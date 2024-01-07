@@ -1,0 +1,19 @@
+﻿@using MVCForum.Models.User
+@model MVCForum.Models.Home.HomeIndexModel
+@section MetaData
+{
+    <meta name="description" content="Snitz™ Forums 2000 is a web-based forum software developed by a group of independent programmers. It was designed as a solution for creating and managing online discussion boards or forums. It gained popularity during the early 2000s and was widely used by various online communities." />
+}
+<div class="container">
+    <div class="row">
+        <div class="col mt-3">
+            <partial name="HomeContent"/>
+        </div>
+        <div class="d-none d-lg-block col-4 mt-3">
+            <partial name="_QuickSearch"/>
+            <partial name="_Login" model="new UserSignInModel()" />
+            <partial name="_LatestPosts" model="@Model.LatestPosts"/>
+        </div>
+    </div>
+
+</div>

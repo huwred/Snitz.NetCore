@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.TagHelpers
+@using BbCodeFormatter
+@model MVCForum.Models.Post.PostListingModel
+@inject ICodeProcessor BbCodeProcessor
+
+<div class="table-row">
+    <div class="status" data-status="@Model.Status">
+        <snitz-topic-icon status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+    </div>
+    <div class="subjects">
+        <a asp-controller="Topic" asp-action="Index" asp-route-id="@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title))</a>
+        <br>
+        <span>Started by @Model.AuthorName <snitz-datetime datetime="@Model.Created"></snitz-datetime> .</span>
+    </div>
+    <div class="replies">
+        @Model.RepliesCount replies <br> @Model.ViewCount views
+    </div>
+
+    <div class="last-reply">
+        <snitz-datetime datetime="@Model.LastPostDate"></snitz-datetime>
+        <br>By <b><a href="">@Model.LastPostAuthorName</a></b>
+    </div>
+</div>

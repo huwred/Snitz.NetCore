@@ -1,0 +1,177 @@
+@model MVCForum.Models.Forum.ForumSearchModel
+@using BbCodeFormatter
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.Models
+@using MVCForum.TagHelpers
+@using SmartBreadcrumbs
+@using SnitzCore.Data.Models
+@inject ICodeProcessor BbCodeProcessor
+
+@{
+    ViewBag.PageCount = Model.Results.PageCount;
+    var pagenum = Model.Results.PageNum?.ToString() ?? Context.Request.Query["page"];
+}
+
+    <div class="container pt-0">
+        <!--Navigation-->
+        <breadcrumb></breadcrumb>
+    @if (Model.Results.Posts.Any())
+    {
+        <!--Display posts table-->
+        <div class="posts-table">
+            <div class="table-head">
+                <div class="status">Status</div>
+                <div class="subjects">Subjects</div>
+                <div class="replies">Replies/Views</div>
+                <div class="last-reply">Last Reply</div>
+            </div>
+
+            <!--Topics start here-->
+            @foreach (var post in Model.Results.Posts)
+            {
+                <div class="table-row">
+                    <div class="status" data-status="@post.Status">
+                        <snitz-topic-icon status="@post.Status" replies="@post.RepliesCount" views="@post.ViewCount" lastpost="@post.LastPostDate"></snitz-topic-icon>
+                    </div>
+                    <div class="subjects">
+                        <a asp-controller="Topic" asp-action="Index" asp-route-id="@post.Id">@Html.Raw(BbCodeProcessor.Subject(post.Title))</a>
+                        <br>
+                    <span>Started by @post.AuthorName <snitz-datetime datetime="@post.Created"></snitz-datetime> .</span>
+                    </div>
+                    <div class="replies">
+                        @post.RepliesCount replies <br> @post.ViewCount views
+                    </div>
+
+                    <div class="last-reply">
+                        <snitz-datetime datetime="@post.LastPostDate"></snitz-datetime>
+                        <br>By <b><a href="/Account/Detail/@post.LastPostAuthorName">@post.LastPostAuthorName</a></b>
+                    </div>
+                </div>            
+            }
+
+
+
+            <!--ends here-->
+        </div>
+        <!--Pagination starts-->
+        @if (Model.Results.PageCount > 1)
+        {
+            var paging = new PagingModel
+            {
+                PageCount = Model.Results.PageCount,
+                Page = Convert.ToInt32(pagenum)
+            };
+            @await Html.PartialAsync("ListPaging",paging)
+        }
+        <!--pagination ends-->
+        <partial name="_IconInfo" />
+    }
+    else
+    {
+        <div class="col col-md-8 offset-md-2 ">
+            <form asp-controller="Forum" asp-action="SearchResult" class="needs-validation bg-form p-4 rounded" novalidate>
+            <div class="mb-3">
+                    <label asp-for="Terms" class="form-label">Search for keywords</label>
+                <input asp-for="Terms" placeholder="Search terms (Enter at least 3 characters)" type="text" class="form-control" aria-describedby="textHelpBlock">
+                <span id="textHelpBlock" class="form-text text-muted">FullText searching is enabled here, to use it, select either 'Search for all terms' or 'Search for any terms'.</span>
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+                <div class="mb-3">
+                    <div>
+                        @foreach (var c in System.Enum.GetValues(typeof(SearchFor)).OfType<SearchFor>())
+                        {
+                            <div class="custom-controls-stacked">
+                                <div class="custom-control custom-radio">
+                                    <input asp-for="SearchFor" type="radio" class="custom-control-input" value="@((int)c)" checked="@(c == Model?.SearchFor)">
+                                    <label asp-for="SearchFor" class="custom-control-label">@c</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="UserName" class="form-label">Search by Author</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1"><i class="fa fa-address-book-o"></i></span>
+                        <input id="UserName" name="UserName" placeholder="Enter username" type="text" aria-describedby="text1HelpBlock" class="form-control">
+                    </div>
+                    <span id="text1HelpBlock" class="form-text text-muted">Use * as wildcard for partial matches</span>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6">
+                        <div class="mb-3">
+                            <label for="SearchCategory" class="form-label">Search in Category</label>
+                            <select id="ddlSearchCategory" name="SearchCategory" asp-items="Model.Categories" aria-describedby="selectHelpBlock" class="form-select">
+                                <option value="0">Please select</option>
+                            </select>
+                            <span id="selectHelpBlock" class="form-text text-muted">Select the Category you wish to search in.All accessible forums will be searched.</span>
+                        </div>
+
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="mb-3">
+                            <label for="SearchForums" class="form-label">Search in Forum(s)</label>
+                            <select multiple="multiple" id="SearchForums" name="SearchForums" asp-items="Model.Forums" aria-describedby="select1HelpBlock" class="form-select">
+                                <option value="">All Forums</option>
+                            </select>
+                            <span id="select1HelpBlock" class="form-text text-muted">Select the forum or forums to search in.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6">
+                        <div class="mb-3">
+                            <label for="SearchMessage" class="form-label">Search in</label>
+                            <select id="SearchMessage" name="SearchMessage" class="form-select">
+                                <option value="True" selected-val="@Model.SearchMessage">Subject and Message</option>
+                                <option value="False" selected-val="@Model.SearchMessage">Subject Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="mb-3">
+                            <label for="date-since" class="form-label">Limit results to</label>
+                            <select asp-for="SinceDate" id="date-since"
+                                    class="form-select"
+                                    asp-items="Html.GetEnumSelectList<SearchDate>()">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Archives</label>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input asp-for="SearchArchives" id="SearchArchivesOn" type="radio" class="custom-control-input" value="true" aria-describedby="radio1HelpBlock">
+                        <label for="SearchArchivesOn" class="custom-control-label">Yes</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input asp-for="SearchArchives" id="SearchArchivesOff" type="radio" class="custom-control-input" value="false" aria-describedby="radio1HelpBlock">
+                        <label for="SearchArchivesOff" class="custom-control-label">No</label>
+                    </div>
+                    <span id="radio1HelpBlock" class="form-text text-muted">search in posts that have been archived</span>
+                </div>
+
+                <div class="mb-3">
+                    <button type="button" class="btn btn-sm btn-danger cancel" onclick="history.go(-1);">Cancel</button>
+                    <button type="reset" class="btn btn-sm btn-warning ">Reset</button>
+                    <button type="submit" id="btn-submit" class="btn btn-sm btn-success">Submit</button>
+                </div>
+        </form>
+        </div>
+    }
+        
+        
+    </div>
+
+@section Scripts{
+    <script>
+        // Disable form submissions if there are invalid fields
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                ValidateForms();
+            }, false);
+        })();
+    </script>
+}

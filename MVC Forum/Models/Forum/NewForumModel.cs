@@ -1,0 +1,29 @@
+﻿using SnitzCore.Data.Models;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace MVCForum.Models.Forum
+{
+    public class NewForumModel
+    {
+        public int Id { get; set; }
+        [Required]
+        public int Category { get; set; }
+        [Required]
+        public string Subject { get; set; }
+        [Required]
+        public string Description { get; set; }
+        public ForumType Type { get; set; }
+
+        public int Order { get; set; } = 99;
+        [Display(Name = "Default view")] 
+        public DefaultDays DefaultView { get; set; } = DefaultDays.Last30Days;
+
+        [Display(Name="Allowed Acccess")]
+        public ForumAuthType AuthType { get; set; }
+
+        [Display(Name="Increment post count")]
+        public bool IncrementMemberPosts { get; set; } = true;
+        public Dictionary<int,string> CategoryList { get; set; }
+    }
+}

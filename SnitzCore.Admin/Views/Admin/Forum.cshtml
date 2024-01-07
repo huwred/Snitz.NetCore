@@ -1,0 +1,130 @@
+﻿@using SnitzCore.Data
+@using SnitzCore.Data.Interfaces
+@inject ISnitzConfig config
+@inject IMember memberService
+@model SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel
+@{
+    Layout = "_MasterLayout";
+    var forums = new SelectList(Model.ForumList, "Key","Value");
+    
+}
+<div class="container">
+    <div class="d-flex align-items-start">
+        <div class="nav flex-column nav-pills me-3 bg-white rounded" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <button class="nav-link active" id="v-pills-group-tab" data-bs-toggle="pill" data-bs-target="#v-pills-group" type="button" role="tab" aria-controls="v-pills-group" aria-selected="true">Groups</button>
+            <button class="nav-link" id="v-pills-moderators-tab" data-bs-toggle="pill" data-bs-target="#v-pills-moderators" type="button" role="tab" aria-controls="v-pills-moderators" aria-selected="false">Moderators</button>
+            <button class="nav-link" id="v-pills-usernames-tab" data-bs-toggle="pill" data-bs-target="#v-pills-usernames" type="button" role="tab" aria-controls="v-pills-usernames" aria-selected="false">Username Filter</button>
+            <button class="nav-link" id="v-pills-badwords-tab" data-bs-toggle="pill" data-bs-target="#v-pills-badwords" type="button" role="tab" aria-controls="v-pills-badwords" aria-selected="false">Badword Filter</button>
+            <button class="nav-link" id="v-pills-archive-tab" data-bs-toggle="pill" data-bs-target="#v-pills-archive" type="button" role="tab" aria-controls="v-pills-archive" aria-selected="false">Archiving</button>
+        </div>
+        <div class="tab-content bg-white rounded p-4 w-100" id="v-pills-tabContent">
+            <div class="tab-pane fade show active" id="v-pills-group" role="tabpanel" aria-labelledby="v-pills-group-tab">
+                <div class="mb-3" id="forum-groups"></div>
+            </div>
+            <div class="tab-pane fade" id="v-pills-moderators" role="tabpanel" aria-labelledby="v-pills-moderators-tab">
+                @using (Html.BeginForm("GetForumModerators", "Admin"))
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Choose forum to view list of moderators</label>
+                        <select title="Select a Forum to manage Moderators" class="form-select getModerators" asp-for="ForumId" asp-items="forums">
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-text">
+                            <p>Use CTRL + Mouse click to select/deselect users in the list<br/>
+                            Use the RESET button to revert back to the current list of moderators for the forum.<br />
+                            When all the moderators for the forum are selected, press the SAVE CHANGES button.</p>
+                        </div>
+                    </div>
+                    <div class="mb-3" id="forum-moderators"></div>
+                }            
+            </div>
+            <div class="tab-pane fade" id="v-pills-usernames" role="tabpanel" aria-labelledby="v-pills-usernames-tab">
+                <form asp-action="SaveUsername" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result1">
+                    <div class="mb-3">
+                        <label class="form-label">Add name to disallow</label>
+                        <input type="text" class="form-control" name="Username" value="" placeholder="Name to disallow" />
+                    </div>
+                    <button class="btn btn-info" type="submit">Add</button>
+                </form>
+                <div id="result1" class="mb-3"></div>
+                @{
+                    var filterednames = memberService.UserNameFilter();
+                    @foreach (var item in filterednames)
+                    {
+                        <input type="text" class="form-control" name="username_@item.Id" value="@item.Name"/>
+                    }
+                }
+            </div>
+            <div class="tab-pane fade" id="v-pills-badwords" role="tabpanel" aria-labelledby="v-pills-badwords-tab">
+                <form asp-action="SaveBadword" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result">
+                    <div class="mb-3">
+                        <label class="form-label">Word</label>
+                        <input type="text" class="form-control" name="Word" value="" placeholder="Word to replace" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Replace With</label>
+                        <input type="text" class="form-control" name="ReplaceWith" value="" placeholder="Replace it with.." />
+                    </div>
+                    <div class="mb-3"><button class="btn btn-info" type="submit">Add</button></div>
+                    
+                </form>
+                <div id="result"></div>
+                @foreach (var badword in config.GetBadwords())
+                {
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-6"><input type="text" class="form-control" name="Word" value="@badword.Word"/></div>
+                            <div class="col-6"><input type="text" class="form-control" name="Replace" value="@badword.ReplaceWith"/></div>
+                        </div>
+                        <input type="hidden" name="Id" value="@badword.Id"/>
+                    </div>
+                }
+            </div>
+            <div class="tab-pane fade" id="v-pills-archive" role="tabpanel" aria-labelledby="v-pills-archive-tab">
+                <div class="mb-3" id="forum-archives"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajax-unobtrusive/3.2.6/jquery.unobtrusive-ajax.js" integrity="sha256-v2nySZafnswY87um3ymbg7p9f766IQspC5oqaqZVX2c=" crossorigin="anonymous"></script>
+    <script src="~/js/jquery.twosidedmultiselect.js" ></script>
+    <script>
+        $('.getModerators').on('change', function () {
+            $('#forum-moderators').load('/Admin/GetForumModerators/' + $(this).val(), function () {
+                $(".multiselect").twosidedmultiselect();
+            });
+
+        });
+        $(document).on('shown.bs.tab',
+            'button[data-bs-toggle="pill"]',
+            function(e) {
+                if (e.target.id === "v-pills-group-tab") {
+                    $('#forum-groups').load('/Admin/ManageGroups/' + $(this).val(), function () {
+                    });
+                }
+                if (e.target.id === "v-pills-archive-tab") {
+                    $('#forum-archives').load('/Admin/ArchiveSettings/' + $(this).val(), function () {
+                    });
+                }
+            });
+        $(function() {
+            $('#forum-groups').load('/Admin/ManageGroups/' + $(this).val(), function () {
+            });
+        });  
+        $(document).on('click', '.manage-group', function (e) {
+            e.preventDefault();
+            $('#forum-groups').load('/Admin/ManageGroups/' + $(this).data('id'), function () {
+            });
+        });
+        $(document).on('click','.confirm-delete', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            $('#myModal').data('id', id).modal('show');
+        });
+    </script>
+}

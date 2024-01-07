@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Data.Interfaces
+@model SnitzCore.Data.Models.SnitzConfig
+@inject ISnitz snitzService
+@inject ISnitzConfig SnitzConfig
+@{
+    Layout = "_MasterLayout";
+    var config = snitzService.GetConfig();
+}
+@section Styles
+{
+    <style>
+        dt, dd { float: left }
+        dt { width: 50%; clear:both }
+    </style>
+}
+<div class="container pt-0">
+    <div class="row">
+        <dl class="col-6 bg-form p-4 rounded">
+            <dt>Forum Url</dt>
+            <dd><input type="text" name="ForumUrl" value="@SnitzConfig.ForumUrl" /></dd>
+            @foreach (var conf in config)
+            {
+                <dt>@conf.Key</dt>
+                <dd>
+                    @if (conf.Value != null && conf.Value.IsNumeric() && Convert.ToInt32(conf.Value) < 2 && Convert.ToInt32(conf.Value) > -1)
+                    {
+                        <input value="@conf.Value" checked="@(Int32.Parse(conf.Value)==1)" name="@conf.Key" class="checkbox" type="checkbox" />
+                    }
+                    else
+                    {
+                        var inputtype = "text";
+                        if (conf.Value != null && conf.Value.IsNumeric())
+                        {
+                            inputtype = "number";
+                        }
+                        <input asp-for="@conf.Value" class="form-control" type="@inputtype" />
+                    }
+                </dd>
+            }
+        </dl>
+    </div>
+</div>

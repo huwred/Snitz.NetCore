@@ -1,0 +1,42 @@
+﻿@model IEnumerable<MVCForum.Models.Post.PostListingModel>
+<div class="subforum latest-posts">
+    <div class="subforum-title">
+        <h1 id="latestPosts"><a href="/Forum/Active">Latest Topics</a></h1>
+    </div>
+    <table class="table table-hover">
+        <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>
+                    <div class="forumLogo" style="background-image: url(@p.Forum.ImageUrl); background-size: 100%"></div>
+                    <div class="postTitle">
+                        <a asp-controller="Topic" asp-action="Index" asp-route-id="@p.Id">
+                            @p.Title
+                        </a>
+                    </div>
+                    <div class="postSubtitle">
+                        @if (p.RepliesCount == 1)
+                        {
+                            <span>@p.RepliesCount Reply</span>
+                        }
+                        @if (p.RepliesCount == 0)
+                        {
+                            <span>No Replies</span>
+                        }
+                        else
+                        {
+                            <span>@p.RepliesCount Replies</span>
+                        }
+                        <span class="postUser">
+                            <a asp-controller="Account" asp-action="Detail" asp-route-id="@p.AuthorName">
+                                @p.AuthorName
+                            </a>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

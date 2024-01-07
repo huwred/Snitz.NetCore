@@ -1,0 +1,21 @@
+﻿@using MVCForum.Extensions
+@using SnitzCore.Data
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Data.Interfaces
+@using SnitzCore.Data.Models
+@inject ISnitz snitzService
+@inject ISnitzConfig config
+
+@{
+    ForumTotal Stats = snitzService.Totals();
+    var LastPost = snitzService.LastPost();
+    var lastpostdate = LastPost?.Created?.FromForumDateStr();
+}
+<div class="forum-info m-2 rounded">
+    <div class="chart">
+        @Html.Raw(config.ForumTitle) - Stats &nbsp;<i class="fa fa-bar-chart"></i>
+    </div>
+    <span>@Stats.PostCount Posts in @Stats.TopicCount Topics by @Stats.UserCount Members.</span><br>
+    <span>Latest post: <b><a href="/Topic/Index/@LastPost?.Id">@LastPost?.Title</a></b> on @lastpostdate?.ToLocalTime().ToForumDisplay() By <a href="">@LastPost?.Member?.Name</a></span>.<br>
+    <span>Check <a href="/Forum/Active">the latest posts</a> .</span><br>
+</div>

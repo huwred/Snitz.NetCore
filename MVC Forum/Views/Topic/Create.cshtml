@@ -1,0 +1,91 @@
+﻿@using SnitzCore.Data
+@using SnitzCore.Data.Interfaces
+@using SmartBreadcrumbs
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using BbCodeFormatter
+@model MVCForum.Models.Post.NewPostModel
+@inject ICodeProcessor BbCodeProcessor
+@{
+    var formaction = "AddPost";
+    if (!Model.IsPost)
+    {
+        formaction = "AddReply";
+    }
+    Model.Content = BbCodeProcessor.Format(Model.Content);
+}
+<div class="container pt-0">
+    <breadcrumb></breadcrumb>
+    <div class="row">
+
+        <form asp-action="@formaction" method="post" id="addPostForm" class="needs-validation col col-md-8 offset-md-2 bg-form p-4 rounded" novalidate>
+            @if (Model.IsPost)
+            {
+                <div class="mb-3 row">
+                    <label asp-for="Title" class="form-label col-2"></label>
+                    <div class="col-10">
+                        <input asp-for="Title" class="form-control"/>
+                        <div class="invalid-feedback">You must provide a title.</div>
+                    </div>
+                </div>
+            }
+            <input asp-for="ForumId" type="hidden" />
+            @if (Model.Id > 0)
+            {
+                <input asp-for="Id" type="hidden" />
+            }
+            
+            <input asp-for="TopicId" type="hidden" />
+            <input asp-for="IsPost" type="hidden" />            
+            <input asp-for="Created" type="hidden"/>
+            <div class="mb-3 row">
+                <div class="col">
+                    @* @await Html.PartialAsync("PostToolbar") *@
+                    <textarea asp-for="Content" class="form-control" id="msg-text" rows="6"></textarea>
+                    <div class="invalid-feedback">You must provide a message.</div>
+
+                </div>
+
+            </div>
+            <div class="mb-3 row">
+                <div class="col row">
+                    <div class="pl-3 col-6">
+                        <input id="show-sig" name="UseSignature" tabindex="5" type="checkbox" value="true">
+                        <input name="UseSignature" type="hidden" value="false">
+                        <label>Check here to include your profile signature</label>
+                    </div>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="pl-3 col-6">
+                            <input asp-for="Lock" tabindex="5" type="checkbox" checked="@Model.Lock">
+                            <label>Check here to lock the topic after this post.</label>
+                        </div>
+                        <div class="pl-3 col-6">
+                            <input asp-for="Sticky" tabindex="5" type="checkbox" checked="@Model.Sticky">
+                            <label>Check here to make this topic sticky.</label>
+                        </div>
+                        <div class="pl-3 col-6">
+                            <input asp-for="DoNotArchive" tabindex="5" type="checkbox" checked="@Model.DoNotArchive">
+                            <label>Do not archive topic</label>
+                        </div>
+                    }
+
+                    <div class="pl-3 col-6" style="display: none;">
+                        <input id="SaveDraft" name="SaveDraft" tabindex="5" type="checkbox" value="true"><input name="SaveDraft" type="hidden" value="false">
+                        <label>Save as draft</label>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 p-2 offset-2">
+                <button type="button" class="btn btn-sm btn-danger cancel" onclick="history.go(-1);">Cancel</button>
+                <button type="reset" class="btn btn-sm btn-warning ">Reset</button>
+                <button type="submit" id="btn-submit" value="Post" class="btn btn-sm btn-success">Post</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/js/initPostForm.js"></script>
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "outputFileName": "wwwroot/js/tinymce/plugins/emoticons/js/emojiimages.min.js",
+    "inputFiles": [
+      "wwwroot/js/tinymce/plugins/emoticons/js/emojiimages.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/jquery/css/jquery-ui.min.css",
+    "inputFiles": [
+      "wwwroot/lib/jquery/css/jquery-ui.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/jquery/jquery.timeago.min.js",
+    "inputFiles": [
+      "wwwroot/lib/jquery/jquery.timeago.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/bootstrap.min.css",
+    "inputFiles": [
+      "wwwroot/css/bootstrap.css"
+    ]
+  }
+]

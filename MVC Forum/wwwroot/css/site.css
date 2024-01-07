@@ -1,0 +1,567 @@
+/* ########################################### */
+/*                 Global                      */
+/* ########################################### */
+*{
+    box-sizing: border-box;
+}
+
+html, body {
+    font-size: 15px;
+    font-family: sans-serif;
+}
+
+a{
+    font-weight: bolder;
+    text-decoration: none;
+}
+
+h1{
+    font-size:16px;
+    font-weight: bolder;
+}
+cite {
+    display:block;
+    font-weight: lighter;
+}
+
+/* ########################################### */
+/*           Forums.html                       */
+/* ########################################### */
+/*.container {
+    margin: 30px 10px;
+    padding: 20px 10px 20px 10px;
+}
+*/
+.container{ margin-top: 42px;}
+.subforum{
+    /*margin-top:20px;*/
+}
+
+.subforum-title{
+    padding: 5px;
+    border-radius: 5px;
+    margin:4px;
+}
+
+.subforum-row{
+    display: grid;
+    grid-template-columns: 7% 60% 15% 18%;
+}
+.subforum-row.subforum-weblink {
+    display: grid;
+    grid-template-columns: 7% 93%;
+}
+
+.subforum-column {
+    padding: 10px;
+    margin: 4px;
+    border-radius: 5px;
+}
+
+.subforum-description *{
+    margin-block: 0;
+}
+
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.subforum-icon i{
+    font-size: 32px;
+}
+.user-icon i {
+    font-size: 22px;
+}
+.subforum-divider{
+    display: none;   
+}
+
+
+/* For the smartphones */
+@media screen and (max-width: 460px) {
+/*    .container {
+        margin: 10px;
+        padding: 10px 0 10px 0;
+    }
+        .container .container {
+            margin: 0;
+            padding: 10px 0 10px 0;
+        }*/
+    .subforum-row.subforum-weblink {
+        display: grid;
+        grid-template-columns: 100%;
+    }
+    .subforum-row{
+        display: grid;
+        grid-template-columns: 100%;
+        grid-template-rows: auto 5em;
+        overflow: hidden;
+    }
+    .subforum-icon  {
+        display:none;
+    }
+    .subforum-stats {
+        display: none;
+    }
+    .user-icon i {
+        font-size: 14px;
+    }
+
+
+        .content {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+}
+
+/* For the tablets */
+@media screen and (min-width: 460px) and (max-width: 1024px) {
+/*    .container {
+        margin: 15px;
+        padding: 15px 5px 15px 5px;
+    }*/
+
+    .subforum-row{
+        display: grid;
+        grid-template-columns: 10% 60% 10% 20%;
+    }
+
+    .subforum-icon i{
+        font-size: 35px;
+    }
+
+    html{
+        font-size: 14px;
+    }
+
+    h1{
+        font-size: 16px;
+    }
+
+  }
+/*   Header Section    */
+
+header{
+    margin-inline: 10px;
+}
+
+.navigation{
+    padding: 10px;
+    width: 65%;
+    display: inline-block;
+    border-radius: 5px;
+    max-height: 80px;
+    margin-right:10px;
+
+}
+
+.close-icon i{
+    font-size:60px;
+    float: left;
+    cursor: pointer;
+}
+
+.nav-list{
+    list-style-type:none;
+    overflow: hidden;
+}
+
+.nav-item a{
+    /*float: right;*/
+    display:block;
+/*    text-align: center;*/
+    margin-inline: 10px;
+    font-size: 1.4em;
+    padding: 5px;
+}
+.nav-item .dropdown-menu a {
+    font-size: 1.1em;
+}
+.dropdown-item {
+    width: auto !important;
+}
+.hide {
+    display: none;
+}
+
+.bar-icon{
+    font-size: 60px;
+    display: inline-block;
+    margin-right:10px;
+    cursor: pointer;
+}
+
+.brand{
+    font-size:60px;
+    display: inline-block;
+}
+
+/*Navbar for the smartphones*/
+@media screen and (max-width: 460px){
+
+    
+    .close-icon i{
+        font-size:30px;
+    }
+    
+    .nav-item a{
+        float:left;
+        display:inline;
+        margin-inline: 3px;
+        font-size: 1em;
+        padding: 5px;
+    }
+    
+    
+    .bar-icon{
+        font-size: 30px;
+    }
+ 
+    .brand{
+        font-size:20px;
+    }
+}
+
+/* forum info Styling */
+.forum-info{
+    padding: 20px;
+
+}
+
+.chart{
+    font-size:20px;
+    font-weight:bold;
+}
+/* Footer Styling */
+
+footer{
+    margin-top: 20px;
+    padding: 20px;
+    display: block;
+    text-align: center;
+}
+
+/* ########################################### */
+/*            posts.html                       */
+/* ########################################### */
+
+/* posts table's head  */
+.table-head{
+    display: flex;
+}
+
+.table-head div{
+    padding: 5px;
+    margin: 2px;
+    font-weight: bold;
+}
+
+.table-head .status{
+    flex: 5%;
+}
+
+.table-head .subjects{
+    flex: 70%;
+}
+
+.table-head .replies{
+    flex: 10%;
+}
+
+.table-head .last-reply{
+    flex: 15%;
+}
+
+/* posts table's body  */
+
+.table-row{
+    display: flex;
+}
+
+.table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply{
+    padding: 5px;
+    margin: 2px;
+
+}
+
+.table-row .status{
+    flex: 5%;
+    font-size: 30px;
+    text-align: center;
+}
+
+.table-row .subjects{
+    flex: 70%;
+}
+
+.table-row .replies{
+    flex: 10%;
+}
+
+.table-row .last-reply{
+    flex: 15%;
+}
+@media screen and (max-width: 460px) {
+    .table-head .subjects {
+        flex: 60%;
+    }
+
+    .table-head .replies {
+        flex: 20%;
+        display: none;
+    }
+
+    .table-head .last-reply {
+        flex: 20%;
+        
+    }
+
+    .table-row .status {
+        flex: 5%;
+        font-size: 20px;
+        text-align: center;
+    }
+    .table-row .subjects {
+        flex: 60%;
+    }
+
+    .table-row .replies {
+        flex: 20%;
+        display: none;
+    }
+
+    .table-row .last-reply {
+        flex: 20%;
+    }
+}
+    /* navigation path*/
+    .navigate {
+        margin-block: 20px;
+        font-weight: lighter;
+        font-size: 1.4em;
+        margin-top: 0px;
+    }
+
+
+
+        .navigate a:hover {
+            font-weight: bolder;
+        }
+
+    /* Pagination*/
+
+    .pagination {
+        padding: 20px;
+        font-size: 15px;
+    }
+
+        .pagination a:hover {
+            opacity: 0.5;
+        }
+
+    .note {
+        padding: 20px;
+        display: block;
+    }
+
+        .note span {
+            font-size: 1.25em;
+            margin-block: 5px;
+        }
+
+
+    /* ########################################### */
+    /*            detail.html                      */
+    /* ########################################### */
+
+    .head {
+        display: flex;
+        padding: 5px;
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    .authors {
+        flex: 15%;
+    }
+
+    .content {
+        flex: 80%;
+    }
+    .toolbar {
+        flex: 5%;
+    }
+.footer {
+    display: flex;
+    margin-top: 0 !important;
+}
+.post-control-btn{ width: 99%;}
+.body {
+    display: flex;
+    padding: 10px;
+    /*margin-top: 5px;*/
+}
+
+        .body .authors .username {
+            font-size: 1.1em;
+        }
+
+        .body .authors img {
+            max-width: 50px;
+            max-height: 80px;
+        }
+
+        .body .content .comment button {
+            border: none;
+            padding: 10px;
+            font-weight: bolder;
+            cursor: pointer;
+            float: right;
+        }
+
+    /* comment section */
+    .comment-area {
+        margin-bottom: 50px;
+    }
+
+        .comment-area textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            margin-block: 10px;
+        }
+
+        .comment-area input {
+            float: right;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+
+    /* autocomplete style overrides */
+    .ui-autocomplete {
+        z-index: 10000;
+    }
+
+    .ui-menu {
+        max-width: 400px !important;
+    }
+
+    .tbl .row {
+        margin: 0px;
+    }
+
+    i.fa-reply, i.fa-trash, i.fa-share, i.fa-close, i.fa-pencil, i.fa-comment-o,i.fa-commenting {
+        cursor: pointer;
+    }
+
+    i.fa-lock.admin, i.fa-unlock.admin {
+        cursor: pointer;
+    }
+
+    .latest-posts .table tr:first-child td:nth-child(1) {
+        border-top: 0;
+    }
+
+/*    .container {
+        max-width: 99% !important;
+    }*/
+
+.tbl {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    /*min-height: 50px;*/
+}
+
+.cell {
+    flex: 1;
+    border: 1px solid white;
+}
+
+.cell.span3-4 {
+    flex: 2 24px; /*  col 3,4 flex-grow/border/padding  */
+}
+
+.row:first-child .cell {
+    display: flex;
+    justify-content: left; /*  center horiz. */
+    align-items: flex-start /*  center vert. */
+}
+
+.row .cell {
+    padding: 5px;
+    vertical-align: top;
+    box-sizing: border-box;
+}
+.field-validation-error,.is-invalid {
+    color: red;
+    font-size: smaller;
+}
+.tableFixHead {
+    overflow: auto;
+    height: 500px;
+}
+.tableFixHead thead tr {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.tableFixHead thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+#customFile .custom-file-control:lang(en)::after {
+    content: "Select file...";
+}
+
+#customFile .custom-file-control:lang(en)::before {
+    content: "Click me";
+}
+
+/*when a value is selected, this class removes the content */
+.custom-file-control.selected:lang(en)::after {
+    content: "" !important;
+}
+
+.custom-file {
+    overflow: hidden;
+}
+
+.custom-file-control {
+    white-space: nowrap;
+}
+.post-control-btn .fa {
+    font-size: 1.2em;
+}
+
+.reply-container .post-control-btn .fa {
+    font-size: 1.4em;
+}
+.input-group-sm > .form-control, .input-group-sm > .input-group-prepend > .input-group-text, .input-group-sm > .input-group-append > .input-group-text, .input-group-sm > .input-group-prepend > .btn, .input-group-sm > .input-group-append > .btn {
+    height: auto;
+}
+.input-group > .form-control, .input-group > .custom-select, .input-group > .custom-file {
+    width: auto;
+}
+img.selected {
+    border: 1px solid darkblue;
+    opacity: 1 !important;
+}
+img.rank {
+    margin: 2px;
+    opacity: .4;
+}
+
+img.rank:hover {
+    opacity: 1;
+}

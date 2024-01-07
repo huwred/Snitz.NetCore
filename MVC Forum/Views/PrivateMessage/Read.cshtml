@@ -1,0 +1,15 @@
+﻿@using BbCodeFormatter
+@model MVC_Forum.Models.Forum.PrivateMessageListingModel
+@inject ICodeProcessor BbCodeProcessor
+
+<div class="card bg-light" style="width: 98%;">
+    <div class="card-header bg-dark">
+        <div class="row">
+            <div class="col-10">Sent on @Model.Sent by @Model.FromMemberName</div>
+            <div class="col-2"><i class="fa fa-reply mr-2" aria-hidden="true" title="Reply to message" data-id="@Model.Id"></i><i class="fa fa-share" aria-hidden="true" title="Forward message" data-id="@Model.Id"></i></div>
+        </div>
+    </div>
+    <div class="card-body text-dark p-3">
+        @Html.Raw(BbCodeProcessor.Format(Model.Description))
+    </div>
+</div>

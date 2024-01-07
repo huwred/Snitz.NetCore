@@ -1,0 +1,35 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVC_Forum.Models.Forum.PrivateMessageIndexModel
+<form id="pm-form">
+    <div class="tableFixHead">
+        <table class="table table-hover" id="forumIndexTable">
+            <thead>
+            <tr class="bg-dark">
+                <th><input type="checkbox" class="checkbox" title="Select All" id="select_all" /></th>
+                <th>Subject</th>
+                <th>From</th>
+                <th>Received</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var pm in Model.Inbox)
+            {
+                <tr class="pmread_@pm.Read" data-id="@pm.Id">
+                    <td><input type="checkbox" class="checkbox select-post" name="Delete" value="@pm.Id" /></td>
+                    <td>
+                        <a asp-controller="PrivateMessage" asp-action="read" asp-route-id="@pm.Id" class="pmread_">@pm.Title</a>
+                    </td>
+                    <td>@pm.FromMemberName</td>
+                    <td>@pm.Sent?.ToString("dd MMM, yyyy HH:mm", CultureInfo.CurrentCulture)</td>
+                    <td><i class="fa fa-reply mr-2" aria-hidden="true" title="Reply to message" data-id="@pm.Id"></i><i class="fa fa-trash" data-id="@pm.Id" data-user="@pm.ToMemberId" title="Delete Message"></i> </td>
+                </tr>
+            }
+            </tbody>
+            <input type="text" name="MemberId" value="@Model.MemberId" style="display:none" />
+
+        </table>
+    </div>
+
+</form>

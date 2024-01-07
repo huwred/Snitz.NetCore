@@ -1,0 +1,276 @@
+﻿@using SnitzCore.BackOffice.TagHelpers
+@using SnitzCore.Data.Interfaces
+@inject ISnitzConfig config
+
+@{
+    Layout = "_MasterLayout";
+ 
+}
+<div class="container">
+<div class="d-flex align-items-start">
+<div class="nav flex-column nav-pills me-3 bg-white rounded" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+    <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Profile Config</button>
+    <button class="nav-link" id="v-pills-roles-tab" data-bs-toggle="pill" data-bs-target="#v-pills-roles" type="button" role="tab" aria-controls="v-pills-roles" aria-selected="false">Role Manager</button>
+    <button class="nav-link" id="v-pills-ranking-tab" data-bs-toggle="pill" data-bs-target="#v-pills-ranking" type="button" role="tab" aria-controls="v-pills-ranking" aria-selected="false">Ranking</button>
+    <button class="nav-link" id="v-pills-pending-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pending" type="button" role="tab" aria-controls="v-pills-pending" aria-selected="false">Pending Members</button>
+</div>
+<div class="tab-content bg-white rounded p-4 w-100" id="v-pills-tabContent">
+<div class="tab-pane fade show active w-100" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRFULLNAME" config-label="Fullname" config-val="@config.GetIntValue("STRFULLNAME")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQFULLNAME" config-label="Required" config-val="@config.GetIntValue("STRREQFULLNAME")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRAGE" config-label="Age" config-val="@config.GetIntValue("STRAGE")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQAGE" config-label="Required" config-val="@config.GetIntValue("STRREQAGE")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRAGEDOB" config-label="Date of Birth" config-val="@config.GetIntValue("STRAGEDOB")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQAGEDOB" config-label="Required" config-val="@config.GetIntValue("STRREQAGEDOB")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRMINAGE" config-label="Min Age" config-val="@config.GetIntValue("STRMINAGE")"></admin-config>
+        </div>
+        <div class="col">
+ 
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRSEX" config-label="Gender" config-val="@config.GetIntValue("STRSEX")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQSEX" config-label="Required" config-val="@config.GetIntValue("STRREQSEX")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRMARSTATUS" config-label="Marital Status" config-val="@config.GetIntValue("STRMARSTATUS")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQMARSTATUS" config-label="Required" config-val="@config.GetIntValue("STRREQMARSTATUS")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRCITY" config-label="City" config-val="@config.GetIntValue("STRCITY")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQCITY" config-label="Required" config-val="@config.GetIntValue("STRREQCITY")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRSTATE" config-label="State" config-val="@config.GetIntValue("STRSTATE")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQSTATE" config-label="Required" config-val="@config.GetIntValue("STRREQSTATE")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRCOUNTRY" config-label="Country" config-val="@config.GetIntValue("STRCOUNTRY")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQCOUNTRY" config-label="Required" config-val="@config.GetIntValue("STRREQCOUNTRY")"></admin-config>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRPICTURE" config-label="Avatar" config-val="@config.GetIntValue("STRPICTURE")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQPICTURE" config-label="Required" config-val="@config.GetIntValue("STRREQPICTURE")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STROCCUPATION" config-label="Occupation" config-val="@config.GetIntValue("STROCCUPATION")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQOCCUPATION" config-label="Required" config-val="@config.GetIntValue("STRREQOCCUPATION")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRHOMEPAGE" config-label="Homepage" config-val="@config.GetIntValue("STRHOMEPAGE")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQHOMEPAGE" config-label="Required" config-val="@config.GetIntValue("STRREQHOMEPAGE")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRBIO" config-label="Bio" config-val="@config.GetIntValue("STRBIO")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQBIO" config-label="Required" config-val="@config.GetIntValue("STRREQBIO")"></admin-config>
+        </div>
+    </div>
+    <!-- Messenger Links -->
+    <hr/>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRAIM" config-label="AIM" config-val="@config.GetIntValue("STRAIM")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQAIM" config-label="Required" config-val="@config.GetIntValue("STRREQAIM")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRICQ" config-label="ICQ" config-val="@config.GetIntValue("STRICQ")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQICQ" config-label="Required" config-val="@config.GetIntValue("STRREQICQ")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRMSN" config-label="Skype (was MSN)" config-val="@config.GetIntValue("STRMSN")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQMSN" config-label="Required" config-val="@config.GetIntValue("STRREQMSN")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRYAHOO" config-label="YAHOO!" config-val="@config.GetIntValue("STRYAHOO")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQYAHOO" config-label="Required" config-val="@config.GetIntValue("STRREQYAHOO")"></admin-config>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRFAVLINKS" config-label="Favorite Links" config-val="@config.GetIntValue("STRFAVLINKS")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQFAVLINKS" config-label="Required" config-val="@config.GetIntValue("STRREQFAVLINKS")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRHOBBIES" config-label="Hobbies" config-val="@config.GetIntValue("STRHOBBIES")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQHOBBIES" config-label="Required" config-val="@config.GetIntValue("STRREQHOBBIES")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRLNEWS" config-label="Latest News" config-val="@config.GetIntValue("STRLNEWS")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQLNEWS" config-label="Required" config-val="@config.GetIntValue("STRREQLNEWS")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRQUOTE" config-label="Quote" config-val="@config.GetIntValue("STRQUOTE")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRREQQUOTE" config-label="Required" config-val="@config.GetIntValue("STRREQQUOTE")"></admin-config>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <admin-config config-key="STRRECENTTOPICS" config-label="Recent Topics" config-val="@config.GetIntValue("STRRECENTTOPICS")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="STRRECENTTOPICS" config-label="Required" config-val="@config.GetIntValue("STRRECENTTOPICS")"></admin-config>
+        </div>
+    </div>
+
+    @*     <div class="row">
+        <div class="col">
+            <admin-config config-key="" config-label="" config-val="@config.GetIntValue("")"></admin-config>
+        </div>
+        <div class="col">
+            <admin-config config-key="" config-label="" config-val="@config.GetIntValue("")"></admin-config>
+        </div>
+    </div> *@
+</div>
+
+<div class="tab-pane fade" id="v-pills-roles" role="tabpanel" aria-labelledby="v-pills-roles-tab">
+    <div id="member-roles"></div>
+</div>
+<div class="tab-pane fade" id="v-pills-ranking" role="tabpanel" aria-labelledby="v-pills-ranking-tab">
+    <div id="member-ranking"></div>
+</div>
+<div class="tab-pane fade" id="v-pills-pending" role="tabpanel" aria-labelledby="v-pills-pending-tab">
+    ...
+</div>
+</div>
+</div>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/jquery.unobtrusive-ajax.js" ></script>
+    <script>
+        $(document).on('click','.roleLink',function(e) {
+            e.preventDefault();
+            console.log($(this).attr('href'));
+            $('#member-roles').load($(this).attr('href'), function () {});
+        });
+        $(document).on('shown.bs.tab',
+            'button[data-bs-toggle="pill"]',
+            function (e) {
+                if (e.target.id === "v-pills-ranking-tab") {
+                    $('#member-ranking').load('/SnitzConfig/RankingConfig/' + $(this).val(), function () {});
+                }
+                if (e.target.id === "v-pills-roles-tab") {
+                    $('#member-roles').load('/Admin/ManageRoles/' + $(this).val(), function () {});
+                }
+            });
+        $('#myModal').on('show',
+            function() {
+                var id = $(this).data('id'),
+                    removeBtn = $(this).find('.danger');
+            });
+
+        $(document).on('click','.confirm-delete', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            $('#myModal').data('id', id).modal('show');
+        });
+
+        $(document).on('click','#btnYes',function() {
+            // handle deletion here
+            var id = $('#myModal').data('id');
+            alert(id);
+            $('[data-id='+id+']').remove();
+            $('#myModal').modal('hide');
+        });
+        //rank-image
+        $(document).on('click','.rank-image', function(e) {
+            //
+            e.preventDefault();
+            const re = new RegExp("icon_star_(.+).gif");
+            const myArray = re.exec($(this).data('val'));
+            var id = $(this).data('id');
+            var val = myArray[1];
+
+            $('#' + id).val(val);
+            $('.' + id).removeClass("selected");
+            $(this).addClass("selected");
+        });
+    </script>
+}

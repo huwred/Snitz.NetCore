@@ -1,0 +1,175 @@
+﻿@using SnitzCore.Data.Interfaces
+@model SnitzCore.BackOffice.ViewModels.AdminEmailServer
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_MasterLayout";
+}
+@inject ISnitzConfig config
+<div class="container">
+<div class="d-flex align-items-start">
+        <div class="nav flex-column me-3 bg-white rounded" role="tablist" id="emailTab" aria-orientation="vertical">
+            <li class="nav-link active"><a href="#email-server" role="tab" data-bs-toggle="tab">Email server settings</a></li>
+            <li class="nav-link"><a href="#email-spam" role="tab" data-bs-toggle="tab">Spam domains</a></li>
+        </div>
+
+        <div class="tab-content bg-white p-4 rounded w-100">
+            <div class="tab-pane fade w-100 active show" id="email-server" role="tabpanel" aria-labelledby="server-tab">
+                @using (Html.BeginForm("EmailConfig", "Admin", FormMethod.Post, new { @class = "form-inline row" }))
+                {
+                    <div class="col-sm-5 text-left">
+                        <fieldset>
+                            <legend>Email Server</legend>
+                            <div class="mb-3">
+                                <label class="form-label">Server address</label>
+                                @Html.TextBoxFor(model => model.Server, new { @class = "form-control" })
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Server port</label>
+                                @Html.TextBoxFor(model => model.Port, new { @class = "form-control" })
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Requires Authentication </label>
+                                @Html.CheckBoxFor(model => model.Auth, new { @class = "form-check-inline", id = "checkbox-auth" })
+                            </div>
+                            <div id="smtp-auth"
+                            @if (!Model.Auth)
+                            {
+                                @Html.Raw("style='display:none'")
+                            }>
+                                <div class="mb-3">
+                                    <label class="form-label">Use default credentials</label>
+                                    @Html.CheckBoxFor(model => model.DefaultCred, new { @class = "checkbox-inline", id = "checkbox-cred" })
+                                </div>
+                                <div class="mb-3 user-cred">
+                                    <label class="form-label">Username</label>
+                                    @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+                                </div>
+                                <div class="mb-3 user-cred">
+                                    <label class="form-label">Password</label>
+                                    @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @type = "password" })
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Ssl method</label>
+                                @Html.TextBoxFor(model => model.SslMode, new { @class = "form-control", @type = "text" })
+                            </div>
+                            <div class="mb-3">
+                                <p>@Html.ValidationSummary(false, "", new { @class = "list-group-item-info" })</p>
+                                <div class="form-text">
+                                    <p>
+                                        Which port should I use?<br />
+                                        Use port 587 if you can, 465 if you can’t, 25 if you must.<br />
+                                        <br />
+                                        Port 587 is technically correct, the best kind of correct. However, many ESPs have adopted implicit TLS on port 465. While you can send email over port 25 and 2525, it’s much more secure to have the messages encrypted. This makes port 587 the preferred option for sending, with port 465 as a close second.
+                                    </p>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-5 flip text-left">
+                        <fieldset>
+                            <legend>Forum email settings</legend>
+                            <div class="mb-3">
+                                <admin-config config-key="STREMAILMODE" config-label="Email mode" config-val="@config.GetIntValue("STREMAILMODE")"></admin-config>
+                            </div>
+                            @*                     @if (ClassicConfig.GetIntValue("STREMAIL") == 1)
+                        {
+                        <div class="mb-3">
+                        <label for="emailval" class="form-label col-8 col-sm-6">Email validation:</label>
+                        <div class="col-4 col-sm-3">
+                        <input id="emailval" type="checkbox" class="yesno-checkbox" data-size="mini" name="emailval" checked="@(ClassicConfig.GetValue("STREMAILVAL") == "1")" />
+                        </div>
+                        </div>
+
+                        }
+                        else
+                        {
+                        <input type="hidden" id="emailval" name="emailval" value="0" />
+                        } *@
+                            <div class="mb-3">
+                                <label class="form-label">Contact Email:</label>
+                                @Html.TextBoxFor(model => model.ContactEmail, new { @class = "form-control inline" })
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">From Email:</label>
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control resource-edit" placeholder="Resource string" value="@Model.From" name="From" />
+                                    <span class="input-group-btn">
+                                        <button data-toggle="tooltip" type="button" class="btn btn-default send-email" title="Send test email" data-id="@User.Identity.Name"><i class="fa fa-envelope"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <legend>Member email settings</legend>
+                            <div class="mb-3">
+                                <admin-config config-key="STRUNIQUEEMAIL" config-label="Require Unique Email" config-val="@config.GetIntValue("STRUNIQUEEMAIL")"></admin-config>
+                                <admin-config config-key="STRLOGONFORMAIL" config-label="Logon to send email" config-val="@config.GetIntValue("STRLOGONFORMAIL")"></admin-config>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="emailpostcount" class="form-label">Number of posts to allow sending email:</label>
+                                <input id="emailpostcount" class="form-control" type="number" name="emailpostcount" value="@(config.GetIntValue("INTMAXPOSTSTOEMAIL"))" />
+                                <input type="text" id="emailadmin" name="emailadmin" value="1" style="display: none;" />
+                            </div>
+                            <div class="mb-3">
+                                <textarea id="emailpostcount-error" class="form-control" name="emailpostcount-message" rows="4">@(config.GetValue("STRNOMAXPOSTSTOEMAIL"))</textarea>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="row"></div>
+                    @* { Html.RenderPartial("_FormButtons"); } *@
+                }
+            </div>
+
+            <div class="tab-pane fade w-100" id="email-spam" role="tabpanel" aria-labelledby="spam-tab">
+                @using (Html.BeginForm("DeleteSpamFilters", "Admin", FormMethod.Post, new { id = "delSpamForm" }))
+                {
+                    <div class="mb-3">
+                        <admin-config config-key="STRFILTEREMAILADDRESSES" config-label="Filter known spam domains" config-val="@config.GetIntValue("STRFILTEREMAILADDRESSES")"></admin-config>
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-group mb-3">
+                            <input type="text" name="EmailDomain" class="form-control" placeholder="New Spam domain, example @@test.com" aria-label="Recipient's username" aria-describedby="button-addon2">
+                            @Html.ActionLink(" ", "AddSpamDomain", "Admin", new { domain = "xxxxxx" }, new { @class = "fa fa-save fa-2x p-2 add-lnk", title = "Add Domain", data_toggle = "tooltip" })
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="mb-3">
+                        <div class="mb-3">
+                            <button type="button" href="@Url.Action("Import", "Admin")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Import Domain Data</button>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="checkbox" class="form-check-inline" title="Select All" />
+                            <a href="#" class="input-group-text fa fa-trash" title="Delete Selected Domain" data_toggle="tooltip" id="del-spam-submit"></a>
+                        </div>
+                    </div>
+                    <div class="container-fluid" style="max-height:500px; overflow-y: scroll;">
+                        @Html.DisplayFor(m => m.BannedDomains)
+                    </div>
+
+                }
+            </div>
+        </div>
+
+</div>
+</div>
+
+<div id='emailModal' class='modal fade in' data-url='@Url.Action("TestEmail", "Account")' aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title" id="myModalLabel">Member</h4>
+            </div>
+            <div id='emailContainer' class="modal-body">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

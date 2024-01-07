@@ -1,0 +1,314 @@
+﻿html, body {
+    font-size: 13px;
+    font-family: Verdana, Arial, helvetica;
+    background-color: whitesmoke !important;
+    color: #191970 !important;
+}
+h4,.h4 {
+    font-size: 1.3em;
+}
+ .subforum-title, .subforum-column {
+    border-radius: 0 !important;
+}
+ /* Navbar Styles */
+.bg-dark {
+    background-color: #191970 !important;
+}
+.navbar-custom .navbar-brand {
+    color: #fff;
+}
+
+.navbar-custom .navbar-brand:hover, .navbar-custom .navbar-brand:focus {
+    color: #fff;
+}
+
+.navbar-custom .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.navbar-custom .navbar-nav .nav-link:hover, .navbar-custom .navbar-nav .nav-link:focus {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.navbar-custom .navbar-nav .nav-link.disabled {
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.navbar-custom .navbar-nav .show > .nav-link,
+.navbar-custom .navbar-nav .active > .nav-link,
+.navbar-custom .navbar-nav .nav-link.show,
+.navbar-custom .navbar-nav .nav-link.active {
+    color: #fff;
+}
+
+.navbar-custom .navbar-toggler {
+    color: rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-custom .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+.navbar-custom .navbar-text {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.navbar-custom .navbar-text a {
+    color: #fff;
+}
+
+.navbar-custom .navbar-text a:hover, .navbar-custom .navbar-text a:focus {
+    color: #fff;
+}
+
+a {
+    color: #00008B;
+    text-decoration: none;
+}
+a:visited {
+    color: #0000FF;
+    text-decoration: underline;
+}
+a:active,a:hover {
+    color: #FF0000;
+    text-decoration: underline;
+}
+.initial a:visited {
+    color: #0000FF;
+}
+.initial a:hover {
+    color: #FF0000;
+}
+h1 {
+    font-size: 16px;
+    font-weight: bolder;
+}
+.text-muted {
+    color: #fefefe !important;
+}
+
+/* ########################################### */
+/*           Forums.html                       */
+/* ########################################### */
+
+.subforum-title, .subforum-title a {
+    background-color: #6A5ACD;
+    color: #F5FFFA !important;
+}
+
+.subforum-column {
+    background-color: #F5F5F5;
+}
+.subforum-icon {
+    color: goldenrod;
+}
+.subforum-icon .fa-ban,.note .fa-ban {
+    color: red;
+}
+.subforum-icon .fa-link, .note .fa-link {
+    color: silver;
+}
+
+.table-row .status .fa, .note .fa {
+    color: goldenrod;
+}
+.fa-fire, .subforum-icon .fa-fire, .table-row .status .fa-fire,.note .fa-fire {
+    color: orangered;
+}
+/* For the smartphones */
+@media screen and (max-width: 460px) {
+    .subforum-divider {
+        display: block;
+        border: 0;
+        height: 1px;
+        background-image: linear-gradient(to right, rgba(190, 190, 190, 0), rgba(255, 255, 255, 0.75), rgba(190, 190, 190, 0));
+    }
+    .body {
+        display: flex;
+        padding: 10px;
+        margin-top: 5px;
+    }
+}
+
+/*   Header Section    */
+
+/* Nav Bar styles */
+
+.navigate {
+    background-color: #eee;
+    color: #666;
+    padding: 3px;
+}
+
+/*.nav-item a {
+    color: darkslategrey;
+}
+
+    .nav-item a:hover {
+        color: white;
+    }
+*/
+.bar-icon {
+    color: #fff;
+}
+
+/* forum info Styling */
+.forum-info {
+    padding: 20px;
+    background-color: #8199DA;
+}
+
+/* Footer Styling */
+
+footer {
+    background-color: #ddd;
+}
+
+/* ########################################### */
+/*            posts.html                       */
+/* ########################################### */
+
+/* posts table's head  */
+
+.table-head div {
+    background-color: #191970;
+    font-weight: bold;
+    color: #F5FFFA;
+}
+
+/* posts table's body  */
+
+.table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply {
+    background-color: #F5F5F5;
+}
+
+    /* navigation path*/
+    .navigate a {
+        color: darkslategrey;
+    }
+
+.navigate a:hover {
+    color: #0000ff;
+    font-weight: bolder;
+}
+
+/* Pagination*/
+
+.pagination a {
+    color: darkslategrey;
+    margin-inline: 5px;
+    padding: 5px 10px;
+    /*border: solid 0.5px darkslategrey;*/
+}
+.page-link {
+    background-color: #ddd;
+}
+.note {
+    background-color: #8199DA;
+    
+}
+
+/* ########################################### */
+/*            detail.html                      */
+/* ########################################### */
+
+.head {
+    background-color: #191970;
+    color: #fff;
+}
+
+div.comment {
+    background-color: #F5F5F5;
+}
+div.comment.alt {
+    background-color: #DCDCDC;
+}
+div.topic-container {
+    margin-top: 4px;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+div.card-body {
+    padding: 0;
+}
+    div.card-body .body {
+        margin-top: 0;
+        background-color: #DCDCDC;
+    }
+div.card-body .body.topic {
+    margin-top: 0;
+    background-color: white;
+}
+div.card-body .body.alt {
+            background-color: #F5F5F5;
+        }
+
+.body.topic {
+    background-color: #F5F5F5;
+}
+.body .content .comment button {
+    box-shadow: 4px 6px #fff;
+}
+
+/* comment section */
+.comment-area input:hover {
+    border: solid 1px #000000;
+}
+
+.editor-buttons .dropdown-menu a, .editor-buttons .dropdown-menu a:visited {
+    color: #000;
+}
+/*Auto complete dropdown*/
+.ui-menu {
+    background-color: darkslategrey;
+    border: lightblue 1px solid;
+    box-shadow: 2px 2px 5px gray;
+    cursor: pointer;
+    color: #fff;
+}
+
+
+
+.cell {
+    border: 1px solid gray;
+}
+
+h1.bg-dark, .btn-group.btn-dark {
+    background-color: #eee !important;
+
+}
+h1.text-white {
+    color: #fff !important;
+}
+tr.bg-dark, .card-header.bg-dark {
+    background-color: #191970 !important;
+    color: #fff;
+}
+
+#theme-change {
+    background-color: #191970;
+    color: #fff;
+}
+.btn-secondary {
+    background-color: #8199DA;
+}
+.bg-form {
+    background-color: #8199DA;
+}
+    .bg-form h1.bg-dark {
+        background-color: #6A5ACD !important;
+    }
+
+    .new-posts {
+        color: magenta !important;
+    }
+
+blockquote.newquote {
+    font: 14px/22px normal helvetica, sans-serif;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 30px;
+    padding-left: 15px;
+    border-left: 3px solid #ccc;
+}

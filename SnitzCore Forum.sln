@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnitzForum", "MVC Forum\SnitzForum.csproj", "{C49CCAE5-0C7B-4F61-95A4-D8F9A27A3D34}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnitzCore.Data", "MVCForum.Data\SnitzCore.Data.csproj", "{4FF42FDA-4793-48E5-90D3-BE777019CD2F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnitzCore.Service", "MVCForum.Service\SnitzCore.Service.csproj", "{8B03F4D3-E67E-45F8-AD69-B2CC9B4A3555}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BbCodeFormatter", "BbCodeFormatter\BbCodeFormatter.csproj", "{5611430F-E899-414F-83FC-5504B8029F18}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnitzCore.BackOffice", "SnitzCore.Admin\SnitzCore.BackOffice.csproj", "{2C8B8B2C-6BEC-4447-BF4B-889E9DBBDFBD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteMigrations", "Migrators\SqliteMigrations\SqliteMigrations.csproj", "{75BA1921-1327-4D87-92E6-FEE60E7B435D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSSqlMigrations", "Migrators\MSSqlMigrations\MSSqlMigrations.csproj", "{5A7246E2-95CD-48C5-B49B-74402BEA5E71}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C49CCAE5-0C7B-4F61-95A4-D8F9A27A3D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C49CCAE5-0C7B-4F61-95A4-D8F9A27A3D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C49CCAE5-0C7B-4F61-95A4-D8F9A27A3D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C49CCAE5-0C7B-4F61-95A4-D8F9A27A3D34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FF42FDA-4793-48E5-90D3-BE777019CD2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FF42FDA-4793-48E5-90D3-BE777019CD2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FF42FDA-4793-48E5-90D3-BE777019CD2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FF42FDA-4793-48E5-90D3-BE777019CD2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B03F4D3-E67E-45F8-AD69-B2CC9B4A3555}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B03F4D3-E67E-45F8-AD69-B2CC9B4A3555}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B03F4D3-E67E-45F8-AD69-B2CC9B4A3555}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B03F4D3-E67E-45F8-AD69-B2CC9B4A3555}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5611430F-E899-414F-83FC-5504B8029F18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5611430F-E899-414F-83FC-5504B8029F18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5611430F-E899-414F-83FC-5504B8029F18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5611430F-E899-414F-83FC-5504B8029F18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C8B8B2C-6BEC-4447-BF4B-889E9DBBDFBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C8B8B2C-6BEC-4447-BF4B-889E9DBBDFBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C8B8B2C-6BEC-4447-BF4B-889E9DBBDFBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C8B8B2C-6BEC-4447-BF4B-889E9DBBDFBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75BA1921-1327-4D87-92E6-FEE60E7B435D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75BA1921-1327-4D87-92E6-FEE60E7B435D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75BA1921-1327-4D87-92E6-FEE60E7B435D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75BA1921-1327-4D87-92E6-FEE60E7B435D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A7246E2-95CD-48C5-B49B-74402BEA5E71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A7246E2-95CD-48C5-B49B-74402BEA5E71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A7246E2-95CD-48C5-B49B-74402BEA5E71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A7246E2-95CD-48C5-B49B-74402BEA5E71}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3D0981AB-0EA3-4121-91E1-3E2C365C0006}
+	EndGlobalSection
+EndGlobal

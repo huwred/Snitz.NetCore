@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<emoticons>
+  <emoticon name="question" code="[?]" image="icon_smile_question.gif"/>
+  <emoticon name="eightball" code="[8]" image="icon_smile_8ball.gif"/>
+  <emoticon name="smile" code="[:)]" image="icon_smile.gif"></emoticon>
+  <emoticon name="angry" code="[:(!]" image="icon_smile_angry.gif"/>
+  <emoticon name="veryangry" code="[:(!!]" image="icon_smile_angry2.gif"/>
+  <emoticon name="grumpy" code="[:G]" image="icon_smile_test.gif"/>
+  <emoticon name="approve" code="[^]" image="icon_smile_approve.gif"/>
+  <emoticon name="bigsmile" code="[:D]" image="icon_smile_big.gif"/>
+  <emoticon name="bigeyes" code="[88]" image="icon_smile_bigeyes.gif"/>
+  <emoticon name="blackeye" code="[B)]" image="icon_smile_blackeye.gif"/>
+  <emoticon name="blush" code="[:I]" image="icon_smile_blush.gif"/>
+  <emoticon name="boggled" code="[:~]" image="icon_smile_boggled.gif"/>
+  <emoticon name="clown" code="[:o)]" image="icon_smile_clown.gif"/>
+  <emoticon name="cool" code="[8D]" image="icon_smile_cool.gif"/>
+  <emoticon name="cyclops" code="[o)]" image="icon_smile_cyclops.gif"/>
+  <emoticon name="dead" code="[xx(]" image="icon_smile_dead.gif"/>
+  <emoticon name="dissapprove" code="[v]" image="icon_smile_dissapprove.gif"/>
+  <emoticon name="dissapprove" code="[V]" image="icon_smile_dissapprove.gif"/>
+  <emoticon name="evil" code="[}:)]" image="icon_smile_evil.gif"/>
+  <emoticon name="kisses" code="[:x]" image="icon_smile_kisses.gif"/>
+  <emoticon name="kisses" code="[:X]" image="icon_smile_kisses.gif"/>
+  <emoticon name="mean" code="[:/]" image="icon_smile_mean.gif"/>
+  <emoticon name="sad" code="[:(]" image="icon_smile_sad.gif"/>
+  <emoticon name="shock" code="[:o]" image="icon_smile_shock.gif"/>
+  <emoticon name="shock" code="[:O]" image="icon_smile_shock.gif"/>
+  <emoticon name="shock" code="[:0]" image="icon_smile_shock.gif"/>
+  <emoticon name="shy" code="[8)]" image="icon_smile_shy.gif"/>
+  <emoticon name="sleepy" code="[|)]" image="icon_smile_sleepy.gif"/>
+  <emoticon name="tongue" code="[:P]" image="icon_smile_tongue.gif"/>
+  <emoticon name="tongue" code="[:p]" image="icon_smile_tongue.gif"/>
+  <emoticon name="wink" code="[;)]" image="icon_smile_wink.gif"/>
+  <emoticon name="thumbsUp" code="[)8]" image="icon_thumb.gif"/>
+  <emoticon name="heart" code="[&lt;3]" image="heart_icon.png"/>
+</emoticons>

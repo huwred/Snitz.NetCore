@@ -1,0 +1,79 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Data
+@using SnitzCore.Data.Interfaces
+@model MVCForum.Models.PrivateMessage.PrivateMessagePostModel
+@inject IEmoticon emoticons
+
+<div class="card">
+    <div class="card-header bg-dark">
+        New Private Message
+    </div>            
+    <div class="card-body text-dark">
+        <form method="post" asp-controller="PrivateMessage" asp-action="Send" class="needs-validation p-2" novalidate>
+            <div class="form-group">
+                <label asp-for="To"></label>
+                <input asp-for="To" disabled="@(Model.IsReply)" class="form-control" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" />
+                <span asp-validation-for="To"></span>
+            </div>            
+            <div class="form-group">
+                <label asp-for="Subject"></label>
+                <input asp-for="Subject" class="form-control"/>
+                <span asp-validation-for="Subject"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Message"></label>
+                @* @await Html.PartialAsync("PostToolbar") *@
+                <textarea asp-for="Message" class="form-control" id="msg-text" rows="5" ></textarea>
+                <span asp-validation-for="Message"></span>
+            </div>
+            @*             <div class="form-group">
+                @foreach (var emote in emoticons.GetAll())
+                {
+                    <img class="insert-emote pr-1" src="/images/emoticon/@emote.Image" data-code=" @emote.Code " title="@emote.Name" alt="@emote.Name emoticon" />
+                }
+            </div> *@
+            <div class="form-check">
+                <label class="form-check-label">
+                    @Html.CheckBoxFor(m=>m.Draft,new{@class="form-check-input"})
+                    <label asp-for="Draft"></label>
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    @Html.CheckBoxFor(m=>m.IncludeSig,new{@class="form-check-input"})
+                    <label asp-for="IncludeSig"></label>
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    @Html.CheckBoxFor(m=>m.SaveToSent,new{@class="form-check-input"})
+                    <label asp-for="SaveToSent"></label>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-success">Send <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+        </form>
+    </div>
+</div>
+<script type="text/javascript" >
+    // Disable form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            ValidateForms();
+        }, false);
+    })();
+
+    tinymce.remove();
+    tinymce.init({
+        selector: 'textarea#msg-text',
+        height: 200,
+        plugins: 'bbcode code emoticons codesample',
+        branding: false,
+        statusbar: false,
+        toolbar: 'undo redo | bold italic underline emoticons codesample | code ',
+        emoticons_database: 'emojiimages',
+        emoticons_images_url: '/images/emoticon/',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+    });
+</script>

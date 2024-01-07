@@ -1,0 +1,113 @@
+﻿@model MVCForum.Models.Forum.ForumIndexModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using BbCodeFormatter
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Routing
+@using MVCForum.Models.User
+@using MVCForum.TagHelpers
+@using SnitzCore.Data.Models
+@inject SignInManager<ForumUser> SignInManager
+@inject ICodeProcessor BbCodeProcessor
+@{
+    var cat = Context.Request.Query["id"];
+    var test = Context.GetRouteValue("id");
+    if (test != null)
+    {
+        cat = (string)test;
+    }
+}
+<div class="container pt-0">
+    <breadcrumb></breadcrumb>
+    @if (!string.IsNullOrWhiteSpace(cat) && User.IsInRole("Admin"))
+    {
+        <div class="btn-group">
+            <button asp-controller="Category" asp-action="Edit" asp-route-id="@cat" title="Edit Forum" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> Edit Category</span></button>
+            <button asp-controller="Category" asp-action="Delete" asp-route-id="@cat" title="Delete Forum" class="btn btn-outline-danger"><i class="fa fa-trash"></i><span class="d-none d-md-inline"> Delete Category</span></button>
+            <button formaction="/Forum/Create/?catid=@cat" title="New Forum" class="btn btn-outline-success"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> Create Forum</span></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col">
+            @foreach (var categoryForums in Model.ForumList.GroupBy(f => f.CategoryId))
+            {
+                <div class="subforum">
+                    <div class="subforum-title rounded">
+                        <h1 style="display: inline-block;"><a href="?id=@categoryForums.Key">@categoryForums.FirstOrDefault().CategoryName</a></h1>
+                    </div>
+                    @foreach (var forum in categoryForums)
+                    {
+                        @if (HasAccess(forum.AccessType))
+                        {
+                            var weblinkclass = "";
+                            if (forum.ForumType == ForumType.WebLink)
+                            {
+                                weblinkclass = "subforum-weblink";
+                            }
+                            <div class="subforum-row @weblinkclass">
+                                <div class="subforum-icon subforum-column center">
+                                    <snitz-forum-icon forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
+                                </div>
+                                <div class="subforum-description subforum-column">
+                                    @if (forum.ForumType == ForumType.WebLink)
+                                    {
+                                        <h4><a href="@forum.Url" target="_blank" title="">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
+                                    }
+                                    else
+                                    {
+                                        <h4><a asp-controller="Forum" asp-action="Index" asp-route-id="@forum.Id" asp-route-defaultdays="@((int)forum.DefaultView)">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
+                                    }
+                                    <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
+                                </div>
+                                @if (forum.ForumType != ForumType.WebLink)
+                                {
+                                    <div class="subforum-stats subforum-column">
+                                        <span>@forum.Posts Posts | @forum.Topics Topics</span>
+                                    </div>
+                                    <div class="subforum-info subforum-column">
+                                        @if (forum.LastPostTopicId.HasValue)
+                                        {
+                                            <b><a href="/Topic/Index/@forum.LastPostTopicId/?replyid=@forum.LastPostReplyId" title="Go to latest Post">Latest Post</a></b>
+                                            <text>by</text>
+                                            <a href="/Account/Detail/@forum.LastPostAuthor?.Name">@forum.LastPostAuthor?.Name</a>
+                                            <br>
+                                            <small><snitz-datetime datetime="@forum.LastPostDateTime"></snitz-datetime></small>
+                                            
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <hr class="subforum-divider">
+                        }
+                    }
+                </div>
+            }
+        </div>
+        <div class="d-none d-md-block col-3">
+            <partial name="_QuickSearch"/>
+            <partial name="_Login" model="new UserSignInModel()"/>
+            <partial name="_LatestPosts" model="@Model.LatestPosts"/>
+        </div>
+    </div>
+    <partial name="_ForumStats" />
+</div>
+@functions
+{
+    bool HasAccess(ForumAuthType authType)
+    {
+        if(authType == ForumAuthType.All)
+            return true;
+        if (SignInManager.IsSignedIn(User))
+        {
+            if(authType == ForumAuthType.Members || authType == ForumAuthType.MembersPassword
+               || authType == ForumAuthType.AllowedMembers)
+                return true;
+        }
+        return false;
+    }
+}
+@section Scripts
+{
+
+}
+    

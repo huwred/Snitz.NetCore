@@ -1,0 +1,66 @@
+﻿@model MVCForum.Models.User.UserCreateModel
+<div class="container pt-0">
+    <div class="center m-2 ">
+        <div class="subforum col-6 p-0 bg-form border border-dark rounded">
+            <h1 class="bg-dark text-white p-2">Forum Registration</h1>
+            
+            <form asp-controller="Account" asp-action="Register" class="needs-validation p-2" novalidate>
+                <div class="form-group">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" required="required" />
+                    <div class="invalid-feedback">You must provide a Username.</div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" class="form-control" required="required" />
+                    <div class="invalid-feedback">You must provide an Email address.</div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password"></label>
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", required="required" })
+                    <div class="invalid-feedback">You must provide a password.</div>
+
+                    <label for="pwRepeat">Confirm Password</label>
+                    <input type="password" name="pwRepeat" id="pwRepeat" class="form-control" />
+                    <div class="invalid-feedback">Passwords do not match.</div>
+                </div>
+                <div class="form-group">
+                    <a asp-controller="Forum" asp-action="Index" class="btn btn-danger">Cancel</a>
+                    <button name="submit" type="submit" class="btn btn-primary">Register</button>
+                </div>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script>
+        // Disable form submissions if there are invalid fields
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Get the forms we want to add validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        var pw = document.getElementById('Password').value; // $('#pw').val();
+                        var pwRepeat = document.getElementById('pwRepeat');
+                        if(pwRepeat.value !== pw) {
+                            // set cell border color to red and show error icon for invalid input
+                            document.getElementById('pwRepeat').classList.add("is-invalid");
+                        }
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>    
+}

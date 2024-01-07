@@ -1,0 +1,161 @@
+﻿@model MVCForum.Models.Post.PostIndexModel
+@using BbCodeFormatter
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.Extensions
+@using MVCForum.Models
+@using MVCForum.TagHelpers
+@using SmartBreadcrumbs
+@using SnitzCore.Data
+@using SnitzCore.Data.Interfaces
+@using SnitzCore.Data.Models
+@inject ICodeProcessor BbCodeProcessor
+@inject IMember MemberService
+@inject IEmoticon Emoticons
+@inject SignInManager<ForumUser> SignInManager
+@section Styles
+{
+    <link rel="stylesheet" href="~/css/prism.css">
+}
+@{
+    ViewBag.PageCount = Model.PageCount;
+
+    var pagenum = Model.PageNum.ToString() ?? Context.Request.Query["page"] ;
+    var pagesize = Context.Request.Query["pagesize"];
+
+    var ranking = MemberService.GetRankings();
+    var replyClass = "d-none";
+    var loggedin = SignInManager.IsSignedIn(User);
+    if (loggedin)
+    {
+        replyClass = "";
+    }
+}
+<div class="container pt-0">
+    <breadcrumb></breadcrumb>
+    <!--Topic Section-->
+
+    <div class="card mb-1 topic-container bg-white">
+        <div class="card-header">
+            @Model.Title - Posted <snitz-datetime datetime="@Model.Created"></snitz-datetime> (Read @Model.Views Times)
+        </div>
+        <div class="card-body">
+            <div class="body topic">
+                <div class="authors">
+                    <div class="username"><a href="">@Model.AuthorName</a></div>
+                    <div>@Html.MemberRankTitle(Model.Author, ranking)</div>
+                    <snitz-avatar src="/Content/Members/@Model.Author.Id/@Model.Author.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="rounded-circle" />
+                    <div>Posts: @Model.Author.Posts</div>
+                    <div>@Html.MemberRankStars(Model.Author, ranking)</div>
+                </div>
+                <div class="content">
+                    @Html.Raw(BbCodeProcessor.Format(Model.Content))
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-dark">
+            <post-controls post-type="Topic" post-status="Model.IsLocked" post-id="Model.Id" curr-user="User" post-author="Model.AuthorName" logged-in="loggedin"></post-controls>
+        </div>
+    </div>
+<!--Replies Section-->
+
+@if (Model.Replies.Any())
+{
+    <form id="defaultdays-form" asp-action="Index" class="form-inline">
+        <select class="form-control mt-1" id="sortdir" name="sortdir">
+            <option value="des" selected-val="@Model.SortDir">Newest first</option>
+            <option value="asc" selected-val="@Model.SortDir">Oldest first</option>
+        </select>
+        <input type="number" value="@pagenum" name="page" style="display: none;" />
+        <input type="number" value="@pagesize" name="pagesize" style="display: none;" />
+    </form>
+
+    var rowclass = "alt";
+
+
+    <div class="reply-container">
+    @foreach (var reply in Model.Replies)
+    {
+        rowclass = rowclass == "alt" ? "" : "alt";
+
+        <div class="card mb-3">
+            <div class="card-header">
+                Posted <snitz-datetime datetime="@reply.Created"></snitz-datetime>
+            </div>
+            <div class="card-body" id="reply-@reply.Id">
+                <div class="body @rowclass">
+                    <div class="authors">
+                        <div class="username"><a href="">@reply.AuthorName</a></div>
+                        <div>@Html.MemberRankTitle(reply.Author, ranking)</div>
+                        <snitz-avatar src="/Content/Members/@reply.Author.Id/@reply.Author.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="rounded-circle"/>
+                        <div>Posts: @reply.AuthorPosts</div>
+                        <div>@Html.MemberRankStars(reply.Author, ranking)</div>
+                    </div>
+                    <div class="content">
+                        @Html.Raw(BbCodeProcessor.Format(reply.Content))
+                        <br/>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-dark">
+                <post-controls post-type="Reply" post-status="Model.IsLocked" post-id="reply.Id" topic-id="Model.Id" curr-user="User" post-author="reply.AuthorName" logged-in="loggedin"></post-controls>
+            </div>
+        </div>
+
+    }
+    </div>
+    <!--Pagination starts-->
+    @if (Model.PageCount > 1)
+    {
+        var paging = new PagingModel
+        {
+            PageCount = Model.PageCount,
+            Page = Model.PageNum,
+            OrderBy = "lpd",
+            SortDir = Model.SortDir
+        };
+        <partial name="ListPaging" model="paging" />
+    }
+    else
+    {
+        <div class="mb3">&nbsp;</div>
+    }
+}
+    <!--Reply Area-->
+    @if (!Model.IsLocked)
+    {
+        <div class="comment-area @replyClass mt-2" id="reply-area">
+            <form asp-controller="Topic" asp-action="AddReply" class="needs-validation" novalidate>
+                <textarea name="Content" id="msg-text" placeholder="reply here ... " class="form-control" required="required"></textarea>
+                <div class="invalid-feedback">You must provide a message.</div>
+                <input name="TopicId" type="hidden" value="@Model.Id"/>
+                <input asp-for="ForumId" type="hidden"/>
+                <div class="form-group mt-2">
+                    <button type="reset" class="btn btn-warning">Reset</button>
+                    <button type="submit" class="btn  btn-success">Post</button>
+                </div>
+            </form>
+        </div>
+    }
+
+</div>
+
+
+
+
+@section Scripts
+{
+    <script type="text/javascript" src="/js/postcontroller.js"></script>
+    <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/js/initPostForm.js"></script>
+    <script src="/js/prism.js" data-manual></script>
+
+    <script>
+        Prism.hooks.add("before-highlight", function (env) {
+            env.code = env.element.innerText;
+        });
+
+        code = document.getElementsByTagName('code');
+        Array.from(code).forEach(el => { Prism.highlightElement(el) });
+    </script>
+}

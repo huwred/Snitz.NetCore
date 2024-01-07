@@ -1,0 +1,216 @@
+﻿@using SnitzCore.Data.Models
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.Extensions
+@using MVCForum.TagHelpers
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Data
+@using SnitzCore.Data.Interfaces
+@using SnitzCore.Service
+@model MVCForum.Models.Member.MemberDetailModel
+@inject ISnitzConfig config
+@inject IMember memberService
+@{
+    var _ranking = memberService.GetRankings();
+}
+<div class="container pt-0">
+    @if (Model.CanEdit)
+    {
+        <h1 class="bg-dark text-dark p-2">Manage your account</h1>
+    }
+    else
+    {
+        <h1 class="bg-dark text-dark p-2">View @Model.Username's account details</h1>
+    }
+
+    <div id="member-profile">
+        <form asp-action="Update" method="post" class="needs-validation" novalidate>
+            <div class="row">
+                <div class="col-6 col-md-2">
+                    <snitz-avatar src="/Content/Members/@Model.Member.Id/@Model.Member.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid"/>
+                </div>
+                <div class="col-6 col-md-3">
+                    <input asp-for="Id" class="form-control" type="hidden"/>
+                    <div class="form-group">
+                        <label asp-for="Username"></label>
+                        <input asp-for="Username" class="form-control" disabled="disabled"/>
+                    </div>
+                    @if (Model.CanEdit || (Model.Member.HideEmail != 1 && Model.Member.Privateprofile != 1))
+                    {
+                        <div class="form-group">
+                            <label asp-for="Email"></label>
+                            <input asp-for="Email" class="form-control" disabled="disabled"/>
+                        </div>
+                    }
+                    <div class="form-group">
+                        <label asp-for="Title"></label>
+                        <input name="Title" class="form-control" disabled="disabled" value="@MemberRankTitle(Model.Member, _ranking)"/>
+                    </div>
+                    @if (Model.CanEdit)
+                    {
+                        <a asp-action="Index" class="btn btn-danger">Cancel</a>
+                        <button type="reset" class="btn btn-warning">Reset</button>
+                        <button type="submit" class="btn btn-success">Save</button>
+                    }
+                </div>
+                <div class="col col-md-6">
+                    <div class="form-group row">
+                        <label asp-for="Member.Created" class="col-sm-3 col-form-label"></label>
+                        <div class="col-sm-9">
+                            <label class="col-form-label">@Model.Member.Created.FromForumDateStr().ToForumDisplay()</label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Member.Posts" class="col-sm-3 col-form-label"></label>
+                        <div class="col-sm-9">
+                            <label class="col-form-label">@Model.Member.Posts</label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Member.Lastpostdate" class="col-sm-3 col-form-label"></label>
+                        <div class="col-sm-9">
+                            <label class="col-form-label">@Model.Member.Lastpostdate.FromForumDateStr().ToForumDisplay()</label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Member.Lastheredate" class="col-sm-3 col-form-label"></label>
+                        <div class="col-sm-9">
+                            <label class="col-form-label">@Model.Member.Lastheredate.FromForumDateStr().ToForumDisplay()</label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Member.Lastactivity" class="col-sm-3 col-form-label"></label>
+                        <div class="col-sm-9">
+                            <label class="col-form-label">@Model.Member.Lastactivity.FromForumDateStr().ToForumDisplay()</label>
+                        </div>
+                    </div>
+                    <input asp-for="Member.Id" type="hidden"/>
+                </div>
+            </div>
+            <input name="PhotoUrl" type="hidden" value="@Model.Member.PhotoUrl" />
+            @if (Model.Member.Privateprofile != 1 || Model.CanEdit)
+            {
+                <div class="row">
+                    @{
+                        foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p=>!p.SystemProperty() && p.PropertyFieldType() != "checkbox").OrderBy(p => p.PropertyOrder()))
+                        {
+                            var showme = config.GetIntValue(property.GetPropertyDisplayCheck<Member>(), 1) == 1;
+                            if (!property.PropertyIsPrivate() || Model.CanEdit)
+                            {
+                                <div class="col-6 col-form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
+                                    <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(config.GetIntValue(property.GetPropertyRequiredCheck<Member>(), 0) == 1)"></snitz-config>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+                <div class="row">
+                    @{
+                        foreach (PropertyInfo prop in Model.Member.GetType().GetProperties().Where(p => p.SystemProperty()).OrderBy(p => p.PropertyOrder()))
+                        {
+                            <snitz-config can-edit="@Model.CanEdit" property-info="@prop" property-val="@prop.GetValue(Model.Member, null)" property-req="@(config.GetIntValue(prop.GetPropertyRequiredCheck<Member>(), 0) == 1)"></snitz-config>
+                        }
+                    }
+                </div>                
+                <div class="row">
+                    @{
+                        foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() == "checkbox").OrderBy(p => p.PropertyOrder()))
+                        {
+                            var showme = config.GetIntValue(property.GetPropertyDisplayCheck<Member>(), 1) == 1;
+                            if (!property.PropertyIsPrivate())
+                            {
+                                <div class="col-6 col-form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
+                                    <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(config.GetIntValue(property.GetPropertyRequiredCheck<Member>(), 0) == 1)"></snitz-config>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+
+            }
+            
+            <input name="Name" type="hidden" value="@Model.Member.Name"/>
+            <input name="Email" type="hidden" value="@Model.Email"/>
+        </form>
+    </div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+</div>
+
+@functions
+{
+    private string? MemberRankTitle(Member author,Dictionary<int,MemberRanking> ranking )
+    {
+
+        string? mTitle = author.Title ?? "";
+        if (author.Status == 0 || author.Name == "n/a")
+        {
+            mTitle =  "Member Locked"; //ResourceManager.GetLocalisedString("tipMemberLocked", "Tooltip");// "Member Locked";
+        }
+        if (author.Name == "zapped")
+        {
+            mTitle = "Zapped Member"; //ResourceManager.GetLocalisedString("tipZapped", "Tooltip");// "Zapped Member";
+        }
+
+        var rankInfoHelper = new RankInfoHelper(author, ref mTitle, author.Posts, ranking);
+
+        return mTitle;
+    }
+}
+@section Styles
+{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
+}
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+        // Disable form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                ValidateForms();
+            }, false);
+        })();
+        $(function () {
+            $('.datepicker').datepicker({
+                autoclose: true,
+                format: {
+                    /*
+                     * Say our UI should display a week ahead,
+                     * but textbox should store the actual date.
+                     * This is useful if we need UI to select local dates,
+                     * but store in UTC
+                     */
+                    
+                    toDisplay: function (date, format, language) {
+                        var d = new Date(date);
+                        d.setDate(d.getDate());
+                        return d.toLocaleDateString();
+                    },
+                    toValue: function (date, format, language) {
+                        let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
+                        let lastFirst = date.replace(re, '$1-$2-$3');
+                        var d = new Date(lastFirst);
+                        d.setDate(d.getDate());
+                        return new Date(d);
+                    }
+                }
+            });
+            $('.datepicker').datepicker('update', '@Model.Member?.Dob');
+            revalidate();
+        });
+        function revalidate() {
+            var container = document.getElementById("member-profile");
+            var forms = container.getElementsByTagName("form");
+            var newForm = forms[forms.length - 1];
+            $.validator.unobtrusive.parse(newForm);
+        }
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+
+        //$('#one').replaceWith("<label>" + $('#one').val() + "</label>");
+    </script>
+}

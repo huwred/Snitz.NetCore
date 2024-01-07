@@ -1,0 +1,20 @@
+﻿@model MVCForum.Models.User.UserSignInModel
+
+<div class="container pt-0">
+    <div class="center">
+        <div class="col-4">
+            <partial name="_Login" model="Model"/>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script>
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                ValidateForms();
+            }, false);
+        })();
+    </script>
+}

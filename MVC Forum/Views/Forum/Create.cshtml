@@ -1,0 +1,92 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SmartBreadcrumbs
+@using SnitzCore.Data
+@using SnitzCore.Data.Interfaces
+@using SnitzCore.Data.Models
+@model MVCForum.Models.Forum.NewForumModel
+@inject IEmoticon emoticons
+<div class="container pt-0">
+    <breadcrumb></breadcrumb>
+
+    <form asp-action="SubmitForum" method="post" id="addForumForm" class="needs-validation bg-form p-4 rounded" novalidate>
+        <div class="mb-3 row">
+            <label asp-for="Category" class="form-label col-2"></label>
+            <div class="col-10 col-lg-4">
+                @Html.DropDownListFor(m => m.Category, // Store selected value in Model.State
+                    new SelectList(Model.CategoryList, "Key", "Value"),
+                    "- Please select a category -",new { @class = "form-control" })
+                <div class="invalid-feedback">You must select a Category.</div>
+            </div>
+            
+        </div>
+        <div class="mb-3 row">
+            <label asp-for="Type" class="form-label col-2"></label>
+            <div class="col-10 col-lg-4">
+                <select asp-for="Type" 
+                        class="form-select" 
+                        asp-items="Html.GetEnumSelectList<ForumType>()">
+                    <option>Select type ...</option>
+                </select>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label asp-for="Subject" class="form-label col-2"></label>
+            <div class="col-6">
+                <input asp-for="Subject" class="form-control"/>
+                <div class="invalid-feedback">You must provide a subject.</div>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-12 col-lg-2">
+
+            </div>
+            <div class="col-10">
+                <textarea asp-for="Description" class="form-control" id="msg-text" rows="6"></textarea>
+                <input asp-for="Id" type="hidden"/>
+                <div class="invalid-feedback">You must enter a description.</div>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label asp-for="Order" class="form-label col-2"></label>
+            <div class="col-2 col-lg-1">
+                <input asp-for="Order" class="form-control"/>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label asp-for="DefaultView" class="form-label col-2"></label>
+            <div class="col-10 col-lg-4">
+                <select asp-for="DefaultView"
+                        class="form-control"
+                        asp-items="Html.GetEnumSelectList<DefaultDays>()">              
+                    <option>Select view ...</option>
+                </select>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label asp-for="AuthType" class="form-label col-2"></label>
+            <div class="col-10 col-lg-4">
+                <select asp-for="AuthType"
+                        class="form-control"
+                        asp-items="Html.GetEnumSelectList<ForumAuthType>()">
+                    <option>Select type ...</option>
+                </select>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label asp-for="IncrementMemberPosts" class="form-label col-2"></label>
+            <div class="col-3 col-lg-2">
+                @Html.CheckBoxFor(m=>m.IncrementMemberPosts,new{@class="form-checkbox"})
+            </div>
+        </div>
+        <div class="mb-3 p-2 offset-2">
+            <button type="button" class="btn btn-sm btn-danger cancel" onclick="history.go(-1);">Cancel</button>
+            <button type="reset" class="btn btn-sm btn-warning ">Reset</button>
+            <button type="submit" id="btn-submit" value="Post" class="btn btn-sm btn-success">Post</button>
+        </div>
+    </form>
+</div>
+@section Scripts
+{
+    <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/js/initPostForm.js"></script>
+}

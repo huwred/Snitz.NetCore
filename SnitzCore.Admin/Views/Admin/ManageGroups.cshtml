@@ -1,0 +1,66 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Data.Models
+@model SnitzCore.BackOffice.ViewModels.AdminGroupsViewModel
+@{
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-5">
+        <h5>Groups</h5>
+        <ul>
+            @foreach (var fgroup in Model.Groups)
+            {
+                string linkText = fgroup.Name;
+                <li>@Html.ActionLink(linkText, "ManageGroups", new { id = fgroup.Id },new{@class="manage-group", data_id=fgroup.Id})</li>
+            }
+        </ul>
+        <hr class="title" />
+        @if (Model.CurrentGroupId > 0)
+        {
+            <button class="btn btn-primary edit-group" id="edit-group" data-value="@Model.CurrentGroupId">Edit current Group</button>
+        }
+        <button class="btn btn-primary edit-group" data-value="0" id="new-group">New Group</button>
+
+    </div>
+    <div class="col-7">
+        <div id="current-group"></div>
+        @if (Model.CurrentGroupForums != null)
+        {
+            var groups = new SelectList(Model.CurrentGroupForums, "Key", "Value");
+            <div class="mb-3">
+                <div class="mb-3">
+                    <select size="4" title="Select a Forum to manage Moderators" class="form-select" asp-for="CurrentGroupId" asp-items="groups">
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <button type="button" id="rem-cat" class="btn btn-primary btn-sm" title="Remove Category">Remove Selected</button>
+                </div>
+                <div class="mb-3">
+                    <form id="AddCatForm">
+                        <label class="form-label col-4">Add Category</label>
+                        <div class="col-7">
+                            <div class="input-group">
+                                <select class="form-control" id="new-cat" name="CatList">
+                                    <option value="0">Select Category</option>
+                                    @foreach (Category cat in Model.CategoryList)
+                                    {
+                                        <option value="@cat.Id">
+                                        @cat.Name
+                                        </option>
+                                    }
+                                </select>
+                                <span class="input-group-append">
+                                    <button type="button" id="add-cat" class="btn btn-primary btn-sm" title="Add Category"><i class="fa fa-plus"></i></button>
+                                </span>
+                                <input type="hidden" name="CurrentGroupId" value="@Model.CurrentGroupId"/>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+</div>

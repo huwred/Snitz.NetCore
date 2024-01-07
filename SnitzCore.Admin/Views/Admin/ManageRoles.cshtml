@@ -1,0 +1,70 @@
+﻿
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Data.Interfaces
+@inject IForum ForumService
+@model SnitzCore.BackOffice.ViewModels.AdminRolesViewModel
+@{
+    string[] protectedRoles = new[] {"Admin","Administrator", "Moderator","ForumMember", "Disabled"};
+}
+<div class="mb-3">
+    <label for="Username" class="control-label">Enter a username/rolename to add to one of the lists</label>
+</div>
+<div class="row mb-3">
+    <div class="col-6" id="role-form">
+        <form asp-action="ManageRoles" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="RankingConfig">
+            <input type="hidden" id="IsRolenameRequired" name="IsRolenameRequired" value="true"/>
+            <div class="mb-3">
+                <ul class="list-group">
+                    @foreach (var role in Model.RoleList)
+                    {
+                        <li class="list-group-item">
+                            <a href="/Admin/ManageRoles/?role=@role" class="roleLink">@role</a>
+                            <span class="pull-right flip">
+                                @if (!protectedRoles.Contains(role))
+                                {
+                                    <link-confirm href="/Admin/DeleteRole/?role=@role" title="Delete Role?" config-class="fa fa-trash-o" config-key="@role"></link-confirm>
+                                }
+                            </span>
+                            @if (role.StartsWith("Forum_"))
+                            {
+                                <div class="form-text">@ForumService.ForumName(role)</div>
+                            }
+                        </li>
+                    }
+                </ul>
+                <div class="mb-3">
+                    <input type="submit" name="AddRole" class="btn btn-primary" value="Add Role"/>
+                    <div class="col-6">@Html.TextBoxFor(model => model.NewRolename, new { @class = "form-control" })</div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <div class="col-6">
+        <div id="role-panel">
+            @if (!String.IsNullOrWhiteSpace(Model.Rolename))
+            {
+                <partial name="_RoleView" model="@Model"/>
+            }
+        </div>
+    </div>
+</div>
+
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="close">×</a>
+                <h3>Delete</h3>
+            </div>
+            <div class="modal-body">
+                <p>You are about to delete.</p>
+                <p>Do you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="btnYes" class="btn danger">Yes</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn secondary">No</a>
+            </div>
+        </div>
+    </div>
+</div>

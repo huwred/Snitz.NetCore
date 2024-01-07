@@ -1,0 +1,59 @@
+﻿@model MVC_Forum.Models.Forum.PrivateMessageSettingsModel
+<div class="card">
+
+    <div class="card-header bg-dark">PM Settings</div>
+    <form asp-action="UpdateSettings" method="post" id="addPostForm">
+        <div class="card-body text-dark">
+            <div class="form-group row">
+                <label asp-for="RecievePM" class="col-6"></label>
+                <div class="col-1">
+                    <input asp-for="RecievePM" class="checkbox"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="EmailNotification" class="col-6"></label>
+                <div class="col-1">
+                    <input asp-for="EmailNotification" class="checkbox"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="SaveSentMessages" class="col-6"></label>
+                <div class="col-1">
+                    <input asp-for="SaveSentMessages" class="checkbox"/>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer"><button type="submit" class="btn btn-success">Save</button></div>
+    </form>
+</div>
+<div class="card mt-2">
+    <div class="card-header bg-dark">Blocked Members</div>
+    <div class="card-body text-dark">
+        <ul class="list-group list-group-flush">
+            @foreach (var blocked in Model.BlockedList)
+            {
+                <li class="list-group-item" value="@blocked.BlockedId">@blocked.BlockedName</li>
+            }
+        </ul>
+    </div>
+    <div class="card-footer">
+        <div class="col-6 offset-6"></div>
+        <form asp-action="UpdateBlocklist" method="post" id="addMember" class="needs-validation" novalidate>
+            <div class="input-group">
+                <input type="text" name="BlockMember" class="form-control" placeholder="Members's username" aria-label="Members's username" aria-describedby="basic-addon2" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" required="required">
+                <div class="invalid-feedback">You must provide a username.</div>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-success" type="submit">Add</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $('*[data-autocomplete-url]').each(function () {
+        $(this).autocomplete({
+            source: $(this).data("autocomplete-url"),
+            minLength: 3
+        });
+    });
+</script>

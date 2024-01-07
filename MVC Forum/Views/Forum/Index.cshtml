@@ -1,0 +1,114 @@
+@model MVCForum.Models.Forum.ForumTopicModel
+@using BbCodeFormatter
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.Models
+@using MVCForum.TagHelpers
+@using SnitzCore.Data.Models
+@inject ICodeProcessor BbCodeProcessor
+
+@{
+    ViewBag.PageCount = Model.PageCount;
+    var pagenum = Model.PageNum?.ToString() ??  Context.Request.Query["page"];
+    var pagesize = Context.Request.Query["pagesize"];
+
+}
+    <div class="container pt-0">
+        <breadcrumb></breadcrumb>
+        <form id="defaultdays-form" asp-action="Index" class="form-inline">
+            <div class="row m-1">
+                <div class="input-group">
+                    <select asp-for="Forum.DefaultView" id="default-days" title="Topics to display"
+                        class="form-select" asp-items="Html.GetEnumSelectList<DefaultDays>()">
+                    </select>
+                    <select name="OrderBy" id="orderby" class="form-select" title="Order by" aria-invalid="false">
+                        <option value="pd" selected-val="@Model.Forum?.OrderBy">Post Date</option>
+                        <option value="lpd" selected-val="@Model.Forum?.OrderBy">Last post date</option>
+                        <option value="a" selected-val="@Model.Forum?.OrderBy">Post author</option>
+                        <option value="lpa" selected-val="@Model.Forum?.OrderBy">Last post author</option>
+                        <option value="v" selected-val="@Model.Forum?.OrderBy">Views</option>
+                        <option value="r" selected-val="@Model.Forum?.OrderBy">Replies</option>
+                    </select>
+                    <select name="sortdir" id="sortdir" class="form-select" title="Sort direction" aria-invalid="false">
+                        <option value="asc" selected-val="@Model.Forum?.SortDir">Oldest first</option>
+                        <option value="des" selected-val="@Model.Forum?.SortDir">Newest first</option>
+                    </select>
+                    <button asp-controller="Topic" asp-action="Create" asp-route-id="@Model.Forum?.Id" class="btn btn-primary"><i class="fa fa-commenting-o"></i><span class="d-none d-md-inline"> New Topic</span></button>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <span class="input-group-append">
+                            <div class="btn-group">
+@*                                 <button formaction="/Forum/Create/?catid=@Model.Forum.CategoryId" title="New Forum" class="btn btn-outline-success"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> New Forum</span></button>
+ *@                                <button asp-controller="Forum" asp-action="Edit" asp-route-id="@Model.Forum.Id" title="Edit Forum" class="btn  btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> Edit Forum</span></button>
+                                <button asp-controller="Forum" asp-action="Delete" asp-route-id="@Model.Forum.Id" title="Delete Forum" class="btn  btn-outline-danger"><i class="fa fa-trash"></i><span class="d-none d-md-inline"> Delete Forum</span></button>
+                            </div>
+                        </span>
+                    }
+                </div>
+            </div>
+            <input type="number" value="@Model.Forum?.Id" name="id" style="display: none;"/>
+            <input type="number" value="@pagenum" name="page" style="display: none;" />
+            <input type="number" value="@pagesize" name="pagesize" style="display: none;" />
+            <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
+        </form>
+        <!--Display posts table-->
+        <div class="posts-table">
+            <div class="table-head">
+                <div class="status"></div>
+                <div class="subjects">Subjects</div>
+                <div class="replies">Replies / Views</div>
+                <div class="last-reply">Last Reply</div>
+            </div>
+            <!--Sticky Topics-->
+            @if (Model.StickyPosts != null)
+            {
+                foreach (var post in Model.StickyPosts)
+                {
+                    <partial name="_TopicListing" model="post" />
+                }
+            }
+            <hr />
+            <!--Topics start here-->
+            @foreach (var post in Model.Posts){
+            <partial name="_TopicListing" model="post" />
+            }
+            <!--ends here-->
+        </div>
+        <!--Pagination starts-->
+        @if (Model.PageCount > 1)
+        {
+            var paging = new PagingModel
+            {
+                PageCount = Model.PageCount,
+                Page = pagenum != null ? Convert.ToInt32(pagenum) : 1,
+                OrderBy = Model.Forum.OrderBy,
+                SortDir = Model.Forum.SortDir,
+                DefaultDays = (int)Model.Forum.DefaultView
+            };
+        @await Html.PartialAsync("ListPaging",paging)
+        }
+        <!--pagination ends-->
+    <partial name="_IconInfo" />
+</div>
+
+@section Scripts{
+    <script>
+        $(document).on("change",
+            "#default-days",
+            function() {
+                $("#hdndefaultdays").val($(this).val());
+                $("#defaultdays-form").submit();
+            });
+        $(document).on("change",
+            "#orderby",
+            function() {
+                $("#hdndefaultdays").val($("#default-days").val());
+                $("#defaultdays-form").submit();
+            });
+        $(document).on("change",
+            "#sortdir",
+            function() {
+                $("#hdndefaultdays").val($("#default-days").val());
+                $("#defaultdays-form").submit();
+            });
+    </script>
+}

@@ -1,0 +1,78 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.TagHelpers
+@using SnitzCore.Data
+@using SnitzCore.Data.Interfaces
+@using SnitzCore.Data.Models
+@inject UserManager<ForumUser> UserManager
+@inject SignInManager<ForumUser> SignInManager
+@inject ISnitzConfig config
+@inject ISnitzCookie cookie
+
+@{
+    var currentTheme = cookie.GetCookieValue("snitztheme")??"SnitzTheme";
+}
+<nav class="navbar navbar-expand-md bg-dark navbar-custom fixed-top">
+    <a class="navbar-brand" asp-controller="Home" asp-action="Index" title="@config.ForumTitle Home page"><img src="/images/logo.png" width="141" height="50" alt="Snitz Forums Logo" loading="lazy" /></a>
+    
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" data-bs-toggle="dropdown" role="button" id="navbarDropdownForumLink">Forum</a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownForumLink">
+                    <li><a class="dropdown-item" asp-controller="Category" asp-action="Index">All Forums</a></li>
+                    <li><a class="dropdown-item" asp-controller="Forum" asp-action="Active">Active Topics</a></li>
+                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Index">Members</a></li>
+                    <li><a class="dropdown-item" asp-controller="Forum" asp-action="Search">Search Topics</a></li>
+                </ul>
+            </li>
+
+            @if (!SignInManager.IsSignedIn(User))
+            {
+                <li class="nav-item"><a asp-controller="Account" asp-action="Login" class="nav-link">Sign In</a></li>
+                <li class="nav-item"><a asp-controller="Account" asp-action="Register" class="nav-link">Register</a></li>
+            }
+            @if (SignInManager.IsSignedIn(User))
+            {
+                var user = UserManager.GetUserAsync(User).Result;
+                var userroles = new List<string>();
+                if (user != null)
+                {
+                    userroles = UserManager.GetRolesAsync(user).Result.ToList();
+                }
+                
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" role="button" id="navbarDropdownUserLink">
+                        Hello, @UserManager.GetUserName(User)<span class="caret"></span>
+                    </a>
+
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownUserLink">
+                        <li><a class="dropdown-item" asp-controller="Account" asp-action="Detail" asp-route-id="">Profile</a></li>
+                        <li><a class="dropdown-item" asp-controller="PrivateMessage" asp-action="Inbox">Messages</a></li>
+                        <li><a class="dropdown-item" asp-controller="Account" asp-action="LogOut">Sign Out</a></li>
+
+                        @if (userroles.Contains("Admin"))
+                        {
+                            <div role="separator" class="dropdown-divider"></div>
+                            <div class="dropdown-header">Admin</div>
+                            <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Config</a></li>
+                            <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">Create Forum</a></li>
+                        }
+                    </ul>
+                </li>
+            }
+
+        </ul>
+        <div class="d-flex">
+        <select id="theme-change" class="form-control" title="Change Theme">
+            <option value="SnitzTheme" selected-val="@currentTheme">Snitz Theme</option>
+            <option value="DarkTheme" selected-val="@currentTheme">Dark Theme</option>
+            <option value="LightTheme" selected-val="@currentTheme">Light Theme</option>
+            <option value="OrangeTheme" selected-val="@currentTheme">Orange Theme</option>
+            </select>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,209 @@
+﻿html, body {
+    font-size: 14px;
+    font-family: sans-serif;
+    background-color: #ffc971 !important;
+    color: #780116 !important;
+}
+.navbar {
+    background-color: #cc5803 !important;
+    color: #780116;
+}
+a {
+    color: #780116;
+    font-weight: bolder;
+    text-decoration: none;
+}
+a:visited {
+    color: yellow;
+    font-weight: bolder;
+    text-decoration: none;
+}
+.initial a:visited {
+    color: #780116;
+}
+.initial a:hover {
+    color: #d8572a;
+}
+h1 {
+    font-size: 16px;
+    font-weight: bolder;
+}
+.btn-primary:hover {
+    color: #000;
+    background-color: gold;
+    border-color: gold;
+}
+
+.btn-primary {
+    color: #000;
+    background-color: yellow;
+    border-color: yellow;
+}
+
+/* ########################################### */
+/*           Forums.html                       */
+/* ########################################### */
+
+.subforum-title {
+    background-color: #cc5803;
+}
+
+.subforum-column {
+    background-color: #e2711d;
+}
+
+/* For the smartphones */
+@media screen and (max-width: 460px) {
+    .subforum-divider {
+        display: block;
+        border: 0;
+        height: 1px;
+        background-image: linear-gradient(to right, rgba(190, 190, 190, 0), rgba(255, 255, 255, 0.75), rgba(190, 190, 190, 0));
+    }
+}
+
+/*   Header Section    */
+
+/* Nav Bar styles */
+
+.navigate {
+    background-color: #cc5803;
+    color: #666;
+    padding: 3px;
+}
+
+.nav-item a {
+    color: #780116;
+}
+
+    .nav-item a:hover {
+        color: white;
+    }
+
+.bar-icon {
+    color: #fff;
+}
+
+/* forum info Styling */
+.forum-info {
+    padding: 20px;
+    background-color: #d8572a;
+}
+
+/* Footer Styling */
+
+footer {
+    background-color: #e2711d;
+}
+
+/* ########################################### */
+/*            posts.html                       */
+/* ########################################### */
+
+/* posts table's head  */
+
+.table-head div {
+    background-color: #d8572a;
+    font-weight: bold;
+}
+
+/* posts table's body  */
+
+.table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply {
+    background-color: #e2711d;
+}
+
+/* navigation path*/
+.navigate a {
+    color: #780116;
+}
+
+.navigate a:hover {
+    color: #0000ff;
+    font-weight: bolder;
+}
+
+/* Pagination*/
+
+.pagination a {
+    color: #780116;
+    margin-inline: 5px;
+    padding: 5px 10px;
+    border: solid 0.5px #780116;
+}
+.page-link {
+    background-color: #e2711d;
+}
+.note {
+    background-color: #e2711d;
+}
+
+/* ########################################### */
+/*            detail.html                      */
+/* ########################################### */
+
+.head {
+    background-color: #d8572a;
+}
+
+.body {
+    background-color: #cc5803;
+}
+    .body.topic {
+        background-color: #e2711d;
+    }
+.body .content .comment button {
+    box-shadow: 4px 6px #fff;
+}
+
+/* comment section */
+.comment-area input:hover {
+    border: solid 1px #780116;
+}
+
+.editor-buttons .dropdown-menu a, .editor-buttons .dropdown-menu a:visited {
+    color: #780116;
+}
+/*Auto complete dropdown*/
+.ui-menu {
+    background-color: #780116;
+    border: lightblue 1px solid;
+    box-shadow: 2px 2px 5px gray;
+    cursor: pointer;
+    color: #fff;
+}
+
+.pagination a {
+    color: #780116;
+    margin-inline: 5px;
+    padding: 5px 10px;
+    border: solid 0.5px #780116;
+}
+
+.cell {
+    border: 1px solid gray;
+}
+
+h1.bg-dark {
+    background-color: #cc5803 !important;
+}
+h1.text-white {
+    color: #780116 !important;
+}
+tr.bg-dark {
+    background-color: #d8572a !important;
+}
+
+#theme-change {
+    background-color: #cc5803;
+    color: #780116;
+}
+
+div.btn-group.btn-dark {
+    background-color: #780116;
+    color: white !important;
+}
+
+.breadcrumb {
+    background-color: #780116;
+}

@@ -1,0 +1,198 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <UserSecretsId>aspnet-MVC_Forum-7562012B-C66A-4DF1-AC22-BC17CBD85983</UserSecretsId>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <RootNamespace>MVCForum</RootNamespace>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\images\forum\**" />
+    <Content Remove="wwwroot\images\forum\**" />
+    <EmbeddedResource Remove="wwwroot\images\forum\**" />
+    <None Remove="wwwroot\images\forum\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Startup.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="bundleconfig.json" />
+    <Content Remove="wwwroot\js\tinymce\icons\default\icons.min.js" />
+    <Content Remove="wwwroot\js\tinymce\jquery.tinymce.min.js" />
+    <Content Remove="wwwroot\js\tinymce\langs\README.md" />
+    <Content Remove="wwwroot\js\tinymce\plugins\advlist\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\anchor\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\autolink\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\autoresize\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\autosave\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\bbcode\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\charmap\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\codesample\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\code\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\colorpicker\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\contextmenu\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\directionality\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\emoticons\js\emojiimages.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\emoticons\js\emojiimages.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\emoticons\js\emojis.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\emoticons\js\emojis.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\emoticons\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\fullpage\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\fullscreen\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\help\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\hr\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\imagetools\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\image\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\importcss\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\insertdatetime\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\legacyoutput\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\link\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\lists\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\media\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\nonbreaking\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\noneditable\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\pagebreak\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\paste\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\preview\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\print\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\quickbars\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\save\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\searchreplace\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\spellchecker\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\tabfocus\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\table\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\template\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\textcolor\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\textpattern\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\toc\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\visualblocks\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\visualchars\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\plugins\wordcount\plugin.min.js" />
+    <Content Remove="wwwroot\js\tinymce\themes\mobile\theme.min.js" />
+    <Content Remove="wwwroot\js\tinymce\themes\silver\theme.min.js" />
+    <Content Remove="wwwroot\js\tinymce\tinymce.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Remove="wwwroot\js\tinymce\tinymce.d.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="bundleconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bundleconfig.json" />
+    <None Include="wwwroot\js\tinymce\CHANGELOG.md" />
+    <None Include="wwwroot\js\tinymce\icons\default\icons.min.js" />
+    <None Include="wwwroot\js\tinymce\jquery.tinymce.min.js" />
+    <None Include="wwwroot\js\tinymce\langs\README.md" />
+    <None Include="wwwroot\js\tinymce\plugins\advlist\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\anchor\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\autolink\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\autoresize\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\autosave\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\bbcode\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\charmap\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\codesample\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\code\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\colorpicker\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\contextmenu\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\directionality\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojiimages.js" />
+    <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojiimages.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojis.js" />
+    <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojis.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\emoticons\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\fullpage\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\fullscreen\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\help\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\hr\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\imagetools\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\image\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\importcss\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\insertdatetime\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\legacyoutput\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\link\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\lists\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\media\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\nonbreaking\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\noneditable\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\pagebreak\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\paste\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\preview\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\print\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\quickbars\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\save\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\searchreplace\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\spellchecker\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\tabfocus\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\table\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\template\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\textcolor\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\textpattern\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\toc\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\visualblocks\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\visualchars\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\wordcount\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\themes\mobile\theme.min.js" />
+    <None Include="wwwroot\js\tinymce\themes\silver\theme.min.js" />
+    <None Include="wwwroot\js\tinymce\tinymce.min.js" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\BbCodeFormatter\BbCodeFormatter.csproj" />
+    <ProjectReference Include="..\Migrators\MSSqlMigrations\MSSqlMigrations.csproj" />
+    <ProjectReference Include="..\Migrators\SqliteMigrations\SqliteMigrations.csproj" />
+    <ProjectReference Include="..\MVCForum.Data\SnitzCore.Data.csproj" />
+    <ProjectReference Include="..\MVCForum.Service\SnitzCore.Service.csproj" />
+    <ProjectReference Include="..\SnitzCore.Admin\SnitzCore.BackOffice.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="BuildBundlerMinifier2022" Version="2.9.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.3.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.7" />
+    <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
+    <PackageReference Include="NuGet.Common" Version="6.3.3" />
+    <PackageReference Include="NuGet.Protocol" Version="6.3.3" />
+    <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Templates\images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="wwwroot\Templates\htmlpage.html">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="App_Data\emoticons.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,73 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.BackOffice.ViewModels
+@using SnitzCore.Data.Models
+@model RankingViewModel
+
+@{
+    ViewBag.PageTitle = "Feature Configuration";
+}
+<form asp-action="RankingConfig" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="RankingConfig">
+
+    <div class="mb-3">
+        <label class="form-label" asp-for="Type">Show Ranking:</label>
+        <select class="form-select-sm" asp-for="Type" asp-items="@Html.GetEnumSelectList<RankType>()">
+            <option>Please Select</option>
+        </select>
+    </div>
+
+    @foreach (var rank in Model.Ranks)
+    {
+        MemberRanking ranking = (MemberRanking)rank.Value;
+
+        <div class="row mb-3">
+
+            @switch (rank.Key)
+            {
+                case 0:
+                    <div class="col-12">
+                        <label class="form-label">Administrator title</label>
+                        <input type="hidden" id="rankId_@rank.Key" name="rankId_@rank.Key" value="@rank.Key" />
+                        <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="hidden" class="form-control" value="@ranking.Posts" />
+                    </div>
+                    break;
+                case 1:
+                    <div class="col-12">
+                        <label class="form-label">Moderator title</label>
+                        <input type="hidden" id="rankId_@rank.Key" name="rankId_@rank.Key" value="@rank.Key" />
+                        <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="hidden" class="form-control" value="@ranking.Posts" />
+                    </div>
+                    break;
+                case 2:
+                    <div class="col-12">
+                        <label class="form-label">Starting Member title</label>
+                        <input type="hidden" id="rankId_@rank.Key" name="rankId_@rank.Key" value="@rank.Key" />
+                        <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="hidden" class="form-control" value="@ranking.Posts" />
+                    </div>
+                    break;
+                default:
+                    <div class="col-12">
+                        <label class="form-label">Member Level @(rank.Key - 2)</label>
+                        <input type="hidden" id="rankId_@rank.Key" name="rankId_@rank.Key" value="@rank.Key" />
+                    </div>
+                    <div class="col-2">
+                        <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="text" class="form-control" value="@ranking.Posts" />
+                    </div>
+                    break;
+            }
+
+
+            <div class="col-3">
+                <input type="text" id="rankTitle_@rank.Key" name="rankTitle_@rank.Key" class="form-control" value="@ranking.Title" />
+            </div>
+            <div class="col-6 rank-admin">
+                @if (rank.Key != 2)
+                {
+                        <rank-image config-key="@rank.Key" config-val="@ranking.Image"></rank-image>
+
+                }
+                <input type="text" id="rankImage_@rank.Key" name="rankImage_@rank.Key" value="@ranking.Image" style="display: none;" />
+            </div>
+        </div>
+    }
+    @* Html.RenderPartial("_FormButtons"); *@
+</form>

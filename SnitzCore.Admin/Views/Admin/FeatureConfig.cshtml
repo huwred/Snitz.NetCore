@@ -1,0 +1,331 @@
+﻿@using SnitzCore.Data.Interfaces
+@inject ISnitzConfig config
+@{
+    Layout = "_MasterLayout";
+    ViewBag.PageTitle = "Feature Configuration";
+}
+<div class="container">
+<div class="d-flex align-items-start">
+        <div class="nav flex-column nav-pills me-3 bg-white rounded" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <button class="nav-link active" id="v-pills-general-tab" data-bs-toggle="pill" data-bs-target="#v-pills-general" type="button" role="tab" aria-controls="v-pills-general" aria-selected="true">General</button>
+            <button class="nav-link" id="v-pills-moderation-tab" data-bs-toggle="pill" data-bs-target="#v-pills-moderation" type="button" role="tab" aria-controls="v-pills-moderation" aria-selected="false">Moderation</button>
+            <button class="nav-link" id="v-pills-forum-tab" data-bs-toggle="pill" data-bs-target="#v-pills-forum" type="button" role="tab" aria-controls="v-pills-forum" aria-selected="false">Forum</button>
+            <button class="nav-link" id="v-pills-topic-tab" data-bs-toggle="pill" data-bs-target="#v-pills-topic" type="button" role="tab" aria-controls="v-pills-topic" aria-selected="false">Topic</button>
+            <button class="nav-link" id="v-pills-posting-tab" data-bs-toggle="pill" data-bs-target="#v-pills-posting" type="button" role="tab" aria-controls="v-pills-posting" aria-selected="false">Posting</button>
+            <button class="nav-link" id="v-pills-spam-tab" data-bs-toggle="pill" data-bs-target="#v-pills-spam" type="button" role="tab" aria-controls="v-pills-spam" aria-selected="false">Anti-Spam</button>
+            <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Private Messaging</button>
+            <button class="nav-link" id="v-pills-announce-tab" data-bs-toggle="pill" data-bs-target="#v-pills-announce" type="button" role="tab" aria-controls="v-pills-announce" aria-selected="false">Announcement</button>
+    </div>
+        <div class="tab-content bg-white rounded p-4 w-100" id="v-pills-tabContent">
+<div class="tab-pane fade show active w-100" id="v-pills-general" role="tabpanel" aria-labelledby="feature-tab">
+    <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result">
+        <admin-config config-key="STRIPLOGGING" config-label="IP Logging" config-val="@config.GetIntValue("STRIPLOGGING")"></admin-config>
+        <fieldset @(config.GetIntValue("STRIPLOGGING") == 0 ? "disabled" : "") id="IPLOGENABLED">
+            <div class="row">
+                <div class="col">
+                    <admin-config config-key="STRIPLOOKUP" config-label="third party service" config-val="@config.GetValue("STRIPLOOKUP")" placeholder="URL to third party lookup service"></admin-config>
+                </div>
+                <div class="col"></div>
+            </div>
+            <div class="form-text mb-3">use [IP] to indicate where the IP should be passed in the url<br />e.g. http://www.ripe.net/whois?form_type=simple&full_query_string=&searchtext=[IP]</div>
+        </fieldset>
+        <admin-config config-key="INTFULLTEXT" config-label="Use Fulltext search" config-val="@config.GetIntValue("INTFULLTEXT")"></admin-config>
+        <admin-config config-key="STRGROUPCATEGORIES" config-label="Group Categories" config-val="@config.GetIntValue("STRGROUPCATEGORIES")"></admin-config>
+        @*             <div class="form-group">
+        <label for="" class="control-label col-xs-12 col-sm-3">Highest level of Subscription:</label>
+        <div class="col-xs-12 col-sm-4">
+        @Html.EnumDropDownListFor(m => m.SubscriptionLevel, new { @class = "form-control inline" }, "")
+        </div>
+        </div> *@
+        <admin-config config-key="INTPROTECTCONTENT" config-label="Protected Content" config-val="@config.GetIntValue("INTPROTECTCONTENT")"></admin-config>
+        <admin-config config-key="INTALLOWHIDEONLINE" config-label="Allow members to hide from Online" config-val="@config.GetIntValue("INTALLOWHIDEONLINE")"></admin-config>
+        <hr class="title" />
+        <div class="row">
+            <div class="col">
+                <admin-config config-key="STRPAGESIZE" config-label="Default page size" config-val="@config.GetValue("STRPAGESIZE")"></admin-config>
+            </div>
+            <div class="col">
+                <admin-config config-key="STRACCOUNTPAGESIZES" config-label="Members Page size" config-val="@config.GetValue("STRACCOUNTPAGESIZES", "20")"></admin-config>
+            </div>
+        </div>
+                    <button type="submit" class="btn btn-info">Save</button>
+                </form>                    <!-- form content-->
+
+
+</div>
+<div class="tab-pane fade w-100" id="v-pills-moderation" role="tabpanel" aria-labelledby="moderation-tab">
+    <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result">
+    <div>
+        <admin-config config-key="STRMODERATION" config-label="Allow Topic Moderation" config-val="@config.GetIntValue("STRMODERATION")"></admin-config>
+        <admin-config config-key="STRSHOWMODERATORS" config-label="Show Moderators" config-val="@config.GetIntValue("STRSHOWMODERATORS")"></admin-config>
+        <admin-config config-key="STRMOVETOPICMODE" config-label="Restrict Topic move" config-val="@config.GetIntValue("STRMOVETOPICMODE")"></admin-config>
+        <admin-config config-key="STRMOVENOTIFY" config-label="Email author when moving topics" config-val="@config.GetIntValue("STRMOVENOTIFY")"></admin-config>
+        </div>
+                    <button type="submit" class="btn btn-info">Save</button>
+                </form>
+</div>
+<div class="tab-pane fade w-100" id="v-pills-forum" role="tabpanel" aria-labelledby="forum-tab">
+    <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result">
+    
+    <div>
+        <admin-config config-key="STRPRIVATEFORUMS" config-label="Private Forums" config-val="@config.GetIntValue("STRPRIVATEFORUMS")"></admin-config>
+        <admin-config config-key="STRARCHIVESTATE" config-label="Archive functions" config-val="@config.GetIntValue("STRARCHIVESTATE")"></admin-config>
+        <admin-config config-key="INTTOPICRATING" config-label="Allow Topic rating" config-val="@config.GetIntValue("INTTOPICRATING")"></admin-config>
+        <admin-config config-key="STRSHOWSTATISTICS" config-label="Show detailed statistics" config-val="@config.GetIntValue("")"></admin-config>
+        <admin-config config-key="STRJUMPLASTPOST" config-label="Show Jump To Last post link" config-val="@config.GetIntValue("STRJUMPLASTPOST")"></admin-config>
+        <admin-config config-key="INTFORUMRSS" config-label="Show RSS Link" config-val="@config.GetIntValue("INTFORUMRSS")"></admin-config>
+        <admin-config config-key="STRSHOWPAGING" config-label="Show quick paging" config-val="@config.GetIntValue("STRSHOWPAGING")"></admin-config>
+        <fieldset @(config.GetIntValue("STRSHOWPAGING") == 0 ? "disabled" : "") id="PAGINGENABLED">
+            <div class="row">
+                <div class="col">
+                    <admin-config config-key="STRPAGENUMBERSIZE" config-label="Page numbers per row" config-val="@config.GetIntValue("STRPAGENUMBERSIZE")"></admin-config>
+                </div>
+                <div class="col">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <admin-config config-key="STRFORUMPAGESIZES" config-label="Page sizes" config-val="@config.GetValue("STRFORUMPAGESIZES", "10,25,50,100")"></admin-config>
+                </div>
+                <div class="col">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <admin-config config-key="STRSEARCHPAGESIZES" config-label="Search results page size" config-val="@config.GetValue("STRSEARCHPAGESIZES", "10")"></admin-config>
+                </div>
+                <div class="col">
+                </div>
+            </div>
+        </fieldset>
+            </div>
+                    <button type="submit" class="btn btn-info">Save</button>
+                </form>
+</div>
+<div class="tab-pane fade w-100" id="v-pills-topic" role="tabpanel" aria-labelledby="topic-tab">
+    <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result">
+    <div>
+        <admin-config config-key="STRSTICKYTOPIC" config-label="Allow Sticky Topics" config-val="@config.GetIntValue("STRSTICKYTOPIC")"></admin-config>
+        <admin-config config-key="STRHOTTOPIC" config-label="Hot Topics" config-val="@config.GetIntValue("STRHOTTOPIC")"></admin-config>
+        <fieldset @(config.GetIntValue("STRHOTTOPIC") == 0 ? "disabled" : "") id="HOTTOPICSENABLED">
+            <div class="row">
+                <div class="col">
+                    <admin-config config-key="INTHOTTOPICNUM" config-label="Hot Topic Count" config-val="@config.GetValue("INTHOTTOPICNUM")"></admin-config>
+                </div>
+                <div class="col">
+                </div>
+            </div>
+        </fieldset>
+        <admin-config config-key="STREDITEDBYDATE" config-label="Show edited by on Date" config-val="@config.GetIntValue("STREDITEDBYDATE")"></admin-config>
+        <admin-config config-key="STRSHOWTOPICNAV" config-label="Show Prev / Next Topic" config-val="@config.GetIntValue("STRSHOWTOPICNAV")"></admin-config>
+        <admin-config config-key="STRSHOWSENDTOFRIEND" config-label="Show send Topic to a friend link" config-val="@config.GetIntValue("STRSHOWSENDTOFRIEND")"></admin-config>
+        <admin-config config-key="STRSHOWPRINTERFRIENDLY" config-label="Show printer friendly link" config-val="@config.GetIntValue("STRSHOWPRINTERFRIENDLY")"></admin-config>
+        <admin-config config-key="STRSOCIALSHARE" config-label="Social Media links" config-val="@config.GetIntValue("STRSOCIALSHARE")"></admin-config>
+        <admin-config config-key="INTTOPICDISPLAY" config-label="Show Topic on all pages" config-val="@config.GetIntValue("INTTOPICDISPLAY")"></admin-config>
+        <div class="row">
+            <div class="col">
+                <admin-config config-key="STRTOPICPAGESIZES" config-label="Page size" config-val="@config.GetValue("STRTOPICPAGESIZES", "10,25,50,100")"></admin-config>
+            </div>
+            <div class="col">
+                <admin-config config-key="STRACTIVEPAGESIZES" config-label="Active Topics page size" config-val="@config.GetValue("STRACTIVEPAGESIZES", "10,20,50")"></admin-config>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <admin-config config-key="INTRECENTCOUNT" config-label="Recent Topics list" config-val="@config.GetValue("INTRECENTCOUNT", "5")"></admin-config>
+            </div>
+            <div class="col">
+            </div>
+        </div>
+    </div>
+                    <button type="submit" class="btn btn-info">Save</button>
+                </form>
+</div>
+<div class="tab-pane fade w-100" id="v-pills-posting" role="tabpanel" aria-labelledby="posting-tab">
+    <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result">
+    <div>
+        @Html.ValidationSummary(false)
+        <div class="row">
+            <div class="col">
+                <admin-config config-key="STRFLOODCHECK" config-label="Flood Control" config-val="@config.GetIntValue("STRFLOODCHECK")"></admin-config>
+            </div>
+            <div class="col">
+                <fieldset @(config.GetIntValue("STRFLOODCHECK") == 0 ? "disabled" : "") id="FLOODCHECKENABLED">
+                    <admin-config config-key="STRFLOODCHECKTIME" config-label="Flood lockout (seconds)" config-val="@config.GetValue("STRFLOODCHECKTIME", "30")"></admin-config>
+                </fieldset>
+            </div>
+        </div>
+        <admin-config config-key="STRBADWORDFILTER" config-label="Bad Word Filter" config-val="@config.GetIntValue("STRBADWORDFILTER")"></admin-config>
+        <admin-config config-key="STRALLOWFORUMCODE" config-label="Allow Forum Code" config-val="@config.GetIntValue("STRALLOWFORUMCODE")"></admin-config>
+        <admin-config config-key="STRIMGINPOSTS" config-label="Images in Posts" config-val="@config.GetIntValue("STRIMGINPOSTS")"></admin-config>
+        <admin-config config-key="STRICONS" config-label="Icons" config-val="@config.GetIntValue("STRICONS")"></admin-config>
+        <admin-config config-key="STRSIGNATURES" config-label="Allow Signatures" config-val="@config.GetIntValue("STRSIGNATURES")"></admin-config>
+        <admin-config config-key="STRDSIGNATURES" config-label="Allow Dynamic Signatures" config-val="@config.GetIntValue("STRDSIGNATURES")"></admin-config>
+        @*                     <admin-config config-key="STRSHOWFORMATBUTTONS" config-label="Show Format Buttons" config-val="@config.GetIntValue("STRSHOWFORMATBUTTONS")"></admin-config>
+                    <admin-config config-key="STRSHOWSMILIESTABLE" config-label="Show Smilies Table" config-val="@config.GetIntValue("STRSHOWSMILIESTABLE")"></admin-config> *@
+        <admin-config config-key="STRSHOWQUICKREPLY" config-label="Show Quick Reply" config-val="@config.GetIntValue("STRSHOWQUICKREPLY")"></admin-config>
+        <admin-config config-key="STRALLOWUPLOADS" config-label="Allow File Attachments" config-val="@config.GetIntValue("STRALLOWUPLOADS")"></admin-config>
+        <fieldset @(config.GetIntValue("STRALLOWUPLOADS") == 0 ? "disabled" : "") id="UPLOADSENABLED">
+            <div class="row">
+                <div class="col">
+                    <admin-config config-key="INTMAXFILESIZE" config-label="Max File size (Mb)" config-val="@config.GetValue("INTMAXFILESIZE", "10")"></admin-config>
+                </div>
+                <div class="col">
+                    <admin-config config-key="STRFILETYPES" config-label="Allowed Extensions" config-val="@config.GetValue("STRFILETYPES", ".txt,.pdf,.zip,.png,.jpg")"></admin-config>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+                    <button type="submit" class="btn btn-info">Save</button>
+                </form>
+</div>
+<div class="tab-pane fade w-100" id="v-pills-spam" role="tabpanel" aria-labelledby="spam-tab">
+    <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result">
+    <div class="form-text">
+        <p>
+            The captcha automatically generates an image containing a simple maths question,
+            You can choose which operators to use below
+        </p>
+    </div>
+    @*             <div class="form-group">
+            <label for="captchareg" class="control-label col-xs-7 col-sm-4">Captcha Operators:</label>
+            <div class="col-xs-5 col-sm-3">
+            @Html.CheckboxListForEnum(model => model.CaptchaOperators)
+            </div>
+            example captcha:<br /><img alt="Captcha" class="captcha" src="@Html.Action("CaptchaImage","Account")" style="" />
+            </div> *@
+    <admin-config config-key="STRUSECAPTCHA" config-label="Use Captcha for Registration" config-val="@config.GetIntValue("STRUSECAPTCHA")"></admin-config>
+    <admin-config config-key="INTEMAILCAPTCHA" config-label="Use Captcha when Emailing" config-val="@config.GetIntValue("INTEMAILCAPTCHA")"></admin-config>
+                    <button type="submit" class="btn btn-info">Save</button>
+                </form>
+</div>
+<div class="tab-pane fade w-100" id="v-pills-messages" role="tabpanel" aria-labelledby="messages-tab">
+    <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result">
+    <admin-config config-key="STRPMSTATUS" config-label="Allow Private Messages" config-val="@config.GetIntValue("STRPMSTATUS")"></admin-config>
+    <fieldset @(config.GetIntValue("STRPMSTATUS") == 0 ? "disabled" : "") id="PMENABLED">
+        <div class="row">
+            <div class="col">
+                <admin-config config-key="INTMAXPMRECIPIENTS" config-label="Max PM recipients" config-val="@config.GetValue("INTMAXPMRECIPIENTS", "50")"></admin-config>
+            </div>
+            <div class="col">
+                <admin-config config-key="STRPMLIMIT" config-label="Message Limit" config-val="@config.GetValue("STRPMLIMIT", "500")"></admin-config>
+            </div>
+        </div>
+        <admin-config config-key="STRPMSOUND" config-label="Play notification sound" config-val="@config.GetIntValue("STRPMSOUND")"></admin-config>
+        <admin-config config-key="STRPMATTACH" config-label="Allow attachments" config-val="@config.GetIntValue("STRPMATTACH")"></admin-config>
+        <admin-config config-key="STRPMSIG" config-label="Allow signatures" config-val="@config.GetIntValue("STRPMSIG")"></admin-config>
+
+    </fieldset>
+                    <button type="submit" class="btn btn-info">Save</button>
+                </form>
+</div>
+<div class="tab-pane fade w-100" id="v-pills-announce" role="tabpanel" aria-labelledby="announce-tab">
+    <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result">
+    <admin-config config-key="STRSHOWANNOUNCE" config-label="Show Announcement" config-val="@config.GetIntValue("STRSHOWANNOUNCE")"></admin-config>
+    <fieldset @(config.GetIntValue("STRSHOWANNOUNCE") == 0 ? "disabled" : "") id="ANNOUNCEENABLED">
+        <admin-config config-key="STRANNOUNCETITLE" config-label="Title" config-val="@config.GetValue("STRANNOUNCETITLE")" placeholder="Add a title, leave blank to use default"></admin-config>
+        <admin-config config-type="textarea" config-key="STRANNOUNCE" config-label="Message" config-val="@config.GetValue("STRANNOUNCE")" placeholder="Enter text for announcement"></admin-config>
+    </fieldset>
+                    <button type="submit" class="btn btn-info">Save</button>
+                </form>
+</div>
+<div class="tab-pane fade w-100" id="v-pills-api" role="tabpanel" aria-labelledby="api-tab">
+    @*            @Html.ConfigInt("[API] Max images per post", "INTAPIMAXUPLOADS", 0, 5, "1", false, "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-2")
+<div class="form-group">
+<label class="control-label col-xs-8 col-sm-3">Allowed Forums</label>
+<div class="col-xs-4">
+<div>
+@Html.ListBoxFor(x => x.AllowedForums, new SelectList(Model.AllowedForums, "Key", "Value", ClassicConfig.GetValue("STRFILETYPES").Split(',')), new { @class = "form-control" })
+<button type="button" id="rem-allowed" class="btn btn-primary btn-sm" title="Remove Forum">Remove Selected</button>
+</div>
+<div class="form-group">
+<label class="control-label col-xs-4">Add Forum</label>
+<div class="col-xs-7">
+@Html.DropDownListFor(model => model.ForumId, new SelectList(Model.ForumList, "Key", "Value"), new { @class = "form-control", @tabindex = 1 })
+</div>
+<div class="col-xs-1"><button type="button" id="add-allowed" class="btn btn-primary btn-sm" title="Add Forum"><i class="fa fa-plus"></i></button></div>
+</div>
+</div>
+</div>
+<label class="control-label col-xs-8 col-sm-3">Audiences</label>
+<div class="panel panel-primary col-xs-6">
+<div class="panel-body">
+<table class="table table-bordered  table-striped table-condensed">
+<thead class="table-header">
+<tr>
+<th>Name</th>
+<th colspan="2">Key</th>
+
+</tr>
+</thead>
+<tbody>
+@foreach (var aud in AudiencesStore.AudiencesList)
+{
+
+<tr>
+<td>
+<label class="form-label col-xs-4">@aud.Value.Name</label>
+</td>
+<td>
+<label class="form-label col-xs-7">@aud.Value.Base64Secret</label>
+</td>
+<td><a href="@Url.Action("RemoveAudience")" data-val="@aud.Value.ClientId" class="remove-audience" title="Remove API access" data-toggle="tooltip"><i class="fa fa-trash-o fa-1_5x"></i></a></td>
+</tr>
+
+}
+</tbody>
+<tfoot>
+<tr>
+<td></td>
+<td>
+<input type="text" class="form-control" id="new-audience" placeholder="new audience name" />
+</td>
+<td><a href="@Url.Action("AddAudience")" id="add-audience" class="btn btn-sm" title="Add new Audience" data-toggle="tooltip"><i class="fa fa-plus fa-1_5x"></i></a></td>
+</tr>
+</tfoot>
+</table>
+
+</div>
+</div>
+*@
+</div>
+
+
+@*         <div class="col-xs-12 col-sm-10">@{
+        Html.RenderPartial("_FormButtons");
+        }</div> *@
+</div>
+</div>
+    <div id="result"></div>
+
+</div>
+@section Scripts
+{
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.unobtrusive-ajax.js"></script>
+        <script>
+        document.querySelector('#STRSHOWANNOUNCE').addEventListener('click', (e) => {
+            document.querySelector('#ANNOUNCEENABLED').disabled = !e.target.checked;
+        });
+        document.querySelector('#STRIPLOGGING').addEventListener('click', (e) => {
+            document.querySelector('#IPLOGENABLED').disabled = !e.target.checked;
+        });
+        document.querySelector('#STRSHOWPAGING').addEventListener('click', (e) => {
+            document.querySelector('#PAGINGENABLED').disabled = !e.target.checked;
+        });
+        document.querySelector('#STRHOTTOPIC').addEventListener('click', (e) => {
+            document.querySelector('#HOTTOPICSENABLED').disabled = !e.target.checked;
+        });
+        document.querySelector('#STRFLOODCHECK').addEventListener('click', (e) => {
+            document.querySelector('#FLOODCHECKENABLED').disabled = !e.target.checked;
+        });
+        document.querySelector('#STRALLOWUPLOADS').addEventListener('click', (e) => {
+            document.querySelector('#UPLOADSENABLED').disabled = !e.target.checked;
+        });
+        document.querySelector('#STRPMSTATUS').addEventListener('click', (e) => {
+            document.querySelector('#PMENABLED').disabled = !e.target.checked;
+        });
+    </script>
+}
+

@@ -1,0 +1,93 @@
+﻿@using System.Resources
+@using SnitzCore.BackOffice.ViewModels
+@using SnitzCore.Data.Extensions
+@model SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel.ArchivesViewModel
+
+    @using (Html.BeginForm("ArchiveSettings", "Admin"))
+    {
+
+        <table class="table mb-3">
+            <thead class="bg-category">
+                <tr>
+                    <th class="col-3"></th>
+                    <th class="col-2">Archive posts older than (days)</th>
+                    <th class="col-2">Delete posts older than (days)</th>
+                    <th class="col-2">Last Archived</th>
+                    <th class="col-2">Last Deletion</th>
+                    <th class="col-1">
+                        <div class="mb-3">
+                            <input class="form-check-input mt-0" name="checkAll" id="checkAll" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+                            <span class="form-check-label"><a href="#" title="Archive posts in selected Forums" data-toggle="tooltip"><i class="fa fa-archive"></i></a></span>
+                            <span class="form-check-label"><a href="#" title="Delete posts in selected Forums" data-toggle="tooltip"><i class="fa fa-trash"></i></a></span>
+                            
+                            
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class=" table-bordered">
+                @for (int ii = 0; ii < Model.Categories.Count; ii++)
+                {
+                    var catlink = "#" + Model.Categories[ii].Id;
+                    <tr class="bg-primary"><td colspan="6" ><label>@Model.Categories[ii].Name</label></td></tr>
+                    <tr ><td colspan="6" class="p-0">
+                             @for (int i = 0; i < Model.Categories[ii].Forums.Count(); i++)
+                             {
+                                 var forum = Model.Categories[ii].Forums.ToArray()[i];
+                                 <table class="table table-striped w-100">
+                                     <tr>
+                                         @switch (forum.Type)
+                                         {
+                                             case (short)ForumType.WebLink:
+                                                 break;
+                                             default:
+                                                 <td class="col-3"><label class="text-info">@forum.Title</label></td>
+                                                 <td class="col-2 align-center" >@Html.TextBoxFor(m => forum.ArchiveSched, new {@class = "form-control "})</td>
+                                                 <td class="col-2 align-center" >@Html.TextBoxFor(m => forum.DeleteSched, new {@class = "form-control "})</td>
+                                                 <td class="col-2 align-center" >@Html.Raw(forum.LastArchived.FromForumDateStr(true).ToShortDateString())</td>
+                                                 <td class="col-2 align-center" >@Html.Raw(forum.LastDelete.FromForumDateStr(true).ToShortDateString())</td>
+                                                 <td class="align-center">
+                                                     <link-confirm config-class="fa fa-archive" config-key="forum.Id" href="/Admin/ArchiveForum" title="Archive posts in this forum"></link-confirm>
+                                                     <link-confirm config-class="fa fa-trash-o" config-key="forum.Id" href="/Admin/DeleteArchiveForum" title="Delete archived posts in this forum?"></link-confirm>
+                                                     @Html.HiddenFor(m=>forum.Id)
+                                                     <input type="checkbox" class="form-check-inline" id="check-@forum.Id" name="check-@forum.Id"/>
+                                                 </td>
+                                                 break;
+                                         }
+                                     </tr>
+                                 </table>
+                             }
+                         </td></tr>
+                }        
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>@ViewBag.Message</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td colspan="2"><input type="submit" class="btn btn-primary" value="Save Changes"/></td>
+
+                </tr>
+            </tfoot>
+        </table>
+    }
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="close">×</a>
+                <h3>Delete</h3>
+            </div>
+            <div class="modal-body">
+                <p>You are about to delete.</p>
+                <p>Do you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="btnYes" class="btn danger">Yes</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn secondary">No</a>
+            </div>
+        </div>
+    </div>
+</div>
