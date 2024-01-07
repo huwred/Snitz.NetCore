@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 /MVC Forum/appsettings.json
 /wwwTest/wwwTest.csproj
+/wwwTest
