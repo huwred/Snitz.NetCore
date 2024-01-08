@@ -31,19 +31,19 @@
                 </div>
                 <div class="col-6 col-md-3">
                     <input asp-for="Id" class="form-control" type="hidden"/>
-                    <div class="form-group">
-                        <label asp-for="Username"></label>
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label"></label>
                         <input asp-for="Username" class="form-control" disabled="disabled"/>
                     </div>
                     @if (Model.CanEdit || (Model.Member.HideEmail != 1 && Model.Member.Privateprofile != 1))
                     {
-                        <div class="form-group">
-                            <label asp-for="Email"></label>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
                             <input asp-for="Email" class="form-control" disabled="disabled"/>
                         </div>
                     }
-                    <div class="form-group">
-                        <label asp-for="Title"></label>
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
                         <input name="Title" class="form-control" disabled="disabled" value="@MemberRankTitle(Model.Member, _ranking)"/>
                     </div>
                     @if (Model.CanEdit)
@@ -54,34 +54,34 @@
                     }
                 </div>
                 <div class="col col-md-6">
-                    <div class="form-group row">
-                        <label asp-for="Member.Created" class="col-sm-3 col-form-label"></label>
+                    <div class="mb-3">
+                        <label asp-for="Member.Created" class="col-sm-3 form-label"></label>
                         <div class="col-sm-9">
-                            <label class="col-form-label">@Model.Member.Created.FromForumDateStr().ToForumDisplay()</label>
+                            <label class="form-label">@Model.Member.Created.FromForumDateStr().ToForumDisplay()</label>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="mb-3">
                         <label asp-for="Member.Posts" class="col-sm-3 col-form-label"></label>
                         <div class="col-sm-9">
-                            <label class="col-form-label">@Model.Member.Posts</label>
+                            <label class="form-label">@Model.Member.Posts</label>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="mb-3">
                         <label asp-for="Member.Lastpostdate" class="col-sm-3 col-form-label"></label>
                         <div class="col-sm-9">
-                            <label class="col-form-label">@Model.Member.Lastpostdate.FromForumDateStr().ToForumDisplay()</label>
+                            <label class="form-label">@Model.Member.Lastpostdate.FromForumDateStr().ToForumDisplay()</label>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="mb-3">
                         <label asp-for="Member.Lastheredate" class="col-sm-3 col-form-label"></label>
                         <div class="col-sm-9">
-                            <label class="col-form-label">@Model.Member.Lastheredate.FromForumDateStr().ToForumDisplay()</label>
+                            <label class="form-label">@Model.Member.Lastheredate.FromForumDateStr().ToForumDisplay()</label>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="mb-3">
                         <label asp-for="Member.Lastactivity" class="col-sm-3 col-form-label"></label>
                         <div class="col-sm-9">
-                            <label class="col-form-label">@Model.Member.Lastactivity.FromForumDateStr().ToForumDisplay()</label>
+                            <label class="form-label">@Model.Member.Lastactivity.FromForumDateStr().ToForumDisplay()</label>
                         </div>
                     </div>
                     <input asp-for="Member.Id" type="hidden"/>
@@ -97,7 +97,7 @@
                             var showme = config.GetIntValue(property.GetPropertyDisplayCheck<Member>(), 1) == 1;
                             if (!property.PropertyIsPrivate() || Model.CanEdit)
                             {
-                                <div class="col-6 col-form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
+                                <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
                                     <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(config.GetIntValue(property.GetPropertyRequiredCheck<Member>(), 0) == 1)"></snitz-config>
                                 </div>
                             }
@@ -119,7 +119,7 @@
                             var showme = config.GetIntValue(property.GetPropertyDisplayCheck<Member>(), 1) == 1;
                             if (!property.PropertyIsPrivate())
                             {
-                                <div class="col-6 col-form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
+                                <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
                                     <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(config.GetIntValue(property.GetPropertyRequiredCheck<Member>(), 0) == 1)"></snitz-config>
                                 </div>
                             }

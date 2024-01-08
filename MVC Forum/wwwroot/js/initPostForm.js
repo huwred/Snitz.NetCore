@@ -23,7 +23,6 @@ tinymce.init({
     images_reuse_filename: true,
     emoticons_database: 'emojiimages',
     emoticons_images_url: '/images/emoticon/',
-    content_style: `
-    body { font-family:Helvetica,Arial,sans-serif; font-size:14px } 
+    content_style: `body { font-family:Helvetica,Arial,sans-serif; font-size:14px; } 
     .mce-content-body img {max-width: 99% !important;height: auto;} `
 });

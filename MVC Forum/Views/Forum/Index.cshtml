@@ -10,6 +10,8 @@
     ViewBag.PageCount = Model.PageCount;
     var pagenum = Model.PageNum?.ToString() ??  Context.Request.Query["page"];
     var pagesize = Context.Request.Query["pagesize"];
+    ViewBag.PageSize = pagesize.Count < 1 ? 20 : Convert.ToInt32(pagesize);
+    ViewBag.PageNum = pagenum;
 
 }
     <div class="container pt-0">

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.IdentityModel.Tokens;
 using MVCForum.Models.Forum;
 using MVCForum.Models.Post;
@@ -10,9 +9,11 @@ using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System.Linq;
+using MVCForum.Models.Category;
 
 namespace MVCForum.Controllers
 {
+    [CustomAuthorize]
     public class CategoryController : Controller
     {
         private readonly IForum _forumService;
@@ -20,17 +21,20 @@ namespace MVCForum.Controllers
         private readonly IPost _postService;
         private readonly ISnitzConfig _config;
         private readonly ISnitzCookie _cookie;
+        private readonly ICategory _categoryService;
 
-        public CategoryController(IForum forumService,IMember memberService,IPost postService, ISnitzConfig config,ISnitzCookie snitzCookie)
+        
+        public CategoryController(IForum forumService,IMember memberService,IPost postService, ISnitzConfig config,ISnitzCookie snitzCookie,ICategory categoryService)
         {
             _forumService = forumService;
             _memberService = memberService;
             _postService = postService;
             _config = config;
             _cookie = snitzCookie;
+            _categoryService = categoryService;
         }
         [Breadcrumb("Forums",FromAction = "Index",FromController = typeof(HomeController))]
-        //[OutputCache]
+        
         public IActionResult Index(int id)
         {
             _memberService.SetLastHere(User);
@@ -61,6 +65,11 @@ namespace MVCForum.Controllers
                 var forumPage = new MvcBreadcrumbNode("", "Category", "Forums");
                 var topicPage = new MvcBreadcrumbNode("", "Category", forums.First().CategoryName) { Parent = forumPage,RouteValues = new{id=forums.First().CategoryId}};
                 ViewData["BreadcrumbNode"] = topicPage; 
+            }
+            else
+            {
+                var forumPage = new MvcBreadcrumbNode("", "Category", "Forums");
+                ViewData["BreadcrumbNode"] = forumPage;
             }
             var latestPosts = _postService.GetLatestPosts(10)
             .Select(post => new PostListingModel
@@ -104,14 +113,40 @@ namespace MVCForum.Controllers
             };
         }
 
+        //[Breadcrumb("Forums",FromAction = "Index",FromController = typeof(HomeController))]
         public IActionResult Edit(int id)
         {
-            throw new System.NotImplementedException();
-        }
+            var cat = _categoryService.GetById(id);
+            var forumPage = new MvcBreadcrumbNode("", "Category", "Categories");
+            var topicPage = new MvcBreadcrumbNode("", "Category", "New Category") { Parent = forumPage};
+            CategoryViewModel vm = new CategoryViewModel();
 
+            if (id > 0)
+            {
+                vm.Id = cat.Id;
+                vm.Name = cat.Name!;
+                vm.Status = (Status)cat.Status!;
+                vm.Subscription = (CategorySubscription)cat.Subscription!;
+                vm.Moderation = (ModerationLevel)cat.Moderation!;
+                vm.Sort = cat.Sort;
+                topicPage = new MvcBreadcrumbNode("", "Category", cat.Name) { Parent = forumPage};
+
+            }
+            ViewData["BreadcrumbNode"] = topicPage;
+            return View("CreateEdit",vm);
+        }
+        public IActionResult Create()
+        {
+            var forumPage = new MvcBreadcrumbNode("", "Category", "Categories");
+            var topicPage = new MvcBreadcrumbNode("", "Category", "New Category") { Parent = forumPage};
+            CategoryViewModel vm = new CategoryViewModel();
+
+            ViewData["BreadcrumbNode"] = topicPage;
+            return View("CreateEdit",vm);
+        }
         public IActionResult Delete(int id)
         {
-            throw new System.NotImplementedException();
+            return RedirectToAction("Index","Category");;
         }
     }
 }

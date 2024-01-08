@@ -5,9 +5,11 @@
 @using Microsoft.AspNetCore.Routing
 @using MVCForum.Models.User
 @using MVCForum.TagHelpers
+@using SnitzCore.Data.Interfaces
 @using SnitzCore.Data.Models
 @inject SignInManager<ForumUser> SignInManager
 @inject ICodeProcessor BbCodeProcessor
+@inject ISnitzConfig Config
 @{
     var cat = Context.Request.Query["id"];
     var test = Context.GetRouteValue("id");
@@ -18,14 +20,26 @@
 }
 <div class="container pt-0">
     <breadcrumb></breadcrumb>
-    @if (!string.IsNullOrWhiteSpace(cat) && User.IsInRole("Admin"))
+    @if (User.IsInRole("Admin"))
     {
-        <div class="btn-group">
-            <button asp-controller="Category" asp-action="Edit" asp-route-id="@cat" title="Edit Forum" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> Edit Category</span></button>
-            <button asp-controller="Category" asp-action="Delete" asp-route-id="@cat" title="Delete Forum" class="btn btn-outline-danger"><i class="fa fa-trash"></i><span class="d-none d-md-inline"> Delete Category</span></button>
-            <button formaction="/Forum/Create/?catid=@cat" title="New Forum" class="btn btn-outline-success"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> Create Forum</span></button>
-        </div>
+        if (!string.IsNullOrWhiteSpace(cat))
+        {
+            <form >
+            <div class="btn-group">
+                <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" title="Edit Category" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> Edit Category</span></button>
+                <button asp-controller="Category" type="submit" asp-action="Delete" asp-route-id="@cat" title="Delete Category" class="btn btn-outline-danger"><i class="fa fa-trash"></i><span class="d-none d-md-inline"> Delete Category</span></button>
+                    <button type="submit" formaction="/Forum/Create/?catid=@cat" title="New Forum" class="btn btn-outline-success"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> Create Forum</span></button>
+            </div></form>
+        }
+        else
+        {
+            <form >
+                <div class="btn-group">
+                    <button asp-controller="Category" type="submit" asp-action="Create" title="Add Category" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> Add Category</span></button>
+                </div></form>
+        }
     }
+
 
     <div class="row">
         <div class="col">
@@ -85,7 +99,7 @@
         </div>
         <div class="d-none d-md-block col-3">
             <partial name="_QuickSearch"/>
-            <partial name="_Login" model="new UserSignInModel()"/>
+            <partial name="_Login" model="new UserSignInModel()" />
             <partial name="_LatestPosts" model="@Model.LatestPosts"/>
         </div>
     </div>

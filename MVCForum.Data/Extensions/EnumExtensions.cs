@@ -23,6 +23,15 @@ namespace SnitzCore.Data.Extensions
                     select type).FirstOrDefault();
 
         }
+        public static TAttribute GetAttribute<TAttribute>(this Enum enumValue) 
+            where TAttribute : Attribute
+        {
+            var test = enumValue.GetType()
+                .GetMember(enumValue.ToString())
+                .First().GetCustomAttribute<TAttribute>();
+            return test;
+        }
+
         public static string? GetDisplayName(this Type enumValue, string value)
         {
             return enumValue

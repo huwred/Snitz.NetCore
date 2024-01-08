@@ -1,0 +1,49 @@
+﻿@model MVCForum.Models.PagingModel
+@{
+    int pagecount = Model.PageCount + 1;
+    var page = Model.Page;
+    var orderby = "";
+    var defaultdays = "";
+    var sortdir = "";
+
+    var intLow = 1;
+    var intHigh = pagecount;
+    if (page == 1) {intLow = 1;}
+    if (intHigh > pagecount) {intHigh = pagecount;}
+
+    if (Context.Request.Query["orderby"].Count > 0)
+    {
+        orderby = $"&orderby={Context.Request.Query["orderby"]}";
+    }
+    else if (Model.OrderBy != null)
+    {
+        orderby = $"&orderby={Model.OrderBy}";
+    }
+    
+    if (Context.Request.Query["defaultdays"].Count > 0)
+    {
+        defaultdays = $"&defaultdays={Context.Request.Query["defaultdays"]}";
+    }
+    else if (Model.DefaultDays != -10000)
+    {
+        defaultdays = $"&defaultdays={Model.DefaultDays}";
+    }
+    
+    if (Context.Request.Query["sortdir"].Count > 0)
+    {
+        sortdir = $"&sortdir={Context.Request.Query["sortdir"]}";
+    }
+    else if (Model.SortDir != null)
+    {
+        sortdir = $"&sortdir={Model.SortDir}";
+    }
+}
+<nav aria-label="Page navigation" class="mb-1">
+    <ul class="pagination quicklink">
+
+        @for (int i = intLow; i < intHigh + 1; i++)
+        {
+            <li class="page-item"><a class="page-link" href="/Topic/Index/@Model.Page/?page=@i@(orderby)@(defaultdays)@(sortdir)">@i</a></li>
+        }
+    </ul>
+</nav>

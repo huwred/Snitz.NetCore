@@ -102,14 +102,14 @@ namespace MVCForum.TagHelpers
                 case "textarea":
                     output.TagName = "div";
                     output.AddClass("form-group",HtmlEncoder.Default);
-                    output.Content.AppendHtml($@"<label for=""{PropertyInfo.Name}"">{displayName??PropertyInfo.Name}</label>");
+                    output.Content.AppendHtml($@"<label class=""form-label"" for=""{PropertyInfo.Name}"">{displayName??PropertyInfo.Name}</label>");
                     if (CanEdit)
                     {
                         output.Content.AppendHtml($@"<textarea type=""{valtype}"" name=""{PropertyInfo.Name}"" id=""{PropertyInfo.Name}"" class=""form-control"" {required} {disabled} rows=""3"">{Value}</textarea>");
                     }
                     else
                     {
-                        output.Content.AppendHtml($@"<label class=""form-control"" >{Value}</label>");
+                        output.Content.AppendHtml($@"<label class=""form-label m-2"" >{Value}</label>");
                     }
                     output.TagMode = TagMode.StartTagAndEndTag;
                     break;
@@ -146,7 +146,7 @@ namespace MVCForum.TagHelpers
                     }
                     else
                     {
-                        output.Content.AppendHtml($@"<label class=""form-control"" >{Value}</label>");
+                        output.Content.AppendHtml($@"<label class=""form-label m-2"" >{Value}</label>");
                     }
 
                     output.TagMode = TagMode.StartTagAndEndTag;
@@ -160,11 +160,11 @@ namespace MVCForum.TagHelpers
                     if (CanEdit)
                     {
                         output.Content.AppendHtml($@"<input name=""{PropertyInfo.Name}"" type=""file"" class=""custom-file-input"" id=""exampleInputFile"" aria-describedby=""fileHelp""/>");
-                        output.Content.AppendHtml($@"<label class=""custom-file-label"" for=""exampleInputFile"">{Value??"Choose file"}</label>");
+                        output.Content.AppendHtml($@"<label class=""form-label"" for=""exampleInputFile"">{Value??"Choose file"}</label>");
                     }
                     else
                     {
-                        output.Content.AppendHtml($@"<label class=""form-control"" for=""exampleInputFile"">{Value??"Choose file"}</label>");
+                        output.Content.AppendHtml($@"<label class=""form-label m-2"" for=""exampleInputFile"">{Value??"Choose file"}</label>");
                     }
                     output.Content.AppendHtml($@"</div>");
                     output.TagMode = TagMode.StartTagAndEndTag;
@@ -173,14 +173,14 @@ namespace MVCForum.TagHelpers
                     output.TagName = "div";
                     output.AddClass("form-group",HtmlEncoder.Default);
                     output.Content.AppendHtml(
-                        $@"<label for=""{PropertyInfo.Name}"">{displayName??PropertyInfo.Name}</label>");
+                        $@"<label class=""form-label""  for=""{PropertyInfo.Name}"">{displayName??PropertyInfo.Name}</label>");
                     if (CanEdit)
                     {
                         output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{PropertyInfo.Name}"" id=""{PropertyInfo.Name}"" value=""{Value}"" class=""form-control"" {required} {disabled}/>");
                     }
                     else
                     {
-                        output.Content.AppendHtml($@"<label class=""form-control"" >{Value}</label>");
+                        output.Content.AppendHtml($@"<label class=""form-label m-2"" >{Value}</label>");
                     }
                     
                     output.TagMode = TagMode.StartTagAndEndTag;

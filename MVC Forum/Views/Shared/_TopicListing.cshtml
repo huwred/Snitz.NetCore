@@ -1,9 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MVCForum.TagHelpers
 @using BbCodeFormatter
+@using MVCForum.Models
+@using SnitzCore.Data.Interfaces
 @model MVCForum.Models.Post.PostListingModel
 @inject ICodeProcessor BbCodeProcessor
-
+@inject ISnitzConfig Config
 <div class="table-row">
     <div class="status" data-status="@Model.Status">
         <snitz-topic-icon status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
@@ -12,6 +14,19 @@
         <a asp-controller="Topic" asp-action="Index" asp-route-id="@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title))</a>
         <br>
         <span>Started by @Model.AuthorName <snitz-datetime datetime="@Model.Created"></snitz-datetime> .</span>
+        @if (Config.GetIntValue("STRSHOWPAGING") == 1)
+        {
+            //TODO: Quick topic paging
+            @if (Model.RepliesCount > ViewBag.PageSize)
+            {
+                var paging = new PagingModel
+                {
+                        PageCount = Model.RepliesCount / ViewBag.PageSize ,
+                        Page = Model.Id
+                };
+                @await Html.PartialAsync("QuickPaging",paging)
+            }
+        }
     </div>
     <div class="replies">
         @Model.RepliesCount replies <br> @Model.ViewCount views
@@ -19,6 +34,11 @@
 
     <div class="last-reply">
         <snitz-datetime datetime="@Model.LastPostDate"></snitz-datetime>
-        <br>By <b><a href="">@Model.LastPostAuthorName</a></b>
+        @if (Config.GetIntValue("STRJUMPLASTPOST") == 1)
+        {
+            <span class=""><br />By <b><a href="">@Model.LastPostAuthorName</a></b></span>
+            
+        }
+        
     </div>
 </div>

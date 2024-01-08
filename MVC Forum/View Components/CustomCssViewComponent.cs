@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using System.Threading.Tasks;
 

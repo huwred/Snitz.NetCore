@@ -1,6 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using SnitzCore.Data.Extensions
 @using SnitzCore.Data.Models
 @model MVCForum.Models.User.UserSignInModel
 @inject SignInManager<ForumUser> SignInManager
@@ -24,18 +23,18 @@
     <div class="m-2 bg-form border border-dark rounded">
         <div class="subforum ">
             <h1 class="bg-dark text-white p-2">SignIn</h1>
-            @Html.MyValidationSummary(false,"",new{@class="list-unstyled p-2"})
-
             <form method="post" asp-controller="Account" asp-action="Login" class="needs-validation p-2" novalidate>
                 <div class="form-group">
                     <label asp-for="Username"></label>
                     <input asp-for="Username" class="form-control" />
+                    <div class="invalid-feedback">You must provide a Username.</div>
                 </div>
                 <div class="form-group">
                     <label asp-for="Password"></label>
                     <div class="input-group" id="show_hide_password">
                         @Html.PasswordFor(m => m.Password,new{@class="form-control"})
                     </div>
+                    <div class="invalid-feedback">You must provide a Username.</div>
                 </div>
                 <div class="form-group">
                     <label asp-for="RememberMe"></label>

@@ -1,7 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MVCForum.TagHelpers
-@using SnitzCore.Data
 @using SnitzCore.Data.Interfaces
 @using SnitzCore.Data.Models
 @inject UserManager<ForumUser> UserManager
@@ -33,7 +32,10 @@
             @if (!SignInManager.IsSignedIn(User))
             {
                 <li class="nav-item"><a asp-controller="Account" asp-action="Login" class="nav-link">Sign In</a></li>
-                <li class="nav-item"><a asp-controller="Account" asp-action="Register" class="nav-link">Register</a></li>
+                @if (config.GetIntValue("STRPROHIBITNEWMEMBERS") != 1)
+                {
+                    <li class="nav-item"><a asp-controller="Account" asp-action="Register" class="nav-link">Register</a></li>
+                }
             }
             @if (SignInManager.IsSignedIn(User))
             {
@@ -53,16 +55,23 @@
                         <li><a class="dropdown-item" asp-controller="Account" asp-action="Detail" asp-route-id="">Profile</a></li>
                         <li><a class="dropdown-item" asp-controller="PrivateMessage" asp-action="Inbox">Messages</a></li>
                         <li><a class="dropdown-item" asp-controller="Account" asp-action="LogOut">Sign Out</a></li>
-
-                        @if (userroles.Contains("Admin"))
-                        {
-                            <div role="separator" class="dropdown-divider"></div>
-                            <div class="dropdown-header">Admin</div>
-                            <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Config</a></li>
-                            <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">Create Forum</a></li>
-                        }
                     </ul>
                 </li>
+                @if (userroles.Contains("Admin"))
+                {
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" role="button" id="navbarDropdownAdminLink">
+                            Admin<span class="caret"></span>
+                        </a>
+
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdminLink">
+                            <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Config</a></li>
+                            <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">Create Category</a></li>
+                            <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">Create Forum</a></li>
+                        </ul>
+                    </li>
+                }
+
             }
 
         </ul>

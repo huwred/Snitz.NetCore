@@ -18,6 +18,7 @@ using X.PagedList;
 
 namespace MVCForum.Controllers
 {
+    [CustomAuthorize]
     public class ForumController : Controller
     {
         private readonly IForum _forumService;
@@ -55,7 +56,7 @@ namespace MVCForum.Controllers
                 Created = p.Created.FromForumDateStr(),
                 RepliesCount = p.ReplyCount,
                 ViewCount = p.ViewCount,
-                IsSticky = p.IsSticky == 1,
+                IsSticky = p.IsSticky == 1 && _config.GetIntValue("STRSTICKYTOPIC") == 1,
                 Status = p.Status,
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
@@ -64,33 +65,37 @@ namespace MVCForum.Controllers
             });
             
             IEnumerable<Post> forumPosts = forum.Posts.Where(p => p.IsSticky != 1);
-
+            if (_config.GetIntValue("STRSTICKYTOPIC") != 1)
+            {
+                stickylistings = null;
+                forumPosts = forum.Posts;
+            }
             
             if (defaultdays > 0)
             {
-                forumPosts = forum.Posts.Where(f => f.IsSticky != 1 && f.LastPostDate?.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays * -1));
+                forumPosts = forumPosts.Where(f => f.LastPostDate?.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays * -1));
             }
             else
             {
                 switch (defaultdays)
                 {
                     case -1 : //AllOpen 
-                        forumPosts = forum.Posts.Where(f => f.IsSticky != 1 && f.Status == 1);
+                        forumPosts = forumPosts.Where(f => f.Status == 1);
                         break;
                     //case -99 : //Archived
                     //    //TODO: Arcvied Topics                      
                     //    break;
                     case -999: //NoReplies
-                        forumPosts = forum.Posts.Where(f => f.IsSticky != 1 && f.Status == 1 && f.ReplyCount == 0);
+                        forumPosts = forumPosts.Where(f => f is { Status: 1, ReplyCount: 0 });
                         break;
                     case -9999: //Draft
-                        forumPosts = forum.Posts.Where(f => f.IsSticky != 1 && f.Status == 99 ); //TODO: current user check
+                        forumPosts = forumPosts.Where(f => f.Status == 99 ); //TODO: current user check
                         break;
                     case -88: //Hot
                         if (_config.GetIntValue("STRHOTTOPIC") == 1)
                         {
                             var hottopicount = _config.GetIntValue("INTHOTTOPICNUM",25);
-                            forumPosts = forum.Posts.Where(f => f.IsSticky != 1 && f.ReplyCount > hottopicount);
+                            forumPosts = forumPosts.Where(f => f.ReplyCount > hottopicount);
                         }
                         break;
                 }
@@ -130,7 +135,7 @@ namespace MVCForum.Controllers
                 Created = p.Created.FromForumDateStr(),
                 RepliesCount = p.ReplyCount,
                 ViewCount = p.ViewCount,
-                IsSticky = p.IsSticky == 1,
+                IsSticky = p.IsSticky == 1 && _config.GetIntValue("STRSTICKYTOPIC") == 1,
                 Status = p.Status,
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,

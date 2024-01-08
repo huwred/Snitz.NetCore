@@ -9,9 +9,11 @@ using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MVCForum.Controllers
 {
+    [Authorize]
     public class PrivateMessageController : Controller
     {
         private Member _member;

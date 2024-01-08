@@ -15,7 +15,9 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service;
 using System;
+using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,10 +59,16 @@ builder.Services.AddOutputCache(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     //Location for your Custom Access Denied Page
-    //options.AccessDeniedPath = "Account/AccessDenied";
+    options.AccessDeniedPath = "/Account/Login";
 
     //Location for your Custom Login Page
     options.LoginPath = "/Account/Login";
+
+    // Cookie settings
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+    options.SlidingExpiration = true;
+
 });
 builder.Services.AddScoped<ICategory, CategoryService>();
 builder.Services.AddScoped<IMember, MemberService>();
@@ -113,6 +121,18 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseStatusCodePages(context => {
+    var request = context.HttpContext.Request;
+    var response = context.HttpContext.Response;
+
+    if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
+    {
+        response.Redirect("/Account/Login");
+    }
+
+    return Task.CompletedTask;
+});
+
 app.UseStaticFiles();
 app.UseRouting();
 //app.UseOutputCache();

@@ -40,7 +40,7 @@ namespace MVCForum.TagHelpers
             output.TagName = "i";
 
             output.AddClass("fa",HtmlEncoder.Default);
-            if (Sticky)
+            if (Sticky && _config.GetIntValue("STRSTICKYTOPIC") == 1)
             {
                 output.Attributes.Add("title","Sticky Topic");
                 output.AddClass("fa-thumb-tack",HtmlEncoder.Default);

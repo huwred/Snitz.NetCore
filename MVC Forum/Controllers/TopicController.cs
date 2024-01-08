@@ -16,6 +16,7 @@ using X.PagedList;
 
 namespace MVCForum.Controllers
 {
+    [CustomAuthorize]
     public class TopicController : Controller
     {
         private readonly IPost _postService;
@@ -30,7 +31,7 @@ namespace MVCForum.Controllers
             _memberService = memberService;
         }
 
-        public IActionResult Index(int id,int page = 1, int pagesize = 4, string sortdir="asc", int? replyid = null)
+        public IActionResult Index(int id,int page = 1, int pagesize = 20, string sortdir="asc", int? replyid = null)
         {
             var post = _postService.GetTopicById(id);
             if (!HttpContext.Session.Keys.Contains("TopicId_"+ id))
@@ -404,5 +405,14 @@ namespace MVCForum.Controllers
         }
 
 
+        public IActionResult Print(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IActionResult Send(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

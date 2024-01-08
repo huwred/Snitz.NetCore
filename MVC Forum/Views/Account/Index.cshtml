@@ -5,11 +5,12 @@
 @using MVCForum.Models
 @using MVCForum.Models.User
 @using SnitzCore.Data
+@using SnitzCore.Data.Interfaces
 @using SnitzCore.Data.Models
 @model MVCForum.Models.User.MemberIndexModel
 @inject IMember memberService
 @inject UserManager<ForumUser> UserManager
-
+@inject ISnitzConfig Config
 @{
     var ranking = memberService.GetRankings();
     ViewBag.PageCount = Model.PageCount;
@@ -147,7 +148,7 @@
         </div>
         <div class="d-none d-md-block col-3">
             <partial name="_QuickSearch"/>
-            <partial name="_Login" model="new UserSignInModel()"/>
+            <partial name="_Login" model="new UserSignInModel()" />
         </div>
     </div>
 </div>

@@ -122,8 +122,11 @@ namespace SnitzCore.Data.Models
 
     public enum SearchFor
     {
+        [Display(Name = "Search for exact phrase")]
         ExactPhrase,
+        [Display(Name = "Search for all terms")]
         AllTerms,
+        [Display(Name = "Search for any terms")] 
         AnyTerms
     }
 
@@ -150,5 +153,27 @@ namespace SnitzCore.Data.Models
         [Display(Name="In the last year")]
         SinceYear = 365,
 
+    }
+
+    public enum Status
+    {
+        Closed = 0,
+        Open = 1
+    }
+    public enum ModerationLevel
+    {
+        [Display(Name = "No Moderation")]
+        NotAllowed = 0,
+        Allowed
+    }
+    public enum CategorySubscription
+    {
+        None = 0,
+        [Display(Name = "Category Subscriptions")]
+        CategorySubscription,
+        [Display(Name = "Forum Subscriptions")]
+        ForumSubscription,
+        [Display(Name = "Topic Subscriptions")] 
+        TopicSubscription
     }
 }

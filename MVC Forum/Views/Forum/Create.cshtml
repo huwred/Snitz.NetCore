@@ -1,10 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using SmartBreadcrumbs
-@using SnitzCore.Data
-@using SnitzCore.Data.Interfaces
 @using SnitzCore.Data.Models
 @model MVCForum.Models.Forum.NewForumModel
-@inject IEmoticon emoticons
 <div class="container pt-0">
     <breadcrumb></breadcrumb>
 
@@ -41,7 +38,7 @@
 
             </div>
             <div class="col-10">
-                <textarea asp-for="Description" class="form-control" id="msg-text" rows="6"></textarea>
+                <textarea asp-for="Description" class="form-control" id="msg-text" rows="6" required="required"></textarea>
                 <input asp-for="Id" type="hidden"/>
                 <div class="invalid-feedback">You must enter a description.</div>
             </div>

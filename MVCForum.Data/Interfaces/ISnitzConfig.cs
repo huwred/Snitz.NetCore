@@ -15,7 +15,7 @@ namespace SnitzCore.Data.Interfaces
 
         int GetIntValue(string key, int defaultvalue = 0);
         string GetValue(string key);
-        string GetValue(string key,string? defVal = null);
+        string? GetValue(string key,string? defVal = null);
         bool TableExists(string tablename);
 
         IEnumerable<Badword> GetBadwords();

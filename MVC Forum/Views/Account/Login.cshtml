@@ -1,12 +1,36 @@
-﻿@model MVCForum.Models.User.UserSignInModel
-
-<div class="container pt-0">
-    <div class="center">
-        <div class="col-4">
-            <partial name="_Login" model="Model"/>
+﻿@using SnitzCore.Data.Interfaces
+@model MVCForum.Models.User.UserSignInModel
+@inject ISnitzConfig Config
+@if (Config.GetIntValue("STRREQUIREREG") == 1)
+{
+    <div class="container pt-0">
+        <div class="center">
+            <div class="col-4">
+                <h2>Login is required</h2>
+                <partial name="_Login" model="Model" />
+            </div>
         </div>
     </div>
-</div>
+}
+else if (Config.GetIntValue("STRPROHIBITNEWMEMBERS") == 1)
+{
+    <div class="container pt-0">
+        <div class="center">
+            <h2>Registration is not enabled</h2>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container pt-0">
+        <div class="center">
+            <div class="col-4">
+                <partial name="_Login" model="Model"/>
+            </div>
+        </div>
+    </div>
+}
+
 @section Scripts
 {
     <script>

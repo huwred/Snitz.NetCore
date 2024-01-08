@@ -121,7 +121,7 @@
   --bs-focus-ring-color: rgba(13, 110, 253, 0.25);
   --bs-form-valid-color: #198754;
   --bs-form-valid-border-color: #198754;
-  --bs-form-invalid-color: #dc3545;
+    --bs-form-invalid-color: white; 
   --bs-form-invalid-border-color: #dc3545;
 }
 

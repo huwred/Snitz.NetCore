@@ -1,12 +1,9 @@
-﻿using BbCodeFormatter.Processors;
-using Microsoft.AspNetCore.Html;
+﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using MVCForum.Models.User;
 using SnitzCore.Data.Models;
 using SnitzCore.Service;
 using System.Collections.Generic;
-using System.Resources;
 
 namespace MVCForum.Extensions
 {

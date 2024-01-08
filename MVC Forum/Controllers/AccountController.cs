@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 
 namespace MVCForum.Controllers
 {
+    //[Authorize]
     public class AccountController : Controller
     {
         private const string Templatepath = @"Templates";

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SnitzCore.Data;
 using System;
-using System.Threading;
 
 namespace MVCForum.Extensions
 {

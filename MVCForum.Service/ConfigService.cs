@@ -64,26 +64,39 @@ namespace SnitzCore.Service
         public int GetIntValue(string key, int defaultvalue = 0)
         {
             if(string.IsNullOrWhiteSpace(key)) return defaultvalue;
+            var service = new InMemoryCache() { DoNotExpire = true };
+            return Int32.Parse(service.GetOrSet("cfg_" + key, () => CachedIntValue(key,defaultvalue)));
 
+        }
+
+        private string CachedIntValue(string key, int defaultvalue)
+        {
             var config = _dbContext.SnitzConfig.SingleOrDefault(c => c.Key == key);
             if (config != null)
             {
-                if (Int32.TryParse(config.Value, out var configvalue))
-                    return configvalue;
+                    return config.Value;
             }
 
-            return defaultvalue;
+            return defaultvalue.ToString();
         }
 
         public string GetValue(string key)
         {
-            return _dbContext.SnitzConfig.SingleOrDefault(c=>c.Key == key)?.Value;
+            return _dbContext.SnitzConfig.SingleOrDefault(c=>c.Key == key)?.Value ?? "";
         }
-        public string GetValue(string key, string? defVal = null)
+        public string? GetValue(string key, string? defVal = null)
+        {
+            var service = new InMemoryCache() { DoNotExpire = true };
+            return service.GetOrSet("cfg_" + key, () => CachedStringValue(key,defVal));
+
+        }
+
+        private string? CachedStringValue(string key, string? defVal)
         {
             var result = _dbContext.SnitzConfig.SingleOrDefault(c=>c.Key == key)?.Value;
-            return result ?? defVal;
+            return result ?? defVal!;
         }
+
         public bool TableExists(string tablename)
         {
             bool exists = _dbContext.TableExists(tablename).Result;

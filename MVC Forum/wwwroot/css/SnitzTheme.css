@@ -201,6 +201,16 @@ footer {
     padding: 5px 10px;
     /*border: solid 0.5px darkslategrey;*/
 }
+.pagination.quicklink {
+    padding: 1px !important;
+    margin-bottom: 2px !important;
+}
+.pagination.quicklink a {
+    color: darkslategrey;
+    margin-inline: 1px !important;
+    padding: 1px 2px !important;
+    /*border: solid 0.5px darkslategrey;*/
+}
 .page-link {
     background-color: #ddd;
 }
