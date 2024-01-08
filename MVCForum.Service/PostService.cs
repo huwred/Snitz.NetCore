@@ -38,15 +38,7 @@ namespace SnitzCore.Service
 
             UpdateForumLastPost(post);
             await _dbContext.SaveChangesAsync();
-            var test = new PostTopicCreate();
-            test.TopicCreated += OnTopicCreated;
 
-        }
-
-        private async void OnTopicCreated(object? sender, EventArgs e)
-        {
-            Console.WriteLine("Created");
-            //TODO: Custom logic goes here;
         }
 
         /// <summary>
