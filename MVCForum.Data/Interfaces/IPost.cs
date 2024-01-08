@@ -7,9 +7,9 @@ namespace SnitzCore.Data.Interfaces
 {
     public interface IPost
     {
-        Post GetTopicById(int id);
-        PostReply GetReplyById(int id);
-        IEnumerable<Post> GetAll();
+        Post GetTopicWithRelated(int id);
+        PostReply GetReply(int id);
+        IEnumerable<Post> GetAllTopicsAndRelated();
         IPagedList<Post> GetFilteredPost(string searchQuery, out int totalcount, int pagesize, int page);
         IPagedList<Post> Find(ForumSearch searchQuery, out int totalcount, int pagesize, int page);
         Post GetLatestReply(int id);

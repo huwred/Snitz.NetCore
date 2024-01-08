@@ -9,6 +9,7 @@ using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using MVCForum.Models.Category;
 
 namespace MVCForum.Controllers
@@ -19,22 +20,18 @@ namespace MVCForum.Controllers
         private readonly IForum _forumService;
         private readonly IMember _memberService;
         private readonly IPost _postService;
-        private readonly ISnitzConfig _config;
-        private readonly ISnitzCookie _cookie;
         private readonly ICategory _categoryService;
 
         
-        public CategoryController(IForum forumService,IMember memberService,IPost postService, ISnitzConfig config,ISnitzCookie snitzCookie,ICategory categoryService)
+        public CategoryController(IForum forumService,IMember memberService,IPost postService, ICategory categoryService)
         {
             _forumService = forumService;
             _memberService = memberService;
             _postService = postService;
-            _config = config;
-            _cookie = snitzCookie;
             _categoryService = categoryService;
         }
-        [Breadcrumb("Forums",FromAction = "Index",FromController = typeof(HomeController))]
         
+        [Breadcrumb("Forums",FromAction = "Index",FromController = typeof(HomeController))]
         public IActionResult Index(int id)
         {
             _memberService.SetLastHere(User);
@@ -96,24 +93,8 @@ namespace MVCForum.Controllers
             };
             return View("index",model);
         }
-        private ForumListingModel GetForumListingForPost(Post post)
-        {
-            Forum forum = post.Forum!;
 
-            return new ForumListingModel
-            {
-                Id = forum.Id,
-                Title = forum.Title,
-                AccessType = forum.Privateforums,
-                ForumType = (ForumType)forum.Type,
-                Url = forum.Url,
-                DefaultView = (DefaultDays)forum.Defaultdays,
-                CategoryId = forum.CategoryId,
-                //ImageUrl = forum.ImageUrl
-            };
-        }
-
-        //[Breadcrumb("Forums",FromAction = "Index",FromController = typeof(HomeController))]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id)
         {
             var cat = _categoryService.GetById(id);
@@ -135,6 +116,7 @@ namespace MVCForum.Controllers
             ViewData["BreadcrumbNode"] = topicPage;
             return View("CreateEdit",vm);
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             var forumPage = new MvcBreadcrumbNode("", "Category", "Categories");
@@ -144,9 +126,59 @@ namespace MVCForum.Controllers
             ViewData["BreadcrumbNode"] = topicPage;
             return View("CreateEdit",vm);
         }
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public IActionResult Create(CategoryViewModel model)
+        {
+            var forumPage = new MvcBreadcrumbNode("", "Category", "Categories");
+            var topicPage = new MvcBreadcrumbNode("", "Category", "New Category") { Parent = forumPage};
+            ViewData["BreadcrumbNode"] = topicPage;
+            if (ModelState.IsValid)
+            {
+                Category newCategory = new()
+                {
+                    Name = model.Name, 
+                    Status = (short)model.Status,
+                    Sort = model.Sort,
+                    Moderation = (int)model.Moderation,
+                    Subscription = (int)(model.Subscription)
+                };
+                if (model.Id != 0)
+                {
+                    newCategory.Id = model.Id;
+                    _categoryService.Update(newCategory);
+                }
+                else
+                {
+                    _categoryService.Create(newCategory);
+                }
+                return RedirectToAction("Index","Category",new{id = newCategory.Id});
+            }
+
+
+            return View("CreateEdit",model);
+        }
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             return RedirectToAction("Index","Category");;
         }
+        private ForumListingModel GetForumListingForPost(Post post)
+        {
+            Forum forum = post.Forum!;
+
+            return new ForumListingModel
+            {
+                Id = forum.Id,
+                Title = forum.Title,
+                AccessType = forum.Privateforums,
+                ForumType = (ForumType)forum.Type,
+                Url = forum.Url,
+                DefaultView = (DefaultDays)forum.Defaultdays,
+                CategoryId = forum.CategoryId,
+                //ImageUrl = forum.ImageUrl
+            };
+        }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -33,7 +34,7 @@ namespace MVCForum.Controllers
 
         public IActionResult Index(int id,int page = 1, int pagesize = 20, string sortdir="asc", int? replyid = null)
         {
-            var post = _postService.GetTopicById(id);
+            var post = _postService.GetTopicWithRelated(id);
             if (!HttpContext.Session.Keys.Contains("TopicId_"+ id))
             {
                 HttpContext.Session.SetInt32("TopicId_"+ id,1);
@@ -91,14 +92,7 @@ namespace MVCForum.Controllers
             return View(model);
         }
 
-        private PagedList<PostReply> PagedReplies(int page, int pagesize, string sortdir, Post post)
-        {
-            PagedList<PostReply> pagedReplies = sortdir == "asc"
-                ? new PagedList<PostReply>(post.Replies.OrderBy(r => r.Created), page, pagesize)
-                : new PagedList<PostReply>(post.Replies.OrderByDescending(r => r.Created), page, pagesize);
-            return pagedReplies;
-        }
-
+        [Authorize]
         public IActionResult Create(int id)
         {
             var member = _memberService.GetById(User).Result;
@@ -123,93 +117,12 @@ namespace MVCForum.Controllers
 
             return View(model);
         }
-
-        [HttpPost]
-        public async Task<IActionResult> AddPost(NewPostModel model)
-        {
-            var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId);
-
-            var post = BuildPost(model, user.MemberId);
-            if (model.TopicId != 0)
-            {
-                post.Created = model.Created.ToForumDateStr();
-                post.LastEdit = DateTime.UtcNow.ToForumDateStr();
-                post.LastEditby = user.MemberId;
-                await _postService.Update(post);
-            }
-            else
-            {
-                await _postService.Create(post);
-            }
-            
-
-            // TODO: Implement User Rating Management
-            return RedirectToAction("Index", "Topic", new { id = post.Id });
-        }
-        [HttpPost]
-        public async Task<IActionResult> AddReply(NewPostModel model)
-        {
-            var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId);
-            var post = BuildReply(model, user.MemberId);
-            if (model.Id != 0)
-            {
-                post.Created = model.Created.ToForumDateStr();
-                post.LastEdited = DateTime.UtcNow.ToForumDateStr();
-                post.LastEditby = user.MemberId;
-                await _postService.Update(post);
-            }
-            else
-            {
-                await _postService.Create(post);
-            }
-            if (model.Lock || model.Sticky)
-            {
-                //TODO: update topic status
-            }
-            // TODO: Implement User Rating Management
-            return RedirectToAction("Index", "Topic", new { id = post.PostId });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> DeleteReply(int id)
+        [Authorize]
+        public IActionResult Quote(int id)
         {
 
             var member = _memberService.GetById(User).Result;
-            var post = _postService.GetReplyById(id);
-            //if this isn't the last post then can't delete it
-            if ((post.MemberId == member.Id && post.Topic.LastPostReplyId != id) && !member.Roles.Contains("Admin"))
-            {
-                ModelState.AddModelError("","Unable to delete this reply");
-                return Json(new { result = false, error = "Unable to delete this reply" });
-
-            }
-            await _postService.DeleteReply(id);
-            return Json(new { result = true, data = post.Topic.Id });
-
-        }
-        [HttpPost]
-        public async Task<IActionResult> DeleteTopic(int id)
-        {
-            var member = _memberService.GetById(User).Result;
-            var post = _postService.GetTopicById(id);
-            if (member.Roles.Contains("Admin") || post.MemberId == member.Id)
-            {
-                await _postService.DeleteTopic(id);
-                return RedirectToAction("Index","Forum",new{id=post.ForumId});
-
-            }
-            
-            return Json(new { result = false, error = "Error Deleting Topic" });
-
-        }
-
-        public async Task<IActionResult> Quote(int id)
-        {
-
-            var member = _memberService.GetById(User).Result;
-            var topic = _postService.GetTopicById(id);
+            var topic = _postService.GetTopicWithRelated(id);
             
             var forum = _forumService.GetById(topic.ForumId);
             var model = new NewPostModel()
@@ -235,11 +148,12 @@ namespace MVCForum.Controllers
             return View("Create", model);
 
         }
-        public async Task<IActionResult> Edit(int id)
+        [Authorize]
+        public IActionResult Edit(int id)
         {
 
             var member = _memberService.GetById(User).Result;
-            var topic = _postService.GetTopicById(id);
+            var topic = _postService.GetTopicWithRelated(id);
             
             var forum = _forumService.GetById(topic.ForumId);
             var model = new NewPostModel()
@@ -268,13 +182,14 @@ namespace MVCForum.Controllers
             return View("Create", model);
 
         }
-        public async Task<IActionResult> QuoteReply(int id)
+        [Authorize]
+        public IActionResult QuoteReply(int id)
         {
 
             var member = _memberService.GetById(User).Result;
-            var reply = _postService.GetReplyById(id);
+            var reply = _postService.GetReply(id);
             
-            var topic = _postService.GetTopicById(reply.PostId);
+            var topic = _postService.GetTopicWithRelated(reply.PostId);
             var model = new NewPostModel()
             {
                 Id = 0,
@@ -300,12 +215,13 @@ namespace MVCForum.Controllers
             return View("Create", model);
 
         }
-        public async Task<IActionResult> EditReply(int id)
+        [Authorize]
+        public IActionResult EditReply(int id)
         {
 
             var member = _memberService.GetById(User).Result;
-            var reply = _postService.GetReplyById(id);
-            var topic = _postService.GetTopicById(reply.PostId);
+            var reply = _postService.GetReply(id);
+            var topic = _postService.GetTopicWithRelated(reply.PostId);
             var model = new NewPostModel()
             {
                 Id = id,
@@ -331,7 +247,92 @@ namespace MVCForum.Controllers
             return View("Create", model);
 
         }
+
         [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddPost(NewPostModel model)
+        {
+            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.FindByIdAsync(userId);
+
+            var post = BuildPost(model, user.MemberId);
+            if (model.TopicId != 0)
+            {
+                post.Created = model.Created.ToForumDateStr();
+                post.LastEdit = DateTime.UtcNow.ToForumDateStr();
+                post.LastEditby = user.MemberId;
+                await _postService.Update(post);
+            }
+            else
+            {
+                await _postService.Create(post);
+            }
+            
+
+            // TODO: Implement User Rating Management
+            return RedirectToAction("Index", "Topic", new { id = post.Id });
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddReply(NewPostModel model)
+        {
+            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.FindByIdAsync(userId);
+            var post = BuildReply(model, user.MemberId);
+            if (model.Id != 0)
+            {
+                post.Created = model.Created.ToForumDateStr();
+                post.LastEdited = DateTime.UtcNow.ToForumDateStr();
+                post.LastEditby = user.MemberId;
+                await _postService.Update(post);
+            }
+            else
+            {
+                await _postService.Create(post);
+            }
+            if (model.Lock || model.Sticky)
+            {
+                //TODO: update topic status
+            }
+            // TODO: Implement User Rating Management
+            return RedirectToAction("Index", "Topic", new { id = post.PostId });
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DeleteReply(int id)
+        {
+
+            var member = _memberService.GetById(User).Result;
+            var post = _postService.GetReply(id);
+            //if this isn't the last post then can't delete it
+            if ((post.MemberId == member.Id && post.Topic.LastPostReplyId != id) && !member.Roles.Contains("Admin"))
+            {
+                ModelState.AddModelError("","Unable to delete this reply");
+                return Json(new { result = false, error = "Unable to delete this reply" });
+
+            }
+            await _postService.DeleteReply(id);
+            return Json(new { result = true, data = post.Topic.Id });
+
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DeleteTopic(int id)
+        {
+            var member = _memberService.GetById(User).Result;
+            var post = _postService.GetTopicWithRelated(id);
+            if (member.Roles.Contains("Admin") || post.MemberId == member.Id)
+            {
+                await _postService.DeleteTopic(id);
+                return RedirectToAction("Index","Forum",new{id=post.ForumId});
+
+            }
+            
+            return Json(new { result = false, error = "Error Deleting Topic" });
+
+        }
+        [HttpPost]
+        [Authorize]
         public async Task<IActionResult> LockTopic(int id, int status)
         {
 
@@ -348,6 +349,15 @@ namespace MVCForum.Controllers
             return result ? Json(new { result = result, data = id }) : Json(new { result = result, error = "Unable to toggle Status" });
             
         }
+        public IActionResult Print(int id)
+        {
+            throw new NotImplementedException();
+        }
+        public IActionResult Send(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         private Post BuildPost(NewPostModel model, int memberid)
         {
             var forum = _forumService.GetById(model.ForumId);
@@ -372,7 +382,7 @@ namespace MVCForum.Controllers
         }
         private PostReply BuildReply(NewPostModel model, int memberid)
         {
-            var topic = _postService.GetTopicById(model.TopicId);
+            var topic = _postService.GetTopicWithRelated(model.TopicId);
 
             return new PostReply()
             {
@@ -403,16 +413,13 @@ namespace MVCForum.Controllers
                 AuthorRole = reply.Member.Level
             });
         }
-
-
-        public IActionResult Print(int id)
+        private PagedList<PostReply> PagedReplies(int page, int pagesize, string sortdir, Post post)
         {
-            throw new NotImplementedException();
+            PagedList<PostReply> pagedReplies = sortdir == "asc"
+                ? new PagedList<PostReply>(post.Replies.OrderBy(r => r.Created), page, pagesize)
+                : new PagedList<PostReply>(post.Replies.OrderByDescending(r => r.Created), page, pagesize);
+            return pagedReplies;
         }
 
-        public IActionResult Send(int id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

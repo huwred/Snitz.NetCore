@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using SnitzCore.Data;
+﻿using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System.Collections.Generic;

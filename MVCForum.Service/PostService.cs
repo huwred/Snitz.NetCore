@@ -22,6 +22,12 @@ namespace SnitzCore.Service
             _memberService = memberService;
 
         }
+
+        /// <summary>
+        /// Create a Topic
+        /// </summary>
+        /// <param name="post"></param>
+        /// <returns></returns>
         public async Task Create(Post post)
         {
             post.LastPostDate = post.Created;
@@ -32,7 +38,22 @@ namespace SnitzCore.Service
 
             UpdateForumLastPost(post);
             await _dbContext.SaveChangesAsync();
+            var test = new PostTopicCreate();
+            test.TopicCreated += OnTopicCreated;
+
         }
+
+        private async void OnTopicCreated(object? sender, EventArgs e)
+        {
+            Console.WriteLine("Created");
+            //TODO: Custom logic goes here;
+        }
+
+        /// <summary>
+        /// Create a Reply
+        /// </summary>
+        /// <param name="post"></param>
+        /// <returns></returns>
         public async Task Create(PostReply post)
         {
             _dbContext.Replies.Add(post);
@@ -81,6 +102,11 @@ namespace SnitzCore.Service
             _dbContext.Update(post);
             await _dbContext.SaveChangesAsync();
         }
+        public async Task Update(PostReply post)
+        {
+            _dbContext.Update(post);
+            await _dbContext.SaveChangesAsync();
+        }
         public async Task UpdateViewCount(int id)
         {
             var topic = _dbContext.Posts.First(x=>x.Id == id);
@@ -88,12 +114,6 @@ namespace SnitzCore.Service
             _dbContext.Update(topic);
             await _dbContext.SaveChangesAsync();
         }
-        public async Task Update(PostReply post)
-        {
-            _dbContext.Update(post);
-            await _dbContext.SaveChangesAsync();
-        }
-
         public async Task UpdateTopicContent(int id, string content)
         {
             var topic = _dbContext.Posts.First(x=>x.Id == id);
@@ -111,7 +131,7 @@ namespace SnitzCore.Service
 
         public IEnumerable<Post> GetLatestPosts(int n)
         {
-            return GetAll().OrderByDescending(post => post.Created).Take(n);
+            return GetAllTopicsAndRelated().OrderByDescending(post => post.Created).Take(n);
         }
         public IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize = 10, int pagenumber = 1)
         {
@@ -120,14 +140,16 @@ namespace SnitzCore.Service
                 .Skip((pagenumber-1) * pagesize).Take(pagesize);
             return replies.ToPagedList(pagenumber, pagesize);
         }
-        public IEnumerable<Post> GetAll()
+        public IEnumerable<Post> GetAllTopicsAndRelated()
         {
             return _dbContext.Posts
                 .AsNoTracking()
+                .Include(p => p.Category)
                 .Include(p => p.Forum)
-                .Include(p => p.Member)
-                .Include(p => p.Replies)!
-                .ThenInclude(r => r.Member);
+                .Include(p => p.Member);
+            ;
+            //.Include(p => p.Replies)!
+            //.ThenInclude(r => r.Member);
 
         }
 
@@ -136,7 +158,7 @@ namespace SnitzCore.Service
             var post = _dbContext.Posts.Single(p => p.Id == id);
             return post;
         }
-        public Post GetTopicById(int id)
+        public Post GetTopicWithRelated(int id)
         {
 
             var post = _dbContext.Posts.Where(p => p.Id == id)
@@ -152,7 +174,7 @@ namespace SnitzCore.Service
 
             return post;
         }
-        public PostReply GetReplyById(int id)
+        public PostReply GetReply(int id)
         {
 
             var post = _dbContext.Replies.Where(p => p.Id == id)

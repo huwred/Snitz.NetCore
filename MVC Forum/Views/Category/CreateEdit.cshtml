@@ -13,6 +13,7 @@
             <div class="mb-3">
                 <label asp-for="Name" class="form-label">Title</label>
                 <input asp-for="@Model.Name" type="text" class="form-control"/>
+                    <div class="invalid-feedback">You must provide a name.</div>
             </div>
             <div class="mb-3">
                 <label asp-for="Status" class="form-label">Status</label>

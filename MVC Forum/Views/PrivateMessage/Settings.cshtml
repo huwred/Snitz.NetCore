@@ -3,24 +3,18 @@
 
     <div class="card-header bg-dark">PM Settings</div>
     <form asp-action="UpdateSettings" method="post" id="addPostForm">
-        <div class="card-body text-dark">
-            <div class="form-group row">
-                <label asp-for="RecievePM" class="col-6"></label>
-                <div class="col-1">
-                    <input asp-for="RecievePM" class="checkbox"/>
-                </div>
+        <div class="card-body text-dark p-4">
+            <div class="form-check mb-3">
+                <label asp-for="RecievePM" class="form-check-label"></label>
+                <input asp-for="RecievePM" class="form-check-input" />
             </div>
-            <div class="form-group row">
-                <label asp-for="EmailNotification" class="col-6"></label>
-                <div class="col-1">
-                    <input asp-for="EmailNotification" class="checkbox"/>
-                </div>
+            <div class="form-check mb-3">
+                <label asp-for="EmailNotification" class="form-check-label"></label>
+                <input asp-for="EmailNotification" class="form-check-input" />
             </div>
-            <div class="form-group row">
-                <label asp-for="SaveSentMessages" class="col-6"></label>
-                <div class="col-1">
-                    <input asp-for="SaveSentMessages" class="checkbox"/>
-                </div>
+            <div class="form-check mb-3">
+                <label asp-for="SaveSentMessages" class="form-check-label"></label>
+                <input asp-for="SaveSentMessages" class="form-check-input" />
             </div>
         </div>
         <div class="card-footer"><button type="submit" class="btn btn-success">Save</button></div>

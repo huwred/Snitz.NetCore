@@ -24,17 +24,17 @@ using System.Threading.Tasks;
 
 namespace MVCForum.Controllers
 {
-    //[Authorize]
+    
     public class AccountController : Controller
     {
         private const string Templatepath = @"Templates";
         private readonly UserManager<ForumUser> _userManager;
         private readonly SignInManager<ForumUser> _signInManager;
         private readonly IMember _memberService;
-        private readonly SnitzCore.Data.Interfaces.IEmailSender _emailSender;
+        private readonly IEmailSender _emailSender;
         private readonly Dictionary<int,MemberRanking> _ranking;
         private readonly ISnitzCookie _cookie;
-        private IWebHostEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly int _pageSize;
 
         public AccountController(UserManager<ForumUser> usrMgr, SignInManager<ForumUser> signinMgr, IMember memberService,SnitzCore.Data.Interfaces.IEmailSender mailSender,
@@ -88,6 +88,7 @@ namespace MVCForum.Controllers
             };
             return View(model);
         }
+
         public async Task<IActionResult> Detail(string id)
         {
             var currUser = User.Identity?.Name;
@@ -122,8 +123,8 @@ namespace MVCForum.Controllers
             else
                 return RedirectToAction("Index");
         }
-        public ViewResult Register() => View();
- 
+        [HttpPost]
+        [Authorize]
         public IActionResult Update(Member model)
         {
             if (model.Dob != null)
@@ -152,7 +153,12 @@ namespace MVCForum.Controllers
             return View("Detail",mdmodel);
         }
 
+        [AllowAnonymous]
+        [CustomAuthorizeAttribute(RegCheck = "STRPROHIBITNEWMEMBERS")]
+        public ViewResult Register() => View();
         [HttpPost]
+        [AllowAnonymous]
+        [CustomAuthorizeAttribute(RegCheck = "STRPROHIBITNEWMEMBERS")]
         public async Task<IActionResult> Register(UserCreateModel user)
         {
             if (!ModelState.IsValid)
@@ -192,7 +198,12 @@ namespace MVCForum.Controllers
 
             return RedirectToAction(nameof(SuccessRegistration));
         }
-
+        [HttpGet]
+        public IActionResult SuccessRegistration()
+        {
+            return View();
+        }
+ 
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = "/")
         {
@@ -203,7 +214,6 @@ namespace MVCForum.Controllers
             ModelState.Clear();
             return View(login);
         }
- 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -284,6 +294,13 @@ namespace MVCForum.Controllers
 
             return View(login);
         }
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            _cookie.LogOut();
+            return RedirectToAction("Index", "Home");
+        }
+
 
         [HttpGet]
         public IActionResult ForgotPassword()
@@ -291,6 +308,7 @@ namespace MVCForum.Controllers
             return View();
         }
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
         {
@@ -309,11 +327,13 @@ namespace MVCForum.Controllers
             await _emailSender.SendEmailAsync(message);
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
         }
+        [AllowAnonymous]
         public IActionResult ForgotPasswordConfirmation()
         {
             return View();
         }
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult ResetPassword(string token, string email)
         {
             var model = new ResetPasswordModel { Token = token, Email = email };
@@ -321,6 +341,7 @@ namespace MVCForum.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel)
         {
             if (!ModelState.IsValid)
@@ -340,22 +361,17 @@ namespace MVCForum.Controllers
             return RedirectToAction(nameof(ResetPasswordConfirmation));
         }
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult ResetPasswordConfirmation()
         {
             return View();
-        }
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            _cookie.LogOut();
-            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Inbox()
         {
             return RedirectToAction("Index","PrivateMessage");
         }
-
+        [AllowAnonymous]
         public IActionResult SetTheme(string theme)
         {
             if (theme == null)
@@ -369,7 +385,6 @@ namespace MVCForum.Controllers
             
             return new JsonResult("OK");
         }
-
         [HttpPost]
         public IActionResult Search(IFormCollection form)
         {
@@ -434,14 +449,13 @@ namespace MVCForum.Controllers
             return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
         }
         [HttpGet]
-        public IActionResult SuccessRegistration()
-        {
-            return View();
-        }
-        [HttpGet]
         public IActionResult Error()
         {
             return View();
+        }
+        public IActionResult TestEmail()
+        {
+            throw new NotImplementedException();
         }
 
         private bool IsValidEmail(string emailaddress)
@@ -473,7 +487,6 @@ namespace MVCForum.Controllers
 
             return mTitle;
         }
-
         private string ParseTemplate(string template,string subject, string email, string callbackUrl, CultureInfo? culture)
         {
             if (culture != null)
@@ -501,9 +514,5 @@ namespace MVCForum.Controllers
             return messageBody;
         }
 
-        public IActionResult TestEmail()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -5,7 +5,7 @@
 <div class="container pt-0">
     <breadcrumb></breadcrumb>
 
-    <form asp-action="SubmitForum" method="post" id="addForumForm" class="needs-validation bg-form p-4 rounded" novalidate>
+    <form asp-action="Create" method="post" id="addForumForm" class="needs-validation bg-form p-4 rounded" novalidate>
         <div class="mb-3 row">
             <label asp-for="Category" class="form-label col-2"></label>
             <div class="col-10 col-lg-4">
@@ -14,7 +14,6 @@
                     "- Please select a category -",new { @class = "form-control" })
                 <div class="invalid-feedback">You must select a Category.</div>
             </div>
-            
         </div>
         <div class="mb-3 row">
             <label asp-for="Type" class="form-label col-2"></label>

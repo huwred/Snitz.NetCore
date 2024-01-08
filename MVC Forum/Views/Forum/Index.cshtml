@@ -34,6 +34,7 @@
                         <option value="asc" selected-val="@Model.Forum?.SortDir">Oldest first</option>
                         <option value="des" selected-val="@Model.Forum?.SortDir">Newest first</option>
                     </select>
+
                     <button asp-controller="Topic" asp-action="Create" asp-route-id="@Model.Forum?.Id" class="btn btn-primary"><i class="fa fa-commenting-o"></i><span class="d-none d-md-inline"> New Topic</span></button>
                     @if (User.IsInRole("Admin"))
                     {

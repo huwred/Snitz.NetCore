@@ -191,7 +191,7 @@ namespace MVCForum.Controllers
                     _ => lastvisit
                 };
             }
-            var posts = _postService.GetAll().Where(f => f.IsSticky != 1 && f.LastPostDate?.FromForumDateStr() > lastvisit);
+            var posts = _postService.GetAllTopicsAndRelated().Where(f => f.IsSticky != 1 && f.LastPostDate?.FromForumDateStr() > lastvisit);
 
             PagedList<Post> latestPosts = new(posts, page, pagesize);
                 
@@ -235,7 +235,7 @@ namespace MVCForum.Controllers
         }
 
         
-        [Breadcrumb(FromAction = "Index", FromController = typeof(CategoryController),Title = "New Forum")]
+        [Breadcrumb(FromAction = "Index", FromController = typeof(CategoryController),Title = "Create Forum")]
         [Authorize(Roles="Admin")]
         public IActionResult Create(int catid)
         {
@@ -245,7 +245,7 @@ namespace MVCForum.Controllers
 
         [HttpPost]
         [Authorize(Roles="Admin")]
-        public IActionResult SubmitForum(NewForumModel model)
+        public IActionResult Create(NewForumModel model)
         {
             ModelState.Remove("CategoryList");
             if (ModelState.IsValid)
@@ -276,7 +276,7 @@ namespace MVCForum.Controllers
             return RedirectToAction("Index","Category",new{id = model.Category});
         }
 
-        [Breadcrumb(FromAction = "Index",FromController = typeof(CategoryController), Title = "New Forum")]
+        [Breadcrumb(FromAction = "Index",FromController = typeof(CategoryController), Title = "Edit Forum")]
         [Authorize(Roles="Admin")]
         public IActionResult Edit(int id)
         {
@@ -297,7 +297,7 @@ namespace MVCForum.Controllers
             return View("Create",model);
         }
 
-        [Breadcrumb(FromAction = "Index",FromController = typeof(CategoryController), Title = "New Forum")]
+        [Breadcrumb(FromAction = "Index",FromController = typeof(CategoryController), Title = "Delete Forum")]
         [Authorize(Roles="Admin")]
         public IActionResult Delete(int id)
         {
@@ -305,6 +305,7 @@ namespace MVCForum.Controllers
             _forumService.Delete(id).Wait();
             return RedirectToAction("Index", "Category",new{id = forum.CategoryId});
         }
+
         public IActionResult Search(string? searchFor, int pagesize=10,int page=1)
         {
             var homePage = new MvcBreadcrumbNode("", "Category", "Forums");

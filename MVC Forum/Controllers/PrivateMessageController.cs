@@ -24,11 +24,13 @@ namespace MVCForum.Controllers
         {
             _pmService = pmService;
             _memberService = memberService;
+            _member = _memberService.GetMember(User);
 
         }
+
         public IActionResult Index()
         {
-            _member = _memberService.GetMember(User);
+            
             var inbox = _pmService.GetInbox(_member.Id).Select(pm => new PrivateMessageListingModel()
             {
                 Id = pm.Id,
@@ -49,6 +51,7 @@ namespace MVCForum.Controllers
             };
             return View(model);
         }
+
         public IActionResult Inbox()
         {
             _member = _memberService.GetMember(User);
@@ -152,6 +155,7 @@ namespace MVCForum.Controllers
             return PartialView(settings);
         }
 
+        [HttpPost]
         public IActionResult UpdateSettings(PrivateMessageSettingsModel settings)
         {
             _member = _memberService.GetMember(User);

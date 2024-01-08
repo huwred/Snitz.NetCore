@@ -4,13 +4,13 @@ namespace MVCForum.Models.PrivateMessage
 {
     public class PrivateMessagePostModel
     {
-        [Required]
+        [Required(ErrorMessage = "Please add a recipient")]
         [MinLength(3,ErrorMessage = "You must provide 3 characters or more")]
         public string To { get; set; }
         public string[] Recipients { get; set; }
         [Required]
         public string Subject { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Please provide a message")]
         public string Message { get; set; }
         [Display(Name = "Include signature")]
         public bool IncludeSig { get; set; }

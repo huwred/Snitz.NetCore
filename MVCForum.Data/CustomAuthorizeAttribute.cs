@@ -15,7 +15,7 @@ namespace SnitzCore.Data
     {
         private readonly ISnitzConfig _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
+        public string? RegCheck { get; set; }
         public CustomAuthorizeAttribute()
         {
 
@@ -25,6 +25,14 @@ namespace SnitzCore.Data
             ISnitzConfig _config = context.HttpContext.RequestServices.GetService(typeof(ISnitzConfig)) as ISnitzConfig;
             if (context != null)
             {
+                if (RegCheck == "STRPROHIBITNEWMEMBERS" && _config.GetIntValue("STRPROHIBITNEWMEMBERS") == 1)
+                {
+                    if (!context.HttpContext.User.Identity.IsAuthenticated)
+                    {
+                        context.Result = new ForbidResult();
+                        return;
+                    }
+                }                
                 if (_config.GetIntValue("STRREQUIREREG") == 1)
                 {
                     if (!context.HttpContext.User.Identity.IsAuthenticated)
@@ -33,6 +41,7 @@ namespace SnitzCore.Data
                         return;
                     }
                 }
+
             }
         }
 

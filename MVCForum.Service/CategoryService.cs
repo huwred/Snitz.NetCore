@@ -2,7 +2,6 @@
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,19 +31,25 @@ namespace SnitzCore.Service
             return result;
         }
 
-        public Task Create(Category category)
+        public async Task Create(Category category)
         {
-            throw new NotImplementedException();
+            _dbContext.Categories.Add(category);
+            await _dbContext.SaveChangesAsync();
+
         }
 
-        public Task Delete(int categoryId)
+        public async Task Delete(int categoryId)
         {
-            throw new NotImplementedException();
+            var category = _dbContext.Categories.Include(f=>f.Forums).SingleOrDefault(f => f.Id == categoryId);
+            if (category != null) _dbContext.Categories.Remove(category);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task Update(Category category)
+        public async Task Update(Category category)
         {
-            throw new NotImplementedException();
+            _dbContext.Update(category);
+            await _dbContext.SaveChangesAsync();
+
         }
 
         public IEnumerable<Group> GetGroups()

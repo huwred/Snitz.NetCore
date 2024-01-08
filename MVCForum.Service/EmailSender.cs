@@ -1,7 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
-using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System.Threading.Tasks;
