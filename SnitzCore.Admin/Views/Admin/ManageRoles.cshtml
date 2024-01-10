@@ -32,10 +32,10 @@
                         </li>
                     }
                 </ul>
-                <div class="mb-3">
-                    <input type="submit" name="AddRole" class="btn btn-primary" value="Add Role"/>
-                    <div class="col-6">@Html.TextBoxFor(model => model.NewRolename, new { @class = "form-control" })</div>
-                </div>
+            </div>
+            <div class="mb-3">
+                @Html.TextBoxFor(model => model.NewRolename, new { @class = "form-control" })
+                <input type="submit" name="AddRole" class="btn btn-primary" value="Add Role" />
             </div>
         </form>
 

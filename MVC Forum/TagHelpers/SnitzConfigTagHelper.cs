@@ -101,11 +101,12 @@ namespace MVCForum.TagHelpers
                     break;
                 case "textarea":
                     output.TagName = "div";
-                    output.AddClass("form-group",HtmlEncoder.Default);
+                    output.AddClass("mb-3",HtmlEncoder.Default);
                     output.Content.AppendHtml($@"<label class=""form-label"" for=""{PropertyInfo.Name}"">{displayName??PropertyInfo.Name}</label>");
                     if (CanEdit)
                     {
                         output.Content.AppendHtml($@"<textarea type=""{valtype}"" name=""{PropertyInfo.Name}"" id=""{PropertyInfo.Name}"" class=""form-control"" {required} {disabled} rows=""3"">{Value}</textarea>");
+                        output.Content.AppendHtml($@"<div class=""invalid-feedback"">You must select a value for {PropertyInfo.Name}.</div>");
                     }
                     else
                     {
@@ -121,28 +122,29 @@ namespace MVCForum.TagHelpers
                     break;
                 case "select" :
                     output.TagName = "div";
-                    output.AddClass("form-group",HtmlEncoder.Default);
+                    output.AddClass("mb-3",HtmlEncoder.Default);
                     output.Content.AppendHtml(
                         $@"<label for=""{PropertyInfo.Name}"">{displayName ?? PropertyInfo.Name}</label>");
                     if (!CanEdit)
                     {
                         output.AddClass("d-none",HtmlEncoder.Default);
                     }
-                    output.Content.AppendHtml(GenerateDropDownList());
+                    output.Content.AppendHtml(GenerateDropDownList(required));
+                    output.Content.AppendHtml($@"<div class=""invalid-feedback"">You must select a value for {PropertyInfo.Name}.</div>");
+
                     output.TagMode = TagMode.StartTagAndEndTag;
                     break;
                 case "datepicker":
                     output.TagName = "div";
-                    output.AddClass("form-group",HtmlEncoder.Default);
+                    output.AddClass("mb-3",HtmlEncoder.Default);
                     output.Content.AppendHtml(
                         $@"<label for=""{PropertyInfo.Name}"">{displayName??PropertyInfo.Name}</label>");
                     if (CanEdit)
                     {
-                        output.Content.AppendHtml($@"<div class=""datepicker date input-group"">");
-                        output.Content.AppendHtml($@"<input name=""{PropertyInfo.Name}"" type=""text"" placeholder=""Choose Date"" class=""form-control"" id=""fecha2""/>");
-                        output.Content.AppendHtml($@"<div class=""input-group-append"">
-                            <span class=""input-group-text""><i class=""fa fa-calendar""></i></span>
-                        </div></div>");
+                        output.Content.AppendHtml($@"<div class=""input-group date"" data-provide=""datepicker"">");
+                        output.Content.AppendHtml($@"<input name=""{PropertyInfo.Name}"" type=""text"" placeholder=""Choose Date"" class=""form-control"" id=""fecha2"" {required} {disabled}/>");
+                        output.Content.AppendHtml($@"<span class=""input-group-addon btn btn-default-outline""><i class=""fa fa-calendar""></i></span></div>");
+                        output.Content.AppendHtml($@"<div class=""invalid-feedback"">You must select a value for {PropertyInfo.Name}.</div>");
                     }
                     else
                     {
@@ -153,30 +155,29 @@ namespace MVCForum.TagHelpers
                     break;
                 case "file":
                     output.TagName = "div";
-                    output.AddClass("form-group",HtmlEncoder.Default);
+                    output.AddClass("mb-3",HtmlEncoder.Default);
                     output.Content.AppendHtml(
-                        $@"<label for=""{PropertyInfo.Name}"">{displayName??PropertyInfo.Name}</label>
-                            <div class=""custom-file"" id=""customFile"">");
+                        $@"<label for=""inputFile"" class=""form-label"">{displayName??PropertyInfo.Name}</label>");
                     if (CanEdit)
                     {
-                        output.Content.AppendHtml($@"<input name=""{PropertyInfo.Name}"" type=""file"" class=""custom-file-input"" id=""exampleInputFile"" aria-describedby=""fileHelp""/>");
-                        output.Content.AppendHtml($@"<label class=""form-label"" for=""exampleInputFile"">{Value??"Choose file"}</label>");
+                        output.Content.AppendHtml($@"<input name=""{PropertyInfo.Name}"" type=""file"" class=""form-control"" id=""inputFile"" aria-describedby=""fileHelp"" {required} {disabled}/>");
+                        output.Content.AppendHtml($@"<label class=""form-text"" for=""inputFile"">{Value??"Choose file"}</label>");
                     }
                     else
                     {
-                        output.Content.AppendHtml($@"<label class=""form-label m-2"" for=""exampleInputFile"">{Value??"Choose file"}</label>");
+                        output.Content.AppendHtml($@"<label class=""form-label m-2"" for=""inputFile"">{Value??"Choose file"}</label>");
                     }
-                    output.Content.AppendHtml($@"</div>");
                     output.TagMode = TagMode.StartTagAndEndTag;
                     break;
                 default:
                     output.TagName = "div";
-                    output.AddClass("form-group",HtmlEncoder.Default);
+                    output.AddClass("mb-3",HtmlEncoder.Default);
                     output.Content.AppendHtml(
                         $@"<label class=""form-label""  for=""{PropertyInfo.Name}"">{displayName??PropertyInfo.Name}</label>");
                     if (CanEdit)
                     {
                         output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{PropertyInfo.Name}"" id=""{PropertyInfo.Name}"" value=""{Value}"" class=""form-control"" {required} {disabled}/>");
+                        output.Content.AppendHtml($@"<div class=""invalid-feedback"">You must provide a value for {PropertyInfo.Name}.</div>");
                     }
                     else
                     {
@@ -188,22 +189,24 @@ namespace MVCForum.TagHelpers
             }
 
         }
-        private IHtmlContent GenerateDropDownList()
+        private IHtmlContent GenerateDropDownList(string required)
         {
             TagBuilder tb = new TagBuilder("select");
             var enumname = PropertyInfo.GetSelectEnum();
             Type test = EnumExtensions.GetEnumType (enumname);
             if (enumname != null)
             {
-                tb.AddCssClass("form-control");
+                tb.AddCssClass("form-select");
                 tb.Attributes.Add("Name",PropertyInfo.Name);
                 tb.MergeAttribute("id", PropertyInfo.Name + "-dd");
+                tb.InnerHtml.AppendHtml(required);
                 foreach (SelectListItem item in test.GetEnumSelectList())
                 {
                     TagBuilder op = new TagBuilder("option");
                     op.Attributes.Add("value",item.Value);
                     op.InnerHtml.AppendHtml(item.Text);
                     tb.InnerHtml.AppendHtml(op);
+                    
                     if (item.Value == Value)
                     {
                         op.Attributes.Add("selected","selected");

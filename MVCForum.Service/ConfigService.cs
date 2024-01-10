@@ -16,7 +16,7 @@ namespace SnitzCore.Service
         private readonly SnitzDbContext _dbContext;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
+        private readonly ISnitzConfig _snitzConfig;
         public string CookiePath
         {
             get => _config.GetSection("SnitzForums").GetSection("strCookiePath").Value; 
@@ -47,6 +47,35 @@ namespace SnitzCore.Service
             set => AddOrUpdateAppSetting("STRPAGESIZE",value);
         }
 
+        public IEnumerable<CaptchaOperator> CaptchaOperators {             
+            get
+            {
+                List<CaptchaOperator> operators = null;
+                if (GetValue("STRCAPTCHAOPERATORS") != null)
+                {
+                    operators = new List<CaptchaOperator>();
+                    var stringCaptcha = GetValue("STRCAPTCHAOPERATORS","").Split(new char[] { ';' },
+                        StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string s in stringCaptcha)
+                    {
+                        operators.Add((CaptchaOperator)Enum.Parse(typeof(CaptchaOperator), s));
+                    }
+                }
+                return operators;
+            }
+            set
+            {
+                var strcap = "";
+                foreach (var captchaOperator in value)
+                {
+                    if (strcap != "")
+                        strcap += ";";
+                    strcap += captchaOperator.ToString();
+                }
+                AddOrUpdateAppSetting("STRCAPTCHAOPERATORS",strcap);
+            }
+        }
+
         string ISnitzConfig.ForumUrl
         {
             get => _config.GetSection("SnitzForums").GetSection("strForumUrl").Value; 
@@ -69,6 +98,10 @@ namespace SnitzCore.Service
 
         }
 
+        public IEnumerable<string> GetRequiredMemberFields()
+        {
+            return _dbContext.SnitzConfig.Where(c => c.Key.StartsWith("STRREQ") && c.Value == "1").Select(c=>c.Key);
+        }
         private string CachedIntValue(string key, int defaultvalue)
         {
             var config = _dbContext.SnitzConfig.SingleOrDefault(c => c.Key == key);

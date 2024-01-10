@@ -24,13 +24,13 @@ namespace MVCForum.Controllers
         {
             _pmService = pmService;
             _memberService = memberService;
-            _member = _memberService.GetMember(User);
+            
 
         }
 
         public IActionResult Index()
         {
-            
+            _member = _memberService.GetMember(User);
             var inbox = _pmService.GetInbox(_member.Id).Select(pm => new PrivateMessageListingModel()
             {
                 Id = pm.Id,

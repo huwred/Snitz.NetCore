@@ -1,0 +1,11 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    Layout = "_MasterLayout";
+}
+
+<div class="mb-3 p-4">
+    <h1>Setup Page</h1>
+    <h3>@HttpContextAccessor.HttpContext.Items["upgrade"]</h3>
+</div>

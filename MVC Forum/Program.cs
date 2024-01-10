@@ -1,6 +1,7 @@
 ﻿using BbCodeFormatter;
 using BbCodeFormatter.Processors;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MVCForum.Extensions;
+using MVCForum.MiddleWare;
 using SmartBreadcrumbs.Extensions;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -104,7 +106,9 @@ var emailConfig = builder.Configuration
     .GetSection("MailSettings")
     .Get<EmailConfiguration>();
 builder.Services.AddSingleton(emailConfig);
-
+//builder.Services.AddRazorPages();
+//builder.Services.AddTransient<IStartupFilter,
+//    RequestSetOptionsStartupFilter>();
 var app = builder.Build();
 app.MigrateDatabase();
 

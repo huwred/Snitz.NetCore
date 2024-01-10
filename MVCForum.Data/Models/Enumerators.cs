@@ -68,7 +68,12 @@ namespace SnitzCore.Data.Models
         BugReports = 3,
         BlogPosts = 4
     }
-
+    public enum CaptchaOperator
+    {
+        Plus,
+        Minus,
+        Multiply
+    }
     public enum PostType
     {
         Topic,

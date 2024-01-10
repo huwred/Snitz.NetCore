@@ -23,7 +23,9 @@
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\Admin\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Admin\ManageArchives.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Admin\Setup.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Admin\_RoleView.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\_FormButtons.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +38,18 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Admin\ManageArchives.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Admin\Setup.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\_FormButtons.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Shared\DisplayTemplates\" />
   </ItemGroup>
 
 

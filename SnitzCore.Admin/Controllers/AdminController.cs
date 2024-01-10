@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,8 @@ namespace SnitzCore.BackOffice.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ISnitzConfig _snitzconfig;
         private readonly IConfiguration _webconfiguration;
-        public AdminController(ISnitz config,IConfiguration configuration, ISnitzConfig snitzconfig,IForum forumservice,ICategory category,SnitzDbContext dbContext,RoleManager<IdentityRole> RoleManager,UserManager<ForumUser> userManager)
+        private readonly IMember _memberService;
+        public AdminController(ISnitz config,IConfiguration configuration, ISnitzConfig snitzconfig,IForum forumservice,ICategory category,SnitzDbContext dbContext,RoleManager<IdentityRole> RoleManager,UserManager<ForumUser> userManager,IMember memberService)
         {
             _config = config;
             _forumservice = forumservice;
@@ -32,8 +34,13 @@ namespace SnitzCore.BackOffice.Controllers
             _roleManager = RoleManager;
             _snitzconfig = snitzconfig;
             _webconfiguration = configuration;
+            _memberService = memberService;
         }
         public IActionResult Index()
+        {
+            return View();
+        }
+        public IActionResult Setup()
         {
             return View();
         }
@@ -43,7 +50,12 @@ namespace SnitzCore.BackOffice.Controllers
         }
         public IActionResult Forum()
         {
-            var model = new AdminModeratorsViewModel(User, _forumservice) { Groups = _categoryservice.GetGroups().ToList() };
+            var model = new AdminModeratorsViewModel(User, _forumservice)
+            {
+                Groups = _categoryservice.GetGroups().ToList(),
+                Badwords = _snitzconfig.GetBadwords().ToList(),
+                UserNamefilters = _memberService.UserNameFilter().ToList()
+            };
             ViewBag.Moderators = _config.GetForumModerators();
             return View(model);
         }
@@ -81,6 +93,62 @@ namespace SnitzCore.BackOffice.Controllers
 
             return PartialView("_Moderators",vm);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateForumModerators(AdminModeratorsViewModel model)
+        {
+            Forum forum = _forumservice.GetById(model.ForumId);
+            var forumModerators = model.ForumModerators;
+            var currentForumModerators = forum.ForumModerators?.ToList();
+
+            if (currentForumModerators != null && !currentForumModerators.Any() )
+            {
+                //No current moderators so add any new ones
+                if (forumModerators.Any())
+                {
+                    foreach (var moderator in forumModerators)
+                    {
+                        _dbcontext.ForumModerator.Add(new ForumModerator() { ForumId = model.ForumId, MemberId = moderator });
+                    }
+
+                    _dbcontext.SaveChanges();
+                }
+            }
+            else
+            {
+                foreach (var moderator in currentForumModerators)
+                {
+                    //remove any moderators not in new list
+                    if (!forumModerators.Contains(moderator.MemberId))
+                    {
+                        _dbcontext.ForumModerator.Attach(moderator);
+                        _dbcontext.Remove(moderator);
+                    }
+                }
+                _dbcontext.SaveChanges();
+                //refresh list of Forum moderators
+                currentForumModerators = forum.ForumModerators?.ToList();
+                foreach (var memberid in forumModerators)
+                {
+                    //Add any new moderators
+                    var exists = currentForumModerators.Find(f => f.MemberId == memberid);
+                    if (exists == null)
+                    {
+                        _dbcontext.ForumModerator.Add(new ForumModerator() { ForumId = model.ForumId, MemberId = memberid });
+
+                    }
+                }
+            }
+            if (forum.ForumModerators != null)
+            {
+                foreach (KeyValuePair<int, string> mod in forum.ForumModerators?.ToDictionary(o => o.MemberId, o => o.Member.Name))
+                {
+                    model.ForumModerators.Add(mod.Key);
+                }
+            }
+            return PartialView("_Moderators",model);
+        }
+
         [Authorize]
         public JsonResult AutoCompleteUsername(string term)
         {
@@ -165,9 +233,48 @@ namespace SnitzCore.BackOffice.Controllers
             return View(vm);
         }
 
-        public IActionResult AddSpamDomain(string domain)
+        public IActionResult AddSpamDomain(IFormCollection form)
         {
-            throw new NotImplementedException();
+            //did we change the enable flag
+            string spamfilter = "STRFILTEREMAILADDRESSES";
+            var currval = _snitzconfig.GetIntValue(spamfilter);
+            if (currval != Convert.ToInt32(form[spamfilter][0]))
+            {
+                var conf = _dbcontext.SnitzConfig.SingleOrDefault(c => c.Key == spamfilter);
+                if (conf != null)
+                {
+                    conf.Value = form[spamfilter][0];
+                    _dbcontext.SnitzConfig.Update(conf);
+                    _dbcontext.SaveChanges();
+                    var service = new InMemoryCache() { DoNotExpire = true };
+                    service.Remove("cfg_" + spamfilter);
+
+                }
+                return PartialView("SaveResult","Filter address flag changed");
+                
+            }
+            
+            if (string.IsNullOrWhiteSpace(form["EmailDomain"][0]))
+            {
+                return PartialView("SaveResult","Please provide a domain to add");
+            }
+            try
+            {
+                var newdomain = form["EmailDomain"][0];
+
+                var spamdomain = _dbcontext.SpamFilter.SingleOrDefault(f => f.Server == form["EmailDomain"][0]);
+                if (spamdomain != null)
+                {
+                    return PartialView("SaveResult","Domain already in list");
+                }
+                _dbcontext.SpamFilter.Add(new SpamFilter() { Server = form["EmailDomain"][0] });
+                _dbcontext.SaveChanges();
+                return PartialView("SaveResult","Domain added");
+            }
+            catch (Exception e)
+            {
+                return PartialView("SaveResult",e.Message);
+            }
         }
 
         public IActionResult DeleteSpamFilters()
@@ -180,5 +287,40 @@ namespace SnitzCore.BackOffice.Controllers
             throw new NotImplementedException();
         }
 
+
+        public IActionResult SaveSpamDomain(IFormCollection form)
+        {
+            try
+            {
+                var prefix = $"BannedDomains[{form["counter"][0]}]";
+                var spamdomain = _dbcontext.SpamFilter.Find(Convert.ToInt32(form[$"{prefix}.Id"][0]));
+                spamdomain.Server = form[$"{prefix}.Server"][0];
+                _dbcontext.SpamFilter.Update(spamdomain);
+                _dbcontext.SaveChanges();
+                return PartialView("SaveResult","Domain info updated");
+            }
+            catch (Exception e)
+            {
+                return PartialView("SaveResult",e.Message);
+            }
+        }
+
+
+        public IActionResult DeleteSpamDomain(IFormCollection form)
+        {
+            try
+            {
+                var prefix = $"BannedDomains[{form["counter"][0]}]";
+                var spamdomain = _dbcontext.SpamFilter.Find(Convert.ToInt32(form[$"{prefix}.Id"][0]));
+                _dbcontext.Remove(spamdomain);
+                _dbcontext.SaveChanges();
+
+                return PartialView("SaveResult","Domain removed");
+            }
+            catch (Exception e)
+            {
+                return PartialView("SaveResult",e.Message);
+            }
+        }
     }
 }

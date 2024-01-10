@@ -27,6 +27,8 @@ namespace SnitzCore.BackOffice.TagHelpers
         public string PlaceHolder { get; set; }
         [HtmlAttributeName("config-type")]
         public string ControlType { get; set; }
+        [HtmlAttributeName("disabled")]
+        public bool Disabled { get; set; }
         public AdminConfigTagHelper() { }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -34,7 +36,7 @@ namespace SnitzCore.BackOffice.TagHelpers
             
             var valtype = Value != null && Value.IsNumeric() ? "number" : "text";
             var required = "";
-            var disabled = "";
+            var disabled = Disabled ? "disabled" : "";
 
             if (valtype == "number")
             {
@@ -70,9 +72,11 @@ namespace SnitzCore.BackOffice.TagHelpers
                     }
                     output.TagName = "div";
                     output.Content.AppendHtml($@"<input type=""{valtype}"" role=""switch"" name=""{Key}"" id=""{Key}"" value=""1"" class=""form-check-input"" {required} {disabled} {ischecked} style=""transform: scale(1.4);""/>");
+                    output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{Key}"" value=""0"" {required} {disabled} checked style=""display:none""/>");
                     output.Content.AppendHtml($@"<label class=""form-check-label"" for=""{Key}"">{Label}</label></label>");
                     output.AddClass("form-check",HtmlEncoder.Default);
                     output.AddClass("form-switch",HtmlEncoder.Default);
+                    output.AddClass("mb-3",HtmlEncoder.Default);
                     output.TagMode = TagMode.StartTagAndEndTag;
 
                     break;

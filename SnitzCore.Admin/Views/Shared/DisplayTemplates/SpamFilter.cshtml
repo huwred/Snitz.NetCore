@@ -1,0 +1,11 @@
+﻿@model SnitzCore.Data.Models.SpamFilter
+
+<div class="input-group">
+    @Html.TextBoxFor(m => m.Server, new { @class = "form-control" })
+    <input class="btn btn-outline-dark" type="submit" title="Delete Domain" asp-controller="Admin" asp-action="DeleteSpamDomain" value="del" /><i class='fa fa-trash fa-2x'></i>
+    <input class="btn btn-outline-dark" type="submit" title="Save Changes" asp-controller="Admin" asp-action="SaveSpamDomain" data-ajax="true" data-ajax-update="#result-spamfilter" data-ajax-mode="replace" value="<i class='fa fa-save fa-2x'></i>"/>
+    <div class="input-group-append">
+        @* <input type="checkbox" class="form-check-inline" value="@Model.Id" name="del-spam-check" /> *@
+        <input type="hidden" asp-for="@Model.Id" />
+    </div>
+</div>

@@ -90,7 +90,7 @@
             <input name="PhotoUrl" type="hidden" value="@Model.Member.PhotoUrl" />
             @if (Model.Member.Privateprofile != 1 || Model.CanEdit)
             {
-                <div class="row">
+                <div class="row  bg-form p-2 rounded mb-2">
                     @{
                         foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p=>!p.SystemProperty() && p.PropertyFieldType() != "checkbox").OrderBy(p => p.PropertyOrder()))
                         {
@@ -104,15 +104,15 @@
                         }
                     }
                 </div>
-                <div class="row">
+                <div class="row bg-form p-2 rounded mb-2">
                     @{
                         foreach (PropertyInfo prop in Model.Member.GetType().GetProperties().Where(p => p.SystemProperty()).OrderBy(p => p.PropertyOrder()))
                         {
                             <snitz-config can-edit="@Model.CanEdit" property-info="@prop" property-val="@prop.GetValue(Model.Member, null)" property-req="@(config.GetIntValue(prop.GetPropertyRequiredCheck<Member>(), 0) == 1)"></snitz-config>
                         }
                     }
-                </div>                
-                <div class="row">
+                </div>
+                <div class="row bg-form p-2 rounded mb-2">
                     @{
                         foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() == "checkbox").OrderBy(p => p.PropertyOrder()))
                         {

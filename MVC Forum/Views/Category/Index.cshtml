@@ -5,11 +5,9 @@
 @using Microsoft.AspNetCore.Routing
 @using MVCForum.Models.User
 @using MVCForum.TagHelpers
-@using SnitzCore.Data.Interfaces
 @using SnitzCore.Data.Models
 @inject SignInManager<ForumUser> SignInManager
 @inject ICodeProcessor BbCodeProcessor
-@inject ISnitzConfig Config
 @{
     var cat = Context.Request.Query["id"];
     var test = Context.GetRouteValue("id");

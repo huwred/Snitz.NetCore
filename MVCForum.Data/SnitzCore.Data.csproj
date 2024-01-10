@@ -16,6 +16,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="7.0.14" />
+    <PackageReference Include="Microsoft.Maui.Graphics" Version="8.0.3" />
+    <PackageReference Include="Microsoft.Maui.Graphics.Skia" Version="8.0.3" />
     <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
     <PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="7.0.3" />

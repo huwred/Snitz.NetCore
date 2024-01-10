@@ -10,7 +10,7 @@ namespace MVCForum.Extensions
     {
         public static WebApplication MigrateDatabase(this WebApplication webApp)
         {
-
+            //webApp.Configuration.GetSection("").GetChildren("");
             using (var scope = webApp.Services.CreateScope())
             {
                 using (var appContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())

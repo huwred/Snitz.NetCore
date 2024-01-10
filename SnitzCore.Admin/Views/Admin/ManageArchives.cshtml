@@ -1,11 +1,10 @@
-﻿@using System.Resources
-@using SnitzCore.BackOffice.ViewModels
+﻿@using SnitzCore.BackOffice.ViewModels
 @using SnitzCore.Data.Extensions
 @model SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel.ArchivesViewModel
-
+<legend>Manage Archives</legend>
+<hr/>
     @using (Html.BeginForm("ArchiveSettings", "Admin"))
     {
-
         <table class="table mb-3">
             <thead class="bg-category">
                 <tr>
@@ -17,11 +16,8 @@
                     <th class="col-1">
                         <div class="mb-3">
                             <input class="form-check-input mt-0" name="checkAll" id="checkAll" type="checkbox" value="" aria-label="Checkbox for following text input">
-
                             <span class="form-check-label"><a href="#" title="Archive posts in selected Forums" data-toggle="tooltip"><i class="fa fa-archive"></i></a></span>
                             <span class="form-check-label"><a href="#" title="Delete posts in selected Forums" data-toggle="tooltip"><i class="fa fa-trash"></i></a></span>
-                            
-                            
                         </div>
                     </th>
                 </tr>
@@ -67,7 +63,7 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td colspan="2"><input type="submit" class="btn btn-primary" value="Save Changes"/></td>
+                <td colspan="2"><input type="submit" class="btn btn-outline-success" value="Save Changes" /></td>
 
                 </tr>
             </tfoot>
@@ -86,7 +82,7 @@
             </div>
             <div class="modal-footer">
                 <a href="#" id="btnYes" class="btn danger">Yes</a>
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn secondary">No</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">No</a>
             </div>
         </div>
     </div>

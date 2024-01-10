@@ -1,5 +1,6 @@
 ﻿using SnitzCore.Data.Models;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SnitzCore.Data.Interfaces
 {
@@ -12,7 +13,8 @@ namespace SnitzCore.Data.Interfaces
         string ForumTitle { get; set; }
         string UniqueId { get; set; }
         int DefaultPageSize { get; set; }
-
+        IEnumerable<CaptchaOperator> CaptchaOperators { get; set; }
+        IEnumerable<string> GetRequiredMemberFields();
         int GetIntValue(string key, int defaultvalue = 0);
         string GetValue(string key);
         string? GetValue(string key,string? defVal = null);

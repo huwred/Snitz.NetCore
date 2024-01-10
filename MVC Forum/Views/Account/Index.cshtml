@@ -10,7 +10,6 @@
 @model MVCForum.Models.User.MemberIndexModel
 @inject IMember memberService
 @inject UserManager<ForumUser> UserManager
-@inject ISnitzConfig Config
 @{
     var ranking = memberService.GetRankings();
     ViewBag.PageCount = Model.PageCount;

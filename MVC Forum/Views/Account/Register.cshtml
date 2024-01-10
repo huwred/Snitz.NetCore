@@ -1,11 +1,24 @@
-﻿@model MVCForum.Models.User.UserCreateModel
-<div class="container pt-0">
+﻿@using SnitzCore.Data.Interfaces
+@using SnitzCore.Data.Models
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Data.Extensions
+@using MVCForum.TagHelpers
+@model MVCForum.Models.User.UserCreateModel
+@inject ISnitzConfig Config
+@{
+    var requiredFields = Config.GetRequiredMemberFields();
+}
+@section Styles
+{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
+}
+<form asp-controller="Account" asp-action="Register" class="needs-validation p-2" novalidate>
+    <div class="row pt-0">
     <div class="center m-2 ">
-        <div class="subforum col-6 p-4 bg-form border border-dark rounded">
-            <h1 class="bg-dark text-white p-2">Forum Registration</h1>
-            
-            <form asp-controller="Account" asp-action="Register" class="needs-validation p-2" novalidate>
-                <div class="mb-3">
+        <div class="subforum col-6 p-2 bg-form border border-dark rounded">
+            <h1 class="bg-dark text-white p-2">Forum Account Registration</h1>
+            <div class="mb-3">
                     <label asp-for="Name" class="form-label"></label>
                     <input asp-for="Name" class="form-control" required="required" />
                     <div class="invalid-feedback">You must provide a Username.</div>
@@ -24,17 +37,32 @@
                     <input type="password" name="pwRepeat" id="pwRepeat" class="form-control" />
                     <div class="invalid-feedback">Passwords do not match.</div>
                 </div>
-                <div class="mb-3">
-                    <a asp-controller="Forum" asp-action="Index" class="btn btn-danger">Cancel</a>
-                    <button name="submit" type="submit" class="btn btn-primary">Register</button>
-                </div>
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            </form>
         </div>
     </div>
 </div>
+<div class="row pt-0">
+    <div class="center m-2 ">
+        <div class="subforum col-6 p-2 bg-form border border-dark rounded">
+            <h1 class="bg-dark text-white p-2">Required Details</h1>
+            @foreach (var field in requiredFields)
+            {
+                var fieldname = field.Replace("STRREQ", "STR");
+                @foreach (PropertyInfo property in typeof(Member).GetProperties().Where(p => !p.SystemProperty() && p.GetPropertyDisplayCheck<Member>() == fieldname).OrderBy(p => p.PropertyOrder()))
+                {
+                    <snitz-config can-edit="true" property-info="@property" property-val="" property-req="true"></snitz-config>
+                }
+            }
+            <div class="mb-3">
+                <a asp-controller="Forum" asp-action="Index" class="btn btn-danger">Cancel</a>
+                <button name="submit" type="submit" class="btn btn-primary">Register</button>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
 @section Scripts
 {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
     <script>
         // Disable form submissions if there are invalid fields
         (function() {
@@ -62,5 +90,49 @@
                 });
             }, false);
         })();
-    </script>    
+    </script>
+    <script>
+
+        $(function () {
+            $('.datepicker').datepicker({
+                autoclose: true,
+                format: {
+                    /*
+                     * Say our UI should display a week ahead,
+                     * but textbox should store the actual date.
+                     * This is useful if we need UI to select local dates,
+                     * but store in UTC
+                     */
+
+                    toDisplay: function (date, format, language) {
+                        var d = new Date(date);
+                        d.setDate(d.getDate());
+                        return d.toLocaleDateString();
+                    },
+                    toValue: function (date, format, language) {
+                        let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
+                        let lastFirst = date.replace(re, '$1-$2-$3');
+                        var d = new Date(lastFirst);
+                        d.setDate(d.getDate());
+                        return new Date(d);
+                    }
+                }
+            });
+
+            revalidate();
+        });
+        function revalidate() {
+            var container = document.getElementById("member-profile");
+            var forms = container.getElementsByTagName("form");
+            var newForm = forms[forms.length - 1];
+            $.validator.unobtrusive.parse(newForm);
+        }
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+
+        //$('#one').replaceWith("<label>" + $('#one').val() + "</label>");
+    </script>
 }

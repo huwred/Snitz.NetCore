@@ -1,6 +1,7 @@
 ﻿using SnitzCore.Data.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.Net.Http.Headers;
 
 namespace SnitzCore.Data.Models;
 
@@ -14,4 +15,6 @@ public partial class SpamFilter
     [Column("SPAM_SERVER")]
     [StringLength(255)]
     public string Server { get; set; } = null!;
+
+    [NotMapped]public bool Ischecked{ get; set; }
 }

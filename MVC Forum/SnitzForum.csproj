@@ -83,6 +83,7 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="bundleconfig.json" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -194,5 +195,8 @@
     <None Update="App_Data\emoticons.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
   </ItemGroup>
 </Project>

@@ -8,22 +8,25 @@
     var forums = new SelectList(Model.ForumList, "Key","Value");
     
 }
-<div class="container">
+<div class="mt-3">
+    <legend>Forum Options</legend>
+    <hr/>
     <div class="d-flex align-items-start">
         <div class="nav flex-column nav-pills me-3 bg-white rounded" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-            <button class="nav-link active" id="v-pills-group-tab" data-bs-toggle="pill" data-bs-target="#v-pills-group" type="button" role="tab" aria-controls="v-pills-group" aria-selected="true">Groups</button>
-            <button class="nav-link" id="v-pills-moderators-tab" data-bs-toggle="pill" data-bs-target="#v-pills-moderators" type="button" role="tab" aria-controls="v-pills-moderators" aria-selected="false">Moderators</button>
-            <button class="nav-link" id="v-pills-usernames-tab" data-bs-toggle="pill" data-bs-target="#v-pills-usernames" type="button" role="tab" aria-controls="v-pills-usernames" aria-selected="false">Username Filter</button>
-            <button class="nav-link" id="v-pills-badwords-tab" data-bs-toggle="pill" data-bs-target="#v-pills-badwords" type="button" role="tab" aria-controls="v-pills-badwords" aria-selected="false">Badword Filter</button>
-            <button class="nav-link" id="v-pills-archive-tab" data-bs-toggle="pill" data-bs-target="#v-pills-archive" type="button" role="tab" aria-controls="v-pills-archive" aria-selected="false">Archiving</button>
+            <button class="nav-link active" id="v-pills-group-tab" data-bs-toggle="pill" data-bs-target="#v-pills-group" type="button" role="tab" aria-controls="v-pills-group" aria-selected="true">Manage Groups</button>
+            <button class="nav-link" id="v-pills-moderators-tab" data-bs-toggle="pill" data-bs-target="#v-pills-moderators" type="button" role="tab" aria-controls="v-pills-moderators" aria-selected="false">Manage Moderators</button>
+            <button class="nav-link" id="v-pills-usernames-tab" data-bs-toggle="pill" data-bs-target="#v-pills-usernames" type="button" role="tab" aria-controls="v-pills-usernames" aria-selected="false">Username Filters</button>
+            <button class="nav-link" id="v-pills-badwords-tab" data-bs-toggle="pill" data-bs-target="#v-pills-badwords" type="button" role="tab" aria-controls="v-pills-badwords" aria-selected="false">Badword Filters</button>
+            <button class="nav-link" id="v-pills-archive-tab" data-bs-toggle="pill" data-bs-target="#v-pills-archive" type="button" role="tab" aria-controls="v-pills-archive" aria-selected="false">Manage Archives</button>
         </div>
-        <div class="tab-content bg-white rounded p-4 w-100" id="v-pills-tabContent">
+        <div class="tab-content bg-white rounded p-4 w-75" id="v-pills-tabContent">
             <div class="tab-pane fade show active" id="v-pills-group" role="tabpanel" aria-labelledby="v-pills-group-tab">
                 <div class="mb-3" id="forum-groups"></div>
             </div>
             <div class="tab-pane fade" id="v-pills-moderators" role="tabpanel" aria-labelledby="v-pills-moderators-tab">
-                @using (Html.BeginForm("GetForumModerators", "Admin"))
-                {
+                <legend>Manage Moderators</legend>
+                <hr/>
+                <form asp-action="UpdateForumModerators" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="#forum-moderators">
                     <div class="mb-3">
                         <label class="form-label">Choose forum to view list of moderators</label>
                         <select title="Select a Forum to manage Moderators" class="form-select getModerators" asp-for="ForumId" asp-items="forums">
@@ -32,58 +35,77 @@
                     <div class="mb-3">
                         <div class="form-text">
                             <p>Use CTRL + Mouse click to select/deselect users in the list<br/>
-                            Use the RESET button to revert back to the current list of moderators for the forum.<br />
-                            When all the moderators for the forum are selected, press the SAVE CHANGES button.</p>
+                                Use the RESET button to revert back to the current list of moderators for the forum.<br/>
+                                When all the moderators for the forum are selected, press the SAVE CHANGES button.</p>
                         </div>
                     </div>
                     <div class="mb-3" id="forum-moderators"></div>
-                }            
+                </form>
             </div>
             <div class="tab-pane fade" id="v-pills-usernames" role="tabpanel" aria-labelledby="v-pills-usernames-tab">
-                <form asp-action="SaveUsername" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result1">
+                <legend>Username Filter</legend>
+                <hr/>
+                <form asp-action="SaveUsername" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
+
                     <div class="mb-3">
                         <label class="form-label">Add name to disallow</label>
-                        <input type="text" class="form-control" name="Username" value="" placeholder="Name to disallow" />
+                        <div class="input-group mb-3">
+                            <input type="text" name="Username" class="form-control" placeholder="Name to disallow" aria-label="Name to disallow" aria-describedby="button-addon2">
+                            <partial name="_FormButtons"/>
+                        </div>
                     </div>
-                    <button class="btn btn-info" type="submit">Add</button>
                 </form>
-                <div id="result1" class="mb-3"></div>
-                @{
-                    var filterednames = memberService.UserNameFilter();
-                    @foreach (var item in filterednames)
-                    {
-                        <input type="text" class="form-control" name="username_@item.Id" value="@item.Name"/>
-                    }
-                }
+                <form asp-action="UpdateUsernameFilter" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-namefilters">
+                    <ul class="list-group mb-3">
+                        @for (int i = 0; i < Model.UserNamefilters.Count; i++)
+                        {
+                            <li class="list-group-item">
+                                <input type="hidden" asp-for="@Model.UserNamefilters[i].Id"/>
+                                <input type="text" class="form-control" asp-for="@Model.UserNamefilters[i].Name"/>
+                            </li>
+                        }
+                    </ul>
+                    <button class="btn btn-outline-success" type="submit">Add</button>
+                    <div id="result-namefilters"></div>
+                </form>
             </div>
             <div class="tab-pane fade" id="v-pills-badwords" role="tabpanel" aria-labelledby="v-pills-badwords-tab">
-                <form asp-action="SaveBadword" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="result">
+                <legend>Bad word Filter</legend>
+                <hr/>
+                <form asp-action="SaveBadword" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-badword">
                     <div class="mb-3">
                         <label class="form-label">Word</label>
-                        <input type="text" class="form-control" name="Word" value="" placeholder="Word to replace" />
+                        <input type="text" class="form-control" name="Word" value="" placeholder="Word to replace"/>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Replace With</label>
-                        <input type="text" class="form-control" name="ReplaceWith" value="" placeholder="Replace it with.." />
+                        <input type="text" class="form-control" name="ReplaceWith" value="" placeholder="Replace it with.."/>
                     </div>
-                    <div class="mb-3"><button class="btn btn-info" type="submit">Add</button></div>
-                    
+                    <div class="mb-3"><button class="btn btn-outline-success" type="submit">Add</button></div>
+                    <div id="result-badword"></div>
                 </form>
-                <div id="result"></div>
-                @foreach (var badword in config.GetBadwords())
-                {
-                    <div class="mb-3">
-                        <div class="row">
-                            <div class="col-6"><input type="text" class="form-control" name="Word" value="@badword.Word"/></div>
-                            <div class="col-6"><input type="text" class="form-control" name="Replace" value="@badword.ReplaceWith"/></div>
-                        </div>
-                        <input type="hidden" name="Id" value="@badword.Id"/>
-                    </div>
-                }
+                <form asp-action="UpdateBadwords" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-badwords">
+                    @{
+                        @for (int i = 0; i < Model.Badwords.Count; i++)
+                        {
+                            <div class="mb-3">
+                                <div class="row">
+                                    <input type="hidden" asp-for="@Model.Badwords[i].Id"/>
+                                    <div class="col-6"><input type="text" class="form-control" asp-for="@Model.Badwords[i].Word"/></div>
+                                    <div class="col-6"><input type="text" class="form-control" asp-for="@Model.Badwords[i].ReplaceWith"/></div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    <div class="mb-3"><partial name="_FormButtons"/></div>
+                    <div id="result-badwords"></div>
+
+                </form>
             </div>
             <div class="tab-pane fade" id="v-pills-archive" role="tabpanel" aria-labelledby="v-pills-archive-tab">
                 <div class="mb-3" id="forum-archives"></div>
             </div>
+            <div id="result"></div>
         </div>
     </div>
 </div>
@@ -103,6 +125,7 @@
         $(document).on('shown.bs.tab',
             'button[data-bs-toggle="pill"]',
             function(e) {
+                $('[id^=result]').html('');
                 if (e.target.id === "v-pills-group-tab") {
                     $('#forum-groups').load('/Admin/ManageGroups/' + $(this).val(), function () {
                     });

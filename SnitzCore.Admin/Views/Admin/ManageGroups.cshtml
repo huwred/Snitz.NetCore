@@ -7,7 +7,8 @@
 
 <div class="row">
     <div class="col-5">
-        <h5>Groups</h5>
+        <legend>Manage Groups</legend>
+        <hr/>
         <ul>
             @foreach (var fgroup in Model.Groups)
             {
@@ -15,13 +16,23 @@
                 <li>@Html.ActionLink(linkText, "ManageGroups", new { id = fgroup.Id },new{@class="manage-group", data_id=fgroup.Id})</li>
             }
         </ul>
-        <hr class="title" />
-        @if (Model.CurrentGroupId > 0)
+        @*         @if (Model.CurrentGroupId > 0)
         {
+            //TODO:
             <button class="btn btn-primary edit-group" id="edit-group" data-value="@Model.CurrentGroupId">Edit current Group</button>
-        }
-        <button class="btn btn-primary edit-group" data-value="0" id="new-group">New Group</button>
+        } *@
+        <hr/>
+        <form asp-action="AddGroup" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="#result">
+            <div class="mb-3">
+                <label class="form-label">New Group</label>
+                <div class="input-group mb-3">
+                    <input type="text" name="GroupName" class="form-control" placeholder="New group name" aria-label="New group name" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-success" type="submit">Add Group</button>
+                </div>
+            </div>
+        </form>
 
+        <div id="result"></div>
     </div>
     <div class="col-7">
         <div id="current-group"></div>
@@ -29,37 +40,27 @@
         {
             var groups = new SelectList(Model.CurrentGroupForums, "Key", "Value");
             <div class="mb-3">
-                <div class="mb-3">
-                    <select size="4" title="Select a Forum to manage Moderators" class="form-select" asp-for="CurrentGroupId" asp-items="groups">
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <button type="button" id="rem-cat" class="btn btn-primary btn-sm" title="Remove Category">Remove Selected</button>
-                </div>
-                <div class="mb-3">
-                    <form id="AddCatForm">
-                        <label class="form-label col-4">Add Category</label>
-                        <div class="col-7">
-                            <div class="input-group">
-                                <select class="form-control" id="new-cat" name="CatList">
-                                    <option value="0">Select Category</option>
-                                    @foreach (Category cat in Model.CategoryList)
-                                    {
-                                        <option value="@cat.Id">
-                                        @cat.Name
-                                        </option>
-                                    }
-                                </select>
-                                <span class="input-group-append">
-                                    <button type="button" id="add-cat" class="btn btn-primary btn-sm" title="Add Category"><i class="fa fa-plus"></i></button>
-                                </span>
-                                <input type="hidden" name="CurrentGroupId" value="@Model.CurrentGroupId"/>
-                            </div>
-                        </div>
-                        <div class="col-1">
-                        </div>
-                    </form>
-                </div>
+                <select size="4" title="Group Categories" class="form-select" asp-for="CurrentGroupId" asp-items="groups">
+                </select>
+            </div>
+            <div class="mb-3">
+                <button type="button" id="rem-cat" class="btn btn-outline-danger" title="Remove Category">Remove Selected</button>
+            </div>
+            <div class="mb-3">
+                <form id="AddCatForm">
+                    <div class="mb-3">
+                        <label class="form-label col-4">Add Categories to Group</label>
+                        <select class="form-select" id="new-cat" asp-for="@Model.CategoryList">
+                            @foreach (Category cat in Model.CategoryList)
+                            {
+                                <option value="@cat.Id">@cat.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <button class="btn btn-outline-success" type="submit">Add selected Categories</button>
+                    <input type="hidden" name="CurrentGroupId" value="@Model.CurrentGroupId"/>
+                </form>
             </div>
         }
     </div>
