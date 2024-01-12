@@ -36,6 +36,7 @@ namespace MVCForum.Controllers
         private readonly ISnitzCookie _cookie;
         private readonly IWebHostEnvironment _env;
         private readonly int _pageSize;
+        private readonly ISnitzConfig _config;
 
         public AccountController(UserManager<ForumUser> usrMgr, SignInManager<ForumUser> signinMgr, IMember memberService,SnitzCore.Data.Interfaces.IEmailSender mailSender,
             ISnitzConfig config, ISnitzCookie snitzcookie,IWebHostEnvironment env)
@@ -48,6 +49,7 @@ namespace MVCForum.Controllers
             _pageSize = config.DefaultPageSize;
             _emailSender = mailSender;
             _env = env;
+            _config = config;
             
         }
         public IActionResult Index(int pagesize,string? sortOrder,string? sortCol,string? initial, int page=1)
@@ -190,7 +192,7 @@ namespace MVCForum.Controllers
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, username = user.Name }, Request.Scheme);
             var message = new EmailMessage(new string[] { user.Email }, 
                 "Confirmation email link", 
-                ParseTemplate("confirmEmail.html","Confirm Account",user.Email,confirmationLink, cultureInfo));
+                ParseTemplate("confirmEmail.html","Confirm Account",user.Email,user.Name, confirmationLink, cultureInfo));
             
              _emailSender.SendEmailAsync(message);
             await _userManager.AddToRoleAsync(appUser, "Visitor");
@@ -266,8 +268,16 @@ namespace MVCForum.Controllers
             //No IdentityUser user, so check the member table,
             //if member exists then create IdentityUser.
             var member = _memberService.GetByUsername(login.Username);
-            var validpwd = _memberService.ValidateMember(member, login.Password);
-            if (member != null && validpwd)
+            var validpwd = false;
+            try
+            {
+                validpwd = _memberService.ValidateMember(member, login.Password);
+            }
+            catch (Exception e)
+            {
+                //membership table may not exists
+            }
+            if (member != null)
             {
 
                 ForumUser existingUser = new()
@@ -278,9 +288,17 @@ namespace MVCForum.Controllers
                     MemberSince = member.Created.FromForumDateStr(),
                     EmailConfirmed = true,
                 };
+                if (!validpwd)
+                {
+                    login.Password = "S0meR@ndom3Str!ng";
+                }
                 IdentityResult result = await _userManager.CreateAsync(existingUser, login.Password);
                 if (result.Succeeded)
                 {
+                    if (!validpwd)
+                    {
+                        return LocalRedirect("/Account/ForgotPassword");
+                    }
                     await _signInManager.SignInAsync(existingUser, false);
                     return LocalRedirect(returnUrl);
                 }
@@ -314,15 +332,19 @@ namespace MVCForum.Controllers
         {
             if (!ModelState.IsValid)
                 return View(forgotPasswordModel);
-            var user = await _userManager.FindByEmailAsync(forgotPasswordModel.Email);
+            var user = await _userManager.FindByNameAsync(forgotPasswordModel.Username);
             if (user == null)
+            {
+
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
+
+            }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { token, email = user.Email }, Request.Scheme);
+            var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { token, email = user.UserName }, Request.Scheme);
             CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
             var message = new EmailMessage(new string[] { user.Email }, 
                 "Reset password token", 
-                ParseTemplate("forgotPassword.html","Confirm Account",user.Email,callbackUrl, cultureInfo));
+                ParseTemplate("forgotPassword.html","Confirm Account",user.Email,user.UserName,callbackUrl, cultureInfo));
             
             await _emailSender.SendEmailAsync(message);
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
@@ -336,7 +358,7 @@ namespace MVCForum.Controllers
         [AllowAnonymous]
         public IActionResult ResetPassword(string token, string email)
         {
-            var model = new ResetPasswordModel { Token = token, Email = email };
+            var model = new ResetPasswordModel { Token = token, Username = email };
             return View(model);
         }
         [HttpPost]
@@ -346,7 +368,7 @@ namespace MVCForum.Controllers
         {
             if (!ModelState.IsValid)
                 return View(resetPasswordModel);
-            var user = await _userManager.FindByEmailAsync(resetPasswordModel.Email);
+            var user = await _userManager.FindByNameAsync(resetPasswordModel.Username);
             if (user == null)
                 RedirectToAction(nameof(ResetPasswordConfirmation));
             var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordModel.Token, resetPasswordModel.Password);
@@ -487,7 +509,7 @@ namespace MVCForum.Controllers
 
             return mTitle;
         }
-        private string ParseTemplate(string template,string subject, string email, string callbackUrl, CultureInfo? culture)
+        private string ParseTemplate(string template,string subject, string email,string username, string callbackUrl, CultureInfo? culture)
         {
             if (culture != null)
             {
@@ -506,10 +528,13 @@ namespace MVCForum.Controllers
 
             }
 
-            string messageBody = builder.HtmlBody
+      string messageBody = builder.HtmlBody
                 .Replace("[SUBJECT]",subject)
                 .Replace("[DATE]",$"{DateTime.Now:dddd, d MMMM yyyy}")
                 .Replace("[EMAIL]",email)
+                .Replace("[USER]",username)
+                .Replace("[SERVER]",_config.ForumUrl)
+                .Replace("[FORUM]",_config.ForumTitle)
                 .Replace("[URL]",callbackUrl);
             return messageBody;
         }

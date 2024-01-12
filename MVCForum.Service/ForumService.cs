@@ -35,9 +35,18 @@ namespace SnitzCore.Service
         }
         public async Task Delete(int forumId)
         {
-            var forum = _dbContext.Forums.Include(f=>f.Posts).SingleOrDefault(f => f.Id == forumId);
-            if (forum != null) _dbContext.Forums.Remove(forum);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                await _dbContext.Posts.Where(p=>p.ForumId == forumId).Include(t=>t.Replies).ExecuteDeleteAsync();
+                await _dbContext.Forums.Where(f => f.Id == forumId).ExecuteDeleteAsync();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
         }
         public async Task Update(Forum forum)
         {
@@ -149,6 +158,23 @@ namespace SnitzCore.Service
         {
             var id = rolename.ToUpperInvariant().Replace("FORUM_","");
             return _dbContext.Forums.Where(f => f.Id == Convert.ToInt32(id)).Select(f => f.Title).FirstOrDefault();
+        }
+
+        public async Task EmptyForum(int id)
+        {
+            await _dbContext.Posts.Where(p => p.ForumId == id).Include(t => t.Replies).ExecuteDeleteAsync();
+            var forum = await _dbContext.Forums.FindAsync(id);
+            if (forum != null)
+            {
+                forum.LastPost = null;
+                forum.LastPostAuthorId = null;
+                forum.LatestReplyId = null;
+                forum.LatestTopicId = null;
+                forum.ReplyCount = 0;
+                forum.TopicCount = 0;
+                _dbContext.Forums.Update(forum);
+                _dbContext.SaveChanges();
+            }
         }
     }
 }

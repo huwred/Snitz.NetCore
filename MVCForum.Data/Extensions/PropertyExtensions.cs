@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SnitzCore.Data.Models;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -85,7 +86,27 @@ namespace SnitzCore.Data.Extensions
             var attr = memberInfo.GetAttribute<ProfileDisplayAttribute>(false);
             return attr.DisplayCheck;
         }
+        public static bool PropertyIsSocialMedia(this PropertyInfo propInfo)
+        {
+            var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
+                .SingleOrDefault();
 
+            return orderAttr?.SocialLink ?? false;
+        }
+        public static MemberLayout PropertyLayoutSection(this PropertyInfo propInfo)
+        {
+            var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
+                .SingleOrDefault();
+
+            return orderAttr != null ? (MemberLayout)orderAttr?.LayoutSection : MemberLayout.Profile;
+        }
+        public static bool PropertyIsPersonal(this PropertyInfo propInfo)
+        {
+            var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
+                .SingleOrDefault();
+
+            return orderAttr?.SocialLink ?? false;
+        }
         public static string GetPropertyRequiredCheck<T>(this MemberInfo memberInfo)
         {
             if (memberInfo == null)

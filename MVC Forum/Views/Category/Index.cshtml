@@ -3,6 +3,7 @@
 @using BbCodeFormatter
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Routing
+@using MVCForum.Models
 @using MVCForum.Models.User
 @using MVCForum.TagHelpers
 @using SnitzCore.Data.Models
@@ -22,19 +23,22 @@
     {
         if (!string.IsNullOrWhiteSpace(cat))
         {
-            <form >
-            <div class="btn-group">
-                <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" title="Edit Category" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> Edit Category</span></button>
-                <button asp-controller="Category" type="submit" asp-action="Delete" asp-route-id="@cat" title="Delete Category" class="btn btn-outline-danger"><i class="fa fa-trash"></i><span class="d-none d-md-inline"> Delete Category</span></button>
-                    <button type="submit" formaction="/Forum/Create/?catid=@cat" title="New Forum" class="btn btn-outline-success"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> Create Forum</span></button>
-            </div></form>
+            <form>
+                <div class="btn-group">
+                    <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" title="Edit Category" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> Edit Category</span></button>
+                    <button-confirm config-class="fa fa-trash" config-key="@cat" href="/Category/Delete/?id=" title="Delete Category"></button-confirm>
+                    <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" title="New Forum" class="btn btn-outline-success"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> Add Forum</span></button>
+                </div>
+            </form>
         }
         else
         {
             <form >
                 <div class="btn-group">
-                    <button asp-controller="Category" type="submit" asp-action="Create" title="Add Category" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> Add Category</span></button>
-                </div></form>
+                    <button asp-controller="Category" type="submit" asp-action="Create" title="Add Category" class="btn btn-outline-warning"><i class="fa fa-folder-open"></i><span class="d-none d-md-inline"> Add Category</span></button>
+                    <button asp-controller="Forum" type="submit" asp-action="Create" title="Add Forum" class="btn btn-outline-warning"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> Add Forum</span></button>
+                </div>
+            </form>
         }
     }
 
@@ -103,6 +107,14 @@
     </div>
     <partial name="_ForumStats" />
 </div>
+@{
+    var confModel = new ConfirmDialogViewModel() { 
+        Title = "Delete Category", 
+        Message = @"<p>You are about to delete this Category.</p>
+                <p>Do you wish to proceed?</p>" };
+}
+<partial name="ConfirmDialog" model="@confModel" />
+
 @functions
 {
     bool HasAccess(ForumAuthType authType)
@@ -120,6 +132,6 @@
 }
 @section Scripts
 {
-
+    <script type="text/javascript" src="/js/ConfirmDialog.js" crossorigin="anonymous"></script>
 }
     

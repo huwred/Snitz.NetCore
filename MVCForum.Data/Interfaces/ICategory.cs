@@ -14,4 +14,5 @@ public interface ICategory
 
     IEnumerable<Group> GetGroups();
     IEnumerable<GroupName> GetGroupNames();
+    Task DeleteForums(int id);
 }

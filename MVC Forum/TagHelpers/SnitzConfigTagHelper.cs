@@ -21,7 +21,8 @@ namespace MVCForum.TagHelpers
         public string Value { get; set; }
         [HtmlAttributeName("property-req")]
         public bool Required { get; set; }
-
+        [HtmlAttributeName("config-type")]
+        public string ControlType { get; set; }
         [HtmlAttributeName("property-info")]
         public PropertyInfo PropertyInfo { get; set; }
         [HtmlAttributeName("can-edit")]
@@ -58,7 +59,10 @@ namespace MVCForum.TagHelpers
                 }
 
             }
-
+            if (!String.IsNullOrWhiteSpace(ControlType))
+            {
+                valtype = ControlType;
+            }
 
             if (PropertyInfo.SystemProperty())
             {
@@ -88,10 +92,12 @@ namespace MVCForum.TagHelpers
                         ischecked = "checked";
                     }
                     output.TagName = "div";
-                    output.Content.AppendHtml($@"<label class=""form-check-label"">");
-                    output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{PropertyInfo.Name}"" id=""{PropertyInfo.Name}"" value=""1"" class=""form-check-input"" {required} {disabled} {ischecked}/>");
-                    output.Content.AppendHtml($@"<label for=""{PropertyInfo.Name}"">{displayName??PropertyInfo.Name}</label></label>");
+                    output.Content.AppendHtml($@"<input type=""{valtype}"" role=""switch"" name=""{PropertyInfo.Name}"" id=""{PropertyInfo.Name}"" value=""1"" class=""form-check-input"" {required} {disabled} {ischecked} style=""transform: scale(1.4);""/>");
+                    output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{PropertyInfo.Name}"" value=""0"" {required} {disabled} checked style=""display:none""/>");
+                    output.Content.AppendHtml($@"<label class=""form-check-label"" for=""{PropertyInfo.Name}"">{displayName??PropertyInfo.Name}</label></label>");
                     output.AddClass("form-check",HtmlEncoder.Default);
+                    output.AddClass("form-switch",HtmlEncoder.Default);
+                    output.AddClass("mb-3",HtmlEncoder.Default);
                     if (!CanEdit)
                     {
                         output.AddClass("d-none",HtmlEncoder.Default);
@@ -124,7 +130,7 @@ namespace MVCForum.TagHelpers
                     output.TagName = "div";
                     output.AddClass("mb-3",HtmlEncoder.Default);
                     output.Content.AppendHtml(
-                        $@"<label for=""{PropertyInfo.Name}"">{displayName ?? PropertyInfo.Name}</label>");
+                        $@"<label for=""{PropertyInfo.Name}"" class=""form-label"">{displayName ?? PropertyInfo.Name}</label>");
                     if (!CanEdit)
                     {
                         output.AddClass("d-none",HtmlEncoder.Default);

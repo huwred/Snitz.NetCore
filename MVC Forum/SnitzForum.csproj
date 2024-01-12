@@ -84,6 +84,8 @@
   <ItemGroup>
     <_ContentIncludedByDefault Remove="bundleconfig.json" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\ConfirmDIalog.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\FormButtons.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -198,5 +200,11 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\ConfirmDIalog.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\FormButtons.cshtml" />
   </ItemGroup>
 </Project>

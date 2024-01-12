@@ -9,6 +9,7 @@ using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using MVCForum.Models.Category;
 
@@ -91,7 +92,7 @@ namespace MVCForum.Controllers
                 ForumList = forums,
                 LatestPosts = latestPosts
             };
-            return View("index",model);
+            return View("Index",model);
         }
 
         [Authorize(Roles = "Admin")]
@@ -161,7 +162,9 @@ namespace MVCForum.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
-            return RedirectToAction("Index","Category");;
+            _categoryService.Delete(id);
+            return Json(new { redirectToUrl = Url.Action("Index", "Category") });
+
         }
         private ForumListingModel GetForumListingForPost(Post post)
         {
@@ -180,5 +183,15 @@ namespace MVCForum.Controllers
             };
         }
 
+        public IActionResult CreateEdit()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public async Task<IActionResult> EmptyCategory(int id)
+        {
+            await _categoryService.DeleteForums(id);
+            return Json(new { redirectToUrl = "/Category" });
+        }
     }
 }

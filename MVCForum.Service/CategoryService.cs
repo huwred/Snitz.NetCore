@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
@@ -40,9 +41,16 @@ namespace SnitzCore.Service
 
         public async Task Delete(int categoryId)
         {
-            var category = _dbContext.Categories.Include(f=>f.Forums).SingleOrDefault(f => f.Id == categoryId);
-            if (category != null) _dbContext.Categories.Remove(category);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                await _dbContext.Categories.Include(f=>f.Forums).Where(f => f.Id == categoryId).ExecuteDeleteAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
         }
 
         public async Task Update(Category category)
@@ -60,6 +68,22 @@ namespace SnitzCore.Service
         public IEnumerable<GroupName> GetGroupNames()
         {
             return _dbContext.GroupName.AsQueryable();
+        }
+
+        public async Task DeleteForums(int id)
+        {
+            try
+            {
+                await _dbContext.Posts.Where(f=>f.CategoryId == id).Include(t=>t.Replies).ExecuteDeleteAsync();
+                await _dbContext.Forums.Where(f=>f.CategoryId == id).ExecuteDeleteAsync();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
         }
     }
 }

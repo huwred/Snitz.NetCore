@@ -1,4 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.Models
+@using MVCForum.TagHelpers
 @using SmartBreadcrumbs
 @using SnitzCore.Data.Models
 @model MVCForum.Models.Forum.NewForumModel
@@ -74,15 +76,32 @@
                 @Html.CheckBoxFor(m=>m.IncrementMemberPosts,new{@class="form-checkbox"})
             </div>
         </div>
-        <div class="mb-3 p-2 offset-2">
-            <button type="button" class="btn btn-sm btn-danger cancel" onclick="history.go(-1);">Cancel</button>
-            <button type="reset" class="btn btn-sm btn-warning ">Reset</button>
-            <button type="submit" id="btn-submit" value="Post" class="btn btn-sm btn-success">Post</button>
-        </div>
+        @if (Model.Id > 0)
+        {
+            <div class="mb-3 row">
+                <label class="form-label col-2">Delete all posts in the Forum</label>
+                <div class="col-3 col-lg-2">
+                    <button-confirm config-class="fa fa-trash" config-key="@Model.Id" href="/Forum/EmptyForum/?id=" title="Empty Forum"></button-confirm>
+                </div>
+            </div>
+        }
+        <partial name="FormButtons"/>
+
     </form>
 </div>
+@{
+    var confModel = new ConfirmDialogViewModel()
+    {
+        Title = "Empty Forum",
+        Message = @"<p>You are about to Empty this Forum.</p>
+                <p>Do you wish to proceed?</p>"
+    };
+}
+<partial name="ConfirmDialog" model="@confModel" />
+
 @section Scripts
 {
     <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="/js/initPostForm.js"></script>
+    <script type="text/javascript" src="/js/ConfirmDialog.js" crossorigin="anonymous"></script>
 }

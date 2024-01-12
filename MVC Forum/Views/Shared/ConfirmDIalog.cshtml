@@ -1,0 +1,18 @@
+﻿@model MVCForum.Models.ConfirmDialogViewModel
+<div id="confirmModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="close">X</a>
+                <h4>@Model.Title</h4>
+            </div>
+            <div class="modal-body">
+                @Html.Raw(Model.Message)
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="btnYes" class="btn btn-danger">Yes</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">No</a>
+            </div>
+        </div>
+    </div>
+</div>

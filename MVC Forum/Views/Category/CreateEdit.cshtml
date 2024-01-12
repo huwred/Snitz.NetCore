@@ -1,61 +1,74 @@
 ﻿@using SmartBreadcrumbs
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.Models
+@using MVCForum.TagHelpers
 @using SnitzCore.Data.Models
 @model MVCForum.Models.Category.CategoryViewModel
 @{
 }
 <div class="container pt-0">
-<breadcrumb></breadcrumb>
-<div class="row">
-    <div class="col col-md-6">
-        <form asp-controller="Category" asp-action="CreateEdit" class="p-4 bg-form rounded">
-            <input asp-for="@Model.Id" type="hidden"/>
-            <div class="mb-3">
-                <label asp-for="Name" class="form-label">Title</label>
-                <input asp-for="@Model.Name" type="text" class="form-control"/>
+    <breadcrumb></breadcrumb>
+    <div class="row">
+        <div class="col col-md-6">
+            <form asp-controller="Category" asp-action="CreateEdit" class="p-4 bg-form rounded">
+                <input asp-for="@Model.Id" type="hidden"/>
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Title</label>
+                    <input asp-for="@Model.Name" type="text" class="form-control"/>
                     <div class="invalid-feedback">You must provide a name.</div>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Status" class="form-label">Status</label>
-                <select asp-for="Status" id="default-days"
-                        class="form-select mb-2 mr-sm-2"
-                        asp-items="Html.GetEnumSelectList<Status>()">
-                </select>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Subscription" class="form-label">Subscription</label>
-                <select asp-for="Subscription" id="default-days"
-                        class="form-select mb-2 mr-sm-2"
-                        asp-items="Html.GetEnumSelectList<CategorySubscription>()">
-                </select>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Moderation" class="form-label">Moderation</label>
-                <select asp-for="Moderation" id="default-days"
-                        class="form-select mb-2 mr-sm-2"
-                        asp-items="Html.GetEnumSelectList<ModerationLevel>()">
-                </select>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Sort" class="form-label">Sort</label>
-                <input asp-for="@Model.Sort" type="number" class="form-control"/>
-            </div>
-            <div class="mb-3 p-2">
-                <button type="button" class="btn btn-sm btn-danger cancel" onclick="history.go(-1);">Cancel</button>
-                <button type="reset" class="btn btn-sm btn-warning ">Reset</button>
-                <button type="submit" id="btn-submit" value="Post" class="btn btn-sm btn-success">Post</button>
-            </div>
-        </form>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Status" class="form-label">Status</label>
+                    <select asp-for="Status" id="default-days"
+                            class="form-select mb-2 mr-sm-2"
+                            asp-items="Html.GetEnumSelectList<Status>()">
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Subscription" class="form-label">Subscription</label>
+                    <select asp-for="Subscription" id="default-days"
+                            class="form-select mb-2 mr-sm-2"
+                            asp-items="Html.GetEnumSelectList<CategorySubscription>()">
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Moderation" class="form-label">Moderation</label>
+                    <select asp-for="Moderation" id="default-days"
+                            class="form-select mb-2 mr-sm-2"
+                            asp-items="Html.GetEnumSelectList<ModerationLevel>()">
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Sort" class="form-label">Sort</label>
+                    <input asp-for="@Model.Sort" type="number" class="form-control"/>
+                </div>
+                <partial name="FormButtons"/>
+            </form>
 
-    </div>
-    <div class="col col-md-6">
-        <form>
-            <div class="btn-group">
-                    <button asp-controller="Category" type="submit" asp-action="Empty" asp-route-id="@Model.Id" title="Empty Category (delete forums)" class="btn btn-outline-danger"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> Empty Category (delete forums)</span></button>
-                    <button asp-controller="Category" type="submit" asp-action="Delete" asp-route-id="@Model.Id" title="Delete Category" class="btn btn-outline-danger"><i class="fa fa-trash"></i><span class="d-none d-md-inline"> Delete Category</span></button>
-            </div>
-        </form>
-        Forum List
+        </div>
+        <div class="col col-md-6">
+            <form>
+                <div class="btn-group">
+                    <button-confirm config-class="fa fa-trash" config-key="@Model.Id" href="/Category/EmptyCategory/?id=" title="Empty Category (delete forums)"></button-confirm>
+                    <button-confirm config-class="fa fa-trash" config-key="@Model.Id" href="/Category/Delete/?id=" title="Delete Category"></button-confirm>
+                </div>
+            </form>
+            Forum List
+        </div>
     </div>
 </div>
-</div>
+
+@{
+    var confModel = new ConfirmDialogViewModel()
+            {
+                Title = "Category",
+                Message = @"<p>You are about to Delete or Empty this Category.</p>
+                <p>Do you wish to proceed?</p>"
+            };
+}
+<partial name="ConfirmDialog" model="@confModel" />
+@section Scripts
+{
+    <script type="text/javascript" src="/js/ConfirmDialog.js" crossorigin="anonymous"></script>
+
+}

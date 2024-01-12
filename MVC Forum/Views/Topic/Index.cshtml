@@ -91,7 +91,10 @@
                 </div>
                 <div class="card-body" id="reply-@reply.Id">
                     <div class="body @rowclass">
-                            <partial name="_PostAuthor" model="reply.Author" />
+                        <partial name="_PostAuthor" model="reply.Author" />
+                        <div class="content">
+                            @Html.Raw(BbCodeProcessor.Format(reply.Content))
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer text-dark">

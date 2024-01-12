@@ -9,6 +9,7 @@ namespace MVCForum.Models.Member
         public string? Firstname { get; set; }
         public string? Lastname { get; set; }
         public string Email { get; set; }
+        public string CurrentEmail { get; set; }
         public string? Title { get; set; }
         public ForumUser UserModel { get; set; }
 

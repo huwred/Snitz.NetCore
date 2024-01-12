@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using SnitzCore.Data.Models;
 
 namespace SnitzCore.Data.Extensions
 {
@@ -12,6 +13,9 @@ namespace SnitzCore.Data.Extensions
 
         public bool Private { get; set; } = false;
         public bool SystemField { get; set; } = false;
+        public bool SocialLink { get; set; }
+
+        public MemberLayout LayoutSection { get; set; }
         public ProfileDisplayAttribute(string stringName) : base(stringName) { }
 
         public string? SelectEnum { get; set; }

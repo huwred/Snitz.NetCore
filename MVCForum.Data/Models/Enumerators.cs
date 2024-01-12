@@ -2,6 +2,13 @@
 
 namespace SnitzCore.Data.Models
 {
+    public enum MemberLayout
+    {
+        Profile,
+        SocialMedia,
+        Bio,
+        Extra
+    }
     public enum DefaultDays
     {
         [Display(Name = "Show all open topics")]

@@ -14,6 +14,7 @@ using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using X.PagedList;
 
 namespace MVCForum.Controllers
@@ -237,9 +238,9 @@ namespace MVCForum.Controllers
         
         [Breadcrumb(FromAction = "Index", FromController = typeof(CategoryController),Title = "Create Forum")]
         [Authorize(Roles="Admin")]
-        public IActionResult Create(int catid)
+        public IActionResult Create(int id)
         {
-            var model = new NewForumModel { CategoryList = _forumService.CategoryList(),Category = catid};
+            var model = new NewForumModel { CategoryList = _forumService.CategoryList(),Category = id};
             return View(model);
         }
 
@@ -299,11 +300,12 @@ namespace MVCForum.Controllers
 
         [Breadcrumb(FromAction = "Index",FromController = typeof(CategoryController), Title = "Delete Forum")]
         [Authorize(Roles="Admin")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var forum = _forumService.GetById(id);
-            _forumService.Delete(id).Wait();
-            return RedirectToAction("Index", "Category",new{id = forum.CategoryId});
+            var catid = _forumService.GetById(id).CategoryId;
+            await _forumService.Delete(id);
+            return Json(new { redirectToUrl = Url.Action("Index", "Category",new{id = catid}) });
+            //return RedirectToAction("Index", "Category",new{id = forum.CategoryId});
         }
 
         public IActionResult Search(string? searchFor, int pagesize=10,int page=1)
@@ -462,5 +464,12 @@ namespace MVCForum.Controllers
             };
         }
 
+        public async Task<IActionResult> EmptyForum(int id )
+        {
+            await _forumService.EmptyForum(id);
+            var forum = _forumService.GetById(id);
+            return Json(new { redirectToUrl = Url.Action("Index", "Category",new{id=forum.CategoryId}) });
+
+        }
     }
 }

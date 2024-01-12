@@ -40,15 +40,15 @@
                         <option value="4">Forum title</option>
                         <option value="5">Email</option>
                     </select>                        
-                        <input type="text" placeholder="Search for ..." class="form-control" name="SearchFor" required="required"/>
-                        <button class="btn btn-secondary" type="submit">Search</button> 
+                    <input type="text" placeholder="Search for ..." class="form-control" name="SearchFor" required="required"/>
+                    <button class="btn btn-secondary" type="submit">Search</button> 
                     @if (userroles != null && userroles.Contains("Admin"))
                     {
                         <a asp-action="Register" class="btn btn-outline-secondary">Create a User</a>
                     }
                 </div>
             </form>
-                        <div class="invalid-feedback ml-2">No values entered for search.</div>
+            <div class="invalid-feedback ml-2">No values entered for search.</div>
             <table class="table table-sm table-bordered table-hover table-striped">
                 <thead>
                 <tr class="bg-dark">
@@ -87,7 +87,7 @@
                                 }
                             }
                         </td>
-                            <td><a href="/Account/Detail/@member.Member.Name" title="View @member.Member.Name's profile'">@member.Member.Name</a></td>
+                        <td><a href="/Account/Detail/@member.Member.Name" title="View @member.Member.Name's profile'">@member.Member.Name</a></td>
                         <td>@member.Title<br/>@Html.MemberRankStars(member, ranking)</td>
                         <td>@member.Member.Posts</td>
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>
@@ -142,7 +142,7 @@
                     PageCount = Model.PageCount,
                     Page = Model.PageNum
                 };
-                @await Html.PartialAsync("ListPaging", paging)
+                <partial name="ListPaging" model="paging" />
             }
         </div>
         <div class="d-none d-md-block col-3">
@@ -151,17 +151,15 @@
         </div>
     </div>
 </div>
+
 @section Scripts
     {
     <script>
-        // Disable form submissions if there are invalid fields
-        (function () {
-            'use strict';
-            window.addEventListener('load', function () {
-                ValidateForms();
-            }, false);
-        })();
-
+        // $(document).on('click', '.confirm-delete', function (e) {
+        //     e.preventDefault();
+        //     var id = $(this).data('id');
+        //     $('#confirmModal').data('id', id).modal('show');
+        // });
     </script>
 
 }

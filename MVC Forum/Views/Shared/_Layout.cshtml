@@ -7,8 +7,8 @@
     @await RenderSectionAsync("MetaData", required: false)
     <link rel="stylesheet" href="~/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="~/lib/jquery/css/jquery-ui.min.css" />
-    <link rel="stylesheet" href="~/css/site.min.css">
+@*     <link rel="stylesheet" href="~/lib/jquery/css/jquery-ui.min.css" />
+ *@    <link rel="stylesheet" href="~/css/site.min.css">
     @await Component.InvokeAsync("SnitzThemeCss")
 
     @await RenderSectionAsync("Styles", required: false)
@@ -26,9 +26,9 @@
 
         <partial name="Footer"/>
     </div>
+    <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="~/lib/jquery/dist/jquery-ui.js"></script>
-    <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery/jquery.timeago.min.js" type="text/javascript"></script>
     <partial name="ValidationScriptsPartial" />
     <script src="~/js/site.js" asp-append-version="true"></script>

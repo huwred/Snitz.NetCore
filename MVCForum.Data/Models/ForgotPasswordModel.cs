@@ -4,8 +4,10 @@ namespace SnitzCore.Data.Models
 {
     public class ForgotPasswordModel
     {
+        //[Required]
+        //[EmailAddress]
+        //public string? Email { get; set; }
         [Required]
-        [EmailAddress]
-        public string? Email { get; set; }
+        public string? Username { get; set; }
     }
 }
