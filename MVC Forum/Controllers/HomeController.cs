@@ -12,25 +12,29 @@ using SnitzCore.Data.Models;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Localization;
 
 namespace MVCForum.Controllers
 {
     [DefaultBreadcrumb]
-    public class HomeController : Controller
+    public class HomeController : SnitzController
     {
         private readonly IPost _postService;
-        private readonly IMember _memberService;
-        public HomeController(IPost postService, IMember memberService)
+
+        public HomeController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory, IPost postService) : base(memberService, config, localizerFactory)
         {
             _postService = postService;
-            _memberService = memberService;
-            
+
         }
 
-        //[OutputCache(PolicyName = "Expire20")]
         public IActionResult Index()
         {
-            //_memberService.SetLastHere(User);
+            if (User.Identity.IsAuthenticated)
+            {
+                _memberService.SetLastHere(User);
+            }
                 
             try
             {
@@ -39,9 +43,8 @@ namespace MVCForum.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.Error("BuildHomeIndexModel",e);
                 return View("TempIndex");
-                //throw;
             }
 
         }
@@ -54,12 +57,12 @@ namespace MVCForum.Controllers
                 Id = post.Id,
                 Title = post.Title,
                 Message = post.Content,
-                AuthorName = post.Member.Name ?? "Unknown",
-                AuthorId = post.Member.Id,
+                AuthorName = post.Member?.Name ?? "Unknown",
+                AuthorId = post.Member!.Id,
                 //AuthorRating = post.User?.Rating ?? 0,
                 Created = post.Created.FromForumDateStr(),
                 LastPostDate = !post.LastPostDate.IsNullOrEmpty() ? post.LastPostDate.FromForumDateStr() : null,
-                LastPostAuthorName = _memberService.GetById(post.LastPostAuthorId).Result?.Name,
+                LastPostAuthorName = _memberService.GetById(post.LastPostAuthorId!.Value)?.Name,
                 Forum = GetForumListingForPost(post),
                 RepliesCount = post.ReplyCount,
                 ViewCount = post.ViewCount,
@@ -81,7 +84,7 @@ namespace MVCForum.Controllers
 
             return new ForumListingModel
             {
-                Id = forum.Id,
+                Id = forum!.Id,
                 Title = forum.Title,
                 AccessType = forum.Privateforums,
                 ForumType = (ForumType)forum.Type,
@@ -100,6 +103,19 @@ namespace MVCForum.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+
+        //[HttpPost]
+        public IActionResult SetLanguage(string lang, string returnUrl)
+        {
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(lang)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMonths(1) }
+            );
+
+            return LocalRedirect(returnUrl);
         }
 
 

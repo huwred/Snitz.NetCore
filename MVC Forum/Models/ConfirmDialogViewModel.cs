@@ -2,8 +2,7 @@
 {
     public class ConfirmDialogViewModel
     {
-        public string Title { get; set; }
-        public string Message { get; set; }
-
+        public string Title { get; set; } = null!;
+        public string Message { get; set; } = null!;
     }
 }

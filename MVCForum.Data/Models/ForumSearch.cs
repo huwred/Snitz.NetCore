@@ -8,7 +8,7 @@
         public bool SearchArchives { get; set; }
         public bool SearchMessage { get; set; }
         public int? SearchCategory { get; set; }
-        public int[] SearchForums { get; set; }
+        public int[]? SearchForums { get; set; }
 
         public SearchDate SinceDate { get; set; }
 

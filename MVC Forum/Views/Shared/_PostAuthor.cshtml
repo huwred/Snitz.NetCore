@@ -1,44 +1,54 @@
 ﻿@using MVCForum.Extensions
 @using SnitzCore.Data
 @using SnitzCore.Data.Interfaces
-@inject ISnitzConfig Config
+@using SnitzCore.Data.Models
+@inject ISnitzConfig SnitzConfig
 @inject IMember MemberService
+
 @model SnitzCore.Data.Models.Member
+
 @{
     var ranking = MemberService.GetRankings();
 }
                     <div class="authors">
                         <div class="username"><a href="">@Model.Name</a></div>
-                        <div>@Html.MemberRankTitle(Model, ranking)</div>
+                        <div>@Html.MemberRankTitle(Model, ranking,Localizer)</div>
                         <snitz-avatar src="/Content/Members/@Model.Id/@Model.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="rounded-circle" />
                         <div>Posts: @Model.Posts</div>
-                        <div>@Html.MemberRankStars(Model, ranking)</div>
+                        <div>@Html.MemberRankStars(Model, ranking,Localizer)</div>
                         <div>
-                            <ul class="list-group list-group-horizontal list-unstyled" style="margin-bottom: 0;">
-                                @if (Model.ReceiveEmail == (short)1)
+                            <ul class="list-group list-group-horizontal list-unstyled mb-0">
+                                @if (Model.ReceiveEmail == 1 && User.Identity!.IsAuthenticated)
                                 {
                                     <li class="p-1">
-                                        <a href="#" title="Send author an Email" data-toggle="tooltip" class="send-email" data-url="" data-id="" style="cursor: pointer" data-original-title="Send author an Email"><i class="fa fa-2x fa-envelope"></i></a>
+                                        <a href="#" title="Send author an Email" data-toggle="tooltip" class="email-link" data-url="@Url.Action("EmailMember","Account")" data-id="@Model.Id" data-original-title="Send author an Email"><i class="fa fa-2x fa-envelope"></i></a>
                                     </li>
                                 }
-                                @if (Config.GetIntValue("STRPMSTATUS") == 1 && Model.Pmreceive == 1)
+                                @if (SnitzConfig.GetIntValue("STRPMSTATUS") == 1 && Model.Pmreceive == 1 && User.Identity!.IsAuthenticated)
                                 {
                                     <li class="p-1">
-                                        <a href="#" title="Send author a private message" data-toggle="tooltip" class="sendpm-link " data-url="" data-id="" style="cursor: pointer" data-original-title="Send author a private message"><i class="fa fa-2x fa-comments"></i></a>
+                                        <a href="#" title="Send author a private message" data-toggle="tooltip" class="sendpm-link" data-url="@Url.Action("Create", "PrivateMessage")" data-id="@Model.Id" data-original-title="Send author a private message"><i class="fa fa-2x fa-comments"></i></a>
                                     </li>
                                 }
-                                @if (Model.Privateprofile != (short)1){
+                                @if (Model.Privateprofile != 1 && !string.IsNullOrWhiteSpace(Model.Homepage)){
                                     <li class="p-1">
-                                        <a href="#" data-toggle="tooltip" class="topic-link" title="Author's home page, click to visit" target="_new"><i class="fa fa-2x fa-home"></i></a>
+                                        <a href="@Model.Homepage" data-toggle="tooltip" title="Author's home page, click to visit" target="_new"><i class="fa fa-2x fa-home"></i></a>
                                     </li>
                                 }
                                 @if (User.IsInRole("Admin"))
                                 {
                                     <li class="p-1">
-                                        <a href="#" class="showIPAddress " data-toggle="tooltip" title="View author's IP address" data-id="" style="cursor: pointer"><i class="fa fa-2x fa-sitemap"></i></a>
+                                        <a href="#" class="show-ip" data-toggle="tooltip" title="View author's IP address" data-id="@Model.Id" data-url="@Url.Action("ShowIP", "Account")"><i class="fa fa-2x fa-sitemap"></i></a>
                                     </li>
                                     <li class="p-1">
-                                        <a class="fa fa-2x fa-lock" data-toggle="tooltip" href="/Account/LockUser?user=25" title="Lock Member"> </a>
+                                        @if (Model.Status == 1)
+                                        {
+                                            <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="Lock Member" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-lock"></i></a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="Lock Member" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-unlock"></i></a>
+                                        }
                                     </li>
                                 }
 

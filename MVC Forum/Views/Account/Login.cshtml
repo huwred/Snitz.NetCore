@@ -1,7 +1,7 @@
 ﻿@using SnitzCore.Data.Interfaces
 @model MVCForum.Models.User.UserSignInModel
-@inject ISnitzConfig Config
-@if (Config.GetIntValue("STRREQUIREREG") == 1)
+@inject ISnitzConfig SnitzConfig
+@if (SnitzConfig.GetIntValue("STRREQUIREREG") == 1)
 {
     <div class="container pt-0">
         <div class="center">
@@ -12,7 +12,7 @@
         </div>
     </div>
 }
-else if (Config.GetIntValue("STRPROHIBITNEWMEMBERS") == 1)
+else if (SnitzConfig.GetIntValue("STRPROHIBITNEWMEMBERS") == 1)
 {
     <div class="container pt-0">
         <div class="center">

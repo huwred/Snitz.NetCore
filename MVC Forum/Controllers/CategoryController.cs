@@ -12,27 +12,30 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using MVCForum.Models.Category;
+using Microsoft.AspNetCore.Mvc.Localization;
 
 namespace MVCForum.Controllers
 {
     [CustomAuthorize]
-    public class CategoryController : Controller
+    public class CategoryController : SnitzController
     {
         private readonly IForum _forumService;
-        private readonly IMember _memberService;
         private readonly IPost _postService;
         private readonly ICategory _categoryService;
 
-        
-        public CategoryController(IForum forumService,IMember memberService,IPost postService, ICategory categoryService)
+        public CategoryController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,
+            IForum forumService, IPost postService, ICategory categoryService) : base(memberService, config, localizerFactory)
         {
             _forumService = forumService;
-            _memberService = memberService;
             _postService = postService;
             _categoryService = categoryService;
         }
+
         
         [Breadcrumb("Forums",FromAction = "Index",FromController = typeof(HomeController))]
+        [Route("Forums")]
+        [Route("Category/{id?}")]
+        [Route("Category/Index/{id}")]
         public IActionResult Index(int id)
         {
             _memberService.SetLastHere(User);
@@ -43,7 +46,7 @@ namespace MVCForum.Controllers
                 Title = forum.Title,
                 Description = forum.Description,
                 CategoryId = forum.CategoryId,
-                CategoryName = forum.Category!.Name!,
+                CategoryName = forum.Category?.Name,
                 Topics = forum.TopicCount,
                 Posts = forum.ReplyCount,
                 DefaultView = (DefaultDays)forum.Defaultdays,
@@ -51,7 +54,7 @@ namespace MVCForum.Controllers
                 LastPostAuthorId = forum.LastPostAuthorId,
                 LastPostTopicId = forum.LatestTopicId,
                 LastPostReplyId = forum.LatestReplyId,
-                LastPostAuthor = _memberService.GetById(forum.LastPostAuthorId).Result,
+                LastPostAuthor = _memberService.GetById(forum.LastPostAuthorId),
                 AccessType = forum.Privateforums,
                 ForumType = (ForumType)forum.Type,
                 Url = forum.Url
@@ -60,7 +63,7 @@ namespace MVCForum.Controllers
             if (id > 0)
             {
                 forums = forums.Where(f => f.CategoryId == id);
-                var forumPage = new MvcBreadcrumbNode("", "Category", "Forums");
+                var forumPage = new MvcBreadcrumbNode("Forums", "Category", "Forums");
                 var topicPage = new MvcBreadcrumbNode("", "Category", forums.First().CategoryName) { Parent = forumPage,RouteValues = new{id=forums.First().CategoryId}};
                 ViewData["BreadcrumbNode"] = topicPage; 
             }
@@ -80,7 +83,7 @@ namespace MVCForum.Controllers
                 //AuthorRating = post.User?.Rating ?? 0,
                 Created = post.Created.FromForumDateStr(),
                 LastPostDate = !post.LastPostDate.IsNullOrEmpty() ? post.LastPostDate.FromForumDateStr() : null,
-                LastPostAuthorName = _memberService.GetById(post.LastPostAuthorId).Result?.Name,
+                LastPostAuthorName = _memberService.GetById(post.LastPostAuthorId!.Value)?.Name,
                 Forum = GetForumListingForPost(post),
                 RepliesCount = post.ReplyCount,
                 ViewCount = post.ViewCount,
@@ -92,7 +95,7 @@ namespace MVCForum.Controllers
                 ForumList = forums,
                 LatestPosts = latestPosts
             };
-            return View("Index",model);
+                return View("Index",model);
         }
 
         [Authorize(Roles = "Admin")]
@@ -193,5 +196,6 @@ namespace MVCForum.Controllers
             await _categoryService.DeleteForums(id);
             return Json(new { redirectToUrl = "/Category" });
         }
+
     }
 }

@@ -16,20 +16,19 @@ namespace SnitzCore.BackOffice.TagHelpers
     public class AdminConfigTagHelper : TagHelper
     {
         [HtmlAttributeName("config-key")]
-        public string Key { get; set; }
+        public string? Key { get; set; }
         [HtmlAttributeName("config-val")]
-        public string Value { get; set; }
+        public string? Value { get; set; }
         [HtmlAttributeName("config-label")]
-        public string Label { get; set; }
+        public string? Label { get; set; }
         [HtmlAttributeName("config-req")]
         public bool Required { get; set; }
         [HtmlAttributeName("placeholder")]
-        public string PlaceHolder { get; set; }
+        public string? PlaceHolder { get; set; }
         [HtmlAttributeName("config-type")]
-        public string ControlType { get; set; }
+        public string? ControlType { get; set; }
         [HtmlAttributeName("disabled")]
         public bool Disabled { get; set; }
-        public AdminConfigTagHelper() { }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -48,11 +47,10 @@ namespace SnitzCore.BackOffice.TagHelpers
                         valtype = "checkbox";
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-
+                    // ignored
                 }
-
             }
 
             if (!String.IsNullOrWhiteSpace(ControlType))
@@ -93,22 +91,14 @@ namespace SnitzCore.BackOffice.TagHelpers
                         $@"<input type=""{valtype}"" name=""{Key}"" id=""{Key}"" value=""{Value}"" />");
                     output.TagMode = TagMode.StartTagAndEndTag;
                     break;
-                //case "select" :
-                //    output.TagName = "div";
-                //    output.AddClass("form-group",HtmlEncoder.Default);
-                //    output.Content.AppendHtml(
-                //        $@"<label for=""{Key}"">{Key}</label>");
-                //    output.Content.AppendHtml(GenerateDropDownList());
-                //    output.TagMode = TagMode.StartTagAndEndTag;
-                //    break;
                 case "datepicker":
                     output.TagName = "div";
                     output.AddClass("form-group",HtmlEncoder.Default);
                     output.Content.AppendHtml(
                         $@"<label for=""{Key}"">{Key}</label>");
-                        output.Content.AppendHtml($@"<div class=""datepicker date input-group"">");
+                        output.Content.AppendHtml(@"<div class=""datepicker date input-group"">");
                         output.Content.AppendHtml($@"<input name=""{Key}"" type=""text"" placeholder=""Choose Date"" class=""form-control"" id=""fecha2""/>");
-                        output.Content.AppendHtml($@"<div class=""input-group-append"">
+                        output.Content.AppendHtml(@"<div class=""input-group-append"">
                             <span class=""input-group-text""><i class=""fa fa-calendar""></i></span>
                         </div></div>");
 
@@ -125,31 +115,6 @@ namespace SnitzCore.BackOffice.TagHelpers
             }
 
         }
-        //private IHtmlContent GenerateDropDownList()
-        //{
-        //    TagBuilder tb = new TagBuilder("select");
-        //    var enumname = PropertyInfo.GetSelectEnum();
-        //    Type test = EnumExtensions.GetEnumType (enumname);
-        //    if (enumname != null)
-        //    {
-        //        tb.AddCssClass("form-control");
-        //        tb.Attributes.Add("Name",PropertyInfo.Name);
-        //        tb.MergeAttribute("id", PropertyInfo.Name + "-dd");
-        //        foreach (SelectListItem item in test.GetEnumSelectList())
-        //        {
-        //            TagBuilder op = new TagBuilder("option");
-        //            op.Attributes.Add("value",item.Value);
-        //            op.InnerHtml.AppendHtml(item.Text);
-        //            tb.InnerHtml.AppendHtml(op);
-        //            if (item.Value == Value)
-        //            {
-        //                op.Attributes.Add("selected","selected");
-        //            }
-        //        }
-        //    }
 
-        //    tb.InnerHtml.AppendHtml(this.GenerateInput());
-        //    return tb;
-        //}
     }
 }

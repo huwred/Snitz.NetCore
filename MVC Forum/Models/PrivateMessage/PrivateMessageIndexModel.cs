@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MVC_Forum.Models.Forum
+namespace MVCForum.Models.PrivateMessage
 {
     public class PrivateMessageIndexModel
     {

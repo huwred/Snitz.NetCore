@@ -104,5 +104,4 @@ public partial class Post
     public virtual Category? Category { get; set; }
     public virtual IEnumerable<PostReply>? Replies { get; set; }
 
-    public static event EventHandler<ActivityChangedEventArgs>? CurrentChanged;
 }

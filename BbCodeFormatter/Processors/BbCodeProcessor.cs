@@ -276,8 +276,12 @@ public class BbCodeProcessor : ICodeProcessor
     /// <param name="tooltip">If true, removes certain code from display in tooltips</param>
     /// <param name="newsfeed"></param>
     /// <returns>Valid HTML5</returns>
-    public string Format(string data,bool parseurls=true, bool tooltip = false, bool newsfeed = false)
+    public string? Format(string? data,bool parseurls=true, bool tooltip = false, bool newsfeed = false)
     {
+        if (data == null)
+        {
+            return data;
+        }
         _useFullUrl = newsfeed;
     if (_config.GetValue("STRALLOWFORUMCODE") != "1")
         return data;
@@ -437,7 +441,7 @@ public class BbCodeProcessor : ICodeProcessor
 
         return data;
     }
-    public string Subject(string data)
+    public string? Subject(string? data)
     {
         if (String.IsNullOrWhiteSpace(data))
             return data;

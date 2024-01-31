@@ -19,21 +19,21 @@
                 </div>
                 <div class="mb-3">
                     <label asp-for="Status" class="form-label">Status</label>
-                    <select asp-for="Status" id="default-days"
+                    <select asp-for="Status"
                             class="form-select mb-2 mr-sm-2"
                             asp-items="Html.GetEnumSelectList<Status>()">
                     </select>
                 </div>
                 <div class="mb-3">
                     <label asp-for="Subscription" class="form-label">Subscription</label>
-                    <select asp-for="Subscription" id="default-days"
+                    <select asp-for="Subscription" 
                             class="form-select mb-2 mr-sm-2"
                             asp-items="Html.GetEnumSelectList<CategorySubscription>()">
                     </select>
                 </div>
                 <div class="mb-3">
                     <label asp-for="Moderation" class="form-label">Moderation</label>
-                    <select asp-for="Moderation" id="default-days"
+                    <select asp-for="Moderation"
                             class="form-select mb-2 mr-sm-2"
                             asp-items="Html.GetEnumSelectList<ModerationLevel>()">
                     </select>
@@ -49,8 +49,8 @@
         <div class="col col-md-6">
             <form>
                 <div class="btn-group">
-                    <button-confirm config-class="fa fa-trash" config-key="@Model.Id" href="/Category/EmptyCategory/?id=" title="Empty Category (delete forums)"></button-confirm>
-                    <button-confirm config-class="fa fa-trash" config-key="@Model.Id" href="/Category/Delete/?id=" title="Delete Category"></button-confirm>
+                    <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Id" href="/Category/EmptyCategory/?id=" title="Empty Category (delete forums)"></button-confirm>
+                    <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Id" href="/Category/Delete/?id=" title="Delete Category"></button-confirm>
                 </div>
             </form>
             Forum List

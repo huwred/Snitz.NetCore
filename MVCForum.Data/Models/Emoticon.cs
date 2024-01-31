@@ -18,5 +18,5 @@ public class Emoticon
 public class EmoticonList
 {
     [XmlElement("emoticon")]
-    public Emoticon[] Emoticons { get; set; }
+    public Emoticon[]? Emoticons { get; set; }
 }

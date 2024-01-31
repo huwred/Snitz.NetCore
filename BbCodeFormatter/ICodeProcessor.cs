@@ -10,7 +10,7 @@ public interface ICodeProcessor
     /// <param name="tooltip">If true, removes certain code from display in tooltips</param>
     /// <param name="newsfeed"></param>
     /// <returns>Valid HTML5</returns>
-    string Format(string data,bool parseurls=true, bool tooltip = false, bool newsfeed = false);
+    string? Format(string? data,bool parseurls=true, bool tooltip = false, bool newsfeed = false);
 
     /// <summary>
     /// Converts data stored as html in the database
@@ -34,7 +34,7 @@ public interface ICodeProcessor
     /// <returns>Classic Snitz compatible message string</returns>
     string Post(string data);
 
-    string Subject(string data);
+    string? Subject(string? data);
 
     /// <summary>
     /// Remove bbcode tags

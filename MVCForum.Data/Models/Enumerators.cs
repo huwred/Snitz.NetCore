@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SnitzCore.Data.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace SnitzCore.Data.Models
 {
@@ -86,35 +87,7 @@ namespace SnitzCore.Data.Models
         Topic,
         Reply
     }
-    public enum ActiveSince
-    {
-        [Display(Name="Last Visit ")]
-        LastVisit,
-        [Display(Name="Last 15 minutes")]
-        LastFifteen,
-        [Display(Name="Last 30 minutes")]
-        LastThirty,
-        [Display(Name="Last hour")]
-        LastHour,
-        [Display(Name="Last 2 hours")]
-        Last2Hours,
-        [Display(Name="Last 6 hours")]
-        Last6Hours,
-        [Display(Name="Last 12 hours")]
-        Last12Hours,
-        [Display(Name="Yesterday")]
-        LastDay,
-        [Display(Name="Last 2 days")]
-        Last2Days,
-        [Display(Name="Last week")]
-        LastWeek,
-        [Display(Name="Last 2 weeks")]
-        Last2Weeks,
-        [Display(Name="Last month")]
-        LastMonth,
-        [Display(Name="Last 2 months")]
-        Last2Months,
-    }
+
 
     public enum ActiveRefresh
     {

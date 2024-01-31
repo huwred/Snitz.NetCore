@@ -15,7 +15,7 @@ namespace MVCForum.MiddleWare
 
         public async Task Invoke(HttpContext context)
         {
-            string visitorId = context.Request.Cookies["VisitorId"];
+            string? visitorId = context.Request.Cookies["VisitorId"];
             if (visitorId == null)
             {
                 //don the necessary staffs here to save the count by one

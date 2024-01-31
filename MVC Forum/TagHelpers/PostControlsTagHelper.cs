@@ -14,9 +14,9 @@ namespace MVCForum.TagHelpers
         [HtmlAttributeName("logged-in")]
         public bool LoggedIn { get; set; }
         [HtmlAttributeName("post-author")]
-        public string Author { get; set; }
+        public string? Author { get; set; }
         [HtmlAttributeName("curr-user")]
-        public ClaimsPrincipal User { get; set; }
+        public ClaimsPrincipal? User { get; set; }
         [HtmlAttributeName("post-id")]
         public int PostId { get; set; }
         [HtmlAttributeName("topic-id")]
@@ -36,11 +36,11 @@ namespace MVCForum.TagHelpers
             base.Process(context, output);
             string username = "";
             IList<string>? userroles = null;
-            if (User.Identity != null && User.Identity.IsAuthenticated)
+            if (User!.Identity != null && User.Identity.IsAuthenticated)
             {
                 var curruser = _userManager.GetUserAsync(User).Result;
-                userroles = _userManager.GetRolesAsync(curruser).Result;
-                username = User.Identity.Name;
+                userroles = _userManager.GetRolesAsync(curruser!).Result;
+                username = User.Identity.Name!;
             }
             output.TagName = "div";
             output.AddClass("post-control-btn",HtmlEncoder.Default);
@@ -48,7 +48,7 @@ namespace MVCForum.TagHelpers
             {
                 var isadmin = userroles!.Contains("Admin");
                 if(!IsLocked || isadmin)
-                    output.Content.AppendHtml($@"<i class=""fa fa-comment-o m-1 post-reply"" title=""Reply to Topic"" data-id=""{TopicId??PostId}""></i>");
+                    output.Content.AppendHtml($@"<i class=""fa fa-comment-o m-1 post-reply"" title=""Reply to Topic"" data-id=""{PostId}""></i>");
                 if (username == Author || isadmin)
                 {
                     if (Posttype == PostType.Topic)
@@ -62,8 +62,8 @@ namespace MVCForum.TagHelpers
                         {
                             output.Content.AppendHtml($@"<i class=""fa fa-trash m-1 post-del"" title=""Delete Post"" data-id=""{PostId}""></i>");
                             output.Content.AppendHtml(IsLocked
-                                ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""UnLock Post"" data-id=""{PostId}"" data-status=""1""></i>"
-                                : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""Lock Post"" data-id=""{PostId}"" data-status=""0""></i>");
+                                ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""UnLock Post"" data-id=""{PostId}"" data-status=""0""></i>"
+                                : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""Lock Post"" data-id=""{PostId}"" data-status=""1""></i>");
                         }
                     }
                     else
@@ -77,14 +77,13 @@ namespace MVCForum.TagHelpers
                         {
                             output.Content.AppendHtml($@"<i class=""fa fa-trash m-1 reply-del"" title=""Delete Post"" data-id=""{PostId}""></i>");
                             output.Content.AppendHtml(IsLocked
-                                ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""UnLock Post"" data-id=""{TopicId}"" data-status=""1""></i>"
-                                : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""Lock Post"" data-id=""{TopicId}"" data-status=""0""></i>");
+                                ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""UnLock Post"" data-id=""{TopicId}"" data-status=""0""></i>"
+                                : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""Lock Post"" data-id=""{TopicId}"" data-status=""1""></i>");
                         }
                     }
 
                 }
             }
-
             output.TagMode = TagMode.StartTagAndEndTag;
         }
     }

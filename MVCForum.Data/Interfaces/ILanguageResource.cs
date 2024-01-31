@@ -26,5 +26,6 @@ namespace SnitzCore.Data.Interfaces
 
         void RenameResource(string old, string name, string set);
         void Reset();
+        string? GetLocalisedString(string name, string set,string? defvalue = "");
     }
 }

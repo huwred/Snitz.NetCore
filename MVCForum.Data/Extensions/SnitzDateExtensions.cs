@@ -9,6 +9,10 @@ namespace SnitzCore.Data.Extensions
         {
             if (date != null)
             {
+                if (date.Length == 8)
+                {
+                    return DateTime.ParseExact(date, "yyyyMMdd", CultureInfo.CurrentCulture);
+                }
                 return DateTime.ParseExact(date, "yyyyMMddHHmmss", CultureInfo.CurrentCulture);
             }
             else
@@ -20,6 +24,10 @@ namespace SnitzCore.Data.Extensions
         {
             if (date != null)
             {
+                if (date.Length == 8)
+                {
+                    return DateTime.ParseExact(date, "yyyyMMdd", CultureInfo.CurrentCulture);
+                }
                 return dateonly ? DateTime.ParseExact(date, "yyyyMMddHHmmss", CultureInfo.CurrentCulture).Date : DateTime.ParseExact(date, "yyyyMMddHHmmss", CultureInfo.CurrentCulture);
             }
             else

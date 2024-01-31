@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
-using MediaWiz.Forums.Helpers;
+using SnitzCore.Data;
 
 namespace MVCForum.View_Components
 {
@@ -18,9 +18,9 @@ namespace MVCForum.View_Components
 
         public async Task<IViewComponentResult> InvokeAsync(Guid UserId)
         {
-            Captcha captcha = new Captcha(200, 80, 6);
+            Captcha captcha = new Captcha(200, 80);
             TempData["b64"] = captcha.GenerateAsB64(Captcha.CaptchaType.Circle);
-            _httpContextAccessor.HttpContext.Session.SetString("Captcha", captcha.GetAnswer());
+            _httpContextAccessor.HttpContext?.Session.SetString("Captcha", captcha.GetAnswer());
 
             return await Task.FromResult((IViewComponentResult)View("Captcha"));
         }

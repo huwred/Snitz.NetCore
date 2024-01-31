@@ -1,12 +1,9 @@
-using Microsoft.AspNetCore.Http;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
-using DataType = System.ComponentModel.DataAnnotations.DataType;
-
 
 
 namespace SnitzCore.BackOffice.ViewModels
@@ -22,16 +19,16 @@ namespace SnitzCore.BackOffice.ViewModels
     public class AdminRolesViewModel
     {
         //[RequiredIf("IsUsernameRequired", "true", "PropertyRequired")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
         //[RequiredIf("IsUsernameRequired", "true", "PropertyRequired")]
-        public string Rolename { get; set; }
+        public string? Rolename { get; set; }
 
         //[RequiredIf("IsRolenameRequired", "true", "PropertyRequired")]
-        public string NewRolename { get; set; }
+        public string? NewRolename { get; set; }
 
-        public List<Member> Members { get; set; }
+        public List<Member>? Members { get; set; }
 
-        public string[] RoleList { get; set; }
+        public string?[]? RoleList { get; set; }
 
         public bool IsUsernameRequired { get; set; }
         public bool IsRolenameRequired { get; set; }
@@ -77,9 +74,9 @@ namespace SnitzCore.BackOffice.ViewModels
             if (id > 0)
             {
                 this.CurrentGroupForums = new Dictionary<int, string>();
-                foreach (KeyValuePair<int, string> forum in category.GetGroups().Where(g=>g.GroupNameId == id).ToDictionary(t => t.CategoryId, t => t.Category.Name))
+                foreach (var (key, value) in category.GetGroups().Where(g=>g.GroupNameId == id).ToDictionary(t => t.CategoryId, t => t.Category!.Name))
                 {
-                    this.CurrentGroupForums.Add(forum.Key, forum.Value);
+                    if (value != null) this.CurrentGroupForums.Add(key, value);
                 }
             }
             else
@@ -99,28 +96,28 @@ namespace SnitzCore.BackOffice.ViewModels
     public class AdminEmailServer
     {
         [Required]
-        public string ContactEmail { get; set; }
+        public string ContactEmail { get; set; } = null!;
 
         [Required]
-        public string Server { get; set; }
+        public string? Server { get; set; }
         public bool Auth { get; set; }
         public int Port { get; set; }
-        public string Username { get; set; }
+        public string? Username { get; set; }
         [PasswordPropertyText]
-        public string Password { get; set; }
+        public string? Password { get; set; }
         [Required]
-        public string From { get; set; }
+        public string From { get; set; } = null!;
 
         public SmtpDeliveryMethod DeliveryMethod { get; set; }
-        public string PickUpFolder { get; set; }
+        public string? PickUpFolder { get; set; }
         public bool DefaultCred { get; set; }
 
-        public string UseSpamFilter { get; set; }
-        public string EmailDomain { get; set; }
-        public SpamFilter[] BannedDomains { get; set; }
-        public string EmailMode { get; set; }
+        public string? UseSpamFilter { get; set; }
+        public string? EmailDomain { get; set; }
+        public SpamFilter[]? BannedDomains { get; set; }
+        public string? EmailMode { get; set; }
 
-        public string SslMode { get; set; }
+        public string? SslMode { get; set; }
     }
 
     //public class AdminFeaturesViewModel

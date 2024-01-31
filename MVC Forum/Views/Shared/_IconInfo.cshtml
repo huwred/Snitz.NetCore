@@ -1,8 +1,11 @@
-﻿<div class="forum-info note rounded mt-1">
-    <span><i class="fa fa-frown-o"></i>&nbsp; Unanswered Topic</span><br>
-    <span><i class="fa fa-folder-o"></i>&nbsp; No new posts</span>&nbsp;<span><i class="fa fa-folder-o" style="color: magenta;"></i>&nbsp; New posts</span><br>
-    <span><i class="fa fa-fire"></i>&nbsp; Popular Topic</span><br>
-    <span><i class="fa fa-rocket"></i>&nbsp; High Engagement Topic</span><br>
-    <span><i class="fa fa-lock"></i>&nbsp; Closed Topic</span><br>
-    <span><i class="fa fa-thumb-tack"></i>&nbsp; Sticky Topic</span>
+﻿@using SnitzCore.Data.Interfaces
+@inject ISnitzConfig SnitzConfig
+<div class="forum-info note rounded mt-1">
+    <span><i class="fa fa-frown-o"></i>&nbsp; @Localizer["lblNoReplyTopic"]</span><br/>
+    <span><i class="fa fa-folder-o"></i>&nbsp; @Localizer["lblOldPosts"]</span>&nbsp;
+    <span><i class="fa fa-folder-o" style="color: magenta;"></i>&nbsp; @Localizer["lblNewPosts"]</span><br/>
+    <span><i class="fa fa-fire"></i>&nbsp; @Localizer["lblHotTopic", new object[] { SnitzConfig.GetIntValue("INTHOTTOPICNUM",25)}]</span>&nbsp;
+    <span><i class="fa fa-rocket"></i>&nbsp; @Localizer["lblSuperHotTopic"]</span><br/>
+    <span><i class="fa fa-lock"></i>&nbsp; @Localizer["lblLockedTopic"]</span><br/>
+    <span><i class="fa fa-thumb-tack"></i>&nbsp; @Localizer["StickyTopics"]</span>
 </div>

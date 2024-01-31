@@ -23,7 +23,7 @@ namespace SnitzCore.Service
         {
             var lastpost = _dbContext.Forums.OrderByDescending(f=>f.LastPost).First();
 
-            return _dbContext.Posts.SingleOrDefault(p=>p.Id == lastpost.LatestTopicId);
+            return _dbContext.Posts.Single(p=>p.Id == lastpost.LatestTopicId);
         }
 
         public IEnumerable<SnitzConfig> GetConfig()

@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IQueryable<SnitzCore.Data.Models.LanguageResource>
+
+@{
+    ViewBag.Title = "Translation Manager";
+    Layout = "_MasterLayout";
+}
+<div class="mt-3">
+    <legend>@ViewBag.Title</legend>
+    <hr />
+    <ul class="list-unstyled"></ul>
+    <select id="ResourceSet" class="form-select mb-3">
+        @foreach (var lang in Model.GroupBy(l=>l.ResourceSet))
+        {
+            <option value="@lang.Key">@lang.Key</option>
+        }
+    </select>
+    <div class="card" id="resource-card"></div>
+
+    <form asp-action="SaveSettings" asp-controller="LanguageManager" method="POST" data-ajax="true" data-ajax-update="#result" class="mt-3">
+    </form>
+</div>
+@section Scripts
+{
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.unobtrusive-ajax.js"></script>
+    <script>
+        $(document).on("change", "#ResourceSet",
+            function() {
+                $('#resource-card').load("/LanguageManager/ResourceSet/" + $(this).val());
+            });
+        $(document).ready(function() {
+                $('#resource-card').load("/LanguageManager/ResourceSet/Admin");
+            });
+    </script>
+}

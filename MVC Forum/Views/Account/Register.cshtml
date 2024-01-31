@@ -5,10 +5,7 @@
 @using SnitzCore.Data.Extensions
 @using MVCForum.TagHelpers
 @model MVCForum.Models.User.UserCreateModel
-@inject ISnitzConfig Config
-@{
-    var requiredFields = Config.GetRequiredMemberFields();
-}
+
 @section Styles
 {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
@@ -44,7 +41,7 @@
     <div class="center m-2 ">
         <div class="subforum col-6 p-2 bg-form border border-dark rounded">
             <h1 class="bg-dark text-white p-2">Required Details</h1>
-            @foreach (var field in requiredFields)
+            @foreach (var field in Model.RequiredFields!)
             {
                 var fieldname = field.Replace("STRREQ", "STR");
                 @foreach (PropertyInfo property in typeof(Member).GetProperties().Where(p => !p.SystemProperty() && p.GetPropertyDisplayCheck<Member>() == fieldname).OrderBy(p => p.PropertyOrder()))
@@ -53,8 +50,8 @@
                 }
             }
             <div class="mb-3">
-                <a asp-controller="Forum" asp-action="Index" class="btn btn-danger">Cancel</a>
-                <button name="submit" type="submit" class="btn btn-primary">Register</button>
+                <a href="/Forums" title="Cancel user creation" class="btn btn-danger">Cancel</a>
+                <button name="submit" type="submit" class="btn btn-primary" title="Register the user">Register</button>
             </div>
         </div>
     </div>
@@ -94,14 +91,11 @@
     <script>
 
         $(function () {
-            $('.datepicker').datepicker({
+            $('.date').datepicker({
                 autoclose: true,
                 format: {
                     /*
-                     * Say our UI should display a week ahead,
-                     * but textbox should store the actual date.
-                     * This is useful if we need UI to select local dates,
-                     * but store in UTC
+                     * Convert to Forum datestring format,
                      */
 
                     toDisplay: function (date, format, language) {

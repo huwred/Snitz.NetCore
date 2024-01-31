@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model MVC_Forum.Models.Forum.PrivateMessageIndexModel
+@model MVCForum.Models.PrivateMessage.PrivateMessageIndexModel
 @{
     var inboxActive = Model.Inbox != null ? "active" : "";
     var outboxActive = Model.Outbox != null ? "active" : "";
@@ -10,13 +10,13 @@
         <div class="btn-group btn-dark btn-md ">
         <a class="btn pm-button @inboxActive" asp-controller="PrivateMessage" asp-action="Inbox" title="Inbox"><i class="fa fa-sign-in fa-rotate-90"></i><span class="d-none d-md-inline"> Inbox</span></a>
             <a class="btn pm-button @outboxActive" asp-controller="PrivateMessage" asp-action="Outbox" title="Sent items"><i class="fa fa-sign-out fa-rotate-270"></i><span class="d-none d-md-inline"> Sent items</span></a>
-            <a class="btn pm-message" data-val="" data-target="NewMessage" title="" data-toggle="tooltip" href="#" data-original-title="New private message"><i class="fa fa-1_5x fa-envelope"></i><span class="d-none d-md-inline"> New message</span></a>
-            <a class="btn pm-send" style="display: none;" title="Send private message" data-toggle="tooltip" href="#" data-target="SendPMsg"><i class="fa fa-1_5x fa-send"></i><span class="d-none d-md-inline"> Send message</span></a>
-    <a class="btn pm-draft" style="display: none;" title="!*en_PrivateMessage.SaveDraft*!" data-toggle="tooltip" href="#" data-target="SendPMsg"><i class="fa fa-1_5x fa-save"></i></a>
-            <a class="btn pm-delete" title="" data-toggle="tooltip" href="#" title="Delete private message(s)"><i class="fa fa-1_5x fa-trash"></i><span class="d-none d-md-inline"> Delete</span></a>
-    <a style="display:none;" href="/mvc/Home/FileUpload" class="btn pm-attach modal-link" title="" data-original-title="Upload"><span class="fa fa-1_5x fa-paperclip"></span></a>
-            <a class="btn pm-settings" data-target="Settings" data-val="1" title="Settings" data-toggle="tooltip" href="#"><i class="fa fa-1_5x fa-cog"></i><span class="d-none d-md-inline"> Settings</span></a>
-            <a class="btn pm-button" data-target="SearchMessages" data-val="1" title="" data-toggle="tooltip" href="#" data-original-title="Search"><i class="fa fa-1_5x fa-search"></i><span class="d-none d-md-inline"> Search messages</span></a>
+            <a class="btn pm-message" data-val="" data-target="NewMessage" title="" data-toggle="tooltip" href="#" data-original-title="New private message"><i class="fa fa-envelope"></i><span class="d-none d-md-inline"> New message</span></a>
+            <a class="btn pm-send" style="display: none;" title="Send private message" data-toggle="tooltip" href="#" data-target="SendPMsg"><i class="fa fa-send"></i><span class="d-none d-md-inline"> Send message</span></a>
+    <a class="btn pm-draft" style="display: none;" title="!*en_PrivateMessage.SaveDraft*!" data-toggle="tooltip" href="#" data-target="SendPMsg"><i class="fa fa-save"></i></a>
+            <a class="btn pm-delete" title="" data-toggle="tooltip" href="#" title="Delete private message(s)"><i class="fa fa-trash"></i><span class="d-none d-md-inline"> Delete</span></a>
+    <a style="display:none;" href="/mvc/Home/FileUpload" class="btn pm-attach modal-link" title="" data-original-title="Upload"><span class="fa fa-paperclip"></span></a>
+            <a class="btn pm-settings" data-target="Settings" data-val="1" title="Settings" data-toggle="tooltip" href="#"><i class="fa fa-cog"></i><span class="d-none d-md-inline"> Settings</span></a>
+            <a class="btn pm-button" data-target="SearchMessages" data-val="1" title="" data-toggle="tooltip" href="#" data-original-title="Search"><i class="fa fa-search"></i><span class="d-none d-md-inline"> Search messages</span></a>
     </div>
 </div>
     <div class="row">
@@ -41,7 +41,6 @@
 @section Scripts
 {
     <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
-
     <script>
 
         $('[class^="pmread_"]').on("click",
@@ -103,6 +102,14 @@
         });
         $(document).on("click", ".fa-share", function (e) {
             $('#pm-message').load("/PrivateMessage/Forward/" + $(this).data("id"), function () {
+                ValidateForms();
+                revalidate();
+            });
+            e.stopPropagation();
+            return false;
+        });
+        $(document).on("click", ".fa-search", function (e) {
+                $('#pm-message').load("/PrivateMessage/SearchMessages/" + $(this).data("id"), function () {
                 ValidateForms();
                 revalidate();
             });

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using MVCForum.Models.Post;
 using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
@@ -14,27 +13,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Hosting;
 
 namespace MVCForum.Controllers
 {
     [CustomAuthorize]
-    public class TopicController : Controller
+    public class TopicController : SnitzController
     {
         private readonly IPost _postService;
         private readonly IForum _forumService;
-        private readonly IMember _memberService;
         private readonly UserManager<ForumUser> _userManager;
-        public TopicController(IPost postService, IForum forumService, UserManager<ForumUser> userManager,IMember memberService)
+
+        public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,
+            IPost postService, IForum forumService, UserManager<ForumUser> userManager) : base(memberService, config, localizerFactory)
         {
             _postService = postService;
             _forumService = forumService;
             _userManager = userManager;
-            _memberService = memberService;
         }
 
+        [Route("{id:int}")]
+        [Route("Topic/{id}")]
+        [Route("Topic/Index/{id}")]
         public IActionResult Index(int id,int page = 1, int pagesize = 20, string sortdir="asc", int? replyid = null)
         {
-            var post = _postService.GetTopicWithRelated(id);
+            var post = _postService.GetTopic(id);
+            if (post.ReplyCount > 0)
+            {
+                post = _postService.GetTopicWithRelated(id);
+            }
             if (!HttpContext.Session.Keys.Contains("TopicId_"+ id))
             {
                 HttpContext.Session.SetInt32("TopicId_"+ id,1);
@@ -51,66 +59,75 @@ namespace MVCForum.Controllers
             
             ViewData["Title"] = post.Title;
             var totalCount = post.Replies?.Count();
-            var pageCount = (int)Math.Ceiling((double)totalCount / pagesize);
+            var pageCount = 1;
+            if (totalCount > 0)
+            {
+                pageCount = (int)Math.Ceiling((double)totalCount! / pagesize);
+            }
 
-            PagedList<PostReply> pagedReplies = PagedReplies(page, pagesize, sortdir, post);
+            PagedList<PostReply>? pagedReplies = PagedReplies(page, pagesize, sortdir, post);
             //todo: if we have a replyid, is it in the current set, otherwise skip forwards
             if (replyid.HasValue)
             {
-                while (pagedReplies.All(p => p.Id != replyid))
+                while (pagedReplies != null && pagedReplies.All(p => p.Id != replyid))
                 {
                     page += 1;
                     pagedReplies = PagedReplies(page, pagesize, sortdir, post);                    
                 }
             }
 
-            var replies = BuildPostReplies(pagedReplies);
+            IEnumerable<PostReplyModel>? replies = null;
+            if (pagedReplies != null)
+            {
+                replies = BuildPostReplies(pagedReplies);
+
+            }
             var model = new PostIndexModel()
             {
                 Id = post.Id,
                 Title = post.Title,
-                Author = post.Member,
-                AuthorId = post.Member.Id,
+                Author = post.Member!,
+                AuthorId = post.Member!.Id,
                 Views = post.ViewCount,
-                IsLocked = post.Status == 0,
+                IsLocked = post.Status == 1,
                 //AuthorRating = post.User?.Rating ?? 0,
-                AuthorName = post.Member.Name ?? "Unknown",
+                AuthorName = post.Member?.Name ?? "Unknown",
                 //AuthorImageUrl = post.User?.ProfileImageUrl ?? "/images/avatar.png",
                 Created = post.Created.FromForumDateStr(),
                 Content = post.Content,
                 Replies = replies,
-                ForumId = post.Forum.Id,
+                ForumId = post.Forum!.Id,
                 ForumName = post.Forum.Title,
                 PageNum = page,
                 PageCount = pageCount,
-                SortDir = sortdir
+                SortDir = sortdir,
+                Edited = post.LastEdit?.FromForumDateStr(),
+                EditedBy = post.LastEditby == null ? "" : _memberService.GetMemberName(post.LastEditby.Value)
             };
-            var routeValuesDictionary = new RouteValueDictionary
-            {
-                { "page", page }
-            };
+
             return View(model);
         }
 
         [Authorize]
-        public IActionResult Create(int id)
+        public async Task<IActionResult> Create(int id)
         {
-            var member = _memberService.GetById(User).Result;
+            var member = await _memberService.GetById(User);
             var forum = _forumService.GetById(id);
             var model = new NewPostModel()
             {
                 Id = 0,
+                CatId = forum.CategoryId,
                 ForumName = forum.Title,
                 ForumId = id,
                 IsPost = true,
-                AuthorName = User.Identity?.Name,
-                UseSignature = member.SigDefault == 1,
+                AuthorName = User.Identity?.Name!,
+                UseSignature = member!.SigDefault == 1,
                 Lock = false,
                 Sticky = false,
                 DoNotArchive = false,
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
-            var catPage = new MvcBreadcrumbNode("", "Category", forum.Category.Name){ Parent = homePage,RouteValues = new{id=forum.Category.Id}};
+            var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Create", "Topic", "New Post") { Parent = forumPage };
             ViewData["BreadcrumbNode"] = topicPage;
@@ -118,10 +135,10 @@ namespace MVCForum.Controllers
             return View(model);
         }
         [Authorize]
-        public IActionResult Quote(int id)
+        public async Task<IActionResult> Reply(int id)
         {
 
-            var member = _memberService.GetById(User).Result;
+            var member = await _memberService.GetById(User);
             var topic = _postService.GetTopicWithRelated(id);
             
             var forum = _forumService.GetById(topic.ForumId);
@@ -130,16 +147,48 @@ namespace MVCForum.Controllers
                 TopicId = id,
                 ForumName = forum.Title,
                 ForumId = topic.ForumId,
+                CatId = forum.CategoryId,
                 IsPost = false,
-                Content = $"[quote]{topic.Content}[/quote=Originally posted by {topic.Member.Name}]",
-                AuthorName = member.Name,
+                AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
                 Lock = topic.Status == 1,
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
-            var catPage = new MvcBreadcrumbNode("", "Category", forum.Category.Name){ Parent = homePage,RouteValues = new{id=forum.Category.Id}};
+            var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
+            var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
+            var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
+            var replyPage = new MvcBreadcrumbNode("Quote", "Topic", "Create Reply") { Parent = topicPage };
+            ViewData["BreadcrumbNode"] = replyPage;
+
+            return View("Create", model);
+
+        }
+        [Authorize]
+        public async Task<IActionResult> QuoteAsync(int id)
+        {
+
+            var member = await _memberService.GetById(User);
+            var topic = _postService.GetTopicWithRelated(id);
+            
+            var forum = _forumService.GetById(topic.ForumId);
+            var model = new NewPostModel()
+            {
+                TopicId = id,
+                ForumName = forum.Title,
+                ForumId = topic.ForumId,
+                CatId = forum.CategoryId,
+                IsPost = false,
+                Content = $"[quote]{topic.Content}[/quote=Originally posted by {topic.Member?.Name}]",
+                AuthorName = member!.Name,
+                UseSignature = member.SigDefault == 1,
+                Lock = topic.Status == 1,
+                Sticky = topic.IsSticky == 1,
+                DoNotArchive = topic.ArchiveFlag == 1,
+            };
+            var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
+            var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
             var replyPage = new MvcBreadcrumbNode("Quote", "Topic", "Reply with Quote") { Parent = topicPage };
@@ -149,10 +198,10 @@ namespace MVCForum.Controllers
 
         }
         [Authorize]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
 
-            var member = _memberService.GetById(User).Result;
+            var member = await _memberService.GetById(User);
             var topic = _postService.GetTopicWithRelated(id);
             
             var forum = _forumService.GetById(topic.ForumId);
@@ -162,18 +211,19 @@ namespace MVCForum.Controllers
                 TopicId = id,
                 ForumName = forum.Title,
                 ForumId = topic.ForumId,
+                CatId = forum.CategoryId,
                 Title = topic.Title,
                 IsPost = true,
                 Content = topic.Content,
-                AuthorName = member.Name,
+                AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 0,
+                Lock = topic.Status == 1,
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = topic.Created.FromForumDateStr(),
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
-            var catPage = new MvcBreadcrumbNode("", "Category", forum.Category.Name){ Parent = homePage,RouteValues = new{id=forum.Category.Id}};
+            var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
             var replyPage = new MvcBreadcrumbNode("Edit", "Topic", "Edit Post") { Parent = topicPage };
@@ -183,10 +233,10 @@ namespace MVCForum.Controllers
 
         }
         [Authorize]
-        public IActionResult QuoteReply(int id)
+        public async Task<IActionResult> QuoteReply(int id)
         {
 
-            var member = _memberService.GetById(User).Result;
+            var member = await _memberService.GetById(User);
             var reply = _postService.GetReply(id);
             
             var topic = _postService.GetTopicWithRelated(reply.PostId);
@@ -194,11 +244,12 @@ namespace MVCForum.Controllers
             {
                 Id = 0,
                 TopicId = topic.Id,
-                ForumName = topic.Forum.Title,
+                ForumName = topic.Forum!.Title,
                 ForumId = topic.ForumId,
+                CatId = topic.CategoryId,
                 IsPost = false,
-                Content = $"[quote]{reply.Content}[/quote=Originally posted by {reply.Member.Name}]<br/>",
-                AuthorName = member.Name,
+                Content = $"[quote]{reply.Content}[/quote=Originally posted by {reply.Member!.Name}]<br/>",
+                AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
                 Lock = topic.Status == 1,
                 Sticky = topic.IsSticky == 1,
@@ -206,7 +257,7 @@ namespace MVCForum.Controllers
                 Created = DateTime.UtcNow
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
-            var catPage = new MvcBreadcrumbNode("", "Category", topic.Category.Name){ Parent = homePage,RouteValues = new{id=topic.Category.Id}};
+            var catPage = new MvcBreadcrumbNode("", "Category", topic.Category!.Name){ Parent = homePage,RouteValues = new{id=topic.Category.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", topic.Forum.Title){ Parent = catPage,RouteValues = new{id=topic.Forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
             var replyPage = new MvcBreadcrumbNode("Quote", "Topic", "Reply with Quote") { Parent = topicPage };
@@ -216,29 +267,30 @@ namespace MVCForum.Controllers
 
         }
         [Authorize]
-        public IActionResult EditReply(int id)
+        public async Task<IActionResult> EditReply(int id)
         {
 
-            var member = _memberService.GetById(User).Result;
+            var member = await _memberService.GetById(User);
             var reply = _postService.GetReply(id);
             var topic = _postService.GetTopicWithRelated(reply.PostId);
             var model = new NewPostModel()
             {
                 Id = id,
                 TopicId = topic.Id,
-                ForumName = topic.Forum.Title,
+                ForumName = topic.Forum!.Title,
                 ForumId = topic.ForumId,
+                CatId = topic.CategoryId,
                 IsPost = false,
                 Content = reply.Content,
-                AuthorName = member.Name,
+                AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 0,
+                Lock = topic.Status == 1,
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = reply.Created.FromForumDateStr(),
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
-            var catPage = new MvcBreadcrumbNode("", "Category", topic.Category.Name){ Parent = homePage,RouteValues = new{id=topic.Category.Id}};
+            var catPage = new MvcBreadcrumbNode("", "Category", topic.Category!.Name){ Parent = homePage,RouteValues = new{id=topic.Category.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", topic.Forum.Title){ Parent = catPage,RouteValues = new{id=topic.Forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
             var replyPage = new MvcBreadcrumbNode("Quote", "Topic", "Edit Reply") { Parent = topicPage };
@@ -250,15 +302,21 @@ namespace MVCForum.Controllers
 
         [HttpPost]
         [Authorize]
+        [Route("AddPost/")]
         public async Task<IActionResult> AddPost(NewPostModel model)
         {
             var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId!);
 
-            var post = BuildPost(model, user.MemberId);
+            var post = BuildPost(model, user!.MemberId);
             if (model.TopicId != 0)
             {
-                post.Created = model.Created.ToForumDateStr();
+                post.Title = model.Title;
+                post.IsSticky = (short)(model.Sticky ? 1 : 0);
+                post.Sig = (short)(model.UseSignature ? 1 : 0);
+                post.Status = (short)(model.Lock ? 1 : 0);
+                post.ArchiveFlag = model.DoNotArchive ? 1 : 0;
+                post.Content = model.Content;
                 post.LastEdit = DateTime.UtcNow.ToForumDateStr();
                 post.LastEditby = user.MemberId;
                 await _postService.Update(post);
@@ -274,57 +332,62 @@ namespace MVCForum.Controllers
         }
         [HttpPost]
         [Authorize]
+        [Route("AddReply/")]
         public async Task<IActionResult> AddReply(NewPostModel model)
         {
             var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId);
-            var post = BuildReply(model, user.MemberId);
+            var user = await _userManager.FindByIdAsync(userId!);
+            var reply = BuildReply(model, user!.MemberId);
             if (model.Id != 0)
             {
-                post.Created = model.Created.ToForumDateStr();
-                post.LastEdited = DateTime.UtcNow.ToForumDateStr();
-                post.LastEditby = user.MemberId;
-                await _postService.Update(post);
+                reply.Content = model.Content;
+                reply.Sig = (short)(model.UseSignature ? 1 : 0);
+                reply.LastEdited = DateTime.UtcNow.ToForumDateStr();
+                reply.LastEditby = user.MemberId;
+                await _postService.Update(reply);
             }
             else
             {
-                await _postService.Create(post);
+                await _postService.Create(reply);
             }
-            if (model.Lock || model.Sticky)
-            {
-                //TODO: update topic status
-            }
+            var topic = _postService.GetTopic(reply.PostId);
+            topic.Status = (short)(model.Lock ? 1 : 0);
+            topic.IsSticky = (short)(model.Sticky ? 1 : 0);
+            topic.ArchiveFlag = (short)(model.DoNotArchive ? 1 : 0);
+            _postService?.Update(topic);
             // TODO: Implement User Rating Management
-            return RedirectToAction("Index", "Topic", new { id = post.PostId });
+            return RedirectToAction("Index", "Topic", new { id = reply.PostId });
         }
         [HttpPost]
         [Authorize]
+        [Route("Topic/DeleteReply/")]
         public async Task<IActionResult> DeleteReply(int id)
         {
 
             var member = _memberService.GetById(User).Result;
             var post = _postService.GetReply(id);
             //if this isn't the last post then can't delete it
-            if ((post.MemberId == member.Id && post.Topic.LastPostReplyId != id) && !member.Roles.Contains("Admin"))
+            if ((post.MemberId == member!.Id && post!.Topic!.LastPostReplyId != id) && !member.Roles.Contains("Admin"))
             {
                 ModelState.AddModelError("","Unable to delete this reply");
                 return Json(new { result = false, error = "Unable to delete this reply" });
 
             }
             await _postService.DeleteReply(id);
-            return Json(new { result = true, data = post.Topic.Id });
+            return Json(new { result = true, data = post.Topic!.Id });
 
         }
         [HttpPost]
         [Authorize]
+        [Route("Topic/DeleteTopic/")]
         public async Task<IActionResult> DeleteTopic(int id)
         {
             var member = _memberService.GetById(User).Result;
-            var post = _postService.GetTopicWithRelated(id);
-            if (member.Roles.Contains("Admin") || post.MemberId == member.Id)
+            var post = _postService.GetTopic(id);
+            if (member != null && (member.Roles.Contains("Admin") || post.MemberId == member.Id))
             {
                 await _postService.DeleteTopic(id);
-                return RedirectToAction("Index","Forum",new{id=post.ForumId});
+                return Json(new { result = true, url = Url.Action("Index","Forum", new{id=post.ForumId}) });
 
             }
             
@@ -333,12 +396,13 @@ namespace MVCForum.Controllers
         }
         [HttpPost]
         [Authorize]
+        [Route("Topic/LockTopic/")]
         public async Task<IActionResult> LockTopic(int id, int status)
         {
 
             var member = _memberService.GetById(User).Result;
 
-            if (!member.Roles.Contains("Admin"))
+            if (member != null && !member.Roles.Contains("Admin"))
             {
                 ModelState.AddModelError("","Unable to lock this reply");
                 return Json(new { result = false, error = "Unable to lock Post" });
@@ -349,19 +413,23 @@ namespace MVCForum.Controllers
             return result ? Json(new { result = result, data = id }) : Json(new { result = result, error = "Unable to toggle Status" });
             
         }
-        public IActionResult Print(int id)
+        public async Task<IActionResult> Print(int id)
         {
+            var member = await _memberService.GetById(User);
             throw new NotImplementedException();
         }
-        public IActionResult Send(int id)
+        public async Task<IActionResult> Send(int id)
         {
+            var member = await _memberService.GetById(User);
             throw new NotImplementedException();
         }
 
         private Post BuildPost(NewPostModel model, int memberid)
         {
-            var forum = _forumService.GetById(model.ForumId);
-
+            if (model.TopicId != 0)
+            {
+                return _postService.GetTopic(model.TopicId);
+            }
             return new Post()
             {
                 Id = model.TopicId,
@@ -371,7 +439,7 @@ namespace MVCForum.Controllers
                 MemberId = memberid,
                 //Member = user,
                 ForumId = model.ForumId,
-                CategoryId = forum.CategoryId,
+                CategoryId = model.CatId,
                 //Forum = forum,
                 IsSticky = (short)(model.Sticky ? 1 : 0),
                 ArchiveFlag = model.DoNotArchive ? 1 : 0,
@@ -382,8 +450,10 @@ namespace MVCForum.Controllers
         }
         private PostReply BuildReply(NewPostModel model, int memberid)
         {
-            var topic = _postService.GetTopicWithRelated(model.TopicId);
-
+            if (model.Id != 0)
+            {
+                return _postService.GetReply(model.Id);
+            }
             return new PostReply()
             {
                 Id = model.Id,
@@ -391,9 +461,9 @@ namespace MVCForum.Controllers
                 Created = DateTime.UtcNow.ToForumDateStr(),
                 Status = (short)(model.Lock ? 0 : 1),
                 MemberId = memberid,
-                PostId = topic.Id,
-                ForumId = topic.ForumId,
-                CategoryId = topic.CategoryId,
+                PostId = model.TopicId,
+                ForumId = model.ForumId,
+                CategoryId = model.CatId,
                 Sig = (short)(model.UseSignature ? 1 : 0),
             };
 
@@ -403,21 +473,24 @@ namespace MVCForum.Controllers
             return replies.Select(reply => new PostReplyModel()
             {
                 Id = reply.Id,
-                AuthorId = reply.Member.Id,
+                AuthorId = reply.Member!.Id,
                 Author = reply.Member,
                 AuthorName = reply.Member.Name,
                 //AuthorImageUrl = reply.User.ProfileImageUrl,
                 Created = reply.Created.FromForumDateStr(),
                 Content = reply.Content,
                 AuthorPosts = reply.Member.Posts,
-                AuthorRole = reply.Member.Level
+                AuthorRole = reply.Member.Level,
+                Edited = reply.LastEdited?.FromForumDateStr(),
+                EditedBy = reply.LastEditby == null ? "" : _memberService.GetMemberName(reply.LastEditby.Value)
             });
         }
-        private PagedList<PostReply> PagedReplies(int page, int pagesize, string sortdir, Post post)
+        private PagedList<PostReply>? PagedReplies(int page, int pagesize, string sortdir, Post post)
         {
-            PagedList<PostReply> pagedReplies = sortdir == "asc"
-                ? new PagedList<PostReply>(post.Replies.OrderBy(r => r.Created), page, pagesize)
-                : new PagedList<PostReply>(post.Replies.OrderByDescending(r => r.Created), page, pagesize);
+            if(post.ReplyCount < 1) return null;
+            var pagedReplies = sortdir == "asc"
+                ? new PagedList<PostReply>(post?.Replies?.OrderBy(r => r.Created), page, pagesize)
+                : new PagedList<PostReply>(post?.Replies?.OrderByDescending(r => r.Created), page, pagesize);
             return pagedReplies;
         }
 

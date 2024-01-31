@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Security.Principal;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 
@@ -14,10 +13,10 @@ public class AdminModeratorsViewModel
     public Dictionary<int, string> ForumList { get; set; }
     public Dictionary<int, string>? ModList { get; set; }
     public ICollection<int> ForumModerators { get; set; }
-    public List<Group> Groups { get; set; }
-    public List<Badword> Badwords { get; set; }
+    public List<Group>? Groups { get; set; }
+    public List<Badword>? Badwords { get; set; }
 
-    public List<MemberNamefilter> UserNamefilters { get; set; }
+    public List<MemberNamefilter>? UserNamefilters { get; set; }
 
     public AdminModeratorsViewModel()
     {
@@ -25,7 +24,7 @@ public class AdminModeratorsViewModel
         this.ForumList = new Dictionary<int, string> { { -1, "--Select Forum--" } };
             
     }
-    public AdminModeratorsViewModel(IPrincipal user,IForum forumservice)
+    public AdminModeratorsViewModel(IForum forumservice)
     {
 
         this.ForumList = new Dictionary<int, string> { { -1, "--Select Forum--" } };
@@ -37,7 +36,7 @@ public class AdminModeratorsViewModel
     }
     public class ArchivesViewModel
     {
-        public List<Category> Categories { get; set; }
+        public List<Category>? Categories { get; set; }
         //public List<Forum> Forums { get; set; }
     }
 }

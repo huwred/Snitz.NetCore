@@ -22,7 +22,7 @@ namespace MVCForum.Extensions
                     opt.MigrationsAssembly("MSSqlMigrations");
                 }),
 
-                Sqlite => builder.UseSqlite(configuration.GetConnectionString("SnitzConnection").Replace("|DataDirectory|",path), opt => 
+                Sqlite => builder.UseSqlite(configuration.GetConnectionString("SnitzConnection")?.Replace("|DataDirectory|",path), opt => 
                 {
                     opt.MigrationsAssembly("SqliteMigrations");
                 }),

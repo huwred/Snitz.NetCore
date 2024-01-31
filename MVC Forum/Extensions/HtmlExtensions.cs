@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MVCForum.Models.User;
+using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service;
 using System.Collections.Generic;
@@ -17,37 +19,37 @@ namespace MVCForum.Extensions
         /// <param name="ranking"></param>
         /// <returns></returns>
         public static  HtmlString MemberRankTitle(this IHtmlHelper htmlhelper, Member author,
-            Dictionary<int, MemberRanking> ranking)
+            Dictionary<int, MemberRanking>? ranking,IViewLocalizer language)
         {
 
-            string mTitle = author.Title;
+            string? mTitle = author.Title;
             if (author.Status == 0 || author.Name == "n/a")
             {
-                mTitle =  "Member Locked"; //ResourceManager.GetLocalisedString("tipMemberLocked", "Tooltip");// "Member Locked";
+                mTitle =  language.GetString("tipMemberLocked");
             }
             if (author.Name == "zapped")
             {
-                mTitle = "Zapped Member"; //ResourceManager.GetLocalisedString("tipZapped", "Tooltip");// "Zapped Member";
+                mTitle = language.GetString("tipZapped");
             }
             RankInfoHelper rank = new RankInfoHelper(author, ref mTitle, author.Posts, ranking);
             TagBuilder title = new TagBuilder("span");
             title.AddCssClass("rank-label");
-            title.InnerHtml.AppendHtml(mTitle);
+            if (mTitle != null) title.InnerHtml.AppendHtml(mTitle);
 
             return new HtmlString(title.GetString());
         }
         public static  HtmlString MemberRankStars(this IHtmlHelper htmlhelper, Member author,
-            Dictionary<int, MemberRanking> ranking)
+            Dictionary<int, MemberRanking>? ranking,IViewLocalizer language)
         {
 
-            string mTitle = author.Title;
+            string? mTitle = author.Title;
             if (author.Status == 0 || author.Name == "n/a")
             {
-                mTitle =  "Member Locked"; //ResourceManager.GetLocalisedString("tipMemberLocked", "Tooltip");// "Member Locked";
+                mTitle =  language.GetString("tipMemberLocked");
             }
             if (author.Name == "zapped")
             {
-                mTitle = "Zapped Member"; //ResourceManager.GetLocalisedString("tipZapped", "Tooltip");// "Zapped Member";
+                mTitle = language.GetString("tipZapped");
             }
             RankInfoHelper rank = new RankInfoHelper(author, ref mTitle, author.Posts, ranking);
             TagBuilder stars = new TagBuilder("span");
@@ -57,16 +59,16 @@ namespace MVCForum.Extensions
             return new HtmlString(stars.GetString());
         }
 
-        public static object MemberRankStars(this IHtmlHelper htmlhelper, MemberListingModel author, Dictionary<int, MemberRanking> ranking)
+        public static object MemberRankStars(this IHtmlHelper htmlhelper, MemberListingModel author, Dictionary<int, MemberRanking>? ranking,IViewLocalizer language)
         {
-            string mTitle = author.Title;
+            string? mTitle = author.Title;
             if (author.Member.Status == 0 || author.Member.Name == "n/a")
             {
-                mTitle =  "Member Locked"; //ResourceManager.GetLocalisedString("tipMemberLocked", "Tooltip");// "Member Locked";
+                mTitle =  language.GetString("tipMemberLocked");
             }
             if (author.Member.Name == "zapped")
             {
-                mTitle = "Zapped Member"; //ResourceManager.GetLocalisedString("tipZapped", "Tooltip");// "Zapped Member";
+                mTitle = language.GetString("tipZapped");
             }
             RankInfoHelper rank = new RankInfoHelper(author.Member, ref mTitle, author.Member.Posts, ranking);
             TagBuilder stars = new TagBuilder("span");

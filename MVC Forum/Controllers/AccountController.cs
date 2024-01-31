@@ -20,38 +20,37 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using X.PagedList;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Hosting;
 
 
 namespace MVCForum.Controllers
 {
     
-    public class AccountController : Controller
+    public class AccountController : SnitzController
     {
-        private const string Templatepath = @"Templates";
         private readonly UserManager<ForumUser> _userManager;
         private readonly SignInManager<ForumUser> _signInManager;
-        private readonly IMember _memberService;
         private readonly IEmailSender _emailSender;
-        private readonly Dictionary<int,MemberRanking> _ranking;
+        private readonly Dictionary<int, MemberRanking>? _ranking;
         private readonly ISnitzCookie _cookie;
         private readonly IWebHostEnvironment _env;
         private readonly int _pageSize;
-        private readonly ISnitzConfig _config;
 
-        public AccountController(UserManager<ForumUser> usrMgr, SignInManager<ForumUser> signinMgr, IMember memberService,SnitzCore.Data.Interfaces.IEmailSender mailSender,
-            ISnitzConfig config, ISnitzCookie snitzcookie,IWebHostEnvironment env)
+        public AccountController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,
+            UserManager<ForumUser> usrMgr, SignInManager<ForumUser> signinMgr,
+            ISnitzCookie snitzcookie,IWebHostEnvironment env,IEmailSender mailSender) : base(memberService, config, localizerFactory)
         {
             _userManager = usrMgr;
             _signInManager = signinMgr;
-            this._memberService = memberService;
             _ranking = memberService.GetRankings();
             _cookie = snitzcookie;
             _pageSize = config.DefaultPageSize;
             _emailSender = mailSender;
             _env = env;
-            _config = config;
-            
         }
+
         public IActionResult Index(int pagesize,string? sortOrder,string? sortCol,string? initial, int page=1)
         {
             _memberService.SetLastHere(User);
@@ -63,15 +62,15 @@ namespace MVCForum.Controllers
                 }
             }
             var totalCount = _memberService.GetAll().Count();
-            IEnumerable<Member> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(pagesize, page);
+            IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(pagesize, page);
             var pageCount = (int)Math.Ceiling((double)totalCount / pagesize);
             
 
             var members = memberListingModel.Select(m => new MemberListingModel()
             {
-                Member = m,
-                Id = m.Id,
-                Title = MemberRankTitle(m),
+                Member = m!,
+                Id = m!.Id,
+                Title = MemberRankTitle(m)!,
                 MemberSince = m.Created.FromForumDateStr(),
                 LastPost =
                     !string.IsNullOrEmpty(m.Lastpostdate)
@@ -91,43 +90,50 @@ namespace MVCForum.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Detail(string id)
+        public async Task<IActionResult> Detail(string? id)
         {
-            var currUser = User.Identity?.Name;
-            ForumUser user;
-            var member = _memberService.GetByUsername(id);
+            ForumUser? currUser =  null;
+            if (User.Identity?.Name != null)
+            {
+                currUser = (await _userManager.FindByNameAsync(User.Identity?.Name!))!;
+            }
+            ForumUser? user;
+            Member? member = null;
             if (id != null)
             {
+                _memberService.GetByUsername(id);
                 user = await _userManager.FindByNameAsync(id);
             }
             else
             {
+                //Get current logged in user record because no username passed in
                 var memberid = _userManager.GetUserId(User);
-                user = await _userManager.FindByIdAsync(memberid);
-                member = _memberService.GetByUsername(user.UserName);
+                user = await _userManager.FindByIdAsync(memberid!);
+                member = _memberService.GetByUsername(user?.UserName!);
             }
 
             var model = new MemberDetailModel()
             {
-                Id = member.Id,
-                UserModel = user, 
+                Id = member!.Id,
+                UserModel = user!, 
                 Username = id ?? member.Name,
                 Firstname = member.Firstname,
                 Lastname = member.Lastname,
                 Title = member.Title,
                 Email = user?.Email ?? member.Email,
                 Member = member,
-                CanEdit = currUser == user?.UserName
+                CanEdit = currUser?.UserName == member.Name || _userManager.IsInRoleAsync(currUser!,"Admin").Result
             };
 
-            if (user != null || member != null)
+            if (user != null )
                 return View(model);
             else
                 return RedirectToAction("Index");
         }
+
         [HttpPost]
         [Authorize]
-        public IActionResult Update(Member model)
+        public async Task<IActionResult> Update(Member model)
         {
             if (model.Dob != null)
             {
@@ -138,13 +144,32 @@ namespace MVCForum.Controllers
 
             if (ModelState.IsValid)
             {
-                _memberService.Update(model);
+                if (model.Email != model.Newemail)
+                {
+                    _memberService.Update(model);
+                    var currUser =  _userManager.FindByNameAsync(model.Name).Result;
+                    
+                    //Email has changed send validation email
+                    CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+                    var token = _userManager.GenerateChangeEmailTokenAsync(currUser!,model.Newemail!).Result;
+                    var confirmationLink = Url.Action(nameof(ChangeEmail), "Account", new { token, username = currUser!.UserName }, Request.Scheme);
+                    var message = new EmailMessage(new[] { model.Newemail! }, 
+                        "Confirmation email link", 
+                        ParseTemplate("changeEmail.html","Confirm Account",model.Newemail!,currUser.UserName!, confirmationLink!, cultureInfo));
+            
+                    await _emailSender.SendEmailAsync(message);
+                }
+                else
+                {
+                    _memberService.Update(model);
+                }
+                
                 return RedirectToAction("Detail","Account");
             }
             var mdmodel = new MemberDetailModel()
             {
                 Id = model.Id,
-                UserModel = _userManager.FindByNameAsync(model.Name).Result, 
+                UserModel = _userManager.FindByNameAsync(model.Name).Result!, 
                 Username = model.Name,
                 Firstname = model.Firstname,
                 Lastname = model.Lastname,
@@ -156,20 +181,41 @@ namespace MVCForum.Controllers
         }
 
         [AllowAnonymous]
-        [CustomAuthorizeAttribute(RegCheck = "STRPROHIBITNEWMEMBERS")]
-        public ViewResult Register() => View();
+        [CustomAuthorize(RegCheck = "STRPROHIBITNEWMEMBERS")]
+        public ViewResult Register()
+        {
+            UserCreateModel user = new UserCreateModel();
+            user.RequiredFields = _config.GetRequiredMemberFields().ToList();
+            //Config.GetRequiredMemberFields();
+            return View();
+        }
+
         [HttpPost]
         [AllowAnonymous]
-        [CustomAuthorizeAttribute(RegCheck = "STRPROHIBITNEWMEMBERS")]
+        [CustomAuthorize(RegCheck = "STRPROHIBITNEWMEMBERS")]
         public async Task<IActionResult> Register(UserCreateModel user)
         {
             if (!ModelState.IsValid)
             {
                 return View(user);
             }
-            Member forumMember = new() { Email = user.Email, Name = user.Name, Level = 1, Status = 0,Created = DateTime.UtcNow.ToForumDateStr()};
-                
-            var newmember = _memberService.Create(forumMember);
+            Member forumMember = new()
+            {
+                Email = user.Email, 
+                Name = user.Name, 
+                Level = 1, 
+                Status = 0,
+                Created = DateTime.UtcNow.ToForumDateStr()
+            };
+            var required = new List<KeyValuePair<string, object>>();
+            if (user.RequiredFields != null)
+                foreach (var requiredField in user.RequiredFields)
+                {
+                    required.Add(new KeyValuePair<string, object>(requiredField,
+                        HttpContext.Request.Form[requiredField][0]!));
+                }
+
+            var newmember = _memberService.Create(forumMember, required);
             ForumUser appUser = new()
             {
                 UserName = user.Name,
@@ -186,20 +232,21 @@ namespace MVCForum.Controllers
                     ModelState.AddModelError("", error.Description);
                 return View(user);
             }
-            CultureInfo uiCultureInfo = Thread.CurrentThread.CurrentUICulture;
+
             CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, username = user.Name }, Request.Scheme);
-            var message = new EmailMessage(new string[] { user.Email }, 
+            var message = new EmailMessage(new[] { user.Email }, 
                 "Confirmation email link", 
-                ParseTemplate("confirmEmail.html","Confirm Account",user.Email,user.Name, confirmationLink, cultureInfo));
+                ParseTemplate("confirmEmail.html","Confirm Account",user.Email,user.Name, confirmationLink!, cultureInfo));
             
-             _emailSender.SendEmailAsync(message);
+            await _emailSender.SendEmailAsync(message);
             await _userManager.AddToRoleAsync(appUser, "Visitor");
 
 
             return RedirectToAction(nameof(SuccessRegistration));
         }
+
         [HttpGet]
         public IActionResult SuccessRegistration()
         {
@@ -216,6 +263,7 @@ namespace MVCForum.Controllers
             ModelState.Clear();
             return View(login);
         }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -228,18 +276,33 @@ namespace MVCForum.Controllers
             var returnUrl = login.ReturnUrl ?? Url.Content("~/");
 
             ForumUser? appUser = null;
+            _logger.Warn($"Finding User {login.Username}");
             if (IsValidEmail(login.Username))
             {
-                appUser = await _userManager.FindByEmailAsync(login.Username);
+                try
+                {
+                    _logger.Warn($"Finding User by Email");
+                    appUser = await _userManager.FindByEmailAsync(login.Username);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error($"Multiple accounts with that email {login.Username}",e);
+                    //we will get an error if multiple accounds have the same email;
+                    ModelState.AddModelError(nameof(login.Username), "Multiple accounts with that email, please login with your username");
+                    return View();
+                }
+                
             }
             else
             {
+                _logger.Warn($"Finding User by Name");
                 appUser = await _userManager.FindByNameAsync(login.Username);
             }
             
 
             if (appUser != null)
             {
+                _logger.Warn($"Found {appUser.Email}");
                 await _signInManager.SignOutAsync();
                 Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(appUser, login.Password, login.RememberMe, true);
                 if (result.Succeeded)
@@ -255,31 +318,37 @@ namespace MVCForum.Controllers
                 }
                 if (result.IsLockedOut)
                 {
+                    _logger.Warn($"User is Locked out");
                     var forgotPassLink = Url.Action(nameof(ForgotPassword),"Account", new { }, Request.Scheme);
-                    var content = string.Format("Your account is locked out, to reset your password, please click this link: {0}", forgotPassLink);
-                    var message = new EmailMessage(new string[] { appUser.Email }, "Locked out account information", content);
+                    var content =
+                        $"Your account is locked out, to reset your password, please click this link: {forgotPassLink}";
+                    var message = new EmailMessage(new[] { appUser.Email! }, "Locked out account information", content);
                     await _emailSender.SendEmailAsync(message);
+                    _logger.Warn($"No IdentityUser userEmai sent");
                     ModelState.AddModelError(nameof(login.Username), "The account is locked out");
                     return View();
                 }
                 ModelState.AddModelError(nameof(login.Username), "Invalid Login Attempt");
                 return View();                       
             }
+            _logger.Warn($"No IdentityUser user");
             //No IdentityUser user, so check the member table,
             //if member exists then create IdentityUser.
             var member = _memberService.GetByUsername(login.Username);
             var validpwd = false;
             try
             {
-                validpwd = _memberService.ValidateMember(member, login.Password);
+                _logger.Warn($"Find Old member record");
+                validpwd = _memberService.ValidateMember(member!, login.Password);
             }
             catch (Exception e)
-            {
+            { 
+                _logger.Error("Find Old member record",e);
                 //membership table may not exists
             }
             if (member != null)
             {
-
+                _logger.Warn($"Found Old member record {member?.Name}");
                 ForumUser existingUser = new()
                 {
                     UserName = login.Username,
@@ -292,6 +361,7 @@ namespace MVCForum.Controllers
                 {
                     login.Password = "S0meR@ndom3Str!ng";
                 }
+                _logger.Warn($"Create new Identity user {member?.Name}");
                 IdentityResult result = await _userManager.CreateAsync(existingUser, login.Password);
                 if (result.Succeeded)
                 {
@@ -312,6 +382,7 @@ namespace MVCForum.Controllers
 
             return View(login);
         }
+
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -319,12 +390,12 @@ namespace MVCForum.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
         [HttpGet]
         public IActionResult ForgotPassword()
         {
             return View();
         }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -332,7 +403,7 @@ namespace MVCForum.Controllers
         {
             if (!ModelState.IsValid)
                 return View(forgotPasswordModel);
-            var user = await _userManager.FindByNameAsync(forgotPasswordModel.Username);
+            var user = await _userManager.FindByNameAsync(forgotPasswordModel.Username!);
             if (user == null)
             {
 
@@ -342,18 +413,20 @@ namespace MVCForum.Controllers
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { token, email = user.UserName }, Request.Scheme);
             CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
-            var message = new EmailMessage(new string[] { user.Email }, 
+            var message = new EmailMessage(new[] { user.Email! }, 
                 "Reset password token", 
-                ParseTemplate("forgotPassword.html","Confirm Account",user.Email,user.UserName,callbackUrl, cultureInfo));
+                ParseTemplate("forgotPassword.html","Confirm Account",user.Email!,user.UserName!,callbackUrl!, cultureInfo));
             
             await _emailSender.SendEmailAsync(message);
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
         }
+        
         [AllowAnonymous]
         public IActionResult ForgotPasswordConfirmation()
         {
             return View();
         }
+        
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPassword(string token, string email)
@@ -361,6 +434,7 @@ namespace MVCForum.Controllers
             var model = new ResetPasswordModel { Token = token, Username = email };
             return View(model);
         }
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
@@ -368,20 +442,38 @@ namespace MVCForum.Controllers
         {
             if (!ModelState.IsValid)
                 return View(resetPasswordModel);
-            var user = await _userManager.FindByNameAsync(resetPasswordModel.Username);
+            _logger.Warn($"Reset password for {resetPasswordModel.Username}");
+            var user = await _userManager.FindByNameAsync(resetPasswordModel.Username!);
+            _logger.Warn($"User found={user?.Member?.Name}");
+
             if (user == null)
-                RedirectToAction(nameof(ResetPasswordConfirmation));
-            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordModel.Token, resetPasswordModel.Password);
+                RedirectToAction(nameof(Error));
+
+            _logger.Warn($"Reset request {resetPasswordModel.Password} {resetPasswordModel.Token}");
+            var resetPassResult = await _userManager.ResetPasswordAsync(user!, resetPasswordModel.Token!, resetPasswordModel.Password!);
+            _logger.Warn($"Reset result: {resetPassResult.Succeeded}");
             if(!resetPassResult.Succeeded)
             {
                 foreach (var error in resetPassResult.Errors)
                 {
                     ModelState.TryAddModelError(error.Code, error.Description);
                 }
+                _logger.Warn($"Reset errors:");
+                foreach (IdentityError error in resetPassResult.Errors)
+                {
+                    _logger.Warn($"{error.Code}:{error.Description}");
+                }
                 return View();
+            }
+            if (user!.LockoutEnabled)
+            {
+                _logger.Warn($"Disable lockout");
+                await _userManager.SetLockoutEnabledAsync(user, false);
+                await _userManager.SetLockoutEndDateAsync(user, null);
             }
             return RedirectToAction(nameof(ResetPasswordConfirmation));
         }
+        
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPasswordConfirmation()
@@ -393,6 +485,7 @@ namespace MVCForum.Controllers
         {
             return RedirectToAction("Index","PrivateMessage");
         }
+        
         [AllowAnonymous]
         public IActionResult SetTheme(string theme)
         {
@@ -407,14 +500,15 @@ namespace MVCForum.Controllers
             
             return new JsonResult("OK");
         }
+        
         [HttpPost]
         public IActionResult Search(IFormCollection form)
         {
 
-            var memberListingModel = _memberService.GetFilteredMembers(form["SearchFor"],form["SearchIn"]);
+            var memberListingModel = _memberService.GetFilteredMembers(form["SearchFor"]!,form["SearchIn"]!);
             if (memberListingModel != null)
             {
-                IEnumerable<Member> listingModel = memberListingModel.ToList();
+                IEnumerable<Member>? listingModel = memberListingModel.ToList()!;
                 var totalCount = listingModel.Count();
                 var members = listingModel.Select(m => new MemberListingModel()
                 {
@@ -442,6 +536,7 @@ namespace MVCForum.Controllers
 
             return RedirectToAction("Index");
         }
+        
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string token, string username)
         {
@@ -468,13 +563,41 @@ namespace MVCForum.Controllers
                     await _userManager.RemoveFromRoleAsync(user, "Visitor");
                 }
             }
+            else
+            {
+                var currmember = _memberService.GetByUsername(username);
+                if (user.Email != currmember?.Newemail)
+                {
+                    currmember!.Email = currmember.Newemail!;
+                }
+            }
             return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
         }
+        
+        [HttpGet]
+        public async Task<IActionResult> ChangeEmail(string token, string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            var currmember = _memberService.GetByUsername(username);
+            if (user == null || currmember?.Newemail == null)
+                return View("Error");
+            var result = await _userManager.ChangeEmailAsync(user,currmember.Newemail, token);
+            if (result.Succeeded)
+            {
+                currmember.Email = currmember.Newemail;
+                currmember.Newemail = null;
+                _memberService.Update(currmember);
+            }
+
+            return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
+        }
+        
         [HttpGet]
         public IActionResult Error()
         {
             return View();
         }
+        
         public IActionResult TestEmail()
         {
             throw new NotImplementedException();
@@ -492,17 +615,17 @@ namespace MVCForum.Controllers
                 return false;
             }
         }
-        private string MemberRankTitle(Member author)
+        private string? MemberRankTitle(Member author)
         {
 
             string? mTitle = author.Title;
             if (author.Status == 0 || author.Name == "n/a")
             {
-                mTitle =  "Member Locked"; //ResourceManager.GetLocalisedString("tipMemberLocked", "Tooltip");// "Member Locked";
+                mTitle =  _languageResource["tipMemberLocked"].Value;
             }
             if (author.Name == "zapped")
             {
-                mTitle = "Zapped Member"; //ResourceManager.GetLocalisedString("tipZapped", "Tooltip");// "Zapped Member";
+                mTitle =  _languageResource["tipZapped"].Value;
             }
 
             var rankInfoHelper = new RankInfoHelper(author, ref mTitle, author.Posts, _ranking);
@@ -528,7 +651,7 @@ namespace MVCForum.Controllers
 
             }
 
-      string messageBody = builder.HtmlBody
+            string messageBody = builder.HtmlBody
                 .Replace("[SUBJECT]",subject)
                 .Replace("[DATE]",$"{DateTime.Now:dddd, d MMMM yyyy}")
                 .Replace("[EMAIL]",email)
@@ -539,5 +662,61 @@ namespace MVCForum.Controllers
             return messageBody;
         }
 
+        public IActionResult ShowIP(int id)
+        {
+            var member = _memberService.GetById(id);
+            return Content(member.LastIp);
+            throw new NotImplementedException();
+        }
+
+        public async Task<IActionResult> LockMember(int id)
+        {
+            var member = _memberService.GetById(id);
+            if (member != null)
+            {
+                var user = await _userManager.FindByNameAsync(member.Name);
+                if (user != null && _userManager.IsInRoleAsync(user, "ForumMember").Result)
+                {
+                    return Json(new { result = true, data = id });
+                }
+                member.Status = (short)(member.Status == 1 ? 0 : 1);
+                _memberService.Update(member);
+            }
+
+
+            return Json(new { result = true, data = id });
+
+        }
+
+        [HttpGet]
+        public IActionResult EmailMember(int? id)
+        {
+            var member = _memberService.GetById(id);
+            var vm = new EmailMemberViewModel()
+            {
+                To = member.Email
+            };
+            return PartialView(vm);
+        }
+
+        public IActionResult EmailMember(EmailMemberViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                //Send Email here
+                var message = new EmailMessage(new[] { model.To! },
+                    model.Subject,
+                    model.Message);
+            
+                 _emailSender.SendEmailAsync(message);
+
+                return Json(new { result = true });
+            }
+            else
+            {
+                return PartialView(model);
+            }
+
+        }
     }
 }

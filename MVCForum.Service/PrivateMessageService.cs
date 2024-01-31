@@ -19,7 +19,7 @@ namespace SnitzCore.Service
         }
         public PrivateMessage GetById(int id)
         {
-            return _dbContext.PrivateMessages.FirstOrDefault(pm=>pm.Id == id);
+            return _dbContext.PrivateMessages.First(pm=>pm.Id == id);
         }
 
         public IEnumerable<PrivateMessage> GetAll()
@@ -29,8 +29,7 @@ namespace SnitzCore.Service
 
         public IEnumerable<PrivateMessage> GetAll(int memberid)
         {
-            var result = _dbContext.PrivateMessages.Where(pm=> (pm.From == memberid && pm.HideFrom == 0) || (pm.To == memberid && pm.HideTo == 0)).OrderByDescending(pm=>pm.SentDate);;
-            return result;
+            return _dbContext.PrivateMessages.Where(pm=> (pm.From == memberid && pm.HideFrom == 0) || (pm.To == memberid && pm.HideTo == 0)).OrderByDescending(pm=>pm.SentDate);;
         }
 
         public IEnumerable<PrivateMessage> GetInbox(int memberid)
@@ -88,31 +87,28 @@ namespace SnitzCore.Service
             var privatemsgs = _dbContext.PrivateMessages.Where(pm => todelete.Contains(pm.Id));
             foreach (var privatemsg in privatemsgs)
             {
-                if (privatemsg != null)
+                if (privatemsg.To == memberid)
                 {
-                    if (privatemsg.To == memberid)
+                    if (privatemsg.HideFrom == 1)
                     {
-                        if (privatemsg.HideFrom == 1)
-                        {
-                            _dbContext.Remove(privatemsg);
-                        }
-                        else
-                        {
-                            privatemsg.HideTo = 1;
-                        }
+                        _dbContext.Remove(privatemsg);
                     }
-                    else if (privatemsg.From == memberid)
+                    else
                     {
-                        if (privatemsg.HideTo == 1)
-                        {
-                            _dbContext.Remove(privatemsg);
-                        }
-                        else
-                        {
-                            privatemsg.HideFrom = 1;
-                        }
+                        privatemsg.HideTo = 1;
                     }
-                }                
+                }
+                else if (privatemsg.From == memberid)
+                {
+                    if (privatemsg.HideTo == 1)
+                    {
+                        _dbContext.Remove(privatemsg);
+                    }
+                    else
+                    {
+                        privatemsg.HideFrom = 1;
+                    }
+                }
             }
             await _dbContext.SaveChangesAsync();
         }
@@ -160,13 +156,18 @@ namespace SnitzCore.Service
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
 
         }
 
+        public void Create(PrivateMessage postmodel)
+        {
+            _dbContext.PrivateMessages.Add(postmodel);
+            _dbContext.SaveChanges();
+        }
 
 
         public IEnumerable<int> GetBlockedMembers(int memberid)

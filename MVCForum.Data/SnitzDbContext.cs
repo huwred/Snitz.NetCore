@@ -42,7 +42,7 @@ namespace SnitzCore.Data
                 PhoneNumber = "+111111111111",
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true,
-                PasswordHash = hasher.HashPassword(null, "Pa$$w0rd"),
+                PasswordHash = hasher.HashPassword(null!, "Pa$$w0rd"),
                 SecurityStamp = Guid.NewGuid().ToString("D")
             });
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(

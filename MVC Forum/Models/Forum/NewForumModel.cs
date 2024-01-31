@@ -10,9 +10,11 @@ namespace MVCForum.Models.Forum
         [Required]
         public int Category { get; set; }
         [Required]
-        public string Subject { get; set; }
+        public string Subject { get; set; } = null!;
+
         [Required]
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
+
         public ForumType Type { get; set; }
 
         public int Order { get; set; } = 99;
@@ -24,6 +26,6 @@ namespace MVCForum.Models.Forum
 
         [Display(Name="Increment post count")]
         public bool IncrementMemberPosts { get; set; } = true;
-        public Dictionary<int,string> CategoryList { get; set; }
+        public Dictionary<int, string>? CategoryList { get; set; }
     }
 }

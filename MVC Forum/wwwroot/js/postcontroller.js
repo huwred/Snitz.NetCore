@@ -27,7 +27,6 @@ $(document).on("click",".reply-del", function() {
                 id: postid
             },
             function(data, status){
-                console.log(data.result);
                 if (!data.result) {
                     alert(data.error);
                 } else {
@@ -37,46 +36,59 @@ $(document).on("click",".reply-del", function() {
         
     } 
 });
-$(document).on("click",".post-del", function() {
+$(document).on("click",".post-del", function(e) {
+    e.preventDefault();
+    var postid = $(this).data("id");
+    var href = $(this).attr('href');
+    $('#confirmModal #confirm-body').html('<p>You are about to Delete this Topic.</p><p>Do you wish to proceed?</p>');
+    $('#confirmModal').data('id', postid).data('url', href).modal('show');
 
-    if (confirm("Are you sure!") === true) {
-        var postid = $(this).data("id");
+    $('#confirmModal').on('click','#btnYes',function(e) {
+        // handle deletion here
+        e.preventDefault();
         $.post("/Topic/DeleteTopic",
             {
                 id: postid
             },
             function(data, status){
-                console.log(data.result);
+                
                 if (!data.result) {
                     alert(data.error);
                 } else {
-                    location.reload(true);
+                    location.href = data.url;
                 }
             });
-        
-    }
+    });
 });
 
-$(document).on("click",".post-lock", function() {
+$(document).on('click', '.post-lock', function (e) {
+    e.preventDefault();
 
-    if (confirm("Are you sure!") === true) {
-        var postid = $(this).data("id");
-        var poststatus = $(this).data("status");
+    var href = $(this).attr('href');
+    var postid = $(this).data("id");
+    var poststatus = $(this).data("status");
+    //confirm-body
+    $('#confirmModal #confirm-body').html('<p>You are about to Lock this Topic.</p><p>Do you wish to proceed?</p>');
+    $('#confirmModal').data('id', postid).data('url', href).modal('show');
+    $('#confirmModal').on('click','#btnYes',function(e) {
+        // handle deletion here
+        e.preventDefault();
         $.post("/Topic/LockTopic",
             {
                 id: postid,
                 status: poststatus
             },
             function(data, status){
-                console.log(data.result);
+                $('#confirmModal').modal('hide');
                 if (!data.result) {
                     alert(data.error);
                 } else {
+
                     location.reload(true);
                 }
             });
-        
-    }
+                    
+    });        
 });
 
 $(document).on("click",".reply-quote", function() {
@@ -87,7 +99,10 @@ $(document).on("click",".post-quote", function() {
     var postid = $(this).data("id");
     location.href = "/Topic/Quote/" + postid;
 });
-
+$(document).on("click",".post-reply", function() {
+    var postid = $(this).data("id");
+    location.href = "/Topic/Reply/" + postid;
+});
 $(document).on("click",".reply-edit", function() {
 
     var postid = $(this).data("id");

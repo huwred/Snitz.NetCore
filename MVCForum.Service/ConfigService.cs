@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 
 namespace SnitzCore.Service
 {
@@ -16,27 +17,23 @@ namespace SnitzCore.Service
         private readonly SnitzDbContext _dbContext;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ISnitzConfig _snitzConfig;
-        public string CookiePath
-        {
-            get => _config.GetSection("SnitzForums").GetSection("strCookiePath").Value; 
-            set => AddOrUpdateAppSetting("strCookiePath",value); 
-        }
-        string ISnitzConfig.RootFolder
+        private readonly IWebHostEnvironment _env;
+
+        string? ISnitzConfig.RootFolder
         {
             get => _httpContextAccessor.HttpContext?.Request.PathBase == "/" ? "" : _httpContextAccessor.HttpContext?.Request.PathBase;
         }
         string ISnitzConfig.ContentFolder
         {
-            get => GetIntValue("INTPROTECTCONTENT", 0) == 1 ? "ProtectedContent" : "Content";
+            get => GetIntValue("INTPROTECTCONTENT") == 1 ? "ProtectedContent" : "Content";
             set => AddOrUpdateAppSetting("INTPROTECTCONTENT",value);
         }
-        string ISnitzConfig.ForumTitle
+        string? ISnitzConfig.ForumTitle
         {
             get => _config.GetSection("SnitzForums").GetSection("strForumTitle").Value;
             set => AddOrUpdateAppSetting("strForumTitle",value);
         }
-        public string UniqueId
+        public string? UniqueId
         {
             get => _config.GetSection("SnitzForums").GetSection("strUniqueId").Value; 
             set => AddOrUpdateAppSetting("strUniqueId",value);
@@ -50,11 +47,10 @@ namespace SnitzCore.Service
         public IEnumerable<CaptchaOperator> CaptchaOperators {             
             get
             {
-                List<CaptchaOperator> operators = null;
-                if (GetValue("STRCAPTCHAOPERATORS") != null)
+                List<CaptchaOperator> operators = new List<CaptchaOperator>();
+                if (GetValue("STRCAPTCHAOPERATORS","") != "")
                 {
-                    operators = new List<CaptchaOperator>();
-                    var stringCaptcha = GetValue("STRCAPTCHAOPERATORS","").Split(new char[] { ';' },
+                    var stringCaptcha = GetValue("STRCAPTCHAOPERATORS","").Split(new[] { ';' },
                         StringSplitOptions.RemoveEmptyEntries);
                     foreach (string s in stringCaptcha)
                     {
@@ -76,25 +72,46 @@ namespace SnitzCore.Service
             }
         }
 
-        string ISnitzConfig.ForumUrl
+        string? ISnitzConfig.ForumUrl
         {
             get => _config.GetSection("SnitzForums").GetSection("strForumUrl").Value; 
             set => AddOrUpdateAppSetting("strForumUrl",value);
         }
 
-        public ConfigService(SnitzDbContext dbContext,IConfiguration config,IHttpContextAccessor httpContextAccessor)
+        public string? CookiePath
+        {
+            get
+            {
+                if (GetIntValue("STRSETCOOKIETOFORUM") == 1)
+                {
+                    HttpContext Current = _httpContextAccessor.HttpContext;
+                    string AppBaseUrl = $"{Current.Request.PathBase}";
+                    if (AppBaseUrl != "/") 
+                        AppBaseUrl = "/" + AppBaseUrl;
+                    return AppBaseUrl;
+                }
+                return "/";
+            }
+        }
+
+        public ConfigService(SnitzDbContext dbContext,IConfiguration config,IHttpContextAccessor httpContextAccessor,IWebHostEnvironment env)
         {
             _dbContext = dbContext;
             _config = config;
             _httpContextAccessor = httpContextAccessor;
-
+            _env = env;
         }
-        
-        public int GetIntValue(string key, int defaultvalue = 0)
+
+        public void RemoveFromCache(string key)
+        {
+            var service = new InMemoryCache();
+            service.Remove("cfg_" + key);
+        }
+        public int GetIntValue(string? key, int defaultvalue = 0)
         {
             if(string.IsNullOrWhiteSpace(key)) return defaultvalue;
             var service = new InMemoryCache() { DoNotExpire = true };
-            return Int32.Parse(service.GetOrSet("cfg_" + key, () => CachedIntValue(key,defaultvalue)));
+            return int.Parse(service.GetOrSet("cfg_" + key, () => CachedIntValue(key,defaultvalue))!);
 
         }
 
@@ -102,7 +119,7 @@ namespace SnitzCore.Service
         {
             return _dbContext.SnitzConfig.Where(c => c.Key.StartsWith("STRREQ") && c.Value == "1").Select(c=>c.Key);
         }
-        private string CachedIntValue(string key, int defaultvalue)
+        private string? CachedIntValue(string? key, int defaultvalue)
         {
             var config = _dbContext.SnitzConfig.SingleOrDefault(c => c.Key == key);
             if (config != null)
@@ -117,14 +134,14 @@ namespace SnitzCore.Service
         {
             return _dbContext.SnitzConfig.SingleOrDefault(c=>c.Key == key)?.Value ?? "";
         }
-        public string? GetValue(string key, string? defVal = null)
+        public string GetValue(string key, string? defVal = null)
         {
             var service = new InMemoryCache() { DoNotExpire = true };
-            return service.GetOrSet("cfg_" + key, () => CachedStringValue(key,defVal));
+            return service.GetOrSet("cfg_" + key, () => CachedStringValue(key,defVal))!;
 
         }
 
-        private string? CachedStringValue(string key, string? defVal)
+        private string CachedStringValue(string key, string? defVal)
         {
             var result = _dbContext.SnitzConfig.SingleOrDefault(c=>c.Key == key)?.Value;
             return result ?? defVal!;
@@ -147,18 +164,18 @@ namespace SnitzCore.Service
             {
                 var filePath = Path.Combine(AppContext.BaseDirectory, "appSettings.json");
                 string json = File.ReadAllText(filePath);
-                dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+                dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json)!;
                 
                 var sectionPath = key.Split(":")[0];
 
-                if (!string.IsNullOrEmpty(sectionPath)) 
+                if (!string.IsNullOrEmpty(sectionPath))
                 {
                     var keyPath = key.Split(":")[1];
-                    jsonObj[sectionPath][keyPath] = value;
+                    if (jsonObj != null) jsonObj[sectionPath][keyPath] = value;
                 }
-                else 
+                else
                 {
-                    jsonObj[sectionPath] = value; // if no sectionpath just set the value
+                    if (jsonObj != null) jsonObj[sectionPath] = value; // if no sectionpath just set the value
                 }
 
                 string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);

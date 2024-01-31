@@ -6,7 +6,7 @@ namespace MVCForum.Models.Post
     public class PostListingModel :  PostBase
     {
         public string? Title { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = null!;
         public ForumListingModel? Forum { get; set; }
 
         public int RepliesCount;

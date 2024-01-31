@@ -29,9 +29,9 @@ namespace SnitzCore.Data.Extensions
 
             var modelErrors = excludePropertyErrors ?
                 modelState[string.Empty]?.Errors :
-                modelState.SelectMany(entry => entry.Value.Errors);
+                modelState.SelectMany(entry => entry.Value?.Errors!);
 
-            if (modelErrors == null || !modelErrors.Any())
+            if (modelErrors == null)
             {
                 return HtmlString.Empty;
             }

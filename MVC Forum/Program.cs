@@ -1,7 +1,6 @@
 ﻿using BbCodeFormatter;
 using BbCodeFormatter.Processors;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MVCForum.Extensions;
-using MVCForum.MiddleWare;
 using SmartBreadcrumbs.Extensions;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -17,9 +15,16 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,36 +53,27 @@ builder.Services.AddDefaultIdentity<ForumUser>(options =>
     .AddTokenProvider<EmailConfirmationTokenProvider<ForumUser>>("emailconfirmation")
     .AddPasswordValidator<CustomPasswordValidator<ForumUser>>();
 builder.Services.Configure<IdentityOptions>(builder.Configuration.GetSection(nameof(IdentityOptions)));
-builder.Services.Configure<DataProtectionTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromHours(2));
-builder.Services.Configure<EmailConfirmationTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromDays(7));
-builder.Services.AddOutputCache(options =>
-{
-    // Add a base policy that applies to all endpoints
-    options.AddBasePolicy(basePolicy => basePolicy.Expire(TimeSpan.FromSeconds(120)));
-
-    // Add a named policy that applies to selected endpoints
-    options.AddPolicy("Expire20", policyBuilder => policyBuilder.Expire(TimeSpan.FromMinutes(20)));
-});
 builder.Services.ConfigureApplicationCookie(options =>
 {
     //Location for your Custom Access Denied Page
     options.AccessDeniedPath = "/Account/Login";
-
     //Location for your Custom Login Page
     options.LoginPath = "/Account/Login";
 
     // Cookie settings
     options.Cookie.HttpOnly = true;
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
     options.SlidingExpiration = true;
 
 });
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromHours(2));
+builder.Services.Configure<EmailConfirmationTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromDays(14));
+
 builder.Services.AddScoped<ICategory, CategoryService>();
 builder.Services.AddScoped<IMember, MemberService>();
 builder.Services.AddScoped<IForum, ForumService>();
 builder.Services.AddScoped<IPost, PostService>();
 builder.Services.AddScoped<IPrivateMessage, PrivateMessageService>();
-builder.Services.AddScoped<ILanguageResource, LanguageService>();
 builder.Services.AddScoped<ISnitzConfig, ConfigService>();
 builder.Services.AddScoped<ICodeProcessor, BbCodeProcessor>();
 builder.Services.AddScoped<IEmoticon, EmoticonService>();
@@ -85,6 +81,25 @@ builder.Services.AddScoped<ISnitz, SnitzService>();
 builder.Services.AddScoped<ISnitzCookie, SnitzCookie>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+#region localization
+var supportedCultures = new List<CultureInfo>
+{
+    new CultureInfo("en-GB"),
+    new CultureInfo("no"),
+    new CultureInfo("fa"),
+    new CultureInfo("ro")
+};
+builder.Services.AddSingleton<IHtmlLocalizerFactory, EFStringLocalizerFactory>();
+builder.Services.AddMvc().AddViewLocalization();
+
+builder.Services.Configure < RequestLocalizationOptions > (options => {
+
+    options.DefaultRequestCulture = new RequestCulture(culture: "en-GB", uiCulture: "en-GB");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+    options.RequestCultureProviders.Insert(0, new QueryStringRequestCultureProvider());
+});
+#endregion
 builder.Services.AddControllersWithViews();
 builder.Services.AddBreadcrumbs(Assembly.GetExecutingAssembly(), options =>
 {
@@ -98,17 +113,20 @@ builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromSeconds(60);
+    options.IdleTimeout = TimeSpan.FromMinutes(15);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-var emailConfig = builder.Configuration
+EmailConfiguration emailConfig = builder.Configuration
     .GetSection("MailSettings")
-    .Get<EmailConfiguration>();
+    .Get<EmailConfiguration>()!;
 builder.Services.AddSingleton(emailConfig);
-//builder.Services.AddRazorPages();
-//builder.Services.AddTransient<IStartupFilter,
-//    RequestSetOptionsStartupFilter>();
+builder.Services.Configure<SnitzForums>(builder.Configuration.GetSection(SnitzForums.SectionName));
+
+builder.Logging.ClearProviders();
+builder.Logging.AddLog4Net("log4net.config");
+
+
 var app = builder.Build();
 app.MigrateDatabase();
 
@@ -126,20 +144,18 @@ else
 
 app.UseHttpsRedirection();
 app.UseStatusCodePages(context => {
-    var request = context.HttpContext.Request;
     var response = context.HttpContext.Response;
-
     if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
     {
         response.Redirect("/Account/Login");
     }
-
     return Task.CompletedTask;
 });
 
 app.UseStaticFiles();
+app.UseRequestLocalization(app.Services.GetRequiredService < IOptions < RequestLocalizationOptions >> ().Value);
 app.UseRouting();
-//app.UseOutputCache();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
@@ -147,7 +163,7 @@ app.UseSession();
 app.MapControllerRoute(
 name: "default",
 pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.MapRazorPages();
-//app.UseDatabaseErrorPage();
 
 app.Run();

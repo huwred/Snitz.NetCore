@@ -2,16 +2,24 @@
 @model MVCForum.Models.PrivateMessage.PrivateMessagePostModel
 
 <div class="card">
-    <div class="card-header bg-dark">
-        New Private Message
-    </div>            
+    @if (!Model.IsPopUp)
+    {
+        <div class="card-header bg-dark">
+            New Private Message
+        </div>
+    }
+
     <div class="card-body text-dark">
-        <form method="post" asp-controller="PrivateMessage" asp-action="Send" class="needs-validation p-2" novalidate>
+        <form id="sendpm-form" method="post" asp-controller="PrivateMessage" asp-action="Send" class="needs-validation p-2" novalidate>
             <div class="mb-3">
                 <label asp-for="To"></label>
-                <input asp-for="To" disabled="@(Model.IsReply)" class="form-control" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" />
+                <input asp-for="To" disabled="@(Model.IsReply || Model.IsPopUp)" class="form-control" data-autocomplete-url="@Url.Action("AutoCompleteUsername")"/>
+                @if (Model.IsPopUp)
+                {
+                    <input asp-for="To" type="hidden"/>
+                }
                 <span asp-validation-for="To"></span>
-            </div>            
+            </div>
             <div class="mb-3">
                 <label asp-for="Subject"></label>
                 <input asp-for="Subject" class="form-control"/>
@@ -20,53 +28,65 @@
             <div class="mb-3">
                 <label asp-for="Message"></label>
                 <textarea asp-for="Message" class="form-control" id="msg-text" rows="5" required="required" ></textarea>
+                <span asp-validation-for="Message"></span>
                 <div class="invalid-feedback text-danger-emphasis">You must enter a message.</div>
             </div>
+            @if (!Model.IsPopUp)
+            {
+                <div class="form-check">
+                    <label class="form-check-label">
+                        @Html.CheckBoxFor(m => m.Draft, new { @class = "form-check-input" })
+                        <label asp-for="Draft"></label>
+                    </label>
+                </div>
+            }
+
             <div class="form-check">
                 <label class="form-check-label">
-                    @Html.CheckBoxFor(m=>m.Draft,new{@class="form-check-input"})
-                    <label asp-for="Draft"></label>
-                </label>
-            </div>
-            <div class="form-check">
-                <label class="form-check-label">
-                    @Html.CheckBoxFor(m=>m.IncludeSig,new{@class="form-check-input"})
+                    @Html.CheckBoxFor(m => m.IncludeSig, new { @class = "form-check-input" })
                     <label asp-for="IncludeSig"></label>
                 </label>
             </div>
             <div class="form-check mb-3">
                 <label class="form-check-label">
-                    @Html.CheckBoxFor(m=>m.SaveToSent,new{@class="form-check-input"})
+                    @Html.CheckBoxFor(m => m.SaveToSent, new { @class = "form-check-input" })
                     <label asp-for="SaveToSent"></label>
                 </label>
             </div>
             <div class="mb-3 p-2">
-                <button type="submit" class="btn btn-danger cancel" asp-action="Inbox" asp-controller="PrivateMessage">Cancel</button>
+                <input asp-for="IsPopUp" type="hidden"/>
+                @if (!Model.IsPopUp)
+                {
+                    <button id="cancel-send-pm" type="submit" class="btn btn-danger cancel" asp-action="Inbox" asp-controller="PrivateMessage">Cancel</button>
+                }
                 <button type="reset" class="btn btn-warning ">Reset</button>
-                <button type="submit" class="btn btn-success">Send <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                <button id="send-pm" type="submit" class="btn btn-success ">Send <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
             </div>
         </form>
     </div>
 </div>
-<script type="text/javascript" >
-    // Disable form submissions if there are invalid fields
-    (function () {
-        'use strict';
-        window.addEventListener('load', function () {
-            ValidateForms();
-        }, false);
-    })();
+@if (!Model.IsPopUp)
+{
+    <script type="text/javascript" >
+        // Disable form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                ValidateForms();
+            }, false);
+        })();
 
-    tinymce.remove();
-    tinymce.init({
-        selector: 'textarea#msg-text',
-        height: 200,
-        plugins: 'bbcode code emoticons codesample',
-        branding: false,
-        statusbar: false,
-        toolbar: 'undo redo | bold italic underline emoticons codesample | code ',
-        emoticons_database: 'emojiimages',
-        emoticons_images_url: '/images/emoticon/',
-        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-    });
-</script>
+        tinymce.remove();
+        tinymce.init({
+            selector: 'textarea#msg-text',
+            height: 200,
+            plugins: 'bbcode code emoticons codesample',
+            branding: false,
+            statusbar: false,
+            toolbar: 'undo redo | bold italic underline emoticons codesample | code ',
+            emoticons_database: 'emojiimages',
+            emoticons_images_url: '/images/emoticon/',
+            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+        });
+    </script>
+}

@@ -2,6 +2,7 @@
 using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,6 +26,12 @@ public abstract class BaseResourceProvider: ILanguageResource
         new InMemoryCache().Remove("language.strings");
         _resources = null;
     }
+
+    public string? GetLocalisedString(string name, string set, string? defvalue = "")
+    {
+        return GetResourceEntry(name,CultureInfo.CurrentCulture.TwoLetterISOLanguageName,set)?.Value ?? defvalue;
+    }
+
     /// <summary>
     /// Returns a single resource for a specific culture
     /// </summary>

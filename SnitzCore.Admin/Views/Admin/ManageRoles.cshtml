@@ -4,10 +4,11 @@
 @inject IForum ForumService
 @model SnitzCore.BackOffice.ViewModels.AdminRolesViewModel
 @{
+    Layout = null;
     string[] protectedRoles = new[] {"Admin","Administrator", "Moderator","ForumMember", "Disabled"};
 }
 <div class="mb-3">
-    <label for="Username" class="control-label">Enter a username/rolename to add to one of the lists</label>
+    <label name="Username" class="form-label">Enter a username/rolename to add to one of the lists</label>
 </div>
 <div class="row mb-3">
     <div class="col-6" id="role-form">
@@ -15,21 +16,24 @@
             <input type="hidden" id="IsRolenameRequired" name="IsRolenameRequired" value="true"/>
             <div class="mb-3">
                 <ul class="list-group">
-                    @foreach (var role in Model.RoleList)
+                    @if (Model.RoleList != null)
                     {
-                        <li class="list-group-item">
-                            <a href="/Admin/ManageRoles/?role=@role" class="roleLink">@role</a>
-                            <span class="pull-right flip">
-                                @if (!protectedRoles.Contains(role))
+                        foreach (var role in Model.RoleList)
+                        {
+                            <li class="list-group-item">
+                                <a href="/Admin/ManageRoles/?role=@role" class="roleLink">@role</a>
+                                <span class="pull-right">
+                                    @if (!protectedRoles.Contains(role))
+                                    {
+                                        <link-confirm href="/Admin/DeleteRole/?role=@role" title="Delete Role?" config-class="@(@"fa fa-trash-o")" config-key="@role"></link-confirm>
+                                    }
+                                </span>
+                                @if (role != null && role.StartsWith("Forum_"))
                                 {
-                                    <link-confirm href="/Admin/DeleteRole/?role=@role" title="Delete Role?" config-class="fa fa-trash-o" config-key="@role"></link-confirm>
+                                    <div class="form-text">@ForumService.ForumName(role)</div>
                                 }
-                            </span>
-                            @if (role.StartsWith("Forum_"))
-                            {
-                                <div class="form-text">@ForumService.ForumName(role)</div>
-                            }
-                        </li>
+                            </li>
+                        }
                     }
                 </ul>
             </div>
@@ -62,8 +66,8 @@
                 <p>Do you want to proceed?</p>
             </div>
             <div class="modal-footer">
-                <a href="#" id="btnYes" class="btn danger">Yes</a>
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn secondary">No</a>
+                <a href="#" id="btnYes" class="btn btn-danger">Yes</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">No</a>
             </div>
         </div>
     </div>

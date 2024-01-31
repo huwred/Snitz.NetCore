@@ -1,25 +1,4 @@
-﻿// /*
-// ####################################################################################################################
-// ##
-// ## SnitzCookie
-// ##   
-// ## Author:		Huw Reddick
-// ## Copyright:	Huw Reddick, Snitz Forums
-// ## based on code from Snitz Forums 2000 (c) Huw Reddick, Michael Anderson, Pierre Gorissen and Richard Kinser
-// ## Created:		17/06/2020
-// ## 
-// ## The use and distribution terms for this software are covered by the 
-// ## Eclipse License 1.0 (http://opensource.org/licenses/eclipse-1.0)
-// ## which can be found in the file Eclipse.txt at the root of this distribution.
-// ## By using this software in any fashion, you are agreeing to be bound by 
-// ## the terms of this license.
-// ##
-// ## You must not remove this notice, or any other, from this software.  
-// ##
-// #################################################################################################################### 
-// */
-
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using SnitzCore.Data.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -45,8 +24,8 @@ namespace SnitzCore.Data.Models
         {
             _httpContextAccessor = httpContextAccessor;
             _snitzConfig = snitzConfig;
-            string snitzUniqueId = snitzConfig.UniqueId;
-            _cookieCollection.Add(snitzUniqueId);
+            string? snitzUniqueId = snitzConfig.UniqueId;
+            if (snitzUniqueId != null) _cookieCollection.Add(snitzUniqueId);
         }
         public  void LogOut()
         {
@@ -135,7 +114,6 @@ namespace SnitzCore.Data.Models
         #region Active Topic cookies
         public  string? GetActiveRefresh()
         {
-            var cookie = _httpContextAccessor.HttpContext?.Request.Cookies["ActiveRefreshSeconds"];
             return GetCookieValue("ActiveRefreshSeconds");
         }
 
@@ -151,7 +129,7 @@ namespace SnitzCore.Data.Models
 
         public  void SetTopicSince(string value)
         {
-            SetCookie("SinceDateEnum", value);
+            SetCookie("SinceDateEnum", value,DateTime.Now.AddMonths(1));
         }
 
 
@@ -184,7 +162,7 @@ namespace SnitzCore.Data.Models
             _httpContextAccessor.HttpContext?.Response.Cookies.Append(name, value, options);
         }
 
-        private  void ExpireCookie(string name)
+        private  void ExpireCookie(string? name)
         {
 
             if (name != null && _httpContextAccessor.HttpContext?.Request.Cookies[name] != null)

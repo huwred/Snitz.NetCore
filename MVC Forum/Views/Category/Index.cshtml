@@ -24,19 +24,19 @@
         if (!string.IsNullOrWhiteSpace(cat))
         {
             <form>
-                <div class="btn-group">
-                    <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" title="Edit Category" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> Edit Category</span></button>
-                    <button-confirm config-class="fa fa-trash" config-key="@cat" href="/Category/Delete/?id=" title="Delete Category"></button-confirm>
-                    <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" title="New Forum" class="btn btn-outline-success"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> Add Forum</span></button>
+                <div class="btn-group mb-2">
+                    <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" title="@Localizer["tipEditCategory"]" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline">@Localizer["tipEditCategory"]</span></button>
+                    <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@cat" href="/Category/Delete/?id=" title="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
+                    <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" title="@Localizer["tipNewForum"]" class="btn btn-outline-success"><i class="fa fa-folder"></i><span class="d-none d-md-inline">@Localizer["tipNewForum"]</span></button>
                 </div>
             </form>
         }
         else
         {
             <form >
-                <div class="btn-group">
-                    <button asp-controller="Category" type="submit" asp-action="Create" title="Add Category" class="btn btn-outline-warning"><i class="fa fa-folder-open"></i><span class="d-none d-md-inline"> Add Category</span></button>
-                    <button asp-controller="Forum" type="submit" asp-action="Create" title="Add Forum" class="btn btn-outline-warning"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> Add Forum</span></button>
+                <div class="btn-group mb-2">
+                    <button asp-controller="Category" type="submit" asp-action="Create" title="@Localizer["tipNewCategory"]" class="btn btn-outline-warning"><i class="fa fa-folder-open"></i><span class="d-none d-md-inline">@Localizer["tipNewCategory"]</span></button>
+                    <button asp-controller="Forum" type="submit" asp-action="Create" title="@Localizer["tipNewForum"]" class="btn btn-outline-warning"><i class="fa fa-folder"></i><span class="d-none d-md-inline">@Localizer["tipNewForum"]</span></button>
                 </div>
             </form>
         }
@@ -45,11 +45,11 @@
 
     <div class="row">
         <div class="col">
-            @foreach (var categoryForums in Model.ForumList.GroupBy(f => f.CategoryId))
+            @foreach (var categoryForums in Model.ForumList?.GroupBy(f => f.CategoryId)!)
             {
                 <div class="subforum">
                     <div class="subforum-title rounded">
-                        <h1 style="display: inline-block;"><a href="?id=@categoryForums.Key">@categoryForums.FirstOrDefault().CategoryName</a></h1>
+                        <h1 style="display: inline-block;"><a href="/Category/@categoryForums.Key">@categoryForums.FirstOrDefault()?.CategoryName</a></h1>
                     </div>
                     @foreach (var forum in categoryForums)
                     {
@@ -71,20 +71,20 @@
                                     }
                                     else
                                     {
-                                        <h4><a asp-controller="Forum" asp-action="Index" asp-route-id="@forum.Id" asp-route-defaultdays="@((int)forum.DefaultView)">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
+                                        <h4><a href="/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
                                     }
                                     <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
                                 </div>
                                 @if (forum.ForumType != ForumType.WebLink)
                                 {
                                     <div class="subforum-stats subforum-column">
-                                        <span>@forum.Posts Posts | @forum.Topics Topics</span>
+                                        <span>@forum.Posts @Localizer["lblPosts"] | @forum.Topics @Localizer["lblTopics"]</span>
                                     </div>
                                     <div class="subforum-info subforum-column">
                                         @if (forum.LastPostTopicId.HasValue)
                                         {
-                                            <b><a href="/Topic/Index/@forum.LastPostTopicId/?replyid=@forum.LastPostReplyId" title="Go to latest Post">Latest Post</a></b>
-                                            <text>by</text>
+                                            <b><a href="/Topic/Index/@forum.LastPostTopicId/?replyid=@forum.LastPostReplyId" title="Go to latest Post">@Localizer["tipLastPost"]</a></b>
+                                            <text>@Localizer["lblPostedBy"]</text>
                                             <a href="/Account/Detail/@forum.LastPostAuthor?.Name">@forum.LastPostAuthor?.Name</a>
                                             <br>
                                             <small><snitz-datetime datetime="@forum.LastPostDateTime"></snitz-datetime></small>

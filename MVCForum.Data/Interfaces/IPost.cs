@@ -7,6 +7,7 @@ namespace SnitzCore.Data.Interfaces
 {
     public interface IPost
     {
+        Post GetTopic(int id);
         Post GetTopicWithRelated(int id);
         PostReply GetReply(int id);
         IEnumerable<Post> GetAllTopicsAndRelated();

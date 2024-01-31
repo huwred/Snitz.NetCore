@@ -13,5 +13,5 @@ public partial class ForumAllowedMember
     [ForeignKey("Forum")]
     public int ForumId { get; set; }
 
-    public virtual Forum Forum { get; set; }
+    public virtual Forum? Forum { get; set; }
 }

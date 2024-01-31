@@ -47,7 +47,7 @@ namespace MVCForum.TagHelpers
                 output.AddClass("center",HtmlEncoder.Default);
                 return;
             }
-            if (Status == "0")
+            if (Status == "1")
             {
                 output.Attributes.Add("title","Locked");
                 output.AddClass("fa-lock",HtmlEncoder.Default);

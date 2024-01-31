@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="EFStringLocalizerOfT.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="X.PagedList" Version="8.4.7" />

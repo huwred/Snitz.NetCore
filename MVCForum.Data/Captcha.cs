@@ -1,11 +1,10 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Graphics.Skia;
 
-namespace MediaWiz.Forums.Helpers
+namespace SnitzCore.Data
 {
     public class Captcha
     {
@@ -23,13 +22,13 @@ namespace MediaWiz.Forums.Helpers
         ///</example>
         ///</summary>
 
-        public Captcha(int pWidth, int pHeight, int pLength)
+        public Captcha(int pWidth, int pHeight)
         {
             bmp = new(pWidth, pHeight, 1.0f);
             canvas = bmp.Canvas;
             random = new Random();
-
-            question = GetRandomString(pLength);
+            answer = string.Empty;
+            question = GetRandomString();
 
         }
 
@@ -96,7 +95,7 @@ namespace MediaWiz.Forums.Helpers
         /// return the correct answer
         /// </summary>
 
-        public String GetAnswer()
+        public string GetAnswer()
         {
             return answer;
         }
@@ -109,11 +108,11 @@ namespace MediaWiz.Forums.Helpers
             pCanvas.FontColor = Colors.OrangeRed;
             pCanvas.Font = new Font("Tahoma");
             pCanvas.FontSize = 32;
-            pCanvas.DrawString(question.ToString(), strLoc.X, strLoc.Y,HorizontalAlignment.Left);
+            pCanvas.DrawString(question, strLoc.X, strLoc.Y,HorizontalAlignment.Left);
 
             return pCanvas;
         }
-        private string GetRandomString(int length)
+        private string GetRandomString()
         {
             var rand = new Random((int)DateTime.Now.Ticks);
             var allowed = new List<string>() { "plus", "minus" /*,"multiply"*/ };

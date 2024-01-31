@@ -5,7 +5,7 @@ namespace MVCForum.Models.Forum
 {
     public class ForumIndexModel
     {
-        public  IEnumerable<ForumListingModel> ForumList { get; set; }
-        public IEnumerable<PostListingModel> LatestPosts { get; set; }
+        public  IEnumerable<ForumListingModel>? ForumList { get; set; }
+        public IEnumerable<PostListingModel>? LatestPosts { get; set; }
     }
 }

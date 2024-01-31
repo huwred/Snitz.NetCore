@@ -21,4 +21,5 @@ public interface IPrivateMessage
     IEnumerable<PrivateMessageBlocklist> GetBlocklist(int memberid);
     IEnumerable<int> GetBlocksByName(string membername);
     bool BlockListAdd(int memberid, string toblock);
+    void Create(PrivateMessage postmodel);
 }

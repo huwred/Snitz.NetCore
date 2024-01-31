@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Data;
 using System.Threading.Tasks;
 
@@ -27,8 +26,12 @@ namespace SnitzCore.Service
             }
             
             var result = await command.ExecuteScalarAsync();
-            var count = Int32.Parse(result.ToString());
-            return count <= 0;
+            if (result != null)
+            {
+                var count = int.Parse(result.ToString()!);
+                return count <= 0;
+            }
+            return false;
         }
     }
 }

@@ -6,10 +6,10 @@ namespace SnitzCore.Service
 {
     public class RankInfoHelper
     {
-        private readonly Dictionary<int, MemberRanking> _ranking;
+        private readonly Dictionary<int, MemberRanking>? _ranking;
         private int _level;
         private int _repeat;
-        public string Title { get; set; }
+        public string? Title { get; set; }
         private readonly int? _posts;
         private readonly bool _isAdmin;
         private readonly bool _isModerator;
@@ -18,7 +18,7 @@ namespace SnitzCore.Service
             get { return GetStars(); }
         }
 
-        public RankInfoHelper(Member? user, ref string? title, int? posts, Dictionary<int, MemberRanking> rankings)
+        public RankInfoHelper(Member? user, ref string? title, int? posts, Dictionary<int, MemberRanking>? rankings)
         {
             _ranking = rankings;
             _posts = posts;
@@ -46,31 +46,34 @@ namespace SnitzCore.Service
             StringBuilder imageString = new("");
             int imageRepeat = _repeat;// _ranking[_Level + 1].Repeat;
 
-            string rankImage = _ranking[_level + 1].Image;
-            if (_isAdmin)
+            if (_ranking != null)
             {
-                //imageRepeat = _ranking[0].Repeat;
-                rankImage = _ranking[0].Image; //Admin;
-            }
-            else if (_isModerator)
-            {
-                //imageRepeat = _ranking[1].Repeat;
-                rankImage = _ranking[1].Image;
-            }
-            if (_level == 0) return "";
-
-            if (rankImage != "")
-            {
-                for (int ii = 1; ii <= imageRepeat; ii++)
+                string rankImage = _ranking[_level + 1].Image;
+                if (_isAdmin)
                 {
-                    string clientpath =  "/images/rankimages/";
-                    if (rankImage.Contains("."))
+                    //imageRepeat = _ranking[0].Repeat;
+                    rankImage = _ranking[0].Image; //Admin;
+                }
+                else if (_isModerator)
+                {
+                    //imageRepeat = _ranking[1].Repeat;
+                    rankImage = _ranking[1].Image;
+                }
+                if (_level == 0) return "";
+
+                if (rankImage != "")
+                {
+                    for (int ii = 1; ii <= imageRepeat; ii++)
                     {
-                        imageString.AppendFormat("<img src='{0}{1}' alt='star'/>", clientpath, rankImage);
-                    }
-                    else
-                    {
-                        imageString.AppendFormat($"<i class='fa fa-star' alt='star' style='color:{rankImage}'></i>");
+                        string clientpath =  "/images/rankimages/";
+                        if (rankImage.Contains("."))
+                        {
+                            imageString.AppendFormat("<img src='{0}{1}' alt='star'/>", clientpath, rankImage);
+                        }
+                        else
+                        {
+                            imageString.AppendFormat($"<i class='fa fa-star' alt='star' style='color:{rankImage}'></i>");
+                        }
                     }
                 }
             }
@@ -84,19 +87,22 @@ namespace SnitzCore.Service
             string rankTitle = "";
             _level = 0;
 
-            foreach (KeyValuePair<int, MemberRanking> ranking in _ranking)
-            {
-                if (ranking.Key < 2)
-                    continue;
-                if (_posts >= ranking.Value.Posts)
+            if (_ranking != null)
+                foreach (KeyValuePair<int, MemberRanking> ranking in _ranking)
                 {
-                    rankTitle = ranking.Value.Title;
-                    _level++;
-                    _repeat++;
+                    if (ranking.Key < 2)
+                        continue;
+                    if (_posts >= ranking.Value.Posts)
+                    {
+                        rankTitle = ranking.Value.Title;
+                        _level++;
+                        _repeat++;
+                    }
+
+                    if (_posts < ranking.Value.Posts)
+                        break;
                 }
-                if (_posts < ranking.Value.Posts)
-                    break;
-            }
+
             if (_isAdmin)
             {
                 rankTitle = "Forum Administrator";

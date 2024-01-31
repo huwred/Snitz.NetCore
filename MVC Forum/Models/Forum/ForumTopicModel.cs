@@ -1,6 +1,7 @@
 ﻿using MVCForum.Models.Post;
 using SnitzCore.Data.Models;
 using System.Collections.Generic;
+using MVCForum.Extensions;
 
 namespace MVCForum.Models.Forum
 {

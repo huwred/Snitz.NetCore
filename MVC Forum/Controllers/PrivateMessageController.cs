@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MVC_Forum.Models.Forum;
 using MVCForum.Extensions;
 using MVCForum.Models.PrivateMessage;
 using SnitzCore.Data;
@@ -10,28 +9,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using MVCForum.ViewModels;
+using Microsoft.AspNetCore.Mvc.Localization;
 
 namespace MVCForum.Controllers
 {
     [Authorize]
-    public class PrivateMessageController : Controller
+    public class PrivateMessageController : SnitzController
     {
-        private Member _member;
+        private Member? _member;
         private readonly IPrivateMessage _pmService;
-        private readonly IMember _memberService;
 
-        public PrivateMessageController(IPrivateMessage pmService, IMember memberService)
+        public PrivateMessageController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,
+            IPrivateMessage pmService) : base(memberService, config, localizerFactory)
         {
             _pmService = pmService;
-            _memberService = memberService;
-            
-
         }
 
         public IActionResult Index()
         {
             _member = _memberService.GetMember(User);
-            var inbox = _pmService.GetInbox(_member.Id).Select(pm => new PrivateMessageListingModel()
+            var inbox = _pmService.GetInbox(_member!.Id).Select(pm => new PrivateMessageListingModel()
             {
                 Id = pm.Id,
                 Title = pm.Subject,
@@ -55,7 +53,7 @@ namespace MVCForum.Controllers
         public IActionResult Inbox()
         {
             _member = _memberService.GetMember(User);
-            var inbox = _pmService.GetInbox(_member.Id).Select(pm => new PrivateMessageListingModel()
+            var inbox = _pmService.GetInbox(_member!.Id).Select(pm => new PrivateMessageListingModel()
             {
                 Id = pm.Id,
                 Title = pm.Subject,
@@ -77,7 +75,7 @@ namespace MVCForum.Controllers
         public IActionResult Outbox()
         {
             _member = _memberService.GetMember(User);
-            var outbox = _pmService.GetOutbox(_member.Id).Select(pm => new PrivateMessageListingModel()
+            var outbox = _pmService.GetOutbox(_member!.Id).Select(pm => new PrivateMessageListingModel()
             {
                 Id = pm.Id,
                 Title = pm.Subject,
@@ -100,7 +98,6 @@ namespace MVCForum.Controllers
         {
             try
             {
-                var pm = _pmService.GetById(pmid);
                 _pmService.Delete(pmid, userid).RunSynchronously();
                 return Json(new { success = true, responseText= "Your message was deleted!"});
             }
@@ -114,7 +111,7 @@ namespace MVCForum.Controllers
         {
             try
             {
-                _pmService.DeleteMany(form.Delete,form.MemberId);
+                if (form.Delete != null) _pmService.DeleteMany(form.Delete, form.MemberId);
                 return Json(new { success = true, responseText= "Your messages were deleted!"});
             }
             catch (Exception e)
@@ -146,7 +143,7 @@ namespace MVCForum.Controllers
             _member = _memberService.GetMember(User);
             var settings = new PrivateMessageSettingsModel
                 {
-                    EmailNotification = _member.Pmemail == 1, 
+                    EmailNotification = _member!.Pmemail == 1, 
                     SaveSentMessages = _member.Pmsavesent == 1,
                     RecievePM = _member.Pmreceive == 1,
                     BlockedList = _pmService.GetBlocklist(_member.Id)
@@ -161,12 +158,12 @@ namespace MVCForum.Controllers
             _member = _memberService.GetMember(User);
             if (ModelState.IsValid)
             {
-                _member.Pmemail = settings.EmailNotification ? 1 : 0;
+                _member!.Pmemail = settings.EmailNotification ? 1 : 0;
                 _member.Pmreceive = settings.RecievePM ? 1 : 0;
                 _member.Pmsavesent = (short)(settings.SaveSentMessages ? 1 : 0);
                 _memberService.Update(_member);
             }
-            var inbox = _pmService.GetInbox(_member.Id).Select(pm => new PrivateMessageListingModel()
+            var inbox = _pmService.GetInbox(_member!.Id).Select(pm => new PrivateMessageListingModel()
             {
                 Id = pm.Id,
                 Title = pm.Subject,
@@ -193,10 +190,18 @@ namespace MVCForum.Controllers
             };
             return View("Index",model);
         }
-        public IActionResult Create()
+        public IActionResult Create(int? id = null)
         {
+            bool popup = false;
+            string touser = "";
+            if (id != null)
+            {
+                touser = _memberService.GetById(id).Name;
+                popup = true;
+            }
+
             _member = _memberService.GetMember(User);
-            return PartialView(new PrivateMessagePostModel(){SaveToSent = _member.Pmsavesent == 1});
+            return PartialView(new PrivateMessagePostModel(){SaveToSent = _member!.Pmsavesent == 1,To = touser,IsPopUp = popup});
         }
         public IActionResult Reply(int id)
         {
@@ -207,10 +212,10 @@ namespace MVCForum.Controllers
             var header = $"\r\n\r\n\r\n----- Original Message -----\r\nSent: {msgSent.ToForumDisplay()} UTC\r\n";            
             var model = new PrivateMessagePostModel()
             {
-                SaveToSent = _member.Pmsavesent == 1, 
+                SaveToSent = _member?.Pmsavesent == 1, 
                 Subject = "RE:" + message.Subject,
                 Message = $"{header}\r\n {message.Message}",
-                To = _memberService.GetMemberName(message.From),
+                To = _memberService.GetMemberName(message.From)!,
                 IsReply = true
             };
             return PartialView("Create",model);
@@ -220,7 +225,7 @@ namespace MVCForum.Controllers
 
             var message = _pmService.GetById(id);
             var msgSent = message.SentDate.FromForumDateStr();
-            _member = _memberService.GetMember(User);
+            _member = _memberService.GetMember(User)!;
             var header = $"\r\n\r\n\r\n----- Original Message -----\r\nFrom: {_memberService.GetMemberName(message.From)}\r\nSent: {msgSent.ToForumDisplay()} UTC\r\n";            
             var model = new PrivateMessagePostModel()
             {
@@ -235,8 +240,8 @@ namespace MVCForum.Controllers
         public JsonResult AutoCompleteUsername(string term)
         {
             _member = _memberService.GetMember(User);
-            IEnumerable<string> result = _memberService.GetAll().Where(r => r.Name.ToLower().Contains(term.ToLower())).Select(m=>m.Name);
-            var blocked = _pmService.GetBlocklist(_member.Id).Select(l => l.BlockedName);
+            IEnumerable<string> result = _memberService.GetAll().Where(r => r!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
+            var blocked = _pmService.GetBlocklist(_member!.Id).Select(l => l.BlockedName);
             result = result.Where(x => !blocked.Contains(x) && x != _member.Name);
             return Json(result);
         }
@@ -244,7 +249,36 @@ namespace MVCForum.Controllers
         public IActionResult Send(PrivateMessagePostModel postmodel)
         {
             _member = _memberService.GetMember(User);
-            var outbox = _pmService.GetOutbox(_member.Id).Select(pm => new PrivateMessageListingModel()
+            if (ModelState.IsValid)
+            {
+                var recipients = postmodel.To.Split(";");
+                if (postmodel.IncludeSig && !string.IsNullOrWhiteSpace(_member.Signature))
+                {
+                    postmodel.Message += $"<br/><span>{_member.Signature}</span>";
+                }
+                _pmService.Create(new PrivateMessage()
+                {
+                    From = _member.Id, 
+                    To = _memberService.GetByUsername(postmodel.To).Id,
+                    Message = postmodel.Message,
+                    Subject = postmodel.Subject,
+                    SentDate = DateTime.UtcNow.ToForumDateStr(),
+                    SaveSentMessage = (short)(postmodel.SaveToSent ? 1 : 0),
+                });
+                if (postmodel.IsPopUp)
+                {
+                    return Json(new { result = true });
+                }                
+            }
+            else
+            {
+                if (postmodel.IsPopUp)
+                {
+                    return PartialView("Create",postmodel);
+                }
+            }
+
+            var outbox = _pmService.GetOutbox(_member!.Id).Select(pm => new PrivateMessageListingModel()
             {
                 Id = pm.Id,
                 Title = pm.Subject,
@@ -268,7 +302,7 @@ namespace MVCForum.Controllers
         public IActionResult UpdateBlocklist(string blockmember)
         {
             var member = _memberService.GetMember(User);
-            _pmService.BlockListAdd(member.Id,blockmember);
+            _pmService.BlockListAdd(member!.Id,blockmember);
             var inbox = _pmService.GetInbox(member.Id).Select(pm => new PrivateMessageListingModel()
             {
                 Id = pm.Id,
@@ -296,5 +330,21 @@ namespace MVCForum.Controllers
             };
             return View("Index",model);
         }
+
+        public PartialViewResult SearchMessages(int id)
+        {
+            return PartialView("_Search", new PMSearchViewModel());
+        }
+        [HttpPost]
+        public PartialViewResult Search(PMSearchViewModel vm)
+        {
+            //var memberId = -1;
+            //if (!String.IsNullOrWhiteSpace(vm.MemberName))
+            //    memberId = MemberManager.GetUser(vm.MemberName).UserId;
+
+            //var result = PrivateMessage.Find(WebSecurity.CurrentUserId,vm.Term,vm.SearchIn, memberId, vm.PhraseType,vm.SearchByDays);
+            return PartialView("_SearchResult"/*, result*/);
+        }
+
     }
 }

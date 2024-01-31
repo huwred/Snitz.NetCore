@@ -8,11 +8,12 @@ namespace MVCForum.Models.Post
     {
         public new int Id { get; set; }
         [Required]
-        public string ForumName { get; set; }
+        public string? ForumName { get; set; }
         public int ForumId { get; set; }
-        public string ImageUrl { get; set; }
+        public int CatId { get; set; }
+        public string? ImageUrl { get; set; }
         [RequiredIfTrue(nameof(IsPost),ErrorMessage = "Please provide a Title for the Topic")]
-        public string Title { get; set; }
+        public string Title { get; set; } = null!;
 
         public int TopicId { get; set; }
 

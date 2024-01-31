@@ -10,21 +10,23 @@
 @model MVCForum.Models.User.MemberIndexModel
 @inject IMember memberService
 @inject UserManager<ForumUser> UserManager
+
 @{
     var ranking = memberService.GetRankings();
     ViewBag.PageCount = Model.PageCount;
-    IList<string> userroles = null;
-    if (User.Identity.IsAuthenticated)
+    IList<string>? userroles = null;
+    if (User.Identity!.IsAuthenticated)
     {
         var curruser = UserManager.GetUserAsync(User).Result;
-        userroles = UserManager.GetRolesAsync(curruser).Result;
+        userroles = UserManager.GetRolesAsync(curruser!).Result;
     }
     int colspan = 9;
     if (userroles != null && userroles.Contains("Admin"))
     {
         colspan = 10;
     }
-    var initials = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z".Split(",");
+    var initials = Localizer["memberSearchInitials"].Value.ToCharArray();
+
 }
 <div class="container pt-0">
     <div class="row">
@@ -33,18 +35,18 @@
             <form asp-action="Search" method="post" class="needs-validation" novalidate>
                 <div class="input-group mb-3">
                     <select class="form-select" id="inputGroupSelect04" name="SearchIn" required="required">
-                        <option value="" selected>Search in...</option>
-                        <option value="1">Username</option>
-                        <option value="2">Firstname</option>
-                        <option value="3">Lastname</option>
-                        <option value="4">Forum title</option>
-                        <option value="5">Email</option>
+                        <option value="" selected>@Localizer["SearchIn"]...</option>
+                        <option value="1">@Localizer["UserName"]</option>
+                        <option value="2">@Localizer["ProfileFirstname"]</option>
+                        <option value="3">@Localizer["ProfileLastname"]</option>
+                        <option value="4">@Localizer["ProfileTitle"]</option>
+                        <option value="5">@Localizer["Email"]</option>
                     </select>                        
-                    <input type="text" placeholder="Search for ..." class="form-control" name="SearchFor" required="required"/>
-                    <button class="btn btn-secondary" type="submit">Search</button> 
+                    <input type="text" placeholder="@Localizer["Search_Term"] ..." class="form-control" name="SearchFor" required="required" />
+                    <button class="btn btn-secondary" type="submit">@Localizer["mnuForumSearch"]</button>
                     @if (userroles != null && userroles.Contains("Admin"))
                     {
-                        <a asp-action="Register" class="btn btn-outline-secondary">Create a User</a>
+                        <a asp-action="Register" class="btn btn-outline-secondary" title="@Localizer["createAccount"]">@Localizer["createAccount"]</a>
                     }
                 </div>
             </form>
@@ -52,18 +54,18 @@
             <table class="table table-sm table-bordered table-hover table-striped">
                 <thead>
                 <tr class="bg-dark">
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Forum title</th>
-                    <th>Posts</th>
-                    <th>Last post</th>
-                    <th class="d-none d-md-table-cell">Member since</th>
-                    <th class="d-none d-md-table-cell">Last visited</th>
+                    <th>&nbsp;</th>
+                    <th>@Localizer["UserName"]</th>
+                    <th>@Localizer["ProfileTitle"]</th>
+                    <th>@Localizer["ProfilePosts"]</th>
+                    <th>@Localizer["ProfileLastPost"]</th>
+                    <th class="d-none d-md-table-cell">@Localizer["ProfileDate"]</th>
+                    <th class="d-none d-md-table-cell">@Localizer["ProfileLastVisit"]</th>
                     @if (userroles != null && userroles.Contains("Admin"))
                     {
-                        <th class="d-none d-md-table-cell">Email</th>
+                            <th class="d-none d-md-table-cell">@Localizer["Email"]</th>
                     }
-                    <th class="d-none d-md-table-cell">Country</th>
+                    <th class="d-none d-md-table-cell">@Localizer["ProfileCountry"]</th>
                     @if (userroles != null && userroles.Contains("Admin"))
                     {
                         <th class="d-none d-md-table-cell"></th>
@@ -71,12 +73,12 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach (MemberListingModel member in Model.MemberList)
+                @foreach (MemberListingModel member in Model.MemberList!)
                 {
+                    var showlink = member.Member.Name != "n/a" && member.Member.Name != "zapped";
                     <tr>
                         <td class="user-icon">
                             @{
-                                var found = UserManager.FindByNameAsync(member.Member.Name).Result;
                                 if (member.LastHereDate != null && member.LastHereDate > DateTime.UtcNow.AddMinutes(-15))
                                 {
                                     <div class="center text-success"><snitz-status-icon status="@member.Member.Status" title="@member.Title"></snitz-status-icon></div>
@@ -87,8 +89,9 @@
                                 }
                             }
                         </td>
-                        <td><a href="/Account/Detail/@member.Member.Name" title="View @member.Member.Name's profile'">@member.Member.Name</a></td>
-                        <td>@member.Title<br/>@Html.MemberRankStars(member, ranking)</td>
+                        <td snitz-if="!showlink">@member.Member.Name</td>
+                        <td snitz-if="showlink"><a href="/Account/Detail/@member.Member.Name" title="View @member.Member.Name's profile'">@member.Member.Name</a></td>
+                        <td>@member.Title<br />@Html.MemberRankStars(member, ranking, Localizer)</td>
                         <td>@member.Member.Posts</td>
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>
                         <td class="d-none d-md-table-cell">@member.MemberSince?.ToShortDateString()</td>
@@ -100,22 +103,11 @@
                         <td class="d-none d-md-table-cell">@member.Member.Country</td>
                         @if (userroles != null && userroles.Contains("Admin"))
                         {
-                            <td class="d-none d-md-table-cell">
-                                @if (member.Member.Status == 0)
-                                {
-                                    if (member.Title == null || !member.Title.StartsWith("Zapped"))
-                                    {
-                                        <i class="fa fa-unlock admin mr-2" title="Unlock Member"></i>
-                                    }
-                                }
-                                else
-                                {
-                                    <i class="fa fa-lock admin mr-2" title="Lock Member"></i>
-                                }
-                                @if (member.Member.Posts < 1)
-                                {
-                                    <i class="fa fa-trash" title="Delete Member"></i>
-                                }
+                            <td class="d-none d-md-table-cell user-icon">
+                                <link-confirm title="" jq-selector="confirm-unlock" snitz-if="(member.Member.Status == 0)" href="/Account/LockMember/" config-class="fa fa-unlock" config-key="@member.Id"></link-confirm>
+                                <link-confirm title="" jq-selector="confirm-lock"  snitz-if="(member.Member.Status != 0)" href="/Account/LockMember/" config-class="fa fa-lock" config-key="@member.Id"></link-confirm>
+                                <link-confirm title="" jq-selector="confirm-delete"  snitz-if="(member.Member.Posts < 1)" href="/Account/Delete/" config-class="fa fa-trash" config-key="@member.Id"></link-confirm>
+                                <link-confirm title="Zap" jq-selector="confirm-zap" snitz-if='(member.Member.Name != "zapped")' href="/Account/ZapMember/" config-class="fa fa-bolt" config-key="@member.Id"></link-confirm>
                             </td>
                         }
                     </tr>
@@ -125,7 +117,7 @@
                 <tr>
                     <td colspan="@colspan" class="text-center d-none d-md-table-cell">
                         <ul class="list-inline list-unstyled h4 initial">
-                            <li class="list-inline-item"><a href="?initial=">All</a></li>
+                            <li class="list-inline-item"><a href="?initial=">@Localizer["Search_All"]</a></li>
                             @foreach (var letter in initials)
                             {
                                 <li class="list-inline-item"><a href="?initial=@letter">@letter</a></li>
@@ -145,21 +137,68 @@
                 <partial name="ListPaging" model="paging" />
             }
         </div>
-        <div class="d-none d-md-block col-3">
-            <partial name="_QuickSearch"/>
-            <partial name="_Login" model="new UserSignInModel()" />
-        </div>
     </div>
 </div>
-
+@{
+    var confModel = new ConfirmDialogViewModel()
+    {
+        Title = "Member",
+        Message = @"<p>You are about to Lock this Member.</p>
+                <p>Do you wish to proceed?</p>"
+    };
+}
+<partial name="ConfirmDialog" model="@confModel" />
 @section Scripts
     {
     <script>
-        // $(document).on('click', '.confirm-delete', function (e) {
-        //     e.preventDefault();
-        //     var id = $(this).data('id');
-        //     $('#confirmModal').data('id', id).modal('show');
-        // });
+        $(document).on('click', '.confirm-lock', function (e) {
+            e.preventDefault();
+            var postid = $(this).data('id');
+            var href = $(this).attr('href');
+            $('#confirmModal #confirm-body').html('<p>You are about to lock this Member.</p><p>Do you wish to proceed?</p>');
+            $('#confirmModal').data('id', postid).data('url', href).modal('show');
+
+            $('#confirmModal').on('click','#btnYes',function(e) {
+                // handle deletion here
+                e.preventDefault();
+                $.post(href,
+                    {
+                        id: postid
+                    },
+                    function(data, status){
+                
+                        if (!data.result) {
+                            alert(data.error);
+                        } else {
+                            location.href = data.url;
+                        }
+                    });
+            });
+        });
+        $(document).on('click', '.confirm-unlock', function (e) {
+            e.preventDefault();
+            var postid = $(this).data('id');
+            var href = $(this).attr('href');
+            $('#confirmModal #confirm-body').html('<p>You are about to unlock this Member.</p><p>Do you wish to proceed?</p>');
+            $('#confirmModal').data('id', postid).data('url', href).modal('show');
+
+            $('#confirmModal').on('click','#btnYes',function(e) {
+                // handle deletion here
+                e.preventDefault();
+                $.post(href,
+                    {
+                        id: postid
+                    },
+                    function(data, status){
+                
+                        if (!data.result) {
+                            alert(data.error);
+                        } else {
+                            location.href = data.url;
+                        }
+                    });
+            });
+        });
     </script>
 
 }

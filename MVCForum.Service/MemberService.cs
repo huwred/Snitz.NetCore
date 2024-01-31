@@ -19,7 +19,7 @@ namespace SnitzCore.Service
     public class MemberService : IMember
     {
         private readonly SnitzDbContext _dbContext;
-        private readonly Dictionary<int, MemberRanking> _rankings;
+        private readonly Dictionary<int, MemberRanking>? _rankings;
         private readonly ISnitzCookie _cookie;
         private readonly UserManager<ForumUser> _userManager;
 
@@ -31,30 +31,33 @@ namespace SnitzCore.Service
             _userManager = userManager;
 
         }
-        public async Task<Member> GetById(int? id)
+        public Member? GetById(int? id)
         {
-            if (id == null || id < 1)
-            {
+            if (id == null)
                 return null;
-            }
             var member =  _dbContext.Members.AsNoTracking()
                 .First(m => m.Id == id);
 
             var curruser = _userManager.FindByNameAsync(member.Name).Result;
             if (curruser != null)
             {
-                IList<string> userroles = await _userManager.GetRolesAsync(curruser);
+                IList<string> userroles = _userManager.GetRolesAsync(curruser).Result;
                 member.Roles = userroles.ToList();
             }
 
             return member;
         }
 
-        public async Task<Member> GetById(ClaimsPrincipal user)
+        public async Task<Member?> GetById(ClaimsPrincipal user)
         {
             var userId = _userManager.GetUserId(user);
-            var forumuser = await _userManager.FindByIdAsync(userId);
-            return await GetById(forumuser.MemberId);
+            if (userId != null)
+            {
+                var forumuser = await _userManager.FindByIdAsync(userId);
+                if (forumuser != null) return GetById(forumuser.MemberId);
+            }
+
+            return null;
         }
 
         public string SHA256Hash(string password)
@@ -65,7 +68,7 @@ namespace SnitzCore.Service
             var stringBuilder = new StringBuilder();
             foreach (byte b in hash)
             {
-                stringBuilder.AppendFormat("{0:x2}", b);
+                stringBuilder.Append($"{b:x2}");
             }
             return stringBuilder.ToString();
         }
@@ -73,20 +76,14 @@ namespace SnitzCore.Service
         public IList<string> Roles(string username)
         {
             var curruser = _userManager.FindByNameAsync(username).Result;
-            return _userManager.GetRolesAsync(curruser).Result;
-            
+            return curruser != null ? _userManager.GetRolesAsync(curruser).Result : new List<string>();
         }
 
+        [Obsolete("Obsolete")]
         public bool ValidateMember(Member member, string password)
         {
-            OldMembership result = _dbContext.OldMemberships.FirstOrDefault(m => m.Id == member.Id);
-            if (result == null)
-            {
-                return false;
-            }
-
-            return VerifyHashedPassword(result.Password,password);
-
+            OldMembership? result = _dbContext.OldMemberships.FirstOrDefault(m => m.Id == member.Id);
+            return result != null && VerifyHashedPassword(result.Password,password);
         }
 
         public Member Create(Member member)
@@ -95,8 +92,21 @@ namespace SnitzCore.Service
             _dbContext.SaveChanges();
             return result.Entity;
         }
+        public Member Create(Member member,List<KeyValuePair<string,object>> additionalFields)
+        {
+            var result = _dbContext.Members.Add(member);
+            _dbContext.SaveChanges();
+            _dbContext.Database.BeginTransaction();
+            foreach (var additionalField in additionalFields)
+            {
+                List<object> parameters = new List<object> { additionalField.Value };
+                _dbContext.Database.ExecuteSqlRaw($"UPDATE FORUM_MEMBERS SET M_{additionalField.Key}=@0", parameters);
+            }
+            _dbContext.Database.CommitTransaction();
 
-        public Dictionary<int, MemberRanking> GetRankings()
+            return result.Entity;
+        }
+        public Dictionary<int, MemberRanking>? GetRankings()
         {
             Dictionary<int, MemberRanking> rankings = new Dictionary<int, MemberRanking>();
             var service = new InMemoryCache() { DoNotExpire = true };
@@ -108,19 +118,18 @@ namespace SnitzCore.Service
                         rankings.Add(rank.Id, rank);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                //Console.WriteLine(e);
-                //throw;
+                //Supress any errors
             }
 
             return service.GetOrSet("Snitz.Rankings", () => rankings);
 
         }
 
-        public Member GetMember(ClaimsPrincipal user)
+        public Member? GetMember(ClaimsPrincipal user)
         {
-            return _dbContext.Members.SingleOrDefault(m=>m.Name == user.Identity.Name);
+            return _dbContext.Members.SingleOrDefault(m=>m.Name == user.Identity!.Name);
         }
 
         public IEnumerable<MemberNamefilter> UserNameFilter()
@@ -139,7 +148,7 @@ namespace SnitzCore.Service
                     if (checkdate < DateTime.UtcNow.AddMinutes(-10))
                     {
                         member.Lastheredate = member.Lastactivity;
-                        _cookie.SetLastVisitCookie(member.Lastheredate);
+                        if (member.Lastheredate != null) _cookie.SetLastVisitCookie(member.Lastheredate);
                     }
                     member.Lastactivity = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
                     _dbContext.SaveChanges();
@@ -166,7 +175,7 @@ namespace SnitzCore.Service
 
         }
 
-        public string GetMemberName(int id)
+        public string? GetMemberName(int id)
         {
             return _dbContext.Members
                 .FirstOrDefault(m => m.Id == id)?.Name;
@@ -190,16 +199,16 @@ namespace SnitzCore.Service
             return members.ToPagedList(page, pagesize);
         }
 
-        public IEnumerable<Member> GetFilteredMembers(string searchQuery, string searchField)
+        public IEnumerable<Member>? GetFilteredMembers(string searchQuery, string searchField)
         {
             switch (searchField)
             {
                 case "1" :
                     return _dbContext.Members.Where(m=>m.Name.ToLower().Contains(searchQuery.ToLower()));
                 case "2" :
-                    return _dbContext.Members.Where(m=>m.Firstname.ToLower().Contains(searchQuery.ToLower()));
+                    return _dbContext.Members.Where(m=>m.Firstname != null && m.Firstname.ToLower().Contains(searchQuery.ToLower()));
                 case "3" :
-                    return _dbContext.Members.Where(m=>m.Lastname.ToLower().Contains(searchQuery.ToLower()));
+                    return _dbContext.Members.Where(m=>m.Lastname != null && m.Lastname.ToLower().Contains(searchQuery.ToLower()));
                 case "4" :
                     var result = _dbContext.Members.AsEnumerable();
                     return result.Where(m => MemberRankTitle(m).ToLower().Contains(searchQuery.ToLower()));
@@ -213,8 +222,10 @@ namespace SnitzCore.Service
 
         public void Update(Member member)
         {
+
+            _dbContext.Attach(member);
             _dbContext.Update(member);
-            _dbContext.SaveChanges();
+            _dbContext.SaveChanges(true);
         }
 
         public int Create(string userName, string userEmail)
@@ -229,7 +240,7 @@ namespace SnitzCore.Service
         private string MemberRankTitle(Member member)
         {
 
-            string mTitle = member.Title;
+            string mTitle = member.Title!;
             if (member.Status == 0 || member.Name == "n/a")
             {
                 mTitle =  "Member Locked"; //ResourceManager.GetLocalisedString("tipMemberLocked", "Tooltip");// "Member Locked";
@@ -238,11 +249,13 @@ namespace SnitzCore.Service
             {
                 mTitle = "Zapped Member"; //ResourceManager.GetLocalisedString("tipZapped", "Tooltip");// "Zapped Member";
             }
-            RankInfoHelper rank = new RankInfoHelper(member, ref mTitle, member.Posts, _rankings);
+
+            var unused = new RankInfoHelper(member, ref mTitle!, member.Posts, _rankings);
 
             return mTitle;
         }
 
+        [Obsolete("Obsolete")]
         public static bool VerifyHashedPassword(string hashedPassword, string password)
         {
              int PBKDF2IterCount = 1000; // default for Rfc2898DeriveBytes
@@ -251,11 +264,11 @@ namespace SnitzCore.Service
 
             if (hashedPassword == null)
             {
-                throw new ArgumentNullException("hashedPassword");
+                throw new ArgumentNullException(nameof(hashedPassword));
             }
             if (password == null)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             byte[] hashedPasswordBytes = Convert.FromBase64String(hashedPassword);
@@ -281,7 +294,7 @@ namespace SnitzCore.Service
             return ByteArraysEqual(storedSubkey, generatedSubkey);
         }
         [MethodImpl(MethodImplOptions.NoOptimization)]
-        private static bool ByteArraysEqual(byte[] a, byte[] b)
+        private static bool ByteArraysEqual(byte[]? a, byte[]? b)
         {
             if (ReferenceEquals(a, b))
             {

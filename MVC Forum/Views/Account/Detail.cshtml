@@ -8,15 +8,17 @@
 @using SnitzCore.Data.Interfaces
 @using SnitzCore.Service
 @model MVCForum.Models.Member.MemberDetailModel
-@inject ISnitzConfig config
-@inject IMember memberService
+@inject ISnitzConfig SnitzConfig
+@inject IMember MemberService
+
 @{
-    var _ranking = memberService.GetRankings();
+    var _ranking = MemberService.GetRankings();
+
 }
 <div class="container pt-0">
     @if (Model.CanEdit)
     {
-        <h1 class="bg-dark text-dark p-2">Manage your account</h1>
+        <h1 class="bg-dark text-dark p-2">Manage Account</h1>
     }
     else
     {
@@ -27,7 +29,7 @@
         <form asp-action="Update" method="post" class="needs-validation" novalidate>
             <div class="row">
                 <div class="col-6 col-md-2">
-                    <snitz-avatar src="/Content/Members/@Model.Member.Id/@Model.Member.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid"/>
+                    <snitz-avatar src="/Content/Members/@Model.Member!.Id/@Model.Member!.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid"/>
                 </div>
                 <div class="col-6 col-md-3">
                     <input asp-for="Id" class="form-control" type="hidden"/>
@@ -35,16 +37,17 @@
                         <label asp-for="Username" class="form-label"></label>
                         <input asp-for="Username" class="form-control" disabled="disabled"/>
                     </div>
-                    @if (Model.CanEdit || (Model.Member.HideEmail != 1 && Model.Member.Privateprofile != 1))
+                    @if (Model.CanEdit || (Model.Member?.HideEmail != 1 && Model.Member?.Privateprofile != 1 && User.Identity!.IsAuthenticated))
                     {
                         <div class="mb-3">
                             <label asp-for="Email" class="form-label"></label>
-                            <input asp-for="Email" class="form-control" />
+                            <input asp-for="Email" type="hidden"  />
+                            <input asp-for="NewEmail" class="form-control" value="@Model.Member?.Email" />
                         </div>
                     }
                     <div class="mb-3">
                         <label asp-for="Title" class="form-label"></label>
-                        <input name="Title" class="form-control" disabled="disabled" value="@MemberRankTitle(Model.Member, _ranking)"/>
+                        <input name="Title" class="form-control" disabled="disabled" value="@MemberRankTitle(Model.Member!, _ranking)"/>
                     </div>
                     @if (Model.CanEdit)
                     {
@@ -55,52 +58,52 @@
                 </div>
                 <div class="col col-md-6">
                     <div class="mb-3">
-                        <label asp-for="Member.Created" class="col-sm-3 form-label"></label>
+                        <label asp-for="Member!.Created" class="col-sm-3 form-label"></label>
                         <div class="col-sm-9">
-                            <label class="form-label">@Model.Member.Created.FromForumDateStr().ToForumDisplay()</label>
+                            <label class="form-label">@Model.Member?.Created.FromForumDateStr().ToForumDisplay()</label>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="Member.Posts" class="col-sm-3 col-form-label"></label>
+                        <label asp-for="Member!.Posts" class="col-sm-3 col-form-label"></label>
                         <div class="col-sm-9">
-                            <label class="form-label">@Model.Member.Posts</label>
+                            <label class="form-label">@Model.Member?.Posts</label>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="Member.Lastpostdate" class="col-sm-3 col-form-label"></label>
+                        <label asp-for="Member!.Lastpostdate" class="col-sm-3 col-form-label"></label>
                         <div class="col-sm-9">
-                            <label class="form-label">@Model.Member.Lastpostdate.FromForumDateStr().ToForumDisplay()</label>
+                            <label class="form-label">@Model.Member?.Lastpostdate.FromForumDateStr().ToForumDisplay()</label>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="Member.Lastheredate" class="col-sm-3 col-form-label"></label>
+                        <label asp-for="Member!.Lastheredate" class="col-sm-3 col-form-label"></label>
                         <div class="col-sm-9">
-                            <label class="form-label">@Model.Member.Lastheredate.FromForumDateStr().ToForumDisplay()</label>
+                            <label class="form-label">@Model.Member?.Lastheredate.FromForumDateStr().ToForumDisplay()</label>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="Member.Lastactivity" class="col-sm-3 col-form-label"></label>
+                        <label asp-for="Member!.Lastactivity" class="col-sm-3 col-form-label"></label>
                         <div class="col-sm-9">
-                            <label class="form-label">@Model.Member.Lastactivity.FromForumDateStr().ToForumDisplay()</label>
+                            <label class="form-label">@Model.Member?.Lastactivity.FromForumDateStr().ToForumDisplay()</label>
                         </div>
                     </div>
-                    <input asp-for="Member.Id" type="hidden"/>
+                    <input asp-for="Member!.Id" type="hidden"/>
                 </div>
             </div>
-            <input name="PhotoUrl" type="hidden" value="@Model.Member.PhotoUrl" />
-            @if (Model.Member.Privateprofile != 1 || Model.CanEdit)
+            <input name="PhotoUrl" type="hidden" value="@Model.Member?.PhotoUrl" />
+            @if ((Model.Member?.Privateprofile != 1 || Model.CanEdit) && User.Identity!.IsAuthenticated)
             {
                 <div class="row  bg-form p-2 rounded mb-2">
                     <legend>Profile</legend>
                     <hr/>
                     @{
-                        foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Profile).OrderBy(p => p.PropertyOrder()))
+                        foreach (PropertyInfo property in Model.Member!.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Profile).OrderBy(p => p.PropertyOrder()))
                         {
-                            var showme = config.GetIntValue(property.GetPropertyDisplayCheck<Member>(), 1) == 1;
+                            var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1;
                             if (!property.PropertyIsPrivate() || Model.CanEdit)
                             {
                                 <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
-                                    <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(config.GetIntValue(property.GetPropertyRequiredCheck<Member>(), 0) == 1)"></snitz-config>
+                                    <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)"></snitz-config>
                                 </div>
                             }
                         }
@@ -110,11 +113,11 @@
                     @{
                         foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Bio).OrderBy(p => p.PropertyOrder()))
                         {
-                            var showme = config.GetIntValue(property.GetPropertyDisplayCheck<Member>(), 1) == 1;
+                            var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!) == 1;
                             if (!property.PropertyIsPrivate() || Model.CanEdit)
                             {
                                 <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
-                                    <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(config.GetIntValue(property.GetPropertyRequiredCheck<Member>(), 0) == 1)"></snitz-config>
+                                    <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)"></snitz-config>
                                 </div>
                             }
                         }
@@ -124,11 +127,11 @@
                     @{
                         foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.SocialMedia).OrderBy(p => p.PropertyOrder()))
                         {
-                            var showme = config.GetIntValue(property.GetPropertyDisplayCheck<Member>(), 1) == 1;
+                            var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!) == 1;
                             if (!property.PropertyIsPrivate() || Model.CanEdit)
                             {
                                 <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
-                                    <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(config.GetIntValue(property.GetPropertyRequiredCheck<Member>(), 0) == 1)"></snitz-config>
+                                    <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)"></snitz-config>
                                 </div>
                             }
                         }
@@ -141,7 +144,7 @@
                     @{
                         foreach (PropertyInfo prop in Model.Member.GetType().GetProperties().Where(p => p.SystemProperty()).OrderBy(p => p.PropertyOrder()))
                         {
-                            <snitz-config can-edit="@Model.CanEdit" property-info="@prop" property-val="@prop.GetValue(Model.Member, null)" property-req="@(config.GetIntValue(prop.GetPropertyRequiredCheck<Member>(), 0) == 1)"></snitz-config>
+                            <snitz-config can-edit="@Model.CanEdit" property-info="@prop" property-val="@prop.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(prop.GetPropertyRequiredCheck<Member>()) == 1)"></snitz-config>
                         }
                     }
                 </div>
@@ -150,12 +153,12 @@
                         var counter = 0;
                         foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() == "checkbox" && !p.PropertyIsPrivate()).OrderBy(p => p.PropertyOrder()))
                         {
-                            var showme = config.GetIntValue(property.GetPropertyDisplayCheck<Member>(), 1) == 1;
+                            var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1;
                             if (!property.PropertyIsPrivate())
                             {
                                 counter++;
                                 <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
-                                    <snitz-config config-type="checkbox" can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(config.GetIntValue(property.GetPropertyRequiredCheck<Member>(), 0) == 1)"></snitz-config>
+                                    <snitz-config config-type="checkbox" can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)"></snitz-config>
                                 </div>
                             }
                         }
@@ -165,8 +168,7 @@
 
             }
             
-            <input name="Name" type="hidden" value="@Model.Member.Name"/>
-            <input name="Newemail"   value="TestMe" />
+            <input name="Name" type="hidden" value="@Model.Member?.Name"/>
         </form>
     </div>
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -174,20 +176,20 @@
 
 @functions
 {
-    private string? MemberRankTitle(Member author,Dictionary<int,MemberRanking> ranking )
+    private string? MemberRankTitle(Member author,Dictionary<int, MemberRanking>? ranking )
     {
 
         string? mTitle = author.Title ?? "";
         if (author.Status == 0 || author.Name == "n/a")
         {
-            mTitle =  "Member Locked"; //ResourceManager.GetLocalisedString("tipMemberLocked", "Tooltip");// "Member Locked";
+            mTitle = Localizer.GetString("tipMemberLocked");
         }
         if (author.Name == "zapped")
         {
-            mTitle = "Zapped Member"; //ResourceManager.GetLocalisedString("tipZapped", "Tooltip");// "Zapped Member";
+            mTitle = Localizer.GetString("tipZapped");
         }
 
-        var rankInfoHelper = new RankInfoHelper(author, ref mTitle, author.Posts, ranking);
+        var unused = new RankInfoHelper(author, ref mTitle, author.Posts, ranking);
 
         return mTitle;
     }
@@ -210,7 +212,7 @@
             }, false);
         })();
         $(function () {
-            $('.datepicker').datepicker({
+            $('.date').datepicker({
                 autoclose: true,
                 format: {
                     /*
@@ -221,11 +223,13 @@
                      */
                     
                     toDisplay: function (date, format, language) {
+                        console.log("toDisplay");
                         var d = new Date(date);
                         d.setDate(d.getDate());
                         return d.toLocaleDateString();
                     },
                     toValue: function (date, format, language) {
+                        console.log("toValue");
                         let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
                         let lastFirst = date.replace(re, '$1-$2-$3');
                         var d = new Date(lastFirst);
@@ -234,7 +238,8 @@
                     }
                 }
             });
-            $('.datepicker').datepicker('update', '@Model.Member?.Dob');
+
+            $('.date').datepicker('setDate', '@Model.Member?.Dob');
             revalidate();
         });
         function revalidate() {

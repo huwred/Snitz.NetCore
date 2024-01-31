@@ -1,5 +1,5 @@
 ﻿@using SnitzCore.Data.Interfaces
-@inject ISnitzConfig config
+@inject ISnitzConfig SnitzConfig
 @{
     Layout = "_MasterLayout";
 }
@@ -13,25 +13,25 @@
             <hr/>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRFORUMTITLE" config-label="Forum Title" config-val="@config.ForumTitle"></admin-config>
+                    <admin-config config-key="STRFORUMTITLE" config-label="Forum Title" config-val="@SnitzConfig.ForumTitle"></admin-config>
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRCOPYRIGHT" config-label="Forum Copyright" config-val="@config.GetValue("STRCOPYRIGHT")"></admin-config>
+                    <admin-config config-key="STRCOPYRIGHT" config-label="Forum Copyright" config-val="@SnitzConfig.GetValue("STRCOPYRIGHT")"></admin-config>
                 </div>
             </div>
-            <admin-config config-key="STRFORUMDESC" config-label="Forum Description" config-val="@config.GetValue("STRFORUMDESC")"></admin-config>
+            <admin-config config-key="STRFORUMDESC" config-label="Forum Description" config-val="@SnitzConfig.GetValue("STRFORUMDESC")"></admin-config>
 
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRHOMEURL" config-label="Home URL" config-val="@config.GetValue("STRHOMEURL")"></admin-config>
+                    <admin-config config-key="STRHOMEURL" config-label="Home URL" config-val="@SnitzConfig.GetValue("STRHOMEURL")"></admin-config>
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRFORUMURL" config-label="Forum URL" config-val="@config.ForumUrl"></admin-config>
+                    <admin-config config-key="STRFORUMURL" config-label="Forum URL" config-val="@SnitzConfig.ForumUrl"></admin-config>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRADMINUSER" config-label="Main Admin account" config-val="@config.GetValue("STRADMINUSER")"></admin-config>
+                    <admin-config config-key="STRADMINUSER" config-label="Main Admin account" config-val="@SnitzConfig.GetValue("STRADMINUSER")"></admin-config>
                 </div>
                 <div class="col">
                 </div>
@@ -41,22 +41,22 @@
             <hr/>
             <div class="row p-3">
                 <div class="col">
-                    <admin-config config-key="STREMAIL" config-label="Email mode" config-val="@config.GetIntValue("STREMAIL")"></admin-config>
+                    <admin-config config-key="STREMAIL" config-label="Email mode" config-val="@SnitzConfig.GetIntValue("STREMAIL")"></admin-config>
 
-                    <admin-config config-key="STRUSERNAMEFILTER" config-label="Username filter" config-val="@config.GetIntValue("STRUSERNAMEFILTER")"></admin-config>
-                    <admin-config config-key="STRSETCOOKIETOFORUM" config-label="Set cookie to Forum" config-val="@config.GetIntValue("STRSETCOOKIETOFORUM")"></admin-config>
-                    <admin-config config-key="INTPAGETIMER" config-label="Show Page Timer" config-val="@config.GetIntValue("INTPAGETIMER")"></admin-config>
+                    <admin-config config-key="STRUSERNAMEFILTER" config-label="Username filter" config-val="@SnitzConfig.GetIntValue("STRUSERNAMEFILTER")"></admin-config>
+                    <admin-config config-key="STRSETCOOKIETOFORUM" config-label="Set cookie to Forum" config-val="@SnitzConfig.GetIntValue("STRSETCOOKIETOFORUM")"></admin-config>
+                    <admin-config config-key="INTPAGETIMER" config-label="Show Page Timer" config-val="@SnitzConfig.GetIntValue("INTPAGETIMER")"></admin-config>
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRPROHIBITNEWMEMBERS" config-label="Prohibit new Members" config-val="@config.GetIntValue("STRPROHIBITNEWMEMBERS")"></admin-config>
-                    <admin-config config-key="STRREQUIREREG" config-label="Require registration" config-val="@config.GetIntValue("STRREQUIREREG")"></admin-config>
-                    <admin-config config-key="STRRESTRICTREG" config-label="Restrict registration" config-val="@config.GetIntValue("STRRESTRICTREG")"></admin-config>
+                    <admin-config config-key="STRPROHIBITNEWMEMBERS" config-label="Prohibit new Members" config-val="@SnitzConfig.GetIntValue("STRPROHIBITNEWMEMBERS")"></admin-config>
+                    <admin-config config-key="STRREQUIREREG" config-label="Require registration" config-val="@SnitzConfig.GetIntValue("STRREQUIREREG")"></admin-config>
+                    <admin-config config-key="STRRESTRICTREG" config-label="Restrict registration" config-val="@SnitzConfig.GetIntValue("STRRESTRICTREG")"></admin-config>
                 </div>
             </div>
             <div class="row p-3">
                 <div class="col">
-                    <admin-config config-key="INTTHEMECHANGE" config-label="Allow Theme Change" config-val="@config.GetIntValue("INTTHEMECHANGE")"></admin-config>
-                    <admin-config config-key="STRDEFAULTTHEME" config-label="Default Theme" config-val="@config.GetValue("STRDEFAULTTHEME")"></admin-config>
+                    <admin-config config-key="INTTHEMECHANGE" config-label="Allow Theme Change" config-val="@SnitzConfig.GetIntValue("INTTHEMECHANGE")"></admin-config>
+                    <admin-config config-key="STRDEFAULTTHEME" config-label="Default Theme" config-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")"></admin-config>
                 </div>
                 <div class="col">
                 </div>
@@ -66,7 +66,7 @@
 
             <div class="mb-3 p-3">
                 <span class="form-text">If you use tracking cookies, this option may be required. It will display a cookie consent form at the bottom of the page.</span>
-                <admin-config config-key="INTREQUIRECONSENT" config-label="Require Cookie consent" config-val="@config.GetIntValue("INTREQUIRECONSENT")"></admin-config>
+                <admin-config config-key="INTREQUIRECONSENT" config-label="Require Cookie consent" config-val="@SnitzConfig.GetIntValue("INTREQUIRECONSENT")"></admin-config>
             </div>
         </div>
         <div class="mb-3 p-3">

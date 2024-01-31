@@ -58,8 +58,7 @@ namespace MVCForum.TagHelpers
         private readonly IActionContextAccessor actionContextAccesor;
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            var urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccesor.ActionContext);
-            var myUrl = urlHelper.Content(SourceFile);
+            var urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccesor.ActionContext!);
             if(!File.Exists(_env.WebRootPath + urlHelper.Content(SourceFile)))
             {
                 SourceFile = null;

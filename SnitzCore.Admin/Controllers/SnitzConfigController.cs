@@ -20,6 +20,7 @@ namespace SnitzCore.BackOffice.Controllers
         }
         public IActionResult Index()
         {
+            //var vm = new 
             return View();
         }
 
@@ -46,13 +47,17 @@ namespace SnitzCore.BackOffice.Controllers
                 {
                     var word = form["Word"][0];
                     var replace = form["ReplaceWith"][0];
-                    var newbadword = new Badword
+                    if (word != null)
                     {
-                        Word = word,
-                        ReplaceWith = replace
-                    };
+                        var newbadword = new Badword
+                        {
+                            Word = word,
+                            ReplaceWith = replace
+                        };
 
-                    _context.Badwords.Add(newbadword);
+                        _context.Badwords.Add(newbadword);
+                    }
+
                     _context.SaveChanges();
                 }
                 return PartialView("SaveResult","Badword saved");
@@ -69,19 +74,20 @@ namespace SnitzCore.BackOffice.Controllers
         {
             try
             {
-                foreach (var badword in model.Badwords)
-                {
-                    var exists = _context.Badwords.Find(badword.Id);
-                    if (exists != null)
+                if (model.Badwords != null)
+                    foreach (var badword in model.Badwords)
                     {
-                        if (exists.Word != badword.Word || exists.ReplaceWith != badword.ReplaceWith)
+                        var exists = _context.Badwords.Find(badword.Id);
+                        if (exists != null)
                         {
-                            exists.Word = badword.Word;
-                            exists.ReplaceWith = badword.ReplaceWith;
-                            _context.Update(exists);
+                            if (exists.Word != badword.Word || exists.ReplaceWith != badword.ReplaceWith)
+                            {
+                                exists.Word = badword.Word;
+                                exists.ReplaceWith = badword.ReplaceWith;
+                                _context.Update(exists);
+                            }
                         }
                     }
-                }
 
                 _context.SaveChanges();
 
@@ -100,13 +106,17 @@ namespace SnitzCore.BackOffice.Controllers
                 if (form["Username"][0] != null)
                 {
                     var name = form["Username"][0];
-                    var newusername = new MemberNamefilter
+                    if (name != null)
                     {
-                        Name = name
-                    };
+                        var newusername = new MemberNamefilter
+                        {
+                            Name = name
+                        };
 
-                    _context.MemberNamefilter.Add(newusername);
-                    _context.SaveChanges();
+                        _context.MemberNamefilter.Add(newusername);
+                        _context.SaveChanges();
+                    }
+
                 }
                 return PartialView("SaveResult", "Username saved");
             }
@@ -122,18 +132,19 @@ namespace SnitzCore.BackOffice.Controllers
         {
             try
             {
-                foreach (var namefilter in model.UserNamefilters)
-                {
-                    var exists = _context.MemberNamefilter.Find(namefilter.Id);
-                    if (exists != null)
+                if (model.UserNamefilters != null)
+                    foreach (var namefilter in model.UserNamefilters)
                     {
-                        if (exists.Name != namefilter.Name)
+                        var exists = _context.MemberNamefilter.Find(namefilter.Id);
+                        if (exists != null)
                         {
-                            exists.Name = namefilter.Name;
-                            _context.Update(exists);
+                            if (exists.Name != namefilter.Name)
+                            {
+                                exists.Name = namefilter.Name;
+                                _context.Update(exists);
+                            }
                         }
                     }
-                }
 
                 _context.SaveChanges();
 
@@ -176,6 +187,7 @@ namespace SnitzCore.BackOffice.Controllers
                             conf.Value = val;
                             _context.SnitzConfig.Update(conf);
                         }
+                        _config.RemoveFromCache(formKey);
                     }
                     else
                     {
@@ -184,8 +196,8 @@ namespace SnitzCore.BackOffice.Controllers
                             _context.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = formKey, Value = val });
                         }
                     }
-                    _context.SaveChanges(true);
                 }
+                _context.SaveChanges(true);
             }
             catch (Exception e)
             {

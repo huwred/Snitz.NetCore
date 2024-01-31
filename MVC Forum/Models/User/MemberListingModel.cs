@@ -8,11 +8,11 @@ namespace MVCForum.Models.User
 
         public DateTime? LastHereDate { get; set; }
 
-        public string Title { get; set; }
+        public string? Title { get; set; }
         public DateTime? LastPost { get; set; }
         public DateTime? MemberSince { get; set; }
 
-        public SnitzCore.Data.Models.Member Member { get; set; }
+        public SnitzCore.Data.Models.Member Member { get; set; } = null!;
         public bool IsActive { get; set; }
     }
 }

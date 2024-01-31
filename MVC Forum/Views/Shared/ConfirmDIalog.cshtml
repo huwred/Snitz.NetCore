@@ -2,11 +2,11 @@
 <div id="confirmModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-danger">
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="close">X</a>
+            <div class="modal-header bg-warning">
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="close text-bg-warning">X</a>
                 <h4>@Model.Title</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" id="confirm-body">
                 @Html.Raw(Model.Message)
             </div>
             <div class="modal-footer">

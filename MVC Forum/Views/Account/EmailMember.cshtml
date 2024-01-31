@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVCForum.Models.Member.EmailMemberViewModel
+
+<div class="card">
+    <div class="card-body text-dark">
+        <form id="sendemail-form" method="post" asp-controller="Account" asp-action="EmailMember" class="needs-validation p-2" novalidate>
+            <input asp-for="To" type="hidden" />
+            <div class="mb-3">
+                <label asp-for="Subject"></label>
+                <input asp-for="Subject" class="form-control" />
+                <span asp-validation-for="Subject"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Message"></label>
+                <textarea asp-for="Message" class="form-control email-text" id="email-text" rows="5" required="required"></textarea>
+                <span asp-validation-for="Message"></span>
+                <div class="invalid-feedback text-danger-emphasis">You must enter a message.</div>
+            </div>
+@*             <div class="form-check">
+                <label class="form-check-label">
+                    @Html.CheckBoxFor(m => m.IncludeSig, new { @class = "form-check-input" })
+                    <label asp-for="IncludeSig"></label>
+                </label>
+            </div> *@
+            <div class="mb-3 p-2">
+                <button type="reset" class="btn btn-warning ">Reset</button>
+                <button id="send-email" type="submit" class="btn btn-success ">Send <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+            </div>
+        </form>
+    </div>
+</div>

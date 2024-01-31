@@ -1,6 +1,6 @@
 ﻿@using SnitzCore.Data.Interfaces
 @using SnitzCore.Data.Models
-@inject ISnitzConfig config
+@inject ISnitzConfig SnitzConfig
 @{
     Layout = "_MasterLayout";
     ViewBag.PageTitle = "Feature Configuration";
@@ -24,33 +24,33 @@
     <legend>General</legend>
     <hr/>
     <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
-        <admin-config config-key="STRIPLOGGING" config-label="IP Logging" config-val="@config.GetIntValue("STRIPLOGGING")"></admin-config>
-        <fieldset @(config.GetIntValue("STRIPLOGGING") == 0 ? "disabled" : "") id="IPLOGENABLED">
+        <admin-config config-key="STRIPLOGGING" config-label="IP Logging" config-val="@SnitzConfig.GetIntValue("STRIPLOGGING")"></admin-config>
+        <fieldset @(SnitzConfig.GetIntValue("STRIPLOGGING") == 0 ? "disabled" : "") id="IPLOGENABLED">
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRIPLOOKUP" config-label="third party service" config-val="@config.GetValue("STRIPLOOKUP")" placeholder="URL to third party lookup service"></admin-config>
+                    <admin-config config-key="STRIPLOOKUP" config-label="third party service" config-val="@SnitzConfig.GetValue("STRIPLOOKUP")" placeholder="URL to third party lookup service"></admin-config>
                 </div>
                 <div class="col"></div>
             </div>
             <div class="form-text mb-3">use [IP] to indicate where the IP should be passed in the url<br/>e.g. http://www.ripe.net/whois?form_type=simple&full_query_string=&searchtext=[IP]</div>
         </fieldset>
-        <admin-config config-key="INTFULLTEXT" config-label="Use Fulltext search" config-val="@config.GetIntValue("INTFULLTEXT")"></admin-config>
-        <admin-config config-key="STRGROUPCATEGORIES" config-label="Group Categories" config-val="@config.GetIntValue("STRGROUPCATEGORIES")"></admin-config>
+        <admin-config config-key="INTFULLTEXT" config-label="Use Fulltext search" config-val="@SnitzConfig.GetIntValue("INTFULLTEXT")"></admin-config>
+        <admin-config config-key="STRGROUPCATEGORIES" config-label="Group Categories" config-val="@SnitzConfig.GetIntValue("STRGROUPCATEGORIES")"></admin-config>
         @*             <div class="form-group">
         <label for="" class="control-label col-xs-12 col-sm-3">Highest level of Subscription:</label>
         <div class="col-xs-12 col-sm-4">
         @Html.EnumDropDownListFor(m => m.SubscriptionLevel, new { @class = "form-control inline" }, "")
         </div>
         </div> *@
-        <admin-config config-key="INTPROTECTCONTENT" config-label="Protected Content" config-val="@config.GetIntValue("INTPROTECTCONTENT")"></admin-config>
-        <admin-config config-key="INTALLOWHIDEONLINE" config-label="Allow members to hide from Online" config-val="@config.GetIntValue("INTALLOWHIDEONLINE")"></admin-config>
+        <admin-config config-key="INTPROTECTCONTENT" config-label="Protected Content" config-val="@SnitzConfig.GetIntValue("INTPROTECTCONTENT")"></admin-config>
+        <admin-config config-key="INTALLOWHIDEONLINE" config-label="Allow members to hide from Online" config-val="@SnitzConfig.GetIntValue("INTALLOWHIDEONLINE")"></admin-config>
         <hr class="title"/>
         <div class="row mb-3">
             <div class="col">
-                <admin-config config-key="STRPAGESIZE" config-label="Default page size" config-val="@config.GetValue("STRPAGESIZE")"></admin-config>
+                <admin-config config-key="STRPAGESIZE" config-label="Default page size" config-val="@SnitzConfig.GetValue("STRPAGESIZE")"></admin-config>
             </div>
             <div class="col">
-                <admin-config config-key="STRACCOUNTPAGESIZES" config-label="Members Page size" config-val="@config.GetValue("STRACCOUNTPAGESIZES", "20")"></admin-config>
+                <admin-config config-key="STRACCOUNTPAGESIZES" config-label="Members Page size" config-val="@SnitzConfig.GetValue("STRACCOUNTPAGESIZES", "20")"></admin-config>
             </div>
         </div>
         <partial name="_FormButtons"/>
@@ -61,10 +61,10 @@
     <hr/>
     <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
         <div class="mb-3">
-            <admin-config config-key="STRMODERATION" config-label="Allow Topic Moderation" config-val="@config.GetIntValue("STRMODERATION")"></admin-config>
-            <admin-config config-key="STRSHOWMODERATORS" config-label="Show Moderators" config-val="@config.GetIntValue("STRSHOWMODERATORS")"></admin-config>
-            <admin-config config-key="STRMOVETOPICMODE" config-label="Restrict Topic move" config-val="@config.GetIntValue("STRMOVETOPICMODE")"></admin-config>
-            <admin-config config-key="STRMOVENOTIFY" config-label="Email author when moving topics" config-val="@config.GetIntValue("STRMOVENOTIFY")"></admin-config>
+            <admin-config config-key="STRMODERATION" config-label="Allow Topic Moderation" config-val="@SnitzConfig.GetIntValue("STRMODERATION")"></admin-config>
+            <admin-config config-key="STRSHOWMODERATORS" config-label="Show Moderators" config-val="@SnitzConfig.GetIntValue("STRSHOWMODERATORS")"></admin-config>
+            <admin-config config-key="STRMOVETOPICMODE" config-label="Restrict Topic move" config-val="@SnitzConfig.GetIntValue("STRMOVETOPICMODE")"></admin-config>
+            <admin-config config-key="STRMOVENOTIFY" config-label="Email author when moving topics" config-val="@SnitzConfig.GetIntValue("STRMOVENOTIFY")"></admin-config>
         </div>
         <partial name="_FormButtons"/>
     </form>
@@ -74,31 +74,31 @@
     <hr/>
     <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
         <div class="mb-3">
-            <admin-config config-key="STRPRIVATEFORUMS" config-label="Private Forums" config-val="@config.GetIntValue("STRPRIVATEFORUMS")"></admin-config>
-            <admin-config config-key="STRARCHIVESTATE" config-label="Archive functions" config-val="@config.GetIntValue("STRARCHIVESTATE")"></admin-config>
-            <admin-config config-key="INTTOPICRATING" config-label="Allow Topic rating" config-val="@config.GetIntValue("INTTOPICRATING")"></admin-config>
-            <admin-config config-key="STRSHOWSTATISTICS" config-label="Show detailed statistics" config-val="@config.GetIntValue("")"></admin-config>
-            <admin-config config-key="STRJUMPLASTPOST" config-label="Show Jump To Last post link" config-val="@config.GetIntValue("STRJUMPLASTPOST")"></admin-config>
-            <admin-config config-key="INTFORUMRSS" config-label="Show RSS Link" config-val="@config.GetIntValue("INTFORUMRSS")"></admin-config>
-            <admin-config config-key="STRSHOWPAGING" config-label="Show quick paging" config-val="@config.GetIntValue("STRSHOWPAGING")"></admin-config>
-            <fieldset @(config.GetIntValue("STRSHOWPAGING") == 0 ? "disabled" : "") id="PAGINGENABLED">
+            <admin-config config-key="STRPRIVATEFORUMS" config-label="Private Forums" config-val="@SnitzConfig.GetIntValue("STRPRIVATEFORUMS")"></admin-config>
+            <admin-config config-key="STRARCHIVESTATE" config-label="Archive functions" config-val="@SnitzConfig.GetIntValue("STRARCHIVESTATE")"></admin-config>
+            <admin-config config-key="INTTOPICRATING" config-label="Allow Topic rating" config-val="@SnitzConfig.GetIntValue("INTTOPICRATING")"></admin-config>
+            <admin-config config-key="STRSHOWSTATISTICS" config-label="Show detailed statistics" config-val="@SnitzConfig.GetIntValue("")"></admin-config>
+            <admin-config config-key="STRJUMPLASTPOST" config-label="Show Jump To Last post link" config-val="@SnitzConfig.GetIntValue("STRJUMPLASTPOST")"></admin-config>
+            <admin-config config-key="INTFORUMRSS" config-label="Show RSS Link" config-val="@SnitzConfig.GetIntValue("INTFORUMRSS")"></admin-config>
+            <admin-config config-key="STRSHOWPAGING" config-label="Show quick paging" config-val="@SnitzConfig.GetIntValue("STRSHOWPAGING")"></admin-config>
+            <fieldset @(SnitzConfig.GetIntValue("STRSHOWPAGING") == 0 ? "disabled" : "") id="PAGINGENABLED">
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="STRPAGENUMBERSIZE" config-label="Page numbers per row" config-val="@config.GetIntValue("STRPAGENUMBERSIZE")"></admin-config>
+                        <admin-config config-key="STRPAGENUMBERSIZE" config-label="Page numbers per row" config-val="@SnitzConfig.GetIntValue("STRPAGENUMBERSIZE")"></admin-config>
                     </div>
                     <div class="col">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="STRFORUMPAGESIZES" config-label="Page sizes" config-val="@config.GetValue("STRFORUMPAGESIZES", "10,25,50,100")"></admin-config>
+                        <admin-config config-key="STRFORUMPAGESIZES" config-label="Page sizes" config-val="@SnitzConfig.GetValue("STRFORUMPAGESIZES", "10,25,50,100")"></admin-config>
                     </div>
                     <div class="col">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="STRSEARCHPAGESIZES" config-label="Search results page size" config-val="@config.GetValue("STRSEARCHPAGESIZES", "10")"></admin-config>
+                        <admin-config config-key="STRSEARCHPAGESIZES" config-label="Search results page size" config-val="@SnitzConfig.GetValue("STRSEARCHPAGESIZES", "10")"></admin-config>
                     </div>
                     <div class="col">
                     </div>
@@ -113,35 +113,35 @@
     <hr/>
     <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
         <div class="mb-3">
-            <admin-config config-key="STRSTICKYTOPIC" config-label="Allow Sticky Topics" config-val="@config.GetIntValue("STRSTICKYTOPIC")"></admin-config>
-            <admin-config config-key="STRHOTTOPIC" config-label="Hot Topics" config-val="@config.GetIntValue("STRHOTTOPIC")"></admin-config>
-            <fieldset @(config.GetIntValue("STRHOTTOPIC") == 0 ? "disabled" : "") id="HOTTOPICSENABLED">
+            <admin-config config-key="STRSTICKYTOPIC" config-label="Allow Sticky Topics" config-val="@SnitzConfig.GetIntValue("STRSTICKYTOPIC")"></admin-config>
+            <admin-config config-key="STRHOTTOPIC" config-label="Hot Topics" config-val="@SnitzConfig.GetIntValue("STRHOTTOPIC")"></admin-config>
+            <fieldset @(SnitzConfig.GetIntValue("STRHOTTOPIC") == 0 ? "disabled" : "") id="HOTTOPICSENABLED">
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="INTHOTTOPICNUM" config-label="Hot Topic Count" config-val="@config.GetValue("INTHOTTOPICNUM")"></admin-config>
+                        <admin-config config-key="INTHOTTOPICNUM" config-label="Hot Topic Count" config-val="@SnitzConfig.GetValue("INTHOTTOPICNUM")"></admin-config>
                     </div>
                     <div class="col">
                     </div>
                 </div>
             </fieldset>
-            <admin-config config-key="STREDITEDBYDATE" config-label="Show edited by on Date" config-val="@config.GetIntValue("STREDITEDBYDATE")"></admin-config>
-            <admin-config config-key="STRSHOWTOPICNAV" config-label="Show Prev / Next Topic" config-val="@config.GetIntValue("STRSHOWTOPICNAV")"></admin-config>
-            <admin-config config-key="STRSHOWSENDTOFRIEND" config-label="Show send Topic to a friend link" config-val="@config.GetIntValue("STRSHOWSENDTOFRIEND")"></admin-config>
-            <admin-config config-key="STRSHOWPRINTERFRIENDLY" config-label="Show printer friendly link" config-val="@config.GetIntValue("STRSHOWPRINTERFRIENDLY")"></admin-config>
-            <admin-config config-key="STRSOCIALSHARE" config-label="Social Media links" config-val="@config.GetIntValue("STRSOCIALSHARE")"></admin-config>
-            <admin-config config-key="INTTOPICDISPLAY" config-label="Show Topic on all pages" config-val="@config.GetIntValue("INTTOPICDISPLAY")"></admin-config>
+            <admin-config config-key="STREDITEDBYDATE" config-label="Show edited by on Date" config-val="@SnitzConfig.GetIntValue("STREDITEDBYDATE")"></admin-config>
+            <admin-config config-key="STRSHOWTOPICNAV" config-label="Show Prev / Next Topic" config-val="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV")"></admin-config>
+            <admin-config config-key="STRSHOWSENDTOFRIEND" config-label="Show send Topic to a friend link" config-val="@SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND")"></admin-config>
+            <admin-config config-key="STRSHOWPRINTERFRIENDLY" config-label="Show printer friendly link" config-val="@SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY")"></admin-config>
+            <admin-config config-key="STRSOCIALSHARE" config-label="Social Media links" config-val="@SnitzConfig.GetIntValue("STRSOCIALSHARE")"></admin-config>
+            <admin-config config-key="INTTOPICDISPLAY" config-label="Show Topic on all pages" config-val="@SnitzConfig.GetIntValue("INTTOPICDISPLAY")"></admin-config>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRTOPICPAGESIZES" config-label="Page size" config-val="@config.GetValue("STRTOPICPAGESIZES", "10,25,50,100")"></admin-config>
+                    <admin-config config-key="STRTOPICPAGESIZES" config-label="Page size" config-val="@SnitzConfig.GetValue("STRTOPICPAGESIZES", "10,25,50,100")"></admin-config>
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRACTIVEPAGESIZES" config-label="Active Topics page size" config-val="@config.GetValue("STRACTIVEPAGESIZES", "10,20,50")"></admin-config>
+                    <admin-config config-key="STRACTIVEPAGESIZES" config-label="Active Topics page size" config-val="@SnitzConfig.GetValue("STRACTIVEPAGESIZES", "10,20,50")"></admin-config>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="INTRECENTCOUNT" config-label="Recent Topics list" config-val="@config.GetValue("INTRECENTCOUNT", "5")"></admin-config>
+                    <admin-config config-key="INTRECENTCOUNT" config-label="Recent Topics list" config-val="@SnitzConfig.GetValue("INTRECENTCOUNT", "5")"></admin-config>
                 </div>
                 <div class="col">
                 </div>
@@ -159,38 +159,38 @@
             @Html.ValidationSummary(false)
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRFLOODCHECK" config-label="Enable flood Control" config-val="@config.GetIntValue("STRFLOODCHECK")"></admin-config>
+                    <admin-config config-key="STRFLOODCHECK" config-label="Enable flood Control" config-val="@SnitzConfig.GetIntValue("STRFLOODCHECK")"></admin-config>
                 </div>
                 <div class="col">
-                    <fieldset @(config.GetIntValue("STRFLOODCHECK") == 0 ? "disabled" : "") id="FLOODCHECKENABLED">
-                        <admin-config config-key="STRFLOODCHECKTIME" config-label="Flood lockout (seconds)" config-val="@config.GetValue("STRFLOODCHECKTIME", "30")"></admin-config>
+                    <fieldset @(SnitzConfig.GetIntValue("STRFLOODCHECK") == 0 ? "disabled" : "") id="FLOODCHECKENABLED">
+                        <admin-config config-key="STRFLOODCHECKTIME" config-label="Flood lockout (seconds)" config-val="@SnitzConfig.GetValue("STRFLOODCHECKTIME", "30")"></admin-config>
                     </fieldset>
                 </div>
             </div>
-            <admin-config config-key="STRBADWORDFILTER" config-label="Filter out bad words" config-val="@config.GetIntValue("STRBADWORDFILTER")"></admin-config>
-            <admin-config config-key="STRALLOWFORUMCODE" config-label="Allow Forum Code" config-val="@config.GetIntValue("STRALLOWFORUMCODE")"></admin-config>
-            <admin-config config-key="STRIMGINPOSTS" config-label="Allow images" config-val="@config.GetIntValue("STRIMGINPOSTS")"></admin-config>
-            <admin-config disabled="true" config-key="STRICONS" config-label="Allow icons" config-type="" config-val="@config.GetIntValue("STRICONS")"></admin-config>
-            <admin-config config-key="STRALLOWUPLOADS" config-label="Allow File Attachments" config-val="@config.GetIntValue("STRALLOWUPLOADS")"></admin-config>
-            <fieldset @(config.GetIntValue("STRALLOWUPLOADS") == 0 ? "disabled" : "") id="UPLOADSENABLED">
+            <admin-config config-key="STRBADWORDFILTER" config-label="Filter out bad words" config-val="@SnitzConfig.GetIntValue("STRBADWORDFILTER")"></admin-config>
+            <admin-config config-key="STRALLOWFORUMCODE" config-label="Allow Forum Code" config-val="@SnitzConfig.GetIntValue("STRALLOWFORUMCODE")"></admin-config>
+            <admin-config config-key="STRIMGINPOSTS" config-label="Allow images" config-val="@SnitzConfig.GetIntValue("STRIMGINPOSTS")"></admin-config>
+            <admin-config disabled="true" config-key="STRICONS" config-label="Allow icons" config-type="" config-val="@SnitzConfig.GetIntValue("STRICONS")"></admin-config>
+            <admin-config config-key="STRALLOWUPLOADS" config-label="Allow File Attachments" config-val="@SnitzConfig.GetIntValue("STRALLOWUPLOADS")"></admin-config>
+            <fieldset @(SnitzConfig.GetIntValue("STRALLOWUPLOADS") == 0 ? "disabled" : "") id="UPLOADSENABLED">
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="INTMAXFILESIZE" config-label="Max File size (Mb)" config-val="@config.GetValue("INTMAXFILESIZE", "10")"></admin-config>
+                        <admin-config config-key="INTMAXFILESIZE" config-label="Max File size (Mb)" config-val="@SnitzConfig.GetValue("INTMAXFILESIZE", "10")"></admin-config>
                     </div>
                     <div class="col">
-                        <admin-config config-key="STRFILETYPES" config-label="Allowed Extensions" config-val="@config.GetValue("STRFILETYPES", ".txt,.pdf,.zip,.png,.jpg")"></admin-config>
+                        <admin-config config-key="STRFILETYPES" config-label="Allowed Extensions" config-val="@SnitzConfig.GetValue("STRFILETYPES", ".txt,.pdf,.zip,.png,.jpg")"></admin-config>
                     </div>
                 </div>
             </fieldset>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRSIGNATURES" config-label="Allow Signatures" config-val="@config.GetIntValue("STRSIGNATURES")"></admin-config>
+                    <admin-config config-key="STRSIGNATURES" config-label="Allow Signatures" config-val="@SnitzConfig.GetIntValue("STRSIGNATURES")"></admin-config>
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRDSIGNATURES" config-label="Dynamic Signatures" config-val="@config.GetIntValue("STRDSIGNATURES")"></admin-config>
+                    <admin-config config-key="STRDSIGNATURES" config-label="Dynamic Signatures" config-val="@SnitzConfig.GetIntValue("STRDSIGNATURES")"></admin-config>
                 </div>
             </div>
-            <admin-config config-key="STRSHOWQUICKREPLY" config-label="Show Quick Reply" config-val="@config.GetIntValue("STRSHOWQUICKREPLY")"></admin-config>
+            <admin-config config-key="STRSHOWQUICKREPLY" config-label="Show Quick Reply" config-val="@SnitzConfig.GetIntValue("STRSHOWQUICKREPLY")"></admin-config>
         </div>
         <partial name="_FormButtons"/>
     </form>
@@ -199,8 +199,8 @@
     <legend>Anti-Spam Settings</legend>
     <hr/>
     <form asp-action="SaveCaptcha" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
-        <admin-config config-key="STRUSECAPTCHA" config-label="Use Captcha for Registration" config-val="@config.GetIntValue("STRUSECAPTCHA")"></admin-config>
-        <admin-config config-key="INTEMAILCAPTCHA" config-label="Use Captcha when Emailing" config-val="@config.GetIntValue("INTEMAILCAPTCHA")"></admin-config>
+        <admin-config config-key="STRUSECAPTCHA" config-label="Use Captcha for Registration" config-val="@SnitzConfig.GetIntValue("STRUSECAPTCHA")"></admin-config>
+        <admin-config config-key="INTEMAILCAPTCHA" config-label="Use Captcha when Emailing" config-val="@SnitzConfig.GetIntValue("INTEMAILCAPTCHA")"></admin-config>
         <div class="mb-3">
             <div class="form-text">
                 <p>
@@ -210,7 +210,7 @@
             </div>
             <div class="mb-3">
                 <div class="col-5 col-sm-3 mb-3">
-                    <select asp-for="@config.CaptchaOperators"
+                    <select asp-for="@SnitzConfig.CaptchaOperators"
                             asp-items="@Html.GetEnumSelectList<CaptchaOperator>()" class="form-select">
                     </select>
                 </div>
@@ -229,17 +229,17 @@
     <legend>Private messaging</legend>
     <hr/>
     <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
-        <admin-config config-key="STRPMSTATUS" config-label="Enable Private Messages" config-val="@config.GetIntValue("STRPMSTATUS")"></admin-config>
-        <fieldset @(config.GetIntValue("STRPMSTATUS") == 0 ? "disabled" : "") id="PMENABLED" class="mb-3">
-            <admin-config config-key="STRPMSOUND" config-label="Play notification sound" config-val="@config.GetIntValue("STRPMSOUND")"></admin-config>
-            <admin-config config-key="STRPMATTACH" config-label="Allow attachments" config-val="@config.GetIntValue("STRPMATTACH")"></admin-config>
-            <admin-config config-key="STRPMSIG" config-label="Allow signatures" config-val="@config.GetIntValue("STRPMSIG")"></admin-config>
+        <admin-config config-key="STRPMSTATUS" config-label="Enable Private Messages" config-val="@SnitzConfig.GetIntValue("STRPMSTATUS")"></admin-config>
+        <fieldset @(SnitzConfig.GetIntValue("STRPMSTATUS") == 0 ? "disabled" : "") id="PMENABLED" class="mb-3">
+            <admin-config config-key="STRPMSOUND" config-label="Play notification sound" config-val="@SnitzConfig.GetIntValue("STRPMSOUND")"></admin-config>
+            <admin-config config-key="STRPMATTACH" config-label="Allow attachments" config-val="@SnitzConfig.GetIntValue("STRPMATTACH")"></admin-config>
+            <admin-config config-key="STRPMSIG" config-label="Allow signatures" config-val="@SnitzConfig.GetIntValue("STRPMSIG")"></admin-config>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="INTMAXPMRECIPIENTS" config-label="Max PM recipients" config-val="@config.GetValue("INTMAXPMRECIPIENTS", "50")"></admin-config>
+                    <admin-config config-key="INTMAXPMRECIPIENTS" config-label="Max PM recipients" config-val="@SnitzConfig.GetValue("INTMAXPMRECIPIENTS", "50")"></admin-config>
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRPMLIMIT" config-label="Message Limit" config-val="@config.GetValue("STRPMLIMIT", "500")"></admin-config>
+                    <admin-config config-key="STRPMLIMIT" config-label="Message Limit" config-val="@SnitzConfig.GetValue("STRPMLIMIT", "500")"></admin-config>
                 </div>
             </div>
         </fieldset>
@@ -250,10 +250,10 @@
     <legend>Forum Announcement</legend>
     <hr/>
     <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
-        <admin-config config-key="STRSHOWANNOUNCE" config-label="Show Announcement" config-val="@config.GetIntValue("STRSHOWANNOUNCE")"></admin-config>
-        <fieldset @(config.GetIntValue("STRSHOWANNOUNCE") == 0 ? "disabled" : "") id="ANNOUNCEENABLED" class="mb-3">
-            <admin-config config-key="STRANNOUNCETITLE" config-label="Title" config-val="@config.GetValue("STRANNOUNCETITLE")" placeholder="Add a title, leave blank to use default"></admin-config>
-            <admin-config config-type="textarea" config-key="STRANNOUNCE" config-label="Message" config-val="@config.GetValue("STRANNOUNCE")" placeholder="Enter text for announcement"></admin-config>
+        <admin-config config-key="STRSHOWANNOUNCE" config-label="Show Announcement" config-val="@SnitzConfig.GetIntValue("STRSHOWANNOUNCE")"></admin-config>
+        <fieldset @(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 0 ? "disabled" : "") id="ANNOUNCEENABLED" class="mb-3">
+            <admin-config config-key="STRANNOUNCETITLE" config-label="Title" config-val="@SnitzConfig.GetValue("STRANNOUNCETITLE")" placeholder="Add a title, leave blank to use default"></admin-config>
+            <admin-config config-type="textarea" config-key="STRANNOUNCE" config-label="Message" config-val="@SnitzConfig.GetValue("STRANNOUNCE")" placeholder="Enter text for announcement"></admin-config>
         </fieldset>
         <partial name="_FormButtons"/>
     </form>

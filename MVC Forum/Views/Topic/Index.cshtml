@@ -10,16 +10,17 @@
 @using SnitzCore.Data.Models
 @inject ICodeProcessor BbCodeProcessor
 @inject IMember MemberService
-@inject ISnitzConfig Config
+@inject ISnitzConfig SnitzConfig
 @inject SignInManager<ForumUser> SignInManager
 @section Styles
 {
     <link rel="stylesheet" href="~/css/prism.css">
 }
+
 @{
     ViewBag.PageCount = Model.PageCount;
 
-    var pagenum = Model.PageNum.ToString() ?? Context.Request.Query["page"] ;
+    string pagenum = (Model.PageNum.ToString() ?? Context.Request.Query["page"])! ;
     var pagesize = Context.Request.Query["pagesize"];
 
     var ranking = MemberService.GetRankings();
@@ -34,15 +35,15 @@
     <breadcrumb></breadcrumb>
     <!--Topic Section-->
 
-    @if (Config.GetIntValue("STRSHOWSENDTOFRIEND") == 1 || Config.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1 || Config.GetIntValue("STRSOCIALSHARE") == 1)
+    @if (SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 || SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1 || SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1)
     {
-        <topic-buttons topic-print="@Model.Id" topic-email="@Model.Id" topic-share="@Config.GetIntValue("STRSOCIALSHARE")"></topic-buttons>
+        <topic-buttons topic-print="@Model.Id" topic-email="@Model.Id" topic-share="@SnitzConfig.GetIntValue("STRSOCIALSHARE")"></topic-buttons>
     }
-    @if (Config.GetIntValue("INTTOPICDISPLAY") == 1 || (Config.GetIntValue("INTTOPICDISPLAY") != 1 && Int32.Parse(pagenum) < 2))
+    @if (SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && Int32.Parse(pagenum) < 2))
     {
         <div class="card mb-1 topic-container bg-white">
             <div class="card-header">
-                @Model.Title - Posted <snitz-datetime datetime="@Model.Created"></snitz-datetime> (Read @Model.Views Times)
+                @Model.Title - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (Read @Model.Views Times)</span>
             </div>
             <div class="card-body">
                 <div class="body topic">
@@ -52,20 +53,27 @@
                     </div>
                 </div>
             </div>
-            <div class="card-footer text-dark">
-                <post-controls post-type="Topic" post-status="Model.IsLocked" post-id="Model.Id" curr-user="User" post-author="Model.AuthorName" logged-in="loggedin"></post-controls>
-                @if (Config.GetIntValue("STRSHOWTOPICNAV") == 1)
-                {
-                    //TODO:
-                    <div class="footer"><a href="" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a class="form-control-plaintext text-end" href="" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
-                }
-            </div>
+            @if (User.Identity.IsAuthenticated || Model.Edited != null)
+            {
+                <div class="card-footer text-dark">
+                    @if (SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && Model.Edited != null)
+                    {
+                        <span class="form-text">@Localizer["lblEditedBy", Model.EditedBy, Model.Edited]</span>
+                    }
+                    <post-controls post-type="Topic" post-status="Model.IsLocked" post-id="Model.Id" curr-user="User" post-author="Model.AuthorName" logged-in="loggedin"></post-controls>
+                    @if (SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1)
+                    {
+                        //TODO:
+                        <div class="footer"><a href="" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a class="form-control-plaintext text-end" href="" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
+                    }
+                </div>
+            }
+
         </div>
     }
 
 <!--Replies Section-->
-
-@if (Model.Replies.Any())
+    @if (Model.Replies != null && Model.Replies!.Any())
 {
     <form id="defaultdays-form" asp-action="Index" class="form-inline">
         <select class="form-control mt-1" id="sortdir" name="sortdir">
@@ -81,7 +89,7 @@
 
     <div class="reply-container">
 
-        @foreach (var reply in Model.Replies)
+        @foreach (var reply in Model.Replies!)
         {
             rowclass = rowclass == "alt" ? "" : "alt";
 
@@ -97,9 +105,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer text-dark">
-                    <post-controls post-type="Reply" post-status="Model.IsLocked" post-id="reply.Id" topic-id="Model.Id" curr-user="User" post-author="reply.AuthorName" logged-in="loggedin"></post-controls>
-                </div>
+                @if (User.Identity.IsAuthenticated || reply.Edited != null)
+                {
+                    <div class="card-footer text-dark">
+                        @if (SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && reply.Edited != null)
+                        {
+
+                                <span class="form-text">@Localizer["lblEditedBy", reply.EditedBy, reply.Edited]</span>
+                        }
+                        <post-controls post-type="Reply" post-status="Model.IsLocked" post-id="reply.Id" topic-id="Model.Id" curr-user="User" post-author="reply.AuthorName" logged-in="loggedin"></post-controls>
+                    </div>
+                }
+
             </div>
 
         }
@@ -122,6 +139,10 @@
         <div class="mb3">&nbsp;</div>
     }
 }
+    else
+    {
+        <p class="p-4">@Localizer["NoReplyMessage"]</p>
+    }
     <!--Reply Area-->
     @if (!Model.IsLocked)
     {
@@ -142,21 +163,163 @@
 </div>
 
 
-
-
+<div id="memberModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-bg-dark">
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="close">X</a>
+                <h4 id="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <div id="member-modal"></div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="btnOk" class="btn btn-danger">OK</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    var confModel = new ConfirmDialogViewModel()
+            {
+                Title = "Manage Topic",
+                Message = @"<p></p>"
+            };
+}
+<partial name="ConfirmDialog" model="@confModel" />
 @section Scripts
 {
     <script type="text/javascript" src="/js/postcontroller.js"></script>
     <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="/js/initPostForm.js"></script>
     <script src="/js/prism.js" data-manual></script>
-
     <script>
-        Prism.hooks.add("before-highlight", function (env) {
-            env.code = env.element.innerText;
+    $(document).on("click",
+        ".email-link",
+        function(e) {
+            e.preventDefault();
+            var memberid = $(this).data("id");
+            var href = $(this).data("url");
+            $('#modal-title').html('Send Email');
+            $('#member-modal').load(href + "/" + memberid, function() {});
+            $('#memberModal #btnOk').hide();
+                
+            $(document).on("click",
+                "#send-email",
+                function(e) {
+                    e.preventDefault();
+                    $(this).prop('disabled', true);
+                    var post_url = $('#sendemail-form').attr("action");
+                    var form_data = $('#sendemail-form').serialize();
+                    $.ajax({
+                        url: post_url,
+                        type: "POST",
+                        data: form_data
+                    }).done(function(response) {
+                        if (response.result) {
+                            $('#memberModal').modal('hide');
+                        } else {
+                            //Dont close the modal, display the error
+                            $('#member-modal').html(response);
+                        }
+                    });
+
+                });
+            $('#memberModal').data('id', memberid).modal('show');
+                //tinymce.EditorManager.execCommand('mceAddEditor', true, "textarea#email-text");
         });
+    $(document).on("click",
+        ".sendpm-link",
+        function(e) {
+            e.preventDefault();
+            var memberid = $(this).data("id");
+            var href = $(this).data("url");
+            $('#modal-title').html('Send private message');
+            $('#member-modal').load(href + "/" + memberid, function() {});
+            $('#memberModal #btnOk').hide();
+                
+            $(document).on("click",
+                "#send-pm",
+                function(e) {
+                    e.preventDefault();
+                    $(this).prop('disabled', true);
+                    var post_url = $('#sendpm-form').attr("action");
+                    var form_data = $('#sendpm-form').serialize();
+                    $.ajax({
+                        url: post_url,
+                        type: "POST",
+                        data: form_data
+                    }).done(function(response) {
+                        if (response.result) {
+                            $('#memberModal').modal('hide');
+                        } else {
+                            //Dont close the modal, display the error
+                            $('#member-modal').html(response);
+                        }
+                    });
+
+                });
+            $('#memberModal').data('id', memberid).modal('show');
+
+        });
+
+        $(document).on("click",
+            ".show-ip",
+            function(e) {
+                e.preventDefault();
+                var memberid = $(this).data("id");
+                var href = $(this).data("url");
+                $('#modal-title').html('IP Address');
+                $('#member-modal').load(href + "/" + memberid, function() {});
+                //$('#member-modal').html(href + "/" + memberid);
+                $('#memberModal').data('id', memberid).modal('show');
+            });
+        $(document).on("click",
+            ".lock-member",
+            function(e) {
+                e.preventDefault();
+                var memberid = $(this).data("id");
+                var href = $(this).data("url");
+                $('#modal-title').html('Lock Member');
+                $('#member-modal').html('Toggle Member Status');
+                $('#memberModal').data('id', memberid).modal('show');
+                $('#memberModal #btnOk').show();
+                $('#memberModal').one('click',
+                    '#btnOk',
+                    function(e) {
+                        // handle deletion here
+                        e.preventDefault();
+                        $.post(href,
+                            {
+                                id: memberid
+                            },
+                            function(data, status) {
+
+                                if (!data.result) {
+                                    alert(data.error);
+                                } else {
+                                    location.reload();
+                                }
+                            });
+                    });
+            });
+        $(document).on('click',
+            '#btnOk',
+            function() {
+                //just hide for now, needs to submit forms
+                $('#memberModal').modal('hide');
+            });
+    </script>
+    <script>
+        Prism.hooks.add("before-highlight",
+            function(env) {
+                env.code = env.element.innerText;
+            });
 
         code = document.getElementsByTagName('code');
         Array.from(code).forEach(el => { Prism.highlightElement(el) });
+
+
     </script>
 }

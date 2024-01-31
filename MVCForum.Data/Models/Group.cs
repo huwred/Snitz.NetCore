@@ -17,6 +17,6 @@ public partial class Group
     [Column("GROUP_CATID")]
     public int CategoryId { get; set; }
 
-    public virtual GroupName GroupName { get; set; }
-    public virtual Category Category { get; set; }
+    public virtual GroupName? GroupName { get; set; }
+    public virtual Category? Category { get; set; }
 }

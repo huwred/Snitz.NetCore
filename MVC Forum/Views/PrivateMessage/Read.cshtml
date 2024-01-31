@@ -1,5 +1,5 @@
 ﻿@using BbCodeFormatter
-@model MVC_Forum.Models.Forum.PrivateMessageListingModel
+@model MVCForum.Models.PrivateMessage.PrivateMessageListingModel
 @inject ICodeProcessor BbCodeProcessor
 
 <div class="card bg-light" style="width: 98%;">
@@ -10,6 +10,6 @@
         </div>
     </div>
     <div class="card-body text-dark p-3">
-        @Html.Raw(BbCodeProcessor.Format(Model.Description))
+        @Html.Raw(BbCodeProcessor.Format(Model.Description!))
     </div>
 </div>

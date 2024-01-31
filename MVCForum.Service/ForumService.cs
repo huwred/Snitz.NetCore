@@ -114,50 +114,49 @@ namespace SnitzCore.Service
             var forums = _dbContext.Forums
                 .Include(forum=>forum.Category)
                 .AsNoTracking()
-                .OrderBy(forum=>forum.Category.Sort).ThenBy(forum=>forum.Order);
+                .OrderBy(forum=>forum.Category!.Sort).ThenBy(forum=>forum.Order);
 
             return forums;
         }
-        public Dictionary<int, string> CategoryList()
+        public Dictionary<int, string?> CategoryList()
         {
             return _dbContext.Categories.AsNoTracking().Select(c=> new {c.Id, value = c.Name}).ToDictionary(k=>k.Id,k=>k.value);
         }
-        public Post GetLatestPost(int forumId)
+        public Post? GetLatestPost(int forumId)
         {
-            var lastpost = _dbContext.Posts.Where(f => f.Id == forumId)
+            return _dbContext.Posts.Where(f => f.Id == forumId)
                 .AsNoTracking()
                 .Include(p => p.Member)
                 
                 .OrderByDescending(p=>p.Created)
                 .FirstOrDefault();
-
-            return lastpost;
         }
         public Forum GetById(int id)
         {
-            var forum = _dbContext.Forums.Where(f => f.Id == id)
+            return _dbContext.Forums.Where(f => f.Id == id)
                 .Include(f=>f.Category)
                 
-                .Include(f => f.Posts.OrderByDescending(p => p.Created))
+                .Include(f => f.Posts!.OrderByDescending(p => p.Created))
                 .ThenInclude(p => p.Member)
-                .Include(f=>f.ForumModerators)
+                .Include(f=>f.ForumModerators)!
                 .ThenInclude(p => p.Member)
-                .AsSplitQuery()
-                //.AsNoTracking()
-                //.Include(forum=>forum.ForumAllowedMembers)
-                .SingleOrDefault();
+                .AsNoTracking()
+                .Single();
 
-            return forum;
         }
         public Dictionary<int, string> ForumList()
         {
             return _dbContext.Forums.AsNoTracking().Where(f=>f.Privateforums == ForumAuthType.All).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value);
         }
 
-        public string? ForumName(string rolename)
+        public string ForumName(string rolename)
         {
             var id = rolename.ToUpperInvariant().Replace("FORUM_","");
-            return _dbContext.Forums.Where(f => f.Id == Convert.ToInt32(id)).Select(f => f.Title).FirstOrDefault();
+            var result = 
+                _dbContext.Forums.FirstOrDefault(f => f.Id == Convert.ToInt32(id));
+
+            if (result != null) return result.Title;
+            return String.Empty;
         }
 
         public async Task EmptyForum(int id)
@@ -173,7 +172,7 @@ namespace SnitzCore.Service
                 forum.ReplyCount = 0;
                 forum.TopicCount = 0;
                 _dbContext.Forums.Update(forum);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
             }
         }
     }

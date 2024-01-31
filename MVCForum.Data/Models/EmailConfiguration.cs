@@ -11,5 +11,6 @@ namespace SnitzCore.Data.Models
         public bool RequireLogin { get; set; } = false;
         public string? UserName { get; set; }
         public string? Password { get; set; }
+        public string? SecureSocketOptions { get; set; }
     }
 }

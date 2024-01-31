@@ -1,23 +1,21 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using SnitzCore.Data
-@using SnitzCore.Data.Models
+﻿@using SnitzCore.Data
 @model SnitzCore.BackOffice.ViewModels.AdminRolesViewModel
-@inject SnitzDbContext DbContext
-@{
 
-}
 @using (Html.BeginForm("ManageRoles", "Admin", null, FormMethod.Post))
 {
     <div class="mb-3">
         <ul class="list-group">
-            @foreach (var user in Model.Members)
+            @if (Model.Members != null)
             {
-                <li class="list-group-item">
-                    @user.Name
-                    <span class="pull-right">
-                        <link-confirm href="/Admin/DelMemberFromRole/?role=@Model.Rolename&username=@user.Name" config-class="fa fa-trash-o" title="Remove Member from role?" config-key="@user.Name" config-role="@Model.Rolename"></link-confirm>
-                    </span>
-                </li>
+                foreach (var user in Model.Members)
+                {
+                    <li class="list-group-item">
+                        @user.Name
+                        <span class="pull-right">
+                            <link-confirm href="/Admin/DelMemberFromRole/?role=@Model.Rolename&username=@user.Name" config-class="@(@"fa fa-trash-o")" title="Remove Member from role?" config-key="@user.Name" config-role="@Model.Rolename"></link-confirm>
+                        </span>
+                    </li>
+                }
             }
         </ul>
         <hr class="title"/>

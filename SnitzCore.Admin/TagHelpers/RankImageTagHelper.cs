@@ -10,17 +10,15 @@ namespace SnitzCore.BackOffice.TagHelpers
     public class RankImageTagHelper : TagHelper
     {
         [HtmlAttributeName("config-key")]
-        public string Key { get; set; }
+        public string? Key { get; set; }
         [HtmlAttributeName("config-val")]
-        public string Value { get; set; }
+        public string? Value { get; set; }
         [ViewContext]
-        public ViewContext ViewContext { set; get; }
-        private readonly IHostingEnvironment _environment;
-        private readonly IHtmlGenerator _htmlGenerator;
-        public RankImageTagHelper(IHostingEnvironment environment,IHtmlGenerator htmlGenerator)
+        public ViewContext? ViewContext { set; get; }
+        private readonly IWebHostEnvironment _environment;
+        public RankImageTagHelper(IWebHostEnvironment environment)
         {
             _environment = environment;
-            _htmlGenerator = htmlGenerator;
         }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -31,12 +29,11 @@ namespace SnitzCore.BackOffice.TagHelpers
             output.TagName = "div";
             output.TagMode = TagMode.StartTagAndEndTag;
 
-            var builder = new HtmlContentBuilder();
             foreach (var file in files)
             {
                 
                 var imagefile = Path.GetFileName(file);
-                string selected = imagefile.Contains(Value) ? "selected" : "";
+                string selected = Value != null && imagefile.Contains(Value) ? "selected" : "";
                 output.Content.AppendHtml($@"<img data-id=""rankImage_{Key}"" data-val=""{imagefile}"" src=""{ "/Content/rankimages/" + imagefile}"" title=""{imagefile}"" class=""rank {selected} rank-image rankImage_{Key}"" />");
 
             }

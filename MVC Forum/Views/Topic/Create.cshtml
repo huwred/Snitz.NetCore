@@ -4,20 +4,20 @@
 @using BbCodeFormatter
 @model MVCForum.Models.Post.NewPostModel
 @inject ICodeProcessor BbCodeProcessor
-@inject ISnitzConfig Config;
+@inject ISnitzConfig SnitzConfig;
 @{
     var formaction = "AddPost";
     if (!Model.IsPost)
     {
         formaction = "AddReply";
     }
-    Model.Content = BbCodeProcessor.Format(Model.Content);
+    Model.Content = BbCodeProcessor.Format(Model.Content)!;
 }
 <div class="container pt-0">
     <breadcrumb></breadcrumb>
     <div class="row">
 
-        <form asp-action="@formaction" method="post" id="addPostForm" class="needs-validation col col-md-8 offset-md-2 bg-form p-4 rounded" novalidate>
+        <form asp-controller="Topic" asp-action="@formaction" method="post" id="addPostForm" class="needs-validation col col-md-8 offset-md-2 bg-form p-4 rounded" novalidate>
             @if (Model.IsPost)
             {
                 <div class="mb-3 row">
@@ -29,6 +29,7 @@
                 </div>
             }
             <input asp-for="ForumId" type="hidden" />
+            <input asp-for="CatId" type="hidden" />
             @if (Model.Id > 0)
             {
                 <input asp-for="Id" type="hidden" />
@@ -48,7 +49,7 @@
             </div>
             <div class="mb-3 row">
                 <div class="col row">
-                    @if (Config.GetIntValue("STRSIGNATURES") == 1)
+                    @if (SnitzConfig.GetIntValue("STRSIGNATURES") == 1)
                     {
                         <div class="pl-3 col-6">
                             <input id="show-sig" name="UseSignature" tabindex="5" type="checkbox" value="true">
@@ -63,14 +64,14 @@
                             <input asp-for="Lock" tabindex="5" type="checkbox" checked="@Model.Lock">
                             <label>Check here to lock the topic after this post.</label>
                         </div>
-                        @if (Config.GetIntValue("STRSTICKYTOPIC") == 1)
+                        @if (SnitzConfig.GetIntValue("STRSTICKYTOPIC") == 1)
                         {
                             <div class="pl-3 col-6">
                                 <input asp-for="Sticky" tabindex="5" type="checkbox" checked="@Model.Sticky">
                                 <label>Check here to make this topic sticky.</label>
                             </div>
                         }
-                        @if (Config.GetIntValue("STRARCHIVESTATE") == 1)
+                        @if (SnitzConfig.GetIntValue("STRARCHIVESTATE") == 1)
                         {
                             <div class="pl-3 col-6">
                                 <input asp-for="DoNotArchive" tabindex="5" type="checkbox" checked="@Model.DoNotArchive">

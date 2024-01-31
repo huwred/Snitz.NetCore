@@ -13,23 +13,19 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-
 <div class="d-flex flex-column" style="min-height: 100vh;">
     <partial name="MainNav"/>
 
-    <div class="container row mt-5">
-        <div class="col-2 mt-5"><partial name="_Menu"/></div>
+    <div class="container row mt-3">
+        <div class="col-3"><partial name="_Menu"/></div>
 
-            <main role="main" class="col-10 pb-3 bg-form rounded mt-5">
+            <main role="main" class="col-9 pb-3 bg-form rounded">
             @RenderBody()
         </main>
     </div>
-
     <partial name="Footer"/>
 </div>
-
 <script src="~/js/bootstrap.bundle.min.js"></script>
 @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 </html>

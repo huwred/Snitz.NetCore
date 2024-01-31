@@ -14,8 +14,10 @@ namespace SnitzCore.Data.Extensions
             return (Enum.GetValues(enumtype).Cast<int>().Select(e =>
                 new SelectListItem() { Text = GetDisplayName(enumtype,Enum.GetName(enumtype, e)!), Value = e.ToString() })).ToList();
         }
-        public static Type? GetEnumType(string name)
+        public static Type? GetEnumType(string? name)
         {
+            if (name == null)
+                return null;
             return 
                 (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                     let type = assembly.GetType(name)
@@ -23,13 +25,13 @@ namespace SnitzCore.Data.Extensions
                     select type).FirstOrDefault();
 
         }
-        public static TAttribute GetAttribute<TAttribute>(this Enum enumValue) 
+        public static TAttribute? GetAttribute<TAttribute>(this Enum enumValue) 
             where TAttribute : Attribute
         {
-            var test = enumValue.GetType()
+            return enumValue.GetType()
                 .GetMember(enumValue.ToString())
                 .First().GetCustomAttribute<TAttribute>();
-            return test;
+
         }
 
         public static string? GetDisplayName(this Type enumValue, string value)

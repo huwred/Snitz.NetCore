@@ -1,0 +1,23 @@
+﻿@model SnitzCore.BackOffice.ViewModels.LanguageViewModel
+@{
+    Layout = null;
+}
+<ul class="">
+@foreach (var res in Model.DefaultStrings)
+{
+    <li class="list-unstyled">
+        <div class="mb-3 row">
+            <label for="@res.Name" class="col-sm-3 col-form-label">@res.Name</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control bg-warning" id="@res.Name" value="@res.Value">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+                <lang-res culture="no" resource="@res.Name"></lang-res>
+            </div>
+        </div>
+    </li>
+}
+</ul>

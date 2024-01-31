@@ -1,8 +1,8 @@
-﻿using SnitzCore.Data.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SnitzCore.Data.Models;
 
-namespace MVC_Forum.Models.Forum
+namespace MVCForum.Models.PrivateMessage
 {
     public class PrivateMessageSettingsModel
     {
@@ -12,6 +12,6 @@ namespace MVC_Forum.Models.Forum
         [Display(Name = "Save Sent Messages")]
         public bool SaveSentMessages { get; set;}
 
-        public IEnumerable<PrivateMessageBlocklist> BlockedList { get; set;}
+        public IEnumerable<PrivateMessageBlocklist>? BlockedList { get; set;}
     }
 }

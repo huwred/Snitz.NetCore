@@ -19,7 +19,7 @@ namespace SnitzCore.Data.Extensions
             }
             return value.All(char.IsNumber);
         }
-        public static T GetAttribute<T>(this MemberInfo member, bool isRequired)
+        public static T? GetAttribute<T>(this MemberInfo member, bool isRequired)
             where T : Attribute
         {
             var attribute = member.GetCustomAttributes(typeof(T), false).SingleOrDefault();
@@ -34,7 +34,7 @@ namespace SnitzCore.Data.Extensions
                         member.Name));
             }
 
-            return (T)attribute;
+            return (T?)attribute;
         }
 
         public static string GetPropertyDisplayName<T>(Expression<Func<T, object>> propertyExpression)
@@ -44,7 +44,7 @@ namespace SnitzCore.Data.Extensions
             {
                 throw new ArgumentException(
                     "No property reference expression was found.",
-                    "propertyExpression");
+                    nameof(propertyExpression));
             }
 
             var attr = memberInfo.GetAttribute<DisplayNameAttribute>(false);
@@ -56,13 +56,13 @@ namespace SnitzCore.Data.Extensions
             return attr.DisplayName;
         }
 
-        public static string? GetPropertyDisplayName<T>(this MemberInfo memberInfo)
+        public static string GetPropertyDisplayName<T>(this MemberInfo memberInfo)
         {
             if (memberInfo == null)
             {
                 throw new ArgumentException(
                     "No property reference expression was found.",
-                    "propertyExpression");
+                    nameof(memberInfo));
             }
 
             var attr = memberInfo.GetAttribute<ProfileDisplayAttribute>(false);
@@ -71,7 +71,7 @@ namespace SnitzCore.Data.Extensions
                 return memberInfo.Name;
             }
 
-            return attr.DisplayName ?? memberInfo.Name;
+            return attr.DisplayName;
         }
 
         public static string? GetPropertyDisplayCheck<T>(this MemberInfo memberInfo)
@@ -80,40 +80,40 @@ namespace SnitzCore.Data.Extensions
             {
                 throw new ArgumentException(
                     "No property reference expression was found.",
-                    "propertyExpression");
+                    nameof(memberInfo));
             }
 
             var attr = memberInfo.GetAttribute<ProfileDisplayAttribute>(false);
-            return attr.DisplayCheck;
+            return attr?.DisplayCheck;
         }
         public static bool PropertyIsSocialMedia(this PropertyInfo propInfo)
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
-                .SingleOrDefault();
+                .SingleOrDefault()!;
 
-            return orderAttr?.SocialLink ?? false;
+            return orderAttr.SocialLink;
         }
         public static MemberLayout PropertyLayoutSection(this PropertyInfo propInfo)
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
-                .SingleOrDefault();
+                .SingleOrDefault()!;
 
-            return orderAttr != null ? (MemberLayout)orderAttr?.LayoutSection : MemberLayout.Profile;
+            return orderAttr.LayoutSection;
         }
         public static bool PropertyIsPersonal(this PropertyInfo propInfo)
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
-                .SingleOrDefault();
+                .SingleOrDefault()!;
 
-            return orderAttr?.SocialLink ?? false;
+            return orderAttr.SocialLink;
         }
-        public static string GetPropertyRequiredCheck<T>(this MemberInfo memberInfo)
+        public static string? GetPropertyRequiredCheck<T>(this MemberInfo memberInfo)
         {
             if (memberInfo == null)
             {
                 throw new ArgumentException(
                     "No property reference expression was found.",
-                    "propertyExpression");
+                    nameof(memberInfo));
             }
 
             var attr = memberInfo.GetAttribute<ProfileDisplayAttribute>(false);
@@ -128,59 +128,55 @@ namespace SnitzCore.Data.Extensions
         public static int PropertyOrder(this PropertyInfo propInfo)
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
-                .SingleOrDefault();
-            int output = orderAttr != null ? orderAttr.Order : Int32.MaxValue;
-            return output;
+                .SingleOrDefault()!;
+
+            return orderAttr.Order;
         }
 
         public static bool PropertyReadOnly(this PropertyInfo propInfo)
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
-                .SingleOrDefault();
-            bool output = orderAttr != null ? orderAttr.ReadOnly : false;
-            return output;
+                .SingleOrDefault()!;
+            return orderAttr.ReadOnly;
         }
         public static bool PropertyIsPrivate(this PropertyInfo propInfo)
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
-                .SingleOrDefault();
-            bool output = orderAttr != null ? orderAttr.Private : false;
-            return output;
+                .SingleOrDefault()!;
+            return orderAttr.Private;
         }
         public static bool SystemProperty(this PropertyInfo propInfo)
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
-                .SingleOrDefault();
-            bool output = orderAttr != null ? orderAttr.SystemField : false;
-            return output;
+                .SingleOrDefault()!;
+            return orderAttr.SystemField;
         }
 
-        public static string? PropertyFieldType(this PropertyInfo propInfo)
+        public static string PropertyFieldType(this PropertyInfo propInfo)
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
-                .SingleOrDefault();
-            return orderAttr?.FieldType;
+                .SingleOrDefault()!;
+            return orderAttr.FieldType;
         }
         public static string? GetSelectEnum(this PropertyInfo propInfo)
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
-                .SingleOrDefault();
-            return orderAttr?.SelectEnum;
+                .SingleOrDefault()!;
+            return orderAttr.SelectEnum;
         }
         public static MemberInfo? GetPropertyInformation(Expression propertyExpression)
         {
             Debug.Assert(propertyExpression != null, "propertyExpression != null");
-            MemberExpression memberExpr = propertyExpression as MemberExpression;
+            MemberExpression? memberExpr = propertyExpression as MemberExpression;
             if (memberExpr == null)
             {
-                UnaryExpression unaryExpr = propertyExpression as UnaryExpression;
-                if (unaryExpr != null && unaryExpr.NodeType == ExpressionType.Convert)
+                if (propertyExpression is UnaryExpression { NodeType: ExpressionType.Convert } unaryExpr)
                 {
                     memberExpr = unaryExpr.Operand as MemberExpression;
                 }
             }
 
-            if (memberExpr != null && memberExpr.Member.MemberType == MemberTypes.Property)
+            if (memberExpr is { Member.MemberType: MemberTypes.Property })
             {
                 return memberExpr.Member;
             }

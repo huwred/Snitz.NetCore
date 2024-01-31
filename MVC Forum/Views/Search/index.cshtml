@@ -7,21 +7,21 @@
 @using SnitzCore.Data.Interfaces
 @using SnitzCore.Data.Models
 @using System.ComponentModel.DataAnnotations
-@inject ISnitzConfig Config
+@inject ISnitzConfig SnitzConfig
 @{
-    ViewBag.PageCount = Model.Results.PageCount;
-    var pagenum = Model.Results.PageNum?.ToString() ?? Context.Request.Query["page"];
+    ViewBag.PageCount = Model.Results?.PageCount!;
+    string pagenum = (Model.Results?.PageNum?.ToString() ?? Context.Request.Query["page"])!;
     ViewBag.PageNum = pagenum;
 }
 
     <div class="container pt-0">
         <!--Navigation-->
         <breadcrumb></breadcrumb>
-    @if (Config.GetValue("STRFORUMPAGESIZES","") != "")
+    @if (SnitzConfig.GetValue("STRFORUMPAGESIZES", "") != "")
     {
         //TODO: Set pagesize
     }
-    @if (Model.Results.Posts.Any())
+    @if (Model.Results!.Posts!.Any())
     {
         <!--Display posts table-->
         <div class="posts-table">
@@ -33,7 +33,7 @@
             </div>
 
             <!--Topics start here-->
-            @foreach (var post in Model.Results.Posts)
+            @foreach (var post in Model.Results.Posts!)
             {
                 <partial name="_TopicListing" model="post" />
             }
@@ -66,11 +66,11 @@
                 <div class="invalid-feedback">Please fill out this field.</div>
             </div>
                 <div class="mb-3">
-                    @foreach (SearchFor c in System.Enum.GetValues(typeof(SearchFor)).OfType<SearchFor>())
+                    @foreach (SearchFor c in Enum.GetValues(typeof(SearchFor)).OfType<SearchFor>())
                         {
-                            var displayName = c.GetAttribute<DisplayAttribute>().Name;
+                            var displayName = c.GetAttribute<DisplayAttribute>()!.Name;
                             <div class="form-check">
-                                <input asp-for="SearchFor" type="radio" class="form-check-input" value="@((int)c)" checked="@(c == Model?.SearchFor)">
+                                <input asp-for="SearchFor" type="radio" class="form-check-input" value="@((int)c)" checked="@(c == Model.SearchFor)">
                             <label asp-for="SearchFor" class="form-check-label">@displayName</label>
                             </div>
                         }

@@ -6,7 +6,7 @@
 @{
     Layout = "_MasterLayout";
 }
-@inject ISnitzConfig config
+@inject ISnitzConfig SnitzConfig
 <div class="mt-3">
     <legend>Email Configuration</legend>
     <hr/>
@@ -18,7 +18,7 @@
 
         <div class="tab-content bg-white p-4 rounded w-100">
             <div class="tab-pane fade w-100 active show" id="email-server" role="tabpanel" aria-labelledby="server-tab">
-                @using (Html.BeginForm("EmailConfig", "Admin", FormMethod.Post, new { @class = "form-inline row" }))
+                @using (Html.BeginForm("EmailConfigUpdate", "Admin", FormMethod.Post, new { @class = "form-inline row" }))
                 {
                     <div class="col-sm-5 text-left">
                         <fieldset>
@@ -85,7 +85,7 @@
                                 <div class="input-group col-xs-12">
                                     <input type="text" class="form-control resource-edit" placeholder="Resource string" value="@Model.From" name="From"/>
                                     <span class="input-group-btn">
-                                        <button data-toggle="tooltip" type="button" class="btn btn-default send-email" title="Send test email" data-id="@User.Identity.Name"><i class="fa fa-envelope"></i></button>
+                                        <button data-toggle="tooltip" type="button" class="btn btn-default send-email" title="Send test email" data-id="@User.Identity!.Name"><i class="fa fa-envelope"></i></button>
                                     </span>
                                 </div>
                             </div>
@@ -93,11 +93,11 @@
                             <legend>Member email settings</legend>
                             <hr/>
                             <div class="mb-3">
-                                <admin-config config-key="STRUNIQUEEMAIL" config-label="Require Unique Email" config-val="@config.GetIntValue("STRUNIQUEEMAIL")"></admin-config>
-                                <admin-config config-key="STRLOGONFORMAIL" config-label="Logon to send email" config-val="@config.GetIntValue("STRLOGONFORMAIL")"></admin-config>
-                                @if (config.GetIntValue("STREMAIL") == 1)
+                                <admin-config config-key="STRUNIQUEEMAIL" config-label="Require Unique Email" config-val="@SnitzConfig.GetIntValue("STRUNIQUEEMAIL")"></admin-config>
+                                <admin-config config-key="STRLOGONFORMAIL" config-label="Logon to send email" config-val="@SnitzConfig.GetIntValue("STRLOGONFORMAIL")"></admin-config>
+                                @if (SnitzConfig.GetIntValue("STREMAIL") == 1)
                                 {
-                                    <admin-config config-key="STREMAILVAL" config-label="Validate email addresses" config-val="@config.GetIntValue("STREMAILVAL")"></admin-config>
+                                    <admin-config config-key="STREMAILVAL" config-label="Validate email addresses" config-val="@SnitzConfig.GetIntValue("STREMAILVAL")"></admin-config>
                                 }
                                 else
                                 {
@@ -107,11 +107,11 @@
 
                             <div class="mb-3">
                                 <label for="emailpostcount" class="form-label">Number of posts to allow sending email:</label>
-                                <input id="emailpostcount" class="form-control" type="number" name="emailpostcount" value="@(config.GetIntValue("INTMAXPOSTSTOEMAIL"))"/>
+                                <input id="emailpostcount" class="form-control" type="number" name="emailpostcount" value="@(SnitzConfig.GetIntValue("INTMAXPOSTSTOEMAIL"))"/>
                                 <input type="text" id="emailadmin" name="emailadmin" value="1" style="display: none;"/>
                             </div>
                             <div class="mb-3">
-                                <textarea id="emailpostcount-error" class="form-control" name="emailpostcount-message" rows="4">@(config.GetValue("STRNOMAXPOSTSTOEMAIL"))</textarea>
+                                <textarea id="emailpostcount-error" class="form-control" name="emailpostcount-message" rows="4">@(SnitzConfig.GetValue("STRNOMAXPOSTSTOEMAIL"))</textarea>
                             </div>
                         </fieldset>
                     </div>
@@ -123,7 +123,7 @@
             <div class="tab-pane fade w-100" id="email-spam" role="tabpanel" aria-labelledby="spam-tab">
                 <form method="POST" class="banned-add" id="form-adddom" data-ajax="true" data-ajax-update="#result-spamdomain" data-ajax-mode="replace">
                     <div class="mb-3">
-                        <admin-config config-key="STRFILTEREMAILADDRESSES" config-label="Filter known spam domains" config-val="@config.GetIntValue("STRFILTEREMAILADDRESSES")"></admin-config>
+                        <admin-config config-key="STRFILTEREMAILADDRESSES" config-label="Filter known spam domains" config-val="@SnitzConfig.GetIntValue("STRFILTEREMAILADDRESSES")"></admin-config>
                     </div>
                     <div class="mb-3">
                         <div class="input-group">
@@ -137,7 +137,7 @@
                 <div class="container-fluid" style="max-height: 500px; overflow-y: scroll;">
                     <legend>Banned Domains</legend>
                     <hr/>
-                    @for (int i = 0; i < Model.BannedDomains.Length; i++)
+                    @for (int i = 0; i < Model.BannedDomains?.Length; i++)
                     {
                         <form method="POST" class="banned-doms" id="form-banned_@Model.BannedDomains[i].Id" data-ajax="true" data-ajax-update="#result-spamfilter" data-ajax-mode="replace">
                             <div class="input-group">

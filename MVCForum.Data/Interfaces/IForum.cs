@@ -10,8 +10,8 @@ namespace SnitzCore.Data.Interfaces
         Forum GetById(int id);
         IPagedList<Post> GetPagedTopics(int id, int pagesize, int page);
         IEnumerable<Forum> GetAll();
-        Dictionary<int, string> CategoryList();
-        Post GetLatestPost(int forumId);
+        Dictionary<int, string?> CategoryList();
+        Post? GetLatestPost(int forumId);
         Task Create(Forum forum);
         Task Delete(int forumId);
         Task Update(Forum forum);

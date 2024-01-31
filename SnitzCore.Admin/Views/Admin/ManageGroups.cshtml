@@ -10,7 +10,7 @@
         <legend>Manage Groups</legend>
         <hr/>
         <ul>
-            @foreach (var fgroup in Model.Groups)
+            @foreach (var fgroup in Model.Groups!)
             {
                 string linkText = fgroup.Name;
                 <li>@Html.ActionLink(linkText, "ManageGroups", new { id = fgroup.Id },new{@class="manage-group", data_id=fgroup.Id})</li>

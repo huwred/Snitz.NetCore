@@ -25,11 +25,13 @@
     <_ContentIncludedByDefault Remove="Views\Admin\ManageArchives.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Admin\Setup.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Admin\_RoleView.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\LanguageManager\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_FormButtons.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MVCForum.Data\SnitzCore.Data.csproj" />
+    <ProjectReference Include="..\MVCForum.Service\SnitzCore.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +52,10 @@
 
   <ItemGroup>
     <Folder Include="Views\Shared\DisplayTemplates\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\LanguageManager\Index.cshtml" />
   </ItemGroup>
 
 

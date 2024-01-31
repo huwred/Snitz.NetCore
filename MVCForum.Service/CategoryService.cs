@@ -27,7 +27,7 @@ namespace SnitzCore.Service
 
         public IEnumerable<Category> GetAll()
         {
-            var result = _dbContext.Categories.Include(forum => forum.Forums)
+            var result = _dbContext.Categories.Include(forum => forum.Forums)!
             .ThenInclude(f=>f.Posts);
             return result;
         }

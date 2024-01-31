@@ -1,111 +1,87 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using SnitzCore.Data;
-using SnitzCore.Data.Models;
+﻿// Copyright (c) .NET Foundation. All rights reserved. 
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
+
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using SnitzCore.Data;
 
 namespace SnitzCore.Service
 {
-    public class LanguageService : BaseResourceProvider
+    public class LanguageService : IHtmlLocalizer
     {
-    
 
-        private readonly SnitzDbContext _dbContext;
-        public LanguageService(SnitzDbContext dbContext){
+        private readonly IServiceProvider _serviceProvider;
 
-            _dbContext = dbContext;
+        public LanguageService(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
 
         }
 
-        public override string GetCulture(string langName)
+        public LocalizedHtmlString this[string name]
         {
-            var lang = _dbContext.LanguageResources.Where(l => l.Culture == langName);
-            if (lang.Any())
+            get
             {
-                return langName;
+                var value = GetString(name);
+                return new LocalizedHtmlString(name, value ?? name);
             }
-
-            return "en";
         }
 
-        public override IEnumerable<string> GetCultures()
+        public LocalizedHtmlString this[string name, params object[] arguments]
         {
-            return _dbContext.LanguageResources.Select(l => l.Culture).Distinct();
-
-        }
-
-        protected override string? GetKey(string value, string culture)
-        {
-            var langres = _dbContext.LanguageResources.SingleOrDefault(l => l.Culture == culture && l.Name == value);
-            return langres?.Value;
-
-        }
-
-        protected override IEnumerable<LanguageResource> ReadResources()
-        {
-            return _dbContext.LanguageResources.OrderBy(l => l.Culture).ThenBy(l => l.Name);
-        }
-        protected override IEnumerable<LanguageResource> ReadLanguageResources(string culture)
-        {
-            return _dbContext.LanguageResources.Where(l=>l.Culture==culture).OrderBy(l => l.Name);
-        }
-        protected override IEnumerable<LanguageResource> ReadResources(string resourceset)
-        {
-            if (resourceset.IsNullOrEmpty())
+            get
             {
-                return _dbContext.LanguageResources.Where(l=>l.ResourceSet==null);
+                var format = GetString(name);
+                var value = string.Format(format ?? name, arguments);
+                return new LocalizedHtmlString(name, value);
             }
-
-            return _dbContext.LanguageResources.Where(l=>l.ResourceSet==resourceset);
         }
 
-        protected override LanguageResource? ReadResource(string name, string culture)
+        public IHtmlLocalizer WithCulture(CultureInfo culture)
         {
-            return _dbContext.LanguageResources.SingleOrDefault(l => l.Culture == culture && l.Name == name);
-
-        }
-
-        protected override async Task AddResource(LanguageResource resource)
-        {
-            _dbContext.LanguageResources.Add(resource);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        protected override async Task DeleteResources(string set, string name)
-        {
-            var langres = _dbContext.LanguageResources.SingleOrDefault(l => l.ResourceSet == set && l.Name == name);
-            if (langres != null) _dbContext.LanguageResources.Remove(langres);
-            await _dbContext.SaveChangesAsync();
-
-        }
-
-        protected override async Task DeleteResourceValue(int id)
-        {
-            var langres = _dbContext.LanguageResources.SingleOrDefault(l => l.Id == id);
-            if (langres != null) _dbContext.LanguageResources.Remove(langres);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        protected override async Task UpdateResource(LanguageResource resource)
-        {
-            _dbContext.LanguageResources.Update(resource);
-            await _dbContext.SaveChangesAsync();
-
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            return new LanguageService(_serviceProvider);
             
         }
 
-        protected override async Task RenameResources(string newname, string oldname, string set)
+        public LocalizedString GetString(string name, params object[] arguments)
         {
-            var langres = _dbContext.LanguageResources.SingleOrDefault(l => l.ResourceSet == set && l.Name==oldname);
-            if (langres != null)
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<LocalizedString> GetAllStrings(bool includeAncestorCultures)
+        {
+            var culture = CultureInfo.CurrentCulture.Name;
+            if (culture.StartsWith("en-"))
             {
-                langres.Name = newname;
-                _dbContext.LanguageResources.Update(langres);
+                culture = "en";
             }
 
-            await _dbContext.SaveChangesAsync();
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetService<SnitzDbContext>();
+            var results = context!.LanguageResources
+                .Where(r => r.Culture == culture)
+                .Select(r => new LocalizedString(r.Name, r.Value));
+            return results;
+        }
 
+        public LocalizedString GetString(string name)
+        {
+            var culture = CultureInfo.CurrentCulture.Name;
+            if (culture.StartsWith("en-"))
+            {
+                culture = "en";
+            }
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetService<SnitzDbContext>();
+            var result = context!.LanguageResources
+                .FirstOrDefault(r => r.Name == name && r.Culture == culture)?.Value;
+            return new LocalizedString(name,result ?? name);
         }
     }
 }

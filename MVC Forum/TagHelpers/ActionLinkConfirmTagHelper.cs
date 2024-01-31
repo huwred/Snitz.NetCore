@@ -11,35 +11,32 @@ namespace MVCForum.TagHelpers
     public class ButtonConfirmTagHelper : TagHelper
     {
         [HtmlAttributeName("config-key")]
-        public string Key { get; set; }
+        public string? Key { get; set; }
         [HtmlAttributeName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
         [HtmlAttributeName("config-class")]
-        public string TagClass { get; set; }
+        public string? TagClass { get; set; }
+        [HtmlAttributeName("selector")]
+        public string? Selector { get; set; }
         [HtmlAttributeName("href")]
-        public string Href { get; set; }
+        public string? Href { get; set; }
         [ViewContext]
-        public ViewContext ViewContext { set; get; }
-
-        public ButtonConfirmTagHelper()
-        {
-
-        }
+        public ViewContext? ViewContext { set; get; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            var test = context.Items;
+
             var tagid = Guid.NewGuid().ToString();
             output.TagName = "a";
             output.TagMode = TagMode.StartTagAndEndTag;
             output.Attributes.Add("href",Href + Key);
             output.Attributes.Add("id",tagid);
-            output.Attributes.Add("data-toggle","modal");
+            output.Attributes.Add("data-bs-toggle","modal");
             output.Attributes.Add("data-id",Key);
             output.Attributes.Add("rel","nofollow");
             output.AddClass("btn",HtmlEncoder.Default);
             output.AddClass("btn-outline-danger",HtmlEncoder.Default);
-            output.AddClass("confirm-delete",HtmlEncoder.Default);
+            output.AddClass(Selector,HtmlEncoder.Default);
             output.Content.AppendHtml($@"<i class='" + TagClass + $"'></i><span class='d-none d-md-inline'> {Title}</span>");
         }
 
@@ -48,20 +45,17 @@ namespace MVCForum.TagHelpers
     public class ActionLinkConfirmTagHelper : TagHelper
     {
         [HtmlAttributeName("config-key")]
-        public string Key { get; set; }
+        public string? Key { get; set; }
         [HtmlAttributeName("config-class")]
-        public string TagClass { get; set; }
+        public string? TagClass { get; set; }
+        [HtmlAttributeName("jq-selector")]
+        public string? Selector { get; set; }
         [ViewContext]
-        public ViewContext ViewContext { set; get; }
-
-        public ActionLinkConfirmTagHelper()
-        {
-
-        }
+        public ViewContext? ViewContext { set; get; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            var test = context.Items;
+            Selector ??= "confirm-delete";
             var tagid = Guid.NewGuid().ToString();
             output.TagName = "a";
             output.TagMode = TagMode.StartTagAndEndTag;
@@ -69,9 +63,9 @@ namespace MVCForum.TagHelpers
             //output.Attributes.Add("href","#");
             output.Attributes.Add("rel","nofollow");
             //output.Attributes.Add("title","Delete Item");
-            output.Attributes.Add("data-toggle","modal");
+            output.Attributes.Add("data-bs-toggle","modal");
             output.Attributes.Add("data-id",Key);
-            output.AddClass("confirm-delete",HtmlEncoder.Default);
+            output.AddClass(Selector,HtmlEncoder.Default);
             output.Content.AppendHtml($@"<i class='" + TagClass + "'></i>");
         }
 

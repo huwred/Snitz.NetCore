@@ -8,19 +8,14 @@ namespace MVCForum.TagHelpers
     [HtmlTargetElement("topic-buttons", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class TopicButtonsTagHelper : TagHelper
     {
-        private readonly IHtmlGenerator _generator;
-        [ViewContext]
-        public ViewContext ViewContext { get; set; }
+
         [HtmlAttributeName("topic-print")]
         public int PrintTopic { get; set; }
         [HtmlAttributeName("topic-email")]
         public int SendTopic { get; set; }
         [HtmlAttributeName("topic-share")]
         public int SocialMedia { get; set; }
-        public TopicButtonsTagHelper(IHtmlGenerator generator)
-        {
-            _generator = generator;
-        }
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             var tagSpan = new TagBuilder("span");
@@ -32,6 +27,7 @@ namespace MVCForum.TagHelpers
                 tagButton.Attributes.Add("type", "button");
                 tagButton.Attributes.Add("data-id", "button");
                 tagButton.Attributes.Add("data-href", "/Topic/Print");
+                tagButton.Attributes.Add("title", "Printer freindly version of Topic");
                 tagButton.InnerHtml.AppendHtml("<i class=\"fa fa-print fa-2x p-2\"></i>");
                 tagSpan.InnerHtml.AppendHtml(tagButton);
 
@@ -44,6 +40,7 @@ namespace MVCForum.TagHelpers
                 tagButton.Attributes.Add("type", "button");
                 tagButton.Attributes.Add("data-id", "button");
                 tagButton.Attributes.Add("data-href", "/Topic/Print");
+                tagButton.Attributes.Add("title", "Email a link to the Topic");
                 tagButton.InnerHtml.AppendHtml("<i class=\"fa fa-envelope fa-2x p-2\"></i>");
                 tagSpan.InnerHtml.AppendHtml(tagButton);
 
@@ -56,7 +53,8 @@ namespace MVCForum.TagHelpers
                 tagButton.Attributes.Add("type", "button");
                 tagButton.Attributes.Add("data-id", "button");
                 tagButton.Attributes.Add("data-href", "/Topic/Print");
-                tagButton.InnerHtml.AppendHtml("<i class=\"fa fa-twitter fa-2x p-2\"></i>");
+                tagButton.Attributes.Add("title", "Share Topic on Social Media");
+                tagButton.InnerHtml.AppendHtml("<i class=\"fa fa-share fa-2x p-2\"></i>");
                 tagSpan.InnerHtml.AppendHtml(tagButton);
 
             }

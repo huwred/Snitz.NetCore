@@ -1,21 +1,19 @@
-﻿#nullable enable
-using SnitzCore;
-using System;
+﻿using System;
 using System.Runtime.Caching;
 
 namespace SnitzCore.Data.Interfaces
 {
     interface ICacheService
     {
-        T GetOrSet<T>(string cacheKey, Func<T> getItemCallback) where T : class;
-        T Get<T>(string cacheKey) where T : class;
+        T GetOrSet<T>(string cacheKey, Func<T> getItemCallback) where T : class?;
+        T? Get<T>(string cacheKey) where T : class;
     }
     public class InMemoryCache : ICacheService
     {
         /// <summary>
         /// Number of minutes before cache expires.
         /// </summary>
-        private int _expireIn = 20;
+        private readonly int _expireIn = 20;
         public bool DoNotExpire { get; set; }
         private readonly CacheItemPolicy? _policy;
         public InMemoryCache()
@@ -37,30 +35,30 @@ namespace SnitzCore.Data.Interfaces
             _expireIn = expires;
         }
 
-        public T GetOrSet<T>(string cacheKey, Func<T> getItemCallback) where T : class
+        public T GetOrSet<T>(string cacheKey, Func<T> getItemCallback) where T : class?
         {
-            T item = MemoryCache.Default.Get(cacheKey) as T;
+            T? item = MemoryCache.Default.Get(cacheKey) as T;
             if (item == null)
             {
                 item = getItemCallback();
                 if (_policy != null)
                 {
-                    MemoryCache.Default.Add(cacheKey, item, _policy);
+                    MemoryCache.Default.Add(cacheKey, item!, _policy);
                 }
                 else
-                    MemoryCache.Default.Add(cacheKey, item, DateTimeOffset.Now.AddMinutes(_expireIn));
+                    MemoryCache.Default.Add(cacheKey, item!, DateTimeOffset.Now.AddMinutes(_expireIn));
             }
             return item;
         }
 
-        public T Get<T>(string cacheKey) where T : class
+        public T? Get<T>(string cacheKey) where T : class
         {
             return MemoryCache.Default.Get(cacheKey) as T;
 
         }
         public T GetOrSet<T>(string cacheKey, Func<T> getItemCallback, string? region) where T : class
         {
-            T item = MemoryCache.Default.Get(cacheKey) as T;
+            T? item = MemoryCache.Default.Get(cacheKey) as T;
             if (item == null)
             {
                 item = getItemCallback();
@@ -70,8 +68,8 @@ namespace SnitzCore.Data.Interfaces
         }
         public void Remove(string cacheKey)
         {
-            var item = MemoryCache.Default.Get(cacheKey);
-            if (item != null)
+            //var item = MemoryCache.Default.Get(cacheKey);
+
                 MemoryCache.Default.Remove(cacheKey);
         }
         public void RemoveUserCache(string[] keys)

@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
@@ -24,7 +26,8 @@ namespace SnitzCore.BackOffice.Controllers
         private readonly ISnitzConfig _snitzconfig;
         private readonly IConfiguration _webconfiguration;
         private readonly IMember _memberService;
-        public AdminController(ISnitz config,IConfiguration configuration, ISnitzConfig snitzconfig,IForum forumservice,ICategory category,SnitzDbContext dbContext,RoleManager<IdentityRole> RoleManager,UserManager<ForumUser> userManager,IMember memberService)
+        private readonly IOptionsSnapshot<EmailConfiguration> _emailconfig;
+        public AdminController(ISnitz config,IConfiguration configuration, ISnitzConfig snitzconfig,IForum forumservice,ICategory category,SnitzDbContext dbContext,RoleManager<IdentityRole> RoleManager,UserManager<ForumUser> userManager,IMember memberService,IOptionsSnapshot<EmailConfiguration> emailconfig)
         {
             _config = config;
             _forumservice = forumservice;
@@ -35,6 +38,7 @@ namespace SnitzCore.BackOffice.Controllers
             _snitzconfig = snitzconfig;
             _webconfiguration = configuration;
             _memberService = memberService;
+            _emailconfig = emailconfig;
         }
         public IActionResult Index()
         {
@@ -50,7 +54,7 @@ namespace SnitzCore.BackOffice.Controllers
         }
         public IActionResult Forum()
         {
-            var model = new AdminModeratorsViewModel(User, _forumservice)
+            var model = new AdminModeratorsViewModel(_forumservice)
             {
                 Groups = _categoryservice.GetGroups().ToList(),
                 Badwords = _snitzconfig.GetBadwords().ToList(),
@@ -78,16 +82,16 @@ namespace SnitzCore.BackOffice.Controllers
         public ActionResult GetForumModerators(int id)
         {
             Forum forum = _forumservice.GetById(id);
-            AdminModeratorsViewModel vm = new(User,_forumservice) {ForumId = id};
-            Dictionary<int, string> modList = forum.ForumModerators?.ToDictionary(o => o.MemberId, o => o.Member.Name);
+            AdminModeratorsViewModel vm = new(_forumservice) {ForumId = id};
+            Dictionary<int, string?>? modList = forum.ForumModerators?.ToDictionary(o => o.MemberId, o => o.Member?.Name);
 
             ViewBag.Moderators = _config.GetForumModerators();
             ViewBag.Moderation = forum.Moderation;
             if (modList != null)
             {
-                foreach (KeyValuePair<int, string> mod in modList)
+                foreach (var (key, _) in modList)
                 {
-                    vm.ForumModerators.Add(mod.Key);
+                    vm.ForumModerators.Add(key);
                 }
             }
 
@@ -116,34 +120,42 @@ namespace SnitzCore.BackOffice.Controllers
             }
             else
             {
-                foreach (var moderator in currentForumModerators)
+                if (currentForumModerators != null)
                 {
-                    //remove any moderators not in new list
-                    if (!forumModerators.Contains(moderator.MemberId))
+                    foreach (var moderator in currentForumModerators)
                     {
-                        _dbcontext.ForumModerator.Attach(moderator);
-                        _dbcontext.Remove(moderator);
+                        //remove any moderators not in new list
+                        if (!forumModerators.Contains(moderator.MemberId))
+                        {
+                            _dbcontext.ForumModerator.Attach(moderator);
+                            _dbcontext.Remove(moderator);
+                        }
                     }
+
+                    _dbcontext.SaveChanges();
                 }
-                _dbcontext.SaveChanges();
+
                 //refresh list of Forum moderators
                 currentForumModerators = forum.ForumModerators?.ToList();
                 foreach (var memberid in forumModerators)
                 {
                     //Add any new moderators
-                    var exists = currentForumModerators.Find(f => f.MemberId == memberid);
-                    if (exists == null)
+                    if (currentForumModerators != null)
                     {
-                        _dbcontext.ForumModerator.Add(new ForumModerator() { ForumId = model.ForumId, MemberId = memberid });
+                        var exists = currentForumModerators.Find(f => f.MemberId == memberid);
+                        if (exists == null)
+                        {
+                            _dbcontext.ForumModerator.Add(new ForumModerator() { ForumId = model.ForumId, MemberId = memberid });
 
+                        }
                     }
                 }
             }
             if (forum.ForumModerators != null)
             {
-                foreach (KeyValuePair<int, string> mod in forum.ForumModerators?.ToDictionary(o => o.MemberId, o => o.Member.Name))
+                foreach (var (key, _) in forum.ForumModerators?.ToDictionary(o => o.MemberId, o => o.Member!.Name)!)
                 {
-                    model.ForumModerators.Add(mod.Key);
+                    model.ForumModerators.Add(key);
                 }
             }
             return PartialView("_Moderators",model);
@@ -153,10 +165,10 @@ namespace SnitzCore.BackOffice.Controllers
         public JsonResult AutoCompleteUsername(string term)
         {
 
-            IEnumerable<string> result = _userManager.Users.Where(r => r.NormalizedUserName.Contains(term.ToUpper())).Select(r=>r.UserName);
+            IEnumerable<string?> result = _userManager.Users.Where(r => r.NormalizedUserName!.Contains(term.ToUpper())).Select(r=>r.UserName);
             return Json(result);
         }
-        public IActionResult ManageRoles(string? role)
+        public async Task<IActionResult> ManageRoles(string? role)
         {
             List<string> names = new List<string>();
             var vm = new AdminRolesViewModel
@@ -166,13 +178,13 @@ namespace SnitzCore.BackOffice.Controllers
                 };
             if (role != null)
             {
-                IdentityRole Role = _roleManager.FindByNameAsync(role).Result;
-                if (role != null)
+                IdentityRole? Role = await _roleManager.FindByNameAsync(role);
+                if (Role != null)
                 {
                     foreach (var user in _userManager.Users)
                     {
-                        if (user != null && _userManager.IsInRoleAsync(user, Role.Name).Result)
-                            names.Add(user.UserName);
+                        if (_userManager.IsInRoleAsync(user, Role.Name!).Result)
+                            names.Add(user.UserName!);
                     }
                 }
 
@@ -205,6 +217,10 @@ namespace SnitzCore.BackOffice.Controllers
             throw new NotImplementedException();
         }
 
+        public IActionResult EmailConfigUpdate(AdminEmailServer model)
+        {
+            return PartialView("SaveResult");
+        }
         public IActionResult EmailConfig()
         {
             AdminEmailServer vm = new AdminEmailServer();
@@ -215,12 +231,12 @@ namespace SnitzCore.BackOffice.Controllers
 
             if (mailSettings.GetChildren().Any())
             {
-                vm.Port = Convert.ToInt32(mailSettings.GetChildren().Single(s=>s.Key == "Port").Value);
-                vm.Server = mailSettings.GetChildren().Single(s=>s.Key == "SmtpServer").Value;
-                vm.Password = mailSettings.GetChildren().Single(s=>s.Key == "Password").Value;
-                vm.Username = mailSettings.GetChildren().Single(s=>s.Key == "UserName").Value;
-                vm.From = mailSettings.GetChildren().Single(s=>s.Key == "From").Value;
-                vm.SslMode = mailSettings.GetChildren().Single(s => s.Key == "SecureSocketOptions").Value;
+                vm.Port = _emailconfig.Value.Port;// Convert.ToInt32(mailSettings.GetChildren().Single(s=>s.Key == "Port").Value);
+                vm.Server = _emailconfig.Value.SmtpServer;// mailSettings.GetChildren().Single(s=>s.Key == "SmtpServer").Value;
+                vm.Password = _emailconfig.Value.Password;// mailSettings.GetChildren().Single(s=>s.Key == "Password").Value;
+                vm.Username = _emailconfig.Value.UserName;// mailSettings.GetChildren().Single(s=>s.Key == "UserName").Value;
+                vm.From = _emailconfig.Value.From!;// mailSettings.GetChildren().Single(s=>s.Key == "From").Value;
+                vm.SslMode = _emailconfig.Value.SecureSocketOptions;// mailSettings.GetChildren().Single(s => s.Key == "SecureSocketOptions").Value;
                 vm.DefaultCred = false;
                 if (vm.DefaultCred || !string.IsNullOrEmpty(vm.Username))
                     vm.Auth = true;
@@ -228,7 +244,7 @@ namespace SnitzCore.BackOffice.Controllers
             }
             vm.EmailMode = _snitzconfig.GetValue("STREMAIL");
             vm.UseSpamFilter = _snitzconfig.GetValue("STRFILTEREMAILADDRESSES");
-            vm.ContactEmail = _snitzconfig.GetValue("STRCONTACTEMAIL") ?? vm.From;
+            vm.ContactEmail = _snitzconfig.GetValue("STRCONTACTEMAIL",null) ?? vm.From;
             vm.BannedDomains = _dbcontext.SpamFilter.AsQueryable().OrderBy(s=>s.Server).ToArray();
             return View(vm);
         }
@@ -260,21 +276,25 @@ namespace SnitzCore.BackOffice.Controllers
             }
             try
             {
-                var newdomain = form["EmailDomain"][0];
-
                 var spamdomain = _dbcontext.SpamFilter.SingleOrDefault(f => f.Server == form["EmailDomain"][0]);
                 if (spamdomain != null)
                 {
                     return PartialView("SaveResult","Domain already in list");
                 }
-                _dbcontext.SpamFilter.Add(new SpamFilter() { Server = form["EmailDomain"][0] });
-                _dbcontext.SaveChanges();
-                return PartialView("SaveResult","Domain added");
+
+                if (form["EmailDomain"][0] != null)
+                {
+                    _dbcontext.SpamFilter.Add(new SpamFilter() { Server = form["EmailDomain"][0]! });
+                    _dbcontext.SaveChanges();
+                    return PartialView("SaveResult","Domain added");
+
+                }
             }
             catch (Exception e)
             {
                 return PartialView("SaveResult",e.Message);
             }
+            return PartialView("SaveResult","Error");
         }
 
         public IActionResult DeleteSpamFilters()
@@ -294,7 +314,7 @@ namespace SnitzCore.BackOffice.Controllers
             {
                 var prefix = $"BannedDomains[{form["counter"][0]}]";
                 var spamdomain = _dbcontext.SpamFilter.Find(Convert.ToInt32(form[$"{prefix}.Id"][0]));
-                spamdomain.Server = form[$"{prefix}.Server"][0];
+                spamdomain!.Server = form[$"{prefix}.Server"][0]!;
                 _dbcontext.SpamFilter.Update(spamdomain);
                 _dbcontext.SaveChanges();
                 return PartialView("SaveResult","Domain info updated");
@@ -312,7 +332,7 @@ namespace SnitzCore.BackOffice.Controllers
             {
                 var prefix = $"BannedDomains[{form["counter"][0]}]";
                 var spamdomain = _dbcontext.SpamFilter.Find(Convert.ToInt32(form[$"{prefix}.Id"][0]));
-                _dbcontext.Remove(spamdomain);
+                _dbcontext.Remove(spamdomain!);
                 _dbcontext.SaveChanges();
 
                 return PartialView("SaveResult","Domain removed");

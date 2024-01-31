@@ -14,9 +14,16 @@ namespace SnitzCore.Service
             _objects = XmlExtensions.DeserializeListFromXml<EmoticonList>("App_Data\\emoticons.xml");
         }
 
-        public Emoticon? GetByName(string name) => _objects?.Emoticons.SingleOrDefault(e => e.Name == name);
+        public Emoticon? GetByName(string name)
+        {
+            if (_objects?.Emoticons != null) return _objects?.Emoticons.SingleOrDefault(e => e.Name == name);
+            return null;
+        }
 
-        public IEnumerable<Emoticon> GetAll() => _objects.Emoticons.DistinctBy(e=>e.Name);
-
+        public IEnumerable<Emoticon> GetAll()
+        {
+            if (_objects is { Emoticons: { } }) return _objects.Emoticons.DistinctBy(e => e.Name);
+            return Enumerable.Empty<Emoticon>();
+        }
     }
 }

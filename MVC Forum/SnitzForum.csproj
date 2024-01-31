@@ -21,6 +21,8 @@
 
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
+    <Content Remove="log4net.config" />
+    <Content Remove="Views\PrivateMessage\Search.cshtml" />
     <Content Remove="wwwroot\js\tinymce\icons\default\icons.min.js" />
     <Content Remove="wwwroot\js\tinymce\jquery.tinymce.min.js" />
     <Content Remove="wwwroot\js\tinymce\langs\README.md" />
@@ -83,6 +85,8 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="bundleconfig.json" />
+    <_ContentIncludedByDefault Remove="Views\Account\EmailMember.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\PrivateMessage\Search.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\ConfirmDIalog.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\FormButtons.cshtml" />
@@ -90,6 +94,9 @@
 
   <ItemGroup>
     <None Include="bundleconfig.json" />
+    <None Include="log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="wwwroot\js\tinymce\CHANGELOG.md" />
     <None Include="wwwroot\js\tinymce\icons\default\icons.min.js" />
     <None Include="wwwroot\js\tinymce\jquery.tinymce.min.js" />
@@ -161,6 +168,8 @@
 
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier2022" Version="2.9.9" />
+    <PackageReference Include="log4net" Version="2.0.15" />
+    <PackageReference Include="log4net.Ext.Json" Version="2.0.10.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.7" />
@@ -170,6 +179,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.3.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -179,7 +189,7 @@
     <PackageReference Include="NuGet.Common" Version="6.3.3" />
     <PackageReference Include="NuGet.Protocol" Version="6.3.3" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
@@ -206,5 +216,11 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\FormButtons.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\PrivateMessage\Search.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Account\EmailMember.cshtml" />
   </ItemGroup>
 </Project>

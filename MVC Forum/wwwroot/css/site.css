@@ -1,24 +1,7 @@
 /* ########################################### */
 /*                 Global                      */
 /* ########################################### */
-*{
-    box-sizing: border-box;
-}
 
-html, body {
-    font-size: 15px;
-    font-family: sans-serif;
-}
-
-a{
-    font-weight: bolder;
-    text-decoration: none;
-}
-
-h1{
-    font-size:16px;
-    font-weight: bolder;
-}
 cite {
     display:block;
     font-weight: lighter;
@@ -31,8 +14,8 @@ cite {
     margin: 30px 10px;
     padding: 20px 10px 20px 10px;
 }
-*/
-.container{ margin-top: 42px;}
+
+.container{ margin-top: 42px;}*/
 .subforum{
     /*margin-top:20px;*/
 }
@@ -40,7 +23,7 @@ cite {
 .subforum-title{
     padding: 5px;
     border-radius: 5px;
-    margin:4px;
+    /*margin:4px;*/
 }
 
 .subforum-row{
@@ -148,7 +131,7 @@ header{
     margin-inline: 10px;
 }
 
-.navigation{
+/*.navigation{
     padding: 10px;
     width: 65%;
     display: inline-block;
@@ -156,7 +139,7 @@ header{
     max-height: 80px;
     margin-right:10px;
 
-}
+}*/
 
 .close-icon i{
     font-size:60px;
@@ -164,30 +147,16 @@ header{
     cursor: pointer;
 }
 
-.nav-list{
+/*.nav-list{
     list-style-type:none;
     overflow: hidden;
-}
+}*/
 
-.nav-item a{
-    /*float: right;*/
-    display:block;
-/*    text-align: center;*/
-    margin-inline: 10px;
-    font-size: 1.4em;
-    padding: 5px;
-}
-.nav-item .dropdown-menu a {
-    font-size: 1.1em;
-}
-.dropdown-item {
-    width: auto !important;
-}
 .hide {
     display: none;
 }
 
-.bar-icon{
+/*.bar-icon{
     font-size: 60px;
     display: inline-block;
     margin-right:10px;
@@ -197,33 +166,7 @@ header{
 .brand{
     font-size:60px;
     display: inline-block;
-}
-
-/*Navbar for the smartphones*/
-@media screen and (max-width: 460px){
-
-    
-    .close-icon i{
-        font-size:30px;
-    }
-    
-    .nav-item a{
-        float:left;
-        display:inline;
-        margin-inline: 3px;
-        font-size: 1em;
-        padding: 5px;
-    }
-    
-    
-    .bar-icon{
-        font-size: 30px;
-    }
- 
-    .brand{
-        font-size:20px;
-    }
-}
+}*/
 
 /* forum info Styling */
 .forum-info{
@@ -338,7 +281,7 @@ footer{
     }
 }
     /* navigation path*/
-    .navigate {
+    /*.navigate {
         margin-block: 20px;
         font-weight: lighter;
         font-size: 1.4em;
@@ -349,7 +292,7 @@ footer{
 
         .navigate a:hover {
             font-weight: bolder;
-        }
+        }*/
 
     /* Pagination*/
 
@@ -451,9 +394,9 @@ footer{
         max-width: 400px !important;
     }
 
-    .tbl .row {
+/*    .tbl .row {
         margin: 0px;
-    }
+    }*/
 
     i.fa-reply, i.fa-trash, i.fa-share, i.fa-close, i.fa-pencil, i.fa-comment-o,i.fa-commenting {
         cursor: pointer;
@@ -471,15 +414,15 @@ footer{
         max-width: 99% !important;
     }*/
 
-.tbl {
+/*.tbl {
     display: flex;
     flex-direction: column;
 }
 
 .row {
-    display: flex;
+    display: flex;*/
     /*min-height: 50px;*/
-}
+/*}
 
 .cell {
     flex: 1;
@@ -487,20 +430,20 @@ footer{
 }
 
 .cell.span3-4 {
-    flex: 2 24px; /*  col 3,4 flex-grow/border/padding  */
-}
+    flex: 2 24px;*/ /*  col 3,4 flex-grow/border/padding  */
+/*}
 
 .row:first-child .cell {
     display: flex;
-    justify-content: left; /*  center horiz. */
-    align-items: flex-start /*  center vert. */
-}
+    justify-content: left;*/ /*  center horiz. */
+    /*align-items: flex-start*/ /*  center vert. */
+/*}
 
 .row .cell {
     padding: 5px;
     vertical-align: top;
     box-sizing: border-box;
-}
+}*/
 .field-validation-error,.is-invalid {
     color: red;
     font-size: smaller;
@@ -564,4 +507,11 @@ img.rank {
 
 img.rank:hover {
     opacity: 1;
+}
+img.flag {
+    border: 1px solid black;
+    opacity: .4;
+    margin: 2px;
+    width: 20px;
+    border-radius: 9px;
 }
