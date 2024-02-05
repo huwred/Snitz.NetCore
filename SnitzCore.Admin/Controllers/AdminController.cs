@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -168,7 +169,7 @@ namespace SnitzCore.BackOffice.Controllers
             IEnumerable<string?> result = _userManager.Users.Where(r => r.NormalizedUserName!.Contains(term.ToUpper())).Select(r=>r.UserName);
             return Json(result);
         }
-        public async Task<IActionResult> ManageRoles(string? role)
+        public async Task<IActionResult> ManageRoles(string role = "")
         {
             List<string> names = new List<string>();
             var vm = new AdminRolesViewModel
@@ -176,9 +177,9 @@ namespace SnitzCore.BackOffice.Controllers
                     RoleList = _dbcontext.Roles.Select(r => r.Name).ToArray(), 
                     Rolename = role ?? ""
                 };
-            if (role != null)
+            if (role != "")
             {
-                IdentityRole? Role = await _roleManager.FindByNameAsync(role);
+                IdentityRole? Role = await _roleManager.FindByNameAsync(role!);
                 if (Role != null)
                 {
                     foreach (var user in _userManager.Users)
@@ -194,10 +195,122 @@ namespace SnitzCore.BackOffice.Controllers
             }
             return PartialView("ManageRoles",vm);
         }
-
-        public IActionResult DeleteRole(string rolename)
+        public async Task<IActionResult> AddMemberToRole(AdminRolesViewModel model)
         {
-            throw new NotImplementedException();
+            if (model.Username != null)
+            {
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user != null)
+                {
+                    if (model.Rolename != null)
+                    {
+                        var result = await _userManager.AddToRoleAsync(user, model.Rolename);
+                        if (!result.Succeeded)
+                        {
+                            foreach (var error in result.Errors)
+                            {
+                                ModelState.AddModelError(model.Username,error.Description);
+                            }
+                    
+                        }
+                    }
+                }
+            }
+            List<string> names = new List<string>();
+
+            model.RoleList = _dbcontext.Roles.Select(r => r.Name).ToArray();
+            if (!string.IsNullOrWhiteSpace(model.Rolename))
+            {
+                IdentityRole? Role = await _roleManager.FindByNameAsync(model.Rolename);
+                if (Role != null)
+                {
+                    foreach (var user in _userManager.Users)
+                    {
+                        if (_userManager.IsInRoleAsync(user, Role.Name!).Result)
+                            names.Add(user.UserName!);
+                    }
+                }
+
+                model.Members = (from s in _dbcontext.Members
+                    where names.Contains(s.Name)
+                    select s).ToList();
+            }
+            return PartialView("ManageRoles",model);
+        }
+        public async Task<IActionResult> AddRole(AdminRolesViewModel model)
+        {
+            if (model.NewRolename != null)
+            {
+                var result = await _roleManager.CreateAsync(new IdentityRole(model.NewRolename));
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(model.NewRolename,error.Description);
+                    }
+                }
+                model.Rolename = model.NewRolename;
+            }
+            List<string> names = new List<string>();
+
+            model.RoleList = _dbcontext.Roles.Select(r => r.Name).ToArray();
+            if (model.NewRolename != null)
+            {
+                IdentityRole? Role = await _roleManager.FindByNameAsync(model.NewRolename);
+                if (Role != null)
+                {
+                    foreach (var user in _userManager.Users)
+                    {
+                        if (_userManager.IsInRoleAsync(user, Role.Name!).Result)
+                            names.Add(user.UserName!);
+                    }
+                }
+            }
+
+            model.Members = (from s in _dbcontext.Members
+                where names.Contains(s.Name)
+                select s).ToList();
+
+            return PartialView("ManageRoles",model);
+        }
+        public async Task<IActionResult> DeleteRole(string rolename)
+        {
+            var Role = await _roleManager.FindByNameAsync(rolename);
+            if (Role != null)
+            {
+                var result = await _roleManager.DeleteAsync(Role);
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(rolename,error.Description);
+                    }
+                }
+            }
+
+            List<string> names = new List<string>();
+            var vm = new AdminRolesViewModel
+            {
+                RoleList = _dbcontext.Roles.Select(r => r.Name).ToArray(), 
+                Rolename = rolename ?? ""
+            };
+            if (rolename != "")
+            {
+                if (Role != null)
+                {
+                    foreach (var user in _userManager.Users)
+                    {
+                        if (_userManager.IsInRoleAsync(user, Role.Name!).Result)
+                            names.Add(user.UserName!);
+                    }
+                }
+
+                vm.Members = (from s in _dbcontext.Members
+                    where names.Contains(s.Name)
+                    select s).ToList();
+            }
+            //return Json(new { result = true });
+            return PartialView("ManageRoles",vm);
         }
 
         public IActionResult DelMemberFromRole(object user, string rolename)

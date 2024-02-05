@@ -5,14 +5,13 @@
 @using MVCForum.Models
 @using MVCForum.Models.User
 @using SnitzCore.Data
-@using SnitzCore.Data.Interfaces
 @using SnitzCore.Data.Models
 @model MVCForum.Models.User.MemberIndexModel
-@inject IMember memberService
+@inject IMember MemberService
 @inject UserManager<ForumUser> UserManager
 
 @{
-    var ranking = memberService.GetRankings();
+    var ranking = MemberService.GetRankings();
     ViewBag.PageCount = Model.PageCount;
     IList<string>? userroles = null;
     if (User.Identity!.IsAuthenticated)
@@ -31,7 +30,7 @@
 <div class="container pt-0">
     <div class="row">
         <div class="col">
-            <breadcrumb></breadcrumb>
+            <snitz-breadcrumb></snitz-breadcrumb>
             <form asp-action="Search" method="post" class="needs-validation" novalidate>
                 <div class="input-group mb-3">
                     <select class="form-select" id="inputGroupSelect04" name="SearchIn" required="required">
@@ -44,13 +43,22 @@
                     </select>                        
                     <input type="text" placeholder="@Localizer["Search_Term"] ..." class="form-control" name="SearchFor" required="required" />
                     <button class="btn btn-secondary" type="submit">@Localizer["mnuForumSearch"]</button>
-                    @if (userroles != null && userroles.Contains("Admin"))
-                    {
-                        <a asp-action="Register" class="btn btn-outline-secondary" title="@Localizer["createAccount"]">@Localizer["createAccount"]</a>
-                    }
+                    <a snitz-if="@userroles != null && @userroles.Contains("Admin")" asp-action="Register" class="btn btn-outline-secondary" title="@Localizer["createAccount"]">@Localizer["createAccount"]</a>
                 </div>
             </form>
             <div class="invalid-feedback ml-2">No values entered for search.</div>
+            @if (SnitzConfig.GetValue("STRACCOUNTPAGESIZES", "") != "")
+            {
+                var ischecked = Model.PageSize;
+                <span class="form-text mb-2">&nbsp;Set page size&nbsp;</span>
+                <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
+                    @foreach (var size in SnitzConfig.GetValue("STRACCOUNTPAGESIZES", "").Split(","))
+                    {
+                        <input type="radio" class="btn-check" name="pagesize" id="option@size" autocomplete="off" value="@size" @if(ischecked == Convert.ToInt32(size)){@Html.Raw("checked")} />
+                        <label class="btn btn-outline-secondary mb-2" for="option@size">@size</label>
+                    }
+                </div>
+            } 
             <table class="table table-sm table-bordered table-hover table-striped">
                 <thead>
                 <tr class="bg-dark">
@@ -61,15 +69,9 @@
                     <th>@Localizer["ProfileLastPost"]</th>
                     <th class="d-none d-md-table-cell">@Localizer["ProfileDate"]</th>
                     <th class="d-none d-md-table-cell">@Localizer["ProfileLastVisit"]</th>
-                    @if (userroles != null && userroles.Contains("Admin"))
-                    {
-                            <th class="d-none d-md-table-cell">@Localizer["Email"]</th>
-                    }
+                    <th snitz-if="@userroles != null && @userroles.Contains("Admin")" class="d-none d-md-table-cell">@Localizer["Email"]</th>
                     <th class="d-none d-md-table-cell">@Localizer["ProfileCountry"]</th>
-                    @if (userroles != null && userroles.Contains("Admin"))
-                    {
-                        <th class="d-none d-md-table-cell"></th>
-                    }
+                    <th snitz-if="@userroles != null && @userroles.Contains("Admin")" class="d-none d-md-table-cell"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -78,15 +80,13 @@
                     var showlink = member.Member.Name != "n/a" && member.Member.Name != "zapped";
                     <tr>
                         <td class="user-icon">
-                            @{
-                                if (member.LastHereDate != null && member.LastHereDate > DateTime.UtcNow.AddMinutes(-15))
-                                {
-                                    <div class="center text-success"><snitz-status-icon status="@member.Member.Status" title="@member.Title"></snitz-status-icon></div>
-                                }
-                                else
-                                {
-                                    <div class="center"><snitz-status-icon status="@member.Member.Status" title="@member.Title"></snitz-status-icon></div>
-                                }
+                            @if (member.LastHereDate != null && member.LastHereDate > DateTime.UtcNow.AddMinutes(-15))
+                            {
+                                <div class="center text-success"><snitz-status-icon status="@member.Member.Status" title="@member.Title"></snitz-status-icon></div>
+                            }
+                            else
+                            {
+                                <div class="center"><snitz-status-icon status="@member.Member.Status" title="@member.Title"></snitz-status-icon></div>
                             }
                         </td>
                         <td snitz-if="!showlink">@member.Member.Name</td>
@@ -96,20 +96,14 @@
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>
                         <td class="d-none d-md-table-cell">@member.MemberSince?.ToShortDateString()</td>
                         <td class="d-none d-md-table-cell">@member.LastHereDate?.ToShortDateString()</td>
-                        @if (userroles != null && userroles.Contains("Admin"))
-                        {
-                            <td class="d-none d-md-table-cell">@member.Member.Email</td>
-                        }
+                        <td snitz-if="@userroles != null && @userroles.Contains("Admin")" class="d-none d-md-table-cell">@member.Member.Email</td>
                         <td class="d-none d-md-table-cell">@member.Member.Country</td>
-                        @if (userroles != null && userroles.Contains("Admin"))
-                        {
-                            <td class="d-none d-md-table-cell user-icon">
-                                <link-confirm title="" jq-selector="confirm-unlock" snitz-if="(member.Member.Status == 0)" href="/Account/LockMember/" config-class="fa fa-unlock" config-key="@member.Id"></link-confirm>
-                                <link-confirm title="" jq-selector="confirm-lock"  snitz-if="(member.Member.Status != 0)" href="/Account/LockMember/" config-class="fa fa-lock" config-key="@member.Id"></link-confirm>
-                                <link-confirm title="" jq-selector="confirm-delete"  snitz-if="(member.Member.Posts < 1)" href="/Account/Delete/" config-class="fa fa-trash" config-key="@member.Id"></link-confirm>
-                                <link-confirm title="Zap" jq-selector="confirm-zap" snitz-if='(member.Member.Name != "zapped")' href="/Account/ZapMember/" config-class="fa fa-bolt" config-key="@member.Id"></link-confirm>
-                            </td>
-                        }
+                        <td snitz-if="@userroles != null && @userroles.Contains("Admin")"class="d-none d-md-table-cell user-icon">
+                            <link-confirm title="" jq-selector="confirm-unlock" snitz-if="(member.Member.Status == 0)" href="/Account/LockMember/" config-class="fa fa-unlock" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="" jq-selector="confirm-lock"  snitz-if="(member.Member.Status != 0)" href="/Account/LockMember/" config-class="fa fa-lock" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="" jq-selector="confirm-delete"  snitz-if="(member.Member.Posts < 1)" href="/Account/Delete/" config-class="fa fa-trash" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="Zap" jq-selector="confirm-zap" snitz-if='(member.Member.Name != "zapped")' href="/Account/ZapMember/" config-class="fa fa-bolt" config-key="@member.Id"></link-confirm>
+                        </td>
                     </tr>
                 }
                 </tbody>

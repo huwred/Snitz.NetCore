@@ -1,7 +1,4 @@
 ﻿@using SnitzCore.BackOffice.TagHelpers
-@using SnitzCore.Data.Interfaces
-@inject ISnitzConfig SnitzConfig
-
 @{
     Layout = "_MasterLayout";
  
@@ -237,7 +234,7 @@
                     $('#member-ranking').load('/SnitzConfig/RankingConfig/' + $(this).val(), function () {});
                 }
                 if (e.target.id === "v-pills-roles-tab") {
-                    $('#member-roles').load('/Admin/ManageRoles/' + $(this).val(), function () {});
+                    $('#member-roles').load('/Admin/ManageRoles/?role=' + $(this).val(), function () {});
                 }
             });
         $('#myModal').on('show',
@@ -249,13 +246,19 @@
         $(document).on('click','.confirm-delete', function(e) {
             e.preventDefault();
             var id = $(this).data('id');
-            $('#myModal').data('id', id).modal('show');
+            var href = $(this).attr('href');
+            $('#myModal').data('id', id).data('url', href).modal('show');
         });
 
-        $(document).on('click','#btnYes',function() {
+        $(document).on('click','#btnYes',function(e) {
             // handle deletion here
-            var id = $('#myModal').data('id');
-            $('[data-id='+id+']').remove();
+            e.preventDefault();
+            var url = $('#myModal').data('url');
+            $.get(url, function(result) {
+                $('#member-roles').html('');
+                $('#member-roles').html(result);
+                $('#myModal').modal('hide');
+            });
             $('#myModal').modal('hide');
         });
         //rank-image

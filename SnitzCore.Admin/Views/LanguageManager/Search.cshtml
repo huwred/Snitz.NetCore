@@ -1,0 +1,52 @@
+﻿
+@model SnitzCore.BackOffice.ViewModels.TranslationViewModel
+@{
+    ViewBag.Title = "Language Search";
+    Layout = "_MasterLayout";
+}
+<div class="mt-3">
+    <legend>@ViewBag.Title</legend>
+    <form asp-action="Search" asp-controller="LanguageManager" method="POST" class="mt-3 mb-3">
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="filterby" id="filterby1" value="id">
+            <label class="form-check-label" for="filterby1">ResourceId</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="filterby" id="filterby2" value="value">
+            <label class="form-check-label" for="filterby2">Description</label>
+        </div>
+        <input name="filter" class="form-control mb-3" id="filter"/>
+        <button type="submit" class="btn btn-primary">@Localizer["btnFind"]</button>
+    </form>
+    <hr />
+    <form asp-action="SearchUpdate" asp-controller="LanguageManager" method="POST" class="mt-3 mb-3">
+        <input asp-for="filter" type="hidden"/>
+        <ul class="list-unstyled">
+            @{
+                int counter = 0;
+                foreach (var lang in Model.Resources)
+                {
+                    <li class="row mb-3 ">
+                        <label class="form-text col-4">@lang.Name</label>
+                        <div class="input-group col">
+                            @if (lang.Value.Length > 60)
+                            {
+                                <textarea asp-for="Resources[counter].Value" rows="2" class="form-control" placeholder="" aria-label="@lang.Value"></textarea>
+                            }
+                            else
+                            {
+                                <input asp-for="Resources[counter].Value" type="text" class="form-control" placeholder="" aria-label="@lang.Value"/>
+                            }
+                            <button class="btn btn-outline-success" type="submit" id="button-save"><i class="fa fa-save"></i></button>
+                            <button class="btn btn-outline-danger" type="button" id="button-del"><i class="fa fa-trash"></i></button>
+                        </div>
+                        <input asp-for="Resources[counter].Id" type="hidden" />
+                        <input asp-for="Resources[counter].Culture" type="hidden" />
+                        <input asp-for="Resources[counter].Name" type="hidden" />
+                    </li>
+                    counter++;
+                }
+            }
+        </ul>
+    </form>
+</div>

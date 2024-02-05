@@ -1,6 +1,5 @@
 ﻿@using SnitzCore.Data.Interfaces
 @using SnitzCore.Data.Models
-@inject ISnitzConfig SnitzConfig
 @{
     Layout = "_MasterLayout";
     ViewBag.PageTitle = "Feature Configuration";
@@ -113,6 +112,7 @@
     <hr/>
     <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
         <div class="mb-3">
+                        <admin-config config-key="STRBOOKMARK" config-label="Allow Bookmarks" config-val="@SnitzConfig.GetIntValue("STRBOOKMARK",0)"></admin-config>
             <admin-config config-key="STRSTICKYTOPIC" config-label="Allow Sticky Topics" config-val="@SnitzConfig.GetIntValue("STRSTICKYTOPIC")"></admin-config>
             <admin-config config-key="STRHOTTOPIC" config-label="Hot Topics" config-val="@SnitzConfig.GetIntValue("STRHOTTOPIC")"></admin-config>
             <fieldset @(SnitzConfig.GetIntValue("STRHOTTOPIC") == 0 ? "disabled" : "") id="HOTTOPICSENABLED">
@@ -210,6 +210,7 @@
             </div>
             <div class="mb-3">
                 <div class="col-5 col-sm-3 mb-3">
+
                     <select asp-for="@SnitzConfig.CaptchaOperators"
                             asp-items="@Html.GetEnumSelectList<CaptchaOperator>()" class="form-select">
                     </select>

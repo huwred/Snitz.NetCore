@@ -36,7 +36,7 @@ namespace SnitzCore.Service
             await _dbContext.Posts.AddAsync(post);
             await _dbContext.SaveChangesAsync();
 
-            UpdateForumLastPost(post);
+            await UpdateForumLastPost(post);
             await _dbContext.SaveChangesAsync();
 
         }
@@ -271,7 +271,7 @@ namespace SnitzCore.Service
             }
             var posts = _dbContext.Posts.Where(p=>p.Title.Contains(searchQuery) || p.Content.Contains(searchQuery));
 
-            posts = posts.Include(p => p.Forum);
+            posts = posts.Include(p => p.Forum).OrderByDescending(p=>p.LastPostDate??p.Created);
             totalcount = posts.Count();
             return posts.ToPagedList(page, pagesize);
         }
@@ -279,7 +279,7 @@ namespace SnitzCore.Service
         public IPagedList<Post> Find(ForumSearch searchQuery, out int totalcount, int pagesize, int page)
         {
 
-            var posts = _dbContext.Posts.AsQueryable();
+            var posts = _dbContext.Posts.Include(p=>p.Forum).AsQueryable();
 
             if (searchQuery.SearchCategory is > 0)
             {
@@ -322,7 +322,7 @@ namespace SnitzCore.Service
                     p.Created.FromForumDateStr() > DateTime.UtcNow.AddDays(-(int)searchQuery.SinceDate));
             }
             totalcount = posts.Count();
-            return posts.ToPagedList(page, pagesize);
+            return posts.OrderBy(p=>p.LastPostDate).ToPagedList(page, pagesize);
         }
 
         public Post GetLatestReply(int id)
@@ -340,7 +340,7 @@ namespace SnitzCore.Service
             _dbContext.Forums.Update(forum);
             if (forum.CountMemberPosts == 1)
             {
-                UpdateMemberPosts(post.MemberId);
+                await UpdateMemberPosts(post.MemberId);
             }
         }
 

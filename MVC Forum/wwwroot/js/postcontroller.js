@@ -60,7 +60,91 @@ $(document).on("click",".post-del", function(e) {
             });
     });
 });
+        $(document).on("click",
+            ".lock-member",
+            function(e) {
+                e.preventDefault();
+                var memberid = $(this).data("id");
+                var href = $(this).data("url");
+                $('#modal-title').html('Lock Member');
+                $('#member-modal').html('Toggle Member Status');
+                $('#memberModal').data('id', memberid).modal('show');
+                $('#memberModal #btnOk').show();
+                $('#memberModal').one('click',
+                    '#btnOk',
+                    function(e) {
+                        // handle deletion here
+                        e.preventDefault();
+                        $.post(href,
+                            {
+                                id: memberid
+                            },
+                            function(data, status) {
 
+                                if (!data.result) {
+                                    alert(data.error);
+                                } else {
+                                    location.reload();
+                                }
+                            });
+                    });
+            });
+$(document).on('click',
+    '.bookmark-add',
+    function(e) {
+        e.preventDefault();
+        var href = $(this).attr('href');
+        var postid = $(this).data("id");
+        //confirm-body
+        $('#confirmModal #confirm-body').html('<p>You are about to Bookmark this Topic.</p><p>Do you wish to proceed?</p>');
+        $('#confirmModal').data('id', postid).data('url', href).modal('show');
+        $('#confirmModal').on('click','#btnYes',function(e) {
+            // handle deletion here
+            e.preventDefault();
+            $.post("/Bookmark/Create",
+                {
+                    id: postid
+                },
+                function(data, status){
+                    $('#confirmModal').modal('hide');
+                    if (!data.result) {
+                        alert(data.error);
+                    } else {
+
+                        location.reload(true);
+                    }
+                });
+                    
+        }); 
+    });
+    $(document).on('click',
+        '.bookmark-del',
+        function(e) {
+            e.preventDefault();
+            var href = $(this).attr('href');
+            var postid = $(this).data("id");
+            //confirm-body
+            $('#confirmModal #confirm-body').html('<p>You are about to delete this Bookmark.</p><p>Do you wish to proceed?</p>');
+            $('#confirmModal').data('id', postid).data('url', href).modal('show');
+            $('#confirmModal').on('click','#btnYes',function(e) {
+                // handle deletion here
+                e.preventDefault();
+                $.post("/Bookmark/Delete",
+                    {
+                        id: postid
+                    },
+                    function(data, status){
+                        $('#confirmModal').modal('hide');
+                        if (!data.result) {
+                            alert(data.error);
+                        } else {
+
+                            location.reload(true);
+                        }
+                    });
+                    
+            }); 
+        });
 $(document).on('click', '.post-lock', function (e) {
     e.preventDefault();
 

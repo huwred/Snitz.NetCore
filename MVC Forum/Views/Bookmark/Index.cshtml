@@ -1,0 +1,63 @@
+﻿@using SnitzCore.Data.Extensions
+@using SnitzCore.Data.Models
+@using MVCForum.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Data
+@model MVCForum.ViewModels.BookmarkViewModel
+@inject IMember MemberService
+@{
+    var lastvisit = DateTime.UtcNow;
+    if (User.Identity!.IsAuthenticated)
+    {
+        lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.Lastheredate.FromForumDateStr();
+    }
+}
+
+
+<div class="container pt-0">
+    <snitz-breadcrumb></snitz-breadcrumb>
+    <form id="defaultdays-form" asp-action="Active" class="form-inline">
+        <div class="row m-2">
+            <div class="col col-md-8">
+                <div class="input-group mb-3">
+                    <enum-select name="Since" id="default-days" last-visit="@lastvisit" enum-type="typeof(ActiveSince)" selected-value="(int)Model.ActiveSince" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    <enum-select name="Refresh" id="active-refresh" enum-type="typeof(ActiveRefresh)" selected-value="(int)Model.Refresh" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+
+                </div>
+            </div>
+        </div>
+@*         <input type="number" value="@pagenum" name="page" style="display: none;" />
+        <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" /> *@
+        <input type="hidden" name="fun" id="fun">
+    </form>
+    @if (Model.Bookmarks.Any())
+    {
+        <!--Display posts table-->
+        <div class="posts-table">
+            <div class="table-head">
+                <div class="col-3">@Localizer["lblForum"]</div>
+                <div class="col-3">@Localizer["lblTopic"]</div>
+                <div class="col-3">@Localizer["lblPosted"]</div>
+                <div class="col-3">@Localizer["lblLastpost"]</div>
+            </div>
+            @foreach (var bookmark in Model.Bookmarks)
+            {
+                <div class="table-row">
+                    <div class="col-3 p-2"><a class="" asp-action="Index" asp-controller="Forum" asp-route-id="@bookmark.Topic.ForumId">@bookmark.Topic.Forum.Title</a></div>
+                    <div class="col-3 p-2"><a class="list-item" asp-action="Index" asp-controller="Topic" asp-route-id="@bookmark.Topic.Id">@bookmark.Topic.Title</a></div>
+                    <div class="col-3 p-2"><snitz-datetime datetime="@bookmark.Topic.Created.FromForumDateStr()"></snitz-datetime> by <member-link member-id="@bookmark.Topic.MemberId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link></div>
+                    <div class="col-3 p-2"><lastpost-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" post-date="@bookmark.Topic.LastPostDate.FromForumDateStr()" reply-id="@bookmark.Topic.LastPostReplyId" topic-id="@bookmark.TopicId"></lastpost-link> by <member-link member-id="@bookmark.Topic.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link></div>
+                </div>
+            }
+        </div>
+        <!--Pagination starts-->
+
+        <!--pagination ends-->
+    }
+    else
+    {
+        <div class="center"><h4>No active Posts</h4></div>
+    }
+
+
+</div>

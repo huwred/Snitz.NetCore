@@ -86,6 +86,12 @@ namespace SnitzCore.Service
             return result != null && VerifyHashedPassword(result.Password,password);
         }
 
+        public Member? Current()
+        {
+            throw new NotImplementedException();
+        }
+
+
         public Member Create(Member member)
         {
             var result = _dbContext.Members.Add(member);

@@ -5,13 +5,10 @@
 @using MVCForum.Models
 @using MVCForum.TagHelpers
 @using SmartBreadcrumbs
-@using SnitzCore.Data
-@using SnitzCore.Data.Interfaces
 @using SnitzCore.Data.Models
 @inject ICodeProcessor BbCodeProcessor
-@inject IMember MemberService
-@inject ISnitzConfig SnitzConfig
 @inject SignInManager<ForumUser> SignInManager
+
 @section Styles
 {
     <link rel="stylesheet" href="~/css/prism.css">
@@ -21,9 +18,6 @@
     ViewBag.PageCount = Model.PageCount;
 
     string pagenum = (Model.PageNum.ToString() ?? Context.Request.Query["page"])! ;
-    var pagesize = Context.Request.Query["pagesize"];
-
-    var ranking = MemberService.GetRankings();
     var replyClass = "d-none";
     var loggedin = SignInManager.IsSignedIn(User);
     if (loggedin)
@@ -32,60 +26,61 @@
     }
 }
 <div class="container pt-0">
-    <breadcrumb></breadcrumb>
+    <snitz-breadcrumb></snitz-breadcrumb>
     <!--Topic Section-->
-
-    @if (SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 || SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1 || SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1)
-    {
-        <topic-buttons topic-print="@Model.Id" topic-email="@Model.Id" topic-share="@SnitzConfig.GetIntValue("STRSOCIALSHARE")"></topic-buttons>
-    }
-    @if (SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && Int32.Parse(pagenum) < 2))
-    {
-        <div class="card mb-1 topic-container bg-white">
-            <div class="card-header">
-                @Model.Title - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (Read @Model.Views Times)</span>
-            </div>
-            <div class="card-body">
-                <div class="body topic">
-                    <partial name="_PostAuthor" model="Model.Author"/>
-                    <div class="content">
-                        @Html.Raw(BbCodeProcessor.Format(Model.Content))
-                    </div>
+    <topic-buttons snitz-if="@SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 || @SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1 || @SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1" topic-print="@Model.Id" topic-email="@Model.Id" topic-share="@SnitzConfig.GetIntValue("STRSOCIALSHARE")"></topic-buttons>
+    <div snitz-if="@SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (@SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && int.Parse(@pagenum) < 2)" class="card mb-2 topic-container bg-white">
+        <div class="card-header">
+            @Model.Title - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (@Model.Views @Localizer["Views"])</span>
+        </div>
+        <div class="card-body">
+            <div class="body topic">
+                <partial name="_PostAuthor" model="Model.Author"/>
+                <div class="content">
+                    @Html.Raw(BbCodeProcessor.Format(Model.Content))
                 </div>
             </div>
-            @if (User.Identity.IsAuthenticated || Model.Edited != null)
+        </div>
+        <div snitz-if="@User.Identity.IsAuthenticated || @Model.Edited != null" class="card-footer text-dark">
+            <span snitz-if="@SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && @Model.Edited != null" class="form-text">@Localizer["lblEditedBy", Model.EditedBy, Model.Edited]</span>
+            <post-controls text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" use-bookmarks="@SnitzConfig.GetIntValue("STRBOOKMARK",0)==1" post-type="Topic" post-status="Model.IsLocked" post-id="Model.Id" curr-user="User" post-author="Model.AuthorName" logged-in="loggedin"></post-controls>
+            <div snitz-if="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1" class="footer"><a href="" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a class="form-control-plaintext text-end" href="" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
+        </div>
+    </div>
+
+<!--Replies Section-->
+@if (Model.Replies != null && Model.Replies!.Any())
+{
+    <form id="defaultdays-form" asp-action="Index" class="form-inline">
+        <div class="input-group">
+                <span class="form-text">&nbsp;Sort direction &nbsp;</span>
+            <select class="form-control mb-2" id="sortdir" name="sortdir">
+                <option value="des" selected-val="@Model.SortDir">@Localizer["optNewest"]</option>
+                <option value="asc" selected-val="@Model.SortDir">@Localizer["optOldest"]</option>
+            </select>
+            @if (SnitzConfig.GetValue("STRTOPICPAGESIZES", "") != "")
             {
-                <div class="card-footer text-dark">
-                    @if (SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && Model.Edited != null)
+                var ischecked = Model.PageSize;
+                <span class="form-text">&nbsp;Set page size&nbsp;</span>
+
+                <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
+                    @foreach (var size in SnitzConfig.GetValue("STRTOPICPAGESIZES", "").Split(","))
                     {
-                        <span class="form-text">@Localizer["lblEditedBy", Model.EditedBy, Model.Edited]</span>
-                    }
-                    <post-controls post-type="Topic" post-status="Model.IsLocked" post-id="Model.Id" curr-user="User" post-author="Model.AuthorName" logged-in="loggedin"></post-controls>
-                    @if (SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1)
-                    {
-                        //TODO:
-                        <div class="footer"><a href="" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a class="form-control-plaintext text-end" href="" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
+                        <input type="radio" class="btn-check" name="pagesize" id="option@size" autocomplete="off" value="@size"
+                               @if (ischecked == Convert.ToInt32(size))
+                               {
+                                   @Html.Raw("checked")
+                               }/>
+                        <label class="btn btn-outline-secondary mb-2" for="option@size">@size</label>
                     }
                 </div>
             }
-
         </div>
-    }
 
-<!--Replies Section-->
-    @if (Model.Replies != null && Model.Replies!.Any())
-{
-    <form id="defaultdays-form" asp-action="Index" class="form-inline">
-        <select class="form-control mt-1" id="sortdir" name="sortdir">
-            <option value="des" selected-val="@Model.SortDir">Newest first</option>
-            <option value="asc" selected-val="@Model.SortDir">Oldest first</option>
-        </select>
-        <input type="number" value="@pagenum" name="page" style="display: none;" />
-        <input type="number" value="@pagesize" name="pagesize" style="display: none;" />
+        <input type="number" value="@pagenum" name="page" style="display: none;"/>
     </form>
 
     var rowclass = "alt";
-
 
     <div class="reply-container">
 
@@ -105,20 +100,11 @@
                         </div>
                     </div>
                 </div>
-                @if (User.Identity.IsAuthenticated || reply.Edited != null)
-                {
-                    <div class="card-footer text-dark">
-                        @if (SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && reply.Edited != null)
-                        {
-
-                                <span class="form-text">@Localizer["lblEditedBy", reply.EditedBy, reply.Edited]</span>
-                        }
-                        <post-controls post-type="Reply" post-status="Model.IsLocked" post-id="reply.Id" topic-id="Model.Id" curr-user="User" post-author="reply.AuthorName" logged-in="loggedin"></post-controls>
-                    </div>
-                }
-
+                <div snitz-if="@User.Identity.IsAuthenticated || @reply.Edited != null" class="card-footer text-dark">
+                    <span snitz-if="@SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && @reply.Edited != null" class="form-text">@Localizer["lblEditedBy", reply.EditedBy, reply.Edited]</span>
+                    <post-controls text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" use-bookmarks="@SnitzConfig.GetIntValue("STRBOOKMARK",0)==1" post-type="Reply" post-status="Model.IsLocked" post-id="reply.Id" topic-id="Model.Id" curr-user="User" post-author="reply.AuthorName" logged-in="loggedin"></post-controls>
+                </div>
             </div>
-
         }
     </div>
     <!--Pagination starts-->
@@ -139,26 +125,24 @@
         <div class="mb3">&nbsp;</div>
     }
 }
-    else
-    {
-        <p class="p-4">@Localizer["NoReplyMessage"]</p>
-    }
+else
+{
+    <p snitz-if="@User.Identity.IsAuthenticated" class="p-4">@Localizer["NoReplyMessage"]</p>
+    <p snitz-if="!@User.Identity.IsAuthenticated" class="p-4">@Localizer["lblNoReplies"]</p>
+}
     <!--Reply Area-->
-    @if (!Model.IsLocked)
-    {
-        <div class="comment-area @replyClass mt-2" id="reply-area">
-            <form asp-controller="Topic" asp-action="AddReply" class="needs-validation" novalidate>
-                <textarea name="Content" id="msg-text" placeholder="reply here ... " class="form-control" required="required"></textarea>
-                <div class="invalid-feedback text-danger-emphasis">You must provide a message.</div>
-                <input name="TopicId" type="hidden" value="@Model.Id"/>
-                <input asp-for="ForumId" type="hidden"/>
-                <div class="mb-3 mt-2">
-                    <button type="reset" class="btn btn-warning">Reset</button>
-                    <button type="submit" class="btn  btn-success">Post</button>
-                </div>
-            </form>
-        </div>
-    }
+    <div snitz-if="!@Model.IsLocked" class="comment-area @replyClass mt-2" id="reply-area">
+        <form asp-controller="Topic" asp-action="AddReply" class="needs-validation" novalidate>
+            <textarea name="Content" id="msg-text" placeholder="reply here ... " class="form-control" required="required"></textarea>
+            <div class="invalid-feedback text-danger-emphasis">@Localizer["MessageRequired"]</div>
+            <input name="TopicId" type="hidden" value="@Model.Id"/>
+            <input asp-for="ForumId" type="hidden"/>
+            <div class="mb-3 mt-2">
+                <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+                <button type="submit" class="btn  btn-success">@Localizer["btnPost"]</button>
+            </div>
+        </form>
+    </div>
 
 </div>
 
@@ -174,20 +158,20 @@
                 <div id="member-modal"></div>
             </div>
             <div class="modal-footer">
-                <a href="#" id="btnOk" class="btn btn-danger">OK</a>
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">Cancel</a>
+                <a href="#" id="btnOk" class="btn btn-danger">@Localizer["btnOk"]</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">@Localizer["btnCancel"]</a>
             </div>
         </div>
     </div>
 </div>
 @{
     var confModel = new ConfirmDialogViewModel()
-            {
-                Title = "Manage Topic",
-                Message = @"<p></p>"
-            };
+    {
+        Title = "Manage Topic",
+        Message = @"<p></p>"
+    };
+    <partial name="ConfirmDialog" model="@confModel" />
 }
-<partial name="ConfirmDialog" model="@confModel" />
 @section Scripts
 {
     <script type="text/javascript" src="/js/postcontroller.js"></script>
@@ -275,35 +259,9 @@
                 //$('#member-modal').html(href + "/" + memberid);
                 $('#memberModal').data('id', memberid).modal('show');
             });
-        $(document).on("click",
-            ".lock-member",
-            function(e) {
-                e.preventDefault();
-                var memberid = $(this).data("id");
-                var href = $(this).data("url");
-                $('#modal-title').html('Lock Member');
-                $('#member-modal').html('Toggle Member Status');
-                $('#memberModal').data('id', memberid).modal('show');
-                $('#memberModal #btnOk').show();
-                $('#memberModal').one('click',
-                    '#btnOk',
-                    function(e) {
-                        // handle deletion here
-                        e.preventDefault();
-                        $.post(href,
-                            {
-                                id: memberid
-                            },
-                            function(data, status) {
 
-                                if (!data.result) {
-                                    alert(data.error);
-                                } else {
-                                    location.reload();
-                                }
-                            });
-                    });
-            });
+
+
         $(document).on('click',
             '#btnOk',
             function() {

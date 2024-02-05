@@ -90,6 +90,7 @@
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\ConfirmDIalog.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\FormButtons.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\_BookmarkLink.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -222,5 +223,8 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Account\EmailMember.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\_BookmarkLink.cshtml" />
   </ItemGroup>
 </Project>

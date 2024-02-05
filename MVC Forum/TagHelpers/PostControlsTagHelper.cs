@@ -5,6 +5,8 @@ using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using SnitzCore.Data.Interfaces;
+using System;
 
 namespace MVCForum.TagHelpers
 {
@@ -25,11 +27,17 @@ namespace MVCForum.TagHelpers
         public PostType Posttype { get; set; }
         [HtmlAttributeName("post-status")]
         public bool IsLocked { get; set; }
-        private readonly UserManager<ForumUser> _userManager;
 
-        public PostControlsTagHelper(UserManager<ForumUser> userManager)
+        public bool UseBookmarks { get; set; }
+        public Func<string, string> TextLocalizerDelegate { get; set; }
+
+        private readonly UserManager<ForumUser> _userManager;
+        private readonly IBookmark _bookmarks;
+
+        public PostControlsTagHelper(UserManager<ForumUser> userManager,IBookmark bookmarks)
         {
             _userManager = userManager;
+            _bookmarks = bookmarks;
         }
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -46,9 +54,11 @@ namespace MVCForum.TagHelpers
             output.AddClass("post-control-btn",HtmlEncoder.Default);
             if (LoggedIn)
             {
+
                 var isadmin = userroles!.Contains("Admin");
                 if(!IsLocked || isadmin)
                     output.Content.AppendHtml($@"<i class=""fa fa-comment-o m-1 post-reply"" title=""Reply to Topic"" data-id=""{PostId}""></i>");
+
                 if (username == Author || isadmin)
                 {
                     if (Posttype == PostType.Topic)
@@ -65,6 +75,13 @@ namespace MVCForum.TagHelpers
                                 ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""UnLock Post"" data-id=""{PostId}"" data-status=""0""></i>"
                                 : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""Lock Post"" data-id=""{PostId}"" data-status=""1""></i>");
                         }
+                        if (UseBookmarks)
+                        {
+                            output.Content.AppendHtml(_bookmarks.IsBookmarked(PostId)
+                                ? $@"<i class=""fa fa-bookmark m-1 bookmark-del"" title=""Delete Bookmark"" data-id=""{PostId}""></i>"
+                                : $@"<i class=""fa fa-bookmark-o m-1 bookmark-add"" title=""Bookmark Topic"" data-id=""{PostId}""></i>");
+                        }
+
                     }
                     else
                     {
@@ -79,6 +96,12 @@ namespace MVCForum.TagHelpers
                             output.Content.AppendHtml(IsLocked
                                 ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""UnLock Post"" data-id=""{TopicId}"" data-status=""0""></i>"
                                 : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""Lock Post"" data-id=""{TopicId}"" data-status=""1""></i>");
+                        }
+                        if (UseBookmarks)
+                        {
+                            output.Content.AppendHtml(_bookmarks.IsBookmarked(TopicId.Value)
+                                ? $@"<i class=""fa fa-bookmark m-1 bookmark-del"" title=""Delete Bookmark"" data-id=""{TopicId}""></i>"
+                                : $@"<i class=""fa fa-bookmark-o m-1 bookmark-add"" title=""Bookmark Topic"" data-id=""{TopicId}""></i>");
                         }
                     }
 

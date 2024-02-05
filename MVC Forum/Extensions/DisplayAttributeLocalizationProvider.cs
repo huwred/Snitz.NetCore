@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
-using Microsoft.Extensions.Localization;
 using SnitzCore.Service;
 
 namespace MVCForum.Extensions
@@ -24,17 +23,21 @@ namespace MVCForum.Extensions
             var modelMetadata = context.DisplayMetadata;
             var propertyName = context.Key.Name;
 
-            if (IsTransformRequired(propertyName, modelMetadata, propertyAttributes))
+            if (propertyName != null && IsTransformRequired(propertyName, modelMetadata, propertyAttributes))
             {
                 modelMetadata.DisplayName = () => _localizer[propertyName].Value;
             }
 
-            //context.PropertyAttributes?
-            //    .Where(attribute => attribute is DisplayAttribute)
-            //    .Cast<DisplayAttribute>().ToList().ForEach(display =>
-            //    {
-            //        display.Name = _localizer[display.Name].Value;
-            //    });
+            if (context.DisplayMetadata.EnumGroupedDisplayNamesAndValues != null)
+            {
+                //var test = context
+            }
+            context.PropertyAttributes?
+                .Where(attribute => attribute is DisplayAttribute)
+                .Cast<DisplayAttribute>().ToList().ForEach(display =>
+                {
+                    display.Name = _localizer[display.Name].Value;
+                });
         }
         private static bool IsTransformRequired(string propertyName, DisplayMetadata modelMetadata, IReadOnlyList<object> propertyAttributes)
         {
@@ -46,7 +49,8 @@ namespace MVCForum.Extensions
 
             if (propertyAttributes.OfType<DisplayAttribute>().Any())
                 return false;
-
+            if (propertyAttributes.OfType<EnumDataTypeAttribute>().Any())
+                return true;
             if (string.IsNullOrEmpty(propertyName))
                 return false;
 

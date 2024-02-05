@@ -14,7 +14,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Hosting;
 
 namespace MVCForum.Controllers
 {
@@ -25,8 +24,8 @@ namespace MVCForum.Controllers
         private readonly IForum _forumService;
         private readonly UserManager<ForumUser> _userManager;
 
-        public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,
-            IPost postService, IForum forumService, UserManager<ForumUser> userManager) : base(memberService, config, localizerFactory)
+        public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,
+            IPost postService, IForum forumService, UserManager<ForumUser> userManager) : base(memberService, config, localizerFactory,dbContext)
         {
             _postService = postService;
             _forumService = forumService;
@@ -36,7 +35,7 @@ namespace MVCForum.Controllers
         [Route("{id:int}")]
         [Route("Topic/{id}")]
         [Route("Topic/Index/{id}")]
-        public IActionResult Index(int id,int page = 1, int pagesize = 20, string sortdir="asc", int? replyid = null)
+        public IActionResult Index(int id,int page = 1, int pagesize = 20, string sortdir="desc", int? replyid = null)
         {
             var post = _postService.GetTopic(id);
             if (post.ReplyCount > 0)
@@ -51,7 +50,7 @@ namespace MVCForum.Controllers
             }
 
 
-            var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", post.Category?.Name){ Parent = homePage,RouteValues = new{id=post.Category?.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", post.Forum?.Title){ Parent = catPage,RouteValues = new{id=post.ForumId}};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", post.Title) { Parent = forumPage };
@@ -100,6 +99,7 @@ namespace MVCForum.Controllers
                 ForumName = post.Forum.Title,
                 PageNum = page,
                 PageCount = pageCount,
+                PageSize = pagesize,
                 SortDir = sortdir,
                 Edited = post.LastEdit?.FromForumDateStr(),
                 EditedBy = post.LastEditby == null ? "" : _memberService.GetMemberName(post.LastEditby.Value)
@@ -126,7 +126,7 @@ namespace MVCForum.Controllers
                 Sticky = false,
                 DoNotArchive = false,
             };
-            var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Create", "Topic", "New Post") { Parent = forumPage };
@@ -155,7 +155,7 @@ namespace MVCForum.Controllers
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
             };
-            var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
@@ -187,7 +187,7 @@ namespace MVCForum.Controllers
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
             };
-            var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
@@ -222,7 +222,7 @@ namespace MVCForum.Controllers
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = topic.Created.FromForumDateStr(),
             };
-            var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
@@ -256,7 +256,7 @@ namespace MVCForum.Controllers
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = DateTime.UtcNow
             };
-            var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", topic.Category!.Name){ Parent = homePage,RouteValues = new{id=topic.Category.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", topic.Forum.Title){ Parent = catPage,RouteValues = new{id=topic.Forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
@@ -289,7 +289,7 @@ namespace MVCForum.Controllers
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = reply.Created.FromForumDateStr(),
             };
-            var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", topic.Category!.Name){ Parent = homePage,RouteValues = new{id=topic.Category.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", topic.Forum.Title){ Parent = catPage,RouteValues = new{id=topic.Forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };

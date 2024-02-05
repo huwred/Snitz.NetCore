@@ -1,0 +1,12 @@
+﻿@using Microsoft.AspNetCore.Http.Extensions
+@model int
+@inject IBookmark Bookmark
+
+@if (Bookmark.IsBookmarked(Model))
+{
+    @Html.ActionLink(Localizer["tipRemoveBookmark"].Value, "Delete", "Bookmark", new { id = Model }, "fa fa-bookmark")
+}
+else
+{
+    @Html.ActionLink(" ", "Create", "Bookmark", new { id = Model, returnurl = Context.Request.GetDisplayUrl() }, new { @class = "fa fa-bookmark-o ", title = @Localizer["tipBookmarkPost"], data_toggle = "tooltip" })
+}

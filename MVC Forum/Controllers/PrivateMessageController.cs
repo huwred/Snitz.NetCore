@@ -20,8 +20,8 @@ namespace MVCForum.Controllers
         private Member? _member;
         private readonly IPrivateMessage _pmService;
 
-        public PrivateMessageController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,
-            IPrivateMessage pmService) : base(memberService, config, localizerFactory)
+        public PrivateMessageController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,
+            IPrivateMessage pmService) : base(memberService, config, localizerFactory, dbContext)
         {
             _pmService = pmService;
         }

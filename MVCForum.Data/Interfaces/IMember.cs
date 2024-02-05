@@ -33,5 +33,6 @@ namespace SnitzCore.Data
 
         bool ValidateMember(Member member, string password);
 
+        Member? Current();
     }
 }

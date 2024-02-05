@@ -84,11 +84,14 @@ namespace SnitzCore.Service
             {
                 if (GetIntValue("STRSETCOOKIETOFORUM") == 1)
                 {
-                    HttpContext Current = _httpContextAccessor.HttpContext;
-                    string AppBaseUrl = $"{Current.Request.PathBase}";
-                    if (AppBaseUrl != "/") 
-                        AppBaseUrl = "/" + AppBaseUrl;
-                    return AppBaseUrl;
+                    if (_httpContextAccessor.HttpContext != null)
+                    {
+                        HttpContext Current = _httpContextAccessor.HttpContext;
+                        string AppBaseUrl = $"{Current.Request.PathBase}";
+                        if (AppBaseUrl != "/") 
+                            AppBaseUrl = "/" + AppBaseUrl;
+                        return AppBaseUrl;
+                    }
                 }
                 return "/";
             }

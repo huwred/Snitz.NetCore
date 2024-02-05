@@ -12,14 +12,12 @@
     ViewBag.PageNum = pagenum;
 }
 <div class="container pt-0">
-    <breadcrumb></breadcrumb>
+    <snitz-breadcrumb></snitz-breadcrumb>
     <form id="defaultdays-form" asp-action="Index" class="form-inline">
         <div class="row m-1">
             <div class="input-group">
-                <select asp-for="Forum!.DefaultView" id="default-days" title="Topics to display"
-                        class="form-select" asp-items="Html.GetEnumSelectList<DefaultDays>()">
-                </select>
-                <select name="OrderBy" id="orderby" class="form-select" title="Order by" aria-invalid="false">
+                <enum-select id="default-days" enum-type="typeof(DefaultDays)" selected-value="(int)Model.Forum.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                <select name="OrderBy" id="orderby" class="form-select mb-2" title="Order by" aria-invalid="false">
                     <option value="pd" selected-val="@Model.Forum?.OrderBy">@Localizer["optPostDate"]</option>
                     <option value="lpd" selected-val="@Model.Forum?.OrderBy">@Localizer["optLastPostDate"]</option>
                     <option value="a" selected-val="@Model.Forum?.OrderBy">@Localizer["optAuthor"]</option>
@@ -27,25 +25,38 @@
                     <option value="v" selected-val="@Model.Forum?.OrderBy">@Localizer["optViews"]</option>
                     <option value="r" selected-val="@Model.Forum?.OrderBy">@Localizer["optReplies"]</option>
                 </select>
-                <select name="sortdir" id="sortdir" class="form-select" title="Sort direction" aria-invalid="false">
+                <select name="sortdir" id="sortdir" class="form-select mb-2" title="Sort direction" aria-invalid="false">
                     <option value="asc" selected-val="@Model.Forum?.SortDir">@Localizer["optAsc"]</option>
                     <option value="des" selected-val="@Model.Forum?.SortDir">@Localizer["optDesc"]</option>
                 </select>
-                <button asp-controller="Topic" asp-action="Create" asp-route-id="@Model.Forum?.Id" class="btn btn-primary"><i class="fa fa-commenting-o"></i><span class="d-none d-md-inline"> @Localizer["btnNewTopic"]</span></button>
-                @if (User.IsInRole("Admin"))
+                @if (SnitzConfig.GetValue("STRFORUMPAGESIZES", "") != "")
                 {
-                    <span class="input-group-append">
-                        <div class="btn-group">
+                    var ischecked = Model.PageSize;
+                    <span class="form-text mb-2">&nbsp;Set page size&nbsp;</span>
+
+                    <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
+                        @foreach (var size in SnitzConfig.GetValue("STRFORUMPAGESIZES", "").Split(","))
+                        {
+                            <input type="radio" class="btn-check" name="pagesize" id="option@size" autocomplete="off" value="@size" @if(ischecked == Convert.ToInt32(size)){@Html.Raw("checked")} />
+                            <label class="btn btn-outline-secondary mb-2" for="option@size">@size</label>
+
+                        }
+                    </div>
+                }
+                <span class="input-group-append">
+                    <div class="btn-group">
+                        <button asp-controller="Topic" asp-action="Create" asp-route-id="@Model.Forum?.Id" class="btn btn-primary"><i class="fa fa-commenting-o"></i><span class="d-none d-md-inline"> @Localizer["btnNewTopic"]</span></button>
+                        @if (User.IsInRole("Admin"))
+                        {
                             <button asp-controller="Forum" asp-action="Edit" asp-route-id="@Model.Forum!.Id" title="Edit Forum" class="btn  btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> @Localizer["tipEditForum"]</span></button>
                             <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Forum!.Id" href="/Forum/Delete/?id=" title="@Localizer["cnfDeleteForum"].Value"></button-confirm>
-                        </div>
-                    </span>
-                }
+                        }
+                    </div>
+                </span>
             </div>
         </div>
         <input type="number" value="@Model.Forum?.Id" name="id" style="display: none;"/>
         <input type="number" value="@pagenum" name="page" style="display: none;" />
-        <input type="number" value="@pagesize" name="pagesize" style="display: none;" />
         <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
     </form>
     <!--Display posts table-->

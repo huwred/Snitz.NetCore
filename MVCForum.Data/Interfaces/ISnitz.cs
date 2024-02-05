@@ -8,7 +8,7 @@ namespace SnitzCore.Data.Interfaces
         ForumTotal Totals();
         Post LastPost();
         IEnumerable<SnitzConfig> GetConfig();
-
+        int ForumCount();
         IEnumerable<KeyValuePair<int, string>> GetForumModerators();
     }
 }

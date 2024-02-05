@@ -7,40 +7,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace MVCForum.TagHelpers
 {
-    [HtmlTargetElement("button-confirm", TagStructure = TagStructure.NormalOrSelfClosing)]
-    public class ButtonConfirmTagHelper : TagHelper
-    {
-        [HtmlAttributeName("config-key")]
-        public string? Key { get; set; }
-        [HtmlAttributeName("title")]
-        public string? Title { get; set; }
-        [HtmlAttributeName("config-class")]
-        public string? TagClass { get; set; }
-        [HtmlAttributeName("selector")]
-        public string? Selector { get; set; }
-        [HtmlAttributeName("href")]
-        public string? Href { get; set; }
-        [ViewContext]
-        public ViewContext? ViewContext { set; get; }
-
-        public override void Process(TagHelperContext context, TagHelperOutput output)
-        {
-
-            var tagid = Guid.NewGuid().ToString();
-            output.TagName = "a";
-            output.TagMode = TagMode.StartTagAndEndTag;
-            output.Attributes.Add("href",Href + Key);
-            output.Attributes.Add("id",tagid);
-            output.Attributes.Add("data-bs-toggle","modal");
-            output.Attributes.Add("data-id",Key);
-            output.Attributes.Add("rel","nofollow");
-            output.AddClass("btn",HtmlEncoder.Default);
-            output.AddClass("btn-outline-danger",HtmlEncoder.Default);
-            output.AddClass(Selector,HtmlEncoder.Default);
-            output.Content.AppendHtml($@"<i class='" + TagClass + $"'></i><span class='d-none d-md-inline'> {Title}</span>");
-        }
-
-    }
     [HtmlTargetElement("link-confirm", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class ActionLinkConfirmTagHelper : TagHelper
     {
@@ -50,8 +16,7 @@ namespace MVCForum.TagHelpers
         public string? TagClass { get; set; }
         [HtmlAttributeName("jq-selector")]
         public string? Selector { get; set; }
-        [ViewContext]
-        public ViewContext? ViewContext { set; get; }
+        public string? Title { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -60,7 +25,7 @@ namespace MVCForum.TagHelpers
             output.TagName = "a";
             output.TagMode = TagMode.StartTagAndEndTag;
             output.Attributes.Add("id",tagid);
-            //output.Attributes.Add("href","#");
+            output.Attributes.Add("title",Title);
             output.Attributes.Add("rel","nofollow");
             //output.Attributes.Add("title","Delete Item");
             output.Attributes.Add("data-bs-toggle","modal");

@@ -12,35 +12,35 @@ namespace SnitzCore.Data.Models
     }
     public enum DefaultDays
     {
-        [Display(Name = "Show all open topics")]
+        [Display(Name = "ForumDays_AllOpen")]
         AllOpen = -1,
-        [Display(Name = "Show all topics")]
+        [Display(Name = "ForumDays_All")]
         All=0, 
-        [Display(Name = "Show topics from last day")]
+        [Display(Name = "ForumDays_LastDay")]
         LastDay,
-        [Display(Name = "Show topics from last 2 days")]
+        [Display(Name = "ForumDays_Last2Days")]
         Last2Days,
-        [Display(Name = "Show topics from last 5 days")]
+        [Display(Name = "ForumDays_Last5Days")]
         Last5Days=5,
-        [Display(Name = "Show topics from last week")]
+        [Display(Name = "ForumDays_Last7Days")]
         Last7Days=7,
-        [Display(Name = "Show topics from last 2 weeks")]
+        [Display(Name = "ForumDays_Last14Days")]
         Last14Days=14,
-        [Display(Name = "Show topics from last 30 days")]
+        [Display(Name = "ForumDays_Last30Days")]
         Last30Days=30,
-        [Display(Name = "Show topics from last 60 days")]
+        [Display(Name = "ForumDays_Last60Days")]
         Last60Days=60,
-        [Display(Name = "Show topics from last 120 days")]
+        [Display(Name = "ForumDays_Last120Days")]
         Last120Days=120,
-        [Display(Name = "Show topics from last year")]
+        [Display(Name = "ForumDays_LastYear")]
         LastYear=365,
-        //[Display(Name = "Show Draft Po")]
+        //[Display(Name = "ForumDays_Draft")]
         //Draft= -9999,
-        [Display(Name = "Show archived topics")]
+        [Display(Name = "ForumDays_Archived")]
         Archived=-99,
-        [Display(Name = "Unanswered Posts")]
+        [Display(Name = "ForumDays_NoReplies")]
         NoReplies=-999,
-        [Display(Name = "Only Hot Topics")]
+        [Display(Name = "ForumDays_Hot")]
         Hot=-88,
 
     }
@@ -48,19 +48,19 @@ namespace SnitzCore.Data.Models
     public enum ForumAuthType
     {
         All = 0,
-        [Display(Name = "Allowed Members")]
+        [Display(Name = "ForumAuthType_AllowedMembers")]
         AllowedMembers = 1,
-        [Display(Name = "Password Protected")]
+        [Display(Name = "ForumAuthType_PasswordProtected")]
         PasswordProtected,
         [Display(Name = "Allowed Member Password")]
         AllowedMemberPassword,
-        [Display(Name = "Members Only")]
+        [Display(Name = "ForumAuthType_Members")]
         Members,
-        [Display(Name = "Members Only (Hidden)")]
+        [Display(Name = "ForumAuthType_MembersHidden")]
         MembersHidden,
-        [Display(Name = "Allowed Members (Hidden)")]
+        [Display(Name = "ForumAuthType_AllowedMembersHidden")]
         AllowedMembersHidden,
-        [Display(Name = "Members Password")]
+        [Display(Name = "ForumAuthType_MembersPassword")]
         MembersPassword
     }
     /// <summary>
@@ -91,51 +91,51 @@ namespace SnitzCore.Data.Models
 
     public enum ActiveRefresh
     {
-        [Display(Name="Don't reload automatically")]
+        [Display(Name="ActiveRefresh_None")]
         None,
-        [Display(Name="Reload page every minute")]
+        [Display(Name="ActiveRefresh_Minute")]
         Minute,
-        [Display(Name="Reload page every 2 minutes")]
+        [Display(Name="ActiveRefresh_TwoMinute")]
         TwoMinute,
-        [Display(Name="Reload page every 5 minutes")]
+        [Display(Name="ActiveRefresh_FiveMinute")]
         FiveMinute=5,
-        [Display(Name="Reload page every 10 minutes")]
+        [Display(Name="ActiveRefresh_TenMinute")]
         TenMinute=10,
-        [Display(Name="Reload page every 15 minutes")]
+        [Display(Name="ActiveRefresh_FifteenMinute")]
         FifteenMinute=15,
     }
 
     public enum SearchFor
     {
-        [Display(Name = "Search for exact phrase")]
+        [Display(Name = "SearchWordMatch_ExactPhrase")]
         ExactPhrase,
-        [Display(Name = "Search for all terms")]
+        [Display(Name = "SearchWordMatch_All")]
         AllTerms,
-        [Display(Name = "Search for any terms")] 
+        [Display(Name = "SearchWordMatch_Any")] 
         AnyTerms
     }
 
     public enum SearchDate
     {
-        [Display(Name="Any Date")]
+        [Display(Name="SearchDays_Any")]
         AnyDate = 0,
-        [Display(Name="Since Yesterday")]
+        [Display(Name="SearchDays_Since1Day")]
         Since1Day,
-        [Display(Name="In the last 2 days")]
+        [Display(Name="ActiveTopicsSince_Last2Days")]
         Since2Days,
-        [Display(Name="In the last 5 days")]
+        [Display(Name="ActiveTopicsSince_Last5Days")]
         Since5Days = 5,
-        [Display(Name="In the last week")]
+        [Display(Name="SearchDays_Since7Days")]
         Since7Days = 7,
-        [Display(Name="In the last 2 weeks")]
+        [Display(Name="SearchDays_Since14Days")]
         Since14Days = 14,
-        [Display(Name="In the last month")]
+        [Display(Name="SearchDays_Since30Days")]
         Since1Month = 30,
-        [Display(Name="In the last 2 months")]
+        [Display(Name="SearchDays_Since60Days")]
         Since2Months = 60,
-        [Display(Name="In the last 6 months")]
+        [Display(Name="SearchDays_Since120Days")]
         Since6Months = 184,
-        [Display(Name="In the last year")]
+        [Display(Name="SearchDays_SinceYear")]
         SinceYear = 365,
 
     }
@@ -147,18 +147,20 @@ namespace SnitzCore.Data.Models
     }
     public enum ModerationLevel
     {
-        [Display(Name = "No Moderation")]
+        [Display(Name = "ModerationLevel_NotAllowed")]
         NotAllowed = 0,
+        [Display(Name = "ModerationLevel_Allowed")]
         Allowed
     }
     public enum CategorySubscription
     {
+        [Display(Name = "CategorySubscription_None")]
         None = 0,
-        [Display(Name = "Category Subscriptions")]
+        [Display(Name = "CategorySubscription_CategorySubscription")]
         CategorySubscription,
-        [Display(Name = "Forum Subscriptions")]
+        [Display(Name = "CategorySubscription_ForumSubscription")]
         ForumSubscription,
-        [Display(Name = "Topic Subscriptions")] 
+        [Display(Name = "CategorySubscription_TopicSubscriptions")] 
         TopicSubscription
     }
 }

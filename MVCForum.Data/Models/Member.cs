@@ -35,7 +35,7 @@ public partial class Member
     public short Status { get; set; }
     
     [Column("M_POSTS")]
-    [ProfileDisplay("Posts made",SystemField = true)]
+    [ProfileDisplay("ProfilePosts",SystemField = true)]
     public int Posts { get; set; }
 
     [Column("M_LASTHEREDATE")]
@@ -50,105 +50,105 @@ public partial class Member
 
     [Column("M_DATE")]
     [StringLength(14)]
-    [ProfileDisplay("Member since",SystemField = true)]
+    [ProfileDisplay("ProfileDate",SystemField = true)]
     public string Created { get; set; } = null!;
 
     #region  Public
 
     [Column("M_FIRSTNAME")]
-    [ProfileDisplay("Firstname",DisplayCheck = "STRFULLNAME",RequiredCheck="STRREQFULLNAME",Order = 2,LayoutSection = MemberLayout.Profile)]
+    [ProfileDisplay("ProfileFirstname",DisplayCheck = "STRFULLNAME",RequiredCheck="STRREQFULLNAME",Order = 2,LayoutSection = MemberLayout.Profile)]
     [StringLength(100)]
     public string? Firstname { get; set; }
 
     [Column("M_LASTNAME")]
-    [ProfileDisplay("Lastname",DisplayCheck = "STRFULLNAME",RequiredCheck="STRREQFULLNAME",Order = 3,LayoutSection = MemberLayout.Profile)]
+    [ProfileDisplay("ProfileLastname",DisplayCheck = "STRFULLNAME",RequiredCheck="STRREQFULLNAME",Order = 3,LayoutSection = MemberLayout.Profile)]
     [StringLength(100)]
     public string? Lastname { get; set; }
 
     [Column("M_CITY")]
-    [ProfileDisplay("City",DisplayCheck = "STRCITY",RequiredCheck="STRREQCITY",Order = 4,LayoutSection = MemberLayout.Profile)]
+    [ProfileDisplay("ProfileCity",DisplayCheck = "STRCITY",RequiredCheck="STRREQCITY",Order = 4,LayoutSection = MemberLayout.Profile)]
     [StringLength(100)]
     public string? City { get; set; }
 
     [Column("M_STATE")]
-    [ProfileDisplay("State",DisplayCheck = "STRSTATE",RequiredCheck="STRREQSTATE",Order = 5,LayoutSection = MemberLayout.Profile)]
+    [ProfileDisplay("ProfileState",DisplayCheck = "STRSTATE",RequiredCheck="STRREQSTATE",Order = 5,LayoutSection = MemberLayout.Profile)]
     [StringLength(100)]
     public string? State { get; set; }
 
     [Column("M_PHOTO_URL")]
-    [ProfileDisplay("Avatar", FieldType = "file",DisplayCheck = "STRPICTURE",RequiredCheck="STRREQPICTURE",Order = 8,LayoutSection = MemberLayout.Profile)]
+    [ProfileDisplay("ProfileAvatar", FieldType = "file",DisplayCheck = "STRPICTURE",RequiredCheck="STRREQPICTURE",Order = 8,LayoutSection = MemberLayout.Profile)]
     [StringLength(255)]
     public string? PhotoUrl { get; set; }
     [Column("M_COUNTRY")]
-    [ProfileDisplay("Country",DisplayCheck = "STRCOUNTRY",RequiredCheck="STRREQCOUNTRY",Order = 6,LayoutSection = MemberLayout.Profile)]
+    [ProfileDisplay("ProfileCountry",DisplayCheck = "STRCOUNTRY",RequiredCheck="STRREQCOUNTRY",Order = 6,LayoutSection = MemberLayout.Profile)]
     [StringLength(50)]
     public string? Country { get; set; }
     [Column("M_SEX")]
-    [ProfileDisplay("Gender",SystemField = true,Order = 9999,LayoutSection = MemberLayout.Profile)]
+    [ProfileDisplay("ProfileGender",SystemField = true,Order = 9999,LayoutSection = MemberLayout.Profile)]
     [StringLength(50)]
     public string? Sex { get; set; }
 
     [Column("M_AGE")]
-    [ProfileDisplay("Age",DisplayCheck = "STRAGE",RequiredCheck="STRREQAGE",Order = 10,LayoutSection = MemberLayout.Profile)]
+    [ProfileDisplay("ProfileAge",DisplayCheck = "STRAGE",RequiredCheck="STRREQAGE",Order = 10,LayoutSection = MemberLayout.Profile)]
     [StringLength(10)]
     public string? Age { get; set; }
 
     [Column("M_DOB")]
     [StringLength(8)]
-    [ProfileDisplay("Date of Birth",Private = true, FieldType = "datepicker",DisplayCheck = "STRAGEDOB",RequiredCheck="STRREQAGEDOB",Order = 11)]
+    [ProfileDisplay("ProfileBirthdate",Private = true, FieldType = "datepicker",DisplayCheck = "STRAGEDOB",RequiredCheck="STRREQAGEDOB",Order = 11)]
     public string? Dob { get; set; }
 
     [Column("M_OCCUPATION")]
-    [ProfileDisplay("Occupation",DisplayCheck = "STROCCUPATION",RequiredCheck="STRREQOCCUPAION",Order = 12,LayoutSection = MemberLayout.Bio)]
+    [ProfileDisplay("ProfileOccupation",DisplayCheck = "STROCCUPATION",RequiredCheck="STRREQOCCUPAION",Order = 12,LayoutSection = MemberLayout.Bio)]
     [StringLength(255)]
     public string? Occupation { get; set; }
     [Column("M_HOMEPAGE")]
-    [ProfileDisplay("Homepage",DisplayCheck = "STRHOMEPAGE",RequiredCheck="STRREQHOMEPAGE",Order = 13,LayoutSection = MemberLayout.Bio)]
+    [ProfileDisplay("ProfileHomepage",DisplayCheck = "STRHOMEPAGE",RequiredCheck="STRREQHOMEPAGE",Order = 13,LayoutSection = MemberLayout.Bio)]
     [StringLength(255)]
     public string? Homepage { get; set; }
     [Column("M_MARSTATUS")]
     [StringLength(100)]
-    [ProfileDisplay("Marital Status",SystemField = true,Order = 9999,LayoutSection = MemberLayout.Profile)]
+    [ProfileDisplay("ProfileMarStatus",SystemField = true,Order = 9999,LayoutSection = MemberLayout.Profile)]
     public string? Marstatus { get; set; }
     [Column("M_DEFAULT_VIEW")]
-    [ProfileDisplay("Forum Default View",SystemField = true, Order = 15,FieldType = "select",SelectEnum = "SnitzCore.Data.Models.DefaultDays",LayoutSection = MemberLayout.Extra)]
+    [ProfileDisplay("ProfileDefaultView",SystemField = true, Order = 15,FieldType = "select",SelectEnum = "SnitzCore.Data.Models.DefaultDays",LayoutSection = MemberLayout.Extra)]
     public int DefaultView { get; set; }
     [Column("M_SIG")]
-    [ProfileDisplay("Signature",FieldType = "textarea",Order=98,LayoutSection = MemberLayout.Bio)]
+    [ProfileDisplay("ProfileSignature",FieldType = "textarea",Order=98,LayoutSection = MemberLayout.Bio)]
     public string? Signature { get; set; }
     #endregion
 
 
     #region Checkboxes
     [Column("M_VIEW_SIG")]
-    [ProfileDisplay("View Signatures in posts",Order = 21, FieldType = "checkbox")]
+    [ProfileDisplay("ProfileShowSig",Order = 21, FieldType = "checkbox")]
     public short ViewSig { get; set; }
 
     [Column("M_SIG_DEFAULT")]
-    [ProfileDisplay("Use Signature when posting",Order = 22, FieldType = "checkbox")]
+    [ProfileDisplay("ProfileUseSig",Order = 22, FieldType = "checkbox")]
     public short SigDefault { get; set; }
 
     [Column("M_HIDE_EMAIL")]
-    [ProfileDisplay("Hide email from Members",Order = 23, FieldType = "checkbox")]
+    [ProfileDisplay("ProfileHideEmail",Order = 23, FieldType = "checkbox")]
     public short HideEmail { get; set; }
 
     [Column("M_RECEIVE_EMAIL")]
-    [ProfileDisplay("Allow Members to send you emails", Order = 24, FieldType = "checkbox")]
+    [ProfileDisplay("ReceiveEmail", Order = 24, FieldType = "checkbox")]
     public short ReceiveEmail { get; set; }
     [Column("M_PMEMAIL")]
-    [ProfileDisplay("Receive email notification for Private Messages", Order = 25, FieldType = "checkbox")]
+    [ProfileDisplay("ProfilePMNotify", Order = 25, FieldType = "checkbox")]
     public int Pmemail { get; set; }
 
     [Column("M_PMRECEIVE")]
-    [ProfileDisplay("Allow Members to send you Private Messages", Order = 26, FieldType = "checkbox")]
+    [ProfileDisplay("ProfilePMReceive", Order = 26, FieldType = "checkbox")]
     public int Pmreceive { get; set; }
 
     [Column("M_PMSAVESENT")]
-    [ProfileDisplay("Save sent Private Messages", Order = 27, FieldType = "checkbox")]
+    [ProfileDisplay("ProfilePMSentItems", Order = 27, FieldType = "checkbox")]
     public short Pmsavesent { get; set; }
 
     [Column("M_PRIVATEPROFILE")]
-    [ProfileDisplay("Make Profile private", Order = 28, FieldType = "checkbox")]
+    [ProfileDisplay("ProfilePrivate", Order = 28, FieldType = "checkbox")]
     public short Privateprofile { get; set; }
 
 
@@ -157,12 +157,12 @@ public partial class Member
     #region System
     [Column("M_LAST_IP")]
         [StringLength(50)]
-        [ProfileDisplay("Last IP address",SystemField = true)]
+        [ProfileDisplay("ProfileLastIP",SystemField = true)]
         public string? LastIp { get; set; }
 
         [Column("M_IP")]
         [StringLength(50)]
-        [ProfileDisplay("Current IP address",SystemField = true)]
+        [ProfileDisplay("ProfileIP",SystemField = true)]
         public string? Ip { get; set; }
         [Column("M_ALLOWEMAIL")]
         [ProfileDisplay("Allow Emails",SystemField = true,Order=29)]
@@ -198,21 +198,21 @@ public partial class Member
     #region SocialMedia
     [Column("M_AIM")]
     [StringLength(150)]
-    [ProfileDisplay("AIM",DisplayCheck = "STRAIM",RequiredCheck= "STRREQAIM", SocialLink = true,LayoutSection = MemberLayout.SocialMedia)]
+    [ProfileDisplay("ProfileAIM",DisplayCheck = "STRAIM",RequiredCheck= "STRREQAIM", SocialLink = true,LayoutSection = MemberLayout.SocialMedia)]
     public string? Aim { get; set; }
 
     [Column("M_ICQ")]
-    [ProfileDisplay("ICQ",DisplayCheck = "STRICQ",RequiredCheck="STRREQICQ", SocialLink = true,LayoutSection = MemberLayout.SocialMedia)]
+    [ProfileDisplay("ProfileICQ",DisplayCheck = "STRICQ",RequiredCheck="STRREQICQ", SocialLink = true,LayoutSection = MemberLayout.SocialMedia)]
     [StringLength(150)]
     public string? Icq { get; set; }
 
     [Column("M_MSN")]
-    [ProfileDisplay("MSN",DisplayCheck = "STRMSN",RequiredCheck="STRREQMSN", SocialLink = true,LayoutSection = MemberLayout.SocialMedia)]
+    [ProfileDisplay("ProfileMSN",DisplayCheck = "STRMSN",RequiredCheck="STRREQMSN", SocialLink = true,LayoutSection = MemberLayout.SocialMedia)]
     [StringLength(150)]
     public string? Msn { get; set; }
 
     [Column("M_YAHOO")]
-    [ProfileDisplay("Yahoo",DisplayCheck = "STRYAHOO",RequiredCheck="STRREQYAHOO", SocialLink = true,LayoutSection = MemberLayout.SocialMedia)]
+    [ProfileDisplay("ProfileYahoo",DisplayCheck = "STRYAHOO",RequiredCheck="STRREQYAHOO", SocialLink = true,LayoutSection = MemberLayout.SocialMedia)]
     [StringLength(150)]
     public string? Yahoo { get; set; }
     
@@ -220,28 +220,28 @@ public partial class Member
     
     #region Optional
     [Column("M_HOBBIES")]
-    [ProfileDisplay("Hobbies",DisplayCheck = "STRHOBBIES",RequiredCheck="STRREQHOBBIES",Order = 99,FieldType = "textarea",LayoutSection = MemberLayout.Bio)]
+    [ProfileDisplay("ProfileHobby",DisplayCheck = "STRHOBBIES",RequiredCheck="STRREQHOBBIES",Order = 99,FieldType = "textarea",LayoutSection = MemberLayout.Bio)]
     public string? Hobbies { get; set; }
 
     [Column("M_LNEWS")]
-    [ProfileDisplay("Latest news",DisplayCheck = "STRLNEWS",RequiredCheck="STRREQLNEWS",Order = 99,FieldType = "textarea",LayoutSection = MemberLayout.Bio)]
+    [ProfileDisplay("ProfileNews",DisplayCheck = "STRLNEWS",RequiredCheck="STRREQLNEWS",Order = 99,FieldType = "textarea",LayoutSection = MemberLayout.Bio)]
     public string? Lnews { get; set; }
 
     [Column("M_QUOTE")]
-    [ProfileDisplay("Favourite Quote",DisplayCheck = "STRQUOTE",RequiredCheck ="STRREQQUOTE",Order = 99,FieldType = "textarea",LayoutSection = MemberLayout.Bio)]
+    [ProfileDisplay("ProfileQuote",DisplayCheck = "STRQUOTE",RequiredCheck ="STRREQQUOTE",Order = 99,FieldType = "textarea",LayoutSection = MemberLayout.Bio)]
     public string? Quote { get; set; }
 
     [Column("M_BIO")]
-    [ProfileDisplay("Biography",DisplayCheck = "STRBIO",RequiredCheck ="STRREQBIO",Order = 99,FieldType = "textarea",LayoutSection = MemberLayout.Bio)]
+    [ProfileDisplay("ProfileBio",DisplayCheck = "STRBIO",RequiredCheck ="STRREQBIO",Order = 99,FieldType = "textarea",LayoutSection = MemberLayout.Bio)]
     public string? Bio { get; set; }
     
     [Column("M_LINK1")]
-    [ProfileDisplay("Favourite Link 1",DisplayCheck = "STRFAVLINKS",RequiredCheck ="STRREQFAVLINKS",Order = 99,LayoutSection = MemberLayout.Bio)]
+    [ProfileDisplay("ProfileFav1",DisplayCheck = "STRFAVLINKS",RequiredCheck ="STRREQFAVLINKS",Order = 99,LayoutSection = MemberLayout.Bio)]
     [StringLength(255)]
     public string? Link1 { get; set; }
 
     [Column("M_LINK2")]
-    [ProfileDisplay("Favourite Link 2",DisplayCheck = "STRFAVLINKS",RequiredCheck="STRREQFAVLINKS",Order = 99,LayoutSection = MemberLayout.Bio)]
+    [ProfileDisplay("ProfileFav2",DisplayCheck = "STRFAVLINKS",RequiredCheck="STRREQFAVLINKS",Order = 99,LayoutSection = MemberLayout.Bio)]
     [StringLength(255)]
     public string? Link2 { get; set; }
     #endregion

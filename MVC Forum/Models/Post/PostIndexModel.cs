@@ -17,5 +17,6 @@ namespace MVCForum.Models.Post
         public SnitzCore.Data.Models.Member Author { get; set; } = null!;
         public bool IsLocked { get; set; }
         public int PageNum { get; set; }
+        public int PageSize { get; set; }
     }
 }

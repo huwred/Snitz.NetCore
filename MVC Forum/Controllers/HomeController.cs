@@ -18,12 +18,12 @@ using Microsoft.AspNetCore.Mvc.Localization;
 
 namespace MVCForum.Controllers
 {
-    [DefaultBreadcrumb]
+    [DefaultBreadcrumb("mnuHome")]
     public class HomeController : SnitzController
     {
         private readonly IPost _postService;
 
-        public HomeController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory, IPost postService) : base(memberService, config, localizerFactory)
+        public HomeController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext, IPost postService) : base(memberService, config, localizerFactory, dbContext)
         {
             _postService = postService;
 

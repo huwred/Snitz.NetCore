@@ -8,6 +8,7 @@ using System;
 using System.Reflection;
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Logging;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MVCForum.TagHelpers
 {
@@ -25,6 +26,8 @@ namespace MVCForum.TagHelpers
         public PropertyInfo? PropertyInfo { get; set; }
         [HtmlAttributeName("can-edit")]
         public bool CanEdit { get; set; }
+
+        public Func<string, string>? TextLocalizerDelegate { get; set; }
 
         public SnitzConfigTagHelper(ILogger<SnitzConfigTagHelper> logger)
         {
@@ -70,6 +73,11 @@ namespace MVCForum.TagHelpers
             try
             {
                 if (PropertyInfo != null) displayName = PropertyInfo.GetPropertyDisplayName<Member>();
+                if (displayName != null && TextLocalizerDelegate != null)
+                {
+                    displayName = TextLocalizerDelegate(displayName);
+                }
+
             }
             catch (Exception)
             {
@@ -205,7 +213,7 @@ namespace MVCForum.TagHelpers
                     {
                         TagBuilder op = new TagBuilder("option");
                         op.Attributes.Add("value",item.Value);
-                        op.InnerHtml.AppendHtml(item.Text);
+                        if (TextLocalizerDelegate != null) op.InnerHtml.AppendHtml(TextLocalizerDelegate(item.Text));
                         tb.InnerHtml.AppendHtml(op);
                     
                         if (item.Value == Value)

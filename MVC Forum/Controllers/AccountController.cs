@@ -22,7 +22,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Hosting;
 
 
 namespace MVCForum.Controllers
@@ -38,9 +37,9 @@ namespace MVCForum.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly int _pageSize;
 
-        public AccountController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,
+        public AccountController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,
             UserManager<ForumUser> usrMgr, SignInManager<ForumUser> signinMgr,
-            ISnitzCookie snitzcookie,IWebHostEnvironment env,IEmailSender mailSender) : base(memberService, config, localizerFactory)
+            ISnitzCookie snitzcookie,IWebHostEnvironment env,IEmailSender mailSender) : base(memberService, config, localizerFactory, dbContext)
         {
             _userManager = usrMgr;
             _signInManager = signinMgr;
@@ -85,6 +84,7 @@ namespace MVCForum.Controllers
             {
                 PageCount = pageCount,
                 PageNum = page,
+                PageSize = pagesize,
                 MemberList = members
             };
             return View(model);
@@ -101,7 +101,7 @@ namespace MVCForum.Controllers
             Member? member = null;
             if (id != null)
             {
-                _memberService.GetByUsername(id);
+                member = _memberService.GetByUsername(id);
                 user = await _userManager.FindByNameAsync(id);
             }
             else
@@ -237,8 +237,8 @@ namespace MVCForum.Controllers
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, username = user.Name }, Request.Scheme);
             var message = new EmailMessage(new[] { user.Email }, 
-                "Confirmation email link", 
-                ParseTemplate("confirmEmail.html","Confirm Account",user.Email,user.Name, confirmationLink!, cultureInfo));
+                _languageResource["Confirm"].Value, 
+                ParseTemplate("confirmEmail.html",_languageResource["Confirm"].Value,user.Email,user.Name, confirmationLink!, cultureInfo));
             
             await _emailSender.SendEmailAsync(message);
             await _userManager.AddToRoleAsync(appUser, "Visitor");
@@ -352,7 +352,7 @@ namespace MVCForum.Controllers
                 ForumUser existingUser = new()
                 {
                     UserName = login.Username,
-                    Email = member.Email,
+                    Email = member!.Email,
                     MemberId = member.Id,
                     MemberSince = member.Created.FromForumDateStr(),
                     EmailConfirmed = true,
@@ -414,8 +414,8 @@ namespace MVCForum.Controllers
             var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { token, email = user.UserName }, Request.Scheme);
             CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
             var message = new EmailMessage(new[] { user.Email! }, 
-                "Reset password token", 
-                ParseTemplate("forgotPassword.html","Confirm Account",user.Email!,user.UserName!,callbackUrl!, cultureInfo));
+                _languageResource["Confirm"].Value, 
+                ParseTemplate("forgotPassword.html",_languageResource["Confirm"].Value,user.Email!,user.UserName!,callbackUrl!, cultureInfo));
             
             await _emailSender.SendEmailAsync(message);
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
@@ -457,12 +457,10 @@ namespace MVCForum.Controllers
                 foreach (var error in resetPassResult.Errors)
                 {
                     ModelState.TryAddModelError(error.Code, error.Description);
-                }
-                _logger.Warn($"Reset errors:");
-                foreach (IdentityError error in resetPassResult.Errors)
-                {
                     _logger.Warn($"{error.Code}:{error.Description}");
                 }
+                _logger.Warn($"Reset errors:");
+
                 return View();
             }
             if (user!.LockoutEnabled)
@@ -529,6 +527,7 @@ namespace MVCForum.Controllers
                 {
                     PageCount = pageCount,
                     PageNum = 1,
+                    PageSize = Convert.ToInt32(form["pagesize"]),
                     MemberList = members
                 };
                 return View("Index", model);

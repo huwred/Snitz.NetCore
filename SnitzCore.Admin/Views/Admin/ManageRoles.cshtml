@@ -12,7 +12,7 @@
 </div>
 <div class="row mb-3">
     <div class="col-6" id="role-form">
-        <form asp-action="ManageRoles" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="RankingConfig">
+        <form asp-action="AddRole" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="#member-roles">
             <input type="hidden" id="IsRolenameRequired" name="IsRolenameRequired" value="true"/>
             <div class="mb-3">
                 <ul class="list-group">
@@ -25,7 +25,7 @@
                                 <span class="pull-right">
                                     @if (!protectedRoles.Contains(role))
                                     {
-                                        <link-confirm href="/Admin/DeleteRole/?role=@role" title="Delete Role?" config-class="@(@"fa fa-trash-o")" config-key="@role"></link-confirm>
+                                        <link-confirm href="/Admin/DeleteRole/?rolename=@role" title="Delete Role?" config-class="@(@"fa fa-trash-o")" config-key="@role"></link-confirm>
                                     }
                                 </span>
                                 @if (role != null && role.StartsWith("Forum_"))

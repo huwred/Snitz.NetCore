@@ -1,6 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @using MVCForum
+@using SnitzCore.Data.Interfaces
 @inject IViewLocalizer Localizer
+@inject ISnitzConfig SnitzConfig
+
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, SnitzForum
 @addTagHelper *, SmartBreadcrumbs

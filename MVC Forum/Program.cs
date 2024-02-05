@@ -22,7 +22,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -81,6 +80,7 @@ builder.Services.AddScoped<ISnitz, SnitzService>();
 builder.Services.AddScoped<ISnitzCookie, SnitzCookie>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IBookmark, BookmarkService>();
 #region localization
 var supportedCultures = new List<CultureInfo>
 {
@@ -108,6 +108,7 @@ builder.Services.AddBreadcrumbs(Assembly.GetExecutingAssembly(), options =>
     options.OlClasses = "breadcrumb";
     options.LiClasses = "breadcrumb-item";
     options.ActiveLiClasses = "breadcrumb-item active";
+    options.ResourceType = typeof(LanguageService);
 });
 builder.Services.AddDistributedMemoryCache();
 

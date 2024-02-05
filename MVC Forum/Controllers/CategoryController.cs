@@ -23,8 +23,8 @@ namespace MVCForum.Controllers
         private readonly IPost _postService;
         private readonly ICategory _categoryService;
 
-        public CategoryController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,
-            IForum forumService, IPost postService, ICategory categoryService) : base(memberService, config, localizerFactory)
+        public CategoryController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,
+            IForum forumService, IPost postService, ICategory categoryService) : base(memberService, config, localizerFactory, dbContext)
         {
             _forumService = forumService;
             _postService = postService;
@@ -32,7 +32,7 @@ namespace MVCForum.Controllers
         }
 
         
-        [Breadcrumb("Forums",FromAction = "Index",FromController = typeof(HomeController))]
+        [Breadcrumb("ttlForums",FromAction = "Index",FromController = typeof(HomeController))]
         [Route("Forums")]
         [Route("Category/{id?}")]
         [Route("Category/Index/{id}")]
@@ -63,13 +63,13 @@ namespace MVCForum.Controllers
             if (id > 0)
             {
                 forums = forums.Where(f => f.CategoryId == id);
-                var forumPage = new MvcBreadcrumbNode("Forums", "Category", "Forums");
+                var forumPage = new MvcBreadcrumbNode("Forums", "Category", "ttlForums");
                 var topicPage = new MvcBreadcrumbNode("", "Category", forums.First().CategoryName) { Parent = forumPage,RouteValues = new{id=forums.First().CategoryId}};
                 ViewData["BreadcrumbNode"] = topicPage; 
             }
             else
             {
-                var forumPage = new MvcBreadcrumbNode("", "Category", "Forums");
+                var forumPage = new MvcBreadcrumbNode("", "Category", "ttlForums");
                 ViewData["BreadcrumbNode"] = forumPage;
             }
             var latestPosts = _postService.GetLatestPosts(10)
@@ -84,6 +84,7 @@ namespace MVCForum.Controllers
                 Created = post.Created.FromForumDateStr(),
                 LastPostDate = !post.LastPostDate.IsNullOrEmpty() ? post.LastPostDate.FromForumDateStr() : null,
                 LastPostAuthorName = _memberService.GetById(post.LastPostAuthorId!.Value)?.Name,
+                LatestReply = post.LastPostReplyId,
                 Forum = GetForumListingForPost(post),
                 RepliesCount = post.ReplyCount,
                 ViewCount = post.ViewCount,

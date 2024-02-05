@@ -5,11 +5,11 @@
 @using SnitzCore.Data.Models
 @model MVCForum.Models.Forum.NewForumModel
 <div class="container pt-0">
-    <breadcrumb></breadcrumb>
+    <snitz-breadcrumb></snitz-breadcrumb>
 
     <form asp-action="Create" method="post" id="addForumForm" class="needs-validation bg-form p-4 rounded" novalidate>
         <div class="mb-3 row">
-            <label asp-for="Category" class="form-label col-2"></label>
+            <label asp-for="Category" class="form-label col-2">@Localizer["forumCategory"]</label>
             <div class="col-10 col-lg-4">
                 @Html.DropDownListFor(m => m.Category, // Store selected value in Model.State
                     new SelectList(Model.CategoryList, "Key", "Value"),
@@ -18,17 +18,13 @@
             </div>
         </div>
         <div class="mb-3 row">
-            <label asp-for="Type" class="form-label col-2"></label>
+            <label asp-for="Type" class="form-label col-2">@Localizer["forumType"]</label>
             <div class="col-10 col-lg-4">
-                <select asp-for="Type" 
-                        class="form-select" 
-                        asp-items="Html.GetEnumSelectList<ForumType>()">
-                    <option>Select type ...</option>
-                </select>
+                <enum-select enum-type="typeof(ForumType)" selected-value="-1" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
             </div>
         </div>
         <div class="mb-3 row">
-            <label asp-for="Subject" class="form-label col-2"></label>
+            <label asp-for="Subject" class="form-label col-2">@Localizer["forumSubject"]</label>
             <div class="col-6">
                 <input asp-for="Subject" class="form-control"/>
                 <div class="invalid-feedback">You must provide a subject.</div>
@@ -45,33 +41,25 @@
             </div>
         </div>
         <div class="mb-3 row">
-            <label asp-for="Order" class="form-label col-2"></label>
+            <label asp-for="Order" class="form-label col-2">@Localizer["forumOrder"]</label>
             <div class="col-2 col-lg-1">
                 <input asp-for="Order" class="form-control"/>
             </div>
         </div>
         <div class="mb-3 row">
-            <label asp-for="DefaultView" class="form-label col-2"></label>
+            <label asp-for="DefaultView" class="form-label col-2">@Localizer["forumView"]</label>
             <div class="col-10 col-lg-4">
-                <select asp-for="DefaultView"
-                        class="form-control"
-                        asp-items="Html.GetEnumSelectList<DefaultDays>()">              
-                    <option>Select view ...</option>
-                </select>
+                <enum-select enum-type="typeof(DefaultDays)" selected-value="(int)Model.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
             </div>
         </div>
         <div class="mb-3 row">
-            <label asp-for="AuthType" class="form-label col-2"></label>
+            <label asp-for="AuthType" class="form-label col-2">@Localizer["forumAuthType"]</label>
             <div class="col-10 col-lg-4">
-                <select asp-for="AuthType"
-                        class="form-control"
-                        asp-items="Html.GetEnumSelectList<ForumAuthType>()">
-                    <option>Select type ...</option>
-                </select>
+                <enum-select enum-type="typeof(ForumAuthType)" selected-value="(int)Model.AuthType" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
             </div>
         </div>
         <div class="mb-3 row">
-            <label asp-for="IncrementMemberPosts" class="form-label col-2"></label>
+            <label asp-for="IncrementMemberPosts" class="form-label col-2">@Localizer["forumPostCount"]</label>
             <div class="col-3 col-lg-2">
                 @Html.CheckBoxFor(m=>m.IncrementMemberPosts,new{@class="form-checkbox"})
             </div>

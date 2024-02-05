@@ -3,6 +3,7 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace SnitzCore.Service
 {
@@ -23,9 +24,12 @@ namespace SnitzCore.Service
         {
             var lastpost = _dbContext.Forums.OrderByDescending(f=>f.LastPost).First();
 
-            return _dbContext.Posts.Single(p=>p.Id == lastpost.LatestTopicId);
+            return _dbContext.Posts.Include(f=>f.Member).Single(p=>p.Id == lastpost.LatestTopicId);
         }
-
+        public int ForumCount()
+        {
+            return _dbContext.Forums.Count(f=>f.Status == 1);
+        }
         public IEnumerable<SnitzConfig> GetConfig()
         {
             return _dbContext.SnitzConfig.AsQueryable();

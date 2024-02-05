@@ -1,11 +1,8 @@
-﻿using System.Globalization;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Models;
-using SnitzCore.Service;
 
 namespace SnitzCore.BackOffice.Controllers;
 
@@ -22,21 +19,62 @@ public class LanguageManagerController : Controller
     // GET
     public IActionResult Index()
     {
-        var vm = GetStrings();
+        TranslationViewModel vm = new TranslationViewModel
+        {
+            Resources = GetStrings().ToList()
+        };
         return View(vm);
     }
-    public IActionResult ResourceSet(string id,string culture = "en")
+
+    public IActionResult Search(string filter = "", string filterby = "value")
+    {
+        TranslationViewModel vm = new TranslationViewModel
+        {
+            filter = filter,
+            filterby = filterby,
+            Resources = new List<LanguageResource>()
+        };
+        if (filter != "")
+        {
+            vm.Resources = filterby == "id" ? GetStrings().Where(s => s.Name.ToLower().Contains(filter.ToLower())).ToList() : GetStrings().Where(s => s.Value.ToLower().Contains(filter.ToLower())).ToList();
+        }
+        return View("Search",vm);
+    }    
+    public IActionResult SearchUpdate(TranslationViewModel vm)
+    {
+
+        if (vm.filter != "")
+        {
+            vm.Resources = vm.filterby == "id" ? GetStrings().Where(s => s.Name.ToLower().Contains(vm.filter!.ToLower())).ToList() : GetStrings().Where(s => s.Value.ToLower().Contains(vm.filter!.ToLower())).ToList();
+        }
+        return View("Search",vm);
+    }  
+    public IActionResult ResourceSet(string id,string culture = "en",string filter = "")
     {
         var model = new LanguageViewModel
         {
             Languages = _dbcontext.LanguageResources.Select(l => l.Culture).Distinct().OrderBy(o=>o).ToList(),
-            LanguageStrings = new List<KeyValuePair<string, List<LanguageResource>>>(),
-            DefaultStrings = GetStrings().Where(l=>l.ResourceSet == id).ToList()
+            LanguageStrings = new List<KeyValuePair<string, List<LanguageResource>>>()
+            
         };
-        foreach (var language in model.Languages)
+        if (filter != "")
         {
-            model.LanguageStrings.Add(new KeyValuePair<string, List<LanguageResource>>(language,GetStrings(language).Where(l=>l.ResourceSet == id).ToList()));
+            model.DefaultStrings =
+                model.DefaultStrings!.Where(s => s.Value.ToLower().Contains(filter.ToLower())).ToList();
+            foreach (var language in model.Languages)
+            {
+                model.LanguageStrings.Add(new KeyValuePair<string, List<LanguageResource>>(language,GetStrings(language).Where(l=>l.ResourceSet == id && l.Value.ToLower().Contains(filter.ToLower())).ToList()));
+            }
         }
+        else
+        {
+            model.DefaultStrings = GetStrings().Where(l => l.ResourceSet == id).ToList();
+            foreach (var language in model.Languages)
+            {
+                model.LanguageStrings.Add(new KeyValuePair<string, List<LanguageResource>>(language,GetStrings(language).Where(l=>l.ResourceSet == id).ToList()));
+            }
+        }      
+
         var vm = GetStrings(culture).Where(l=>l.ResourceSet == id);
         return PartialView(model);
     }
@@ -51,4 +89,6 @@ public class LanguageManagerController : Controller
             .Where(r => r.Culture == culture);
         return results;
     }
+
+
 }

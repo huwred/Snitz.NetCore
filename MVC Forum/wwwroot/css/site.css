@@ -515,3 +515,6 @@ img.flag {
     width: 20px;
     border-radius: 9px;
 }
+.validation-summary-valid span {
+    display: none;
+}

@@ -463,6 +463,38 @@ namespace WebApplication1.Migrations
                     b.ToTable("FORUM_BADWORDS");
                 });
 
+            modelBuilder.Entity("SnitzCore.Data.Models.BookmarkEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("BOOKMARK_ID");
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ForumId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TopicId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("B_TOPICID");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("B_MEMBERID");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("ForumId");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("FORUM_BOOKMARKS");
+                });
+
             modelBuilder.Entity("SnitzCore.Data.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -712,6 +744,10 @@ namespace WebApplication1.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ForumId");
+
+                    b.HasIndex("MemberId");
+
                     b.ToTable("FORUM_MODERATOR");
                 });
 
@@ -745,17 +781,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_TOTALS");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = (short)1,
-                            ArchivedPostCount = 0,
-                            ArchivedTopicCount = 0,
-                            PostCount = 1,
-                            TopicCount = 1,
-                            UserCount = 0
-                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Group", b =>
@@ -765,15 +790,19 @@ namespace WebApplication1.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("GROUP_KEY");
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("INTEGER")
                         .HasColumnName("GROUP_CATID");
 
-                    b.Property<int?>("GroupId")
+                    b.Property<int?>("GroupNameId")
                         .HasColumnType("INTEGER")
                         .HasColumnName("GROUP_ID");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("GroupNameId");
 
                     b.ToTable("FORUM_GROUPS");
                 });
@@ -1095,7 +1124,7 @@ namespace WebApplication1.Migrations
                         {
                             Id = 1,
                             Allowemail = (short)0,
-                            Created = "20231230105325",
+                            Created = "20240204081028",
                             DefaultView = 0,
                             Email = "xxxx@example.com",
                             HideEmail = (short)0,
@@ -1170,72 +1199,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_RANKING");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Image = "gold",
-                            ImgRepeat = 5,
-                            Posts = 0,
-                            Title = "Administrator"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Image = "silver",
-                            ImgRepeat = 5,
-                            Posts = 0,
-                            Title = "Moderator"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Image = "bronze",
-                            ImgRepeat = 0,
-                            Posts = 0,
-                            Title = "Starting Member"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Image = "green",
-                            ImgRepeat = 1,
-                            Posts = 5,
-                            Title = "Newbie"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Image = "cyan",
-                            ImgRepeat = 2,
-                            Posts = 50,
-                            Title = "Junior"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Image = "blue",
-                            ImgRepeat = 3,
-                            Posts = 250,
-                            Title = "Average Member"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Image = "purple",
-                            ImgRepeat = 4,
-                            Posts = 500,
-                            Title = "Knowitall"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Image = "bronze",
-                            ImgRepeat = 5,
-                            Posts = 2000,
-                            Title = "Forum Guru"
-                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.MemberSubscription", b =>
@@ -1827,16 +1790,16 @@ namespace WebApplication1.Migrations
                         {
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5b9d430b-3b6d-49e1-88ba-058fb91ea5f0",
+                            ConcurrencyStamp = "f5da8215-eea7-4cdb-9ce5-091edc65ea98",
                             Email = "xxxx@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "XXXX@EXAMPLE.COM",
                             NormalizedUserName = "ADMINISTRATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDpJ7OCmCWQoo5vWLBKEQd7FmcPMQT2GiDY+68IcM0ybn+Up3tsoEK6y6oQiY2DUbw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDlj5yWo7DykiuGqzO/0v4XLws3VzZqbNrHn0WAY00D+hQIiTtnoB7wsIspfhDkGkg==",
                             PhoneNumber = "+111111111111",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "9b7f7d0e-fed1-44c2-bb3b-ebe4b34bf17f",
+                            SecurityStamp = "b1267f06-3188-4950-9bad-b9a4093d2cab",
                             TwoFactorEnabled = false,
                             UserName = "Adminstrator",
                             IsActive = false,
@@ -1898,6 +1861,33 @@ namespace WebApplication1.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SnitzCore.Data.Models.BookmarkEntry", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.Member", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Forum", "Forum")
+                        .WithMany()
+                        .HasForeignKey("ForumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Post", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Forum");
+
+                    b.Navigation("Topic");
+                });
+
             modelBuilder.Entity("SnitzCore.Data.Models.Forum", b =>
                 {
                     b.HasOne("SnitzCore.Data.Models.Category", "Category")
@@ -1918,6 +1908,40 @@ namespace WebApplication1.Migrations
                         .IsRequired();
 
                     b.Navigation("Forum");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.ForumModerator", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.Forum", null)
+                        .WithMany("ForumModerators")
+                        .HasForeignKey("ForumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.Group", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.GroupName", "GroupName")
+                        .WithMany()
+                        .HasForeignKey("GroupNameId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("GroupName");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Post", b =>
@@ -1990,6 +2014,8 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("SnitzCore.Data.Models.Forum", b =>
                 {
+                    b.Navigation("ForumModerators");
+
                     b.Navigation("Posts");
                 });
 

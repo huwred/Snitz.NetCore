@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
 using MVCForum.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace MVCForum.Controllers
 {
@@ -28,8 +29,8 @@ namespace MVCForum.Controllers
         private readonly IPost _postService;
         private readonly ISnitzCookie _cookie;
 
-        public ForumController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,
-            IForum forumService,IPost postService,ISnitzCookie snitzCookie) : base(memberService, config, localizerFactory)
+        public ForumController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,
+            IForum forumService,IPost postService,ISnitzCookie snitzCookie) : base(memberService, config, localizerFactory, dbContext)
         {
             _forumService = forumService;
             _postService = postService;
@@ -42,7 +43,7 @@ namespace MVCForum.Controllers
         public IActionResult Index(int id, int page = 1, int defaultdays=30,string orderby = "lpd",string sortdir="des", int pagesize = 10)
         {
             var forum = _forumService.GetById(id);
-            var forumPage = new MvcBreadcrumbNode("", "Category", "Forums");
+            var forumPage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name) { Parent = forumPage,RouteValues = new {id=forum.Category?.Id}};
             var topicPage = new MvcBreadcrumbNode("Index", "Post", forum.Title) { Parent = catPage };
             ViewData["BreadcrumbNode"] = topicPage;
@@ -64,6 +65,7 @@ namespace MVCForum.Controllers
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
                 LastPostAuthorName = _memberService.GetById(p.LastPostAuthorId!.Value)?.Name,
+                LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p)
             });
             
@@ -144,6 +146,7 @@ namespace MVCForum.Controllers
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
                 LastPostAuthorName = _memberService.GetById(p.LastPostAuthorId!.Value)?.Name,
+                LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p)
             });
 
@@ -165,7 +168,7 @@ namespace MVCForum.Controllers
 
         public IActionResult Active(int page = 1, int pagesize = 20,ActiveRefresh? Refresh = null,ActiveSince? Since = null)
         {
-            var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var topicPage = new MvcBreadcrumbNode("Active", "Forum", "Active") { Parent = homePage };
             ViewData["BreadcrumbNode"] = topicPage;
             if (Since == null)
@@ -230,6 +233,7 @@ namespace MVCForum.Controllers
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
                 LastPostAuthorName = _memberService.GetById(p.LastPostAuthorId!.Value)?.Name,
+                LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p)
             });
             if (Refresh == null)
@@ -248,7 +252,8 @@ namespace MVCForum.Controllers
                 PageCount = latestPosts.PageCount,
                 PageNum = latestPosts.PageNumber,
                 Refresh = Refresh ?? ActiveRefresh.None,
-                Since = member == null || Since == null ? ActiveSince.LastVisit : Since.Value
+                Since = member == null || Since == null ? ActiveSince.LastVisit : Since.Value,
+                PageSize = pagesize
             };
 
             ViewBag.RefreshSeconds = (int)model.Refresh * 1000 * 60;
@@ -330,11 +335,16 @@ namespace MVCForum.Controllers
 
         public IActionResult Search(string? searchFor, int pagesize=10,int page=1)
         {
-            var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var topicPage = new MvcBreadcrumbNode("Search", "Forum", "ViewData.Title") { Parent = homePage };
             ViewData["BreadcrumbNode"] = topicPage;
             ViewData["Title"] = "Search";
-
+            if (HttpContext.Request.Cookies.ContainsKey("search-pagesize") && _config.GetValue("STRFORUMPAGESIZES", _config.DefaultPageSize.ToString()).Split(',').Count() > 1)
+            {
+                var pagesizeCookie = HttpContext.Request.Cookies["search-pagesize"];
+                if (pagesizeCookie != null)
+                    pagesize = Convert.ToInt32(pagesizeCookie);
+            }
             if (searchFor == null)
             {
                 var prev = HttpContext.Session.GetString("searchFor");
@@ -364,6 +374,7 @@ namespace MVCForum.Controllers
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
                 LastPostAuthorName = _memberService.GetById(p.LastPostAuthorId!.Value)?.Name,
+                LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p)
             });
 
@@ -389,10 +400,11 @@ namespace MVCForum.Controllers
         [HttpPost]
         public IActionResult SearchResult(ForumSearchModel model,int pagesize=10,int page=1)
         {
-            var homePage = new MvcBreadcrumbNode("", "Category", "Forums");
-            var topicPage = new MvcBreadcrumbNode("Search", "Forum", "ViewData.Title") { Parent = homePage };
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
+            var searchPage = new MvcBreadcrumbNode("Search", "Forum", "Search") { Parent = homePage };
+            var topicPage = new MvcBreadcrumbNode("Search", "Forum", "ViewData.Title") { Parent = searchPage };
             ViewData["BreadcrumbNode"] = topicPage;
-            ViewData["Title"] = "Search";
+            ViewData["Title"] = "Search Results";
             var searchmodel = new ForumSearch()
             {
                 SinceDate = model.SinceDate,
@@ -418,10 +430,11 @@ namespace MVCForum.Controllers
                 IsSticky = p.IsSticky == 1,
                 Status = p.Status,
                 Message = p.Content,
-                LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
+                LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : p.Created.FromForumDateStr(),
                 LastPostAuthorName = _memberService.GetById(p.LastPostAuthorId!.Value)?.Name,
+                LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p)
-            });
+            }).OrderBy(p=>p.LastPostDate);
 
             var pageCount = (int)Math.Ceiling((double)totalcount / pagesize);
             var topicModel = new ForumTopicModel()

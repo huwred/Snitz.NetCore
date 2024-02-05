@@ -2,6 +2,7 @@
 using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using MVCForum.Extensions;
+using SnitzCore.Data.Extensions;
 
 namespace MVCForum.Models.Forum
 {
@@ -12,6 +13,7 @@ namespace MVCForum.Models.Forum
         public int PageCount { get; set; }
         public IEnumerable<PostListingModel>? StickyPosts { get; set; }
         public int? PageNum { get; set; }
+        public int PageSize { get; set; } = 10;
     }
 
     public class ActiveTopicModel
@@ -22,5 +24,6 @@ namespace MVCForum.Models.Forum
         public ActiveSince Since { get; set; }
         public ActiveRefresh Refresh { get; set; }
         public int? PageNum { get; set; }
+        public int PageSize { get; set; } = 20;
     }
 }

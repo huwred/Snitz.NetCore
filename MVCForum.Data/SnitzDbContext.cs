@@ -125,6 +125,7 @@ namespace SnitzCore.Data
             modelBuilder.Entity<PrivateMessage>();
             modelBuilder.Entity<PrivateMessageBlocklist>();
 
+            modelBuilder.Entity<BookmarkEntry>();
         }
 
         public DbSet<ForumUser> ApplicationUser { get; set; }
@@ -155,5 +156,7 @@ namespace SnitzCore.Data
         public DbSet<PrivateMessage> PrivateMessages { get; set; }
         public DbSet<PrivateMessageBlocklist> PrivateMessagesBlocklist { get; set; }
         public DbSet<MemberRanking> MemberRanking { get; set; }
+
+        public DbSet<BookmarkEntry> Bookmarks { get; set; }
     }
 }

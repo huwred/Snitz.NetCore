@@ -1,8 +1,6 @@
 ﻿@using SnitzCore.Data
 @model SnitzCore.BackOffice.ViewModels.AdminRolesViewModel
-
-@using (Html.BeginForm("ManageRoles", "Admin", null, FormMethod.Post))
-{
+<form asp-action="AddMemberToRole" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="#member-roles">
     <div class="mb-3">
         <ul class="list-group">
             @if (Model.Members != null)
@@ -29,4 +27,4 @@
               
         <input type="hidden" id="IsUsernameRequired" name="IsUsernameRequired" value="true"/>     
     </div>
-}
+</form>

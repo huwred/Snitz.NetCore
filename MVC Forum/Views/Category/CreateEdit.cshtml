@@ -7,39 +7,30 @@
 @{
 }
 <div class="container pt-0">
-    <breadcrumb></breadcrumb>
+    <snitz-breadcrumb></snitz-breadcrumb>
     <div class="row">
         <div class="col col-md-6">
             <form asp-controller="Category" asp-action="CreateEdit" class="p-4 bg-form rounded">
                 <input asp-for="@Model.Id" type="hidden"/>
                 <div class="mb-3">
-                    <label asp-for="Name" class="form-label">Title</label>
+                    <label asp-for="Name" class="form-label">@Localizer["catName"]</label>
                     <input asp-for="@Model.Name" type="text" class="form-control"/>
-                    <div class="invalid-feedback">You must provide a name.</div>
+                    <div class="invalid-feedback">@Localizer["PropertyRequired",Localizer["catName"]]You must provide a name.</div>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Status" class="form-label">Status</label>
-                    <select asp-for="Status"
-                            class="form-select mb-2 mr-sm-2"
-                            asp-items="Html.GetEnumSelectList<Status>()">
-                    </select>
+                    <label asp-for="Status" class="form-label">@Localizer["catStatus"]</label>
+                    <enum-select enum-type="typeof(Status)" selected-value="(int)Model.Status" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Subscription" class="form-label">Subscription</label>
-                    <select asp-for="Subscription" 
-                            class="form-select mb-2 mr-sm-2"
-                            asp-items="Html.GetEnumSelectList<CategorySubscription>()">
-                    </select>
+                    <label asp-for="Subscription" class="form-label">@Localizer["catSubscription"]</label>
+                    <enum-select enum-type="typeof(CategorySubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Moderation" class="form-label">Moderation</label>
-                    <select asp-for="Moderation"
-                            class="form-select mb-2 mr-sm-2"
-                            asp-items="Html.GetEnumSelectList<ModerationLevel>()">
-                    </select>
+                    <label asp-for="Moderation" class="form-label">@Localizer["catModeration"]</label>
+                    <enum-select enum-type="typeof(ModerationLevel)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Sort" class="form-label">Sort</label>
+                    <label asp-for="Sort" class="form-label">@Localizer["catOrder"]</label>
                     <input asp-for="@Model.Sort" type="number" class="form-control"/>
                 </div>
                 <partial name="FormButtons"/>
@@ -53,7 +44,6 @@
                     <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Id" href="/Category/Delete/?id=" title="Delete Category"></button-confirm>
                 </div>
             </form>
-            Forum List
         </div>
     </div>
 </div>

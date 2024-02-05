@@ -1,11 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MVCForum.TagHelpers
-@using SnitzCore.Data.Interfaces
 @using SnitzCore.Data.Models
 @inject UserManager<ForumUser> UserManager
 @inject SignInManager<ForumUser> SignInManager
-@inject ISnitzConfig SnitzConfig
 @inject ISnitzCookie SnitzCookie
 @{
     var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? "SnitzTheme";
@@ -36,42 +34,32 @@
             }
             @if (SignInManager.IsSignedIn(User))
             {
+                <partial name="_MemberMenu"/>
                 var user = UserManager.GetUserAsync(User).Result;
-                var userroles = new List<string>();
                 if (user != null)
                 {
-                    userroles = UserManager.GetRolesAsync(user).Result.ToList();
-                }
-                <li class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" id="navbarDropdownUserLink">
-                        @Localizer["lblHello"] @UserManager.GetUserName(User)
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownUserLink">
-                        <li><a class="dropdown-item" asp-controller="Account" asp-action="Detail" asp-route-id="">@Localizer["mnuAccountProfile"]</a></li>
-                        <li><a class="dropdown-item" asp-controller="PrivateMessage" asp-action="Inbox">@Localizer["mnuAccountPM"]</a></li>
-                        <li><a class="dropdown-item" asp-controller="Account" asp-action="LogOut">@Localizer["SignOut"]</a></li>
-                    </ul>
-                </li>
-                @if (userroles.Contains("Admin"))
-                {
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" id="navbarDropdownAdminLink">
-                            @Localizer["mnuAdmin"]
-                        </a>
-
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdminLink">
-                            <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Config</a></li>
-                            <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">Create Category</a></li>
-                            <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">Create Forum</a></li>
-                        </ul>
-                    </li>
+                    var userroles = UserManager.GetRolesAsync(user).Result.ToList();
+                    if (userroles.Contains("Admin"))
+                    {
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" id="navbarDropdownAdminLink">
+                                @Localizer["mnuAdmin"]
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdminLink">
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Config</a></li>
+                                <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">Create Category</a></li>
+                                <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search">Search Language</a></li>
+                                <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">Create Forum</a></li>
+                            </ul>
+                        </li>
+                    }
                 }
             }
         </ul>
         @if (SnitzConfig.GetIntValue("INTTHEMECHANGE") == 1)
         {
             <div class="d-flex m-1">
-                <select id="theme-change" class="form-control" title="Change Theme">
+                <select id="theme-change" class="form-control" title="@Localizer["tipChangeTheme"]">
                 <option value="SnitzTheme" selected-val="@currentTheme">Snitz Theme</option>
                 <option value="DarkTheme" selected-val="@currentTheme">Dark Theme</option>
                 <option value="LightTheme" selected-val="@currentTheme">Light Theme</option>
@@ -79,6 +67,7 @@
                 </select>
             </div>
         }
-        @await Html.PartialAsync("_SelectLanguage")
+        <partial name="_SelectLanguage" />
+
     </div>
 </nav>
