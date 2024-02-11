@@ -1,21 +1,23 @@
-<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script type="text/javascript" src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script type="text/javascript" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 <script type="text/javascript">
-        var settings = {
-            errorClass: "",
-            validClass: "",
-            highlight: function (element, errorClass, validClass) {
-                $(element).addClass("is-invalid").removeClass("is-valid");
-                $(element.form).find('[data-valmsg-for="' + element.name + '"]').addClass("invalid-feedback");
-            },
-            unhighlight: function (element, errorClass, validClass) {
-                $(element).addClass("is-valid").removeClass("is-invalid");
-                $(element.form).find('[data-valmsg-for="' + element.name + '"]').removeClass("invalid-feedback");
-            }
+    var settings = {
+        errorClass: "",
+        validClass: "",
+        highlight: function (element, errorClass, validClass) {
+            $(element).addClass("is-invalid").removeClass("is-valid");
+            $(element.form).find('[data-valmsg-for="' + element.name + '"]').addClass("invalid-feedback");
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            $(element).addClass("is-valid").removeClass("is-invalid");
+            $(element.form).find('[data-valmsg-for="' + element.name + '"]').removeClass("invalid-feedback");
+        }
 
-        }; 
-        $.validator.setDefaults(settings);
-        $.validator.unobtrusive.options = settings;
+    }; 
+    $.validator.setDefaults(settings);
+    $.validator.unobtrusive.options = settings;
+    let attach = '@SnitzConfig.GetIntValue("STRALLOWUPLOADS")' === '1';
 
-    </script>
+    let photoalbum = '@SnitzConfig.GetIntValue("STRPHOTOALBUM")' === '1';
+</script>
 

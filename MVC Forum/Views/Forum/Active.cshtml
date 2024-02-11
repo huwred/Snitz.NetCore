@@ -7,6 +7,7 @@
 @using SnitzCore.Data.Extensions
 @using SnitzCore.Data.Models
 @using BbCodeFormatter
+@using SnitzCore.Service.Extensions
 @inject IMember MemberService
 @inject ICodeProcessor BbCodeProcessor
 
@@ -138,7 +139,7 @@
 
 
 @section Scripts{
-    <script>
+    <script type="text/javascript">
         $(document).on("change",
             "#default-days",
             function() {

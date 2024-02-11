@@ -6,9 +6,15 @@
 @using MVCForum.TagHelpers
 @using SmartBreadcrumbs
 @using SnitzCore.Data.Models
+@using SnitzCore.Service.TagHelpers
 @inject ICodeProcessor BbCodeProcessor
 @inject SignInManager<ForumUser> SignInManager
-
+@section MetaData
+{
+    <meta name="title" content="Topic: @Model.Title" />
+    <meta name="description" content="@Model.Content" />
+    <meta name="robots" content="index,nofollow" />
+}
 @section Styles
 {
     <link rel="stylesheet" href="~/css/prism.css">
@@ -43,7 +49,7 @@
         </div>
         <div snitz-if="@User.Identity.IsAuthenticated || @Model.Edited != null" class="card-footer text-dark">
             <span snitz-if="@SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && @Model.Edited != null" class="form-text">@Localizer["lblEditedBy", Model.EditedBy, Model.Edited]</span>
-            <post-controls text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" use-bookmarks="@SnitzConfig.GetIntValue("STRBOOKMARK",0)==1" post-type="Topic" post-status="Model.IsLocked" post-id="Model.Id" curr-user="User" post-author="Model.AuthorName" logged-in="loggedin"></post-controls>
+            <post-controls text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" use-bookmarks="@SnitzConfig.GetIntValue("STRBOOKMARK",0)==1" post-type="Topic" post-status="@Model.IsLocked" post-id="@Model.Id" topic-id="@Model.Id" curr-user="@User" post-author="@Model.AuthorName" logged-in="@loggedin"></post-controls>
             <div snitz-if="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1" class="footer"><a href="" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a class="form-control-plaintext text-end" href="" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
         </div>
     </div>
@@ -102,7 +108,7 @@
                 </div>
                 <div snitz-if="@User.Identity.IsAuthenticated || @reply.Edited != null" class="card-footer text-dark">
                     <span snitz-if="@SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && @reply.Edited != null" class="form-text">@Localizer["lblEditedBy", reply.EditedBy, reply.Edited]</span>
-                    <post-controls text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" use-bookmarks="@SnitzConfig.GetIntValue("STRBOOKMARK",0)==1" post-type="Reply" post-status="Model.IsLocked" post-id="reply.Id" topic-id="Model.Id" curr-user="User" post-author="reply.AuthorName" logged-in="loggedin"></post-controls>
+                    <post-controls text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" use-bookmarks="@SnitzConfig.GetIntValue("STRBOOKMARK",0)==1" post-type="Reply" post-status="@Model.IsLocked" post-id="@reply.Id" topic-id="@Model.Id" curr-user="@User" post-author="@reply.AuthorName" logged-in="loggedin"></post-controls>
                 </div>
             </div>
         }
@@ -172,81 +178,164 @@ else
     };
     <partial name="ConfirmDialog" model="@confModel" />
 }
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">
+                    @Localizer["lblFileUpload"]
+                </h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="upload-content">
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <p class="footer-title">
+                    If you're having problems uploading, try choosing a smaller image.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts
 {
     <script type="text/javascript" src="/js/postcontroller.js"></script>
     <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="/js/initPostForm.js"></script>
-    <script src="/js/prism.js" data-manual></script>
-    <script>
-    $(document).on("click",
-        ".email-link",
-        function(e) {
-            e.preventDefault();
-            var memberid = $(this).data("id");
-            var href = $(this).data("url");
-            $('#modal-title').html('Send Email');
-            $('#member-modal').load(href + "/" + memberid, function() {});
-            $('#memberModal #btnOk').hide();
-                
-            $(document).on("click",
-                "#send-email",
-                function(e) {
-                    e.preventDefault();
-                    $(this).prop('disabled', true);
-                    var post_url = $('#sendemail-form').attr("action");
-                    var form_data = $('#sendemail-form').serialize();
-                    $.ajax({
-                        url: post_url,
-                        type: "POST",
-                        data: form_data
-                    }).done(function(response) {
-                        if (response.result) {
-                            $('#memberModal').modal('hide');
-                        } else {
-                            //Dont close the modal, display the error
-                            $('#member-modal').html(response);
+    <script type="text/javascript" src="/js/prism.js" data-manual></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".fig-caption").each(function() {
+                var test = $(this);
+                $.ajax({
+                    url: "/PhotoAlbum/GetCaption/" + $(this).data("id"),
+                    type: "GET",
+                    success: function(data) {
+                        //alert(data); // the View
+                        test.html(data);
+                    }
+                });
+            });
+        });
+        $(document).on('click',
+            '#submitUpload',
+            function(e) {
+                e.preventDefault();
+                var form = $("#upload-form");
+                var formData = new FormData(form[0]);
+                $.ajax({
+                    url: $("#upload-form").attr("action"),
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        if (data.result) {
+                            if (!data.type) {
+                                var img = "[image=" + data.id + "]";
+                                if (data.caption) {
+                                    img = "[cimage=" + data.id + "]";
+                                }
+                                tinymce.activeEditor.execCommand('mceInsertContent', false, img);
+                            } else {
+                                alert(data.type);
+                                var file = "[file " + data.filesize + "]" + data.data + "[/file]";
+                                if (data.type === ".pdf") {
+                                    file = "[pdf]" + data.data + "[/pdf]";
+                                } else if (data.type === ".jpg" || data.type === ".png" || data.type === ".jpeg" || data.type === ".webp") {
+                                    file = "[img]" + data.data + "[/img]";
+                                }
+
+                                tinymce.activeEditor.execCommand('mceInsertContent', false, file);
+                            }
+
+                            $('#uploadModal').modal('hide');
                         }
-                    });
+
+                    },
+                    error: function(data) {
+                        alert("error");
+                        $('#upload-content').html(data);
+                    },
+                    complete: function(data) {
+                        $('#uploadModal').modal('hide');
+                    }
 
                 });
-            $('#memberModal').data('id', memberid).modal('show');
+                return false;
+            });
+
+        $(document).on("click",
+            ".email-link",
+            function(e) {
+                e.preventDefault();
+                var memberid = $(this).data("id");
+                var href = $(this).data("url");
+                $('#modal-title').html('Send Email');
+                $('#member-modal').load(href + "/" + memberid, function() {});
+                $('#memberModal #btnOk').hide();
+
+                $(document).on("click",
+                    "#send-email",
+                    function(e) {
+                        e.preventDefault();
+                        $(this).prop('disabled', true);
+                        var post_url = $('#sendemail-form').attr("action");
+                        var form_data = $('#sendemail-form').serialize();
+                        $.ajax({
+                            url: post_url,
+                            type: "POST",
+                            data: form_data
+                        }).done(function(response) {
+                            if (response.result) {
+                                $('#memberModal').modal('hide');
+                            } else {
+                                //Dont close the modal, display the error
+                                $('#member-modal').html(response);
+                            }
+                        });
+
+                    });
+                $('#memberModal').data('id', memberid).modal('show');
                 //tinymce.EditorManager.execCommand('mceAddEditor', true, "textarea#email-text");
-        });
-    $(document).on("click",
-        ".sendpm-link",
-        function(e) {
-            e.preventDefault();
-            var memberid = $(this).data("id");
-            var href = $(this).data("url");
-            $('#modal-title').html('Send private message');
-            $('#member-modal').load(href + "/" + memberid, function() {});
-            $('#memberModal #btnOk').hide();
-                
-            $(document).on("click",
-                "#send-pm",
-                function(e) {
-                    e.preventDefault();
-                    $(this).prop('disabled', true);
-                    var post_url = $('#sendpm-form').attr("action");
-                    var form_data = $('#sendpm-form').serialize();
-                    $.ajax({
-                        url: post_url,
-                        type: "POST",
-                        data: form_data
-                    }).done(function(response) {
-                        if (response.result) {
-                            $('#memberModal').modal('hide');
-                        } else {
-                            //Dont close the modal, display the error
-                            $('#member-modal').html(response);
-                        }
+            });
+        $(document).on("click",
+            ".sendpm-link",
+            function(e) {
+                e.preventDefault();
+                var memberid = $(this).data("id");
+                var href = $(this).data("url");
+                $('#modal-title').html('Send private message');
+                $('#member-modal').load(href + "/" + memberid, function() {});
+                $('#memberModal #btnOk').hide();
+
+                $(document).on("click",
+                    "#send-pm",
+                    function(e) {
+                        e.preventDefault();
+                        $(this).prop('disabled', true);
+                        var post_url = $('#sendpm-form').attr("action");
+                        var form_data = $('#sendpm-form').serialize();
+                        $.ajax({
+                            url: post_url,
+                            type: "POST",
+                            data: form_data
+                        }).done(function(response) {
+                            if (response.result) {
+                                $('#memberModal').modal('hide');
+                            } else {
+                                //Dont close the modal, display the error
+                                $('#member-modal').html(response);
+                            }
+                        });
+
                     });
+                $('#memberModal').data('id', memberid).modal('show');
 
-                });
-            $('#memberModal').data('id', memberid).modal('show');
-
-        });
+            });
 
         $(document).on("click",
             ".show-ip",
@@ -260,7 +349,16 @@ else
                 $('#memberModal').data('id', memberid).modal('show');
             });
 
+        $("#aFile_upload").on("change",
+            function(e) {
+                var filesize = ((this.files[0].size / 1024) / 1024).toFixed(4); // MB
+                var maxsize = parseInt('@SnitzConfig.GetValue("INTMAXFILESIZE", "5")');
+                if (filesize > maxsize) {
+                    alert("File is too big!");
+                    this.value = "";
+                }
 
+            });
 
         $(document).on('click',
             '#btnOk',
@@ -268,8 +366,7 @@ else
                 //just hide for now, needs to submit forms
                 $('#memberModal').modal('hide');
             });
-    </script>
-    <script>
+
         Prism.hooks.add("before-highlight",
             function(env) {
                 env.code = env.element.innerText;

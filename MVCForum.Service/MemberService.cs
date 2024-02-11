@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data;
+using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
@@ -12,6 +13,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using X.PagedList;
 
 namespace SnitzCore.Service
@@ -22,13 +24,15 @@ namespace SnitzCore.Service
         private readonly Dictionary<int, MemberRanking>? _rankings;
         private readonly ISnitzCookie _cookie;
         private readonly UserManager<ForumUser> _userManager;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public MemberService(SnitzDbContext dbContext,ISnitzCookie snitzcookie,UserManager<ForumUser> userManager)
+        public MemberService(SnitzDbContext dbContext,ISnitzCookie snitzcookie,UserManager<ForumUser> userManager,IHttpContextAccessor contextAccessor)
         {
             _dbContext = dbContext;
             _rankings = GetRankings();
             _cookie = snitzcookie;
             _userManager = userManager;
+            _contextAccessor = contextAccessor;
 
         }
         public Member? GetById(int? id)
@@ -88,7 +92,23 @@ namespace SnitzCore.Service
 
         public Member? Current()
         {
-            throw new NotImplementedException();
+            var user = _contextAccessor.HttpContext?.User.Identity?.Name;
+            if (user != null) return GetByUsername(user);
+
+            return null;
+        }
+
+        public async Task UpdatePostCount(int memberid)
+        {
+            var member = GetById(memberid);
+            if (member != null)
+            {
+                member.Posts += 1;
+                member.Lastpostdate = DateTime.UtcNow.ToForumDateStr();
+                member.Lastactivity = DateTime.UtcNow.ToForumDateStr();
+                _dbContext.Members.Update(member);
+                await _dbContext.SaveChangesAsync();
+            }
         }
 
 

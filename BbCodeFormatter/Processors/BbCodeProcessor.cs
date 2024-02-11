@@ -68,9 +68,9 @@ public class BbCodeProcessor : ICodeProcessor
         //_formatters.Add(new RegexFormatter(@"(?:\[file])([^?#\[]*/)([^.?\[]+)/([^\[]+)(?:\[/file])", "<span class=\"file-attachment\">$3 <a href=\"$1$2/$3\" rel=\"nofollow\" title=\"Download file\" data-toggle=\"tooltip\" ><i class=\"fa  fa-download fa-1_5x\"></i></a></span>"));
         _formatters.Add(new RegexFormatter(@"(?:\[file((.|\n)*?)(?:\s*)])([^?#\[]*/)([^.?\[]+)/([^\[]+)(?:\[/file])", "<span class=\"file-attachment\">$5 <a href=\"$3$4/$5\" rel=\"nofollow\" title=\"Download file\" data-toggle=\"tooltip\" ><i class=\"fa  fa-download fa-1_5x\"></i></a>$1</span>"));
 
-        string embed = "<object data=\"$1$2$3\" type=\"application/pdf\" class=\"object-pdf\" >";
+        string embed = "<embed src=\"$1$2$3\" type=\"application/pdf\" class=\"object-pdf\" />";
         //embed += WebUtility.HtmlDecode(String.Format(ResourceManager.GetLocalisedString("pdfLabel", "General"), "$1$2$3"));
-        embed += "</object>";
+        //embed += "</embed>";
 
         _formatters.Add(new RegexFormatter(@"(?:\[pdf])([^?#\[]*/)([^.?\[]+)([^\[]+)(?:\[/pdf])", embed));
         //var postedvia = String.Format(ResourceManager.GetLocalisedString("strPostedFrom", "Api"), "$2");
@@ -340,7 +340,7 @@ public class BbCodeProcessor : ICodeProcessor
         data = formatter.Format(data);
     }
 
-    if (_config.GetIntValue("STRPHOTOALBUM") == 1)
+    if (_config.GetIntValue("STRPHOTOALBUM") == 1 || _config.TableExists("FORUM_IMAGES"))
     {
         if (_useFullUrl)
         {

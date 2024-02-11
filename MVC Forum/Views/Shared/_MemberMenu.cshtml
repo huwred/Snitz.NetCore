@@ -8,8 +8,11 @@
             <li><a class="dropdown-item" asp-controller="Account" asp-action="Detail" asp-route-id="">@Localizer["mnuAccountProfile"]</a></li>
             <li><a class="dropdown-item" asp-controller="PrivateMessage" asp-action="Inbox">@Localizer["mnuAccountPM"]</a></li>
             <li snitz-if="@SnitzConfig.GetIntValue("STRBOOKMARK") == 1"><a class="dropdown-item" asp-controller="Bookmark" asp-action="Index" asp-route-id="">@Localizer["mnuBookMarks"]</a></li>
+            <li snitz-if="@SnitzConfig.TableExists("FORUM_IMAGES")"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="">@Localizer["mnuMyAlbum"]</a></li>
+
             <li><hr class="dropdown-divider"> </li>
             <li><a class="dropdown-item" asp-controller="Account" asp-action="LogOut">@Localizer["SignOut"]</a></li>
+
         </ul>
     </li>
 }

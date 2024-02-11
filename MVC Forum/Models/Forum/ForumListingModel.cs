@@ -10,7 +10,7 @@ namespace MVCForum.Models.Forum
 
         public int Topics { get; set; }
         public int Posts { get; set; }
-
+        public int Status { get; set; }
         public ForumAuthType AccessType { get; set; }
 
         public DateTime? LastPostDateTime { get; set; }

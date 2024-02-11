@@ -2,11 +2,14 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MVCForum.TagHelpers
 @using SnitzCore.Data.Models
+@using SnitzCore.Service.TagHelpers
 @inject UserManager<ForumUser> UserManager
 @inject SignInManager<ForumUser> SignInManager
 @inject ISnitzCookie SnitzCookie
 @{
     var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? "SnitzTheme";
+    var currForumUser = UserManager.GetUserAsync(User).Result;
+ 
 }
 <nav class="navbar navbar-expand-md bg-dark @* navbar-custom  *@fixed-top">
     <a class="navbar-brand" asp-controller="Home" asp-action="Index" title="@Html.Raw(SnitzConfig.ForumTitle) Home page"><img src="/images/logo.png" width="141" height="50" alt="Snitz Forums Logo" loading="lazy" /></a>
@@ -24,6 +27,16 @@
                     <li><a class="dropdown-item" asp-controller="Forum" asp-action="Search">@Localizer["mnuForumSearch"]</a></li>
                 </ul>
             </li>
+            <li class="nav-item dropdown" snitz-if="@SnitzConfig.TableExists("FORUM_IMAGES")">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownAlbumLink">@Localizer["mnuAlbums"]</a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownAlbumLink">
+                    <li><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Index" asp-route-id="">@Localizer["mnuMemberAlbums"]</a></li>
+                    <li><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Album" asp-route-id="">@Localizer["mnuCommonAlbum"]</a></li>
+                    <li snitz-if="@SignInManager.IsSignedIn(User)"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="@currForumUser.MemberId">@Localizer["mnuMyAlbum"]</a></li>
+
+                </ul>
+            </li>
+
             @if (!SignInManager.IsSignedIn(User))
             {
                 <li class="nav-item"><a asp-controller="Account" asp-action="Login" class="nav-link">@Localizer["SignIn"]</a></li>

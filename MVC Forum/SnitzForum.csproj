@@ -9,10 +9,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\Content\PhotoAlbum\**" />
     <Compile Remove="wwwroot\images\forum\**" />
+    <Compile Remove="wwwroot\is-cache\**" />
+    <Content Remove="wwwroot\Content\PhotoAlbum\**" />
     <Content Remove="wwwroot\images\forum\**" />
+    <Content Remove="wwwroot\is-cache\**" />
+    <EmbeddedResource Remove="wwwroot\Content\PhotoAlbum\**" />
     <EmbeddedResource Remove="wwwroot\images\forum\**" />
+    <EmbeddedResource Remove="wwwroot\is-cache\**" />
+    <None Remove="wwwroot\Content\PhotoAlbum\**" />
     <None Remove="wwwroot\images\forum\**" />
+    <None Remove="wwwroot\is-cache\**" />
+    <TypeScriptCompile Remove="wwwroot\Content\PhotoAlbum\**" />
+    <TypeScriptCompile Remove="wwwroot\is-cache\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -91,6 +101,7 @@
     <_ContentIncludedByDefault Remove="Views\Shared\ConfirmDIalog.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\FormButtons.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_BookmarkLink.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\_popUpload.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -163,6 +174,7 @@
     <ProjectReference Include="..\Migrators\SqliteMigrations\SqliteMigrations.csproj" />
     <ProjectReference Include="..\MVCForum.Data\SnitzCore.Data.csproj" />
     <ProjectReference Include="..\MVCForum.Service\SnitzCore.Service.csproj" />
+    <ProjectReference Include="..\Snitz.PhotoAlbum\Snitz.PhotoAlbum.csproj" />
     <ProjectReference Include="..\SnitzCore.Admin\SnitzCore.BackOffice.csproj" />
   </ItemGroup>
 
@@ -189,6 +201,7 @@
     <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
     <PackageReference Include="NuGet.Common" Version="6.3.3" />
     <PackageReference Include="NuGet.Protocol" Version="6.3.3" />
+    <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.0" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
@@ -226,5 +239,8 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\_BookmarkLink.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\_popUpload.cshtml" />
   </ItemGroup>
 </Project>

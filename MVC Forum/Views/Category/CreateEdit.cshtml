@@ -19,15 +19,15 @@
                 </div>
                 <div class="mb-3">
                     <label asp-for="Status" class="form-label">@Localizer["catStatus"]</label>
-                    <enum-select enum-type="typeof(Status)" selected-value="(int)Model.Status" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    <enum-select name="Status" enum-type="typeof(Status)" selected-value="(int)Model.Status" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                 </div>
                 <div class="mb-3">
                     <label asp-for="Subscription" class="form-label">@Localizer["catSubscription"]</label>
-                    <enum-select enum-type="typeof(CategorySubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    <enum-select name="Subscription" enum-type="typeof(CategorySubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                 </div>
                 <div class="mb-3">
                     <label asp-for="Moderation" class="form-label">@Localizer["catModeration"]</label>
-                    <enum-select enum-type="typeof(ModerationLevel)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    <enum-select name="Moderation" enum-type="typeof(ModerationLevel)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                 </div>
                 <div class="mb-3">
                     <label asp-for="Sort" class="form-label">@Localizer["catOrder"]</label>

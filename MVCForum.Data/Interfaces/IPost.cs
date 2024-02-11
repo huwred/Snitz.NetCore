@@ -27,5 +27,7 @@ namespace SnitzCore.Data.Interfaces
         IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize, int pagenumber);
         Task Create(PostReply post);
         Task<bool> LockTopic(int id, short status);
+
+        Task UpdateLastPost(int topicid);
     }
 }

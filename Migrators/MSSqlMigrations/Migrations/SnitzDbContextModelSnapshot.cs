@@ -259,6 +259,140 @@ namespace WebApplication1.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Snitz.PhotoAlbum.Models.AlbumCategory", b =>
+                {
+                    b.Property<int>("CatId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("CAT_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CatId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("CAT_DESC");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int")
+                        .HasColumnName("MEMBER_ID");
+
+                    b.HasKey("CatId");
+
+                    b.ToTable("FORUM_IMAGE_CAT");
+                });
+
+            modelBuilder.Entity("Snitz.PhotoAlbum.Models.AlbumGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("O_GROUP_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("O_GROUP_NAME");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int")
+                        .HasColumnName("O_GROUP_ORDER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FORUM_ORG_GROUP");
+                });
+
+            modelBuilder.Entity("Snitz.PhotoAlbum.Models.AlbumImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("I_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int")
+                        .HasColumnName("I_CAT");
+
+                    b.Property<string>("CommonName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("I_NORWEGIANNAME");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("I_DESC");
+
+                    b.Property<bool>("DoNotFeature")
+                        .HasColumnType("bit")
+                        .HasColumnName("I_NOTFEATURED");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int")
+                        .HasColumnName("I_GROUP_ID");
+
+                    b.Property<int>("Height")
+                        .HasColumnType("int")
+                        .HasColumnName("I_HEIGHT");
+
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("bit")
+                        .HasColumnName("I_PRIVATE");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("I_LOC");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int")
+                        .HasColumnName("I_MID");
+
+                    b.Property<string>("Mime")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("I_TYPE");
+
+                    b.Property<string>("ScientificName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("I_SCIENTIFICNAME");
+
+                    b.Property<int>("Size")
+                        .HasColumnType("int")
+                        .HasColumnName("I_SIZE");
+
+                    b.Property<string>("Timestamp")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("I_DATE");
+
+                    b.Property<int>("Views")
+                        .HasColumnType("int")
+                        .HasColumnName("I_VIEWS");
+
+                    b.Property<int>("Width")
+                        .HasColumnType("int")
+                        .HasColumnName("I_WIDTH");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("FORUM_IMAGES");
+                });
+
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedReply", b =>
                 {
                     b.Property<int>("Id")
@@ -1151,7 +1285,7 @@ namespace WebApplication1.Migrations
                         {
                             Id = 1,
                             Allowemail = (short)0,
-                            Created = "20240204174952",
+                            Created = "20240207144842",
                             DefaultView = 0,
                             Email = "xxxx@example.com",
                             HideEmail = (short)0,
@@ -1839,16 +1973,16 @@ namespace WebApplication1.Migrations
                         {
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e6ab6a60-f073-4fe1-8cd8-5829182abe83",
+                            ConcurrencyStamp = "c5c33b95-7c42-480a-a50c-c9dfbdb5c074",
                             Email = "xxxx@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "XXXX@EXAMPLE.COM",
                             NormalizedUserName = "ADMINISTRATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAECSO3QHbIv4/NN+Pp4lMcF12zJkRbINIQlUkznZcUX8O3/O85EZsRJJJEyEHZivb3A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGZceVVnBoqv4u4xE5zkwAvT71yhEctSU5D5J71TKuh8H3fqYVmEOeuEZxkxHOas5w==",
                             PhoneNumber = "+111111111111",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "638c1aff-0664-4478-a8e0-1d536ca924d3",
+                            SecurityStamp = "d07b1d17-7d75-4fa3-816f-32e909450498",
                             TwoFactorEnabled = false,
                             UserName = "Adminstrator",
                             IsActive = false,
@@ -1908,6 +2042,25 @@ namespace WebApplication1.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Snitz.PhotoAlbum.Models.AlbumImage", b =>
+                {
+                    b.HasOne("Snitz.PhotoAlbum.Models.AlbumCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Snitz.PhotoAlbum.Models.AlbumGroup", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.BookmarkEntry", b =>

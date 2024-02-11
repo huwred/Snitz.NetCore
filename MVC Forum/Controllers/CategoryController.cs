@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using MVCForum.Models.Category;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Http;
 
 namespace MVCForum.Controllers
 {
@@ -23,8 +24,8 @@ namespace MVCForum.Controllers
         private readonly IPost _postService;
         private readonly ICategory _categoryService;
 
-        public CategoryController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,
-            IForum forumService, IPost postService, ICategory categoryService) : base(memberService, config, localizerFactory, dbContext)
+        public CategoryController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
+            IForum forumService, IPost postService, ICategory categoryService) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _forumService = forumService;
             _postService = postService;
@@ -57,7 +58,8 @@ namespace MVCForum.Controllers
                 LastPostAuthor = _memberService.GetById(forum.LastPostAuthorId),
                 AccessType = forum.Privateforums,
                 ForumType = (ForumType)forum.Type,
-                Url = forum.Url
+                Url = forum.Url,
+                Status = forum.Status
                 
             });
             if (id > 0)
@@ -83,7 +85,7 @@ namespace MVCForum.Controllers
                 //AuthorRating = post.User?.Rating ?? 0,
                 Created = post.Created.FromForumDateStr(),
                 LastPostDate = !post.LastPostDate.IsNullOrEmpty() ? post.LastPostDate.FromForumDateStr() : null,
-                LastPostAuthorName = _memberService.GetById(post.LastPostAuthorId!.Value)?.Name,
+                LastPostAuthorName = post.LastPostAuthorId != null ? _memberService.GetById(post.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = post.LastPostReplyId,
                 Forum = GetForumListingForPost(post),
                 RepliesCount = post.ReplyCount,
@@ -183,6 +185,7 @@ namespace MVCForum.Controllers
                 Url = forum.Url,
                 DefaultView = (DefaultDays)forum.Defaultdays,
                 CategoryId = forum.CategoryId,
+                Status = forum.Status
                 //ImageUrl = forum.ImageUrl
             };
         }

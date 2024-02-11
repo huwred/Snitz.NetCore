@@ -29,8 +29,8 @@ namespace MVCForum.Controllers
         private readonly IPost _postService;
         private readonly ISnitzCookie _cookie;
 
-        public ForumController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,
-            IForum forumService,IPost postService,ISnitzCookie snitzCookie) : base(memberService, config, localizerFactory, dbContext)
+        public ForumController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
+            IForum forumService,IPost postService,ISnitzCookie snitzCookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _forumService = forumService;
             _postService = postService;
@@ -64,7 +64,7 @@ namespace MVCForum.Controllers
                 Status = p.Status,
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
-                LastPostAuthorName = _memberService.GetById(p.LastPostAuthorId!.Value)?.Name,
+                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p)
             });
@@ -145,7 +145,7 @@ namespace MVCForum.Controllers
                 Status = p.Status,
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
-                LastPostAuthorName = _memberService.GetById(p.LastPostAuthorId!.Value)?.Name,
+                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p)
             });
@@ -232,7 +232,7 @@ namespace MVCForum.Controllers
                 Status = p.Status,
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
-                LastPostAuthorName = _memberService.GetById(p.LastPostAuthorId!.Value)?.Name,
+                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p)
             });
@@ -265,37 +265,48 @@ namespace MVCForum.Controllers
         [Authorize(Roles="Admin")]
         public IActionResult Create(int id)
         {
-            var model = new NewForumModel { CategoryList = _forumService.CategoryList()!,Category = id};
+            var model = new NewForumModel { CategoryList = _forumService.CategoryList()!,Category = id,ForumId = 0};
             return View(model);
         }
 
         [HttpPost]
         [Authorize(Roles="Admin")]
-        public IActionResult Create(NewForumModel model)
+        public async Task<IActionResult> Create(NewForumModel model)
         {
             ModelState.Remove("CategoryList");
             if (ModelState.IsValid)
             {
-                Forum newForum = new()
+                try
                 {
-                    Title = model.Subject, 
-                    Description = model.Description, 
-                    CategoryId = model.Category,
-                    Type = (short)model.Type,
-                    Privateforums = model.AuthType,
-                    Order = model.Order,
-                    Defaultdays = (int)model.DefaultView,
-                    CountMemberPosts = (short)(model.IncrementMemberPosts ? 1 : 0)
-                };
-                if (model.Id != 0)
-                {
-                    newForum.Id = model.Id;
-                    _forumService.Update(newForum);
+                    Forum newForum = new()
+                    {
+                        Id = model.ForumId,
+                        Title = model.Subject, 
+                        Description = model.Description, 
+                        CategoryId = model.Category,
+                        Type = (short)model.Type,
+                        Privateforums = model.AuthType,
+                        Status = (short)(model.Status ? 1 : 0),
+                        Order = model.Order,
+                        Defaultdays = (int)model.DefaultView,
+                        CountMemberPosts = (short)(model.IncrementMemberPosts ? 1 : 0)
+                    };
+                    if (model.ForumId != 0)
+                    {
+                        newForum.Id = model.Id;
+                        await _forumService.Update(newForum);
+                    }
+                    else
+                    {
+                        await _forumService.Create(newForum);
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    _forumService.Create(newForum);
+                    Console.WriteLine(e);
+                    throw;
                 }
+
                 
                 
             }
@@ -318,7 +329,9 @@ namespace MVCForum.Controllers
                 AuthType = (ForumAuthType)forum.Type,
                 Order = forum.Order,
                 Subject = forum.Title,
-                Type = (ForumType)forum.Type
+                Type = (ForumType)forum.Type,
+                Status = forum.Status == 1,
+                ForumId = id
             };
             return View("Create",model);
         }
@@ -373,7 +386,7 @@ namespace MVCForum.Controllers
                 Status = p.Status,
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
-                LastPostAuthorName = _memberService.GetById(p.LastPostAuthorId!.Value)?.Name,
+                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p)
             });
@@ -431,7 +444,7 @@ namespace MVCForum.Controllers
                 Status = p.Status,
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : p.Created.FromForumDateStr(),
-                LastPostAuthorName = _memberService.GetById(p.LastPostAuthorId!.Value)?.Name,
+                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p)
             }).OrderBy(p=>p.LastPostDate);
@@ -466,7 +479,8 @@ namespace MVCForum.Controllers
                 OrderBy = orderby,
                 SortDir = sortdir,
                 DefaultView = (defaultdays == null) ? (DefaultDays)forum.Defaultdays : (DefaultDays)defaultdays.Value,
-                CategoryId = forum.CategoryId
+                CategoryId = forum.CategoryId,
+                Status = forum.Status
                 //ImageUrl = forum.ImageUrl
 
             };
@@ -493,6 +507,7 @@ namespace MVCForum.Controllers
                 Url = forum.Url,
                 DefaultView = (DefaultDays)forum.Defaultdays,
                 CategoryId = forum.CategoryId,
+                Status = forum.Status
                 //ImageUrl = forum.ImageUrl
             };
         }

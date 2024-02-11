@@ -1,9 +1,6 @@
 ﻿@using MVCForum.Models.User
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using Microsoft.Extensions.Options
-@using SnitzCore.Data.Models
 @model MVCForum.Models.Home.HomeIndexModel
-@inject IOptions<SnitzForums> Config
 @section MetaData
 {
         <meta name="title" content="@Config.Value.strForumTitle" />

@@ -39,6 +39,7 @@
     <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" type="text/javascript"></script>
     <partial name="ValidationScriptsPartial" />
     <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="/js/jquery.cookie.js"></script>
     @if (clang == "fa")
     {
         <script type="text/javascript" src="~/bundles/Persian"></script>
@@ -46,12 +47,12 @@
 
     @if (clang == "nb" || clang == "nn" || clang == "no")
     {
-        <script src="/js/timeago/timeago.no.js"></script>
+        <script type="text/javascript" src="/js/timeago/timeago.no.js"></script>
     }
     else if (clang != "en")
     {
         var src = $"/js/timeago/timeago.{clang}.js";
-        <script src="@src"></script>
+        <script type="text/javascript" src="@src"></script>
     }
 @await RenderSectionAsync("Scripts", required: false)
 

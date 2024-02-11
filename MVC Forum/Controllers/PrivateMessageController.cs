@@ -11,6 +11,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using MVCForum.ViewModels;
 using Microsoft.AspNetCore.Mvc.Localization;
+using SnitzCore.Service.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace MVCForum.Controllers
 {
@@ -20,8 +22,8 @@ namespace MVCForum.Controllers
         private Member? _member;
         private readonly IPrivateMessage _pmService;
 
-        public PrivateMessageController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,
-            IPrivateMessage pmService) : base(memberService, config, localizerFactory, dbContext)
+        public PrivateMessageController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
+            IPrivateMessage pmService) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _pmService = pmService;
         }

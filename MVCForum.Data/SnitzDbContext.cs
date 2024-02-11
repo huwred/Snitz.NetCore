@@ -5,16 +5,20 @@ using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace SnitzCore.Data
 {
     public class SnitzDbContext : IdentityDbContext
     {
-
-        public SnitzDbContext(DbContextOptions<SnitzDbContext> options)
+        private readonly IServiceProvider _serviceProvider;
+        public SnitzDbContext(){}
+        public SnitzDbContext(DbContextOptions<SnitzDbContext> options,IServiceProvider serviceProvider)
             : base(options)
         {
             //SavedChanges += SnitzContext_SavedChanges;
+            _serviceProvider = serviceProvider;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -126,8 +130,14 @@ namespace SnitzCore.Data
             modelBuilder.Entity<PrivateMessageBlocklist>();
 
             modelBuilder.Entity<BookmarkEntry>();
-        }
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.PhotoAlbum"));
 
+        }
+        //Assembly GetAssemblyByName(string name)
+        //{
+        //    return AppDomain.CurrentDomain.GetAssemblies().
+        //        SingleOrDefault(assembly => assembly.GetName().Name == name);
+        //}
         public DbSet<ForumUser> ApplicationUser { get; set; }
         public DbSet<OldMembership> OldMemberships { get; set; }
         public DbSet<Member> Members { get; set; }

@@ -13,7 +13,7 @@ namespace SnitzCore.Data.Extensions
                 {
                     return DateTime.ParseExact(date, "yyyyMMdd", CultureInfo.CurrentCulture);
                 }
-                return DateTime.ParseExact(date, "yyyyMMddHHmmss", CultureInfo.CurrentCulture);
+                return DateTime.ParseExact(date.Substring(0, 14), "yyyyMMddHHmmss", CultureInfo.CurrentCulture);
             }
             else
             {

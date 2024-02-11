@@ -4,6 +4,9 @@
 @using SmartBreadcrumbs
 @using SnitzCore.Data.Models
 @model MVCForum.Models.Forum.NewForumModel
+@{
+    var test = Model.Id;
+}
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
 
@@ -20,7 +23,7 @@
         <div class="mb-3 row">
             <label asp-for="Type" class="form-label col-2">@Localizer["forumType"]</label>
             <div class="col-10 col-lg-4">
-                <enum-select enum-type="typeof(ForumType)" selected-value="-1" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                <enum-select name="Type" enum-type="typeof(ForumType)" selected-value="-1" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
             </div>
         </div>
         <div class="mb-3 row">
@@ -49,19 +52,25 @@
         <div class="mb-3 row">
             <label asp-for="DefaultView" class="form-label col-2">@Localizer["forumView"]</label>
             <div class="col-10 col-lg-4">
-                <enum-select enum-type="typeof(DefaultDays)" selected-value="(int)Model.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                <enum-select name="DefaultView" enum-type="typeof(DefaultDays)" selected-value="(int)Model.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
             </div>
         </div>
         <div class="mb-3 row">
             <label asp-for="AuthType" class="form-label col-2">@Localizer["forumAuthType"]</label>
             <div class="col-10 col-lg-4">
-                <enum-select enum-type="typeof(ForumAuthType)" selected-value="(int)Model.AuthType" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                <enum-select name="AuthType" enum-type="typeof(ForumAuthType)" selected-value="(int)Model.AuthType" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
             </div>
         </div>
         <div class="mb-3 row">
             <label asp-for="IncrementMemberPosts" class="form-label col-2">@Localizer["forumPostCount"]</label>
             <div class="col-3 col-lg-2">
                 @Html.CheckBoxFor(m=>m.IncrementMemberPosts,new{@class="form-checkbox"})
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label asp-for="Status" class="form-label col-2">@Localizer["forumStatus"]</label>
+            <div class="col-3 col-lg-2">
+                @Html.CheckBoxFor(m=>m.Status,new{@class="form-checkbox"})
             </div>
         </div>
         @if (Model.Id > 0)
@@ -73,6 +82,7 @@
                 </div>
             </div>
         }
+        <input name="ForumId" style="display: none;" value="@Model.ForumId" />
         <partial name="FormButtons"/>
 
     </form>

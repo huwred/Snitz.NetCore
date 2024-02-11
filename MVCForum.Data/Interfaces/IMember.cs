@@ -34,5 +34,6 @@ namespace SnitzCore.Data
         bool ValidateMember(Member member, string password);
 
         Member? Current();
+        Task UpdatePostCount(int memberid);
     }
 }

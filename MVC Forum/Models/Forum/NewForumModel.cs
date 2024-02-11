@@ -17,6 +17,8 @@ namespace MVCForum.Models.Forum
 
         public ForumType Type { get; set; }
 
+        public bool Status { get; set; }
+
         public int Order { get; set; } = 99;
         [Display(Name = "Default view")] 
         public DefaultDays DefaultView { get; set; } = DefaultDays.Last30Days;
@@ -27,5 +29,6 @@ namespace MVCForum.Models.Forum
         [Display(Name="Increment post count")]
         public bool IncrementMemberPosts { get; set; } = true;
         public Dictionary<int, string>? CategoryList { get; set; }
+        public int ForumId { get; set; }
     }
 }

@@ -17,6 +17,7 @@ using SnitzCore.Service;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -24,6 +25,10 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Web.Commands;
+using SixLabors.ImageSharp.Web.DependencyInjection;
+using SixLabors.ImageSharp.Web.Processors;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -101,6 +106,7 @@ builder.Services.Configure < RequestLocalizationOptions > (options => {
 });
 #endregion
 builder.Services.AddControllersWithViews();
+builder.Services.AddResponseCaching();
 builder.Services.AddBreadcrumbs(Assembly.GetExecutingAssembly(), options =>
 {
     options.TagName = "nav";
@@ -126,7 +132,34 @@ builder.Services.Configure<SnitzForums>(builder.Configuration.GetSection(SnitzFo
 
 builder.Logging.ClearProviders();
 builder.Logging.AddLog4Net("log4net.config");
+builder.Services.AddImageSharp(
+    options =>
+    {
+        options.OnParseCommandsAsync = c =>
+        {
+            if (c.Commands.Count == 0)
+            {
+                return Task.CompletedTask;
+            }
 
+            uint width = c.Parser.ParseValue<uint>(
+                c.Commands.GetValueOrDefault(ResizeWebProcessor.Width),
+                c.Culture);
+
+            uint height = c.Parser.ParseValue<uint>(
+                c.Commands.GetValueOrDefault(ResizeWebProcessor.Height),
+                c.Culture);
+
+            List<Size> allowedSizes = new List<Size> { new Size(1920, 1080), new Size(1080, 1920) };
+            if (!allowedSizes.Any(x => x.Width >= width && x.Height >= height))
+            {
+                c.Commands.Remove(ResizeWebProcessor.Width);
+                c.Commands.Remove(ResizeWebProcessor.Height);
+            }
+
+            return Task.CompletedTask;
+        };
+    });
 
 var app = builder.Build();
 app.MigrateDatabase();
@@ -152,14 +185,14 @@ app.UseStatusCodePages(context => {
     }
     return Task.CompletedTask;
 });
-
-app.UseStaticFiles();
 app.UseRequestLocalization(app.Services.GetRequiredService < IOptions < RequestLocalizationOptions >> ().Value);
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
+app.UseImageSharp();
+app.UseStaticFiles();
 
 app.MapControllerRoute(
 name: "default",

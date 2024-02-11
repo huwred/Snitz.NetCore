@@ -1,0 +1,5 @@
+<Content Remove="compilerconfig.json;package.json"/>
+<None Include="compilerconfig.json;package.json">
+  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+  <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+</None>

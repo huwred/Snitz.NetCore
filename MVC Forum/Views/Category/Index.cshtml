@@ -62,7 +62,7 @@
                             }
                             <div class="subforum-row @weblinkclass">
                                 <div class="subforum-icon subforum-column center">
-                                    <snitz-forum-icon forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
+                                    <snitz-forum-icon status="@forum.Status" forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
                                 </div>
                                 <div class="subforum-description subforum-column">
                                     @if (forum.ForumType == ForumType.WebLink)

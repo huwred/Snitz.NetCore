@@ -29,7 +29,7 @@ namespace SnitzCore.Service
             if (result != null)
             {
                 var count = int.Parse(result.ToString()!);
-                return count <= 0;
+                return count > 0;
             }
             return false;
         }

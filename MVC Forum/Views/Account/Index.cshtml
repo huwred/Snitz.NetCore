@@ -6,6 +6,7 @@
 @using MVCForum.Models.User
 @using SnitzCore.Data
 @using SnitzCore.Data.Models
+@using SnitzCore.Service.TagHelpers
 @model MVCForum.Models.User.MemberIndexModel
 @inject IMember MemberService
 @inject UserManager<ForumUser> UserManager
@@ -144,7 +145,7 @@
 <partial name="ConfirmDialog" model="@confModel" />
 @section Scripts
     {
-    <script>
+    <script type="text/javascript">
         $(document).on('click', '.confirm-lock', function (e) {
             e.preventDefault();
             var postid = $(this).data('id');

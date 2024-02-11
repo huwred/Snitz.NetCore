@@ -25,9 +25,9 @@
 </div>
 @section Scripts
 {
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/jquery.unobtrusive-ajax.js"></script>
-    <script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.unobtrusive-ajax.js"></script>
+    <script type="text/javascript">
         $(document).on("change", "#ResourceSet",
             function() {
                 $('#resource-card').load("/LanguageManager/ResourceSet/" + $(this).val() + "/?filter=" + $('#filter').val());

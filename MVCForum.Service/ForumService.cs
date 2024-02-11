@@ -175,5 +175,41 @@ namespace SnitzCore.Service
                 await _dbContext.SaveChangesAsync();
             }
         }
+
+        public async Task<Forum> UpdateLastPost(int forumid)
+        {
+            var forum = await _dbContext.Forums.FirstAsync(f => f.Id == forumid);
+
+            var lasttopic = _dbContext.Posts
+                .Where(t=>t.ForumId == forumid && t.Status < 2)
+                .OrderByDescending(t=>t.LastPostDate)
+                .Select(p => new { Post = p, Topics = _dbContext.Posts.Count(t=>t.ForumId == forumid && t.Status <2), Replies = _dbContext.Replies.Count(r=>r.ForumId == forumid && r.Status <2) })
+                .FirstOrDefault();
+
+            if (lasttopic == null)
+            {
+                forum.TopicCount = 0;
+                forum.ReplyCount = 0;
+                forum.LatestTopicId = 0;
+                forum.LatestReplyId = 0;
+                forum.LastPost = null;
+                forum.LastPostAuthorId = 0;
+            }
+            else
+            {
+                forum.LatestTopicId = lasttopic.Post.Id;
+                forum.LatestReplyId = lasttopic.Post.LastPostReplyId;
+                forum.LastPost = lasttopic.Post.LastPostDate;
+                forum.LastPostAuthorId = lasttopic.Post.LastPostAuthorId;
+                forum.TopicCount = lasttopic.Topics;
+                forum.ReplyCount = lasttopic.Replies;
+            }
+
+            _dbContext.Forums.Update(forum);
+            await _dbContext.SaveChangesAsync();
+            return forum;
+            //var cacheService = new InMemoryCache();
+            //cacheService.Remove("category.forums");           
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -15,11 +16,13 @@ namespace SnitzCore.Service
     {
         private readonly SnitzDbContext _dbContext;
         private readonly IMember _memberService;
+        private readonly IForum _forumservice;
 
-        public PostService(SnitzDbContext dbContext, IMember memberService)
+        public PostService(SnitzDbContext dbContext, IMember memberService,IForum forumservice)
         {
             _dbContext = dbContext;
             _memberService = memberService;
+            _forumservice = forumservice;
 
         }
 
@@ -36,8 +39,11 @@ namespace SnitzCore.Service
             await _dbContext.Posts.AddAsync(post);
             await _dbContext.SaveChangesAsync();
 
-            await UpdateForumLastPost(post);
-            await _dbContext.SaveChangesAsync();
+            var forum = await _forumservice.UpdateLastPost(post.ForumId);
+            if (forum.CountMemberPosts == 1)
+            {
+                await _memberService.UpdatePostCount(post.MemberId);
+            }
 
         }
 
@@ -51,16 +57,13 @@ namespace SnitzCore.Service
             _dbContext.Replies.Add(post);
             await _dbContext.SaveChangesAsync();
             //update topic stuff
-            var topic = _dbContext.Posts.Single(p => p.Id == post.PostId);
-            topic.LastPostAuthorId = post.MemberId;
-            topic.ReplyCount += 1;
-            topic.LastPostReplyId = post.Id;
-            topic.LastPostDate = post.Created;
-            _dbContext.Posts.Update(topic);
-            await _dbContext.SaveChangesAsync();
+            await UpdateLastPost(post.PostId);
             //update Forum
-            await UpdateForumLastPost(post);
-            
+            var forum = await _forumservice.UpdateLastPost(post.ForumId);
+            if (forum.CountMemberPosts == 1)
+            {
+                await _memberService.UpdatePostCount(post.MemberId);
+            }
         }
 
         public async Task<bool> LockTopic(int id, short status = 0)
@@ -82,41 +85,11 @@ namespace SnitzCore.Service
             if (post != null)
             {
                 var forumid = post.ForumId;
-                var replycount = post.ReplyCount;
-
                 _dbContext.Posts.Remove(post);
                 await _dbContext.SaveChangesAsync();
-                
-                var forum = _dbContext.Forums.SingleOrDefault(f => f.Id == forumid);
-                if (forum != null)
-                {
-                    if (forum.LatestTopicId == id)
-                    {
-                        var lasttopic = _dbContext.Posts.Where(f=>f.ForumId == forumid).OrderByDescending(r=>r.Created).FirstOrDefault();
-                        if (lasttopic != null)
-                        {
-                            forum.LatestTopicId = lasttopic.Id;
-                            forum.TopicCount -= 1;
-                            forum.ReplyCount -= replycount;
-                            forum.LatestReplyId = lasttopic.LastPostReplyId;
-                            forum.LastPostAuthorId = lasttopic.LastPostAuthorId;
-                            forum.LastPost = lasttopic.LastPostDate;
-                            _dbContext.Update(forum);
-                        }
-                        else
-                        {
-                            forum.LatestTopicId = null;
-                            forum.LatestReplyId = null;
-                            forum.LastPostAuthorId = null;
-                            forum.LastPost = null;
-                            forum.ReplyCount = 0;
-                            forum.TopicCount = 0;
-                            _dbContext.Update(forum);
-                        }
-                    }
-                }
+
+                await _forumservice.UpdateLastPost(forumid);
             }
-            await _dbContext.SaveChangesAsync();
         }
         public async Task DeleteReply(int id)
         {
@@ -125,50 +98,13 @@ namespace SnitzCore.Service
             {
                 var topicid = post.PostId;
                 var forumid = post.ForumId;
-
                 _dbContext.Replies.Remove(post);
                 await _dbContext.SaveChangesAsync();
-                var topic = _dbContext.Posts.SingleOrDefault(f => f.Id == topicid);
-                if (topic != null)
-                {
-                    topic.ReplyCount -= 1;
-                    if (topic.LastPostReplyId == id)
-                    {
-                        var lastreply = _dbContext.Replies.Where(f=>f.PostId == topicid).OrderByDescending(r=>r.Created).FirstOrDefault();
-                        if (lastreply != null)
-                        {
-                            topic.LastPostReplyId = lastreply.Id;
-                            topic.LastPostAuthorId = lastreply.MemberId;
-                            topic.LastPostDate = lastreply.Created;
-                        }
-                        else
-                        {
-                            topic.ReplyCount = 0;
-                            topic.LastPostReplyId = null;
-                            topic.LastPostAuthorId = null;
-                            topic.LastPostDate = null;
-                        }
 
-                        _dbContext.Update(topic);
-                        await _dbContext.SaveChangesAsync();
-                    }
-                    var forum = _dbContext.Forums.SingleOrDefault(f => f.Id == forumid);
-
-                    if (forum != null)
-                    {
-                        if (forum.LatestReplyId == id)
-                        {
-                            forum.LatestReplyId = topic.LastPostReplyId;
-                            forum.ReplyCount -= 1;
-                            forum.LastPostAuthorId = topic.LastPostAuthorId ?? topic.MemberId;
-                            _dbContext.Update(forum);
-                            await _dbContext.SaveChangesAsync();
-                        }
-                    }                    
-                }
+                await UpdateLastPost(topicid);
+                await _forumservice.UpdateLastPost(forumid);
 
             }
-            await _dbContext.SaveChangesAsync();
         }
 
         public async Task Update(Post post)
@@ -329,51 +265,33 @@ namespace SnitzCore.Service
         {
             throw new NotImplementedException();
         }
-        private async Task UpdateForumLastPost(Post post)
+        public async Task UpdateLastPost(int topicid)
         {
-            Forum forum = _dbContext.Forums.Single(f => f.Id == post.ForumId);
-            await _dbContext.SaveChangesAsync();
-            forum.LastPost = post.Created;
-            forum.LatestTopicId = post.Id;
-            forum.LastPostAuthorId = post.MemberId;
-            forum.TopicCount += 1;
-            _dbContext.Forums.Update(forum);
-            if (forum.CountMemberPosts == 1)
+            var topic = GetTopic(topicid);
+            var lastreply = _dbContext.Replies
+                .Where(t=>t.PostId == topicid && t.Status < 2)
+                .OrderByDescending(t=>t.Created)
+                .Select(p => new { LastPostId = p.Id, LastPostAuthorId = p.MemberId,LastPostDate = p.Created, PostCount = _dbContext.Replies.Count(r=>r.PostId == topicid && r.Status <2) })
+                .FirstOrDefault();
+
+            if (lastreply == null)
             {
-                await UpdateMemberPosts(post.MemberId);
+                topic.LastPostReplyId = 0;
+                topic.LastPostDate = topic.Created;
+                topic.LastPostAuthorId = topic.MemberId;
+                topic.ReplyCount = 0;
             }
+            else
+            {
+                topic.LastPostReplyId = lastreply.LastPostId;
+                topic.LastPostDate = lastreply.LastPostDate;
+                topic.LastPostAuthorId = lastreply.LastPostAuthorId;
+                topic.ReplyCount = lastreply.PostCount;
+            }
+            _dbContext.Update(topic);
+            await _dbContext.SaveChangesAsync();
         }
 
-        private async Task UpdateMemberPosts(int postauthor)
-        {
-            var member = _memberService.GetById(postauthor);
-            await _dbContext.SaveChangesAsync();
-            if (member != null)
-            {
-                member.Posts += 1;
-                member.Lastpostdate = DateTime.UtcNow.ToForumDateStr();
-                member.Lastactivity = DateTime.UtcNow.ToForumDateStr();
-                _dbContext.Members.Update(member);
-                await _dbContext.SaveChangesAsync();
-            }
-        }
 
-        private async Task UpdateForumLastPost(PostReply post)
-        {
-
-            var forum = _dbContext.Forums.AsNoTracking().Single(f => f.Id == post.ForumId);
-            await _dbContext.SaveChangesAsync();
-            forum.LastPost = post.Created;
-            forum.LatestTopicId = post.PostId;
-            forum.LatestReplyId = post.Id;
-            forum.LastPostAuthorId = post.MemberId;
-            forum.ReplyCount += 1;
-            _dbContext.Forums.Update(forum);
-            await _dbContext.SaveChangesAsync();
-            if (forum.CountMemberPosts == 1)
-            {
-                await UpdateMemberPosts(post.MemberId);
-            }
-        }
     }
 }

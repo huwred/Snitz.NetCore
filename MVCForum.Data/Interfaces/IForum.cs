@@ -21,5 +21,6 @@ namespace SnitzCore.Data.Interfaces
         Dictionary<int, string> ForumList();
         string ForumName(string rolename);
         Task EmptyForum(int id);
+        Task<Forum> UpdateLastPost(int forumid);
     }
 }

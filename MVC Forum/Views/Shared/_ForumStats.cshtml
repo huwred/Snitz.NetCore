@@ -1,5 +1,4 @@
-﻿@using MVCForum.Extensions
-@using SnitzCore.Data.Extensions
+﻿@using SnitzCore.Data.Extensions
 @using SnitzCore.Data.Models
 @inject ISnitz SnitzService
 
@@ -13,6 +12,6 @@
         @Localizer["lblForumStats"] &nbsp;<i class="fa fa-bar-chart"></i>
     </div>
     <span>@Localizer["staMembers", Stats.PostCount, Stats.TopicCount, Stats.UserCount, SnitzService.ForumCount()]</span><br>
-    <span>Latest post: <b><lastpost-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" topic-id="@LastPost?.Id" post-date="@lastpostdate?.ToLocalTime()" reply-id="@LastPost?.LastPostReplyId"></lastpost-link></b> @Localizer["lblPostedBy"] <member-link member-id="@LastPost?.Member?.Id" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link></span>.<br>
+    <span>Latest post: <b><lastpost-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" topic-id="@LastPost.Id" post-date="@lastpostdate" reply-id="@LastPost?.LastPostReplyId"></lastpost-link></b> @Localizer["lblPostedBy"] <member-link member-id="@LastPost?.Member?.Id" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link></span>.<br>
     <span>Check <a href="/Forum/Active">the latest posts</a> .</span><br>
 </div>

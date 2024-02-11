@@ -10,10 +10,15 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
+using MVCForum.ViewModels;
+using Snitz.PhotoAlbum.ViewModels;
+using Snitz.PhotoAlbum.Models;
 
 namespace MVCForum.Controllers
 {
@@ -23,13 +28,15 @@ namespace MVCForum.Controllers
         private readonly IPost _postService;
         private readonly IForum _forumService;
         private readonly UserManager<ForumUser> _userManager;
+        private readonly IWebHostEnvironment _environment;
 
-        public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,
-            IPost postService, IForum forumService, UserManager<ForumUser> userManager) : base(memberService, config, localizerFactory,dbContext)
+        public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
+            IPost postService, IForum forumService, UserManager<ForumUser> userManager,IWebHostEnvironment environment) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
         {
             _postService = postService;
             _forumService = forumService;
             _userManager = userManager;
+            _environment = environment;
         }
 
         [Route("{id:int}")]
@@ -88,7 +95,7 @@ namespace MVCForum.Controllers
                 Author = post.Member!,
                 AuthorId = post.Member!.Id,
                 Views = post.ViewCount,
-                IsLocked = post.Status == 1,
+                IsLocked = post.Status == 1 || post.Forum?.Status == 0,
                 //AuthorRating = post.User?.Rating ?? 0,
                 AuthorName = post.Member?.Name ?? "Unknown",
                 //AuthorImageUrl = post.User?.ProfileImageUrl ?? "/images/avatar.png",
@@ -494,5 +501,60 @@ namespace MVCForum.Controllers
             return pagedReplies;
         }
 
+        /// <summary>
+        /// File upload handler for Topics
+        /// </summary>
+        /// <returns></returns>
+        [Route("Topic/Upload/")]
+        //[HttpPost]
+        public IActionResult Upload(AlbumUploadViewModel model)
+        {
+            var uploadFolder = Combine(_config.ContentFolder, "Members");
+            var currentMember = _memberService.Current();
+            if (currentMember != null)
+            {
+                uploadFolder = Combine(uploadFolder, currentMember.Id.ToString());
+            }
+            else
+            {
+                return View("Error");
+            }
+            
+            var path = $"{uploadFolder}".Replace("/","\\");
+            if (ModelState.IsValid)
+            {
+                var uniqueFileName = GetUniqueFileName(model.AlbumImage.FileName);
+                var uploads = Path.Combine(_environment.WebRootPath, path);
+                var filePath = Path.Combine(uploads, uniqueFileName);
+                var fStream = new FileStream(filePath, FileMode.Create);
+                model.AlbumImage.CopyTo(fStream);
+                fStream.Flush();
+                return Json(new { result = true, data = Combine(uploadFolder,uniqueFileName),filesize= model.AlbumImage.Length/1024,type = Path.GetExtension(model.AlbumImage.FileName) });
+                //return Json(uniqueFileName + "|" + model.Description);
+            }
+
+            return PartialView("_popUpload",model);
+
+        }
+
+        [Route("Topic/UploadForm/")]
+        public IActionResult UploadForm()
+        {
+            ViewBag.Title = "lblUpload";
+            return PartialView("_popUpload",new AlbumUploadViewModel());
+        }
+        private string GetUniqueFileName(string fileName)
+        {
+            fileName = Path.GetFileName(fileName);
+            return  DateTime.UtcNow.ToForumDateStr()
+                    + "_"
+                    + GetSafeFilename(fileName);
+        }
+        private static string GetSafeFilename(string filename)
+        {
+
+            return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+
+        }
     }
 }

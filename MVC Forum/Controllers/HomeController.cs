@@ -23,7 +23,7 @@ namespace MVCForum.Controllers
     {
         private readonly IPost _postService;
 
-        public HomeController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext, IPost postService) : base(memberService, config, localizerFactory, dbContext)
+        public HomeController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, IPost postService) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _postService = postService;
 
@@ -62,7 +62,7 @@ namespace MVCForum.Controllers
                 //AuthorRating = post.User?.Rating ?? 0,
                 Created = post.Created.FromForumDateStr(),
                 LastPostDate = !post.LastPostDate.IsNullOrEmpty() ? post.LastPostDate.FromForumDateStr() : null,
-                LastPostAuthorName = _memberService.GetById(post.LastPostAuthorId!.Value)?.Name,
+                LastPostAuthorName = post.LastPostAuthorId != null ? _memberService.GetById(post.LastPostAuthorId!.Value)?.Name : "",
                 Forum = GetForumListingForPost(post),
                 RepliesCount = post.ReplyCount,
                 ViewCount = post.ViewCount,

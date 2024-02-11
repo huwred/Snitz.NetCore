@@ -80,8 +80,17 @@ namespace MVCForum.TagHelpers
                 {
                     if (LastPost > lasthere)
                     {
-                        output.AddClass("new-posts",HtmlEncoder.Default);
-                        output.Attributes.Add("title","Contains new posts");
+                        if (Status == "1")
+                        {
+                            output.Attributes.Add("title","Locked, Contains new posts");
+                            output.AddClass("fa-lock",HtmlEncoder.Default);
+                        }
+                        else
+                        {
+                            output.AddClass("new-posts",HtmlEncoder.Default);
+                            output.Attributes.Add("title","Contains new posts");
+                        }
+                        
                     }
                 }
             }

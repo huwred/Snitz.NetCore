@@ -37,9 +37,9 @@ namespace MVCForum.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly int _pageSize;
 
-        public AccountController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,
+        public AccountController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             UserManager<ForumUser> usrMgr, SignInManager<ForumUser> signinMgr,
-            ISnitzCookie snitzcookie,IWebHostEnvironment env,IEmailSender mailSender) : base(memberService, config, localizerFactory, dbContext)
+            ISnitzCookie snitzcookie,IWebHostEnvironment env,IEmailSender mailSender) : base(memberService, config, localizerFactory, dbContext,httpContextAccessor)
         {
             _userManager = usrMgr;
             _signInManager = signinMgr;

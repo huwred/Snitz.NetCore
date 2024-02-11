@@ -11,23 +11,20 @@ namespace MVCForum.Extensions
         public static WebApplication MigrateDatabase(this WebApplication webApp)
         {
             //webApp.Configuration.GetSection("").GetChildren("");
-            using (var scope = webApp.Services.CreateScope())
+            using var scope = webApp.Services.CreateScope();
+            using var appContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>();
+            try
             {
-                using (var appContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
-                {
-                    try
-                    {
-                        appContext.Database.Migrate();
+                appContext.Database.Migrate();
 
-                    }
-                    catch (Exception ex)
-                    {
-                        //Log errors or do anything you think it's needed
-                        Console.WriteLine(ex.Message);
-                        //throw;
-                    }
-                }
             }
+            catch (Exception ex)
+            {
+                //Log errors or do anything you think it's needed
+                Console.WriteLine(ex.Message);
+                //throw;
+            }
+
             return webApp;
         }
     }

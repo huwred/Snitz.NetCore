@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
@@ -28,7 +29,9 @@ namespace SnitzCore.BackOffice.Controllers
         private readonly IConfiguration _webconfiguration;
         private readonly IMember _memberService;
         private readonly IOptionsSnapshot<EmailConfiguration> _emailconfig;
-        public AdminController(ISnitz config,IConfiguration configuration, ISnitzConfig snitzconfig,IForum forumservice,ICategory category,SnitzDbContext dbContext,RoleManager<IdentityRole> RoleManager,UserManager<ForumUser> userManager,IMember memberService,IOptionsSnapshot<EmailConfiguration> emailconfig)
+        private IHostApplicationLifetime _appLifetime;
+        public AdminController(ISnitz config,IConfiguration configuration, ISnitzConfig snitzconfig,IForum forumservice,ICategory category,SnitzDbContext dbContext,RoleManager<IdentityRole> RoleManager,UserManager<ForumUser> userManager,
+            IMember memberService,IOptionsSnapshot<EmailConfiguration> emailconfig,IHostApplicationLifetime appLifetime)
         {
             _config = config;
             _forumservice = forumservice;
@@ -40,6 +43,7 @@ namespace SnitzCore.BackOffice.Controllers
             _webconfiguration = configuration;
             _memberService = memberService;
             _emailconfig = emailconfig;
+            _appLifetime = appLifetime;
         }
         public IActionResult Index()
         {
@@ -438,7 +442,11 @@ namespace SnitzCore.BackOffice.Controllers
             }
         }
 
-
+        public IActionResult Restart()
+        {
+            _appLifetime.StopApplication();
+            return RedirectToAction("Index");
+        }
         public IActionResult DeleteSpamDomain(IFormCollection form)
         {
             try

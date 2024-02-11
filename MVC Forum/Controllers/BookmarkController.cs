@@ -13,8 +13,8 @@ namespace MVCForum.Controllers
     public class BookmarkController : SnitzController
     {
         private readonly IBookmark _bookmarks;
-        public BookmarkController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,
-            IBookmark bookmarks) : base(memberService, config, localizerFactory, dbContext)
+        public BookmarkController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
+            IBookmark bookmarks) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _bookmarks = bookmarks;
         }

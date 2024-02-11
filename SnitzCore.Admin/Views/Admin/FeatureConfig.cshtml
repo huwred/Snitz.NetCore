@@ -182,6 +182,21 @@
                     </div>
                 </div>
             </fieldset>
+            @if (SnitzConfig.TableExists("FORUM_IMAGES") && SnitzConfig.GetIntValue("STRALLOWUPLOADS") == 1)
+            {
+                <admin-config config-key="STRPHOTOALBUM" config-label="Enable Albums" config-val="@SnitzConfig.GetIntValue("STRPHOTOALBUM")"></admin-config>
+                    <fieldset  @(SnitzConfig.GetIntValue("STRALLOWUPLOADS") == 0 ? "disabled" : "") id="ALBUMENABLED">
+                    <div class="row">
+                        <div class="col">
+                            <admin-config config-key="INTMAXIMAGESIZE" config-label="Max File size (Mb)" config-val="@SnitzConfig.GetValue("INTMAXIMAGESIZE", "5")"></admin-config>
+                        </div>
+                        <div class="col">
+                            <admin-config config-key="STRIMAGETYPES" config-label="Allowed Extensions" config-val="@SnitzConfig.GetValue("STRIMAGETYPES", ".png,.jpg")"></admin-config>
+                        </div>
+                    </div>
+                </fieldset>
+            }
+
             <div class="row">
                 <div class="col">
                     <admin-config config-key="STRSIGNATURES" config-label="Allow Signatures" config-val="@SnitzConfig.GetIntValue("STRSIGNATURES")"></admin-config>
@@ -331,9 +346,9 @@
 </div>
 @section Scripts
 {
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/jquery.unobtrusive-ajax.js"></script>
-        <script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.unobtrusive-ajax.js"></script>
+    <script type="text/javascript">
         document.querySelector('#STRSHOWANNOUNCE').addEventListener('click', (e) => {
             document.querySelector('#ANNOUNCEENABLED').disabled = !e.target.checked;
         });
@@ -351,6 +366,7 @@
         });
         document.querySelector('#STRALLOWUPLOADS').addEventListener('click', (e) => {
             document.querySelector('#UPLOADSENABLED').disabled = !e.target.checked;
+            document.querySelector('#ALBUMENABLED').disabled = !e.target.checked;
         });
         document.querySelector('#STRPMSTATUS').addEventListener('click', (e) => {
             document.querySelector('#PMENABLED').disabled = !e.target.checked;
