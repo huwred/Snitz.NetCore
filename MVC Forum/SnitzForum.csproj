@@ -9,18 +9,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\Content\Members\**" />
     <Compile Remove="wwwroot\Content\PhotoAlbum\**" />
     <Compile Remove="wwwroot\images\forum\**" />
     <Compile Remove="wwwroot\is-cache\**" />
+    <Content Remove="wwwroot\Content\Members\**" />
     <Content Remove="wwwroot\Content\PhotoAlbum\**" />
     <Content Remove="wwwroot\images\forum\**" />
     <Content Remove="wwwroot\is-cache\**" />
+    <EmbeddedResource Remove="wwwroot\Content\Members\**" />
     <EmbeddedResource Remove="wwwroot\Content\PhotoAlbum\**" />
     <EmbeddedResource Remove="wwwroot\images\forum\**" />
     <EmbeddedResource Remove="wwwroot\is-cache\**" />
+    <None Remove="wwwroot\Content\Members\**" />
     <None Remove="wwwroot\Content\PhotoAlbum\**" />
     <None Remove="wwwroot\images\forum\**" />
     <None Remove="wwwroot\is-cache\**" />
+    <TypeScriptCompile Remove="wwwroot\Content\Members\**" />
     <TypeScriptCompile Remove="wwwroot\Content\PhotoAlbum\**" />
     <TypeScriptCompile Remove="wwwroot\is-cache\**" />
   </ItemGroup>
