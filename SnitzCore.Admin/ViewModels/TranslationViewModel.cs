@@ -12,5 +12,7 @@ namespace SnitzCore.BackOffice.ViewModels
         public string? filterby { get; set; }
         public string? filter { get; set; }
         public List<LanguageResource> Resources { get; set; } = null!;
+
+        public List<string?> ResourceSets { get; set; }
     }
 }

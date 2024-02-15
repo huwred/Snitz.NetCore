@@ -15,6 +15,7 @@ namespace SnitzCore.Service.TagHelpers
         [HtmlAttributeName("jq-selector")]
         public string? Selector { get; set; }
         public string? Title { get; set; }
+        public string? Class { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -27,9 +28,22 @@ namespace SnitzCore.Service.TagHelpers
             output.Attributes.Add("rel","nofollow");
             //output.Attributes.Add("title","Delete Item");
             output.Attributes.Add("data-bs-toggle","modal");
-            output.Attributes.Add("data-id",Key);
-            output.AddClass(Selector,HtmlEncoder.Default);
-            output.Content.AppendHtml($@"<i class='" + TagClass + "'></i>");
+            if (Key != null)
+            {
+                output.Attributes.Add("data-id",Key);
+            }
+            
+            if (TagClass != null)
+            {
+                output.Content.AppendHtml($@"<i class='" + TagClass + "'></i>");
+                output.AddClass(Selector,HtmlEncoder.Default);
+            }
+            else
+            {
+                output.Content.AppendHtml(Title);
+                output.Attributes.Add("class", Class);
+                output.AddClass(Selector,HtmlEncoder.Default);
+            }
         }
 
     }

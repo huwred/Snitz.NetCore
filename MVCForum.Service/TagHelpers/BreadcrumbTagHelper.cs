@@ -25,7 +25,7 @@ namespace SmartBreadcrumbs
         private readonly BreadcrumbManager _breadcrumbManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IUrlHelper _urlHelper;
-        private readonly IHtmlLocalizer _localizer;
+        private readonly IHtmlLocalizer? _localizer;
 
         #endregion
 
@@ -33,7 +33,7 @@ namespace SmartBreadcrumbs
 
         [ViewContext]
         [HtmlAttributeNotBound]
-        public ViewContext ViewContext { get; set; }
+        public ViewContext? ViewContext { get; set; }
 
         #endregion
 
@@ -42,14 +42,19 @@ namespace SmartBreadcrumbs
         {
             _breadcrumbManager = breadcrumbManager;
             _htmlEncoder = htmlEncoder;
-            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
-
-            IHtmlLocalizerFactory factory = (IHtmlLocalizerFactory)actionContextAccessor.ActionContext.HttpContext.RequestServices.GetService(typeof(IHtmlLocalizerFactory));
-            if (factory != null && BreadcrumbManager.Options.ResourceType != null)
+            if (actionContextAccessor.ActionContext != null)
             {
-                var type = BreadcrumbManager.Options.ResourceType;
-                var assemblyName = new AssemblyName(type.GetTypeInfo().Assembly.FullName);
-                _localizer = factory.Create(BreadcrumbManager.Options.ResourceType.Name, assemblyName.Name);
+                _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+
+                IHtmlLocalizerFactory factory =
+                    (IHtmlLocalizerFactory)actionContextAccessor.ActionContext.HttpContext.RequestServices.GetService(
+                        typeof(IHtmlLocalizerFactory));
+                if (factory != null && BreadcrumbManager.Options.ResourceType != null)
+                {
+                    var type = BreadcrumbManager.Options.ResourceType;
+                    var assemblyName = new AssemblyName(type.GetTypeInfo().Assembly.FullName);
+                    _localizer = factory.Create(BreadcrumbManager.Options.ResourceType.Name, assemblyName.Name);
+                }
             }
         }
 
@@ -59,8 +64,8 @@ namespace SmartBreadcrumbs
         {
             var child = await output.GetChildContentAsync();
 
-            var nodeKey = new NodeKey(ViewContext.ActionDescriptor.RouteValues, ViewContext.HttpContext.Request.Method);
-            var node = ViewContext.ViewData["BreadcrumbNode"] as BreadcrumbNode ?? _breadcrumbManager.GetNode(nodeKey.Value);
+            var nodeKey = new NodeKey(ViewContext?.ActionDescriptor.RouteValues, ViewContext?.HttpContext.Request.Method);
+            var node = ViewContext?.ViewData["BreadcrumbNode"] as BreadcrumbNode ?? _breadcrumbManager.GetNode(nodeKey.Value);
 
             output.TagName = BreadcrumbManager.Options.TagName;
             if (!string.IsNullOrWhiteSpace(BreadcrumbManager.Options.AriaLabel))

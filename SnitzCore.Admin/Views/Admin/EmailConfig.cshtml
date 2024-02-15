@@ -6,13 +6,13 @@
 <div class="mt-3">
     <legend>Email Configuration</legend>
     <hr/>
-    <div class="d-flex align-items-start">
-        <div class="nav flex-column nav-pills me-3 bg-white rounded" role="tablist" id="emailTab" aria-orientation="vertical">
+    <div class="">
+        <div class="nav nav-tabs me-3" role="tablist" id="emailTab">
             <button class="nav-link active" data-bs-target="#email-server" role="tab" data-bs-toggle="pill">Email server settings</button>
             <button class="nav-link" data-bs-target="#email-spam" role="tab" data-bs-toggle="pill">Spam domains</button>
         </div>
 
-        <div class="tab-content bg-white p-4 rounded w-100">
+        <div class="tab-content bg-white p-4">
             <div class="tab-pane fade w-100 active show" id="email-server" role="tabpanel" aria-labelledby="server-tab">
                 @using (Html.BeginForm("EmailConfigUpdate", "Admin", FormMethod.Post, new { @class = "form-inline row" }))
                 {

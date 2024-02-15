@@ -23,7 +23,9 @@ namespace MVCForum.TagHelpers
             if (Title != null && Title.StartsWith("Zapped"))
             {
                 output.AddClass("fa-bolt",HtmlEncoder.Default);
+                
             }
+            output.Attributes.Add("title",Title);
             output.AddClass("center",HtmlEncoder.Default);
         }
     }

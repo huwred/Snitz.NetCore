@@ -135,7 +135,8 @@ namespace MVCForum.Controllers
         }
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public IActionResult Create(CategoryViewModel model)
+        [Route("Category/CreateEdit")]
+        public IActionResult CreateEdit(CategoryViewModel model)
         {
             var forumPage = new MvcBreadcrumbNode("", "Category", "Categories");
             var topicPage = new MvcBreadcrumbNode("", "Category", "New Category") { Parent = forumPage};
@@ -190,10 +191,6 @@ namespace MVCForum.Controllers
             };
         }
 
-        public IActionResult CreateEdit()
-        {
-            throw new System.NotImplementedException();
-        }
 
         public async Task<IActionResult> EmptyCategory(int id)
         {

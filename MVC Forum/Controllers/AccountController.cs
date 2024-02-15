@@ -664,7 +664,7 @@ namespace MVCForum.Controllers
         public IActionResult ShowIP(int id)
         {
             var member = _memberService.GetById(id);
-            return Content(member.LastIp);
+            return Content(member?.LastIp ?? "");
             throw new NotImplementedException();
         }
 
@@ -691,11 +691,16 @@ namespace MVCForum.Controllers
         public IActionResult EmailMember(int? id)
         {
             var member = _memberService.GetById(id);
-            var vm = new EmailMemberViewModel()
+            if (member?.Email != null)
             {
-                To = member.Email
-            };
-            return PartialView(vm);
+                var vm = new EmailMemberViewModel()
+                {
+                    To = member?.Email
+                };
+                return PartialView(vm);
+            }
+
+            return View("Error");
         }
 
         public IActionResult EmailMember(EmailMemberViewModel model)

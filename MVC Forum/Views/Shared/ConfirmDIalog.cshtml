@@ -3,15 +3,15 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-warning">
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="close text-bg-warning">X</a>
-                <h4>@Model.Title</h4>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline-danger">X</a>
+                <h4 class="text-bg-warning">@Model.Title</h4>
             </div>
             <div class="modal-body" id="confirm-body">
                 @Html.Raw(Model.Message)
             </div>
             <div class="modal-footer">
-                <a href="#" id="btnYes" class="btn btn-danger">@Localizer["lblYes"]</a>
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">@Localizer["lblNo"]</a>
+                <a href="#" id="btnYes" class="btn btn-danger">@Localizer["btnOk"]</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">@Localizer["btnCancel"]</a>
             </div>
         </div>
     </div>

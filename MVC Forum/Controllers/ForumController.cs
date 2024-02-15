@@ -352,7 +352,7 @@ namespace MVCForum.Controllers
             var topicPage = new MvcBreadcrumbNode("Search", "Forum", "ViewData.Title") { Parent = homePage };
             ViewData["BreadcrumbNode"] = topicPage;
             ViewData["Title"] = "Search";
-            if (HttpContext.Request.Cookies.ContainsKey("search-pagesize") && _config.GetValue("STRFORUMPAGESIZES", _config.DefaultPageSize.ToString()).Split(',').Count() > 1)
+            if (HttpContext.Request.Cookies.ContainsKey("search-pagesize") && _config.GetValue("STRFORUMPAGESIZES", _config.DefaultPageSize.ToString())!.Split(',').Count() > 1)
             {
                 var pagesizeCookie = HttpContext.Request.Cookies["search-pagesize"];
                 if (pagesizeCookie != null)
@@ -480,7 +480,9 @@ namespace MVCForum.Controllers
                 SortDir = sortdir,
                 DefaultView = (defaultdays == null) ? (DefaultDays)forum.Defaultdays : (DefaultDays)defaultdays.Value,
                 CategoryId = forum.CategoryId,
-                Status = forum.Status
+                Status = forum.Status,
+                Topics = forum.TopicCount,
+                Posts = forum.ReplyCount
                 //ImageUrl = forum.ImageUrl
 
             };

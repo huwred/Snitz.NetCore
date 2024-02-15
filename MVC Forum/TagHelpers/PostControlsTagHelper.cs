@@ -58,29 +58,29 @@ namespace MVCForum.TagHelpers
                 var isadmin = userroles!.Contains("Admin");
                 if (!IsLocked || isadmin)
                 {
-                    output.Content.AppendHtml($@"<i class=""fa fa-comment-o m-1 post-reply"" title=""Reply to Topic"" data-id=""{TopicId}""></i>");
+                    output.Content.AppendHtml($@"<i class=""fa fa-comment-o m-1 post-reply"" title=""{TextLocalizerDelegate("tipTopicReply")}"" data-id=""{TopicId}""></i>");
                 }
                 if (Posttype == PostType.Topic)
                 {
                     if(!IsLocked || isadmin)
-                        output.Content.AppendHtml($@"<i class=""fa fa-commenting m-1 post-quote"" title=""Reply with Quote"" data-id=""{PostId}""></i>");
+                        output.Content.AppendHtml($@"<i class=""fa fa-commenting m-1 post-quote"" title=""{TextLocalizerDelegate("tipQuoteTopic")}"" data-id=""{PostId}""></i>");
                     if (UseBookmarks)
                     {
                         output.Content.AppendHtml(_bookmarks.IsBookmarked(PostId)
-                            ? $@"<i class=""fa fa-bookmark m-1 bookmark-del"" title=""Delete Bookmark"" data-id=""{PostId}""></i>"
-                            : $@"<i class=""fa fa-bookmark-o m-1 bookmark-add"" title=""Bookmark Topic"" data-id=""{PostId}""></i>");
+                            ? $@"<i class=""fa fa-bookmark m-1 bookmark-del"" title=""{TextLocalizerDelegate("tipRemoveBookmark")}"" data-id=""{PostId}""></i>"
+                            : $@"<i class=""fa fa-bookmark-o m-1 bookmark-add"" title=""{TextLocalizerDelegate("tipBookmarkPost")}"" data-id=""{PostId}""></i>");
                     }
 
                 }
                 else
                 {
                     if(!IsLocked || isadmin)
-                        output.Content.AppendHtml($@"<i class=""fa fa-commenting m-1 reply-quote"" title=""Reply with Quote"" data-id=""{PostId}""></i>");
+                        output.Content.AppendHtml($@"<i class=""fa fa-commenting m-1 reply-quote"" title=""{TextLocalizerDelegate("tipQuoteReply")}"" data-id=""{PostId}""></i>");
                     if (UseBookmarks)
                     {
-                        output.Content.AppendHtml(_bookmarks.IsBookmarked(TopicId.Value)
-                            ? $@"<i class=""fa fa-bookmark m-1 bookmark-del"" title=""Delete Bookmark"" data-id=""{TopicId}""></i>"
-                            : $@"<i class=""fa fa-bookmark-o m-1 bookmark-add"" title=""Bookmark Topic"" data-id=""{TopicId}""></i>");
+                        output.Content.AppendHtml(_bookmarks.IsBookmarked(TopicId!.Value)
+                            ? $@"<i class=""fa fa-bookmark m-1 bookmark-del"" title=""{TextLocalizerDelegate("tipRemoveBookmark")}"" data-id=""{TopicId}""></i>"
+                            : $@"<i class=""fa fa-bookmark-o m-1 bookmark-add"" title=""{TextLocalizerDelegate("tipBookmarkPost")}"" data-id=""{TopicId}""></i>");
                     }
                 }
                 if (username == Author || isadmin)
@@ -89,28 +89,28 @@ namespace MVCForum.TagHelpers
                     {
                         if (!IsLocked || isadmin)
                         {
-                            output.Content.AppendHtml($@"<i class=""fa fa-pencil m-1 post-edit"" title=""Edit Post"" data-id=""{PostId}""></i>");
+                            output.Content.AppendHtml($@"<i class=""fa fa-pencil m-1 post-edit"" title=""{TextLocalizerDelegate("tipEditTopic")}"" data-id=""{PostId}""></i>");
                         }
                         if (isadmin)
                         {
-                            output.Content.AppendHtml($@"<i class=""fa fa-trash m-1 post-del"" title=""Delete Post"" data-id=""{PostId}""></i>");
+                            output.Content.AppendHtml($@"<i class=""fa fa-trash m-1 post-del"" title=""{TextLocalizerDelegate("tipTopicDel")}"" data-id=""{PostId}""></i>");
                             output.Content.AppendHtml(IsLocked
-                                ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""UnLock Post"" data-id=""{PostId}"" data-status=""0""></i>"
-                                : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""Lock Post"" data-id=""{PostId}"" data-status=""1""></i>");
+                                ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""{TextLocalizerDelegate("cnfUnlockTopic")}"" data-id=""{PostId}"" data-status=""0""></i>"
+                                : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""{TextLocalizerDelegate("cnfLockTopic")}"" data-id=""{PostId}"" data-status=""1""></i>");
                         }
                     }
                     else
                     {
                         if (!IsLocked || isadmin)
                         {
-                            output.Content.AppendHtml($@"<i class=""fa fa-pencil m-1 reply-edit"" title=""Edit Post"" data-id=""{PostId}""></i>");
+                            output.Content.AppendHtml($@"<i class=""fa fa-pencil m-1 reply-edit"" title=""{TextLocalizerDelegate("tipEditReply")}"" data-id=""{PostId}""></i>");
                         }
                         if (isadmin)
                         {
-                            output.Content.AppendHtml($@"<i class=""fa fa-trash m-1 reply-del"" title=""Delete Post"" data-id=""{PostId}""></i>");
+                            output.Content.AppendHtml($@"<i class=""fa fa-trash m-1 reply-del"" title=""{TextLocalizerDelegate("tipDelReply")}"" data-id=""{PostId}""></i>");
                             output.Content.AppendHtml(IsLocked
-                                ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""UnLock Post"" data-id=""{TopicId}"" data-status=""0""></i>"
-                                : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""Lock Post"" data-id=""{TopicId}"" data-status=""1""></i>");
+                                ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""{TextLocalizerDelegate("cnfUnlockTopic")}"" data-id=""{TopicId}"" data-status=""0""></i>"
+                                : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""{TextLocalizerDelegate("cnfLockTopic")}"" data-id=""{TopicId}"" data-status=""1""></i>");
                         }
 
                     }

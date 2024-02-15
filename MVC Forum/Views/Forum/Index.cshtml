@@ -87,6 +87,13 @@
         @foreach (var post in Model.Posts!){
             <partial name="_TopicListing" model="post" />
         }
+        @if (Model.Forum.Posts == 0)
+        {
+            <p class="text-center p-4">@Localizer["lblNoForumTopics"]</p>
+        }else if (Model.Posts == null || Model.Posts?.Count() == 0)
+        {
+            <p class="text-center p-4">@Localizer["lblNoTopicsToDisplay"]</p>
+        }
         <!--ends here-->
     </div>
     <!--Pagination starts-->

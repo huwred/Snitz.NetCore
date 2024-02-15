@@ -10,11 +10,11 @@ namespace MVCForum.Extensions
 {
     public sealed class DisplayAttributeLocalizationProvider : IDisplayMetadataProvider
     {
-        private LanguageService _localizer;
+        private readonly LanguageService _localizer;
 
         public DisplayAttributeLocalizationProvider(IHtmlLocalizerFactory localizerFactory)
         {
-            _localizer = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");;
+            _localizer = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
         }
 
         public void CreateDisplayMetadata(DisplayMetadataProviderContext context)
@@ -36,7 +36,7 @@ namespace MVCForum.Extensions
                 .Where(attribute => attribute is DisplayAttribute)
                 .Cast<DisplayAttribute>().ToList().ForEach(display =>
                 {
-                    display.Name = _localizer[display.Name].Value;
+                    if (display.Name != null) display.Name = _localizer[display.Name].Value;
                 });
         }
         private static bool IsTransformRequired(string propertyName, DisplayMetadata modelMetadata, IReadOnlyList<object> propertyAttributes)

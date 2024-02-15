@@ -1,17 +1,18 @@
 ﻿@using SnitzCore.Data.Extensions
-@using SnitzCore.Data.Models
+@using MVCForum.TagHelpers
 @inject ISnitz SnitzService
 
 @{
     ForumTotal Stats = SnitzService.Totals();
     var LastPost = SnitzService.LastPost();
-    var lastpostdate = LastPost?.Created?.FromForumDateStr();
+
+    var lastpostdate = LastPost.LastPostDate?.FromForumDateStr();
 }
 <div class="forum-info m-2 rounded">
     <div class="chart">
         @Localizer["lblForumStats"] &nbsp;<i class="fa fa-bar-chart"></i>
     </div>
-    <span>@Localizer["staMembers", Stats.PostCount, Stats.TopicCount, Stats.UserCount, SnitzService.ForumCount()]</span><br>
-    <span>Latest post: <b><lastpost-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" topic-id="@LastPost.Id" post-date="@lastpostdate" reply-id="@LastPost?.LastPostReplyId"></lastpost-link></b> @Localizer["lblPostedBy"] <member-link member-id="@LastPost?.Member?.Id" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link></span>.<br>
-    <span>Check <a href="/Forum/Active">the latest posts</a> .</span><br>
+    <span>@Localizer["staMembers", Stats.PostCount, Stats.TopicCount, Stats.UserCount, SnitzService.ForumCount()]</span><br/>
+    <span>@Localizer["lblLatestPost"]: <b><lastpost-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" topic-id="@LastPost.LastTopic" post-date="@lastpostdate" reply-id="@LastPost?.LastReply"></lastpost-link></b> @Localizer["lblPostedBy"] <member-link member-id="@LastPost?.LastPostAuthor" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link></span>.<br/>
+    <span>@Localizer["lblCheckActive"] .</span><br/>
 </div>

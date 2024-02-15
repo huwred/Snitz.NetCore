@@ -31,7 +31,7 @@ namespace MVCForum.Controllers
 
         public IActionResult Index()
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity is { IsAuthenticated: true })
             {
                 _memberService.SetLastHere(User);
             }

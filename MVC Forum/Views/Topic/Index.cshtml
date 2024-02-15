@@ -133,7 +133,7 @@
 }
 else
 {
-    <p snitz-if="@User.Identity.IsAuthenticated" class="p-4">@Localizer["NoReplyMessage"]</p>
+    <p snitz-if="@User.Identity.IsAuthenticated" class="p-4">@Localizer["lblNoReplyMessage"]</p>
     <p snitz-if="!@User.Identity.IsAuthenticated" class="p-4">@Localizer["lblNoReplies"]</p>
 }
     <!--Reply Area-->
@@ -157,8 +157,8 @@ else
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-dark text-bg-dark">
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="close">X</a>
-                <h4 id="modal-title"></h4>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline-light">X</a>
+                <h4 class="bg-dark text-bg-dark" id="modal-title"></h4>
             </div>
             <div class="modal-body">
                 <div id="member-modal"></div>

@@ -11,6 +11,7 @@
             <li snitz-if="@SnitzConfig.TableExists("FORUM_IMAGES")"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="">@Localizer["mnuMyAlbum"]</a></li>
 
             <li><hr class="dropdown-divider"> </li>
+            <li snitz-if="@User.IsInRole("LanguageEditor")"><a href="~/LanguageManager/" class="nav-link">Language Settings</a></li>
             <li><a class="dropdown-item" asp-controller="Account" asp-action="LogOut">@Localizer["SignOut"]</a></li>
 
         </ul>

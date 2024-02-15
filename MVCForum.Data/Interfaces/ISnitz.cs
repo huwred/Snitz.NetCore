@@ -6,7 +6,7 @@ namespace SnitzCore.Data.Interfaces
     public interface ISnitz
     {
         ForumTotal Totals();
-        Post LastPost();
+        LastPostViewModel LastPost();
         IEnumerable<SnitzConfig> GetConfig();
         int ForumCount();
         IEnumerable<KeyValuePair<int, string>> GetForumModerators();

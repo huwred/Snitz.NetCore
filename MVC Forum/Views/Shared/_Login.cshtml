@@ -1,6 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using SnitzCore.Data.Models
 @model MVCForum.Models.User.UserSignInModel
 @inject SignInManager<ForumUser> SignInManager
 @if (!SignInManager.IsSignedIn(User))
@@ -18,11 +17,10 @@
         {
             returnurl = Context.Request.Query["ReturnUrl"].ToString();
         }
-
     }
     <div class="m-2 bg-form border border-dark rounded">
-        <div class="subforum ">
-            <h1 class="bg-dark text-white p-2">SignIn</h1>
+        <div class="subforum">
+            <h1 class="bg-dark text-white p-2">@Localizer["SignIn"]</h1>
             <form method="post" asp-controller="Account" asp-action="Login" class="needs-validation p-2" novalidate>
                 <div class="form-group">
                     <label asp-for="Username">@Localizer["Username"]</label>

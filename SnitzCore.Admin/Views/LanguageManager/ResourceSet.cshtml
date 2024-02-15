@@ -1,23 +1,75 @@
-﻿@model SnitzCore.BackOffice.ViewModels.LanguageViewModel
+﻿@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.BackOffice.TagHelpers
+@model SnitzCore.BackOffice.ViewModels.LanguageViewModel
+@inject IOptions<RequestLocalizationOptions> LocOptions
+
 @{
     Layout = null;
+    var cultureItems = LocOptions.Value.SupportedUICultures!
+        .Where(c=>c.TwoLetterISOLanguageName != "en")
+        .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
+        .ToList();
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    string clang = requestCulture?.RequestCulture.Culture.Name!;
 }
-<ul class="">
-@foreach (var res in Model.DefaultStrings)
-{
+<ul class="p-1">
     <li class="list-unstyled">
         <div class="mb-3 row">
-            <label for="@res.Name" class="col-sm-3 col-form-label">@res.Name</label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control bg-warning" id="@res.Name" value="@res.Value">
+            <label class="col-2 col-form-label">Key</label>
+            <label class="col-4 col-form-label">@Localizer["lang_en"]</label>
+            <div class="col-4 col-form-label">
+                <select id="select-lang" class="form-select" title="Select language to edit">
+                    <option value="">- Select Language to edit -</option>
+                    @foreach (var culture in cultureItems)
+                    {
+                        if (culture.Value == clang)
+                        {
+                            <option value="lang_@culture.Value" selected="">@culture.Text</option>
+                        }
+                        else
+                        {
+                            <option value="lang_@culture.Value">@culture.Text</option>
+                        }
+                        
+                    }
+                </select>
             </div>
-        </div>
-        <div class="mb-3 row">
-            <div class="col-sm-3"></div>
-            <div class="col-sm-6">
-                <lang-res culture="no" resource="@res.Name"></lang-res>
-            </div>
+            <div class="col-2"><button class="btn" title="Delete Resource Set"><i class="fa fa-trash-o"></i></button></div>
         </div>
     </li>
-}
+    @foreach (var res in Model.DefaultStrings)
+    {
+        <li class="list-unstyled">
+            <div class="mb-3 row">
+                <label for="@res.Name" class="col-2 col-form-label">@res.Name</label>
+                <div class="col-4">
+                    <input type="text" class="form-control bg-warning" id="@res.Name" value="@res.Value" disabled aria-disabled="True">
+                </div>
+                <div class="col-6 p-0">
+                    <form asp-action="UpdateResource" data-ajax="true" data-ajax-update="#result_@res.Name" class="row">
+                        @foreach (var culture in cultureItems)
+                        {
+                            <div class="lang_@culture.Value col-8" style="display: none;">
+                                <input type="hidden" value="@res.ResourceSet" name="ResourceSet" />
+                                <input type="hidden" value="@res.Culture" name="Culture" />
+                                <input type="hidden" value="@res.Id" name="Id" />
+                                <input type="hidden" value="@res.Name" name="Name" />
+                                <lang-res culture="@culture.Value" resource="@res.Name"></lang-res>
+                            </div>
+                        }
+                        <div class="col-3">
+                            <button class="btn btn-sm btn-outline-success" type="submit" title="Save Changes" data-id="@res.Id"><i class="fa fa-save"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" title="Delete Resource" data-id="@res.Id"><i class="fa fa-trash-o"></i></button>
+                            <span id="result_@res.Name"></span>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </li>
+    }
 </ul>
+<div id="loaded"></div>

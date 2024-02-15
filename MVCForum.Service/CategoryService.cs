@@ -55,7 +55,23 @@ namespace SnitzCore.Service
 
         public async Task Update(Category category)
         {
-            _dbContext.Update(category);
+            try
+            {
+                var myObj =  _dbContext.Categories.Find(category.Id);
+                _dbContext.Attach(myObj);
+                myObj.Name = category.Name;
+                myObj.Moderation = category.Moderation;
+                myObj.Status = category.Status;
+                myObj.Sort = category.Sort;
+                myObj.Subscription = category.Subscription;
+                 _dbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
             await _dbContext.SaveChangesAsync();
 
         }

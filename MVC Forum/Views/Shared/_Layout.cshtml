@@ -1,5 +1,6 @@
 ﻿@using System.Globalization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.Models
 @{
     //check the culture so we can set the page direction and language
     CultureInfo ci = CultureInfo.CurrentUICulture;
@@ -33,28 +34,64 @@
         <partial name="Footer"/>
     </div>
 
-    <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="/js/jquery.min.js"></script>
-    <script type="text/javascript" src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" type="text/javascript"></script>
-    <partial name="ValidationScriptsPartial" />
-    <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
-    <script type="text/javascript" src="/js/jquery.cookie.js"></script>
-    @if (clang == "fa")
-    {
-        <script type="text/javascript" src="~/bundles/Persian"></script>
-    }
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" type="text/javascript"></script>
+<partial name="ValidationScriptsPartial" />
+<script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
+<script type="text/javascript" src="/js/jquery.cookie.js"></script>
+<script snitz-if="@(clang == "fa")" type="text/javascript" src="~/bundles/Persian"></script>
+<script snitz-if="@(clang is "nb" or "nn" or "no")" type="text/javascript" src="/js/timeago/timeago.no.js"></script>
 
-    @if (clang == "nb" || clang == "nn" || clang == "no")
-    {
-        <script type="text/javascript" src="/js/timeago/timeago.no.js"></script>
-    }
-    else if (clang != "en")
-    {
-        var src = $"/js/timeago/timeago.{clang}.js";
-        <script type="text/javascript" src="@src"></script>
-    }
+@if (!clang.Contains("en"))
+{
+    var src = $"/js/timeago/timeago.{clang}.js";
+    <script type="text/javascript" src="@src"></script>
+}
+
 @await RenderSectionAsync("Scripts", required: false)
+@if (User.IsInRole("Admin"))
+{
+    <div id="confirmRestart" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-danger">X</a>
+                    <h4 class="text-bg-danger">Application Restart!</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to Restart the Application.</p>
+                    <p>Do you wish to proceed?</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="btnRestartYes" class="btn btn-danger">@Localizer["btnOk"]</a>
+                    <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">@Localizer["btnCancel"]</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).on('click', '.confirm-restart', function (e) {
+            e.preventDefault();
+            var href = $(this).attr('href');
+            $('#confirmRestart').data('url', href).modal('show');
 
+                $('#confirmRestart').on('click', '#btnRestartYes', function (e) {
+                e.preventDefault();
+                $.post(href,'',
+                    function(data, status){
+                
+                        if (!data.result) {
+                            alert(data.error);
+                        } else {
+                            location.href = data.url;
+                        }
+                    });
+            });
+        });
+
+    </script>
+}
 </body>
 </html>

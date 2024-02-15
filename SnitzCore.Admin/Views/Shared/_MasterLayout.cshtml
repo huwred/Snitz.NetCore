@@ -16,10 +16,9 @@
     <div class="d-flex flex-column" style="min-height: 100vh;">
         <partial name="MainNav"/>
 
-        <div class="container row mt-3">
-            <div class="col-3"><partial name="_Menu"/></div>
-
-                <main role="main" class="col-9 pb-3 bg-form rounded">
+        <div class="container mt-3">
+            <partial name="_Menu" />
+            <main role="main" class="p-2 bg-form rounded">
                 @RenderBody()
             </main>
         </div>

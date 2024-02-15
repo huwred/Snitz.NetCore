@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using System;
+using System.Globalization;
 using System.Linq;
 using SnitzCore.Data.Extensions;
 
@@ -66,19 +67,21 @@ namespace MVCForum.TagHelpers
             //get Display(Name = "Field name")
             if (fieldName != null)
             {
-                var displayName = EnumType.GetField(fieldName).GetCustomAttributes(false).OfType<DisplayAttribute>().SingleOrDefault()?.Name;
+                var displayName = EnumType.GetField(fieldName)?.GetCustomAttributes(false).OfType<DisplayAttribute>().SingleOrDefault()?.Name;
 
                 return displayName ?? fieldName;
             }
 
-            return fieldName;
+            return fieldName ??  "";
         }
 
         private string GetEnumFieldLocalizedDisplayName(int value)
         {
             var text = GetEnumFieldDisplayName(value);
 
-            return TextLocalizerDelegate(text).Replace("[[LASTVISIT]]",LastVisit?.ToLocalTime().ToString());
+            if (TextLocalizerDelegate != null)
+                return TextLocalizerDelegate(text).Replace("[[LASTVISIT]]", LastVisit?.ToLocalTime().ToString(CultureInfo.CurrentCulture));
+            return text;
         }
     }
 }

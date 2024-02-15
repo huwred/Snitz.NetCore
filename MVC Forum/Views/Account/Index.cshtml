@@ -91,19 +91,19 @@
                             }
                         </td>
                         <td snitz-if="!showlink">@member.Member.Name</td>
-                        <td snitz-if="showlink"><a href="/Account/Detail/@member.Member.Name" title="View @member.Member.Name's profile'">@member.Member.Name</a></td>
+                        <td snitz-if="showlink"><a href="/Account/Detail/@member.Member.Name" title="@Localizer["tipViewProfile"]">@member.Member.Name</a></td>
                         <td>@member.Title<br />@Html.MemberRankStars(member, ranking, Localizer)</td>
                         <td>@member.Member.Posts</td>
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>
-                        <td class="d-none d-md-table-cell">@member.MemberSince?.ToShortDateString()</td>
+                        <td class="d-none d-md-table-cell">@member.MemberSince?.Year</td>
                         <td class="d-none d-md-table-cell">@member.LastHereDate?.ToShortDateString()</td>
                         <td snitz-if="@userroles != null && @userroles.Contains("Admin")" class="d-none d-md-table-cell">@member.Member.Email</td>
                         <td class="d-none d-md-table-cell">@member.Member.Country</td>
                         <td snitz-if="@userroles != null && @userroles.Contains("Admin")"class="d-none d-md-table-cell user-icon">
-                            <link-confirm title="" jq-selector="confirm-unlock" snitz-if="(member.Member.Status == 0)" href="/Account/LockMember/" config-class="fa fa-unlock" config-key="@member.Id"></link-confirm>
-                            <link-confirm title="" jq-selector="confirm-lock"  snitz-if="(member.Member.Status != 0)" href="/Account/LockMember/" config-class="fa fa-lock" config-key="@member.Id"></link-confirm>
-                            <link-confirm title="" jq-selector="confirm-delete"  snitz-if="(member.Member.Posts < 1)" href="/Account/Delete/" config-class="fa fa-trash" config-key="@member.Id"></link-confirm>
-                            <link-confirm title="Zap" jq-selector="confirm-zap" snitz-if='(member.Member.Name != "zapped")' href="/Account/ZapMember/" config-class="fa fa-bolt" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipAuthorUnlock"].Value" jq-selector="confirm-unlock" snitz-if="(member.Member.Status == 0)" href="/Account/LockMember/" config-class="fa fa-unlock" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipAuthorLock"].Value" jq-selector="confirm-lock" snitz-if="(member.Member.Status != 0)" href="/Account/LockMember/" config-class="fa fa-lock" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipDelMember"].Value" jq-selector="confirm-delete" snitz-if="(member.Member.Posts < 1)" href="/Account/Delete/" config-class="fa fa-trash" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipZapMember"].Value" jq-selector="confirm-zap" snitz-if='(member.Member.Name != "zapped")' href="/Account/ZapMember/" config-class="fa fa-bolt" config-key="@member.Id"></link-confirm>
                         </td>
                     </tr>
                 }
@@ -134,66 +134,90 @@
         </div>
     </div>
 </div>
-@{
+@if (User.IsInRole("Admin"))
+{
     var confModel = new ConfirmDialogViewModel()
     {
-        Title = "Member",
-        Message = @"<p>You are about to Lock this Member.</p>
-                <p>Do you wish to proceed?</p>"
+        Title = "Manage Member",
+        Message = @"<p></p>"
     };
-}
-<partial name="ConfirmDialog" model="@confModel" />
-@section Scripts
+    <partial name="ConfirmDialog" model="@confModel" />
+    @section Scripts
     {
-    <script type="text/javascript">
-        $(document).on('click', '.confirm-lock', function (e) {
-            e.preventDefault();
-            var postid = $(this).data('id');
-            var href = $(this).attr('href');
-            $('#confirmModal #confirm-body').html('<p>You are about to lock this Member.</p><p>Do you wish to proceed?</p>');
-            $('#confirmModal').data('id', postid).data('url', href).modal('show');
-
-            $('#confirmModal').on('click','#btnYes',function(e) {
-                // handle deletion here
+        <script type="text/javascript">
+            $(document).on('click', '.confirm-lock', function (e) {
                 e.preventDefault();
-                $.post(href,
-                    {
-                        id: postid
-                    },
-                    function(data, status){
-                
-                        if (!data.result) {
-                            alert(data.error);
-                        } else {
-                            location.href = data.url;
-                        }
-                    });
-            });
-        });
-        $(document).on('click', '.confirm-unlock', function (e) {
-            e.preventDefault();
-            var postid = $(this).data('id');
-            var href = $(this).attr('href');
-            $('#confirmModal #confirm-body').html('<p>You are about to unlock this Member.</p><p>Do you wish to proceed?</p>');
-            $('#confirmModal').data('id', postid).data('url', href).modal('show');
+                var postid = $(this).data('id');
+                var href = $(this).attr('href');
+                $('#confirmModal #confirm-body').html('<p>You are about to lock this Member.</p><p>Do you wish to proceed?</p>');
+                $('#confirmModal').data('id', postid).data('url', href).modal('show');
 
-            $('#confirmModal').on('click','#btnYes',function(e) {
-                // handle deletion here
+                $('#confirmModal').on('click','#btnYes',function(e) {
+                    // handle deletion here
+                    e.preventDefault();
+                    $.post(href,
+                        {
+                            id: postid
+                        },
+                        function(data, status){
+                    
+                            if (!data.result) {
+                                alert(data.error);
+                            } else {
+                                location.href = data.url;
+                            }
+                        });
+                });
+            });
+            $(document).on('click', '.confirm-unlock', function (e) {
                 e.preventDefault();
-                $.post(href,
-                    {
-                        id: postid
-                    },
-                    function(data, status){
-                
-                        if (!data.result) {
-                            alert(data.error);
-                        } else {
-                            location.href = data.url;
-                        }
-                    });
-            });
-        });
-    </script>
+                var postid = $(this).data('id');
+                var href = $(this).attr('href');
+                $('#confirmModal #confirm-body').html('<p>You are about to unlock this Member.</p><p>Do you wish to proceed?</p>');
+                $('#confirmModal').data('id', postid).data('url', href).modal('show');
 
+                $('#confirmModal').on('click','#btnYes',function(e) {
+                    // handle deletion here
+                    e.preventDefault();
+                    $.post(href,
+                        {
+                            id: postid
+                        },
+                        function(data, status){
+                    
+                            if (!data.result) {
+                                alert(data.error);
+                            } else {
+                                location.href = data.url;
+                            }
+                        });
+                });
+            });
+            $(document).on('click', '.confirm-zap', function (e) {
+                e.preventDefault();
+                var postid = $(this).data('id');
+                var href = $(this).attr('href');
+                $('#confirmModal #confirm-body').html('<p>You are about to Zap this Member\'s account.</p><p>Do you wish to proceed?</p>');
+                $('#confirmModal').data('id', postid).data('url', href).modal('show');
+
+                $('#confirmModal').on('click','#btnYes',function(e) {
+                    // handle deletion here
+                    e.preventDefault();
+                    $.post(href,
+                        {
+                            id: postid
+                        },
+                        function(data, status){
+                    
+                            if (!data.result) {
+                                alert(data.error);
+                            } else {
+                                location.href = data.url;
+                            }
+                        });
+                });
+            });
+        </script>
+    }
 }
+

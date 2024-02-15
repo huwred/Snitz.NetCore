@@ -21,12 +21,13 @@ public class LanguageManagerController : Controller
     {
         TranslationViewModel vm = new TranslationViewModel
         {
-            Resources = GetStrings().ToList()
+            Resources = GetStrings().ToList(),
+            ResourceSets = _dbcontext.LanguageResources.Select(l=>l.ResourceSet).Distinct().ToList()
         };
         return View(vm);
     }
 
-    public IActionResult Search(string filter = "", string filterby = "value")
+    public IActionResult Search(string filter = "", string filterby = "value", string Culture = "en")
     {
         TranslationViewModel vm = new TranslationViewModel
         {
@@ -36,7 +37,7 @@ public class LanguageManagerController : Controller
         };
         if (filter != "")
         {
-            vm.Resources = filterby == "id" ? GetStrings().Where(s => s.Name.ToLower().Contains(filter.ToLower())).ToList() : GetStrings().Where(s => s.Value.ToLower().Contains(filter.ToLower())).ToList();
+            vm.Resources = filterby == "id" ? GetStrings(Culture).Where(s => s.Name.ToLower().Contains(filter.ToLower())).ToList() : GetStrings(Culture).Where(s => s.Value.ToLower().Contains(filter.ToLower())).ToList();
         }
         return View("Search",vm);
     }    
@@ -91,4 +92,26 @@ public class LanguageManagerController : Controller
     }
 
 
+    public IActionResult UpdateResource()
+    {
+        return Content("<i class='fa fa-check'></i>");
+    }
+
+    public IActionResult AddResource(LanguageResource res)
+    {
+        TranslationViewModel vm = new TranslationViewModel
+        {
+            Resources = GetStrings().ToList(),
+            ResourceSets = _dbcontext.LanguageResources.Select(l=>l.ResourceSet).Distinct().ToList()
+        };
+        
+        if (ModelState.IsValid)
+        {
+            _dbcontext.LanguageResources.Add(res);
+            _dbcontext.SaveChanges();
+            return Content("Resource Saved");
+        }
+
+        return Content("Error saving resource");
+    }
 }

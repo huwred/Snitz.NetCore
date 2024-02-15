@@ -1,22 +1,48 @@
 ﻿
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Builder
 @model SnitzCore.BackOffice.ViewModels.TranslationViewModel
+@inject IOptions<RequestLocalizationOptions> LocOptions
 @{
     ViewBag.Title = "Language Search";
     Layout = "_MasterLayout";
+    var cultureItems = LocOptions.Value.SupportedUICultures!
+        .Select(c => new SelectListItem { Value = c.TwoLetterISOLanguageName, Text = c.DisplayName })
+        .ToList();
 }
 <div class="mt-3">
     <legend>@ViewBag.Title</legend>
     <form asp-action="Search" asp-controller="LanguageManager" method="POST" class="mt-3 mb-3">
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="filterby" id="filterby1" value="id">
-            <label class="form-check-label" for="filterby1">ResourceId</label>
+        <div class="row  mb-3">
+            <div class="col-2">
+                <div class="form-check form-check-inline mt-2">
+                    <input class="form-check-input" type="radio" name="filterby" id="filterby1" value="id">
+                    <label class="form-check-label" for="filterby1">ResourceId</label>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="form-check form-check-inline mt-2">
+                    <input class="form-check-input" type="radio" name="filterby" id="filterby2" value="value">
+                    <label class="form-check-label" for="filterby2">Description</label>
+                </div>
+            </div>
+            <div class="col-3">
+                <select id="ResourceLang" class="form-select" title="Select language to edit" name="Culture">
+                    <option value="" selected>- Select Language -</option>
+                    @foreach (var culture in cultureItems)
+                    {
+                        <option value="@culture.Value">@culture.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    <input name="filter" class="form-control" id="filter" />
+                    <button type="submit" class="btn btn-outline-primary">@Localizer["btnFind"]</button>
+                </div>
+            </div>
         </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="filterby" id="filterby2" value="value">
-            <label class="form-check-label" for="filterby2">Description</label>
-        </div>
-        <input name="filter" class="form-control mb-3" id="filter"/>
-        <button type="submit" class="btn btn-primary">@Localizer["btnFind"]</button>
+
     </form>
     <hr />
     <form asp-action="SearchUpdate" asp-controller="LanguageManager" method="POST" class="mt-3 mb-3">

@@ -26,7 +26,7 @@ namespace MVCForum.TagHelpers
 
             link.Attributes.Add("rel","index,follow");
             link.Attributes.Add("href", $"/Topic/{TopicId}/?replyid={ReplyId}");
-            link.Attributes.Add("title",TextLocalizerDelegate("tipLastPost"));
+            if (TextLocalizerDelegate != null) link.Attributes.Add("title", TextLocalizerDelegate("tipLastPost"));
             link.InnerHtml.AppendHtml(@"<i class=""fa fa-arrow-right""></i>");
 
             output.TagName = "span";

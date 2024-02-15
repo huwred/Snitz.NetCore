@@ -12,13 +12,12 @@ namespace SnitzCore.Data
 {
     public class SnitzDbContext : IdentityDbContext
     {
-        private readonly IServiceProvider _serviceProvider;
         public SnitzDbContext(){}
         public SnitzDbContext(DbContextOptions<SnitzDbContext> options,IServiceProvider serviceProvider)
             : base(options)
         {
             //SavedChanges += SnitzContext_SavedChanges;
-            _serviceProvider = serviceProvider;
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

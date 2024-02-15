@@ -10,7 +10,7 @@
     <snitz-breadcrumb></snitz-breadcrumb>
     <div class="row">
         <div class="col col-md-6">
-            <form asp-controller="Category" asp-action="CreateEdit" class="p-4 bg-form rounded">
+            <form asp-controller="Category" asp-action="CreateEdit" method="post"  class="p-4 bg-form rounded">
                 <input asp-for="@Model.Id" type="hidden"/>
                 <div class="mb-3">
                     <label asp-for="Name" class="form-label">@Localizer["catName"]</label>

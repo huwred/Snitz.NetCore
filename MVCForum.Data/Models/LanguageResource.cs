@@ -13,11 +13,13 @@ public partial class LanguageResource
 
     [StringLength(100)]
     [Column("ResourceId")]
+    [Required]
     public string Name { get; set; } = null!;
 
     public string Value { get; set; } = null!;
 
     [StringLength(6)]
+    [Required]
     public string Culture { get; set; } = null!;
 
     [StringLength(32)]

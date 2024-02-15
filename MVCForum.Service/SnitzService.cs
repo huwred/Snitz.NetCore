@@ -4,6 +4,7 @@ using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using SnitzCore.Data.Extensions;
 
 namespace SnitzCore.Service
 {
@@ -20,11 +21,20 @@ namespace SnitzCore.Service
             return _dbContext.ForumTotal.First();
         }
 
-        public Post LastPost()
+        public LastPostViewModel LastPost()
         {
             var lastpost = _dbContext.Forums.OrderByDescending(f=>f.LastPost).First();
+            var lastreply = _dbContext.Replies.Include(f=>f.Member).Single(p=>p.Id == lastpost.LatestReplyId);
+            var lasttopic = _dbContext.Posts.Include(f=>f.Member).Single(p=>p.Id == lastpost.LatestTopicId);
 
-            return _dbContext.Posts.Include(f=>f.Member).Single(p=>p.Id == lastpost.LatestTopicId);
+            dynamic latest = lastreply.Created.FromForumDateStr() > lasttopic.Created.FromForumDateStr() ? lastreply : lasttopic;
+            return new LastPostViewModel()
+            {
+                LastPostDate = latest.Created,
+                LastPostAuthor = latest.Member.Id,
+                LastTopic = latest.PostId ?? latest.Id,
+                LastReply = latest.Id
+            };
         }
         public int ForumCount()
         {
@@ -40,4 +50,6 @@ namespace SnitzCore.Service
             return _dbContext.Members.Where(m=>m.Level>1).ToDictionary(o => o.Id, o => o.Name).ToList();
         }
     }
+
+
 }

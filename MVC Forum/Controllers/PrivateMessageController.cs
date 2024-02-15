@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MVCForum.Extensions;
 using MVCForum.Models.PrivateMessage;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -198,7 +197,8 @@ namespace MVCForum.Controllers
             string touser = "";
             if (id != null)
             {
-                touser = _memberService.GetById(id).Name;
+                var name = _memberService.GetById(id)?.Name;
+                if (name != null) touser = name;
                 popup = true;
             }
 
@@ -253,20 +253,22 @@ namespace MVCForum.Controllers
             _member = _memberService.GetMember(User);
             if (ModelState.IsValid)
             {
-                var recipients = postmodel.To.Split(";");
-                if (postmodel.IncludeSig && !string.IsNullOrWhiteSpace(_member.Signature))
+                //var recipients = postmodel.To.Split(";");
+                if (postmodel.IncludeSig && !string.IsNullOrWhiteSpace(_member?.Signature))
                 {
                     postmodel.Message += $"<br/><span>{_member.Signature}</span>";
                 }
-                _pmService.Create(new PrivateMessage()
-                {
-                    From = _member.Id, 
-                    To = _memberService.GetByUsername(postmodel.To).Id,
-                    Message = postmodel.Message,
-                    Subject = postmodel.Subject,
-                    SentDate = DateTime.UtcNow.ToForumDateStr(),
-                    SaveSentMessage = (short)(postmodel.SaveToSent ? 1 : 0),
-                });
+
+                if (_member != null)
+                    _pmService.Create(new PrivateMessage()
+                    {
+                        From = _member.Id,
+                        To = _memberService.GetByUsername(postmodel.To)!.Id,
+                        Message = postmodel.Message,
+                        Subject = postmodel.Subject,
+                        SentDate = DateTime.UtcNow.ToForumDateStr(),
+                        SaveSentMessage = (short)(postmodel.SaveToSent ? 1 : 0),
+                    });
                 if (postmodel.IsPopUp)
                 {
                     return Json(new { result = true });

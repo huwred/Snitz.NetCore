@@ -19,7 +19,7 @@ namespace SnitzCore.BackOffice.TagHelpers
         public string? Lang { get; set; }
         [HtmlAttributeName("resource")]
         public string? Resource { get; set; }
-
+        public string? Key { get; set; }
         private readonly SnitzDbContext _dbContext;
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -29,7 +29,7 @@ namespace SnitzCore.BackOffice.TagHelpers
             output.TagName = "input";
             output.TagMode = TagMode.SelfClosing;
             output.Attributes.Add("id",tagid);
-            output.Attributes.Add("data-id",Resource);
+            output.Attributes.Add("name","Value");
             output.Attributes.Add("data-lang",Lang);
             output.AddClass("form-control",HtmlEncoder.Default);
             
