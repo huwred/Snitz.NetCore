@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
-using MVCForum.Models.Forum;
-using MVCForum.Models.Post;
 using SmartBreadcrumbs.Attributes;
 using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
@@ -17,6 +15,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
+using MVCForum.ViewModels.Forum;
+using MVCForum.ViewModels.Post;
 
 namespace MVCForum.Controllers
 {

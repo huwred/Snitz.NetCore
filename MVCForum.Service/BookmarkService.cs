@@ -13,19 +13,17 @@ namespace SnitzCore.Service
 {
     public class BookmarkService : IBookmark
     {
-        private readonly int _pagesize;
         private readonly SnitzDbContext _dbContext;
 
         public int MemberId { get; set; }
 
         public BookmarkService(SnitzDbContext dbContext,IMember memberService,IHttpContextAccessor httpContextAccessor)
         {
-            _pagesize = 10;
             _dbContext = dbContext;
             var userId = httpContextAccessor.HttpContext?.User.Identity?.Name;
             if (userId != null)
             {
-                MemberId = memberService.GetByUsername(userId).Id;
+                MemberId = memberService.GetByUsername(userId)!.Id;
             }
             
 

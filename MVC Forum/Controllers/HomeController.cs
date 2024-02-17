@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using MVC_Forum.Models;
-using MVCForum.Models.Forum;
-using MVCForum.Models.Home;
-using MVCForum.Models.Post;
 using SmartBreadcrumbs.Attributes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -15,6 +11,10 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Localization;
+using MVCForum.ViewModels;
+using MVCForum.ViewModels.Forum;
+using MVCForum.ViewModels.Home;
+using MVCForum.ViewModels.Post;
 
 namespace MVCForum.Controllers
 {

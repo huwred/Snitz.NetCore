@@ -52,17 +52,20 @@ namespace SnitzCore.Service
         {
 
             var myObj = await _dbContext.Forums.FindAsync(forum.Id);
-            myObj.Title = forum.Title;
-            myObj.Description = forum.Description;
-            myObj.CategoryId = forum.CategoryId;
-            myObj.Type = forum.Type;
-            myObj.Privateforums = forum.Privateforums;
-            myObj.Status = forum.Status;
-            myObj.Order = forum.Order;
-            myObj.Defaultdays = forum.Defaultdays;
-            myObj.CountMemberPosts = forum.CountMemberPosts;
+            if (myObj != null)
+            {
+                myObj.Title = forum.Title;
+                myObj.Description = forum.Description;
+                myObj.CategoryId = forum.CategoryId;
+                myObj.Type = forum.Type;
+                myObj.Privateforums = forum.Privateforums;
+                myObj.Status = forum.Status;
+                myObj.Order = forum.Order;
+                myObj.Defaultdays = forum.Defaultdays;
+                myObj.CountMemberPosts = forum.CountMemberPosts;
+                _dbContext.Update(myObj);
+            }
 
-            _dbContext.Update(myObj);
             await _dbContext.SaveChangesAsync();
 
             if (_roleManager.RoleExistsAsync($"Forum_{forum.Id}").Result)

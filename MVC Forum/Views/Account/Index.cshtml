@@ -2,12 +2,10 @@
 @using MVCForum.Extensions
 @using MVCForum.TagHelpers
 @using Microsoft.AspNetCore.Identity
-@using MVCForum.Models
-@using MVCForum.Models.User
+@using MVCForum.ViewModels.User
 @using SnitzCore.Data
-@using SnitzCore.Data.Models
 @using SnitzCore.Service.TagHelpers
-@model MVCForum.Models.User.MemberIndexModel
+@model MVCForum.ViewModels.User.MemberIndexModel
 @inject IMember MemberService
 @inject UserManager<ForumUser> UserManager
 

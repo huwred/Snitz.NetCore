@@ -141,7 +141,7 @@ namespace SmartBreadcrumbs
             }
 
             string key = title.Substring(9);
-            title = ViewContext.ViewData.ContainsKey(key) ? ViewContext.ViewData[key].ToString() : $"{key} Not Found";
+            title = ViewContext != null && ViewContext.ViewData.ContainsKey(key) ? ViewContext.ViewData[key].ToString() : $"{key} Not Found";
             return encode ? _htmlEncoder.Encode(title) : title;
         }
 

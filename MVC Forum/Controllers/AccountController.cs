@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using MimeKit;
-using MVCForum.Models.Member;
-using MVCForum.Models.User;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -23,11 +21,13 @@ using System.Threading.Tasks;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
+using MVCForum.ViewModels.User;
+using MVCForum.ViewModels.Member;
 
 
 namespace MVCForum.Controllers
 {
-    
+
     public class AccountController : SnitzController
     {
         private readonly UserManager<ForumUser> _userManager;

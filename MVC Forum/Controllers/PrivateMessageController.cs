@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MVCForum.Models.PrivateMessage;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -12,6 +11,7 @@ using MVCForum.ViewModels;
 using Microsoft.AspNetCore.Mvc.Localization;
 using SnitzCore.Service.Extensions;
 using Microsoft.AspNetCore.Http;
+using MVCForum.ViewModels.PrivateMessage;
 
 namespace MVCForum.Controllers
 {

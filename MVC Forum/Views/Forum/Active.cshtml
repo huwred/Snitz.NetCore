@@ -1,12 +1,10 @@
-@model MVCForum.Models.Forum.ActiveTopicModel
+@model MVCForum.ViewModels.Forum.ActiveTopicModel
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using MVCForum.Extensions
-@using MVCForum.Models
 @using SmartBreadcrumbs
 @using SnitzCore.Data
 @using SnitzCore.Data.Extensions
-@using SnitzCore.Data.Models
 @using BbCodeFormatter
+@using MVCForum.TagHelpers
 @using SnitzCore.Service.Extensions
 @inject IMember MemberService
 @inject ICodeProcessor BbCodeProcessor

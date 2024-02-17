@@ -214,6 +214,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\" />
     <Folder Include="wwwroot\Templates\images\" />
   </ItemGroup>
   <ItemGroup>

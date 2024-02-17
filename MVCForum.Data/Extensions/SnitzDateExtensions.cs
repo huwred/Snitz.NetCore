@@ -7,7 +7,7 @@ namespace SnitzCore.Data.Extensions
     {
         private const string DateFormat = "yyyyMMdd";
         private const string DateTimeFormat = "yyyyMMddHHmmss";
-        public static DateTime FromForumDateStr(this string? date)
+        public static DateTime FromForumDateStr(this string date)
         {
             if (date != null)
             {

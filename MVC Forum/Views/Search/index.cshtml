@@ -1,10 +1,8 @@
-@model MVCForum.Models.Forum.ForumSearchModel
+@model MVCForum.ViewModels.Forum.ForumSearchModel
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using MVCForum.Models
 @using MVCForum.TagHelpers
 @using SmartBreadcrumbs
 @using SnitzCore.Data.Extensions
-@using SnitzCore.Data.Models
 @using System.ComponentModel.DataAnnotations
 @{
     ViewBag.PageCount = Model.Results?.PageCount!;

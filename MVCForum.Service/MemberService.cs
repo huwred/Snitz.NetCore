@@ -128,7 +128,7 @@ namespace SnitzCore.Service
             {
                 if (additionalField.Key.ToUpper() == "DOB")
                 {
-                    var date = DateTime.Parse(additionalField.Value.ToString());
+                    var date = DateTime.Parse(additionalField.Value.ToString()!);
                     _dbContext.Database.ExecuteSqlRaw($"UPDATE FORUM_MEMBERS SET M_{additionalField.Key.ToUpper()}='{date:yyyyMMdd}'");
                 }
                 else

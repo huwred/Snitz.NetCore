@@ -1,4 +1,5 @@
-﻿@model MVCForum.Models.User.UserSignInModel
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVCForum.ViewModels.User.UserSignInModel
 @if (SnitzConfig.GetIntValue("STRREQUIREREG") == 1)
 {
     <div class="container pt-0">

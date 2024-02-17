@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MVCForum.Models.User;
+using MVCForum.ViewModels.User;
 using SnitzCore.Data.Models;
 using SnitzCore.Service;
 using System.Collections.Generic;

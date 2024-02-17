@@ -1,9 +1,8 @@
-﻿@using SnitzCore.Data.Models
-@using System.Reflection
+﻿@using System.Reflection
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using SnitzCore.Data.Extensions
 @using MVCForum.TagHelpers
-@model MVCForum.Models.User.UserCreateModel
+@model MVCForum.ViewModels.User.UserCreateModel
 @if (SnitzConfig.GetIntValue("STRPROHIBITNEWMEMBERS") == 1)
 {
     <div class="container pt-0">

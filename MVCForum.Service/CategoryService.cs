@@ -12,6 +12,8 @@ namespace SnitzCore.Service
     public class CategoryService : ICategory
     {
         private readonly SnitzDbContext _dbContext;
+        private readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
+
         public CategoryService(SnitzDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -58,13 +60,15 @@ namespace SnitzCore.Service
             try
             {
                 var myObj =  _dbContext.Categories.Find(category.Id);
-                _dbContext.Attach(myObj);
-                myObj.Name = category.Name;
-                myObj.Moderation = category.Moderation;
-                myObj.Status = category.Status;
-                myObj.Sort = category.Sort;
-                myObj.Subscription = category.Subscription;
-                 _dbContext.SaveChanges();
+                if (myObj != null)
+                {
+                    myObj.Name = category.Name;
+                    myObj.Moderation = category.Moderation;
+                    myObj.Status = category.Status;
+                    myObj.Sort = category.Sort;
+                    myObj.Subscription = category.Subscription;
+                     await _dbContext.SaveChangesAsync();
+                }
             }
             catch (Exception e)
             {

@@ -9,6 +9,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
+using SnitzCore.Service.Extensions;
 
 namespace SnitzCore.Service
 {

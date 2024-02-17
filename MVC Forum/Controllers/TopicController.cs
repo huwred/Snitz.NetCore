@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MVCForum.Models.Post;
 using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -17,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Snitz.PhotoAlbum.ViewModels;
+using MVCForum.ViewModels.Post;
 
 namespace MVCForum.Controllers
 {

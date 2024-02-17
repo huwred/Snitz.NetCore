@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model MVCForum.Models.User.UserSignInModel
+@model MVCForum.ViewModels.User.UserSignInModel
 @inject SignInManager<ForumUser> SignInManager
 @if (!SignInManager.IsSignedIn(User))
 {

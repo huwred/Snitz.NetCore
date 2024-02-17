@@ -35,7 +35,7 @@ namespace SnitzCore.Data.Models
         public int UserId { get; set; }
         public int RoleId { get; set; }
 
-        public virtual Member User { get; set; }
-        public virtual OldRole Role { get; set; }
+        [NotMapped]public virtual Member User { get; set; } = null!;
+        [NotMapped] public virtual OldRole Role { get; set; } = null!;
     }
 }

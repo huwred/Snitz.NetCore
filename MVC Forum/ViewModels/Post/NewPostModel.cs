@@ -1,0 +1,25 @@
+﻿using SnitzCore.Data.Extensions;
+using System.ComponentModel.DataAnnotations;
+
+namespace MVCForum.ViewModels.Post
+{
+    public class NewPostModel : PostBase
+    {
+        public new int Id { get; set; }
+        [Required]
+        public string? ForumName { get; set; }
+        public int ForumId { get; set; }
+        public int CatId { get; set; }
+        public string? ImageUrl { get; set; }
+        [RequiredIfTrue(nameof(IsPost), ErrorMessage = "Please provide a Title for the Topic")]
+        public string Title { get; set; } = null!;
+
+        public int TopicId { get; set; }
+
+        public bool IsPost { get; set; }
+        public bool UseSignature { get; set; }
+        public bool Lock { get; set; }
+        public bool Sticky { get; set; }
+        public bool DoNotArchive { get; set; }
+    }
+}

@@ -1,12 +1,10 @@
-﻿@model MVCForum.Models.Forum.ForumIndexModel
+﻿@model MVCForum.ViewModels.Forum.ForumIndexModel
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using BbCodeFormatter
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Routing
-@using MVCForum.Models
-@using MVCForum.Models.User
 @using MVCForum.TagHelpers
-@using SnitzCore.Data.Models
+@using MVCForum.ViewModels.User
 @inject SignInManager<ForumUser> SignInManager
 @inject ICodeProcessor BbCodeProcessor
 @{
