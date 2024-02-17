@@ -39,8 +39,10 @@ namespace MVCForum.Controllers
         [Route("Category/Index/{id}")]
         public IActionResult Index(int id)
         {
-            _memberService.SetLastHere(User);
-           
+            if (User.Identity is { IsAuthenticated: true })
+            {
+                _memberService.SetLastHere(User);
+            }
             var forums = _forumService.GetAll().Select(forum => new ForumListingModel()
             {
                 Id = forum.Id,

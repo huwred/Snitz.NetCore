@@ -1,4 +1,4 @@
-﻿namespace MVCForum.Models
+﻿namespace SnitzCore.Data.Models
 {
     public class PagingModel
     {

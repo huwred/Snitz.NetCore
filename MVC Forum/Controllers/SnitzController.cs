@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using SnitzCore.Data;
@@ -21,6 +17,7 @@ namespace MVCForum.Controllers
         protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
         public SnitzController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor)
         {
+
             _config = config;
             _memberService = memberService;
             _snitzDbContext = dbContext;

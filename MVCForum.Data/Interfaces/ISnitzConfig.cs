@@ -6,6 +6,7 @@ namespace SnitzCore.Data.Interfaces
 {
     public interface ISnitzConfig
     {
+        string DateTimeFormat { get; }
         string? CookiePath { get; }
         string? ForumUrl { get; set; }
         string? RootFolder { get; }

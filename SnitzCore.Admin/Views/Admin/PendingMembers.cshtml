@@ -1,0 +1,12 @@
+﻿@using SnitzCore.Data.Extensions
+@model IEnumerable<SnitzCore.Data.Models.ForumUser>
+<h1>Pending Members</h1>
+    @foreach (var user in Model)
+    {
+    <div class="row">
+        <div class="col">@user.UserName</div>
+        <div class="col-2">@user.Email </div>
+        <div class="col-2">@user.Member?.Ip </div>
+        <div class="col-2">@user.Member?.Created.FromForumDateStr().ToLocalTime() </div>
+    </div>
+}

@@ -130,7 +130,7 @@ namespace SnitzCore.Data
 
             modelBuilder.Entity<BookmarkEntry>();
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.PhotoAlbum"));
-
+            modelBuilder.Entity<OldUserInRole>().HasNoKey();
         }
         //Assembly GetAssemblyByName(string name)
         //{
@@ -139,6 +139,9 @@ namespace SnitzCore.Data
         //}
         public DbSet<ForumUser> ApplicationUser { get; set; }
         public DbSet<OldMembership> OldMemberships { get; set; }
+        public DbSet<OldRole> OldRoles { get; set; }
+        public DbSet<OldUserInRole> OldUsersInRoles { get; set; }
+
         public DbSet<Member> Members { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Forum> Forums { get; set; }

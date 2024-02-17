@@ -50,12 +50,18 @@ else
             <div class="center m-2 ">
                 <div class="subforum col-6 p-2 bg-form border border-dark rounded">
                     <h1 class="bg-dark text-white p-2">@Localizer["Required"]</h1>
-                    @foreach (var field in Model.RequiredFields!)
+                    @if (Model.RequiredFields != null)
                     {
-                        var fieldname = field.Replace("STRREQ", "STR");
-                        @foreach (PropertyInfo property in typeof(Member).GetProperties().Where(p => !p.SystemProperty() && p.GetPropertyDisplayCheck<Member>() == fieldname).OrderBy(p => p.PropertyOrder()))
+                        var counter = 0;
+                        foreach (var field in Model.RequiredFields)
                         {
-                            <snitz-config can-edit="true" property-info="@property" property-val="" property-req="true" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
+                            var fieldname = field.Replace("STRREQ", "STR");
+                            foreach (PropertyInfo property in typeof(Member).GetProperties().Where(p => !p.SystemProperty() && p.GetPropertyDisplayCheck<Member>() == fieldname).OrderBy(p => p.PropertyOrder()))
+                            {
+                                <snitz-config name="RequiredFields[@counter]" can-edit="true" property-info="@property" property-val="" property-req="true" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
+                                <input type="hidden" name="RequiredProperty[@counter]" value="@property.Name" />
+                                counter++;
+                            }
                         }
                     }
                     <div class="mb-3">

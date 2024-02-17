@@ -1,14 +1,12 @@
-﻿
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-@using SnitzCore.Data.Interfaces
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IForum ForumService
 @model SnitzCore.BackOffice.ViewModels.AdminRolesViewModel
 @{
     Layout = null;
-    string[] protectedRoles = new[] {"Admin","Administrator", "Moderator","ForumMember", "Disabled"};
+    string[] protectedRoles = new[] {"Admin", "Moderator","ForumMember", "Disabled"};
 }
 <div class="mb-3">
-    <label name="Username" class="form-label">Enter a username/rolename to add to one of the lists</label>
+    <label name="Username" class="form-label">Enter a username/role name to add to one of the lists</label>
 </div>
 <div class="row mb-3">
     <div class="col-6" id="role-form">

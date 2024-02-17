@@ -5,15 +5,17 @@ namespace SnitzCore.Data.Extensions
 {
     public static class SnitzDateExtensions
     {
+        private const string DateFormat = "yyyyMMdd";
+        private const string DateTimeFormat = "yyyyMMddHHmmss";
         public static DateTime FromForumDateStr(this string? date)
         {
             if (date != null)
             {
                 if (date.Length == 8)
                 {
-                    return DateTime.ParseExact(date, "yyyyMMdd", CultureInfo.CurrentCulture);
+                    return DateTime.ParseExact(date, DateFormat, CultureInfo.CurrentCulture);
                 }
-                return DateTime.ParseExact(date.Substring(0, 14), "yyyyMMddHHmmss", CultureInfo.CurrentCulture);
+                return DateTime.ParseExact(date.Substring(0, 14), DateTimeFormat, CultureInfo.CurrentCulture);
             }
             else
             {
@@ -26,9 +28,9 @@ namespace SnitzCore.Data.Extensions
             {
                 if (date.Length == 8)
                 {
-                    return DateTime.ParseExact(date, "yyyyMMdd", CultureInfo.CurrentCulture);
+                    return DateTime.ParseExact(date, DateFormat, CultureInfo.CurrentCulture);
                 }
-                return dateonly ? DateTime.ParseExact(date, "yyyyMMddHHmmss", CultureInfo.CurrentCulture).Date : DateTime.ParseExact(date, "yyyyMMddHHmmss", CultureInfo.CurrentCulture);
+                return dateonly ? DateTime.ParseExact(date, DateTimeFormat, CultureInfo.CurrentCulture).Date : DateTime.ParseExact(date, DateTimeFormat, CultureInfo.CurrentCulture);
             }
             else
             {
@@ -37,7 +39,7 @@ namespace SnitzCore.Data.Extensions
         }
         public static string ToForumDateStr(this DateTime date)
         {
-            return date.ToString("yyyyMMddHHmmss");
+            return date.ToString(DateTimeFormat);
         }
     }
 }

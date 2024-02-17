@@ -78,6 +78,18 @@ namespace SnitzCore.Service
             set => AddOrUpdateAppSetting("strForumUrl",value);
         }
 
+        public string DateTimeFormat { get
+            {
+    ;
+                return "yyyyMMddHHmmss";
+            }
+        }
+        public string DateFormat { get
+            {
+                ;
+                return "yyyyMMdd";
+            }
+        }
         public string? CookiePath
         {
             get

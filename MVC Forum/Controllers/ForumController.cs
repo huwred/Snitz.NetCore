@@ -17,8 +17,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
-using MVCForum.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace MVCForum.Controllers
 {
@@ -35,6 +33,7 @@ namespace MVCForum.Controllers
             _forumService = forumService;
             _postService = postService;
             _cookie = snitzCookie;
+            
         }
         
         //[Breadcrumb("Forums",FromAction = "Index",FromController = typeof(CategoryController))]
@@ -42,6 +41,10 @@ namespace MVCForum.Controllers
         [Route("Forum/Index/{id:int}")]
         public IActionResult Index(int id, int page = 1, int defaultdays=30,string orderby = "lpd",string sortdir="des", int pagesize = 10)
         {
+            if (User.Identity is { IsAuthenticated: true })
+            {
+                _memberService.SetLastHere(User);
+            }
             var forum = _forumService.GetById(id);
             var forumPage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name) { Parent = forumPage,RouteValues = new {id=forum.Category?.Id}};
@@ -168,6 +171,10 @@ namespace MVCForum.Controllers
 
         public IActionResult Active(int page = 1, int pagesize = 20,ActiveRefresh? Refresh = null,ActiveSince? Since = null)
         {
+            if (User.Identity is { IsAuthenticated: true })
+            {
+                _memberService.SetLastHere(User);
+            }
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var topicPage = new MvcBreadcrumbNode("Active", "Forum", "Active") { Parent = homePage };
             ViewData["BreadcrumbNode"] = topicPage;

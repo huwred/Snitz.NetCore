@@ -1,6 +1,6 @@
 ﻿html, body {
-    font-size: 14px;
-    font-family: sans-serif;
+    font-size: 16px;
+    font-family: Verdana, Arial, helvetica;
     background-color: rgb(90,90,90) !important;
     color: #FEFEFE !important;
 }
@@ -28,16 +28,8 @@ h1 {
     font-size: 16px;
     font-weight: bolder;
 }
-
-.btn-primary {
-    color: #000;
-    background-color: silver;
-    border-color: silver;
-}
-.btn-primary:hover {
-    color: #000;
-    background-color: #efef;
-    border-color: #efef;
+.text-muted {
+    color: #fefefe !important;
 }
 /* ########################################### */
 /*           Forums.html                       */
@@ -50,7 +42,22 @@ h1 {
 .subforum-column {
     background-color: #111314;
 }
+.subforum-icon {
+    color: goldenrod;
+}
+.subforum-icon .fa-ban,.note .fa-ban {
+    color: red;
+}
+.subforum-icon .fa-link, .note .fa-link {
+    color: silver;
+}
 
+.table-row .status .fa, .note .fa {
+    color: goldenrod;
+}
+.fa-fire, .subforum-icon .fa-fire, .table-row .status .fa-fire,.note .fa-fire {
+    color: orangered;
+}
 /* For the smartphones */
 @media screen and (max-width: 460px) {
     .subforum-divider {
@@ -58,6 +65,11 @@ h1 {
         border: 0;
         height: 1px;
         background-image: linear-gradient(to right, rgba(190, 190, 190, 0), rgba(255, 255, 255, 0.75), rgba(190, 190, 190, 0));
+    }
+    .body {
+        display: flex;
+        padding: 10px;
+        margin-top: 5px;
     }
 }
 
@@ -71,14 +83,14 @@ h1 {
     padding: 3px;
 }
 
-.nav-item a {
-    color: #fff;
+/*.nav-item a {
+    color: darkslategrey;
 }
 
-.nav-item a:hover {
-    color: silver;
-}
-
+    .nav-item a:hover {
+        color: white;
+    }
+*/
 .bar-icon {
     color: #fff;
 }
@@ -129,6 +141,16 @@ footer {
     margin-inline: 5px;
     padding: 5px 10px;
     border: solid 0.5px #fff;
+}
+.pagination.quicklink {
+    padding: 1px !important;
+    margin-bottom: 2px !important;
+}
+.pagination.quicklink a {
+    color: darkslategrey;
+    margin-inline: 1px !important;
+    padding: 1px 2px !important;
+    /*border: solid 0.5px darkslategrey;*/
 }
 .page-link {
     background-color: #111314;
@@ -186,4 +208,13 @@ footer {
 
 .breadcrumb {
     background-color: #343a40;
+}
+
+
+#loadFile {
+    display: none
+}
+
+.modal-header > .modal-title, .modal-body > .body-desc, .modal-body > .photo-input, .modal-footer > .footer-title {
+    text-align: center
 }

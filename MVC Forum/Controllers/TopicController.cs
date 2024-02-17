@@ -16,9 +16,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
-using MVCForum.ViewModels;
 using Snitz.PhotoAlbum.ViewModels;
-using Snitz.PhotoAlbum.Models;
 
 namespace MVCForum.Controllers
 {
@@ -44,6 +42,10 @@ namespace MVCForum.Controllers
         [Route("Topic/Index/{id}")]
         public IActionResult Index(int id,int page = 1, int pagesize = 20, string sortdir="desc", int? replyid = null)
         {
+            if (User.Identity is { IsAuthenticated: true })
+            {
+                _memberService.SetLastHere(User);
+            }
             var post = _postService.GetTopic(id);
             if (post.ReplyCount > 0)
             {

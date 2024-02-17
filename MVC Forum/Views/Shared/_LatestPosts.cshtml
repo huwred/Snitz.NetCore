@@ -12,17 +12,17 @@
                     <a asp-controller="Topic" asp-action="Index" asp-route-id="@p.Id">@p.Title</a>
                 </div>
                 <div class="postSubtitle">
-                    @if (p.RepliesCount == 1)
+                    @switch (p.RepliesCount)
                     {
-                        <span>@p.RepliesCount Reply</span>
-                    }
-                    @if (p.RepliesCount == 0)
-                    {
-                        <span>@Localizer["lblNoReplies"]</span>
-                    }
-                    else
-                    {
-                        <span>@p.RepliesCount @Localizer["lblReplies"]</span>
+                        case 1:
+                            <span>@p.RepliesCount @Localizer["Reply"]</span>
+                            break;
+                        case 0:
+                            <span>@Localizer["lblNoReplies"]</span>
+                            break;
+                        default:
+                            <span>@p.RepliesCount @Localizer["lblReplies"]</span>
+                            break;
                     }
                     <span class="postUser">
                         <a asp-controller="Account" asp-action="Detail" asp-route-id="@p.AuthorName">
@@ -32,7 +32,5 @@
                 </div>
             </li>
         }
-
     </ul>
-
 </div>

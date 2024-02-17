@@ -106,6 +106,7 @@ namespace SnitzCore.Service
                 member.Posts += 1;
                 member.Lastpostdate = DateTime.UtcNow.ToForumDateStr();
                 member.Lastactivity = DateTime.UtcNow.ToForumDateStr();
+                member.LastIp = _contextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
                 _dbContext.Members.Update(member);
                 await _dbContext.SaveChangesAsync();
             }
@@ -125,8 +126,15 @@ namespace SnitzCore.Service
             _dbContext.Database.BeginTransaction();
             foreach (var additionalField in additionalFields)
             {
-                List<object> parameters = new List<object> { additionalField.Value };
-                _dbContext.Database.ExecuteSqlRaw($"UPDATE FORUM_MEMBERS SET M_{additionalField.Key}=@0", parameters);
+                if (additionalField.Key.ToUpper() == "DOB")
+                {
+                    var date = DateTime.Parse(additionalField.Value.ToString());
+                    _dbContext.Database.ExecuteSqlRaw($"UPDATE FORUM_MEMBERS SET M_{additionalField.Key.ToUpper()}='{date:yyyyMMdd}'");
+                }
+                else
+                {
+                    _dbContext.Database.ExecuteSqlRaw($"UPDATE FORUM_MEMBERS SET M_{additionalField.Key.ToUpper()}='{additionalField.Value}'");
+                }
             }
             _dbContext.Database.CommitTransaction();
 
@@ -176,7 +184,8 @@ namespace SnitzCore.Service
                         member.Lastheredate = member.Lastactivity;
                         if (member.Lastheredate != null) _cookie.SetLastVisitCookie(member.Lastheredate);
                     }
-                    member.Lastactivity = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+                    member.Lastactivity = DateTime.UtcNow.ToForumDateStr();
+                    member.LastIp = _contextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
                     _dbContext.SaveChanges();
                 }
             }

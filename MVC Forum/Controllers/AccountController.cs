@@ -22,6 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace MVCForum.Controllers
@@ -36,10 +37,12 @@ namespace MVCForum.Controllers
         private readonly ISnitzCookie _cookie;
         private readonly IWebHostEnvironment _env;
         private readonly int _pageSize;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AccountController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             UserManager<ForumUser> usrMgr, SignInManager<ForumUser> signinMgr,
-            ISnitzCookie snitzcookie,IWebHostEnvironment env,IEmailSender mailSender) : base(memberService, config, localizerFactory, dbContext,httpContextAccessor)
+            ISnitzCookie snitzcookie,IWebHostEnvironment env,IEmailSender mailSender,
+            RoleManager<IdentityRole> roleManager) : base(memberService, config, localizerFactory, dbContext,httpContextAccessor)
         {
             _userManager = usrMgr;
             _signInManager = signinMgr;
@@ -48,11 +51,15 @@ namespace MVCForum.Controllers
             _pageSize = config.DefaultPageSize;
             _emailSender = mailSender;
             _env = env;
+            _roleManager = roleManager;
         }
 
         public IActionResult Index(int pagesize,string? sortOrder,string? sortCol,string? initial, int page=1)
         {
-            _memberService.SetLastHere(User);
+            if (User.Identity is { IsAuthenticated: true })
+            {
+                _memberService.SetLastHere(User);
+            }
             if (pagesize == 0)
             {
                 if (_pageSize > 0)
@@ -98,7 +105,7 @@ namespace MVCForum.Controllers
                 currUser = (await _userManager.FindByNameAsync(User.Identity?.Name!))!;
             }
             ForumUser? user;
-            Member? member = null;
+            Member? member;
             if (id != null)
             {
                 member = _memberService.GetByUsername(id);
@@ -127,8 +134,8 @@ namespace MVCForum.Controllers
 
             if (user != null )
                 return View(model);
-            else
-                return RedirectToAction("Index");
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -184,10 +191,12 @@ namespace MVCForum.Controllers
         [CustomAuthorize(RegCheck = "STRPROHIBITNEWMEMBERS")]
         public ViewResult Register()
         {
-            UserCreateModel user = new UserCreateModel();
-            user.RequiredFields = _config.GetRequiredMemberFields().ToList();
-            //Config.GetRequiredMemberFields();
-            return View();
+            UserCreateModel user = new UserCreateModel
+            {
+                RequiredFields = _config.GetRequiredMemberFields().ToList()
+            };
+
+            return View(user);
         }
 
         [HttpPost]
@@ -205,15 +214,21 @@ namespace MVCForum.Controllers
                 Name = user.Name, 
                 Level = 1, 
                 Status = 0,
-                Created = DateTime.UtcNow.ToForumDateStr()
+                Created = DateTime.UtcNow.ToForumDateStr(),
+                Ip = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString(),
             };
             var required = new List<KeyValuePair<string, object>>();
+
             if (user.RequiredFields != null)
-                foreach (var requiredField in user.RequiredFields)
+            {
+                for (int i = 0; i < user.RequiredFields.Count; i++)
                 {
-                    required.Add(new KeyValuePair<string, object>(requiredField,
-                        HttpContext.Request.Form[requiredField][0]!));
+                    if (user.RequiredProperty != null)
+                        required.Add(new KeyValuePair<string, object>(user.RequiredProperty[i],
+                            user.RequiredFields[i]));
                 }
+            }
+
 
             var newmember = _memberService.Create(forumMember, required);
             ForumUser appUser = new()
@@ -311,6 +326,7 @@ namespace MVCForum.Controllers
                     if (currmember != null)
                     {
                         currmember.Lastheredate = DateTime.UtcNow.ToForumDateStr();
+                        currmember.LastIp = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
                         _memberService.Update(currmember);
                     }
 
@@ -324,16 +340,15 @@ namespace MVCForum.Controllers
                         $"Your account is locked out, to reset your password, please click this link: {forgotPassLink}";
                     var message = new EmailMessage(new[] { appUser.Email! }, "Locked out account information", content);
                     await _emailSender.SendEmailAsync(message);
-                    _logger.Warn($"No IdentityUser userEmai sent");
+
                     ModelState.AddModelError(nameof(login.Username), "The account is locked out");
                     return View();
                 }
                 ModelState.AddModelError(nameof(login.Username), "Invalid Login Attempt");
                 return View();                       
             }
-            _logger.Warn($"No IdentityUser user");
-            //No IdentityUser user, so check the member table,
-            //if member exists then create IdentityUser.
+            _logger.Warn($"No IdentityUser user, checking Member table");
+
             var member = _memberService.GetByUsername(login.Username);
             var validpwd = false;
             try
@@ -365,6 +380,20 @@ namespace MVCForum.Controllers
                 IdentityResult result = await _userManager.CreateAsync(existingUser, login.Password);
                 if (result.Succeeded)
                 {
+                    //TODO: we created the user, so lets check for any existing roles and copy them.
+                    var currroles = _snitzDbContext.OldUsersInRoles
+                        .Include(r=>r.Role).AsNoTracking()
+                        .Include(r=>r.User).AsNoTracking()
+                        .Where(r => r.UserId == existingUser.MemberId);
+                    foreach (var userInRole in currroles)
+                    {
+                        var exists = _roleManager.Roles.FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
+                        if (exists == null)
+                        {
+                            await _roleManager.CreateAsync(new IdentityRole(userInRole.Role.RoleName));
+                        }
+                        await _userManager.AddToRoleAsync(existingUser, userInRole.Role.RoleName);
+                    }
                     if (!validpwd)
                     {
                         return LocalRedirect("/Account/ForgotPassword");

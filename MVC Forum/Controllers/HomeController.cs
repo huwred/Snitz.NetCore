@@ -26,16 +26,14 @@ namespace MVCForum.Controllers
         public HomeController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, IPost postService) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _postService = postService;
-
         }
 
         public IActionResult Index()
-        {
+        {            
             if (User.Identity is { IsAuthenticated: true })
             {
                 _memberService.SetLastHere(User);
             }
-                
             try
             {
                 var model = BuildHomeIndexModel();
@@ -46,7 +44,6 @@ namespace MVCForum.Controllers
                 _logger.Error("BuildHomeIndexModel",e);
                 return View("TempIndex");
             }
-
         }
 
         private HomeIndexModel BuildHomeIndexModel()

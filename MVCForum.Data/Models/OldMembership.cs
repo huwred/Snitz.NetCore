@@ -19,4 +19,23 @@ namespace SnitzCore.Data.Models
         [StringLength(75)]
         public string Password { get; set; } = null!;
     }
+
+    [Table("webpages_Roles")]
+    public class OldRole
+    {
+        [Key]
+        public int RoleId { get; set; }
+
+        public string RoleName { get; set; } = null!;
+    }
+
+    [Table("webpages_UsersInRoles")]
+    public class OldUserInRole
+    {
+        public int UserId { get; set; }
+        public int RoleId { get; set; }
+
+        public virtual Member User { get; set; }
+        public virtual OldRole Role { get; set; }
+    }
 }

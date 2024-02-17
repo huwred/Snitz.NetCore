@@ -317,9 +317,26 @@ namespace SnitzCore.BackOffice.Controllers
             return PartialView("ManageRoles",vm);
         }
 
-        public IActionResult DelMemberFromRole(object user, string rolename)
+        public async Task<IActionResult> DelMemberFromRole(string username, string role)
         {
-            throw new NotImplementedException();
+            var forumuser = await _userManager.FindByNameAsync(username);
+            await _userManager.RemoveFromRoleAsync(forumuser, role);
+            List<string> names = new List<string>();
+            var vm = new AdminRolesViewModel
+            {
+                RoleList = _dbcontext.Roles.Select(r => r.Name).ToArray(), 
+                Rolename = role ?? ""
+            };
+            foreach (var user in _userManager.Users)
+            {
+                if (_userManager.IsInRoleAsync(user, role!).Result)
+                    names.Add(user.UserName!);
+            }
+
+            vm.Members = (from s in _dbcontext.Members
+                where names.Contains(s.Name)
+                select s).ToList();
+            return PartialView("ManageRoles",vm);
         }
 
         public IActionResult ArchiveSettings()
@@ -424,7 +441,12 @@ namespace SnitzCore.BackOffice.Controllers
             throw new NotImplementedException();
         }
 
+        public IActionResult PendingMembers()
+        {
+            var test = _userManager.Users.Include(u=>u.Member).Where(u => !u.EmailConfirmed && u.LockoutEnabled);
 
+            return PartialView(test);
+        }
         public IActionResult SaveSpamDomain(IFormCollection form)
         {
             try

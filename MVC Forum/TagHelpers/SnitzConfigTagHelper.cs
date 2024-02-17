@@ -26,7 +26,7 @@ namespace MVCForum.TagHelpers
         public PropertyInfo? PropertyInfo { get; set; }
         [HtmlAttributeName("can-edit")]
         public bool CanEdit { get; set; }
-
+        public string? Name { get; set; }
         public Func<string, string>? TextLocalizerDelegate { get; set; }
 
         public SnitzConfigTagHelper(ILogger<SnitzConfigTagHelper> logger)
@@ -149,7 +149,7 @@ namespace MVCForum.TagHelpers
                     if (CanEdit)
                     {
                         output.Content.AppendHtml($@"<div class=""input-group date"" data-provide=""datepicker"">");
-                        output.Content.AppendHtml($@"<input name=""{PropertyInfo?.Name}"" type=""text"" placeholder=""Choose Date"" class=""form-control"" id=""fecha2"" {required} {disabled}/>");
+                        output.Content.AppendHtml($@"<input name=""{Name ?? PropertyInfo?.Name}"" type=""text"" placeholder=""Choose Date"" class=""form-control"" id=""fecha2"" {required} {disabled}/>");
                         output.Content.AppendHtml($@"<span class=""input-group-addon btn btn-default-outline""><i class=""fa fa-calendar""></i></span></div>");
                         output.Content.AppendHtml($@"<div class=""invalid-feedback"">You must select a value for {PropertyInfo?.Name}.</div>");
                     }
@@ -183,7 +183,7 @@ namespace MVCForum.TagHelpers
                         $@"<label class=""form-label""  for=""{PropertyInfo?.Name}"">{displayName??PropertyInfo?.Name}</label>");
                     if (CanEdit)
                     {
-                        output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{PropertyInfo?.Name}"" id=""{PropertyInfo?.Name}"" value=""{Value}"" class=""form-control"" {required} {disabled}/>");
+                        output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{Name ?? PropertyInfo?.Name}"" id=""{PropertyInfo?.Name}"" value=""{Value}"" class=""form-control"" {required} {disabled}/>");
                         output.Content.AppendHtml($@"<div class=""invalid-feedback"">You must provide a value for {PropertyInfo?.Name}.</div>");
                     }
                     else

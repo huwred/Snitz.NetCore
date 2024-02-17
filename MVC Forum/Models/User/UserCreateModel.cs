@@ -19,5 +19,6 @@ namespace MVCForum.Models.User
         public string Password { get; set; } = null!;
 
         public List<string>? RequiredFields { get; set; }
+        public List<string>? RequiredProperty { get; set; }
     }
 }
