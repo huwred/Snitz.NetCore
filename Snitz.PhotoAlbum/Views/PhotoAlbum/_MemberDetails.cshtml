@@ -1,0 +1,112 @@
+﻿@using System.Resources
+@using SnitzCore.Data.Extensions
+@model List<Snitz.PhotoAlbum.Models.AlbumImage>
+@{
+    ViewBag.IsOwner = true;
+    string sortIcon = ViewBag.SortDir == "asc" ? "<i class=\"fa fa-sort-desc\"></i>" : "<i class=\"fa fa-sort-asc\"></i>";
+    var currentmember = 0;
+    bool showprivate = false;
+    if (ViewBag.CurrentMemberId != null)
+    {
+        currentmember = ViewBag.CurrentMemberId;
+    }
+    if (currentmember == ViewBag.MemberId)
+    {
+        showprivate = true;
+    }
+}
+
+<input type="checkbox" id="showhidethumbs" checked /> @Localizer["lblShowThumbnails"]
+<div class="table-responsive">
+    <table class="table table-bordered table-striped member-details">
+        <thead>
+        <tr class="row bg-primary">
+            <th class="col-2 col-md-1 col-thumb">
+                <a href="&sortby=file">@Localizer["Image"]</a>
+            </th>
+            <th class="col-2 d-none d-sm-none d-md-none d-lg-inline">
+                <a href="&sortby=id">@Localizer["lblForumcode"]</a>
+            </th>
+            <th class="col-8 col-sm-4 col-md-2">
+                <a href="&sortby=localname">@Localizer["lblDescription"]</a>
+            </th>
+            <th class="col-2 d-none d-sm-none d-md-inline">
+                    <a href="&sortby=group">@Localizer["Image"]</a>
+            </th>
+            <th class="col-1 d-none d-sm-none d-md-none d-lg-inline">
+                <a href="&sortby=date">@Localizer["Date"]</a>
+                <i class="fa fa-sort-desc"></i>
+            </th>
+            <th class="col-1 d-none d-sm-none d-md-none d-lg-inline">
+                <a href="&sortby=views">@Localizer["Views"]</a>
+            </th>
+                <th class="col-1 d-none d-sm-none d-md-none d-lg-inline">
+                <a href="&sortby=date">@Localizer["Dimensions"]</a>
+            </th>
+            <th class="col-1 d-none d-sm-none d-md-none d-lg-inline">
+                <a href="&sortby=date">@Localizer["Size"]</a>
+            </th>
+            </tr>
+        </thead>
+
+        @using (Html.BeginForm("DeleteImages", "PhotoAlbum", FormMethod.Post, new { id = "delForm" }))
+        {
+            <tbody>
+                @foreach (var photo in Model)
+                {
+                    var imgUrl = Url.Content("~/") + "Content/PhotoAlbum/thumbs/" + photo.ImageName;
+                    <tr class="row" snitz-if="!@photo.IsPrivate || @showprivate">
+                        <td class="col-2 col-md-1 col-thumb">
+                            <a class="view-gallery" target="_blank" href="/PhotoAlbum/Gallery/@photo.MemberId/?photoid=@photo.Id&speciesOnly=false" title="Image @photo.Id">
+                                <album-image class="img-thumbnail" src="@photo.ImageName" width="100" height="100" org-width="@photo.Width" org-height="@photo.Height"></album-image>
+                            </a>
+                        </td>
+                        <td class="col-2 d-none d-sm-none d-md-none d-lg-inline">[image=@photo.Id]</td>
+                        <td class="col-8 col-sm-4 col-md-2">@photo.Description</td>
+                        <td class="col-2 d-none d-sm-none d-md-inline"><a class="view-gallery" href="@Url.Action("Gallery", new {id = photo.MemberId, photoid = photo.Id,pagenum=1, searchparams= ViewBag.JsonParams})" title="@Localizer["lblImage"].Value @photo.Id">@photo.Location</a></td>
+                        <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Timestamp.FromForumDateStr()</td>
+                        <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Views</td>
+                        <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Width x @photo.Height</td>
+                        <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Size</td>
+                        @if (ViewBag.IsOwner)
+                        {
+                            <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">
+                                <link-confirm snitz-if="@photo.IsPrivate" title="@Localizer["lblIsPrivate"].Value" jq-selector="confirm-privacy" href="/PhotoAlbum/TogglePrivacy/@photo.Id/?state=false&memberid=@photo.MemberId" config-class="fa fa-user-secret" config-key="@photo.Id"></link-confirm>
+                                <link-confirm snitz-if="!@photo.IsPrivate" title="@Localizer["lblPrivate"].Value" jq-selector="confirm-privacy" href="/PhotoAlbum/TogglePrivacy/@photo.Id/?state=true&memberid=@photo.MemberId" config-class="fa fa-user-o" config-key="@photo.Id"></link-confirm>
+                                <link-confirm snitz-if="@photo.DoNotFeature" title="@Localizer["lblDoNotFeature"].Value" jq-selector="confirm-feature" href="/PhotoAlbum/ToggleDoNotFeature/@photo.Id/?state=false&memberid=@photo.MemberId" config-class="fa fa-square-o" config-key="@photo.Id"></link-confirm>
+                                <link-confirm snitz-if="!@photo.DoNotFeature" title="@Localizer["imgFeature"].Value" jq-selector="confirm-feature" href="/PhotoAlbum/ToggleDoNotFeature/@photo.Id/?state=true&memberid=@photo.MemberId" config-class="fa fa-picture-o" config-key="@photo.Id"></link-confirm>
+                                <a href="@Url.Action("Edit", new {id = photo.Id})" class="gallery-link" title="@Localizer["tipEditImage"].Value" data-toggle="tooltip"><i class="fa fa-pencil-square-o"></i></a>
+                                <link-confirm title="@Localizer["tipDelImage"].Value" jq-selector="confirm-delete" href="/PhotoAlbum/DeleteImage/@photo.Id" config-class="fa fa-trash-o" config-key="@photo.Id"></link-confirm>
+                                <input type="checkbox" class="thumb" name="imgDelete" data-img="@photo.Location" value="@photo.Id" />
+                            </td>
+                        }
+                    </tr>
+
+                }
+                @if (!Model.Any())
+                {
+                    var colspan = 8;
+                    if (ViewBag.ShowThumbs)
+                    {
+                        colspan = 9;
+                    }
+                    <tr class=""><td colspan="@colspan">@Localizer["lblNoImg"]</td></tr>
+                }
+            </tbody>
+            if (User.Identity.IsAuthenticated && ViewBag.IsOwner)
+            {
+                <tfoot>
+                    <tr>
+                        <td colspan="6"></td>
+                        <td>
+                            <input type="button" id="delete_button" style="display:none" class="btn btn-primary" value="Delete Images" />
+                        </td>
+                    </tr>
+                </tfoot>
+            }
+        }
+
+    </table>
+
+</div>
+

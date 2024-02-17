@@ -1,0 +1,36 @@
+﻿@model System.Collections.Generic.List<Snitz.PhotoAlbum.Models.AlbumImage>
+@{
+    int dispstyle = (int)ViewBag.Display;
+}
+
+@* @if (dispstyle == 1 || dispstyle == 2 || dispstyle == 3)
+{
+    <div class="row">
+        <partial name="_ImagePager" model="Model" />
+    </div>
+} *@
+@switch ((int)ViewBag.Display)
+{
+    case 1:
+        <partial name="_MemberDetails" />
+        break;
+    case 2:
+        <partial name="_MemberList" />
+        break;
+    case 3:
+        @* @Html.Action("MemberSlideShow", new { id = ViewBag.Username }) *@
+        break;
+    default:
+        <partial name="_MemberThumbs" />
+        break;
+}
+@* @if (dispstyle == 1 || dispstyle == 2 || dispstyle == 3)
+{
+    <div class="row">
+        <partial name="_ImagePager" model="Model" />
+    </div>
+
+} *@    
+<span class="viewbag-diplay" data-val="@dispstyle">&nbsp;</span>
+
+

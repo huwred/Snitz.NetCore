@@ -1,0 +1,233 @@
+﻿@using SnitzCore.Data.Extensions
+@model List<Snitz.PhotoAlbum.Models.AlbumImage>
+
+@section MetaData
+{
+    <meta name="title" content="@Model.First().Member?.Name @Localizer["lblPhotoAlbum"]" />
+    <meta name="description" content="Photo Album" />
+    <meta name="robots" content="noindex,nofollow" />
+}
+@{
+    Layout = "_Layout";
+    var currentmember = 0;
+    bool showprivate = false;
+    if (ViewBag.CurrentMemberId != null)
+    {
+        currentmember = ViewBag.CurrentMemberId;
+    }
+    if (currentmember == ViewBag.MemberId)
+    {
+        showprivate = true;
+    }
+}
+
+
+<div class="container pt-0">
+    <snitz-breadcrumb></snitz-breadcrumb>
+    <form asp-action="MemberImages" asp-controller="PhotoAlbum" data-ajax="true" data-ajax-update="#ImageContainer">
+        <div class="row">
+            <div class="col-6">
+                <div class="input-group">
+                    <input type="text" value='@ViewBag.Display' name="display" id="display-template" style="display: none;" />
+                    <select class="form-select" id="album-sortby" name="SortBy">
+                        <option value="id" snitz-if='@ViewBag.SortBy == "id"' selected>@Localizer["optSortId"]</option>
+                        <option value="id" snitz-if='@ViewBag.SortBy != "id"'>@Localizer["optSortId"]</option>
+                        <option value="date" snitz-if='@ViewBag.SortBy == "date"' selected>@Localizer["optSortDate"]</option>
+                        <option value="date" snitz-if='@ViewBag.SortBy != "date"'>@Localizer["optSortDate"]</option>
+                        <option value="desc" snitz-if='@ViewBag.SortBy == "desc"' selected>@Localizer["optSortDesc"]</option>
+                        <option value="desc" snitz-if='@ViewBag.SortBy != "desc"'>@Localizer["optSortDesc"]</option>
+                        <option value="file" snitz-if='@ViewBag.SortBy == "file"' selected>@Localizer["optSortFile"]</option>
+                        <option value="file" snitz-if='@ViewBag.SortBy != "file"'>@Localizer["optSortFile"]</option>
+                    </select>
+                    <select class="form-select" name="SortOrder" id="album-sortdesc">
+                        <option value="desc" snitz-if="@(ViewBag.SortDir.ToLower() == "desc")" selected>@Localizer["optDesc"]</option>
+                        <option value="desc" snitz-if="@(ViewBag.SortDir.ToLower() != "desc")">@Localizer["optDesc"]</option>
+                        <option value="asc" snitz-if="@(ViewBag.SortDir.ToLower() == "asc")" selected>@Localizer["optAsc"]</option>
+                        <option value="asc" snitz-if="@(ViewBag.SortDir.ToLower() != "asc")">@Localizer["optAsc"]</option>
+                    </select>
+                    <a data-ajax="true"
+                       data-ajax-mode="replace"
+                       data-ajax-update="#ImageContainer"
+                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.Username, display = 0, pagenum = 1 })'
+                       class="btn btn-outline-info">
+                        <li class='fa fa-th'></li>
+                    </a>
+                    <a data-ajax="true"
+                       data-ajax-update="#ImageContainer"
+                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.Username, display = 2, pagenum = 1 })'
+                       class="btn btn-outline-info">
+                        <li class='fa fa-align-justify'></li>
+                    </a>
+                    <a data-ajax="true"
+                       data-ajax-update="#ImageContainer"
+                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.Username, display = 1, pagenum = 1 })'
+                       class="btn btn-outline-info">
+                        <li class='fa fa-list'></li>
+                    </a>
+                    <a data-ajax="true"
+                       data-ajax-update="#ImageContainer"
+                       data-ajax-url='@Url.Action("MemberSlideShow", "PhotoAlbum", new { id = ViewBag.Username, display = 3, pagenum = 1 })'
+                       class="btn btn-outline-info">
+                        <li class='fa fa-film'></li>
+                    </a>
+                    <button snitz-if="@showprivate" class="btn btn-outline-primary" id="photo-upload" title="@Localizer["tipUpload"]"><i class="fa fa-upload"></i></button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="container mt-3" id="ImageContainer">
+        <ul class="image-gallery list-unstyled">
+            @foreach (var image in Model)
+            {
+                <li snitz-if="!@image.IsPrivate || @showprivate" class="d-flex center">
+                    <figure class="figure">
+                        <album-image data-id="@image.Id" org-width="@image.Width" org-height="@image.Height" width="300" height="225" src="@($"{image.Timestamp}_{image.Location}")" class="figure-img" description="@image.Description"></album-image>
+                        <div class="overlay">
+                            <div class="text">@image.CommonName<br />@image.ScientificName<br />Posted on: @image.Timestamp.FromForumDateStr().ToLocalTime().ToShortDateString() <br />@image.Width x @image.Height</div>
+                        </div>
+                        <figcaption class="figure-caption form-text">@image.Description</figcaption>
+                    </figure>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">
+                    @Localizer["lblFileUpload"]
+                </h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="upload-content">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <p class="footer-title">
+                    If you're having problems uploading, try choosing a smaller image.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+@if (User.IsInRole("Admin"))
+{
+    var confModel = new ConfirmDialogViewModel()
+                {
+                    Title = "Manage Image",
+                    Message = @"<p></p>"
+                };
+    <partial name="ConfirmDialog" model="@confModel" />
+
+}
+@section Scripts
+{
+    <script src="~/js/jquery.unobtrusive-ajax.js"></script>
+   <script type="text/javascript">
+
+        $(document).on('click', '#submitUpload',
+            function (e) {
+                e.preventDefault();
+                var form = $("#upload-form");
+                var formData = new FormData(form[0]);
+                $.ajax({
+                    url: $("#upload-form").attr("action"),
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data.result) {
+                            $('#uploadModal').modal('hide');
+                            location.reload();
+                        }
+                    },
+                    error: function (data) {
+                        alert("error");
+                        $('#upload-content').html(data);
+                    },
+                    complete: function (data) {
+                        $('#uploadModal').modal('hide');
+                    }
+                });
+                return false;
+            });
+        $(document).on("click", "#photo-upload",
+            function(e) {
+                e.preventDefault();
+                $('#upload-content').load("/PhotoAlbum/UploadForm/?showall=true",
+                    function() {
+                        $('#uploadModal').modal('show');
+                    });
+            });
+
+        $(document).on('click', '.confirm-privacy', function (e) {
+                e.preventDefault();
+                var postid = $(this).data('id');
+                var href = $(this).attr('href');
+                $('#confirmModal #confirm-body').html('<p>You are about to toggle privacy for this image.</p><p>Do you wish to proceed?</p>');
+                $('#confirmModal').data('id', postid).data('url', href).modal('show');
+
+                $('#confirmModal').on('click', '#btnYes', function (e) {
+                    // handle deletion here
+                    e.preventDefault();
+                    $.post(href,
+                        function (data) {
+                            $('#confirmModal').modal('hide');
+                            if (!data) {
+                                //alert(data.error);
+                            } else {
+
+                            $('#ImageContainer').html(data);
+                            }
+                        });
+                });
+            });
+        $(document).on('click', '.confirm-feature', function (e) {
+            e.preventDefault();
+            var postid = $(this).data('id');
+            var href = $(this).attr('href');
+            $('#confirmModal #confirm-body').html('<p>You are about to toggle "doNotFeature" for this image.</p><p>Do you wish to proceed?</p>');
+            $('#confirmModal').data('id', postid).data('url', href).modal('show');
+
+            $('#confirmModal').on('click', '#btnYes', function (e) {
+                // handle deletion here
+                e.preventDefault();
+                $.post(href,
+                    function (data) {
+                        $('#confirmModal').modal('hide');
+                        if (!data) {
+                            //alert(data.error);
+                        } else {
+
+                            $('#ImageContainer').html(data);
+                        }
+                    });
+            });
+        });
+        $(document).on('click', '.confirm-delete', function (e) {
+            e.preventDefault();
+            var postid = $(this).data('id');
+            var href = $(this).attr('href');
+            $('#confirmModal #confirm-body').html('<p>You are about to delete this image.</p><p>Do you wish to proceed?</p>');
+            $('#confirmModal').data('id', postid).data('url', href).modal('show');
+
+            $('#confirmModal').on('click', '#btnYes', function (e) {
+                // handle deletion here
+                e.preventDefault();
+                $.post(href,
+                    function (data) {
+                        $('#confirmModal').modal('hide');
+                        if (!data) {
+                            //alert(data.error);
+                        } else {
+
+                            $('#ImageContainer').html(data);
+                        }
+                    });
+            });
+        });
+   </script>
+}

@@ -1,0 +1,174 @@
+﻿@using SnitzCore.Data.Extensions
+@model Snitz.PhotoAlbum.ViewModels.SpeciesAlbum
+
+@section MetaData
+{
+    <meta name="title" content="@Config.Value.strForumTitle @Localizer["lblPhotoAlbum"]" />
+    <meta name="description" content="Photo Album" />
+    <meta name="robots" content="index,follow" />
+}
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+    int counter = 0;
+    var currentmember = 0;
+    bool showprivate = false;
+
+}
+<div class="container pt-0">
+    <snitz-breadcrumb></snitz-breadcrumb>
+    <form asp-action="Search" asp-controller="PhotoAlbum" data-ajax="true" data-ajax-update="#ImageContainer">
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <div class="input-group">
+                    <label class="input-group-text">@Localizer["lblSearchin"]</label>
+                    <div class="input-group-text">
+                        <input class="form-check-input mt-0" type="checkbox" id="SrchUser" value="" aria-label="Checkbox for following text input">
+                        <label class="form-check-label" for="SrchUser">&nbsp;@Localizer["Member"]</label>
+                    </div>
+                    <div class="input-group-text">
+                        <input class="form-check-input mt-0" type="checkbox" id="SrchSciName" value="" aria-label="Checkbox for following text input">
+                        <label class="form-check-label" for="SrchSciName">&nbsp;@Localizer["lblScientificName"]</label>
+                    </div>
+                    <div class="input-group-text">
+                        <input class="form-check-input mt-0" type="checkbox" id="SrchLocName" value="" aria-label="Checkbox for following text input">
+                        <label class="form-check-label" for="SrchLocName">&nbsp;@Localizer["lblLocalName"]</label>
+                    </div>
+                    <div class="input-group-text">
+                        <input class="form-check-input mt-0" type="checkbox" id="SrchDesc" value="" aria-label="Checkbox for following text input">
+                        <label class="form-check-label" for="SrchDesc">&nbsp;@Localizer["lblDescription"]</label>
+                    </div>
+                    <select class="form-select" id="SrchGroup">
+                        <option selected>Group ...</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="input-group">
+                    <label class="input-group-text" for="searchTerms">@Localizer["lblSearchFor"]</label>
+                    <input class="form-control" id="searchTerms" />
+                    <button class="btn btn-outline-success" type="button" title="Filter records"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <form asp-action="Album" asp-controller="PhotoAlbum" data-ajax="true" data-ajax-update="#ImageContainer">
+        <div class="row">
+            <div class="col-8">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="ShowThumb" value="1">
+                    <label class="form-check-label" for="ShowThumb">@Localizer["lblShowThumbnails"]</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="SpeciesOnly" value="1">
+                    <label class="form-check-label" for="SpeciesOnly">@Localizer["lblShowOnlySpecies"]</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="input-group">
+                    <input type="text" value='@ViewBag.Display' name="display" id="display-template" style="display: none;"/>
+                    <select class="form-select" id="album-sortby" name="SortBy">
+                        <option value="id" snitz-if='@ViewBag.SortBy == "id"' selected>@Localizer["optSortId"]</option>
+                        <option value="id" snitz-if='@ViewBag.SortBy != "id"'>@Localizer["optSortId"]</option>
+                        <option value="date" snitz-if='@ViewBag.SortBy == "date"' selected>@Localizer["optSortDate"]</option>
+                        <option value="date" snitz-if='@ViewBag.SortBy != "date"'>@Localizer["optSortDate"]</option>
+                        <option value="user" snitz-if='@ViewBag.SortBy == "user"' selected>@Localizer["optSortUser"]</option>
+                        <option value="user" snitz-if='@ViewBag.SortBy != "user"'>@Localizer["optSortUser"]</option>
+                        <option value="desc" snitz-if='@ViewBag.SortBy == "desc"' selected>@Localizer["optSortDesc"]</option>
+                        <option value="desc" snitz-if='@ViewBag.SortBy != "desc"'>@Localizer["optSortDesc"]</option>
+                        <option value="file" snitz-if='@ViewBag.SortBy == "file"' selected>@Localizer["optSortFile"]</option>
+                        <option value="file" snitz-if='@ViewBag.SortBy != "file"'>@Localizer["optSortFile"]</option>
+                        <option value="localname" snitz-if='@ViewBag.SortBy == "localname"' selected>@Localizer["optSortCommon"]</option>
+                        <option value="localname" snitz-if='@ViewBag.SortBy != "localname"'>@Localizer["optSortCommon"]</option>
+                        <option value="scientific" snitz-if='@ViewBag.SortBy == "scientific"' selected>@Localizer["optSortScientific"]</option>
+                        <option value="scientific" snitz-if='@ViewBag.SortBy != "scientific"'>@Localizer["optSortScientific"]</option>
+                    </select>
+                    <select class="form-select" name="SortOrder" id="album-sortdesc">
+                        <option value="desc" snitz-if="@(ViewBag.SortDir.ToLower() == "desc")" selected>@Localizer["optDesc"]</option>
+                        <option value="desc" snitz-if="@(ViewBag.SortDir.ToLower() != "desc")">@Localizer["optDesc"]</option>
+                        <option value="asc" snitz-if="@(ViewBag.SortDir.ToLower() == "asc")" selected>@Localizer["optAsc"]</option>
+                        <option value="asc" snitz-if="@(ViewBag.SortDir.ToLower() != "asc")">@Localizer["optAsc"]</option>
+                    </select>
+                    <button snitz-if="@showprivate" class="btn btn-outline-primary" id="photo-upload" title="@Localizer["tipUpload"]"><i class="fa fa-upload"></i></button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+    <div class="container mt-3">
+        <table class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr class="row bg-primary">
+                    <th class="col-1 d-none d-sm-inline">
+                        <a href="&sortby=user">@Localizer["Member"]</a>
+                    </th>
+                    <th class="col-2 col-md-1 col-thumb">
+                        <a href="&sortby=file">@Localizer["Image"]</a>
+                    </th>
+                    <th class="col-2 d-none d-sm-none d-md-none d-lg-inline">
+                        <a href="&sortby=id">@Localizer["lblForumcode"]</a>
+                    </th>
+                    <th class="col-5 col-sm-3 col-md-2">
+                        <a href="&sortby=scientific">@Localizer["lblScientificName"]</a>
+                    </th>
+                    <th class="col-5 col-sm-3 col-md-2">
+                        <a href="&sortby=localname">@Localizer["lblLocalName"]</a>
+                    </th>
+                    <th class="col-1 col-md d-none d-sm-inline">
+                        <a href="&sortby=desc">@Localizer["lblDescription"]</a>
+                    </th>
+                    <th class="col-1 d-none d-sm-none d-md-inline">
+                        <a href="&sortby=group">@Localizer["lblGroup"]</a>
+                    </th>
+                    <th class="col-1 d-none d-sm-none d-md-none d-lg-inline">
+                        <a href="&sortby=date">@Localizer["Date"]</a>
+                        <i class="fa fa-sort-desc"></i>
+                    </th>
+                    <th class="col-1 d-none d-sm-none d-md-none d-lg-inline">
+                        <a href="&sortby=views">@Localizer["Views"]</a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var image in Model.Images)
+                {
+                    <tr class="row">
+                        <td class="col-1 d-none d-sm-inline">
+                            <a data-toggle="tooltip" href="/PhotoAlbum/Member/@image.MemberId" title="" data-original-title="View members photo album">@image.Member?.Name</a>
+                        </td>
+                        <td class="col-2 col-md-1 col-thumb">
+                            <a class="view-gallery" target="_blank" href="/PhotoAlbum/Gallery/0/?photoid=@image.Id&speciesOnly=true" title="Image @image.Id">
+                                <album-image class="img-thumbnail" src="thumbs/@image.ImageName" width="100" height="100" org-width="@image.Width" org-height="@image.Height"></album-image>
+                            </a>
+                        </td>
+                        <td class="col-2 d-none d-sm-none d-md-none d-lg-inline">[image=@image.Id]</td>
+                        <td class="col-5 col-sm-3 col-md-2">@image.ScientificName</td>
+                        <td class="col-5 col-sm-3 col-md-2">@image.CommonName</td>
+                        <td class="col-1 col-md d-none d-sm-inline">@image.Description</td>
+                        <td class="col-1 d-none d-sm-none d-md-inline">@image.Group?.Description</td>
+                        <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@image.Timestamp.FromForumDateStr().ToLocalTime().ToShortDateString()</td>
+                        <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@image.Views</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).on('change',
+            '#ShowThumb',
+            function(e) {
+                if ( $('.col-thumb').css('display') == 'none' )
+                    $('.col-thumb').css('display', 'inline');
+                else
+                    $('.col-thumb').css('display', 'none');
+            });
+    </script>
+}
