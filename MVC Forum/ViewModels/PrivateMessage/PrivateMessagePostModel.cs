@@ -19,7 +19,7 @@ namespace MVCForum.ViewModels.PrivateMessage
         public bool IncludeSig { get; set; }
         [Display(Name = "Save to sent items")]
         public bool SaveToSent { get; set; }
-        [Display(Name = "Save as draft")]
+        [Display(Name = "cbxDraft")]
         public bool Draft { get; set; }
 
         public bool IsReply { get; set; }

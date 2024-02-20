@@ -1,15 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Hosting;
-using MimeKit;
-using SnitzCore.Data;
-using SnitzCore.Data.Extensions;
-using SnitzCore.Data.Interfaces;
-using SnitzCore.Data.Models;
-using SnitzCore.Service;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -18,12 +7,24 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using X.PagedList;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
-using MVCForum.ViewModels.User;
+using Microsoft.Extensions.Options;
+using MimeKit;
 using MVCForum.ViewModels.Member;
-
+using MVCForum.ViewModels.User;
+using SnitzCore.Data;
+using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Interfaces;
+using SnitzCore.Data.Models;
+using SnitzCore.Service;
+using X.PagedList;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace MVCForum.Controllers
 {
@@ -38,11 +39,12 @@ namespace MVCForum.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly int _pageSize;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IOptions<IdentityOptions> _configuration;
 
         public AccountController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             UserManager<ForumUser> usrMgr, SignInManager<ForumUser> signinMgr,
             ISnitzCookie snitzcookie,IWebHostEnvironment env,IEmailSender mailSender,
-            RoleManager<IdentityRole> roleManager) : base(memberService, config, localizerFactory, dbContext,httpContextAccessor)
+            RoleManager<IdentityRole> roleManager,IOptions<IdentityOptions> configuration) : base(memberService, config, localizerFactory, dbContext,httpContextAccessor)
         {
             _userManager = usrMgr;
             _signInManager = signinMgr;
@@ -52,6 +54,7 @@ namespace MVCForum.Controllers
             _emailSender = mailSender;
             _env = env;
             _roleManager = roleManager;
+            _configuration = configuration;
         }
 
         public IActionResult Index(int pagesize,string? sortOrder,string? sortCol,string? initial, int page=1)
@@ -72,7 +75,7 @@ namespace MVCForum.Controllers
             var pageCount = (int)Math.Ceiling((double)totalCount / pagesize);
             
 
-            var members = memberListingModel.Select(m => new MemberListingModel()
+            var members = memberListingModel.Select(m => new MemberListingModel
             {
                 Member = m!,
                 Id = m!.Id,
@@ -87,7 +90,7 @@ namespace MVCForum.Controllers
                     : null,
             });
             
-            var model = new MemberIndexModel()
+            var model = new MemberIndexModel
             {
                 PageCount = pageCount,
                 PageNum = page,
@@ -119,7 +122,7 @@ namespace MVCForum.Controllers
                 member = _memberService.GetByUsername(user?.UserName!);
             }
 
-            var model = new MemberDetailModel()
+            var model = new MemberDetailModel
             {
                 Id = member!.Id,
                 UserModel = user!, 
@@ -135,7 +138,7 @@ namespace MVCForum.Controllers
             if (user != null )
                 return View(model);
 
-            return RedirectToAction("Index");
+            return View("Error");
         }
 
         [HttpPost]
@@ -173,7 +176,7 @@ namespace MVCForum.Controllers
                 
                 return RedirectToAction("Detail","Account");
             }
-            var mdmodel = new MemberDetailModel()
+            var mdmodel = new MemberDetailModel
             {
                 Id = model.Id,
                 UserModel = _userManager.FindByNameAsync(model.Name).Result!, 
@@ -290,13 +293,13 @@ namespace MVCForum.Controllers
             }
             var returnUrl = login.ReturnUrl ?? Url.Content("~/");
 
-            ForumUser? appUser = null;
+            ForumUser? appUser;
             _logger.Warn($"Finding User {login.Username}");
             if (IsValidEmail(login.Username))
             {
                 try
                 {
-                    _logger.Warn($"Finding User by Email");
+                    _logger.Warn("Finding User by Email");
                     appUser = await _userManager.FindByEmailAsync(login.Username);
                 }
                 catch (Exception e)
@@ -310,7 +313,7 @@ namespace MVCForum.Controllers
             }
             else
             {
-                _logger.Warn($"Finding User by Name");
+                _logger.Warn("Finding User by Name");
                 appUser = await _userManager.FindByNameAsync(login.Username);
             }
             
@@ -319,7 +322,7 @@ namespace MVCForum.Controllers
             {
                 _logger.Warn($"Found {appUser.Email}");
                 await _signInManager.SignOutAsync();
-                Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(appUser, login.Password, login.RememberMe, true);
+                SignInResult result = await _signInManager.PasswordSignInAsync(appUser, login.Password, login.RememberMe, true);
                 if (result.Succeeded)
                 {
                     var currmember = _memberService.GetByUsername(login.Username);
@@ -334,7 +337,7 @@ namespace MVCForum.Controllers
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.Warn($"User is Locked out");
+                    _logger.Warn("User is Locked out");
                     var forgotPassLink = Url.Action(nameof(ForgotPassword),"Account", new { }, Request.Scheme);
                     var content =
                         $"Your account is locked out, to reset your password, please click this link: {forgotPassLink}";
@@ -347,13 +350,13 @@ namespace MVCForum.Controllers
                 ModelState.AddModelError(nameof(login.Username), "Invalid Login Attempt");
                 return View();                       
             }
-            _logger.Warn($"No IdentityUser user, checking Member table");
+            _logger.Warn("No IdentityUser user, checking Member table");
 
             var member = _memberService.GetByUsername(login.Username);
             var validpwd = false;
             try
             {
-                _logger.Warn($"Find Old member record");
+                _logger.Warn("Find Old member record");
                 validpwd = _memberService.ValidateMember(member!, login.Password);
             }
             catch (Exception e)
@@ -363,24 +366,23 @@ namespace MVCForum.Controllers
             }
             if (member != null)
             {
-                _logger.Warn($"Found Old member record {member?.Name}");
+                _logger.Warn($"Found Old member record {member.Name}");
                 ForumUser existingUser = new()
                 {
                     UserName = login.Username,
-                    Email = member!.Email,
+                    Email = member.Email,
                     MemberId = member.Id,
                     MemberSince = member.Created.FromForumDateStr(),
                     EmailConfirmed = true,
                 };
                 if (!validpwd)
                 {
-                    login.Password = "S0meR@ndom3Str!ng";
+                    login.Password = GeneratePassword();
                 }
-                _logger.Warn($"Create new Identity user {member?.Name}");
+                _logger.Warn($"Create new Identity user {member.Name}");
                 IdentityResult result = await _userManager.CreateAsync(existingUser, login.Password);
                 if (result.Succeeded)
                 {
-                    //TODO: we created the user, so lets check for any existing roles and copy them.
                     var currroles = _snitzDbContext.OldUsersInRoles
                         .Include(r=>r.Role).AsNoTracking()
                         .Include(r=>r.User).AsNoTracking()
@@ -410,6 +412,56 @@ namespace MVCForum.Controllers
             }
 
             return View(login);
+        }
+
+        private string GeneratePassword()
+        {
+            var test = _configuration.Value; // here 
+            var opts = new PasswordOptions()
+            {
+                RequiredLength = test.Password.RequiredLength,
+                RequiredUniqueChars = test.Password.RequiredUniqueChars,
+                RequireDigit = test.Password.RequireDigit,
+                RequireLowercase = test.Password.RequireLowercase,
+                RequireNonAlphanumeric = test.Password.RequireNonAlphanumeric,
+                RequireUppercase = test.Password.RequireUppercase
+            };
+
+            string[] randomChars = new[] {
+                "ABCDEFGHJKLMNOPQRSTUVWXYZ",    // uppercase 
+                "abcdefghijkmnopqrstuvwxyz",    // lowercase
+                "0123456789",                   // digits
+                "!@$?_-^"                        // non-alphanumeric
+            };
+
+            Random rand = new Random(Environment.TickCount);
+            List<char> chars = new List<char>();
+
+            if (opts.RequireUppercase)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[0][rand.Next(0, randomChars[0].Length)]);
+
+            if (opts.RequireLowercase)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[1][rand.Next(0, randomChars[1].Length)]);
+
+            if (opts.RequireDigit)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[2][rand.Next(0, randomChars[2].Length)]);
+
+            if (opts.RequireNonAlphanumeric)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[3][rand.Next(0, randomChars[3].Length)]);
+
+            for (int i = chars.Count; i < opts.RequiredLength
+                                      || chars.Distinct().Count() < opts.RequiredUniqueChars; i++)
+            {
+                string rcs = randomChars[rand.Next(0, randomChars.Length)];
+                chars.Insert(rand.Next(0, chars.Count),
+                    rcs[rand.Next(0, rcs.Length)]);
+            }
+
+            return new string(chars.ToArray());
         }
 
         public async Task<IActionResult> Logout()
@@ -488,13 +540,13 @@ namespace MVCForum.Controllers
                     ModelState.TryAddModelError(error.Code, error.Description);
                     _logger.Warn($"{error.Code}:{error.Description}");
                 }
-                _logger.Warn($"Reset errors:");
+                _logger.Warn("Reset errors:");
 
                 return View();
             }
             if (user!.LockoutEnabled)
             {
-                _logger.Warn($"Disable lockout");
+                _logger.Warn("Disable lockout");
                 await _userManager.SetLockoutEnabledAsync(user, false);
                 await _userManager.SetLockoutEndDateAsync(user, null);
             }
@@ -514,7 +566,7 @@ namespace MVCForum.Controllers
         }
         
         [AllowAnonymous]
-        public IActionResult SetTheme(string theme)
+        public IActionResult SetTheme(string? theme)
         {
             if (theme == null)
             {
@@ -535,9 +587,9 @@ namespace MVCForum.Controllers
             var memberListingModel = _memberService.GetFilteredMembers(form["SearchFor"]!,form["SearchIn"]!);
             if (memberListingModel != null)
             {
-                IEnumerable<Member>? listingModel = memberListingModel.ToList()!;
+                IEnumerable<Member> listingModel = memberListingModel.ToList()!;
                 var totalCount = listingModel.Count();
-                var members = listingModel.Select(m => new MemberListingModel()
+                var members = listingModel.Select(m => new MemberListingModel
                 {
                     Member = m,
                     Id = m.Id,
@@ -552,7 +604,7 @@ namespace MVCForum.Controllers
                         : null,
                 });
                 var pageCount = (int)Math.Ceiling((double)totalCount / _pageSize);
-                var model = new MemberIndexModel()
+                var model = new MemberIndexModel
                 {
                     PageCount = pageCount,
                     PageNum = 1,
@@ -645,7 +697,6 @@ namespace MVCForum.Controllers
         }
         private string? MemberRankTitle(Member author)
         {
-
             string? mTitle = author.Title;
             if (author.Status == 0 || author.Name == "n/a")
             {
@@ -657,8 +708,8 @@ namespace MVCForum.Controllers
             }
 
             var rankInfoHelper = new RankInfoHelper(author, ref mTitle, author.Posts, _ranking);
-
-            return mTitle;
+            
+            return rankInfoHelper.Title;
         }
         private string ParseTemplate(string template,string subject, string email,string username, string callbackUrl, CultureInfo? culture)
         {
@@ -694,7 +745,6 @@ namespace MVCForum.Controllers
         {
             var member = _memberService.GetById(id);
             return Content(member?.LastIp ?? "");
-            throw new NotImplementedException();
         }
 
         public async Task<IActionResult> LockMember(int id)
@@ -722,9 +772,9 @@ namespace MVCForum.Controllers
             var member = _memberService.GetById(id);
             if (member?.Email != null)
             {
-                var vm = new EmailMemberViewModel()
+                var vm = new EmailMemberViewModel
                 {
-                    To = member?.Email
+                    To = member.Email
                 };
                 return PartialView(vm);
             }
@@ -737,7 +787,7 @@ namespace MVCForum.Controllers
             if (ModelState.IsValid)
             {
                 //Send Email here
-                var message = new EmailMessage(new[] { model.To! },
+                var message = new EmailMessage(new[] { model.To },
                     model.Subject,
                     model.Message);
             
@@ -745,10 +795,8 @@ namespace MVCForum.Controllers
 
                 return Json(new { result = true });
             }
-            else
-            {
-                return PartialView(model);
-            }
+
+            return PartialView(model);
 
         }
     }

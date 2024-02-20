@@ -49,7 +49,7 @@
             @if (SnitzConfig.GetValue("STRACCOUNTPAGESIZES", "") != "")
             {
                 var ischecked = Model.PageSize;
-                <span class="form-text mb-2">&nbsp;Set page size&nbsp;</span>
+                <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
                 <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
                     @foreach (var size in SnitzConfig.GetValue("STRACCOUNTPAGESIZES", "").Split(","))
                     {
@@ -89,7 +89,7 @@
                             }
                         </td>
                         <td snitz-if="!showlink">@member.Member.Name</td>
-                        <td snitz-if="showlink"><a href="/Account/Detail/@member.Member.Name" title="@Localizer["tipViewProfile"]">@member.Member.Name</a></td>
+                        <td snitz-if="showlink"><a href="/Account/Detail/@Flurl.Url.Encode(member.Member.Name)" title="@Localizer["tipViewProfile"]">@member.Member.Name</a></td>
                         <td>@member.Title<br />@Html.MemberRankStars(member, ranking, Localizer)</td>
                         <td>@member.Member.Posts</td>
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>

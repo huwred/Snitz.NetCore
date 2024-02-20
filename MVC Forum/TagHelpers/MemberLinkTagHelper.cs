@@ -25,7 +25,7 @@ namespace MVCForum.TagHelpers
             if (TextLocalizerDelegate != null) output.Attributes.Add("title", TextLocalizerDelegate("tipViewProfile"));
             if (MemberName != null)
             {
-                output.Attributes.Add("href", $"/Account/Detail/{MemberName}");
+                output.Attributes.Add("href", $"/Account/Detail/{Url.Encode(MemberName)}");
                 output.Content.AppendHtml($"{MemberName}");
             }
             else
@@ -33,7 +33,7 @@ namespace MVCForum.TagHelpers
                 var member = _member.GetById(MemberId);
                 if (member != null)
                 {
-                    output.Attributes.Add("href", $"/Account/Detail/{member.Name}");
+                    output.Attributes.Add("href", $"/Account/Detail/{Url.Encode(MemberName)}");
                     output.Content.AppendHtml($"{member.Name}");
                 }
             }

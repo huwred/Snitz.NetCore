@@ -36,7 +36,7 @@
                 @if (SnitzConfig.GetValue("STRFORUMPAGESIZES", "") != "")
                 {
                     var ischecked = Model.PageSize;
-                    <span class="form-text mb-2">&nbsp;Set page size&nbsp;</span>
+                    <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
 
                     <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
                         @foreach (var size in SnitzConfig.GetValue("STRFORUMPAGESIZES", "").Split(","))

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SnitzCore.Data.Models
+﻿namespace SnitzCore.Data.Models
 {
     public class SnitzForums
     {
@@ -19,4 +13,5 @@ namespace SnitzCore.Data.Models
         public string? LanguageConnectionString { get; set;}
         public string? strVersion { get; set;}
     }
+
 }

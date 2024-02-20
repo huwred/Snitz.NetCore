@@ -6,7 +6,9 @@ cite {
     display:block;
     font-weight: lighter;
 }
-
+a.btn:hover {
+    text-decoration: none;
+}
 /* ########################################### */
 /*           Forums.html                       */
 /* ########################################### */
@@ -48,7 +50,7 @@ cite {
 .center{
     display: flex;
     justify-content: center;
-    align-items: center;
+    /*align-items: center;*/
 }
 
 .subforum-icon i{
@@ -280,19 +282,7 @@ footer{
         flex: 20%;
     }
 }
-    /* navigation path*/
-    /*.navigate {
-        margin-block: 20px;
-        font-weight: lighter;
-        font-size: 1.4em;
-        margin-top: 0px;
-    }
 
-
-
-        .navigate a:hover {
-            font-weight: bolder;
-        }*/
 
     /* Pagination*/
 

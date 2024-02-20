@@ -57,7 +57,7 @@
 {
     <form id="defaultdays-form" asp-action="Index" class="form-inline">
         <div class="input-group">
-                <span class="form-text">&nbsp;Sort direction &nbsp;</span>
+                <span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span>
             <select class="form-control mb-2" id="sortdir" name="sortdir">
                 <option value="des" selected-val="@Model.SortDir">@Localizer["optNewest"]</option>
                 <option value="asc" selected-val="@Model.SortDir">@Localizer["optOldest"]</option>
@@ -65,7 +65,7 @@
             @if (SnitzConfig.GetValue("STRTOPICPAGESIZES", "") != "")
             {
                 var ischecked = Model.PageSize;
-                <span class="form-text">&nbsp;Set page size&nbsp;</span>
+                    <span class="form-text">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
 
                 <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
                     @foreach (var size in SnitzConfig.GetValue("STRTOPICPAGESIZES", "").Split(","))
@@ -94,7 +94,7 @@
 
             <div class="card mb-3">
                 <div class="card-header">
-                    Posted <snitz-datetime datetime="@reply.Created"></snitz-datetime>
+                        @Localizer["lblPosted"] <snitz-datetime datetime="@reply.Created"></snitz-datetime>
                 </div>
                 <div class="card-body" id="reply-@reply.Id">
                     <div class="body @rowclass">

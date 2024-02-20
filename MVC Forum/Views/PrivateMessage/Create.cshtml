@@ -5,14 +5,14 @@
     @if (!Model.IsPopUp)
     {
         <div class="card-header bg-dark">
-            New Private Message
+            @Localizer["NewMessage"]
         </div>
     }
 
     <div class="card-body text-dark">
         <form id="sendpm-form" method="post" asp-controller="PrivateMessage" asp-action="Send" class="needs-validation p-2" novalidate>
             <div class="mb-3">
-                <label asp-for="To"></label>
+                <label asp-for="To">@Localizer["To"]</label>
                 <input asp-for="To" disabled="@(Model.IsReply || Model.IsPopUp)" class="form-control" data-autocomplete-url="@Url.Action("AutoCompleteUsername")"/>
                 @if (Model.IsPopUp)
                 {
@@ -21,12 +21,12 @@
                 <span asp-validation-for="To"></span>
             </div>
             <div class="mb-3">
-                <label asp-for="Subject"></label>
+                <label asp-for="Subject">@Localizer["Subject"]</label>
                 <input asp-for="Subject" class="form-control"/>
                 <span asp-validation-for="Subject"></span>
             </div>
             <div class="mb-3">
-                <label asp-for="Message"></label>
+                <label asp-for="Message">@Localizer["Message"]</label>
                 <textarea asp-for="Message" class="form-control" id="msg-text" rows="5" required="required" ></textarea>
                 <span asp-validation-for="Message"></span>
                 <div class="invalid-feedback text-danger-emphasis">You must enter a message.</div>
@@ -36,7 +36,7 @@
                 <div class="form-check">
                     <label class="form-check-label">
                         @Html.CheckBoxFor(m => m.Draft, new { @class = "form-check-input" })
-                        <label asp-for="Draft"></label>
+                        <label asp-for="Draft">@Localizer["cbxDraft"]</label>
                     </label>
                 </div>
             }
@@ -44,13 +44,13 @@
             <div class="form-check">
                 <label class="form-check-label">
                     @Html.CheckBoxFor(m => m.IncludeSig, new { @class = "form-check-input" })
-                    <label asp-for="IncludeSig"></label>
+                    <label asp-for="IncludeSig">@Localizer["cbxShowSig"]</label>
                 </label>
             </div>
             <div class="form-check mb-3">
                 <label class="form-check-label">
                     @Html.CheckBoxFor(m => m.SaveToSent, new { @class = "form-check-input" })
-                    <label asp-for="SaveToSent"></label>
+                    <label asp-for="SaveToSent">@Localizer["SaveSentPM"]</label>
                 </label>
             </div>
             <div class="mb-3 p-2">
@@ -59,8 +59,8 @@
                 {
                     <button id="cancel-send-pm" type="submit" class="btn btn-danger cancel" asp-action="Inbox" asp-controller="PrivateMessage">Cancel</button>
                 }
-                <button type="reset" class="btn btn-warning ">Reset</button>
-                <button id="send-pm" type="submit" class="btn btn-success ">Send <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                <button type="reset" class="btn btn-warning ">@Localizer["btnRest"]</button>
+                <button id="send-pm" type="submit" class="btn btn-success ">@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
             </div>
         </form>
     </div>

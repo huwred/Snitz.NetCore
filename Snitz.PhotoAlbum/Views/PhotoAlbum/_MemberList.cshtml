@@ -3,9 +3,9 @@
 <div class="panel panel-primary">
     <div class="panel-heading">
         <ul class="list-unstyled">
-            <li>
-                <div class="col-xs-6 col-md-4">@Localizer["lblFileName"]</div>
-                <div class="col-xs-6 col-md-8">@Localizer["lblForumcode"]</div>
+            <li class="row">
+                <div class="col-6 col-md-8">@Localizer["lblFileName"]</div>
+                <div class="col-6 col-md-4">@Localizer["lblForumcode"]</div>
             </li>
         </ul>
     </div>
@@ -13,11 +13,11 @@
         <ul class="list-unstyled">
             @foreach (var photo in Model)
             {
-                <li>
-                    <div class="col-xs-6 col-md-4">
+                <li class="row">
+                    <div class="col-6 col-md-8">
                         <a class="view-gallery" target="_blank" href="@Url.Action("Gallery", new {id = photo.MemberId, photoid = photo.Id,pagenum=1, searchparams= ViewBag.JsonParams })" title="@Localizer["lblImage"] @photo.Id">@photo.Location</a>
                     </div>
-                    <div class="col-xs-6 col-md-8">[Image=@photo.Id]</div>
+                    <div class="col-6 col-md-4">[Image=@photo.Id]</div>
                 </li>
 
             }

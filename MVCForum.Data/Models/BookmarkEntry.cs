@@ -16,11 +16,10 @@ namespace SnitzCore.Data.Models
         [Column("B_MEMBERID")]
         public int MemberId { get; set; }
 
-        [NotMapped]
+        //[NotMapped]
         public virtual Post Topic { get; set; } = null!;
 
-        [NotMapped]
-        public virtual Member? Author { get; set; }
-
+        //[NotMapped]
+        public virtual Member Member { get; set; } = null!;
     }
 }

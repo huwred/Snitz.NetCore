@@ -30,12 +30,12 @@ namespace SnitzCore.Service
         }
         public BookmarkEntry? GetEntryById(int id)
         {
-            return _dbContext.Bookmarks.Include(b=>b.Author).Include(b=>b.Topic).AsNoTrackingWithIdentityResolution().First(b=>b.Id == id && b.MemberId == MemberId);
+            return _dbContext.Bookmarks.Include(b=>b.Member).Include(b=>b.Topic).AsNoTrackingWithIdentityResolution().First(b=>b.Id == id && b.MemberId == MemberId);
         }
 
         public List<BookmarkEntry>? GetAllEntries()
         {
-            return _dbContext.Bookmarks.Include(b=>b.Author).Include(b=>b.Topic).ThenInclude(t=>t.Forum).AsNoTrackingWithIdentityResolution().Where(b=>b.MemberId == MemberId).ToList();
+            return _dbContext.Bookmarks.Include(b=>b.Member).Include(b=>b.Topic).ThenInclude(t=>t.Forum).AsNoTrackingWithIdentityResolution().Where(b=>b.MemberId == MemberId).ToList();
         }
 
         public List<BookmarkEntry> GetPaged(int pagenum, ActiveSince activesince, string lastVisitCookie, string memberSince)

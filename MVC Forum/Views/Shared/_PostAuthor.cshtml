@@ -11,30 +11,30 @@
     <div class="username"><a href="">@Model.Name</a></div>
     <div>@Html.MemberRankTitle(Model, ranking,Localizer)</div>
     <snitz-avatar src="/Content/Members/@Model.Id/@Model.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="rounded-circle" />
-    <div>Posts: @Model.Posts</div>
+    <div>@Localizer["lblPosts"]: @Model.Posts</div>
     <div>@Html.MemberRankStars(Model, ranking,Localizer)</div>
     <div>
         <ul class="list-group list-group-horizontal list-unstyled mb-0">
             <li snitz-if="@Model.ReceiveEmail == 1 && @User.Identity!.IsAuthenticated" class="p-1">
-                <a href="#" title="Send author an Email" data-toggle="tooltip" class="email-link" data-url="@Url.Action("EmailMember","Account")" data-id="@Model.Id" data-original-title="Send author an Email"><i class="fa fa-2x fa-envelope"></i></a>
+                <a href="#" title="@Localizer["tipAuthorEmail"]" data-toggle="tooltip" class="email-link" data-url="@Url.Action("EmailMember", "Account")" data-id="@Model.Id" data-original-title="@Localizer["tipAuthorEmail"]"><i class="fa fa-2x fa-envelope"></i></a>
             </li>
             <li snitz-if="@SnitzConfig.GetIntValue("STRPMSTATUS") == 1 && @Model.Pmreceive == 1 && @User.Identity!.IsAuthenticated" class="p-1">
-                <a href="#" title="Send author a private message" data-toggle="tooltip" class="sendpm-link" data-url="@Url.Action("Create", "PrivateMessage")" data-id="@Model.Id" data-original-title="Send author a private message"><i class="fa fa-2x fa-comments"></i></a>
+                <a href="#" title="@Localizer["tipAuthorPM"]" data-toggle="tooltip" class="sendpm-link" data-url="@Url.Action("Create", "PrivateMessage")" data-id="@Model.Id" data-original-title="@Localizer["tipAuthorPM"]"><i class="fa fa-2x fa-comments"></i></a>
             </li>
             <li snitz-if="@Model.Privateprofile != 1 && !string.IsNullOrWhiteSpace(@Model.Homepage) && @SnitzConfig.GetIntValue("STRHOMEPAGE") == 1" class="p-1">
-                <a href="@Model.Homepage" data-toggle="tooltip" title="Author's home page, click to visit" target="_new"><i class="fa fa-2x fa-home"></i></a>
+                <a href="@Model.Homepage" data-toggle="tooltip" title="@Localizer["tipAuthorHomePage"]" target="_new"><i class="fa fa-2x fa-home"></i></a>
             </li>
             <li snitz-if="@User.IsInRole("Admin")" class="p-1">
-                <a href="#" class="show-ip" data-toggle="tooltip" title="View author's IP address" data-id="@Model.Id" data-url="@Url.Action("ShowIP", "Account")"><i class="fa fa-2x fa-sitemap"></i></a>
+                <a href="#" class="show-ip" data-toggle="tooltip" title="@Localizer["tipAuthorIP"]" data-id="@Model.Id" data-url="@Url.Action("ShowIP", "Account")"><i class="fa fa-2x fa-sitemap"></i></a>
             </li>
             <li snitz-if="@User.IsInRole("Admin")" class="p-1">
                 @switch (Model.Status)
                 {
                     case 1:
-                        <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="Lock Member" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-lock"></i></a>
+                        <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="@Localizer["tipAuthorUnLock"]" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-lock"></i></a>
                         break;
                     default:
-                        <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="Lock Member" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-unlock"></i></a>
+                        <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="@Localizer["tipAuthorLock"]" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-unlock"></i></a>
                         break;
                 }
             </li>

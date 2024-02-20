@@ -39,10 +39,11 @@
                         <label class="form-check-label" for="SrchDesc">&nbsp;@Localizer["lblDescription"]</label>
                     </div>
                     <select class="form-select" id="SrchGroup">
-                        <option selected>Group ...</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
+                        <option selected>@Localizer["lblGroup"].Value ...</option>
+                        @foreach (var grp in Model.GroupList)
+                        {
+                            <option value="@grp.Value">@grp.Text</option>
+                        }
                     </select>
                 </div>
             </div>

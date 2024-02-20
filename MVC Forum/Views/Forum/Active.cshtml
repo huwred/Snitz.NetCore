@@ -39,7 +39,7 @@
                     @if (SnitzConfig.GetValue("STRACTIVEPAGESIZES", "") != "")
                     {
                         var ischecked = Model.PageSize;
-                        <span class="form-text mb-2">&nbsp;Set page size&nbsp;</span>
+                        <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
 
                         <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
                             @foreach (var size in SnitzConfig.GetValue("STRACTIVEPAGESIZES", "").Split(","))
@@ -71,41 +71,6 @@
             @foreach (var post in Model.Posts!)
             {
                 <partial name="_TopicListing" model="post" />
-@*                 <div class="table-row">
-                    <div class="status" data-status="@post.Status">
-                        <snitz-topic-icon status="@post.Status" replies="@post.RepliesCount" views="@post.ViewCount" lastpost="@post.LastPostDate"></snitz-topic-icon>
-                    </div>
-                    <div class="subjects">
-                        <a href="/Topic/@post.Id">@Html.Raw(BbCodeProcessor.Subject(post.Title!))</a>
-                        <br>
-                        <span>Started by @post.AuthorName <snitz-datetime datetime="@post.Created"></snitz-datetime> .</span>
-                        @if (SnitzConfig.GetIntValue("STRSHOWPAGING") == 1)
-                        {
-                            @if (post.RepliesCount > ViewBag.PageSize)
-                            {
-                                var paging = new PagingModel
-                                {
-                                PageCount = post.RepliesCount / ViewBag.PageSize,
-                                Page = post.Id
-                            };
-                                <partial name="QuickPaging" model="paging"/>
-                            }
-                        }
-                    </div>
-                    <div class="replies">
-                        @post.RepliesCount @Localizer["lblReplies"] <br> @post.ViewCount @Localizer["lblViews"]
-                    </div>
-
-                    <div class="last-reply">
-                        <snitz-datetime datetime="@post.LastPostDate"></snitz-datetime>
-                        @if (SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1)
-                        {
-                            <span class=""><br />By <b><a href="">@post.LastPostAuthorName</a></b></span>
-            
-                        }
-        
-                    </div>
-                </div> *@
             }
 
 
@@ -129,7 +94,7 @@
     }
     else
     {
-        <div class="center"><h4>No active Posts</h4></div>
+        <div class="center"><h4>@Localizer["lblOldPosts"]</h4></div>
     }
         <partial name="_IconInfo" />
 
