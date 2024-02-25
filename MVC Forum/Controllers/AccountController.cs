@@ -653,7 +653,12 @@ namespace MVCForum.Controllers
             }
             return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
         }
-        
+
+        public IActionResult ChangeEmail(int memberid)
+        {
+            var member = _memberService.GetById()
+            return View();
+        }
         [HttpGet]
         public async Task<IActionResult> ChangeEmail(string token, string username)
         {
@@ -697,7 +702,7 @@ namespace MVCForum.Controllers
         }
         private string? MemberRankTitle(Member author)
         {
-            string? mTitle = author.Title;
+            var mTitle = author.Title;
             if (author.Status == 0 || author.Name == "n/a")
             {
                 mTitle =  _languageResource["tipMemberLocked"].Value;

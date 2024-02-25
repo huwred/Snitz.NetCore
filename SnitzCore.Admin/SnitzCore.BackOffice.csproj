@@ -51,13 +51,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Extensions\" />
     <Folder Include="Views\Shared\DisplayTemplates\" />
   </ItemGroup>
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\LanguageManager\Index.cshtml" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Content Remove="Views/_ViewImports.cshtml" />
+    <Content Include="Views/_ViewImports.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 
 
 </Project>

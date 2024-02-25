@@ -11,24 +11,26 @@
                 <div class="forumLogo" style="background-image: url(@p.Forum?.ImageUrl); background-size: 100%"></div>
                 <div class="postTitle">
                     <a asp-controller="Topic" asp-action="Index" asp-route-id="@p.Id">@p.Title</a>
+                    @Localizer["lblPostedBy"] <a asp-controller="Account" asp-action="Detail" asp-route-id="@p.AuthorName">@p.AuthorName</a>
                 </div>
                 <div class="postSubtitle">
                     @switch (p.RepliesCount)
                     {
                         case 1:
-                            <span>@p.RepliesCount @Localizer["Reply"]</span>
+                            <span>@p.RepliesCount @Localizer["Reply"]<text>, </text></span>
                             break;
                         case 0:
-                            <span>@Localizer["lblNoReplies"]</span>
+                            <span>@Localizer["lblNoReplies"]<text>, </text></span>
                             break;
                         default:
-                            <span>@p.RepliesCount @Localizer["lblReplies"]</span>
+                            <span>@p.RepliesCount @Localizer["lblReplies"]<text>, </text></span>
                             break;
                     }
                     <span class="postUser">
-                        <a asp-controller="Account" asp-action="Detail" asp-route-id="@p.AuthorName">
-                            @p.AuthorName
-                        </a>
+                        @if (SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1 && p.LastPostDate != null)
+                        {
+                            @Localizer["lblLastPost"] <lastpost-link post-date="@p.LastPostDate" topic-id="@p.Id" reply-id="@p.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                        }
                     </span>
                 </div>
             </li>
