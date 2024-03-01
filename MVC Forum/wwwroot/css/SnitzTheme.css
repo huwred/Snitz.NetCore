@@ -439,3 +439,6 @@ blockquote.newquote {
 .modal-header > .modal-title, .modal-body > .body-desc, .modal-body > .photo-input, .modal-footer > .footer-title {
     text-align: center
 }
+.field-validation-error {
+    color: var(--bs-form-invalid-color);
+}

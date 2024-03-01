@@ -101,6 +101,7 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="bundleconfig.json" />
+    <_ContentIncludedByDefault Remove="Views\Account\ChangeUsername.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Account\EmailMember.cshtml" />
     <_ContentIncludedByDefault Remove="Views\PrivateMessage\Search.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
@@ -249,5 +250,8 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\_popUpload.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Account\ChangeUsername.cshtml" />
   </ItemGroup>
 </Project>

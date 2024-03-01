@@ -1,0 +1,36 @@
+﻿@model MVCForum.ViewModels.ChangeUsernameModel
+
+<div class="container pt-0">
+    <div class="center">
+        <div class="col-8 col-md-4 bg-form border border-dark rounded">
+            <h1 class="bg-dark text-white p-2">@Localizer["ChangeUsername"]</h1>
+
+            @using (Html.BeginForm("ChangeUsername", "Account", FormMethod.Post, new { id = "changeEmailForm", autocomplete = "off", @class = "needs-validation p-2" }))
+            {
+                @Html.AntiForgeryToken()
+                <input autocomplete="false" name="hidden" type="text" style="display:none;">
+                <span class="text-success">@ViewBag.Message</span>
+                <div class="">
+                    <div class="container-fluid">
+                        <div class="mb-3">
+                            <label asp-for="Username">@Localizer["Username"]</label>
+                            <input asp-for="Username" class="form-control" />
+                            <div class="invalid-feedback">
+                                @Localizer["PropertyRequired", Localizer["Username"].Value]
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            @Html.ValidationMessage("Username")
+                        </div>
+                        @Html.HiddenFor(model => model.CurrentUserId)
+                    </div>
+                    <div class="mb-3">
+                        <button type="reset" class="btn btn-danger">@Localizer["btnReset"]</button>
+                        <button type="submit" id="approve-btn" class="btn btn-success">@Localizer["btnChangeUsername"]</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

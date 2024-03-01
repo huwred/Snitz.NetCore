@@ -7,6 +7,7 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using MVCForum.ViewModels;
 using MVCForum.ViewModels.Member;
 using MVCForum.ViewModels.User;
 using SnitzCore.Data;
@@ -414,56 +416,6 @@ namespace MVCForum.Controllers
             return View(login);
         }
 
-        private string GeneratePassword()
-        {
-            var test = _configuration.Value; // here 
-            var opts = new PasswordOptions()
-            {
-                RequiredLength = test.Password.RequiredLength,
-                RequiredUniqueChars = test.Password.RequiredUniqueChars,
-                RequireDigit = test.Password.RequireDigit,
-                RequireLowercase = test.Password.RequireLowercase,
-                RequireNonAlphanumeric = test.Password.RequireNonAlphanumeric,
-                RequireUppercase = test.Password.RequireUppercase
-            };
-
-            string[] randomChars = new[] {
-                "ABCDEFGHJKLMNOPQRSTUVWXYZ",    // uppercase 
-                "abcdefghijkmnopqrstuvwxyz",    // lowercase
-                "0123456789",                   // digits
-                "!@$?_-^"                        // non-alphanumeric
-            };
-
-            Random rand = new Random(Environment.TickCount);
-            List<char> chars = new List<char>();
-
-            if (opts.RequireUppercase)
-                chars.Insert(rand.Next(0, chars.Count),
-                    randomChars[0][rand.Next(0, randomChars[0].Length)]);
-
-            if (opts.RequireLowercase)
-                chars.Insert(rand.Next(0, chars.Count),
-                    randomChars[1][rand.Next(0, randomChars[1].Length)]);
-
-            if (opts.RequireDigit)
-                chars.Insert(rand.Next(0, chars.Count),
-                    randomChars[2][rand.Next(0, randomChars[2].Length)]);
-
-            if (opts.RequireNonAlphanumeric)
-                chars.Insert(rand.Next(0, chars.Count),
-                    randomChars[3][rand.Next(0, randomChars[3].Length)]);
-
-            for (int i = chars.Count; i < opts.RequiredLength
-                                      || chars.Distinct().Count() < opts.RequiredUniqueChars; i++)
-            {
-                string rcs = randomChars[rand.Next(0, randomChars.Length)];
-                chars.Insert(rand.Next(0, chars.Count),
-                    rcs[rand.Next(0, rcs.Length)]);
-            }
-
-            return new string(chars.ToArray());
-        }
-
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -510,8 +462,18 @@ namespace MVCForum.Controllers
         
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResetPassword(string token, string email)
+        public IActionResult ResetPassword(string? token, string? email)
         {
+            if (token == null)
+            {
+                var forumuser = _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User).Result;
+                if (forumuser != null)
+                {
+                    token = _userManager.GeneratePasswordResetTokenAsync(forumuser).Result;
+                    email = forumuser.UserName;
+                }
+            }
+
             var model = new ResetPasswordModel { Token = token, Username = email };
             return View(model);
         }
@@ -523,6 +485,13 @@ namespace MVCForum.Controllers
         {
             if (!ModelState.IsValid)
                 return View(resetPasswordModel);
+            var passwordValidator = new PasswordValidator<ForumUser>();
+            var result = await passwordValidator.ValidateAsync(_userManager, null, resetPasswordModel.Password);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("Password", "Password is not valid");
+                return View(resetPasswordModel);
+            }
             _logger.Warn($"Reset password for {resetPasswordModel.Username}");
             var user = await _userManager.FindByNameAsync(resetPasswordModel.Username!);
             _logger.Warn($"User found={user?.Member?.Name}");
@@ -654,27 +623,76 @@ namespace MVCForum.Controllers
             return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
         }
 
-        public IActionResult ChangeEmail(int memberid)
+        [HttpGet]
+        public IActionResult NewEmail()
         {
-            var member = _memberService.GetById()
-            return View();
+            var member = _memberService.Current();
+            var model = new ChangeEmailModel
+            {
+                Email = "",
+                Username = member.Name,
+                CurrentEmail = member.Email
+            };
+            return View(model);
+        }
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> NewEmail(ChangeEmailModel model)
+        {
+            var user = await _userManager.FindByNameAsync(model.Username);
+            if (user == null)
+            {
+                ModelState.AddModelError("CustomError", _languageResource.GetString("UsernameNotFound"));
+            }
+            if (!await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                ModelState.AddModelError("CustomError", _languageResource.GetString("dlgPasswordErr"));                    
+            }
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var member = _memberService.Current();
+            member.Newemail = model.NewEmail;
+            _snitzDbContext.Update(member);
+            await _snitzDbContext.SaveChangesAsync();
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user,model.NewEmail);//.GenerateEmailConfirmationTokenAsync(user);
+            token = HttpUtility.UrlEncode(token);
+            var confirmationLink = Url.Action(nameof(ChangeEmail), "Account", new { token, username = member.Name }, Request.Scheme);
+            var message = new EmailMessage(new[] { model.NewEmail }, 
+                _languageResource["Confirm"].Value, 
+                ParseTemplate("changeEmail.html",_languageResource["Confirm"].Value,model.NewEmail,member.Name, confirmationLink!, cultureInfo));
+            
+            await _emailSender.SendEmailAsync(message);
+            ViewBag.Message = _languageResource.GetString("EmailConfirm");
+            return View(model);
         }
         [HttpGet]
-        public async Task<IActionResult> ChangeEmail(string token, string username)
+        public async Task<IActionResult> ChangeEmail(string? token, string? user)
         {
-            var user = await _userManager.FindByNameAsync(username);
-            var currmember = _memberService.GetByUsername(username);
-            if (user == null || currmember?.Newemail == null)
+            if (user == null || token == null)
+                return View("Error");            
+            
+            var forumUser = await _userManager.FindByIdAsync(user);
+            var currmember = _memberService.GetById(forumUser?.MemberId);
+            if (forumUser == null || currmember == null)
                 return View("Error");
-            var result = await _userManager.ChangeEmailAsync(user,currmember.Newemail, token);
-            if (result.Succeeded)
+            if (currmember.Newemail != null)
             {
-                currmember.Email = currmember.Newemail;
-                currmember.Newemail = null;
-                _memberService.Update(currmember);
-            }
+                var result = await _userManager.ChangeEmailAsync(forumUser,currmember.Newemail, token);
+                if (result.Succeeded)
+                {
+                    currmember.Email = currmember.Newemail;
+                    currmember.Newemail = null;
+                    _memberService.Update(currmember);
+                    await _snitzDbContext.SaveChangesAsync();
+                }
 
-            return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
+                return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
+            }
+            return View("Error");
         }
         
         [HttpGet]
@@ -686,64 +704,6 @@ namespace MVCForum.Controllers
         public IActionResult TestEmail()
         {
             throw new NotImplementedException();
-        }
-
-        private bool IsValidEmail(string emailaddress)
-        {
-            try
-            {
-                MailAddress m = new(emailaddress);
-                return true;
-            }
-            catch (FormatException)
-            {
-                return false;
-            }
-        }
-        private string? MemberRankTitle(Member author)
-        {
-            var mTitle = author.Title;
-            if (author.Status == 0 || author.Name == "n/a")
-            {
-                mTitle =  _languageResource["tipMemberLocked"].Value;
-            }
-            if (author.Name == "zapped")
-            {
-                mTitle =  _languageResource["tipZapped"].Value;
-            }
-
-            var rankInfoHelper = new RankInfoHelper(author, ref mTitle, author.Posts, _ranking);
-            
-            return rankInfoHelper.Title;
-        }
-        private string ParseTemplate(string template,string subject, string email,string username, string callbackUrl, CultureInfo? culture)
-        {
-            if (culture != null)
-            {
-                template = culture.Name + Path.DirectorySeparatorChar + template;
-            }
-            var pathToFile = _env.WebRootPath  
-                             + Path.DirectorySeparatorChar  
-                             + "Templates"  
-                             + Path.DirectorySeparatorChar  
-                             + template;
-            var builder = new BodyBuilder();
-            using (StreamReader sourceReader = System.IO.File.OpenText(pathToFile))
-            {
-
-                builder.HtmlBody = sourceReader.ReadToEnd();
-
-            }
-
-            string messageBody = builder.HtmlBody
-                .Replace("[SUBJECT]",subject)
-                .Replace("[DATE]",$"{DateTime.Now:dddd, d MMMM yyyy}")
-                .Replace("[EMAIL]",email)
-                .Replace("[USER]",username)
-                .Replace("[SERVER]",_config.ForumUrl)
-                .Replace("[FORUM]",_config.ForumTitle)
-                .Replace("[URL]",callbackUrl);
-            return messageBody;
         }
 
         public IActionResult ShowIP(int id)
@@ -804,5 +764,145 @@ namespace MVCForum.Controllers
             return PartialView(model);
 
         }
+        [HttpGet]
+        [Authorize]
+        public IActionResult ChangeUsername(int? id)
+        {
+            if (_memberService.Current()?.Id != id || id == null)
+                return View("Error");
+
+            return View(new ChangeUsernameModel{CurrentUserId = _memberService.Current().Id});
+        }
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public IActionResult ChangeUsername(ChangeUsernameModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var member = _memberService.GetById(model.CurrentUserId);
+                if (_memberService.GetByUsername(model.Username) != null)
+                {
+                    ModelState.AddModelError("Username",_languageResource.GetString("UserNameExists"));
+                }
+                else
+                {
+                    member.Name = model.Username;
+                    _memberService.Update(member);
+                    _snitzDbContext.SaveChanges();
+                    ViewBag.Message = "Username changed";
+                }
+            }
+            return View(model);
+        }
+
+        private bool IsValidEmail(string emailaddress)
+        {
+            try
+            {
+                MailAddress m = new(emailaddress);
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
+        private string? MemberRankTitle(Member author)
+        {
+            var mTitle = author.Title;
+            if (author.Status == 0 || author.Name == "n/a")
+            {
+                mTitle =  _languageResource["tipMemberLocked"].Value;
+            }
+            if (author.Name == "zapped")
+            {
+                mTitle =  _languageResource["tipZapped"].Value;
+            }
+
+            var rankInfoHelper = new RankInfoHelper(author, ref mTitle, author.Posts, _ranking);
+            
+            return rankInfoHelper.Title;
+        }
+        private string ParseTemplate(string template,string subject, string email,string username, string callbackUrl, CultureInfo? culture)
+        {
+            if (culture != null)
+            {
+                template = culture.Name + Path.DirectorySeparatorChar + template;
+            }
+            var pathToFile = _env.WebRootPath  
+                             + Path.DirectorySeparatorChar  
+                             + "Templates"  
+                             + Path.DirectorySeparatorChar  
+                             + template;
+            var builder = new BodyBuilder();
+            using (StreamReader sourceReader = System.IO.File.OpenText(pathToFile))
+            {
+
+                builder.HtmlBody = sourceReader.ReadToEnd();
+
+            }
+
+            string messageBody = builder.HtmlBody
+                .Replace("[SUBJECT]",subject)
+                .Replace("[DATE]",$"{DateTime.Now:dddd, d MMMM yyyy}")
+                .Replace("[EMAIL]",email)
+                .Replace("[USER]",username)
+                .Replace("[SERVER]",_config.ForumUrl)
+                .Replace("[FORUM]",_config.ForumTitle)
+                .Replace("[URL]",callbackUrl);
+            return messageBody;
+        }
+        private string GeneratePassword()
+        {
+            var test = _configuration.Value; // here 
+            var opts = new PasswordOptions()
+            {
+                RequiredLength = test.Password.RequiredLength,
+                RequiredUniqueChars = test.Password.RequiredUniqueChars,
+                RequireDigit = test.Password.RequireDigit,
+                RequireLowercase = test.Password.RequireLowercase,
+                RequireNonAlphanumeric = test.Password.RequireNonAlphanumeric,
+                RequireUppercase = test.Password.RequireUppercase
+            };
+
+            string[] randomChars = new[] {
+                "ABCDEFGHJKLMNOPQRSTUVWXYZ",    // uppercase 
+                "abcdefghijkmnopqrstuvwxyz",    // lowercase
+                "0123456789",                   // digits
+                "!@$?_-^"                        // non-alphanumeric
+            };
+
+            Random rand = new Random(Environment.TickCount);
+            List<char> chars = new List<char>();
+
+            if (opts.RequireUppercase)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[0][rand.Next(0, randomChars[0].Length)]);
+
+            if (opts.RequireLowercase)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[1][rand.Next(0, randomChars[1].Length)]);
+
+            if (opts.RequireDigit)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[2][rand.Next(0, randomChars[2].Length)]);
+
+            if (opts.RequireNonAlphanumeric)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[3][rand.Next(0, randomChars[3].Length)]);
+
+            for (int i = chars.Count; i < opts.RequiredLength
+                                      || chars.Distinct().Count() < opts.RequiredUniqueChars; i++)
+            {
+                string rcs = randomChars[rand.Next(0, randomChars.Length)];
+                chars.Insert(rand.Next(0, chars.Count),
+                    rcs[rand.Next(0, rcs.Length)]);
+            }
+
+            return new string(chars.ToArray());
+        }
+
+
     }
 }

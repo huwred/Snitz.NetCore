@@ -54,7 +54,7 @@ namespace MVCForum.TagHelpers
             output.AddClass("post-control-btn",HtmlEncoder.Default);
             if (LoggedIn)
             {
-
+                var isauthor = username == Author;
                 var isadmin = userroles!.Contains("Admin");
                 if (!IsLocked || isadmin)
                 {
@@ -70,7 +70,6 @@ namespace MVCForum.TagHelpers
                             ? $@"<i class=""fa fa-bookmark m-1 bookmark-del"" title=""{TextLocalizerDelegate("tipRemoveBookmark")}"" data-id=""{PostId}""></i>"
                             : $@"<i class=""fa fa-bookmark-o m-1 bookmark-add"" title=""{TextLocalizerDelegate("tipBookmarkPost")}"" data-id=""{PostId}""></i>");
                     }
-
                 }
                 else
                 {
@@ -83,7 +82,7 @@ namespace MVCForum.TagHelpers
                             : $@"<i class=""fa fa-bookmark-o m-1 bookmark-add"" title=""{TextLocalizerDelegate("tipBookmarkPost")}"" data-id=""{TopicId}""></i>");
                     }
                 }
-                if (username == Author || isadmin)
+                if (isauthor || isadmin)
                 {
                     if (Posttype == PostType.Topic)
                     {
@@ -91,9 +90,12 @@ namespace MVCForum.TagHelpers
                         {
                             output.Content.AppendHtml($@"<i class=""fa fa-pencil m-1 post-edit"" title=""{TextLocalizerDelegate("tipEditTopic")}"" data-id=""{PostId}""></i>");
                         }
-                        if (isadmin)
+                        if (isauthor || isadmin)
                         {
                             output.Content.AppendHtml($@"<i class=""fa fa-trash m-1 post-del"" title=""{TextLocalizerDelegate("tipTopicDel")}"" data-id=""{PostId}""></i>");
+                        }
+                        if (isadmin)
+                        {
                             output.Content.AppendHtml(IsLocked
                                 ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""{TextLocalizerDelegate("cnfUnlockTopic")}"" data-id=""{PostId}"" data-status=""0""></i>"
                                 : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""{TextLocalizerDelegate("cnfLockTopic")}"" data-id=""{PostId}"" data-status=""1""></i>");
@@ -105,16 +107,17 @@ namespace MVCForum.TagHelpers
                         {
                             output.Content.AppendHtml($@"<i class=""fa fa-pencil m-1 reply-edit"" title=""{TextLocalizerDelegate("tipEditReply")}"" data-id=""{PostId}""></i>");
                         }
-                        if (isadmin)
+                        if (isauthor || isadmin)
                         {
                             output.Content.AppendHtml($@"<i class=""fa fa-trash m-1 reply-del"" title=""{TextLocalizerDelegate("tipDelReply")}"" data-id=""{PostId}""></i>");
+                        }
+                        if (isadmin)
+                        {
                             output.Content.AppendHtml(IsLocked
                                 ? $@"<i class=""fa fa-unlock admin m-1 post-lock"" title=""{TextLocalizerDelegate("cnfUnlockTopic")}"" data-id=""{TopicId}"" data-status=""0""></i>"
                                 : $@"<i class=""fa fa-lock admin m-1 post-lock"" title=""{TextLocalizerDelegate("cnfLockTopic")}"" data-id=""{TopicId}"" data-status=""1""></i>");
                         }
-
                     }
-
                 }
             }
             output.TagMode = TagMode.StartTagAndEndTag;

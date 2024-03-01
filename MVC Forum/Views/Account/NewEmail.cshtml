@@ -1,0 +1,45 @@
+﻿@model MVCForum.ViewModels.ChangeEmailModel
+
+<div class="container pt-0">
+    <div class="center">
+        <div class="col-8 col-md-4 bg-form border border-dark rounded">
+            <h1 class="bg-dark text-white p-2">@Localizer["ChangeEmail"]</h1>
+
+            @using (Html.BeginForm("NewEmail", "Account", FormMethod.Post, new { id = "changeEmailForm", autocomplete = "off", @class = "needs-validation p-2" }))
+            {
+                @Html.AntiForgeryToken()
+                <span class="text-success">@ViewBag.Message</span>
+                <input autocomplete="false" name="hidden" type="text" style="display:none;">
+                <div class="">
+                    <div class="container-fluid">
+                        <div class="mb-3">
+                            <label asp-for="Email">@Localizer["CurrentEmail"]</label>
+                            <input asp-for="Email" class="form-control" placeholder="@Localizer["CurrentEmail"]"/>
+                            <div class="invalid-feedback">
+                                @Localizer["compCurrentEmail", Localizer["CurrentEmail"].Value, Localizer["Email"].Value]
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="NewEmail">@Localizer["NewEmail"]</label>
+                            <input asp-for="NewEmail" class="form-control" placeholder="@Localizer["NewEmail"]" autoComplete="off" required/>
+                            <div class="invalid-feedback">@Localizer["PropertyRequired", Localizer["NewEmail"].Value]</div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Password">@Localizer["Password"]</label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="@Localizer["plhEnterPassword"]" autoComplete="off"/>
+                            <div class="invalid-feedback">@Localizer["PropertyRequired", Localizer["Password"].Value]</div>
+                            @Html.ValidationMessage("CustomError")
+                        </div>
+                        @Html.HiddenFor(model => model.Username)
+                        @Html.HiddenFor(model => model.CurrentEmail)
+                    </div>
+                    <div class="mb-3">
+                        <button type="reset" class="btn btn-danger">@Localizer["btnReset"]</button>
+                        <button type="submit" id="approve-btn" class="btn btn-success">@Localizer["btnChange"]</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
