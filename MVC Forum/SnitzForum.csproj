@@ -39,6 +39,7 @@
     <Content Remove="bundleconfig.json" />
     <Content Remove="log4net.config" />
     <Content Remove="Views\PrivateMessage\Search.cshtml" />
+    <Content Remove="Views\Shared\_BookmarkLink.cshtml" />
     <Content Remove="wwwroot\js\tinymce\icons\default\icons.min.js" />
     <Content Remove="wwwroot\js\tinymce\jquery.tinymce.min.js" />
     <Content Remove="wwwroot\js\tinymce\langs\README.md" />
@@ -108,7 +109,6 @@
     <_ContentIncludedByDefault Remove="Views\Shared\ConfirmDIalog.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\FormButtons.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_BookmarkLink.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Shared\_popUpload.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -193,6 +193,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.7">
@@ -247,9 +248,6 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\_BookmarkLink.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Shared\_popUpload.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Account\ChangeUsername.cshtml" />

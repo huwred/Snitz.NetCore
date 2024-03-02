@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
@@ -76,7 +77,6 @@ public class LanguageManagerController : Controller
             }
         }      
 
-        var vm = GetStrings(culture).Where(l=>l.ResourceSet == id);
         return PartialView(model);
     }
     private IQueryable<LanguageResource> GetStrings(string culture = "en")
@@ -86,24 +86,57 @@ public class LanguageManagerController : Controller
             culture = "en";
         }
 
-        var results = _dbcontext!.LanguageResources
+        var results = _dbcontext.LanguageResources
             .Where(r => r.Culture == culture);
         return results;
     }
 
 
-    public IActionResult UpdateResource()
+    [HttpPost]
+    public IActionResult UpdateResource(LanguageResource langres,string? subBut)
+    {
+        var itemToUpdate = _dbcontext.LanguageResources.SingleOrDefault(l =>
+            l.Culture == langres.Culture && l.Name == langres.Name && l.ResourceSet == langres.ResourceSet);
+        if (subBut == "update")
+        {
+            if (itemToUpdate != null)
+            {
+                itemToUpdate.Value = langres.Value;
+                _dbcontext.LanguageResources.Update(itemToUpdate);
+            }
+            else
+            {
+                itemToUpdate = new LanguageResource()
+                {
+                    Culture = langres.Culture,
+                    Name = langres.Name,
+                    ResourceSet = langres.ResourceSet,
+                    Value = langres.Value
+                };
+                _dbcontext.LanguageResources.Add(itemToUpdate);
+            }
+            _dbcontext.SaveChanges();
+            return Content("<i class='fa fa-check'></i>");
+        }else if (subBut == "delete")
+        {
+            if (itemToUpdate != null) _dbcontext.LanguageResources.Remove(itemToUpdate);
+            _dbcontext.SaveChanges();
+            return Content("<i class='fa fa-check'></i>");
+        }
+        return Content("<i class='fa fa-times'></i>");
+    }
+    [HttpPost]
+    public IActionResult DeleteResource(FormCollection form, string action)
     {
         return Content("<i class='fa fa-check'></i>");
     }
-
     public IActionResult AddResource(LanguageResource res)
     {
-        TranslationViewModel vm = new TranslationViewModel
-        {
-            Resources = GetStrings().ToList(),
-            ResourceSets = _dbcontext.LanguageResources.Select(l=>l.ResourceSet).Distinct().ToList()
-        };
+        //TranslationViewModel vm = new TranslationViewModel
+        //{
+        //    Resources = GetStrings().ToList(),
+        //    ResourceSets = _dbcontext.LanguageResources.Select(l=>l.ResourceSet).Distinct().ToList()
+        //};
         
         if (ModelState.IsValid)
         {

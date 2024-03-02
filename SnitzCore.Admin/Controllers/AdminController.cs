@@ -485,5 +485,10 @@ namespace SnitzCore.BackOffice.Controllers
                 return PartialView("SaveResult",e.Message);
             }
         }
+
+        public IActionResult ListViews()
+        {
+            return View();
+        }
     }
 }

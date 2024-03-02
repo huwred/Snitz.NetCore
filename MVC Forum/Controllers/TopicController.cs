@@ -535,7 +535,7 @@ namespace MVCForum.Controllers
                 //return Json(uniqueFileName + "|" + model.Description);
             }
 
-            return PartialView("_popUpload",model);
+            return PartialView("popUpload",model);
 
         }
 
@@ -543,7 +543,7 @@ namespace MVCForum.Controllers
         public IActionResult UploadForm()
         {
             ViewBag.Title = "lblUpload";
-            return PartialView("_popUpload",new AlbumUploadViewModel());
+            return PartialView("popUpload",new AlbumUploadViewModel());
         }
         private string GetUniqueFileName(string fileName)
         {

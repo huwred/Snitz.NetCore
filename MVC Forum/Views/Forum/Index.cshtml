@@ -78,14 +78,14 @@
             {
                 foreach (var post in Model.StickyPosts)
                 {
-                    <partial name="_TopicListing" model="@post"/>
+                    <partial name="TopicListing" model="@post"/>
                 }
             }
             <hr />
         }
         <!--Topics start here-->
         @foreach (var post in Model.Posts!){
-            <partial name="_TopicListing" model="post" />
+            <partial name="TopicListing" model="post" />
         }
         @if (Model.Forum.Posts == 0)
         {
@@ -110,7 +110,7 @@
         <partial name="ListPaging" model="paging" />
     }
     <!--pagination ends-->
-    <partial name="_IconInfo" />
+    <partial name="IconInfo" />
 </div>
 @{
     var confModel = new ConfirmDialogViewModel()

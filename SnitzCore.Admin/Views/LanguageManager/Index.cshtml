@@ -75,7 +75,7 @@
             }
         </ul>
         <div class="col">
-            <div id="loader"></div>
+            @* <div id="loader"></div> *@
             <div class="card " id="resource-card"></div>
         </div>
     </div>
@@ -86,14 +86,14 @@
     <script type="text/javascript" src="/js/jquery.min.js"></script>
     <script type="text/javascript" src="/js/jquery.unobtrusive-ajax.js"></script>
     <script type="text/javascript">
-        var $loading = $('#loader').hide();
-        $(document)
-            .ajaxStart(function () {
-                $loading.show();
-            })
-            .ajaxStop(function () {
-                $loading.hide();
-            });
+        // var $loading = $('#loader').hide();
+        // $(document)
+        //     .ajaxStart(function () {
+        //         $loading.show();
+        //     })
+        //     .ajaxStop(function () {
+        //         $loading.hide();
+        //     });
 
         $(document).ready(function() {
             $('#resource-card').load("/LanguageManager/ResourceSet/Admin/?filter=" + $('#filter').val());

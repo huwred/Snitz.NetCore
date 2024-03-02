@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNetCore.Hosting
+
+@inject IWebHostEnvironment _env
+@{
+    ViewBag.Title = "title";
+    Layout = "_MasterLayout";
+    var dir = Directory.GetFiles(string.Format("{0}/Views", _env.ContentRootPath),
+        "*.cshtml", SearchOption.AllDirectories);
+
+
+}
+
+<h2>title</h2>
+<ul>
+@foreach (var file in dir)
+{
+    var relativePath = file.Replace(_env.WebRootPath, String.Empty);
+        <li>@relativePath</li>
+}
+</ul>

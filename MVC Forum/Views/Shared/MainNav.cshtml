@@ -46,7 +46,7 @@
             }
             @if (SignInManager.IsSignedIn(User))
             {
-                <partial name="_MemberMenu"/>
+                <partial name="MemberMenu"/>
                 var user = UserManager.GetUserAsync(User).Result;
                 if (user != null)
                 {
@@ -87,7 +87,7 @@
                 </select>
             </div>
         }
-        <partial name="_SelectLanguage" />
+        <partial name="SelectLanguage" />
 
     </div>
 </nav>

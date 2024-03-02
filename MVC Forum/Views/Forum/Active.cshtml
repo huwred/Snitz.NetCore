@@ -70,7 +70,7 @@
             <!--Topics start here-->
             @foreach (var post in Model.Posts!)
             {
-                <partial name="_TopicListing" model="post" />
+                <partial name="TopicListing" model="post" />
             }
 
 
@@ -96,7 +96,7 @@
     {
         <div class="center"><h4>@Localizer["lblOldPosts"]</h4></div>
     }
-        <partial name="_IconInfo" />
+        <partial name="IconInfo" />
 
 </div>
 

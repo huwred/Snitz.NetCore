@@ -105,7 +105,7 @@ builder.Services.Configure < RequestLocalizationOptions > (options => {
     options.RequestCultureProviders.Insert(0, new QueryStringRequestCultureProvider());
 });
 #endregion
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddResponseCaching();
 builder.Services.AddBreadcrumbs(Assembly.GetExecutingAssembly(), options =>
 {

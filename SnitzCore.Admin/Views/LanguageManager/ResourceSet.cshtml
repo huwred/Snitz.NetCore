@@ -54,15 +54,15 @@
                         {
                             <div class="lang_@culture.Value col-8" style="display: none;">
                                 <input type="hidden" value="@res.ResourceSet" name="ResourceSet" />
-                                <input type="hidden" value="@res.Culture" name="Culture" />
+                                <input type="hidden" value="@culture.Value" name="Culture" />
                                 <input type="hidden" value="@res.Id" name="Id" />
                                 <input type="hidden" value="@res.Name" name="Name" />
                                 <lang-res culture="@culture.Value" resource="@res.Name"></lang-res>
                             </div>
                         }
                         <div class="col-3">
-                            <button class="btn btn-sm btn-outline-success" type="submit" title="Save Changes" data-id="@res.Id"><i class="fa fa-save"></i></button>
-                            <button class="btn btn-sm btn-outline-danger" type="button" title="Delete Resource" data-id="@res.Id"><i class="fa fa-trash-o"></i></button>
+                            <button class="btn btn-sm btn-outline-success" type="submit" title="Save Changes" data-id="@res.Id" name="subBut" value="update"><i class="fa fa-save"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" type="submit" title="Delete Resource" data-id="@res.Id" name="subBut" value="delete"><i class="fa fa-trash-o"></i></button>
                             <span id="result_@res.Name"></span>
                         </div>
                     </form>
