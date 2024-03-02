@@ -14,7 +14,7 @@
                     <div class="container-fluid">
                         <div class="mb-3">
                             <label asp-for="Email">@Localizer["CurrentEmail"]</label>
-                            <input asp-for="Email" class="form-control" placeholder="@Localizer["CurrentEmail"]"/>
+                            <input asp-for="Email" class="form-control" placeholder="@Localizer["CurrentEmail"]" autocomplete="off" />
                             <div class="invalid-feedback">
                                 @Localizer["compCurrentEmail", Localizer["CurrentEmail"].Value, Localizer["Email"].Value]
                             </div>
@@ -26,7 +26,7 @@
                         </div>
                         <div class="mb-3">
                             <label asp-for="Password">@Localizer["Password"]</label>
-                            <input asp-for="Password" type="password" class="form-control" placeholder="@Localizer["plhEnterPassword"]" autoComplete="off"/>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="@Localizer["plhEnterPassword"]" autoComplete="new-password"/>
                             <div class="invalid-feedback">@Localizer["PropertyRequired", Localizer["Password"].Value]</div>
                             @Html.ValidationMessage("CustomError")
                         </div>
