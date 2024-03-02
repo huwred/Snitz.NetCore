@@ -6,8 +6,8 @@ namespace BbCodeFormatter.Formatters
   {
 		#region  Private Member Declarations  
 
-    private Regex _regex;
-    private string _replace;
+    private readonly Regex _regex;
+    private readonly string _replace;
 
 		#endregion  Private Member Declarations  
 
@@ -50,9 +50,9 @@ namespace BbCodeFormatter.Formatters
     {
         #region  Private Member Declarations  
 
-        private Regex _regex;
+        private readonly Regex _regex;
 
-        private string _replace;
+        private readonly string _replace;
 
         #endregion  Private Member Declarations  
 
@@ -93,7 +93,6 @@ namespace BbCodeFormatter.Formatters
                     {
                         if (m.Groups.Count > 1)
                         {
-                            var alpha = new[] { "a", "A", "i", "I" };
                             string t = m.Groups["type"].Value;
                             string s = m.Groups["start"].Value;
                             if (t.Length == 0)

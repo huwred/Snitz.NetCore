@@ -2,7 +2,6 @@
 using System.Xml.Linq;
 using Flurl;
 using Microsoft.AspNetCore.Http;
-using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 
 namespace BbCodeFormatter.Formatters
@@ -35,7 +34,8 @@ namespace BbCodeFormatter.Formatters
               string title = el.Attribute("name")!.Value;
               string alt = el.Attribute("name")!.Value;
 
-              string link = String.Format("<img title=\"{0}\" data-toggle=\"tooltip\" src=\"{1}{2}\" alt=\"{3}\" class=\"emote\" loading=\"lazy\" />", title, urlpath, image, alt);
+              string link =
+                  $"<img title=\"{title}\" data-toggle=\"tooltip\" src=\"{urlpath}{image}\" alt=\"{alt}\" class=\"emote\" loading=\"lazy\" />";
 
               _formatters.Add(new SearchReplaceFormatter(WebUtility.HtmlEncode(emoticon), link));
           }

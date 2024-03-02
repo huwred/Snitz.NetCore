@@ -5,8 +5,8 @@ namespace BbCodeFormatter.Formatters
   {
 		#region  Private Member Declarations  
 
-    private string _pattern;
-    private string _replace;
+    private readonly string _pattern;
+    private readonly string _replace;
 
 		#endregion  Private Member Declarations  
 
@@ -26,7 +26,7 @@ namespace BbCodeFormatter.Formatters
     {
         if (String.IsNullOrWhiteSpace(data))
             return data;
-      return data.Replace(_pattern, _replace);
+        return data.Replace(_pattern, _replace);
     }
 
 		#endregion  Public Methods  

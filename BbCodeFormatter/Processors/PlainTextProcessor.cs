@@ -4,14 +4,15 @@ namespace BbCodeFormatter.Processors
 {
   public static class PlainTextProcessor
   {
-    static List<IHtmlFormatter> _formatters;
+    static readonly List<IHtmlFormatter> _formatters;
 
     static PlainTextProcessor()
     {
-      _formatters = new List<IHtmlFormatter>();
-
-      _formatters.Add(new SearchReplaceFormatter("\r", ""));
-      _formatters.Add(new SearchReplaceFormatter("\n", "<br />"));
+      _formatters = new List<IHtmlFormatter>
+      {
+          new SearchReplaceFormatter("\r", ""),
+          new SearchReplaceFormatter("\n", "<br />")
+      };
     }
 
     public static string Format(string data)

@@ -4,8 +4,8 @@
   {
     #region  Private Member Declarations
 
-    private string[] _exclusionCodes;
-    private List<IHtmlFormatter> _formatters;
+    private readonly string[] _exclusionCodes;
+    private readonly List<IHtmlFormatter> _formatters;
 
     #endregion  Private Member Declarations
 
@@ -72,7 +72,7 @@
 
     private int GetBlockEnd(int startingPosition, string data, string? tag)
     {
-        string fullTag = String.Format("[/{0}]", tag);
+        string fullTag = $"[/{tag}]";
       var matchPosition = data.IndexOf(fullTag, startingPosition, StringComparison.InvariantCultureIgnoreCase);
 
       if (matchPosition == -1)
@@ -88,7 +88,7 @@
 
       foreach (string exclusion in _exclusionCodes)
       {
-          string tag = String.Format("[{0}]",exclusion);
+          string tag = $"[{exclusion}]";
         var matchPosition = data.IndexOf(tag, startingPosition, StringComparison.InvariantCultureIgnoreCase);
 
         if (matchPosition > -1 && (matchPosition < lowestPosition || lowestPosition == -1))

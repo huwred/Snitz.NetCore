@@ -8,7 +8,7 @@ namespace BbCodeFormatter.Formatters
     /// </summary>
     internal class BadWordFilter : IHtmlFormatter
     {
-        readonly List<IHtmlFormatter> _formatters;
+        private readonly List<IHtmlFormatter> _formatters;
 
         /// <summary>
         /// Filter out bad words

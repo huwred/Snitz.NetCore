@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 
 namespace BbCodeFormatter.Formatters
@@ -8,9 +7,9 @@ namespace BbCodeFormatter.Formatters
     {
         #region  Private Member Declarations  
 
-        private Regex _regex;
-        private string _replace;
-        private string _pattern;
+        private readonly Regex _regex;
+        private readonly string _replace;
+        private readonly string _pattern;
 
         #endregion  Private Member Declarations  
 

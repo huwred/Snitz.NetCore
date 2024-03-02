@@ -19,8 +19,7 @@ public class BbCodeProcessor : ICodeProcessor
   {
     #region  Private Class Member Declarations
         private readonly ISnitzConfig _config;
-        private readonly SnitzDbContext _dbContext;
-    private bool _useFullUrl;
+        private bool _useFullUrl;
     private readonly List<IHtmlFormatter> _formatters;
     private readonly List<IHtmlFormatter> _postformatters;
     private readonly List<IHtmlFormatter> _cleancodeformatters;
@@ -35,7 +34,6 @@ public class BbCodeProcessor : ICodeProcessor
 
     public BbCodeProcessor(ISnitzConfig config,IHttpContextAccessor httpContextAccessor,SnitzDbContext dbContext)
     {
-        _dbContext = dbContext;
         _config = config;
         _formatters = new List<IHtmlFormatter>();
         _tables = new List<IHtmlFormatter>();
@@ -65,17 +63,11 @@ public class BbCodeProcessor : ICodeProcessor
         _urlformatters.Add((new UrlFormatter(@"(?<start>\[urlpreview(?:\s*)\])(?!(?:https?/))(?<url>(?:.|\n)*?)(?<end>\[/urlpreview(?:\s*)\])", config.ForumUrl + "websitethumbnailhandler.ashx?url=${url}&tw=400&th=300")));
 
     #endregion
-        //_formatters.Add(new RegexFormatter(@"(?:\[file])([^?#\[]*/)([^.?\[]+)/([^\[]+)(?:\[/file])", "<span class=\"file-attachment\">$3 <a href=\"$1$2/$3\" rel=\"nofollow\" title=\"Download file\" data-toggle=\"tooltip\" ><i class=\"fa  fa-download fa-1_5x\"></i></a></span>"));
         _formatters.Add(new RegexFormatter(@"(?:\[file((.|\n)*?)(?:\s*)])([^?#\[]*/)([^.?\[]+)/([^\[]+)(?:\[/file])", "<span class=\"file-attachment\">$5 <a href=\"$3$4/$5\" rel=\"nofollow\" title=\"Download file\" data-toggle=\"tooltip\" ><i class=\"fa  fa-download fa-1_5x\"></i></a>$1</span>"));
 
         string embed = "<embed src=\"$1$2$3\" type=\"application/pdf\" class=\"object-pdf\" />";
-        //embed += WebUtility.HtmlDecode(String.Format(ResourceManager.GetLocalisedString("pdfLabel", "General"), "$1$2$3"));
-        //embed += "</embed>";
-
         _formatters.Add(new RegexFormatter(@"(?:\[pdf])([^?#\[]*/)([^.?\[]+)([^\[]+)(?:\[/pdf])", embed));
-        //var postedvia = String.Format(ResourceManager.GetLocalisedString("strPostedFrom", "Api"), "$2");
-        //_formatters.Add(new RegexFormatter(@"(\[APIPOST=)(.+(?=]))]", postedvia));
-        //(\[APIPOST=)(.+(?=]))]
+
     #region Lists
     //we use a ListFormatter here to remove any newlines outside of the tags
     // \[list(?:\s*)]|\[list=(?<start>[ai1-9]*)(?:\s*)\]
@@ -137,7 +129,7 @@ public class BbCodeProcessor : ICodeProcessor
     _quoteformatter.Add(new RegexFormatter(@"\[quote=((.|\n)*?)(?:\s*)\]", "<blockquote class=\"newquote\" ><cite>$1</cite>"));
     _quoteformatter.Add(new RegexFormatter(@"\[quote(?:\s*)\]", "<blockquote class=\"newquote\" >"));
 
-    if (_config.GetValue("STRIMGINPOSTS") == "1")
+    if (_config.GetIntValue("STRIMGINPOSTS") == 1)
     {
         _formatters.Add(new RegexFormatter(@"(?<!"")\[img(?:\s*)\]((.|\n)*?)\[/img(?:\s*)\](?!"")", "<img loading=\"lazy\" src=\"$1\" border=\"0\" alt=\"\" />"));
         _formatters.Add(new RegexFormatter(@"\[img align=((.|\n)*?)(?:\s*)\]((.|\n)*?)\[/img(?:\s*)\]", "<img src=\"$3\" border=\"0\" loading=\"lazy\" class=\"img-$1\" alt=\"\" />"));
@@ -147,7 +139,7 @@ public class BbCodeProcessor : ICodeProcessor
 
     }
 
-        _formatters.Add(new RegexFormatter(@"\[color=((.|\n)*?)(?:\s*)\]((.|\n)*?)\[/color(?:\s*)\]", "<span style=\"color:$1;\">$3</span>"));
+    _formatters.Add(new RegexFormatter(@"\[color=((.|\n)*?)(?:\s*)\]((.|\n)*?)\[/color(?:\s*)\]", "<span style=\"color:$1;\">$3</span>"));
     _formatters.Add(new RegexFormatter(@"\[highlight(?:\s*)\]((.|\n)*?)\[/highlight(?:\s*)]", "<span class=\"bbc-highlight\">$1</span>"));
     _formatters.Add(new RegexFormatter(@"\[spoiler(?:\s*)\]((.|\n)*?)\[/spoiler(?:\s*)]", "<span class=\"bbc-spoiler\"><span class=\"bbc-spoiler-head\">Reveal hidden content</span><span class=\"bbc-spoiler-content\">$1</span></span>"));
     _formatters.Add(new RegexFormatter(@"\[indent(?:\s*)\]((.|\n)*?)\[/indent(?:\s*)]", "<div class=\"bbc-indent\">$1</div>"));
@@ -170,8 +162,6 @@ public class BbCodeProcessor : ICodeProcessor
   
 
     #region PostFormat
-    //_postformatters.Add(new RegexFormatter(@"\[quote(?:\s*)\]", "<blockquote id=\"quote\"><font size=\"" + ClassicConfig.FooterFontsize + "\" face=\"" + ClassicConfig.DefaultFontFace + "\" id=\"quote\">quote:<hr height=\"1\" noshade id=\"quote\">"));
-    //_postformatters.Add(new RegexFormatter(@"\[/quote(?:\s*)\]", "<hr height=\"1\" noshade id=\"quote\"></font id=\"quote\"></blockquote id=\"quote\">"));
     _postformatters.Add(new RegexFormatter(@"\[b(?:\s*)\]((.|\n)*?)\[/b(?:\s*)\]", "<b>$1</b>"));
     _postformatters.Add(new RegexFormatter(@"\[i(?:\s*)\]((.|\n)*?)\[/i(?:\s*)\]", "<i>$1</i>"));
     _postformatters.Add(new RegexFormatter(@"\[s(?:\s*)\]((.|\n)*?)\[/s(?:\s*)\]", "<s>$1</s>"));
@@ -181,16 +171,15 @@ public class BbCodeProcessor : ICodeProcessor
     _postformatters.Add(new RegexFormatter(@"\[h([1-6])(?:\s*)\]((.|\n)*?)\[/h[1-6](?:\s*)\]", "<h$1>$2</h$1>"));
     _postformatters.Add(new RegexFormatter(@"\[size=((.|\n)*?)(?:\s*)\]((.|\n)*?)\[/size=((.|\n)*?)(?:\s*)\]", "<font size=\"$1\">$3</font id=\"size$1\">"));
     _postformatters.Add(new SearchReplaceFormatter("[hr]", "<hr noshade size=\"1\">"));
-    if (_config.GetValue("STRBADWORDFILTER") == "1")
+    if (_config.GetIntValue("STRBADWORDFILTER") == 1)
     {
-        _postformatters.Add(new BadWordFilter(_dbContext));
+        _postformatters.Add(new BadWordFilter(dbContext));
     }
 
     #endregion
 
     #region CleanCode
     _cleancodeformatters.Add(new RegexFormatter(@"(<table([^>]*)>)", "[table$2]"));
-
     _cleancodeformatters.Add(new RegexFormatter(@"(<\/table>)", "[/table]"));
     _cleancodeformatters.Add(new RegexFormatter(@"(<t([rdh])([^>]*)>)", "[t$2 $3]"));
     _cleancodeformatters.Add(new RegexFormatter(@"(<\/t([rdh])>)", "[/t$2]"));
@@ -201,10 +190,9 @@ public class BbCodeProcessor : ICodeProcessor
     _cleancodeformatters.Add(new RegexFormatter(@"(<tfoot([^>]*)>)", "[tfoot$2]"));
     _cleancodeformatters.Add(new RegexFormatter(@"(<\/tfoot>)", "[/tfoot]"));
     _cleancodeformatters.Add(new SearchReplaceFormatter("<br />", "\r\n"));
-        //<blockquote id="quote"><(font) (\b[^>]*)>(.*?)</font></blockquote>
-        _cleancodeformatters.Add(new RegexFormatter(@"<blockquote id=""quote""><(font) (\b[^>]*)>(.*?)</font></blockquote>", "[quote]$3[/quote]"));
+    _cleancodeformatters.Add(new RegexFormatter(@"<blockquote id=""quote""><(font) (\b[^>]*)>(.*?)</font></blockquote>", "[quote]$3[/quote]"));
 
-        _cleancodeformatters.Add(new RegexFormatter(@"(<blockquote id=(?:\\""|"")quote(?:\\""|"")>.*quote:<hr (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"") noshade (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"")>)", "[quote]"));
+    _cleancodeformatters.Add(new RegexFormatter(@"(<blockquote id=(?:\\""|"")quote(?:\\""|"")>.*quote:<hr (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"") noshade (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"")>)", "[quote]"));
     _cleancodeformatters.Add(new RegexFormatter(@"(<hr (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"") noshade (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"")></font id=(?:\\""|"")quote(?:\\""|"")></blockquote id=(?:\\""|"")quote(?:\\""|"")>)", "[/quote]"));
     _cleancodeformatters.Add(new RegexFormatter(@"(<pre id=""code""><font.*"">)(.*)(</font id=""code""></pre id=""code"">)", "[code]$2[/code]"));
     _cleancodeformatters.Add(new RegexFormatter(@"<em(?:\s*)\>((.|\n)*?)\</em(?:\s*)\>", "<i>$1</i>"));      
@@ -283,27 +271,27 @@ public class BbCodeProcessor : ICodeProcessor
             return data;
         }
         _useFullUrl = newsfeed;
-    if (_config.GetValue("STRALLOWFORUMCODE") != "1")
-        return data;
+        if (_config.GetValue("STRALLOWFORUMCODE") != "1")
+            return data;
 
-    if (String.IsNullOrWhiteSpace(data))
-        return data;
-    //classic forum stores some codes as html, so lets' parse it back into [bbcode]
-    data = CleanCode(data);
-    
-    //parse any [noparse] tags
-    data = NoParse(data);
+        if (String.IsNullOrWhiteSpace(data))
+            return data;
+        //classic forum stores some codes as html, so lets' parse it back into [bbcode]
+        data = CleanCode(data);
+        
+        //parse any [noparse] tags
+        data = NoParse(data);
 
-    //now we can turn bbtags into html5
-    if (parseurls)
-    {
-        foreach (IHtmlFormatter urlformatter in _urlformatters)
+        //now we can turn bbtags into html5
+        if (parseurls)
         {
-            data = urlformatter.Format(data);
+            foreach (IHtmlFormatter urlformatter in _urlformatters)
+            {
+                data = urlformatter.Format(data);
+            }
         }
-    }
-    if (!tooltip)
-    {
+        if (!tooltip)
+        {
             foreach (IHtmlFormatter formatter in _quoteformatter)
             {
                 data = formatter.Format(data);
@@ -315,66 +303,59 @@ public class BbCodeProcessor : ICodeProcessor
             }
 
 
-    }
-    else
-    {
-        var removecode = new List<IHtmlFormatter>
-        {
-            new SearchReplaceFormatter("[scrollcode][code]", "[scrollcode]"),
-            new SearchReplaceFormatter("[/code][/scrollcode]", "[/scrollcode]"),
-            new RegexFormatter(@"\[code(?:=""([\S\s]*)"")*(?:\s*)\]((.|\n)*?)\[/code(?:\s*)]", ""),
-            new RegexFormatter(@"\[scrollcode(?:\s*)\]((.|\n)*?)\[/scrollcode(?:\s*)]", "")
-        };
-        //some users use both tags, so lets filter that out
-        foreach (IHtmlFormatter formatter in removecode)
-        {
-            data = formatter.Format(data);
-        }
-    }
-    foreach (IHtmlFormatter formatter in _tables)
-    {
-        data = formatter.Format(data);
-    }
-    foreach (IHtmlFormatter formatter in _formatters)
-    {
-        data = formatter.Format(data);
-    }
-
-    if (_config.GetIntValue("STRPHOTOALBUM") == 1 || _config.TableExists("FORUM_IMAGES"))
-    {
-        if (_useFullUrl)
-        {
-            data = Regex.Replace(data, @"\[image=(?<id>\d+)]", "<a href=\"" + _config.ForumUrl + "PhotoAlbum/GetPhoto/${id}\" class=\"view-image\" target=\"_blank\"><img loading=\"lazy\" src=\"" + _config.ForumUrl + "PhotoAlbum/Thumbnail/${id}\" border=\"0\" title=\"${id}\" /></a>", RegexOptions.IgnoreCase);
         }
         else
         {
-            data = Regex.Replace(data, @"\[image=(?<id>\d+)]", "<a href=\"" + _config.RootFolder + "/PhotoAlbum/GetPhoto/${id}\" class=\"view-image\" target=\"_blank\"><img loading=\"lazy\" src=\"" + _config.RootFolder + "/PhotoAlbum/Thumbnail/${id}\" border=\"0\" /></a>", RegexOptions.IgnoreCase);
+            var removecode = new List<IHtmlFormatter>
+            {
+                new SearchReplaceFormatter("[scrollcode][code]", "[scrollcode]"),
+                new SearchReplaceFormatter("[/code][/scrollcode]", "[/scrollcode]"),
+                new RegexFormatter(@"\[code(?:=""([\S\s]*)"")*(?:\s*)\]((.|\n)*?)\[/code(?:\s*)]", ""),
+                new RegexFormatter(@"\[scrollcode(?:\s*)\]((.|\n)*?)\[/scrollcode(?:\s*)]", "")
+            };
+            //some users use both tags, so lets filter that out
+            foreach (IHtmlFormatter formatter in removecode)
+            {
+                data = formatter.Format(data);
+            }
         }
-
-        var imgf = new AlbumImageFormatter(_config,@"\[cimage=(?<id>\d+)]");
-        data = imgf.Format(data);
-    }
-
-    if (_config.TableExists("FORUM_BBCODE"))
-    {
-        data = CustomCode(data);
-    }
-
-
-
-
-    if (_config.ContentFolder != "Content")
-    {
-        data = Regex.Replace(data,"/Content/Members", "/ProtectedContent/Members",RegexOptions.IgnoreCase);
-        data = Regex.Replace(data, "/Content/Avatar", "/ProtectedContent/Avatar", RegexOptions.IgnoreCase);
-        if (_config.GetIntValue("INTPROTECTPHOTO") == 1)
+        foreach (IHtmlFormatter formatter in _tables)
         {
-            data = Regex.Replace(data, "/Content/PhotoAlbum", "/ProtectedContent/PhotoAlbum", RegexOptions.IgnoreCase);
+            data = formatter.Format(data);
         }
-    }
+        foreach (IHtmlFormatter formatter in _formatters)
+        {
+            data = formatter.Format(data);
+        }
+
+        if (_config.GetIntValue("STRPHOTOALBUM") == 1 || _config.TableExists("FORUM_IMAGES"))
+        {
+            data = _useFullUrl ? Regex.Replace(data, @"\[image=(?<id>\d+)]", "<a href=\"" + _config.ForumUrl + "PhotoAlbum/GetPhoto/${id}\" class=\"view-image\" target=\"_blank\"><img loading=\"lazy\" src=\"" + _config.ForumUrl + "PhotoAlbum/Thumbnail/${id}\" border=\"0\" title=\"${id}\" /></a>", RegexOptions.IgnoreCase) : Regex.Replace(data, @"\[image=(?<id>\d+)]", "<a href=\"" + _config.RootFolder + "/PhotoAlbum/GetPhoto/${id}\" class=\"view-image\" target=\"_blank\"><img loading=\"lazy\" src=\"" + _config.RootFolder + "/PhotoAlbum/Thumbnail/${id}\" border=\"0\" /></a>", RegexOptions.IgnoreCase);
+
+            var imgf = new AlbumImageFormatter(_config,@"\[cimage=(?<id>\d+)]");
+            data = imgf.Format(data);
+        }
+
+        if (_config.TableExists("FORUM_BBCODE"))
+        {
+            data = CustomCode(data);
+        }
 
 
-    return data.Replace("'", "&#39;");
+
+
+        if (_config.ContentFolder != "Content")
+        {
+            data = Regex.Replace(data,"/Content/Members", "/ProtectedContent/Members",RegexOptions.IgnoreCase);
+            data = Regex.Replace(data, "/Content/Avatar", "/ProtectedContent/Avatar", RegexOptions.IgnoreCase);
+            if (_config.GetIntValue("INTPROTECTPHOTO") == 1)
+            {
+                data = Regex.Replace(data, "/Content/PhotoAlbum", "/ProtectedContent/PhotoAlbum", RegexOptions.IgnoreCase);
+            }
+        }
+
+
+        return data.Replace("'", "&#39;");
     }
 
     /// <summary>
