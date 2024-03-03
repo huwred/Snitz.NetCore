@@ -4,17 +4,17 @@
 @{
     ViewBag.Title = "title";
     Layout = "_MasterLayout";
-    var dir = Directory.GetFiles(string.Format("{0}/Views", _env.ContentRootPath),
+    var dir = Directory.GetFiles($"{_env.ContentRootPath}/Views",
         "*.cshtml", SearchOption.AllDirectories);
 
 
 }
 
-<h2>title</h2>
+<h2>Page Templates</h2>
 <ul>
 @foreach (var file in dir)
 {
-    var relativePath = file.Replace(_env.WebRootPath, String.Empty);
+        var relativePath = file.Replace($"{_env.ContentRootPath}/Views", String.Empty);
         <li>@relativePath</li>
 }
 </ul>

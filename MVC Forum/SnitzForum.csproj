@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Compile Remove="Startup.cs" />
+    <Compile Remove="TagHelpers\ButtonConfirmTagHelper.cs" />
   </ItemGroup>
 
   <ItemGroup>

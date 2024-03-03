@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Models;
@@ -56,8 +57,8 @@ public class LanguageManagerController : Controller
         var model = new LanguageViewModel
         {
             Languages = _dbcontext.LanguageResources.Select(l => l.Culture).Distinct().OrderBy(o=>o).ToList(),
-            LanguageStrings = new List<KeyValuePair<string, List<LanguageResource>>>()
-            
+            LanguageStrings = new List<KeyValuePair<string, List<LanguageResource>>>(),
+            ResourceSet = id
         };
         if (filter != "")
         {
@@ -75,8 +76,9 @@ public class LanguageManagerController : Controller
             {
                 model.LanguageStrings.Add(new KeyValuePair<string, List<LanguageResource>>(language,GetStrings(language).Where(l=>l.ResourceSet == id).ToList()));
             }
-        }      
+        }
 
+        ViewBag.Current = id;
         return PartialView(model);
     }
     private IQueryable<LanguageResource> GetStrings(string culture = "en")
@@ -117,18 +119,20 @@ public class LanguageManagerController : Controller
             }
             _dbcontext.SaveChanges();
             return Content("<i class='fa fa-check'></i>");
-        }else if (subBut == "delete")
+        }
+        if (subBut == "delete")
         {
-            if (itemToUpdate != null) _dbcontext.LanguageResources.Remove(itemToUpdate);
-            _dbcontext.SaveChanges();
-            return Content("<i class='fa fa-check'></i>");
+            _dbcontext.LanguageResources.Where(l => l.ResourceSet == langres.ResourceSet && l.Name == langres.Name).ExecuteDelete();
+
+            return Content("<script>location.reload();</script>");
         }
         return Content("<i class='fa fa-times'></i>");
     }
-    [HttpPost]
-    public IActionResult DeleteResource(FormCollection form, string action)
+
+    public IActionResult DeleteResource(string id)
     {
-        return Content("<i class='fa fa-check'></i>");
+        _dbcontext.LanguageResources.Where(l => l.Name == id).ExecuteDelete();
+        return Content("");
     }
     public IActionResult AddResource(LanguageResource res)
     {
