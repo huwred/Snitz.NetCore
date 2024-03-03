@@ -33,11 +33,10 @@
                         {
                             <option value="lang_@culture.Value">@culture.Text</option>
                         }
-                        
                     }
                 </select>
             </div>
-            <div class="col-2"><button class="btn" title="Delete Resource Set"><i class="fa fa-trash-o"></i></button></div>
+            <div class="col-2"><button class="btn btn-outline-danger" title="Delete this Resource Set"><i class="fa fa-trash-o"></i></button></div>
         </div>
     </li>
     @foreach (var res in Model.DefaultStrings)
@@ -62,14 +61,11 @@
                         }
                         <div class="col-3">
                             <button class="btn btn-sm btn-outline-success" style="display:none;" type="submit" title="Save Changes" data-id="@res.Id" name="subBut" value="update"><i class="fa fa-save"></i></button>
-                            @* <link-confirm config-class="fa fa-trash-o text-danger" config-key="@res.Id" href="/Admin/UpdateResource" title="Delete this Resource?"></link-confirm> *@
-                            <button-confirm selector="confirm-delete" config-class="fa fa-trash-o" config-key="@res.Name" href="/LanguageManager/DeleteResource/?id="></button-confirm>
-                            @* <button class="btn btn-sm btn-outline-danger" type="submit" title="Delete Resource" data-id="@res.Id" name="subBut" value="delete"><i class="fa fa-trash-o"></i></button> *@
+                            <button-confirm snitz-if="@User.IsInRole("Admin")" size="btn-sm" selector="confirm-delete" config-class="fa fa-trash-o" config-key="@res.Name" href="/LanguageManager/DeleteResource/?id="></button-confirm>
                             <span id="result_@res.Name"></span>
                         </div>
                     </form>
                 </div>
-
             </div>
         </li>
     }

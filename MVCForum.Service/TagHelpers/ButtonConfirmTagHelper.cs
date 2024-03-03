@@ -18,6 +18,7 @@ public class ButtonConfirmTagHelper : TagHelper
     public string? Selector { get; set; }
     [HtmlAttributeName("href")]
     public string? Href { get; set; }
+    public string? Size { get; set; }
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
@@ -32,6 +33,10 @@ public class ButtonConfirmTagHelper : TagHelper
         output.Attributes.Add("data-id",Key);
         output.Attributes.Add("rel","nofollow");
         output.AddClass("btn",HtmlEncoder.Default);
+        if (Size != null)
+        {
+            output.AddClass(Size,HtmlEncoder.Default);
+        }
         output.AddClass("btn-outline-danger",HtmlEncoder.Default);
         output.AddClass(Selector,HtmlEncoder.Default);
         output.Content.AppendHtml($@"<i class='" + TagClass + $"'></i><span class='d-none d-md-inline'> {Title}</span>");

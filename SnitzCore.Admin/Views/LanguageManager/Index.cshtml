@@ -26,7 +26,6 @@
         <div class="col-2 mb-3">
             <label for="ResourceSet" class="form-label">Resource Set</label>
             <select id="ResourceSet" class="form-select" title="Select language to edit" name="ResourceSet" aria-required="true">
-                @* <option value="" selected>- Select -</option> *@
                 @foreach (var rs in Model.ResourceSets.OrderBy(r=>r))
                 {
                     <option value="@rs">@rs</option>
@@ -60,14 +59,13 @@
                 }
             </select>
         </div>
-        <div class="col-1 mb-3"><button type="submit" class="btn btn-danger mt-4"><i class="fa fa-save"></i></button></div>
+        <div class="col-1 mb-3"><button type="submit" class="btn btn-success mt-4" title="Add Resource"><i class="fa fa-save"></i></button></div>
     </form>
     <div id="result-resource"></div>
     <hr/>
     <div class="row">
         <ul class="list-group list-unstyled col-2 p-2">
             <li class="fw-bold list-group-item">Resource Sets</li>
-            @* <li><hr/></li> *@
             @foreach (var lang in Model.Resources.GroupBy(l => l.ResourceSet).OrderBy(o=>o.Key))
             {
                 if (lang.Key == "Admin")
@@ -154,9 +152,9 @@
 
             $.get(url, function(result) {
                 $('#myModal').modal('hide');
-                location.reload();
+                $('#resource-card')
+                    .load("/LanguageManager/ResourceSet/" + $('#ResourceSet').val() + "/?filter=" + $('#filter').val());
             });
-
         });
     </script>
 }
