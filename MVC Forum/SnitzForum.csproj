@@ -14,21 +14,26 @@
     <Compile Remove="wwwroot\Content\PhotoAlbum\**" />
     <Compile Remove="wwwroot\images\forum\**" />
     <Compile Remove="wwwroot\is-cache\**" />
+    <Compile Remove="wwwroot\js\codemirror\**" />
     <Content Remove="wwwroot\Content\Members\**" />
     <Content Remove="wwwroot\Content\PhotoAlbum\**" />
     <Content Remove="wwwroot\images\forum\**" />
     <Content Remove="wwwroot\is-cache\**" />
+    <Content Remove="wwwroot\js\codemirror\**" />
     <EmbeddedResource Remove="wwwroot\Content\Members\**" />
     <EmbeddedResource Remove="wwwroot\Content\PhotoAlbum\**" />
     <EmbeddedResource Remove="wwwroot\images\forum\**" />
     <EmbeddedResource Remove="wwwroot\is-cache\**" />
+    <EmbeddedResource Remove="wwwroot\js\codemirror\**" />
     <None Remove="wwwroot\Content\Members\**" />
     <None Remove="wwwroot\Content\PhotoAlbum\**" />
     <None Remove="wwwroot\images\forum\**" />
     <None Remove="wwwroot\is-cache\**" />
+    <None Remove="wwwroot\js\codemirror\**" />
     <TypeScriptCompile Remove="wwwroot\Content\Members\**" />
     <TypeScriptCompile Remove="wwwroot\Content\PhotoAlbum\**" />
     <TypeScriptCompile Remove="wwwroot\is-cache\**" />
+    <TypeScriptCompile Remove="wwwroot\js\codemirror\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -117,6 +122,19 @@
     <None Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="wwwroot\codemirror\lib\codemirror.js" />
+    <None Include="wwwroot\codemirror\mode\clike\clike.js" />
+    <None Include="wwwroot\codemirror\mode\clike\test.js" />
+    <None Include="wwwroot\codemirror\mode\css\css.js" />
+    <None Include="wwwroot\codemirror\mode\css\gss_test.js" />
+    <None Include="wwwroot\codemirror\mode\css\less_test.js" />
+    <None Include="wwwroot\codemirror\mode\css\scss_test.js" />
+    <None Include="wwwroot\codemirror\mode\css\test.js" />
+    <None Include="wwwroot\codemirror\mode\htmlembedded\htmlembedded.js" />
+    <None Include="wwwroot\codemirror\mode\htmlmixed\htmlmixed.js" />
+    <None Include="wwwroot\codemirror\mode\javascript\javascript.js" />
+    <None Include="wwwroot\codemirror\mode\javascript\test.js" />
+    <None Include="wwwroot\codemirror\mode\meta.js" />
     <None Include="wwwroot\js\tinymce\CHANGELOG.md" />
     <None Include="wwwroot\js\tinymce\icons\default\icons.min.js" />
     <None Include="wwwroot\js\tinymce\jquery.tinymce.min.js" />

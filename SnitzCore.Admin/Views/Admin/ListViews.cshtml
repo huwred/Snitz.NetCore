@@ -4,17 +4,68 @@
 @{
     ViewBag.Title = "title";
     Layout = "_MasterLayout";
-    var dir = Directory.GetFiles($"{_env.ContentRootPath}/Views",
+    var dir = Directory.GetFiles($@"{_env.ContentRootPath}\Views",
         "*.cshtml", SearchOption.AllDirectories);
-
-
+    string[] folders = Directory.GetDirectories($@"{_env.ContentRootPath}\Views", "*", System.IO.SearchOption.AllDirectories);
+    DirectoryInfo diTop = new DirectoryInfo($@"{_env.ContentRootPath}\Views");
 }
-
-<h2>Page Templates</h2>
-<ul>
-@foreach (var file in dir)
+@section Styles
 {
-        var relativePath = file.Replace($"{_env.ContentRootPath}/Views", String.Empty);
-        <li>@relativePath</li>
+    <link rel="stylesheet" href="/codemirror/lib/codemirror.css">
+
 }
-</ul>
+<h2>Page Templates</h2>
+<div class="row">
+    <div class="col-3">
+        <ul class="list-group">
+            @foreach (var folder in diTop.EnumerateDirectories("*"))
+            {
+                <li class="list-group-item" >
+                    <b class="list-group-item-name" data-id="@folder.Name">@folder.Name</b>
+                    <ul id="@folder.Name" style="display:none;">
+                        @foreach (var file in new DirectoryInfo(folder.FullName).EnumerateFiles("*.cshtml"))
+                        {
+                            <li class="list-unstyled" data-path="@file.FullName.Replace($@"{_env.ContentRootPath}\", String.Empty)">@System.IO.Path.GetFileNameWithoutExtension(file.Name)</li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="col-9 p-2 " id="file-editor-div">
+        <textarea id="file-editor"></textarea>
+    </div>
+</div>
+
+@section Scripts
+{
+    <!-- Create a simple CodeMirror instance -->
+    
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.unobtrusive-ajax.js"></script>
+    <script src="/codemirror/lib/codemirror.js"></script>
+    <script src="/codemirror/mode/clike/clike.js"></script>
+    <script>
+        var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("file-editor"), {
+            mode: "text/x-csharp",
+            lineNumbers: true
+        });
+        $(".list-group-item-name").on("click",
+            function(e) {
+                $("#" + $(this).data("id")).toggle();
+            });
+        $(".list-unstyled").on("click",function(e) {
+            e.preventDefault();
+            var encoded = encodeURIComponent($(this).data("path"));
+            $.get("/Admin/LoadFile?id=" + encoded, function (data) {
+                myCodeMirror.setValue(data);
+                myCodeMirror.setSize("98%", 300);
+            });
+
+        });
+
+        function SaveMe() {
+            var textToWrite = myCodeMirror.doc.getValue();
+        }
+    </script>
+}

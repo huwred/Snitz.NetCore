@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder.Extensions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -29,9 +30,10 @@ namespace SnitzCore.BackOffice.Controllers
         private readonly IConfiguration _webconfiguration;
         private readonly IMember _memberService;
         private readonly IOptionsSnapshot<EmailConfiguration> _emailconfig;
+        private readonly IWebHostEnvironment _env;
         private IHostApplicationLifetime _appLifetime;
         public AdminController(ISnitz config,IConfiguration configuration, ISnitzConfig snitzconfig,IForum forumservice,ICategory category,SnitzDbContext dbContext,RoleManager<IdentityRole> RoleManager,UserManager<ForumUser> userManager,
-            IMember memberService,IOptionsSnapshot<EmailConfiguration> emailconfig,IHostApplicationLifetime appLifetime)
+            IMember memberService,IOptionsSnapshot<EmailConfiguration> emailconfig,IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
         {
             _config = config;
             _forumservice = forumservice;
@@ -44,6 +46,7 @@ namespace SnitzCore.BackOffice.Controllers
             _memberService = memberService;
             _emailconfig = emailconfig;
             _appLifetime = appLifetime;
+            _env = env;
         }
         public IActionResult Index()
         {
@@ -489,6 +492,13 @@ namespace SnitzCore.BackOffice.Controllers
         public IActionResult ListViews()
         {
             return View();
+        }
+
+        public IActionResult LoadFile(string id)
+        {
+            string contents = System.IO.File.ReadAllText(_env.ContentRootPath + $@"\{id}");
+
+            return Content(contents);
         }
     }
 }
