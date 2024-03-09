@@ -8,9 +8,11 @@
 })();
 function revalidate() {
     var container = document.getElementById("reply-area");
-    var forms = container.getElementsByTagName("form");
-    var newForm = forms[forms.length - 1];
-    $.validator.unobtrusive.parse(newForm);
+    if (container) {
+        var forms = container.getElementsByTagName("form");
+        var newForm = forms[forms.length - 1];
+        $.validator.unobtrusive.parse(newForm);
+    }
 }
 $(document).on("change",
     "#sortdir",

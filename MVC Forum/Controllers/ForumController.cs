@@ -161,7 +161,8 @@ namespace MVCForum.Controllers
                     Posts = postlistings,
                     Forum = BuildForumListing(forum,defaultdays,orderby,sortdir),
                     PageCount = pagedTopics.PageCount,
-                    PageNum = pagedTopics.PageNumber
+                    PageNum = pagedTopics.PageNumber,
+                    PageSize = pagesize
                 };
 
                 return View("Index",model);

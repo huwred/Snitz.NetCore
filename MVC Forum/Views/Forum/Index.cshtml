@@ -41,8 +41,8 @@
                     <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
                         @foreach (var size in SnitzConfig.GetValue("STRFORUMPAGESIZES", "").Split(","))
                         {
-                            <input type="radio" class="btn-check" name="pagesize" id="option@size" autocomplete="off" value="@size" @if(ischecked == Convert.ToInt32(size)){@Html.Raw("checked")} />
-                            <label class="btn btn-outline-secondary mb-2" for="option@size">@size</label>
+                            <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if(ischecked == Convert.ToInt32(size)){@Html.Raw("checked")} />
+                            <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
 
                         }
                     </div>
@@ -125,21 +125,18 @@
 @section Scripts {
     <script type="text/javascript" src="/js/ConfirmDialog.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
-        $(document).on("change",
-            "#default-days",
-            function () {
+        $(document).on("change", "#default-days", function () {
                 $("#hdndefaultdays").val($(this).val());
                 $("#defaultdays-form").submit();
             });
-        $(document).on("change",
-            "#orderby",
-            function () {
+        $(document).on("change", "#orderby", function () {
                 $("#hdndefaultdays").val($("#default-days").val());
                 $("#defaultdays-form").submit();
             });
-        $(document).on("change",
-            "#sortdir",
-            function () {
+        $(document).on("change", "input[type=radio][name=pagesize]", function () {
+                $("#defaultdays-form").submit();
+            });
+        $(document).on("change", "#sortdir", function () {
                 $("#hdndefaultdays").val($("#default-days").val());
                 $("#defaultdays-form").submit();
             });

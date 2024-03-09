@@ -28,5 +28,17 @@
     "inputFiles": [
       "wwwroot/css/bootstrap.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/topic.min.js",
+    "inputFiles": [
+      "wwwroot/js/topic.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/js/site.js"
+    ]
   }
 ]

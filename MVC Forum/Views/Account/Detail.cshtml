@@ -18,8 +18,7 @@
 }
 <div class="container pt-0">
     <h1 snitz-if="@Model.CanEdit" class="bg-dark text-dark p-2">@Localizer["Profile"]</h1>
-    <h1 snitz-if="!@Model.CanEdit" class="bg-dark text-dark p-2">View @Model.Name's account details</h1>
-
+    <h1 snitz-if="!@Model.CanEdit" class="bg-dark text-dark p-2">@Localizer["ProfileDetails",Model.Name] </h1>
     <div id="member-profile">
         <form asp-action="Update" method="post" class="needs-validation" novalidate>
             <div class="row">
@@ -89,6 +88,11 @@
                             </div>
                         }
                     }
+                    <div class="mb-3" snitz-if="@Model.CanEdit">
+                        <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
+                        <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+                        <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
+                    </div>
                     <legend>@Localizer["mnuAbout"]</legend>
                     <hr />
                     @{
@@ -99,19 +103,31 @@
                                 <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
                             </div>
                         }
+                        <div class="mb-3" snitz-if="@Model.CanEdit">
+                            <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
+                            <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+                            <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
+                        </div>
                     }
                     @{
 
-                        <legend>@Localizer["SocialMedia"]</legend>
-                        <hr />
-
-                        foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.SocialMedia).OrderBy(p => p.PropertyOrder()))
-                        {
-                            var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit);
-                            <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
-                                <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
+                        <div class="parent">
+                            <legend>@Localizer["SocialMedia"]</legend>
+                            <hr />
+                            @foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.SocialMedia).OrderBy(p => p.PropertyOrder()))
+                            {
+                                var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit);
+                                <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
+                                    <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
+                                </div>
+                            }
+                            <div class="mb-3" snitz-if="@Model.CanEdit">
+                                <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
+                                <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+                                <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
                             </div>
-                        }
+                        </div>
+
                     }
                 </div>
                 <div class="row bg-form p-3 rounded mb-2" snitz-if="@Model.CanEdit">
@@ -134,6 +150,11 @@
                             </div>
                         }
                     }
+                    <div class="mb-3" snitz-if="@Model.CanEdit">
+                        <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
+                        <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+                        <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
+                    </div>
                 </div>
             </div>
             <input name="Name" type="hidden" value="@Model.Member?.Name"/>
@@ -166,7 +187,6 @@
 @section Scripts
 {
     <script type="text/javascript" src="/js/jquery.unobtrusive-ajax.js"></script>
-
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
     <script type="text/javascript">
         // Disable form submissions if there are invalid fields
@@ -176,6 +196,13 @@
                 ValidateForms();
             }, false);
         })();
+        $(".parent").each(function()
+        {
+            if($(this).children(".form-label").length == 0)
+            {
+                $(this).hide();
+            }
+        });
         $(function () {
             $('.date').datepicker({
                 autoclose: true,

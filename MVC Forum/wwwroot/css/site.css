@@ -330,6 +330,7 @@ footer{
 
     .content {
         flex: 80%;
+        max-width:80%;
     }
     .toolbar {
         flex: 5%;

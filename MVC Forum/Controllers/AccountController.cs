@@ -157,25 +157,7 @@ namespace MVCForum.Controllers
 
             if (ModelState.IsValid)
             {
-                if (model.Newemail != null && model.Email != model.Newemail)
-                {
-                    _memberService.Update(model);
-                    var currUser =  _userManager.FindByNameAsync(model.Name).Result;
-                    
-                    //Email has changed send validation email
-                    CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
-                    var token = _userManager.GenerateChangeEmailTokenAsync(currUser!,model.Newemail!).Result;
-                    var confirmationLink = Url.Action(nameof(ChangeEmail), "Account", new { token, username = currUser!.UserName }, Request.Scheme);
-                    var message = new EmailMessage(new[] { model.Newemail! }, 
-                        "Confirmation email link", 
-                        ParseTemplate("changeEmail.html","Confirm Account",model.Newemail!,currUser.UserName!, confirmationLink!, cultureInfo));
-            
-                    await _emailSender.SendEmailAsync(message);
-                }
-                else
-                {
-                    _memberService.Update(model);
-                }
+                _memberService.Update(model);
                 
                 return RedirectToAction("Detail","Account");
             }
