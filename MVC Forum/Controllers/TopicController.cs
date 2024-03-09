@@ -525,7 +525,7 @@ namespace MVCForum.Controllers
             var path = $"{uploadFolder}".Replace("/","\\");
             if (ModelState.IsValid)
             {
-                var uniqueFileName = GetUniqueFileName(model.AlbumImage.FileName);
+                var uniqueFileName = GetUniqueFileName(model.AlbumImage.FileName, out string timestamp);
                 var uploads = Path.Combine(_environment.WebRootPath, path);
                 var filePath = Path.Combine(uploads, uniqueFileName);
                 var fStream = new FileStream(filePath, FileMode.Create);
@@ -545,10 +545,11 @@ namespace MVCForum.Controllers
             ViewBag.Title = "lblUpload";
             return PartialView("popUpload",new AlbumUploadViewModel());
         }
-        private string GetUniqueFileName(string fileName)
+        private string GetUniqueFileName(string fileName, out string timestamp)
         {
             fileName = Path.GetFileName(fileName);
-            return  DateTime.UtcNow.ToForumDateStr()
+            timestamp = DateTime.UtcNow.ToForumDateStr();
+            return  timestamp
                     + "_"
                     + GetSafeFilename(fileName);
         }

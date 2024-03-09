@@ -1,0 +1,66 @@
+﻿@using SnitzCore.Data.Extensions
+@using SnitzCore.Service.TagHelpers
+@model List<Snitz.PhotoAlbum.Models.AlbumImage>
+@{
+    var currentmember = 0;
+    bool showprivate = false;
+    if (ViewBag.CurrentMemberId != null)
+    {
+        currentmember = ViewBag.CurrentMemberId;
+    }
+    if (currentmember == ViewBag.MemberId)
+    {
+        showprivate = true;
+    }
+
+    var idx = 0;
+}
+<div id="albumCarousel" class="carousel slide" >
+
+    <div class="carousel-inner">
+        @{
+            foreach (var image in Model)
+            {
+                var path = $"/Content/PhotoAlbum/{image.Timestamp}_{image.Location}?width=1024&height=768&format=jpg&rmode=crop";
+                if (idx == 0)
+                {
+                    <div class="carousel-item active">
+
+                        <album-image data-id="@image.Id" org-width="@image.Width" org-height="@image.Height" width="800" height="600" src="@($"{image.Timestamp}_{image.Location}")" class="d-block" description="@image.Description"></album-image>
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>@image.ImageName</h5>
+                            <p>@image.Description</p>
+                        </div>
+                    </div>
+                    idx++;
+                }
+                else
+                {
+                    <div class="carousel-item">
+                        <album-image data-id="@image.Id" org-width="@image.Width" org-height="@image.Height" width="800" height="600" src="@($"{image.Timestamp}_{image.Location}")" class="d-block" description="@image.Description"></album-image>
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5 class="text-dark">@image.ImageName</h5>
+                            <p>@image.Description</p>
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#albumCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#albumCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+<script>
+    let carousel = new bootstrap.Carousel('#albumCarousel',
+        {
+            interval: 3000,
+            ride : 'carousel',
+            wrap: true
+        });
+</script>

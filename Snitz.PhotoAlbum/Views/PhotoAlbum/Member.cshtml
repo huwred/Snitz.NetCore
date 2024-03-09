@@ -7,6 +7,20 @@
     <meta name="description" content="Photo Album" />
     <meta name="robots" content="noindex,nofollow" />
 }
+@section Styles
+{
+    <style>
+
+        .carousel-inner > .carousel-item > img, .carousel-inner > .carousel-item > a > img {
+            max-height: 100%;margin: auto;
+        }
+        .carousel-control-next,
+        .carousel-control-prev /*, .carousel-indicators */ {
+            filter: invert(100%);
+        }
+
+    </style>
+}
 @{
     Layout = "Layout";
     var currentmember = 0;
@@ -48,29 +62,33 @@
                     <a data-ajax="true"
                        data-ajax-mode="replace"
                        data-ajax-update="#ImageContainer"
-                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.Username, display = 0, pagenum = 1 })'
-                       class="btn btn-outline-info">
-                        <li class='fa fa-th'></li>
+                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 0, pagenum = 1 })'
+                       class="btn btn-outline-info"
+                       title="@Localizer["tipThumbs"]">
+                        <li class="fa fa-th"></li>
                     </a>
                     <a data-ajax="true"
                        data-ajax-update="#ImageContainer"
-                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.Username, display = 2, pagenum = 1 })'
-                       class="btn btn-outline-info">
-                        <li class='fa fa-align-justify'></li>
+                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 2, pagenum = 1 })'
+                       class="btn btn-outline-info"
+                       title="@Localizer["tipList"]">
+                        <li class="fa fa-align-justify"></li>
                     </a>
                     <a data-ajax="true"
                        data-ajax-update="#ImageContainer"
-                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.Username, display = 1, pagenum = 1 })'
-                       class="btn btn-outline-info">
-                        <li class='fa fa-list'></li>
+                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 1, pagenum = 1 })'
+                       class="btn btn-outline-info"
+                       title="@Localizer["tipDetails"]">
+                        <li class="fa fa-list"></li>
                     </a>
                     <a data-ajax="true"
                        data-ajax-update="#ImageContainer"
-                       data-ajax-url='@Url.Action("MemberSlideShow", "PhotoAlbum", new { id = ViewBag.Username, display = 3, pagenum = 1 })'
-                       class="btn btn-outline-info">
-                        <li class='fa fa-film'></li>
+                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 3, pagenum = 1 })'
+                       class="btn btn-outline-info"
+                       title="@Localizer["tipSlide"]">
+                        <li class="fa fa-film"></li>
                     </a>
-                    <button snitz-if="@showprivate" class="btn btn-outline-primary" id="photo-upload" title="@Localizer["tipUpload"]"><i class="fa fa-upload"></i></button>
+                    <button snitz-if="@showprivate" class="btn btn-outline-primary" id="photo-upload" title="@Localizer["lblUpload"]"><i class="fa fa-upload"></i></button>
                 </div>
             </div>
         </div>
@@ -229,5 +247,7 @@
                     });
             });
         });
+
+
    </script>
 }

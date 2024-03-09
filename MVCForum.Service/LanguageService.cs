@@ -5,10 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using SnitzCore.Data;
+using SnitzCore.Data.Interfaces;
 
 namespace SnitzCore.Service
 {
@@ -77,6 +80,13 @@ namespace SnitzCore.Service
             {
                 culture = "en";
             }
+            var service = new InMemoryCache(30);
+            return service.GetOrSet($"{culture}_{name}", () => CachedStringValue(name,culture));
+
+        }
+
+        private LocalizedString CachedStringValue(string name, string culture)
+        {
             using var scope = _serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetService<SnitzDbContext>();
             var result = context!.LanguageResources

@@ -128,11 +128,12 @@ namespace MVCForum.Controllers
             {
                 Id = member!.Id,
                 UserModel = user!, 
-                Username = id ?? member.Name,
+                Name = id ?? member.Name,
                 Firstname = member.Firstname,
                 Lastname = member.Lastname,
                 Title = member.Title,
                 Email = user?.Email ?? member.Email,
+                Newemail = user?.Email ?? member.Email,
                 Member = member,
                 CanEdit = currUser?.UserName == member.Name || _userManager.IsInRoleAsync(currUser!,"Admin").Result
             };
@@ -156,7 +157,7 @@ namespace MVCForum.Controllers
 
             if (ModelState.IsValid)
             {
-                if (model.Email != model.Newemail)
+                if (model.Newemail != null && model.Email != model.Newemail)
                 {
                     _memberService.Update(model);
                     var currUser =  _userManager.FindByNameAsync(model.Name).Result;
@@ -182,11 +183,12 @@ namespace MVCForum.Controllers
             {
                 Id = model.Id,
                 UserModel = _userManager.FindByNameAsync(model.Name).Result!, 
-                Username = model.Name,
+                Name = model.Name,
                 Firstname = model.Firstname,
                 Lastname = model.Lastname,
                 Title = model.Title,
                 Email = model.Email,
+                Newemail = model.Email,
                 Member = model,
             };            
             return View("Detail",mdmodel);

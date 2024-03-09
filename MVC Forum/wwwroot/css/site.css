@@ -309,14 +309,21 @@ footer{
     /* ########################################### */
     /*            detail.html                      */
     /* ########################################### */
-
+.card-body {
+    flex: 1 auto !important;
+}
     .head {
         display: flex;
         padding: 5px;
         font-weight: bold;
         font-size: 15px;
     }
-
+.body {
+    display: flex;
+    padding: 10px;
+    overflow:hidden;
+    /*margin-top: 5px;*/
+}
     .authors {
         flex: 15%;
     }
@@ -332,11 +339,7 @@ footer{
     margin-top: 0 !important;
 }
 .post-control-btn{ width: 99%;}
-.body {
-    display: flex;
-    padding: 10px;
-    /*margin-top: 5px;*/
-}
+
 
         .body .authors .username {
             font-size: 1.1em;
@@ -588,4 +591,8 @@ img.flag {
         bottom: 0;
         opacity: 1
     }
+}
+
+pre.language-markup{
+    max-width:80%;
 }

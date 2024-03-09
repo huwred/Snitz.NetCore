@@ -19,7 +19,7 @@ namespace SnitzCore.Data.Extensions
             }
             else
             {
-                return DateTime.UtcNow;
+                return DateTime.MinValue;
             }
         }
         public static DateTime FromForumDateStr(this string? date, bool dateonly)

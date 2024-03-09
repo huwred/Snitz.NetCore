@@ -24,15 +24,24 @@ namespace SnitzCore.Service
         public LastPostViewModel LastPost()
         {
             var lastpost = _dbContext.Forums.OrderByDescending(f=>f.LastPost).First();
-            var lastreply = _dbContext.Replies.Include(f=>f.Member).Single(p=>p.Id == lastpost.LatestReplyId);
+            var lastreply = _dbContext.Replies.Include(f=>f.Member).SingleOrDefault(p=>p.Id == lastpost.LatestReplyId);
             var lasttopic = _dbContext.Posts.Include(f=>f.Member).Single(p=>p.Id == lastpost.LatestTopicId);
 
-            dynamic latest = lastreply.Created.FromForumDateStr() > lasttopic.Created.FromForumDateStr() ? lastreply : lasttopic;
+            dynamic latest = lastreply?.Created.FromForumDateStr() > lasttopic.Created.FromForumDateStr() ? lastreply : lasttopic;
+            if (latest is Post)
+            {
+                return new LastPostViewModel()
+                {
+                    LastPostDate = latest.Created,
+                    LastPostAuthor = latest.Member.Id,
+                    LastTopic = latest.Id
+                };
+            }
             return new LastPostViewModel()
             {
                 LastPostDate = latest.Created,
                 LastPostAuthor = latest.Member.Id,
-                LastTopic = latest.PostId ?? latest.Id,
+                LastTopic = latest.PostId,
                 LastReply = latest.Id
             };
         }

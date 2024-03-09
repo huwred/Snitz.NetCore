@@ -31,16 +31,24 @@
   </ItemGroup>
 
 <ItemGroup>
-  <Content Remove="appsettings.json;appsettings.Development.json"/>
+  <Content Remove="appsettings.json;appsettings.Development.json" />
   <None Include="appsettings.json;appsettings.Development.json">
     <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     <CopyToPublishDirectory>Never</CopyToPublishDirectory>
   </None>
-  <Content Remove="Views/_ViewImports.cshtml"/>
+  <Content Remove="Views/_ViewImports.cshtml" />
   <Content Include="Views/_ViewImports.cshtml">
     <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     <CopyToPublishDirectory>Never</CopyToPublishDirectory>
   </Content>
+</ItemGroup>
+
+<ItemGroup>
+  <UpToDateCheckInput Remove="Views\PhotoAlbum\_MemberSlideShow.cshtml" />
+</ItemGroup>
+
+<ItemGroup>
+  <_ContentIncludedByDefault Remove="Views\PhotoAlbum\_MemberSlideShow.cshtml" />
 </ItemGroup>
 
 </Project>

@@ -9,6 +9,7 @@ using SnitzCore.Data.Extensions;
 using LinqKit;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Service;
 using Microsoft.Extensions.FileProviders;
@@ -127,7 +128,7 @@ namespace Snitz.PhotoAlbum.Controllers
         /// <param name="sortby"></param>
         /// <param name="sortorder"></param>
         /// <returns></returns>
-        [ResponseCache(VaryByHeader = "User-Agent", Duration = 30)]
+        //[ResponseCache(VaryByHeader = "User-Agent", Duration = 30)]
         public IActionResult Member(string id, int display = 0, int pagenum = 1, string sortby = "date",string sortorder = "desc", int uid=0)
         {
             var albumPage = new MvcBreadcrumbNode("", "PhotoAlbum", _languageResource["mnuMemberAlbums"].Value);
@@ -148,37 +149,44 @@ namespace Snitz.PhotoAlbum.Controllers
             {
                 return View("Error");
             }
-            var images = from ai in _dbContext.Set<AlbumImage>()
-                join m in _dbContext.Members on ai.MemberId equals m.Id
-                join ag in _dbContext.Set<AlbumGroup>() on ai.GroupId equals ag.Id into res
-                from albumgroup in res.DefaultIfEmpty()
-                join ac in _dbContext.Set<AlbumCategory>() on  new {Key1 = ai.CategoryId, Key2 = ai.MemberId} equals new {Key1 = ac.CatId,Key2 = ac.MemberId} into res1
-                from albumcat in res1.DefaultIfEmpty()
-                
-                where m.Id == memberid
-                orderby ai.Timestamp descending 
 
-                 select new AlbumImage() {
-                     Id = ai.Id,
-                     MemberId = m.Id,
-                     Member = m,
-                     ImageName = $"{ai.Timestamp}_{ai.Location}",
-                     Mime = ai.Mime,
-                     GroupId = ai.GroupId,
-                     Group = albumgroup,
-                     Timestamp = ai.Timestamp,
-                     CategoryId = ai.CategoryId,
-                     Category = albumcat,
-                     CommonName = ai.CommonName,
-                     ScientificName = ai.ScientificName,
-                     IsPrivate = ai.IsPrivate,
-                     Width = ai.Width,
-                     Height = ai.Height,
-                     Size = ai.Size,
-                     Views = ai.Views,
-                     Location = ai.Location,
-                     Description = ai.Description
-                 };
+            var test = _dbContext.Set<AlbumImage>()
+                .Include(i => i.Group)
+                .Include(i=>i.Category)
+                .Include(i => i.Member)
+                .Where(i=>i.MemberId == memberid)
+                .OrderByDescending(i=>i.Timestamp);
+
+            //var images = from ai in _dbContext.Set<AlbumImage>()
+            //    join m in _dbContext.Members on ai.MemberId equals m.Id
+            //    join ag in _dbContext.Set<AlbumGroup>() on ai.GroupId equals ag.Id into res
+            //    from albumgroup in res.DefaultIfEmpty()
+            //    join ac in _dbContext.Set<AlbumCategory>() on  new {Key1 = ai.CategoryId, Key2 = ai.MemberId} equals new {Key1 = ac.CatId,Key2 = ac.MemberId} into res1
+            //    from albumcat in res1.DefaultIfEmpty()
+            //    where m.Id == memberid
+            //    orderby ai.Timestamp descending 
+
+            //     select new AlbumImage() {
+            //         Id = ai.Id,
+            //         MemberId = m.Id,
+            //         Member = m,
+            //         ImageName = $"{ai.Timestamp}_{ai.Location}",
+            //         Mime = ai.Mime,
+            //         GroupId = ai.GroupId,
+            //         Group = albumgroup,
+            //         Timestamp = ai.Timestamp,
+            //         CategoryId = ai.CategoryId,
+            //         Category = albumcat,
+            //         CommonName = ai.CommonName,
+            //         ScientificName = ai.ScientificName,
+            //         IsPrivate = ai.IsPrivate,
+            //         Width = ai.Width,
+            //         Height = ai.Height,
+            //         Size = ai.Size,
+            //         Views = ai.Views,
+            //         Location = ai.Location,
+            //         Description = ai.Description
+            //     };
             ViewBag.Username = id;
             ViewBag.MemberId = memberid;
 
@@ -204,7 +212,7 @@ namespace Snitz.PhotoAlbum.Controllers
             ViewBag.SortDir = sortorder;
             //Paging info
             ViewBag.Page = pagenum;
-            ViewBag.PageCount = (images.Count() / pagesize) + 1;
+            ViewBag.PageCount = (test.Count() / pagesize) + 1;
             SpeciesAlbum param = new SpeciesAlbum
             {
                 SortBy = sortby,
@@ -215,7 +223,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 SpeciesOnly = false
             };
             ViewBag.JsonParams = JsonConvert.SerializeObject(param);
-            return View(images.ToList());
+            return View(test.ToList());
 
         }
 
@@ -380,7 +388,7 @@ namespace Snitz.PhotoAlbum.Controllers
             var path = $"{uploadFolder}".Replace("/","\\");
             if (ModelState.IsValid)
             {
-                var uniqueFileName = GetUniqueFileName(model.AlbumImage.FileName);
+                var uniqueFileName = GetUniqueFileName(model.AlbumImage.FileName, out string timestamp);
                 var uploads = Path.Combine(_environment.WebRootPath, path);
                 var filePath = Path.Combine(uploads, uniqueFileName);
                 model.AlbumImage.CopyTo(new FileStream(filePath, FileMode.Create));
@@ -395,7 +403,7 @@ namespace Snitz.PhotoAlbum.Controllers
                     ScientificName = model.ScientificName ?? "",
                     GroupId = model.Group,
                     MemberId = _memberservice.Current().Id,
-                    Timestamp = DateTime.UtcNow.ToForumDateStr(),
+                    Timestamp = timestamp,
                     Location = GetSafeFilename(model.AlbumImage.FileName)
                 };
                 _dbContext.Set<AlbumImage>().Add(newalbumImage);
@@ -409,43 +417,17 @@ namespace Snitz.PhotoAlbum.Controllers
             return PartialView("_popAlbumUpload",model);
 
         }
-        // Implements a full image mutating pipeline operating on IImageProcessingContext
         public IActionResult MemberImages(int id, int display, int pagenum = 1, string sortby = "date",string sortorder = "desc")
         {
             int memberid = id;
-            var member = _memberservice.GetById(id);
 
-            var images = from ai in _dbContext.Set<AlbumImage>()
-                join m in _dbContext.Members on ai.MemberId equals m.Id
-                join ag in _dbContext.Set<AlbumGroup>() on ai.GroupId equals ag.Id into res
-                from albumgroup in res.DefaultIfEmpty()
-                join ac in _dbContext.Set<AlbumCategory>() on  new {Key1 = ai.CategoryId, Key2 = ai.MemberId} equals new {Key1 = ac.CatId,Key2 = ac.MemberId} into res1
-                from albumcat in res1.DefaultIfEmpty()
-                
-                where m.Id == memberid
-                orderby ai.Timestamp descending 
+            var images = _dbContext.Set<AlbumImage>()
+                .Include(i => i.Group)
+                .Include(i=>i.Category)
+                .Include(i => i.Member)
+                .Where(i=>i.MemberId == memberid)
+                .OrderByDescending(i=>i.Timestamp);
 
-                select new AlbumImage() {
-                    Id = ai.Id,
-                    MemberId = m.Id,
-                    Member = m,
-                    ImageName = $"{ai.Timestamp}_{ai.Location}",
-                    Mime = ai.Mime,
-                    GroupId = ai.GroupId,
-                    Group = albumgroup,
-                    Timestamp = ai.Timestamp,
-                    CategoryId = ai.CategoryId,
-                    Category = albumcat,
-                    CommonName = ai.CommonName,
-                    ScientificName = ai.ScientificName,
-                    IsPrivate = ai.IsPrivate,
-                    Width = ai.Width,
-                    Height = ai.Height,
-                    Size = ai.Size,
-                    Views = ai.Views,
-                    Location = ai.Location,
-                    Description = ai.Description
-                };
             ViewBag.Username = id;
             ViewBag.MemberId = memberid;
             //todo: Remove Dummy Member
@@ -511,7 +493,6 @@ namespace Snitz.PhotoAlbum.Controllers
                         Id = im.Id,
                         MemberId = members.Id,
                         Member = members,
-                        ImageName = $"{im.Timestamp}_{im.Location}",
                         Mime = im.Mime,
                         GroupId = im.GroupId,
                         Group = albumgroup,
@@ -633,10 +614,11 @@ namespace Snitz.PhotoAlbum.Controllers
             uri2 = uri2.TrimStart('/');
             return $"{uri1}/{uri2}";
         }
-        private string GetUniqueFileName(string fileName)
+        private string GetUniqueFileName(string fileName, out string timestamp)
         {
             fileName = Path.GetFileName(fileName);
-            return  DateTime.UtcNow.ToForumDateStr()
+            timestamp = DateTime.UtcNow.ToForumDateStr();
+            return  timestamp
                     + "_"
                     + GetSafeFilename(fileName);
         }

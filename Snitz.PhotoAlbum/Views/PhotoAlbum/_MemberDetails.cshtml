@@ -1,22 +1,11 @@
-﻿@using System.Resources
-@using SnitzCore.Data.Extensions
+﻿@using SnitzCore.Data.Extensions
 @model List<Snitz.PhotoAlbum.Models.AlbumImage>
 @{
-    ViewBag.IsOwner = true;
     string sortIcon = ViewBag.SortDir == "asc" ? "<i class=\"fa fa-sort-desc\"></i>" : "<i class=\"fa fa-sort-asc\"></i>";
-    var currentmember = 0;
-    bool showprivate = false;
-    if (ViewBag.CurrentMemberId != null)
-    {
-        currentmember = ViewBag.CurrentMemberId;
-    }
-    if (currentmember == ViewBag.MemberId)
-    {
-        showprivate = true;
-    }
+    bool showprivate = false || ViewBag.IsOwner;
 }
 
-<input type="checkbox" id="showhidethumbs" checked /> @Localizer["lblShowThumbnails"]
+<input type="checkbox" id="ShowThumb" checked /> @Localizer["lblShowThumbnails"]
 <div class="table-responsive">
     <table class="table table-bordered table-striped member-details">
         <thead>
@@ -46,6 +35,10 @@
             <th class="col-1 d-none d-sm-none d-md-none d-lg-inline">
                 <a href="&sortby=date">@Localizer["Size"]</a>
             </th>
+            @if (ViewBag.IsOwner)
+            {
+                <th class="col-1 d-none d-sm-none d-md-none d-lg-inline col-ctrl"></th>
+            }
             </tr>
         </thead>
 
@@ -54,7 +47,6 @@
             <tbody>
                 @foreach (var photo in Model)
                 {
-                    var imgUrl = Url.Content("~/") + "Content/PhotoAlbum/thumbs/" + photo.ImageName;
                     <tr class="row" snitz-if="!@photo.IsPrivate || @showprivate">
                         <td class="col-2 col-md-1 col-thumb">
                             <a class="view-gallery" target="_blank" href="/PhotoAlbum/Gallery/@photo.MemberId/?photoid=@photo.Id&speciesOnly=false" title="Image @photo.Id">
@@ -64,13 +56,13 @@
                         <td class="col-2 d-none d-sm-none d-md-none d-lg-inline">[image=@photo.Id]</td>
                         <td class="col-8 col-sm-4 col-md-2">@photo.Description</td>
                         <td class="col-2 d-none d-sm-none d-md-inline"><a class="view-gallery" href="@Url.Action("Gallery", new {id = photo.MemberId, photoid = photo.Id,pagenum=1, searchparams= ViewBag.JsonParams})" title="@Localizer["lblImage"].Value @photo.Id">@photo.Location</a></td>
-                        <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Timestamp.FromForumDateStr()</td>
+                        <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Timestamp.FromForumDateStr().ToShortDateString()</td>
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Views</td>
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Width x @photo.Height</td>
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Size</td>
                         @if (ViewBag.IsOwner)
                         {
-                            <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">
+                            <td class="col-1 d-none d-sm-none d-md-none d-lg-inline col-ctrl">
                                 <link-confirm snitz-if="@photo.IsPrivate" title="@Localizer["lblIsPrivate"].Value" jq-selector="confirm-privacy" href="/PhotoAlbum/TogglePrivacy/@photo.Id/?state=false&memberid=@photo.MemberId" config-class="fa fa-user-secret" config-key="@photo.Id"></link-confirm>
                                 <link-confirm snitz-if="!@photo.IsPrivate" title="@Localizer["lblPrivate"].Value" jq-selector="confirm-privacy" href="/PhotoAlbum/TogglePrivacy/@photo.Id/?state=true&memberid=@photo.MemberId" config-class="fa fa-user-o" config-key="@photo.Id"></link-confirm>
                                 <link-confirm snitz-if="@photo.DoNotFeature" title="@Localizer["lblDoNotFeature"].Value" jq-selector="confirm-feature" href="/PhotoAlbum/ToggleDoNotFeature/@photo.Id/?state=false&memberid=@photo.MemberId" config-class="fa fa-square-o" config-key="@photo.Id"></link-confirm>
@@ -81,7 +73,6 @@
                             </td>
                         }
                     </tr>
-
                 }
                 @if (!Model.Any())
                 {
@@ -105,8 +96,21 @@
                 </tfoot>
             }
         }
-
     </table>
-
 </div>
 
+<script type="text/javascript">
+    $(document).on('change',
+        '#ShowThumb',
+        function(e) {
+            if ($('.col-thumb').css('display') == 'none') {
+                $('.col-thumb').css('display', 'inline');
+                $('.col-ctrl').removeClass("col-2");
+                $('.col-ctrl').addClass("col-1");
+            } else {
+                $('.col-thumb').css('display', 'none');
+                $('.col-ctrl').removeClass("col-1");
+                $('.col-ctrl').addClass("col-2");
+            }
+        });
+</script>

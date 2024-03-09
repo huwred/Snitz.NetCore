@@ -25,7 +25,7 @@ namespace Snitz.PhotoAlbum.Models
         [Column("I_MID")]
         public int MemberId { get; set; }
         [Column("I_CAT")]
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
         [Column("I_WIDTH")]
         public int? Width { get; set; }
@@ -76,7 +76,10 @@ namespace Snitz.PhotoAlbum.Models
         public virtual AlbumCategory? Category { get; set; }
 
         [NotMapped]
-        public string ImageName { get; set; } = null!;
+        public string ImageName
+        {
+            get { return $"{Timestamp}_{Location}"; }
+        }
 
         //public byte[] ImageData { get; set; }
 

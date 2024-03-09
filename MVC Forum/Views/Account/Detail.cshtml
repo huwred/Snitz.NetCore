@@ -18,7 +18,7 @@
 }
 <div class="container pt-0">
     <h1 snitz-if="@Model.CanEdit" class="bg-dark text-dark p-2">@Localizer["Profile"]</h1>
-    <h1 snitz-if="!@Model.CanEdit" class="bg-dark text-dark p-2">View @Model.Username's account details</h1>
+    <h1 snitz-if="!@Model.CanEdit" class="bg-dark text-dark p-2">View @Model.Name's account details</h1>
 
     <div id="member-profile">
         <form asp-action="Update" method="post" class="needs-validation" novalidate>
@@ -29,17 +29,17 @@
                 <div class="col-6 col-md-3">
                     <input asp-for="Id" class="form-control" type="hidden"/>
                     <div class="mb-3">
-                        <label asp-for="Username" class="form-label">@Localizer["Username"]</label>
-                        <input asp-for="Username" class="form-control" disabled="disabled"/>
+                        <label asp-for="Name" class="form-label">@Localizer["Username"]</label>
+                        <input asp-for="Name" class="form-control" disabled="disabled"/>
                     </div>
                     <div snitz-if="@Model.CanEdit || (@Model.Member?.HideEmail != 1 && @Model.Member?.Privateprofile != 1 && @User.Identity!.IsAuthenticated)" class="mb-3">
                         <label asp-for="Email" class="form-label">@Localizer["Email"]</label>
                         <input asp-for="Email" type="hidden"  />
-                        <input asp-for="NewEmail" class="form-control" value="@Model.Member?.Email" />
+                        <input asp-for="Newemail" class="form-control" value="@Model.Member?.Email" disabled="disabled" />
                     </div>
                     <div class="mb-3">
                         <label asp-for="Title" class="form-label">@Localizer["ProfileTitle"]</label>
-                        <input name="Title" class="form-control" disabled="disabled" value="@MemberRankTitle(Model.Member!, _ranking)"/>
+                        <input name="Title" class="form-control" disabled="@(!User.IsInRole("Admin"))" value="@MemberRankTitle(Model.Member!, _ranking)"/>
                     </div>
                     <div class="mb-3" snitz-if="@Model.CanEdit">
                         <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
@@ -118,7 +118,7 @@
                     <legend>@Localizer["Options"]</legend>
                     <hr />
                     @{
-                        foreach (PropertyInfo prop in Model.Member.GetType().GetProperties().Where(p => p.SystemProperty()).OrderBy(p => p.PropertyOrder()))
+                        foreach (PropertyInfo prop in Model.Member.GetType().GetProperties().Where(p => p.SystemProperty() && p.Name != "Newemail").OrderBy(p => p.PropertyOrder()))
                         {
                             <snitz-config can-edit="@Model.CanEdit" property-info="@prop" property-val="@prop.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(prop.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
                         }
