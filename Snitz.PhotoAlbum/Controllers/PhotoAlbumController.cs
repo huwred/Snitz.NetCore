@@ -402,7 +402,7 @@ namespace Snitz.PhotoAlbum.Controllers
                     CommonName = model.CommonName ?? "",
                     ScientificName = model.ScientificName ?? "",
                     GroupId = model.Group,
-                    MemberId = _memberservice.Current().Id,
+                    MemberId = currentMember.Id,
                     Timestamp = timestamp,
                     Location = GetSafeFilename(model.AlbumImage.FileName)
                 };
@@ -430,7 +430,6 @@ namespace Snitz.PhotoAlbum.Controllers
 
             ViewBag.Username = id;
             ViewBag.MemberId = memberid;
-            //todo: Remove Dummy Member
             ViewBag.IsOwner = (memberid == _memberservice.Current()?.Id);
             ViewBag.Display = display;
             TempData["Display"] = display;
@@ -448,25 +447,36 @@ namespace Snitz.PhotoAlbum.Controllers
         public IActionResult TogglePrivacy(int id, int memberid, bool state)
         {
             var image = _dbContext.Set<AlbumImage>().Find(id);
-            image.IsPrivate = state;
-            _dbContext.Update(image);
-            _dbContext.SaveChanges();
+            if (image != null)
+            {
+                image.IsPrivate = state;
+                _dbContext.Update(image);
+                _dbContext.SaveChanges();
+            }
+
             return RedirectToAction("MemberImages", new {id=memberid,display=1 });
         }
         public IActionResult ToggleDoNotFeature(int id, int memberid, bool state)
         {
             var image = _dbContext.Set<AlbumImage>().Find(id);
-            image.DoNotFeature = state;
-            _dbContext.Update(image);
-            _dbContext.SaveChanges();
+            if (image != null)
+            {
+                image.DoNotFeature = state;
+                _dbContext.Update(image);
+                _dbContext.SaveChanges();
+            }
+
             return RedirectToAction("MemberImages", new {id=memberid,display=1 });
         }
         public IActionResult DeleteImage(int id, int memberid)
         {
             var image = _dbContext.Set<AlbumImage>().Find(id);
-            _dbContext.Remove<AlbumImage>(image);
-            //todo: remove the files
-            _dbContext.SaveChanges();
+            if (image != null)
+            {
+                _dbContext.Remove<AlbumImage>(image);
+                _dbContext.SaveChanges();
+            }
+
             return RedirectToAction("MemberImages", new {id=memberid,display=1 });
         }
         private static IImageProcessingContext ConvertToThumb(IImageProcessingContext context, Size size)
@@ -481,63 +491,41 @@ namespace Snitz.PhotoAlbum.Controllers
         {
             var currentmemberid = _memberservice.Current()?.Id;
 
-                var images =
-                    from im in _dbContext.Set<AlbumImage>()
-                    join m in _dbContext.Members on im.MemberId equals m.Id into res
-                    from members in res.DefaultIfEmpty()
-                    join ag in _dbContext.Set<AlbumGroup>() on im.GroupId equals ag.Id into res2
-                    from albumgroup in res2.DefaultIfEmpty()
-                    //where members.Status == 1
-                    select new AlbumImage()
-                    {
-                        Id = im.Id,
-                        MemberId = members.Id,
-                        Member = members,
-                        Mime = im.Mime,
-                        GroupId = im.GroupId,
-                        Group = albumgroup,
-                        Timestamp = im.Timestamp,
-                        CategoryId = im.CategoryId,
-                        CommonName = im.CommonName,
-                        ScientificName = im.ScientificName,
-                        IsPrivate = im.IsPrivate,
-                        Width = im.Width,
-                        Height = im.Height,
-                        Size = im.Size,
-                        Views = im.Views,
-                        Location = im.Location,
-                        Description = im.Description
-                    };
-                var test = images.Count();
+            var images = _dbContext.Set<AlbumImage>()
+                .Include(i => i.Group)
+                .Include(i=>i.Category)
+                .Include(i => i.Member)
+                .OrderByDescending(i=>i.Timestamp);
+
                 if (searchin != null && searchin.Contains("Member"))
                 {
                     if (_memberservice.GetByUsername(searchfor).Id != currentmemberid)
                     {
-                        images = images.Where(i=>!i.IsPrivate);
+                        images = (IOrderedQueryable<AlbumImage>)images.Where(i=>!i.IsPrivate);
                     }
                 }
                 else if (searchin != null && searchin.Contains("MemberId"))
                 {
                     if (Convert.ToInt32(searchfor) != currentmemberid)
                     {
-                        images = images.Where(i=>!i.IsPrivate);
+                        images = (IOrderedQueryable<AlbumImage>)images.Where(i => !i.IsPrivate);
                     }
                 }
                 else
                 {
-                    images = images.Where(i=>!i.IsPrivate);
+                    images = (IOrderedQueryable<AlbumImage>)images.Where(i => !i.IsPrivate);
                 }
 
                 if (speciesOnly != null && speciesOnly.Value)
                 {
-                    images = images.Where(i=> !string.IsNullOrWhiteSpace(i.ScientificName));
-                    images = images.Where(i=> !string.IsNullOrWhiteSpace(i.CommonName));
-                    images = images.Where(i=> !string.IsNullOrWhiteSpace(i.Description));
+                    images = (IOrderedQueryable<AlbumImage>)images.Where(i=> !string.IsNullOrWhiteSpace(i.ScientificName));
+                    images = (IOrderedQueryable<AlbumImage>)images.Where(i=> !string.IsNullOrWhiteSpace(i.CommonName));
+                    images = (IOrderedQueryable<AlbumImage>)images.Where(i=> !string.IsNullOrWhiteSpace(i.Description));
                 }
 
             if (filter > 0)
             {
-                images = images.Where(i=> i.GroupId == filter);
+                images = (IOrderedQueryable<AlbumImage>)images.Where(i => i.GroupId == filter);
             }
             if (searchfor != null)
             {
@@ -568,7 +556,7 @@ namespace Snitz.PhotoAlbum.Controllers
                         }
                     }
 
-                images = images.Where(predicate);
+                images = (IOrderedQueryable<AlbumImage>)images.Where(predicate);
             }
             switch (sortby)
             {
