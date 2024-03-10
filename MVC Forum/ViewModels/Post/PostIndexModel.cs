@@ -18,5 +18,7 @@ namespace MVCForum.ViewModels.Post
         public bool IsLocked { get; set; }
         public int PageNum { get; set; }
         public int PageSize { get; set; }
+
+        public bool Answered { get; set; }
     }
 }

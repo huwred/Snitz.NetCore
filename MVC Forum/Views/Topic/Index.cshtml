@@ -34,7 +34,14 @@
     <!--Topic Section-->
     <topic-buttons snitz-if="@SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 || @SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1 || @SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1" topic-print="@Model.Id" topic-email="@Model.Id" topic-share="@SnitzConfig.GetIntValue("STRSOCIALSHARE")"></topic-buttons>
     <div snitz-if="@SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (@SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && int.Parse(@pagenum) < 2)" class="card mb-2 topic-container bg-white">
-        <div class="card-header">
+        @{
+            var answer = "";
+            if (Model.Answered)
+            {
+                answer = "bg-success";
+            }
+        }
+        <div class="card-header @answer">
             @Model.Title - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (@Model.Views @Localizer["Views"])</span>
         </div>
         <div class="card-body">
@@ -47,7 +54,7 @@
         </div>
         <div snitz-if="@User.Identity.IsAuthenticated || @Model.Edited != null" class="card-footer text-dark">
             <span snitz-if="@SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && @Model.Edited != null" class="form-text">@Localizer["lblEditedBy", Model.EditedBy, Model.Edited]</span>
-            <post-controls text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" use-bookmarks="@SnitzConfig.GetIntValue("STRBOOKMARK",0)==1" post-type="Topic" post-status="@Model.IsLocked" post-id="@Model.Id" topic-id="@Model.Id" curr-user="@User" post-author="@Model.AuthorName" logged-in="@loggedin"></post-controls>
+            @await Component.InvokeAsync("PostControls", Model)
             <div snitz-if="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1" class="footer"><a href="" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a class="form-control-plaintext text-end" href="" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
         </div>
     </div>
@@ -57,7 +64,7 @@
 {
     <form id="defaultdays-form" asp-action="Index" class="form-inline">
         <div class="input-group">
-                <span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span>
+            <span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span>
             <select class="form-control mb-2" id="sortdir" name="sortdir">
                 <option value="des" selected-val="@Model.SortDir">@Localizer["optNewest"]</option>
                 <option value="asc" selected-val="@Model.SortDir">@Localizer["optOldest"]</option>
@@ -80,21 +87,30 @@
                 </div>
             }
         </div>
-
         <input type="number" value="@pagenum" name="page" style="display: none;"/>
     </form>
 
     var rowclass = "alt";
-
+    var first = true;
     <div class="reply-container">
 
         @foreach (var reply in Model.Replies!)
         {
             rowclass = rowclass == "alt" ? "" : "alt";
-
+            var hideme = "";
+            var answer = "";
+            if (reply.Answer)
+            {
+                answer = "bg-success";
+            }
+            if (!first)
+            {
+                hideme = "display:none;";
+            }
+            first = false;
             <div class="card mb-3 reply-card" >
-                <div style="display:none;">
-                    <div class="card-header">
+                <div style="@hideme">
+                    <div class="card-header @answer">
                         @Localizer["lblPosted"] <snitz-datetime datetime="@reply.Created"></snitz-datetime>
                     </div>
                     <div class="card-body" id="reply-@reply.Id">
@@ -107,7 +123,7 @@
                     </div>
                     <div snitz-if="@User.Identity.IsAuthenticated || @reply.Edited != null" class="card-footer text-dark">
                         <span snitz-if="@SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && @reply.Edited != null" class="form-text">@Localizer["lblEditedBy", reply.EditedBy, reply.Edited]</span>
-                        <post-controls text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" use-bookmarks="@SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1" post-type="Reply" post-status="@Model.IsLocked" post-id="@reply.Id" topic-id="@Model.Id" curr-user="@User" post-author="@reply.AuthorName" logged-in="loggedin"></post-controls>
+                        @await Component.InvokeAsync("PostControls",reply)
                     </div>
                 </div>
             </div>

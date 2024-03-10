@@ -1,23 +1,23 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MVCForum.ViewModels.User.UserSignInModel
+
 @if (SnitzConfig.GetIntValue("STRREQUIREREG") == 1)
 {
     <div class="container pt-0">
         <div class="center">
             <div class="col-8 col-md-4">
                 <h2>@Localizer["PropertyRequird","Login"]</h2>
-                <partial name="Login" model="Model" />
+                <partial name="LoginForm" model="Model" />
             </div>
         </div>
     </div>
 }
-
 else
 {
     <div class="container pt-0">
         <div class="center">
             <div class="col-8 col-md-4">
-                <partial name="Login" model="Model"/>
+                <partial name="LoginForm" model="Model" />
             </div>
         </div>
     </div>

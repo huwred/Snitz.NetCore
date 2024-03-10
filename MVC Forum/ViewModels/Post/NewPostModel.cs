@@ -21,5 +21,6 @@ namespace MVCForum.ViewModels.Post
         public bool Lock { get; set; }
         public bool Sticky { get; set; }
         public bool DoNotArchive { get; set; }
+        public bool Answer { get; internal set; }
     }
 }

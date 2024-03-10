@@ -64,7 +64,8 @@ namespace MVCForum.Controllers
                 RepliesCount = post.ReplyCount,
                 ViewCount = post.ViewCount,
                 IsSticky = post.IsSticky == 1,
-                Status = post.Status
+                Status = post.Status,
+                Answered = post.Answered
             });
 
             return new HomeIndexModel

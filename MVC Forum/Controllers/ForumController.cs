@@ -17,6 +17,7 @@ using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
 using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Post;
+using Microsoft.Extensions.Hosting;
 
 namespace MVCForum.Controllers
 {
@@ -69,7 +70,8 @@ namespace MVCForum.Controllers
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
                 LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
-                Forum = BuildForumListing(p)
+                Forum = BuildForumListing(p),
+                Answered = p.Answered
             });
             
             IEnumerable<Post>? forumPosts = forum?.Posts?.Where(p => p.IsSticky != 1);
@@ -150,7 +152,8 @@ namespace MVCForum.Controllers
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
                 LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
-                Forum = BuildForumListing(p)
+                Forum = BuildForumListing(p),
+                Answered = p.Answered
             });
 
             if (forum != null)
@@ -242,7 +245,8 @@ namespace MVCForum.Controllers
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
                 LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
-                Forum = BuildForumListing(p)
+                Forum = BuildForumListing(p),
+                Answered = p.Answered
             });
             if (Refresh == null)
             {
@@ -396,7 +400,8 @@ namespace MVCForum.Controllers
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
                 LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
-                Forum = BuildForumListing(p)
+                Forum = BuildForumListing(p),
+                Answered = p.Answered
             });
 
             var pageCount = (int)Math.Ceiling((double)totalcount / pagesize);
@@ -454,7 +459,8 @@ namespace MVCForum.Controllers
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : p.Created.FromForumDateStr(),
                 LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
-                Forum = BuildForumListing(p)
+                Forum = BuildForumListing(p),
+                Answered = p.Answered
             }).OrderBy(p=>p.LastPostDate);
 
             var pageCount = (int)Math.Ceiling((double)totalcount / pagesize);

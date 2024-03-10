@@ -442,3 +442,10 @@ blockquote.newquote {
 .field-validation-error {
     color: var(--bs-form-invalid-color);
 }
+.table-row.answered-overlay {
+    position: relative;
+    border: 2px dotted rgba(var(--bs-success-rgb));
+}
+.table-row .status .fa-folder, .note .fa-folder {
+    color: rgba(var(--bs-success-rgb)) !important;
+}

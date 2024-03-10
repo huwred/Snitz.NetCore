@@ -97,7 +97,8 @@ public partial class Post
 
     [Column("T_ALLOW_RATING")]
     public int AllowRating { get; set; }
-
+    [Column("T_ANSWERED")]
+    public bool Answered { get; set; }
     public virtual Member? Member { get; set; }
     public virtual Member? LastPostAuthor { get; set; }
     public virtual Forum? Forum { get; set; }

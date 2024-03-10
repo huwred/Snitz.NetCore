@@ -6,12 +6,18 @@
 @inject ICodeProcessor BbCodeProcessor
 @{
     Layout = null;
+    var answeredClass = "";
+    if (Model.Answered)
+    {
+        answeredClass = "answered-overlay";
+    }
 }
-<div class="table-row">
-    <div class="status" data-status="@Model.Status">
-        <snitz-topic-icon status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+<div class="table-row @answeredClass rounded-2">
+
+    <div class="status" data-status="@Model.Status" style="z-index:2">
+        <snitz-topic-icon answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
     </div>
-    <div class="subjects">
+    <div class="subjects" style="z-index:2">
         <a href="/Topic/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a>
         <br/>
         <span>@Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model.AuthorId"></member-link> <snitz-datetime datetime="@Model.Created"></snitz-datetime> .</span>
@@ -21,8 +27,8 @@
             {
                 var paging = new PagingModel
                 {
-                        PageCount = Model.RepliesCount / ViewBag.PageSize ,
-                        Page = Model.Id
+                    PageCount = Model.RepliesCount / ViewBag.PageSize,
+                    Page = Model.Id
                 };
                 <partial name="QuickPaging" model="paging"/>
             }
@@ -31,11 +37,11 @@
     <div class="replies">
         @Model.RepliesCount @Localizer["lblReplies"] <br/> @Model.ViewCount @Localizer["lblViews"]
     </div>
-    <div class="last-reply">
+    <div class="last-reply" style="z-index:2">
         @if (SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1 && Model.LastPostDate != null)
         {
             <lastpost-link post-date="@Model.LastPostDate" topic-id="@Model.Id" reply-id="@Model.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
-            <span class=""><br />@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
+            <span class=""><br/>@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
         }
     </div>
 </div>

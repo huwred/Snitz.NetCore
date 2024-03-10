@@ -19,5 +19,7 @@ namespace MVCForum.ViewModels.Post
         public bool IsSticky { get; set; }
         public int Status { get; set; }
         public int? LatestReply { get; set; }
+
+        public bool Answered { get; set; }
     }
 }

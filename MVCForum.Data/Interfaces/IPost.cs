@@ -29,5 +29,6 @@ namespace SnitzCore.Data.Interfaces
         Task<bool> LockTopic(int id, short status);
 
         Task UpdateLastPost(int topicid);
+        Task<bool> Answer(int id);
     }
 }

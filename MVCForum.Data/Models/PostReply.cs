@@ -57,4 +57,6 @@ public partial class PostReply
 
     public virtual Member? Member { get; set; }
     public virtual Post? Topic { get; set; }
+    [Column("R_ANSWER")]
+    public bool Answer { get; set; }
 }

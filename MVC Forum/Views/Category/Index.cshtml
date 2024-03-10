@@ -76,7 +76,7 @@
                                 @if (forum.ForumType != ForumType.WebLink)
                                 {
                                     <div class="subforum-stats subforum-column">
-                                        <span>@forum.Posts @Localizer["lblPosts"] | @forum.Topics @Localizer["lblTopics"]</span>
+                                        <span>@forum.Posts @Localizer["lblPosts"] @Localizer["lblin"] @forum.Topics @Localizer["lblTopics"]</span>
                                     </div>
                                     <div class="subforum-info subforum-column">
                                         @if (forum.LastPostTopicId.HasValue)
@@ -96,7 +96,7 @@
         </div>
         <div class="d-none d-md-block col-3">
             <partial name="QuickSearch"/>
-            <partial name="Login" model="new UserSignInModel()" />
+            <partial name="LoginForm" model="new UserSignInModel()" />
             <partial name="LatestPosts" model="@Model.LatestPosts"/>
         </div>
     </div>

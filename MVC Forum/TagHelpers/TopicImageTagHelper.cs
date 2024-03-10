@@ -33,6 +33,7 @@ namespace MVCForum.TagHelpers
         public string? Views { get; set; }
         [HtmlAttributeName("lastpost")]
         public DateTime? LastPost { get; set; }
+        public bool Answered { get; set; }
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             base.Process(context, output);
@@ -66,6 +67,11 @@ namespace MVCForum.TagHelpers
             {
                 output.Attributes.Add("title","Hot Topic");
                 output.AddClass("fa-fire",HtmlEncoder.Default);
+            }
+            else if (Answered)
+            {
+                output.Attributes.Add("title","Topic answered");
+                output.AddClass("fa-folder",HtmlEncoder.Default);
             }
             else 
             {

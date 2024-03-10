@@ -1,0 +1,29 @@
+﻿@model PostReply
+@inject IBookmark Bookmarks;
+@{
+    bool isadmin = User.IsInRole("Admin");
+    bool islocked = Model.Topic.Status == 1;
+    bool isTopicAuthor = User.Identity.Name == Model.Topic.Member.Name;
+    bool isauthor = User.Identity.Name == Model.Member.Name;
+}
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="post-control-btn">
+        <i snitz-if="@(!islocked || isadmin)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" data-id="@Model.PostId"></i>
+        <i snitz-if="@(!islocked || isadmin)" class="fa fa-commenting m-1 reply-quote" title="@Localizer["tipQuoteReply"]" data-id="@Model.Id"></i>
+
+        @if (SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1)
+        {
+            <i snitz-if="@Bookmarks.IsBookmarked(Model.PostId)" class="fa fa-bookmark m-1 bookmark-del" title="@Localizer["tipRemoveBookmark"]" data-id="@Model.PostId"></i>
+            <i snitz-if="!@Bookmarks.IsBookmarked(Model.PostId)" class="fa fa-bookmark-o m-1 bookmark-add" title="@Localizer["tipBookmarkPost"]" data-id="@Model.PostId"></i>
+        }
+        <i snitz-if="@(!Model.Topic.Answered && isTopicAuthor)" class="fa fa-flag-checkered m-1 reply-answer" title="@Localizer["tipAnswer"]" data-id="@Model.Id"></i>
+        @if (isadmin || isauthor)
+        {
+            <i snitz-if="@(!islocked)" class="fa fa-pencil m-1 reply-edit" title="@Localizer["tipEditReply"]" data-id="@Model.Id"></i>
+            <i class="fa fa-trash m-1 reply-del" title="@Localizer["tipDelReply"]" data-id="@Model.Id"></i>
+            <i snitz-if="@islocked" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.PostId" data-status="@Model.Topic.Status"></i>
+            <i snitz-if="!@islocked" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.PostId" data-status="@Model.Topic.Status"></i>
+        }
+    </div>
+}

@@ -192,7 +192,7 @@ namespace SnitzCore.Service
             var post = _dbContext.Replies.Where(p => p.Id == id)
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Member).AsNoTracking()
-                .Include(r => r.Topic).AsNoTracking()
+                .Include(r => r.Topic).ThenInclude(t=>t.Member).AsNoTracking()
                 .Single();
 
             return post;
@@ -292,6 +292,20 @@ namespace SnitzCore.Service
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<bool> Answer(int id)
+        {
+            var reply = _dbContext.Replies.Where(r => r.Id == id).FirstOrDefault();
+            if (reply != null)
+            {
+                var topic = _dbContext.Posts.Where(t => t.Id == reply.PostId).FirstOrDefault();
+                reply.Answer = true;
+                topic.Answered = true;
+                _dbContext.Update(reply);
+                _dbContext.Update(topic);
+                await _dbContext.SaveChangesAsync();
+            }
 
+            return true;
+        }
     }
 }

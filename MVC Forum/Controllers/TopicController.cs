@@ -98,6 +98,7 @@ namespace MVCForum.Controllers
                 AuthorId = post.Member!.Id,
                 Views = post.ViewCount,
                 IsLocked = post.Status == 1 || post.Forum?.Status == 0,
+                Answered = post.Answered,
                 //AuthorRating = post.User?.Rating ?? 0,
                 AuthorName = post.Member?.Name ?? "Unknown",
                 //AuthorImageUrl = post.User?.ProfileImageUrl ?? "/images/avatar.png",
@@ -405,6 +406,15 @@ namespace MVCForum.Controllers
         }
         [HttpPost]
         [Authorize]
+        [Route("Topic/Answered/")]
+        public async Task<IActionResult> Answered(int id)
+        {
+            var result = await _postService.Answer(id);
+            return result ? Json(new { result = result, data = id }) : Json(new { result = result, error = "Unable to toggle Status" });
+
+        }
+        [HttpPost]
+        [Authorize]
         [Route("Topic/LockTopic/")]
         public async Task<IActionResult> LockTopic(int id, int status)
         {
@@ -474,6 +484,7 @@ namespace MVCForum.Controllers
                 ForumId = model.ForumId,
                 CategoryId = model.CatId,
                 Sig = (short)(model.UseSignature ? 1 : 0),
+                Answer = model.Answer
             };
 
         }
@@ -485,6 +496,7 @@ namespace MVCForum.Controllers
                 AuthorId = reply.Member!.Id,
                 Author = reply.Member,
                 AuthorName = reply.Member.Name,
+                Answer = reply.Answer,
                 //AuthorImageUrl = reply.User.ProfileImageUrl,
                 Created = reply.Created.FromForumDateStr(),
                 Content = reply.Content,

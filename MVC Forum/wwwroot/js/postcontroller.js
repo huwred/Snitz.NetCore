@@ -194,6 +194,35 @@ $(document).on("click",".reply-edit", function() {
     var postid = $(this).data("id");
     location.href = "/Topic/EditReply/" + postid;
 });
+$(document).on('click', '.reply-answer', function (e) {
+    e.preventDefault();
+
+    var href = $(this).attr('href');
+    var postid = $(this).data("id");
+    var poststatus = $(this).data("status");
+    //confirm-body
+    $('#confirmModal #confirm-body').html('<p>Mark as Answer?</p><p>Do you wish to proceed?</p>');
+    $('#confirmModal').data('id', postid).data('url', href).modal('show');
+    $('#confirmModal').on('click','#btnYes',function(e) {
+        // handle deletion here
+        e.preventDefault();
+        $.post("/Topic/Answered",
+            {
+                id: postid,
+                status: poststatus
+            },
+            function(data, status){
+                $('#confirmModal').modal('hide');
+                if (!data.result) {
+                    alert(data.error);
+                } else {
+
+                    location.reload(true);
+                }
+            });
+                    
+    });        
+});
 $(document).on("click",".post-edit", function() {
 
     var postid = $(this).data("id");
