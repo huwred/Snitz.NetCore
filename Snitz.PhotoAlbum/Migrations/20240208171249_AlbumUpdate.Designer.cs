@@ -55,7 +55,7 @@ namespace Snitz.PhotoAlbum.Migrations
                         new
                         {
                             Id = "2c5e174e-3b0e-446f-86af-483d56fd7210",
-                            Name = "Admin",
+                            Name = "Administrator",
                             NormalizedName = "ADMIN"
                         },
                         new
@@ -525,9 +525,6 @@ namespace Snitz.PhotoAlbum.Migrations
                     b.Property<int?>("LastPostReplyId")
                         .HasColumnType("int")
                         .HasColumnName("T_LAST_POST_REPLY_ID");
-
-                    b.Property<int?>("LastPoster")
-                        .HasColumnType("int");
 
                     b.Property<short>("Mail")
                         .HasColumnType("smallint")
@@ -1324,7 +1321,7 @@ namespace Snitz.PhotoAlbum.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Admin"
+                            Name = "Administrator"
                         });
                 });
 
@@ -1486,9 +1483,6 @@ namespace Snitz.PhotoAlbum.Migrations
                     b.Property<int?>("LastPostReplyId")
                         .HasColumnType("int")
                         .HasColumnName("T_LAST_POST_REPLY_ID");
-
-                    b.Property<int?>("LastPoster")
-                        .HasColumnType("int");
 
                     b.Property<short>("Mail")
                         .HasColumnType("smallint")

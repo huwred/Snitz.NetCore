@@ -408,3 +408,5 @@ FodyWeavers.xsd
 /wwwTest/CustomPasswordHasher.cs
 /Migrators/MSSqlMigrations.zip
 /Migrators/SqliteMigrations.zip
+/MVC Forum/appsettings.Development.json
+/MVC Forum/migrate.sql
