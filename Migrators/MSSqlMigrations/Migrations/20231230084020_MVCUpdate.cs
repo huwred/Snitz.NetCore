@@ -30,34 +30,34 @@ namespace WebApplication1.Migrations
             SetParameters();
             migrationBuilder.AddColumn<int>(
                 name: "M_PMEMAIL",
-                table: $"{_memberTablePrefix}MEMBERS",
+                table: $"FORUM_MEMBERS",
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
 
             migrationBuilder.AddColumn<int>(
                 name: "M_PMRECEIVE",
-                table: $"{_memberTablePrefix}MEMBERS",
+                table: $"FORUM_MEMBERS",
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
 
             migrationBuilder.AddColumn<short>(
                 name: "M_PMSAVESENT",
-                table: $"{_memberTablePrefix}MEMBERS",
+                table: $"FORUM_MEMBERS",
                 type: "smallint",
                 nullable: false,
                 defaultValue: (short)0);
 
             migrationBuilder.AddColumn<short>(
                 name: "M_PRIVATEPROFILE",
-                table: $"{_memberTablePrefix}MEMBERS",
+                table: $"FORUM_MEMBERS",
                 type: "smallint",
                 nullable: false,
                 defaultValue: (short)0);
 
             migrationBuilder.CreateTable(
-                name: $"{_forumTablePrefix}PM",
+                name: $"FORUM_PM",
                 columns: table => new
                 {
                     M_ID = table.Column<int>(type: "int", nullable: false)
@@ -80,7 +80,7 @@ namespace WebApplication1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: $"{_forumTablePrefix}PM_BLOCKLIST",
+                name: $"FORUM_PM_BLOCKLIST",
                 columns: table => new
                 {
                     BL_ID = table.Column<int>(type: "int", nullable: false)
@@ -95,7 +95,7 @@ namespace WebApplication1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: $"{_forumTablePrefix}RANKING",
+                name: $"FORUM_RANKING",
                 columns: table => new
                 {
                     RANK_ID = table.Column<int>(type: "int", nullable: false)
@@ -111,7 +111,7 @@ namespace WebApplication1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: $"{_forumTablePrefix}SPAM_MAIL",
+                name: $"FORUM_SPAM_MAIL",
                 columns: table => new
                 {
                     SPAM_ID = table.Column<int>(type: "int", nullable: false)
@@ -141,7 +141,7 @@ namespace WebApplication1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: $"{_forumTablePrefix}RATINGS",
+                name: $"FORUM_RATINGS",
                 columns: table => new
                 {
                     RATING = table.Column<int>(type: "int", nullable: false)
@@ -169,7 +169,7 @@ namespace WebApplication1.Migrations
                 });
 
             migrationBuilder.UpdateData(
-                table: $"{_memberTablePrefix}MEMBERS",
+                table: $"FORUM_MEMBERS",
                 keyColumn: "MEMBER_ID",
                 keyValue: 1,
                 columns: new[] { "M_DATE", "M_PMEMAIL", "M_PMRECEIVE", "M_PMSAVESENT", "M_PRIVATEPROFILE" },
@@ -181,44 +181,44 @@ namespace WebApplication1.Migrations
         {
             SetParameters();
             migrationBuilder.DropTable(
-                name: $"{_forumTablePrefix}PM");
+                name: $"FORUM_PM");
 
             migrationBuilder.DropTable(
-                name: $"{_forumTablePrefix}PM_BLOCKLIST");
+                name: $"FORUM_PM_BLOCKLIST");
 
             migrationBuilder.DropTable(
-                name: $"{_forumTablePrefix}RANKING");
+                name: $"FORUM_RANKING");
 
             migrationBuilder.DropTable(
-                name: $"{_forumTablePrefix}SPAM_MAIL");
+                name: $"FORUM_SPAM_MAIL");
 
             migrationBuilder.DropTable(
                 name: "LANGUAGE_RES");
 
             migrationBuilder.DropTable(
-                name: $"{_forumTablePrefix}RATINGS");
+                name: $"FORUM_RATINGS");
 
             migrationBuilder.DropTable(
                 name: "webpages_Membership");
 
             migrationBuilder.DropColumn(
                 name: "M_PMEMAIL",
-                table: $"{_memberTablePrefix}MEMBERS");
+                table: $"FORUM_MEMBERS");
 
             migrationBuilder.DropColumn(
                 name: "M_PMRECEIVE",
-                table: $"{_memberTablePrefix}MEMBERS");
+                table: $"FORUM_MEMBERS");
 
             migrationBuilder.DropColumn(
                 name: "M_PMSAVESENT",
-                table: $"{_memberTablePrefix}MEMBERS");
+                table: $"FORUM_MEMBERS");
 
             migrationBuilder.DropColumn(
                 name: "M_PRIVATEPROFILE",
-                table: $"{_memberTablePrefix}MEMBERS");
+                table: $"FORUM_MEMBERS");
 
             migrationBuilder.UpdateData(
-                table: $"{_memberTablePrefix}MEMBERS",
+                table: $"FORUM_MEMBERS",
                 keyColumn: "MEMBER_ID",
                 keyValue: 1,
                 column: "M_DATE",

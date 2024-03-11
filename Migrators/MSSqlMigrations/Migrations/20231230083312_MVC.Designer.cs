@@ -1090,7 +1090,7 @@ namespace WebApplication1.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Admin"
+                            Name = "Administrator"
                         });
                 });
 

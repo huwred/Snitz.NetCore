@@ -446,7 +446,7 @@ namespace WebApplication1.Migrations
             migrationBuilder.InsertData(
                 table: $"{_forumTablePrefix}NAMEFILTER",
                 columns: new[] { "N_ID", "N_NAME" },
-                values: new object[] { 1, "Admin" });
+                values: new object[] { 1, "Administrator" });
 
             migrationBuilder.InsertData(
                 table: $"{_forumTablePrefix}TOTALS",

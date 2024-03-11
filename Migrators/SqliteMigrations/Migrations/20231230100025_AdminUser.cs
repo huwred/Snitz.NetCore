@@ -19,7 +19,7 @@ namespace WebApplication1.Migrations
                 values: new object[,]
                 {
                     { "0D1F96F3-A8BD-4348-AFA4-61B931BB3553", null, "Moderator", "MODERATOR" },
-                    { "2c5e174e-3b0e-446f-86af-483d56fd7210", null, "Admin", "ADMIN" },
+                    { "2c5e174e-3b0e-446f-86af-483d56fd7210", null, "Administrator", "ADMIN" },
                     { "467DF002-6D82-4109-979A-76F01FA9D4CF", null, "ForumMember", "FORUMMEMBER" }
                 });
 

@@ -87,7 +87,7 @@ namespace WebApplication1.Migrations
                 name: "FK_AspNetUsers_FORUM_MEMBERS_MemberId",
                 table: "AspNetUsers",
                 column: "MemberId",
-                principalTable: $"{_memberTablePrefix}MEMBERS",
+                principalTable: $"FORUM_MEMBERS",
                 principalColumn: "MEMBER_ID",
                 onDelete: ReferentialAction.Cascade);
         }

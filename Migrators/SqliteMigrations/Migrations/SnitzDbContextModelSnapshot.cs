@@ -46,7 +46,7 @@ namespace WebApplication1.Migrations
                         new
                         {
                             Id = "2c5e174e-3b0e-446f-86af-483d56fd7210",
-                            Name = "Admin",
+                            Name = "Administrator",
                             NormalizedName = "ADMIN"
                         },
                         new
@@ -1165,7 +1165,7 @@ namespace WebApplication1.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Admin"
+                            Name = "Administrator"
                         });
                 });
 

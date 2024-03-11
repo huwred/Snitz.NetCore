@@ -47,26 +47,6 @@ namespace WebApplication1.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "2c5e174e-3b0e-446f-86af-483d56fd7210",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "0D1F96F3-A8BD-4348-AFA4-61B931BB3553",
-                            Name = "Moderator",
-                            NormalizedName = "MODERATOR"
-                        },
-                        new
-                        {
-                            Id = "467DF002-6D82-4109-979A-76F01FA9D4CF",
-                            Name = "ForumMember",
-                            NormalizedName = "FORUMMEMBER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -229,13 +209,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "8e445865-a24d-4543-a6c6-9443d048cdb9",
-                            RoleId = "2c5e174e-3b0e-446f-86af-483d56fd7210"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -524,9 +497,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("int")
                         .HasColumnName("T_LAST_POST_REPLY_ID");
 
-                    b.Property<int?>("LastPoster")
-                        .HasColumnType("int");
-
                     b.Property<short>("Mail")
                         .HasColumnType("smallint")
                         .HasColumnName("T_MAIL");
@@ -666,16 +636,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_CATEGORY");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Moderation = 0,
-                            Name = "General",
-                            Sort = 0,
-                            Status = (short)1
-                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Forum", b =>
@@ -821,34 +781,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("FORUM_FORUM");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ArchiveSched = 0,
-                            ArchivedCount = 0,
-                            ArchivedTopics = 0,
-                            CategoryId = 1,
-                            CountMemberPosts = (short)1,
-                            Defaultdays = 30,
-                            DeleteSched = 0,
-                            Description = "This forum gives you a chance to become more familiar with how this product responds to different features and keeps testing in one place instead of posting tests all over. Happy Posting! [:)]",
-                            Mail = (short)0,
-                            Moderation = 0,
-                            Order = 0,
-                            Polls = 0,
-                            Postauth = 0,
-                            Privateforums = 0,
-                            Rating = (short)0,
-                            ReplyCount = 0,
-                            Replyauth = 0,
-                            Status = (short)1,
-                            Subscription = 0,
-                            Title = "Testing Forums",
-                            TopicCount = 0,
-                            Type = (short)0
-                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ForumAllowedMember", b =>
@@ -1273,30 +1205,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_MEMBERS");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Allowemail = (short)0,
-                            Created = "20240309203647",
-                            DefaultView = 0,
-                            Email = "xxxx@example.com",
-                            HideEmail = (short)0,
-                            Level = (short)3,
-                            Name = "Administrator",
-                            Pmemail = 0,
-                            Pmreceive = 0,
-                            Pmsavesent = (short)0,
-                            Posts = 0,
-                            Privateprofile = (short)0,
-                            ReceiveEmail = (short)0,
-                            Sha256 = (short)0,
-                            SigDefault = (short)0,
-                            Status = (short)1,
-                            Subscription = (short)0,
-                            ViewSig = (short)0
-                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.MemberNamefilter", b =>
@@ -1317,13 +1225,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_NAMEFILTER");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.MemberRanking", b =>
@@ -1439,6 +1340,10 @@ namespace WebApplication1.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("webpages_UsersInRoles");
                 });
 
@@ -1516,9 +1421,6 @@ namespace WebApplication1.Migrations
                     b.Property<int?>("LastPostReplyId")
                         .HasColumnType("int")
                         .HasColumnName("T_LAST_POST_REPLY_ID");
-
-                    b.Property<int?>("LastPoster")
-                        .HasColumnType("int");
 
                     b.Property<short>("Mail")
                         .HasColumnType("smallint")
@@ -1773,158 +1675,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_CONFIG_NEW");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Key = "STRICONS",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Key = "STRALLOWFORUMCODE",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Key = "STRPHOTOALBUM",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Key = "STRBADWORDFILTER",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Key = "STRIMGINPOSTS",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Key = "INTHOTTOPICNUM",
-                            Value = "25"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Key = "STRPAGESIZE",
-                            Value = "15"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Key = "STRPAGENUMBERSIZE",
-                            Value = "10"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Key = "STRMARSTATUS",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Key = "STRFULLNAME",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Key = "STRPICTURE",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Key = "STRSEX",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Key = "STRCITY",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Key = "STRSTATE",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Key = "STRAGE",
-                            Value = "0"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Key = "STRAGEDOB",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Key = "STRMINAGE",
-                            Value = "14"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Key = "STRCOUNTRY",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Key = "STROCCUPATION",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Key = "STRFAVLINKS",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Key = "STRBIO",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Key = "STRHOBBIES",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Key = "STRLNEWS",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Key = "STRQUOTE",
-                            Value = "1"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Key = "STRHOMEPAGE",
-                            Value = "1"
-                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.SpamFilter", b =>
@@ -1997,30 +1747,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("MemberId");
 
                     b.HasDiscriminator().HasValue("ForumUser");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "88c23c52-ffe3-4269-b021-5bab6d78815d",
-                            Email = "xxxx@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "XXXX@EXAMPLE.COM",
-                            NormalizedUserName = "ADMINISTRATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPsxtKp8WVROfc5mUHd/XZZuPlE1I3sEZr+KGrROAxImCPJ4XCRRVpWPDXvpzbnJ0w==",
-                            PhoneNumber = "+111111111111",
-                            PhoneNumberConfirmed = true,
-                            SecurityStamp = "c5c3164d-97e2-45ce-8c4d-bc5a2c007183",
-                            TwoFactorEnabled = false,
-                            UserName = "Adminstrator",
-                            IsActive = false,
-                            IsAdmin = true,
-                            MemberId = 1,
-                            MemberSince = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Rating = 0
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -2170,6 +1896,25 @@ namespace WebApplication1.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("GroupName");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.OldUserInRole", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.OldRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Member", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Post", b =>
