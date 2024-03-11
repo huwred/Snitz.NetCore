@@ -104,7 +104,7 @@ namespace MVCForum.Controllers
                 return View("Index",model);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrator")]
         public IActionResult Edit(int id)
         {
             var cat = _categoryService.GetById(id);
@@ -126,7 +126,7 @@ namespace MVCForum.Controllers
             ViewData["BreadcrumbNode"] = topicPage;
             return View("CreateEdit",vm);
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrator")]
         public IActionResult Create()
         {
             var forumPage = new MvcBreadcrumbNode("", "Category", "Categories");
@@ -137,7 +137,7 @@ namespace MVCForum.Controllers
             return View("CreateEdit",vm);
         }
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrator")]
         [Route("Category/CreateEdit")]
         public IActionResult CreateEdit(CategoryViewModel model)
         {
@@ -169,7 +169,7 @@ namespace MVCForum.Controllers
 
             return View("CreateEdit",model);
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrator")]
         public IActionResult Delete(int id)
         {
             _categoryService.Delete(id);

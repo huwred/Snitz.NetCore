@@ -19,7 +19,7 @@
         userroles = UserManager.GetRolesAsync(curruser!).Result;
     }
     int colspan = 9;
-    if (userroles != null && userroles.Contains("Admin"))
+    if (userroles != null && userroles.Contains("Administrator"))
     {
         colspan = 10;
     }
@@ -42,7 +42,7 @@
                     </select>                        
                     <input type="text" placeholder="@Localizer["Search_Term"] ..." class="form-control" name="SearchFor" required="required" />
                     <button class="btn btn-secondary" type="submit">@Localizer["mnuForumSearch"]</button>
-                    <a snitz-if="@userroles != null && @userroles.Contains("Admin")" asp-action="Register" class="btn btn-outline-secondary" title="@Localizer["createAccount"]">@Localizer["createAccount"]</a>
+                    <a snitz-if="@userroles != null && @userroles.Contains("Administrator")" asp-action="Register" class="btn btn-outline-secondary" title="@Localizer["createAccount"]">@Localizer["createAccount"]</a>
                 </div>
             </form>
             <div class="invalid-feedback ml-2">No values entered for search.</div>
@@ -68,9 +68,9 @@
                     <th>@Localizer["ProfileLastPost"]</th>
                     <th class="d-none d-md-table-cell">@Localizer["ProfileDate"]</th>
                     <th class="d-none d-md-table-cell">@Localizer["ProfileLastVisit"]</th>
-                    <th snitz-if="@userroles != null && @userroles.Contains("Admin")" class="d-none d-md-table-cell">@Localizer["Email"]</th>
+                    <th snitz-if="@userroles != null && @userroles.Contains("Administrator")" class="d-none d-md-table-cell">@Localizer["Email"]</th>
                     <th class="d-none d-md-table-cell">@Localizer["ProfileCountry"]</th>
-                    <th snitz-if="@userroles != null && @userroles.Contains("Admin")" class="d-none d-md-table-cell"></th>
+                    <th snitz-if="@userroles != null && @userroles.Contains("Administrator")" class="d-none d-md-table-cell"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -95,9 +95,9 @@
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>
                         <td class="d-none d-md-table-cell">@member.MemberSince?.Year</td>
                         <td class="d-none d-md-table-cell">@member.LastHereDate?.ToShortDateString()</td>
-                        <td snitz-if="@userroles != null && @userroles.Contains("Admin")" class="d-none d-md-table-cell">@member.Member.Email</td>
+                        <td snitz-if="@userroles != null && @userroles.Contains("Administrator")" class="d-none d-md-table-cell">@member.Member.Email</td>
                         <td class="d-none d-md-table-cell">@member.Member.Country</td>
-                        <td snitz-if="@userroles != null && @userroles.Contains("Admin")"class="d-none d-md-table-cell user-icon">
+                        <td snitz-if="@userroles != null && @userroles.Contains("Administrator")"class="d-none d-md-table-cell user-icon">
                             <link-confirm title="@Localizer["tipAuthorUnlock"].Value" jq-selector="confirm-unlock" snitz-if="(member.Member.Status == 0)" href="/Account/LockMember/" config-class="fa fa-unlock" config-key="@member.Id"></link-confirm>
                             <link-confirm title="@Localizer["tipAuthorLock"].Value" jq-selector="confirm-lock" snitz-if="(member.Member.Status != 0)" href="/Account/LockMember/" config-class="fa fa-lock" config-key="@member.Id"></link-confirm>
                             <link-confirm title="@Localizer["tipDelMember"].Value" jq-selector="confirm-delete" snitz-if="(member.Member.Posts < 1)" href="/Account/Delete/" config-class="fa fa-trash" config-key="@member.Id"></link-confirm>
@@ -132,7 +132,7 @@
         </div>
     </div>
 </div>
-@if (User.IsInRole("Admin"))
+@if (User.IsInRole("Administrator"))
 {
     var confModel = new ConfirmDialogViewModel()
     {

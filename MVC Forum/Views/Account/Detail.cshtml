@@ -11,6 +11,7 @@
 
 @{
     var _ranking = MemberService.GetRankings();
+    Model.CanEdit = Model.CanEdit || User.IsInRole("Administrator");
 }
 @section Styles
 {
@@ -22,8 +23,13 @@
     <div id="member-profile">
         <form asp-action="Update" method="post" class="needs-validation" novalidate>
             <div class="row">
-                <div class="col-6 col-md-2">
-                    <snitz-avatar src="/Content/Members/@Model.Member!.Id/@Model.Member!.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid"/>
+                <div class="col-6 col-md-2 avatar-container">
+                    <snitz-avatar src="/Content/Avatar/@Model.Member!.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid"/>
+                    <div class="overlay-delete" snitz-if="@Model.CanEdit">
+                        <a href="#" class="icon" title="Delete Avatar" data-url="/Account/DeleteAvatar/" data-id="@Model.Member.Id">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <input asp-for="Id" class="form-control" type="hidden"/>
@@ -38,7 +44,7 @@
                     </div>
                     <div class="mb-3">
                         <label asp-for="Title" class="form-label">@Localizer["ProfileTitle"]</label>
-                        <input name="Title" class="form-control" disabled="@(!User.IsInRole("Admin"))" value="@MemberRankTitle(Model.Member!, _ranking)"/>
+                        <input name="Title" class="form-control" disabled="@(!User.IsInRole("Administrator"))" value="@MemberRankTitle(Model.Member!, _ranking)" />
                     </div>
                     <div class="mb-3" snitz-if="@Model.CanEdit">
                         <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
@@ -82,7 +88,7 @@
                     @{
                         foreach (PropertyInfo property in Model.Member!.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Profile).OrderBy(p => p.PropertyOrder()))
                         {
-                            var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit);
+                            var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit) && !(property.Name == "PhotoUrl");
                             <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
                                 <snitz-config can-edit="@Model.CanEdit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
                             </div>
@@ -183,7 +189,26 @@
         return mTitle;
     }
 }
-
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">
+                    @Localizer["lblFileUpload"]
+                </h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="upload-content">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <p class="footer-title">
+                    If you're having problems uploading, try choosing a smaller image.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts
 {
     <script type="text/javascript" src="/js/jquery.unobtrusive-ajax.js"></script>
@@ -196,6 +221,35 @@
                 ValidateForms();
             }, false);
         })();
+        if ($('.img-fluid').attr("src") == "/images/ninja-1027877_960_720.webp") {
+            $(".icon").attr("title", "Add avatar");
+            var el = document.querySelector('.fa-trash');
+            el.classList.remove('fa-trash');
+            el.classList.add('fa-upload');
+        }
+        $('.icon').on("click",
+            function(e) {
+                e.preventDefault();
+                if ($(".icon > i").hasClass("fa-trash")) {
+                    $.get($(this).data("url") + $(this).data("id"),
+                        function(data) {
+                            $(".img-fluid").attr('src', 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==');
+                            $(".img-fluid").attr("width","100");
+                            $(".img-fluid").attr("height", "100");
+                            $(".icon").attr("title", "Add avatar");
+                            var el = document.querySelector('.fa-trash');
+                            el.classList.remove('fa-trash');
+                            el.classList.add('fa-upload');
+                            location.href = "/Account/Detail";
+                        });
+                } else {
+
+                    $('#upload-content').html('');
+                    $('#upload-content').load("/Account/UploadForm/",function() {
+                        $('#uploadModal').modal('show');
+                    });
+                }
+            });
         $(".parent").each(function()
         {
             if($(this).children(".form-label").length == 0)
@@ -244,6 +298,31 @@
             $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
         });
 
-        //$('#one').replaceWith("<label>" + $('#one').val() + "</label>");
+        $(document).on('click', '#submitUpload', function (e) {
+            e.preventDefault();
+            var form = $("#upload-form");
+            var formData = new FormData(form[0]);
+            $.ajax({
+                url: $("#upload-form").attr("action"),
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data.result) {
+                        alert(data.data);
+                        $(".img-fluid").attr('src', data.data);
+                        location.href = "/Account/Detail";
+                    }
+                },
+                error: function (data) {
+                    alert("error");
+                },
+                complete: function (data) {
+                    $('#uploadModal').modal('hide');
+                }
+            });
+            return false;
+        });
     </script>
 }

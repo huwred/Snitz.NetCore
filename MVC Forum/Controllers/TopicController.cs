@@ -377,7 +377,7 @@ namespace MVCForum.Controllers
             var member = _memberService.GetById(User).Result;
             var post = _postService.GetReply(id);
             //if this isn't the last post then can't delete it
-            if ((post.MemberId == member!.Id && post!.Topic!.LastPostReplyId != id) && !member.Roles.Contains("Admin"))
+            if ((post.MemberId == member!.Id && post!.Topic!.LastPostReplyId != id) && !member.Roles.Contains("Administrator"))
             {
                 ModelState.AddModelError("","Unable to delete this reply");
                 return Json(new { result = false, error = "Unable to delete this reply" });
@@ -394,7 +394,7 @@ namespace MVCForum.Controllers
         {
             var member = _memberService.GetById(User).Result;
             var post = _postService.GetTopic(id);
-            if (member != null && (member.Roles.Contains("Admin") || post.MemberId == member.Id))
+            if (member != null && (member.Roles.Contains("Administrator") || post.MemberId == member.Id))
             {
                 await _postService.DeleteTopic(id);
                 return Json(new { result = true, url = Url.Action("Index","Forum", new{id=post.ForumId}) });
@@ -421,7 +421,7 @@ namespace MVCForum.Controllers
 
             var member = _memberService.GetById(User).Result;
 
-            if (member != null && !member.Roles.Contains("Admin"))
+            if (member != null && !member.Roles.Contains("Administrator"))
             {
                 ModelState.AddModelError("","Unable to lock this reply");
                 return Json(new { result = false, error = "Unable to lock Post" });

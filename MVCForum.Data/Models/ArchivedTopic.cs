@@ -49,7 +49,7 @@ public partial class ArchivedTopic
     [StringLength(14)]
     public string Date { get; set; } = null!;
 
-    public int? LastPoster { get; set; }
+    //public int? LastPoster { get; set; }
 
     [Column("T_IP")]
     [StringLength(50)]

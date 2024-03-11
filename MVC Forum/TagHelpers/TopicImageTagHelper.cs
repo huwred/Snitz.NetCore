@@ -96,7 +96,6 @@ namespace MVCForum.TagHelpers
                             output.AddClass("new-posts",HtmlEncoder.Default);
                             output.Attributes.Add("title","Contains new posts");
                         }
-                        
                     }
                 }
             }

@@ -597,3 +597,45 @@ img.flag {
 pre.language-markup{
     max-width:80%;
 }
+
+.avatar-container {
+    position: relative;
+    width: 100%;
+    max-width: 100px;
+}
+
+/* The overlay effect (full height and width) - lays on top of the container and over the image */
+.overlay-delete {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    width: 100%;
+    opacity: 0;
+    transition: .3s ease;
+    background-color: gainsboro;
+}
+
+/* When you mouse over the container, fade in the overlay icon*/
+.avatar-container:hover .overlay-delete {
+    opacity: 1;
+}
+
+/* The icon inside the overlay is positioned in the middle vertically and horizontally */
+.icon {
+    color: white;
+    font-size: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+/* When you move the mouse over the icon, change color */
+.fa-trash:hover {
+    color: #eee;
+}

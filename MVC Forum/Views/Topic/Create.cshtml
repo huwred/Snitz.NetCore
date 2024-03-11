@@ -47,7 +47,7 @@
                             <label>@Localizer["cbxShowSig"]</label>
                         </div>
                     }
-                    @if (User.IsInRole("Admin"))
+                    @if (User.IsInRole("Administrator"))
                     {
                         <div class="pl-3 col-6">
                             <input asp-for="Lock" tabindex="5" type="checkbox" checked="@Model.Lock">

@@ -24,10 +24,10 @@
             <li snitz-if="@Model.Privateprofile != 1 && !string.IsNullOrWhiteSpace(@Model.Homepage) && @SnitzConfig.GetIntValue("STRHOMEPAGE") == 1" class="p-1">
                 <a href="@Model.Homepage" data-toggle="tooltip" title="@Localizer["tipAuthorHomePage"]" target="_new"><i class="fa fa-2x fa-home"></i></a>
             </li>
-            <li snitz-if="@User.IsInRole("Admin")" class="p-1">
+            <li snitz-if="@User.IsInRole("Administrator")" class="p-1">
                 <a href="#" class="show-ip" data-toggle="tooltip" title="@Localizer["tipAuthorIP"]" data-id="@Model.Id" data-url="@Url.Action("ShowIP", "Account")"><i class="fa fa-2x fa-sitemap"></i></a>
             </li>
-            <li snitz-if="@User.IsInRole("Admin")" class="p-1">
+            <li snitz-if="@User.IsInRole("Administrator")" class="p-1">
                 @switch (Model.Status)
                 {
                     case 1:

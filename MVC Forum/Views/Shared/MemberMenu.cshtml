@@ -18,7 +18,7 @@
             <li><a class="dropdown-item" asp-controller="Account" asp-action="ResetPassword" asp-route-id="">@Localizer["mnuChangePassword"]</a></li>
 
             <li><hr class="dropdown-divider"> </li>
-            <li snitz-if="@User.IsInRole("LanguageEditor")"><a href="~/LanguageManager/" class="dropdown-item">Language Settings</a></li>
+            <li snitz-if="@User.IsInRole("LanguageEditor")"><a href="~/LanguageManager/" class="dropdown-item">@Localizer["mnuAdminLangResources"]</a></li>
             <li><a class="dropdown-item" asp-controller="Account" asp-action="LogOut">@Localizer["SignOut"]</a></li>
 
         </ul>

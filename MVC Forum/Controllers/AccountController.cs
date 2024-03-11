@@ -20,6 +20,7 @@ using MimeKit;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Member;
 using MVCForum.ViewModels.User;
+using Snitz.PhotoAlbum.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -135,10 +136,10 @@ namespace MVCForum.Controllers
                 Email = user?.Email ?? member.Email,
                 Newemail = user?.Email ?? member.Email,
                 Member = member,
-                CanEdit = currUser?.UserName == member.Name || _userManager.IsInRoleAsync(currUser!,"Admin").Result
+                CanEdit = currUser?.UserName == member.Name 
             };
 
-            if (user != null )
+            if (member != null )
                 return View(model);
 
             return View("Error");
@@ -279,36 +280,36 @@ namespace MVCForum.Controllers
             }
             var returnUrl = login.ReturnUrl ?? Url.Content("~/");
 
-            ForumUser? appUser;
+            ForumUser? newIdentityUser;
             _logger.Warn($"Finding User {login.Username}");
             if (IsValidEmail(login.Username))
             {
                 try
                 {
                     _logger.Warn("Finding User by Email");
-                    appUser = await _userManager.FindByEmailAsync(login.Username);
+                    newIdentityUser = await _userManager.FindByEmailAsync(login.Username);
                 }
                 catch (Exception e)
                 {
                     _logger.Error($"Multiple accounts with that email {login.Username}",e);
                     //we will get an error if multiple accounds have the same email;
                     ModelState.AddModelError(nameof(login.Username), "Multiple accounts with that email, please login with your username");
-                    return View();
+                    return View(login);
                 }
                 
             }
             else
             {
                 _logger.Warn("Finding User by Name");
-                appUser = await _userManager.FindByNameAsync(login.Username);
+                newIdentityUser = await _userManager.FindByNameAsync(login.Username);
             }
             
 
-            if (appUser != null)
+            if (newIdentityUser != null) //Already Migrated
             {
-                _logger.Warn($"Found {appUser.Email}");
+                _logger.Warn($"Found {newIdentityUser.Email}");
                 await _signInManager.SignOutAsync();
-                SignInResult result = await _signInManager.PasswordSignInAsync(appUser, login.Password, login.RememberMe, true);
+                SignInResult result = await _signInManager.PasswordSignInAsync(newIdentityUser, login.Password, login.RememberMe, true);
                 if (result.Succeeded)
                 {
                     var currmember = _memberService.GetByUsername(login.Username);
@@ -327,18 +328,25 @@ namespace MVCForum.Controllers
                     var forgotPassLink = Url.Action(nameof(ForgotPassword),"Account", new { }, Request.Scheme);
                     var content =
                         $"Your account is locked out, to reset your password, please click this link: {forgotPassLink}";
-                    var message = new EmailMessage(new[] { appUser.Email! }, "Locked out account information", content);
+                    var message = new EmailMessage(new[] { newIdentityUser.Email! }, "Locked out account information", content);
                     await _emailSender.SendEmailAsync(message);
 
                     ModelState.AddModelError(nameof(login.Username), "The account is locked out");
-                    return View();
+                    return View(login);
                 }
                 ModelState.AddModelError(nameof(login.Username), "Invalid Login Attempt");
                 return View();                       
             }
             _logger.Warn("No IdentityUser user, checking Member table");
-
+            #region Migrate Member
+            //check if they are an existing member
             var member = _memberService.GetByUsername(login.Username);
+            if (member == null)
+            {
+                //not a member so redirect to the register page
+                return RedirectToActionPermanent("Register");
+            }
+
             var validpwd = false;
             try
             {
@@ -369,10 +377,10 @@ namespace MVCForum.Controllers
                 IdentityResult result = await _userManager.CreateAsync(existingUser, login.Password);
                 if (result.Succeeded)
                 {
-                    var currroles = _snitzDbContext.OldUsersInRoles
-                        .Include(r=>r.Role).AsNoTracking()
-                        .Include(r=>r.User).AsNoTracking()
-                        .Where(r => r.UserId == existingUser.MemberId);
+                    var currroles = _snitzDbContext.Set<OldUserInRole>()
+                        .Include(u => u.Role).AsNoTracking()
+                        .Include(u => u.User).AsNoTracking()
+                        .Where(r => r.UserId == member.Id);
                     foreach (var userInRole in currroles)
                     {
                         var exists = _roleManager.Roles.FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
@@ -396,7 +404,7 @@ namespace MVCForum.Controllers
             {
                 ModelState.AddModelError(nameof(login.Username), "Either the user was not found or the password does not match.<br/>Please try using the forgot password link to reset your password.");
             }
-
+            #endregion
             return View(login);
         }
 
@@ -780,6 +788,74 @@ namespace MVCForum.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult DeleteAvatar(int id)
+        {
+            var currentMember = _memberService.Current();
+            if (currentMember != null)
+            {
+                var avPath = Path.Combine(_env.WebRootPath, _config.ContentFolder,"Avatar");
+                try
+                {
+                    if (System.IO.File.Exists(Path.GetFullPath(avPath,currentMember.PhotoUrl)))
+                    {
+                        System.IO.File.Delete(Path.GetFullPath(avPath, currentMember.PhotoUrl));
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.Error("Unable to delete avatar",e);
+                }
+
+                currentMember.PhotoUrl = null;
+                _snitzDbContext.Update(currentMember);
+                _snitzDbContext.SaveChanges();
+            }
+            else
+            {
+                return View("Error");
+            }
+
+            return RedirectToAction("Index");
+        }
+        public IActionResult UploadForm(int? id)
+        {
+            return PartialView("popUploadAvatar",new AlbumUploadViewModel());;
+        }
+
+        public IActionResult UploadAvatar(AlbumUploadViewModel model)
+        {
+            var uploadFolder = Combine(_config.ContentFolder, "Avatar");
+            var currentMember = _memberService.Current();
+            if (currentMember == null)
+            {
+                return View("Error");
+            }
+
+            if (!Directory.Exists(_env.WebRootPath + uploadFolder))
+            {
+                Directory.CreateDirectory(_env.WebRootPath + uploadFolder);
+            }
+            var path = $"{uploadFolder}".Replace("/","\\");
+            //return Json(new { result = true, data = Combine(uploadFolder,model.AlbumImage.FileName) });
+
+            if (ModelState.IsValid)
+            {
+                var uploads = Path.Combine(_env.WebRootPath, path);
+                var filePath = Path.Combine(uploads, model.AlbumImage.FileName);
+                var fStream = new FileStream(filePath, FileMode.Create);
+                model.AlbumImage.CopyTo(fStream);
+                fStream.Flush();
+                currentMember.PhotoUrl = model.AlbumImage.FileName;
+                _snitzDbContext.Update(currentMember);
+                _snitzDbContext.SaveChanges();
+
+                return Json(new { result = true, data = "/" + Combine(uploadFolder,model.AlbumImage.FileName) });
+
+            }
+
+            return PartialView("popUploadAvatar",model);
+        }
         private bool IsValidEmail(string emailaddress)
         {
             try

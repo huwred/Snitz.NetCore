@@ -132,15 +132,11 @@
     <!--Pagination starts-->
     @if (Model.PageCount > 1)
     {
-        var paging = new PagingModel
-        {
-            PageCount = Model.PageCount,
-            Page = Model.PageNum,
-            OrderBy = "lpd",
-            SortDir = Model.SortDir
-        };
-
-        <partial name="ListPaging" model="paging" />
+        <partial name="ListPaging" model="@(new PagingModel{
+                                            PageCount = Model.PageCount,
+                                            Page = Model.PageNum,
+                                            OrderBy = "lpd",
+                                            SortDir = Model.SortDir})" />
     }
     else
     {

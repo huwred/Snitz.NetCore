@@ -17,7 +17,7 @@
 }
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
-    @if (User.IsInRole("Admin"))
+    @if (User.IsInRole("Administrator"))
     {
         if (!string.IsNullOrWhiteSpace(cat))
         {

@@ -37,24 +37,22 @@
                 <div class="replies">@Localizer["lblReplies"]/@Localizer["lblViews"]</div>
                 <div class="last-reply">@Localizer["lblLastPost"]</div>
             </div>
-
+            @{
+                ViewData["ActiveTopics"] = true;
+            }
             <!--Topics start here-->
             @foreach (var post in Model.Results.Posts!)
             {
-                <partial name="TopicListing" model="post" />
+                <partial name="TopicListing" model="post" view-data="ViewData" />
             }
             <!--ends here-->
         </div>
         <!--Pagination starts-->
-        @if (Model.Results.PageCount > 1)
-        {
-            var paging = new PagingModel
-            {
-                PageCount = Model.Results.PageCount,
-                Page = Convert.ToInt32(pagenum)
-            };
-            @await Html.PartialAsync("ListPaging",paging)
-        }
+        <partial snitz-if="@(Model.Results.PageCount > 1)" name="ListPaging" model="@(new PagingModel
+                                                                                    {
+                                                                                        PageCount = Model.Results.PageCount,
+                                                                                        Page = Convert.ToInt32(pagenum)
+                                                                                    })" />
         <!--pagination ends-->
         <partial name="IconInfo" />
     }

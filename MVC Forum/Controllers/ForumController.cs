@@ -274,7 +274,7 @@ namespace MVCForum.Controllers
 
         
         [Breadcrumb(FromAction = "Index", FromController = typeof(CategoryController),Title = "Create Forum")]
-        [Authorize(Roles="Admin")]
+        [Authorize(Roles="Administrator")]
         public IActionResult Create(int id)
         {
             var model = new NewForumModel { CategoryList = _forumService.CategoryList()!,Category = id,ForumId = 0};
@@ -282,7 +282,7 @@ namespace MVCForum.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles="Admin")]
+        [Authorize(Roles="Administrator")]
         public async Task<IActionResult> Create(NewForumModel model)
         {
             ModelState.Remove("CategoryList");
@@ -326,7 +326,7 @@ namespace MVCForum.Controllers
         }
 
         [Breadcrumb(FromAction = "Index",FromController = typeof(CategoryController), Title = "Edit Forum")]
-        [Authorize(Roles="Admin")]
+        [Authorize(Roles="Administrator")]
         public IActionResult Edit(int id)
         {
             var forum = _forumService.GetById(id);
@@ -349,7 +349,7 @@ namespace MVCForum.Controllers
         }
 
         [Breadcrumb(FromAction = "Index",FromController = typeof(CategoryController), Title = "Delete Forum")]
-        [Authorize(Roles="Admin")]
+        [Authorize(Roles="Administrator")]
         public async Task<IActionResult> Delete(int id)
         {
             var catid = _forumService.GetById(id).CategoryId;

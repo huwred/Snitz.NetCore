@@ -446,6 +446,14 @@ blockquote.newquote {
     position: relative;
     border: 2px dotted rgba(var(--bs-success-rgb));
 }
-.table-row .status .fa-folder, .note .fa-folder {
+.table-row .status .fa-folder, .note .fa-folder, .answered-overlay .status .fa-lock {
     color: rgba(var(--bs-success-rgb)) !important;
+}
+
+.postTitle a {
+    display: block;
+    white-space: nowrap;
+    width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

@@ -1,7 +1,7 @@
 ﻿@model PostReply
 @inject IBookmark Bookmarks;
 @{
-    bool isadmin = User.IsInRole("Admin");
+    bool isadmin = User.IsInRole("Administrator");
     bool islocked = Model.Topic.Status == 1;
     bool isTopicAuthor = User.Identity.Name == Model.Topic.Member.Name;
     bool isauthor = User.Identity.Name == Model.Member.Name;

@@ -20,7 +20,13 @@
     <div class="subjects" style="z-index:2">
         <a href="/Topic/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a>
         <br/>
-        <span>@Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model.AuthorId"></member-link> <snitz-datetime datetime="@Model.Created"></snitz-datetime> .</span>
+        <span>@Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model.AuthorId"></member-link> 
+            @if ((bool)ViewData["ActiveTopics"])
+            {
+                @Localizer["lblin"] <a href="/Forum/@Model.Forum.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Forum.Title!))</a>
+            }
+            <snitz-datetime datetime="@Model.Created"></snitz-datetime> .
+            </span>
         @if (SnitzConfig.GetIntValue("STRSHOWPAGING") == 1)
         {
             @if (Model.RepliesCount > ViewBag.PageSize)

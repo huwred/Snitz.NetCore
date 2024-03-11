@@ -18,7 +18,7 @@ namespace SnitzCore.Data
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            if (context.HttpContext.User.IsInRole("Admin"))
+            if (context.HttpContext.User.IsInRole("Administrator"))
             {
                 return;
             }

@@ -141,7 +141,7 @@ namespace SnitzCore.Service
 
         public IEnumerable<Post> GetLatestPosts(int n)
         {
-            return GetAllTopicsAndRelated().OrderByDescending(post => post.Created).Take(n);
+            return GetAllTopicsAndRelated().OrderByDescending(post => post.LastPostDate).Take(n);
         }
         public IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize = 10, int pagenumber = 1)
         {

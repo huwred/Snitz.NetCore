@@ -83,7 +83,7 @@ namespace SnitzCore.Service
             return curruser != null ? _userManager.GetRolesAsync(curruser).Result : new List<string>();
         }
 
-        [Obsolete("Obsolete")]
+        //[Obsolete("Obsolete")]
         public bool ValidateMember(Member member, string password)
         {
             OldMembership? result = _dbContext.OldMemberships.FirstOrDefault(m => m.Id == member.Id);

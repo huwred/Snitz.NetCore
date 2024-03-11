@@ -39,6 +39,16 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
     options.UseDatabase(builder.Configuration.GetConnectionString("DBProvider"), builder.Configuration, System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 },ServiceLifetime.Transient);
+//using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+//{
+//    using (var dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
+//    {
+//        if (dbContext.Database.GetPendingMigrations().Any())
+//        {
+//            dbContext.Database.Migrate();
+//        }
+//    }
+//}
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ForumUser>(options =>
@@ -56,6 +66,7 @@ builder.Services.AddDefaultIdentity<ForumUser>(options =>
     .AddDefaultTokenProviders()
     .AddTokenProvider<EmailConfirmationTokenProvider<ForumUser>>("emailconfirmation")
     .AddPasswordValidator<CustomPasswordValidator<ForumUser>>();
+builder.Services.AddScoped<IPasswordHasher<IdentityUser>, CustomPasswordHasher>();
 builder.Services.Configure<IdentityOptions>(builder.Configuration.GetSection(nameof(IdentityOptions)));
 builder.Services.ConfigureApplicationCookie(options =>
 {

@@ -54,7 +54,7 @@ public partial class Post
     [StringLength(14)]
     public string Created { get; set; } = null!;
 
-    public int? LastPoster { get; set; }
+    //public int? LastPoster { get; set; }
 
     [Column("T_IP")]
     [StringLength(50)]

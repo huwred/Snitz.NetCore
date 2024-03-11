@@ -10,7 +10,7 @@
             <li class="list-group-item">
                 <div class="forumLogo" style="background-image: url(@p.Forum?.ImageUrl); background-size: 100%"></div>
                 <div class="postTitle">
-                    <a asp-controller="Topic" asp-action="Index" asp-route-id="@p.Id">@p.Title</a>
+                    <a asp-controller="Topic" asp-action="Index" asp-route-id="@p.Id" title="@p.Title">@p.Title</a>
                     @Localizer["lblPostedBy"] <a asp-controller="Account" asp-action="Detail" asp-route-id="@p.AuthorName">@p.AuthorName</a>
                 </div>
                 <div class="postSubtitle">
