@@ -68,7 +68,7 @@
             <li class="fw-bold list-group-item">Resource Sets</li>
             @foreach (var lang in Model.Resources.GroupBy(l => l.ResourceSet).OrderBy(o=>o.Key))
             {
-                if (lang.Key == "Admin")
+                if (lang.Key == "Administrator")
                 {
                     <li data-id="@lang.Key" class="resource-set list-group-item active" style="cursor: pointer">@lang.Key</li>
                 }

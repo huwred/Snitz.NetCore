@@ -8,7 +8,7 @@ using SnitzCore.Data.Models;
 
 namespace SnitzCore.BackOffice.Controllers;
 
-[Authorize(Roles="Admin,LanguageEditor")]
+[Authorize(Roles="Administrator,LanguageEditor")]
 public class LanguageManagerController : Controller
 {
     private readonly SnitzDbContext _dbcontext;

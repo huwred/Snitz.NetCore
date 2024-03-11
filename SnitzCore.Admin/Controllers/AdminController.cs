@@ -17,7 +17,7 @@ using static SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel;
 
 namespace SnitzCore.BackOffice.Controllers
 {
-    [Authorize(Roles="Admin")]
+    [Authorize(Roles="Administrator")]
     public class AdminController : Controller
     {
         private readonly ISnitz _config;

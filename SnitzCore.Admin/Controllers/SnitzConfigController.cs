@@ -8,7 +8,7 @@ using SnitzCore.Data.Models;
 
 namespace SnitzCore.BackOffice.Controllers
 {
-    [Authorize(Roles="Admin")]
+    [Authorize(Roles="Administrator")]
     public class SnitzConfigController : Controller
     {
         private readonly ISnitzConfig _config;

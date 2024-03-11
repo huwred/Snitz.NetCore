@@ -61,7 +61,7 @@
                         }
                         <div class="col-3">
                             <button class="btn btn-sm btn-outline-success" style="display:none;" type="submit" title="Save Changes" data-id="@res.Id" name="subBut" value="update"><i class="fa fa-save"></i></button>
-                            <button-confirm snitz-if="@User.IsInRole("Admin")" size="btn-sm" selector="confirm-delete" config-class="fa fa-trash-o" config-key="@res.Name" href="/LanguageManager/DeleteResource/?id="></button-confirm>
+                            <button-confirm snitz-if="@User.IsInRole("Administrator")" size="btn-sm" selector="confirm-delete" config-class="fa fa-trash-o" config-key="@res.Name" href="/LanguageManager/DeleteResource/?id="></button-confirm>
                             <span id="result_@res.Name"></span>
                         </div>
                     </form>
