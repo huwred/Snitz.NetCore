@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace WebApplication1.Migrations
+namespace Migrations
 {
     /// <inheritdoc />
     public partial class SnitzCore : Migration
@@ -10,7 +11,7 @@ namespace WebApplication1.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            
+
             migrationBuilder.AddColumn<bool>(
                 name: "T_ANSWERED",
                 table: "FORUM_TOPICS",
@@ -24,16 +25,6 @@ namespace WebApplication1.Migrations
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
-
-            //migrationBuilder.AlterColumn<int>(
-            //    name: "GROUP_CATID",
-            //    table: "FORUM_GROUPS",
-            //    type: "int",
-            //    nullable: false,
-            //    defaultValue: 0,
-            //    oldClrType: typeof(int),
-            //    oldType: "int",
-            //    oldNullable: true);
 
             //migrationBuilder.CreateTable(
             //    name: "FORUM_BOOKMARKS",
@@ -90,6 +81,46 @@ namespace WebApplication1.Migrations
             //    });
 
             //migrationBuilder.CreateTable(
+            //    name: "FORUM_SPAM_MAIL",
+            //    columns: table => new
+            //    {
+            //        SPAM_ID = table.Column<int>(type: "int", nullable: false)
+            //            .Annotation("SqlServer:Identity", "1, 1"),
+            //        SPAM_SERVER = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_FORUM_SPAM_MAIL", x => x.SPAM_ID);
+            //    });
+
+            //migrationBuilder.CreateTable(
+            //    name: "webpages_Membership",
+            //    columns: table => new
+            //    {
+            //        UserId = table.Column<int>(type: "int", nullable: false)
+            //            .Annotation("SqlServer:Identity", "1, 1"),
+            //        CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+            //        Password = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_webpages_Membership", x => x.UserId);
+            //    });
+
+            //migrationBuilder.CreateTable(
+            //    name: "webpages_Roles",
+            //    columns: table => new
+            //    {
+            //        RoleId = table.Column<int>(type: "int", nullable: false)
+            //            .Annotation("SqlServer:Identity", "1, 1"),
+            //        RoleName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_webpages_Roles", x => x.RoleId);
+            //    });
+
+            //migrationBuilder.CreateTable(
             //    name: "FORUM_IMAGES",
             //    columns: table => new
             //    {
@@ -132,86 +163,74 @@ namespace WebApplication1.Migrations
             //            principalColumn: "O_GROUP_ID");
             //    });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FORUM_MODERATOR_FORUM_ID",
-                table: "FORUM_MODERATOR",
-                column: "FORUM_ID");
+            //migrationBuilder.CreateTable(
+            //    name: "webpages_UsersInRoles",
+            //    columns: table => new
+            //    {
+            //        UserId = table.Column<int>(type: "int", nullable: false),
+            //        RoleId = table.Column<int>(type: "int", nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.ForeignKey(
+            //            name: "FK_webpages_UsersInRoles_FORUM_MEMBERS_UserId",
+            //            column: x => x.UserId,
+            //            principalTable: "FORUM_MEMBERS",
+            //            principalColumn: "MEMBER_ID",
+            //            onDelete: ReferentialAction.Cascade);
+            //        table.ForeignKey(
+            //            name: "FK_webpages_UsersInRoles_webpages_Roles_RoleId",
+            //            column: x => x.RoleId,
+            //            principalTable: "webpages_Roles",
+            //            principalColumn: "RoleId",
+            //            onDelete: ReferentialAction.Cascade);
+            //    });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FORUM_MODERATOR_MEMBER_ID",
-                table: "FORUM_MODERATOR",
-                column: "MEMBER_ID");
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_FORUM_BOOKMARKS_B_MEMBERID",
+            //    table: "FORUM_BOOKMARKS",
+            //    column: "B_MEMBERID");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FORUM_GROUPS_GROUP_CATID",
-                table: "FORUM_GROUPS",
-                column: "GROUP_CATID");
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_FORUM_BOOKMARKS_B_TOPICID",
+            //    table: "FORUM_BOOKMARKS",
+            //    column: "B_TOPICID");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FORUM_GROUPS_GROUP_ID",
-                table: "FORUM_GROUPS",
-                column: "GROUP_ID");
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_FORUM_IMAGES_I_CAT",
+            //    table: "FORUM_IMAGES",
+            //    column: "I_CAT");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FORUM_BOOKMARKS_B_MEMBERID",
-                table: "FORUM_BOOKMARKS",
-                column: "B_MEMBERID");
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_FORUM_IMAGES_I_GROUP_ID",
+            //    table: "FORUM_IMAGES",
+            //    column: "I_GROUP_ID");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FORUM_BOOKMARKS_B_TOPICID",
-                table: "FORUM_BOOKMARKS",
-                column: "B_TOPICID");
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_FORUM_IMAGES_I_ID",
+            //    table: "FORUM_IMAGES",
+            //    column: "I_ID",
+            //    unique: true);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FORUM_IMAGES_I_CAT",
-                table: "FORUM_IMAGES",
-                column: "I_CAT");
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_FORUM_IMAGES_I_MID",
+            //    table: "FORUM_IMAGES",
+            //    column: "I_MID");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FORUM_IMAGES_I_GROUP_ID",
-                table: "FORUM_IMAGES",
-                column: "I_GROUP_ID");
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_webpages_UsersInRoles_RoleId",
+            //    table: "webpages_UsersInRoles",
+            //    column: "RoleId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FORUM_IMAGES_I_ID",
-                table: "FORUM_IMAGES",
-                column: "I_ID",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FORUM_IMAGES_I_MID",
-                table: "FORUM_IMAGES",
-                column: "I_MID");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_FORUM_MODERATOR_FORUM_FORUM_FORUM_ID",
-                table: "FORUM_MODERATOR",
-                column: "FORUM_ID",
-                principalTable: "FORUM_FORUM",
-                principalColumn: "FORUM_ID",
-                onDelete: ReferentialAction.NoAction);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_FORUM_MODERATOR_FORUM_MEMBERS_MEMBER_ID",
-                table: "FORUM_MODERATOR",
-                column: "MEMBER_ID",
-                principalTable: "FORUM_MEMBERS",
-                principalColumn: "MEMBER_ID",
-                onDelete: ReferentialAction.NoAction);
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_webpages_UsersInRoles_UserId",
+            //    table: "webpages_UsersInRoles",
+            //    column: "UserId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_FORUM_MODERATOR_FORUM_FORUM_FORUM_ID",
-                table: "FORUM_MODERATOR");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_FORUM_MODERATOR_FORUM_MEMBERS_MEMBER_ID",
-                table: "FORUM_MODERATOR");
-
             migrationBuilder.DropTable(
                 name: "FORUM_BOOKMARKS");
 
@@ -219,26 +238,22 @@ namespace WebApplication1.Migrations
                 name: "FORUM_IMAGES");
 
             migrationBuilder.DropTable(
+                name: "FORUM_SPAM_MAIL");
+
+            migrationBuilder.DropTable(
+                name: "webpages_Membership");
+
+            migrationBuilder.DropTable(
+                name: "webpages_UsersInRoles");
+
+            migrationBuilder.DropTable(
                 name: "FORUM_IMAGE_CAT");
 
             migrationBuilder.DropTable(
                 name: "FORUM_ORG_GROUP");
 
-            migrationBuilder.DropIndex(
-                name: "IX_FORUM_MODERATOR_FORUM_ID",
-                table: "FORUM_MODERATOR");
-
-            migrationBuilder.DropIndex(
-                name: "IX_FORUM_MODERATOR_MEMBER_ID",
-                table: "FORUM_MODERATOR");
-
-            migrationBuilder.DropIndex(
-                name: "IX_FORUM_GROUPS_GROUP_CATID",
-                table: "FORUM_GROUPS");
-
-            migrationBuilder.DropIndex(
-                name: "IX_FORUM_GROUPS_GROUP_ID",
-                table: "FORUM_GROUPS");
+            migrationBuilder.DropTable(
+                name: "webpages_Roles");
 
             migrationBuilder.DropColumn(
                 name: "T_ANSWERED",
@@ -254,20 +269,11 @@ namespace WebApplication1.Migrations
                 type: "int",
                 nullable: true);
 
-            migrationBuilder.AlterColumn<int>(
-                name: "GROUP_CATID",
-                table: "FORUM_GROUPS",
-                type: "int",
-                nullable: true,
-                oldClrType: typeof(int),
-                oldType: "int");
-
             migrationBuilder.AddColumn<int>(
                 name: "LastPoster",
                 table: "FORUM_A_TOPICS",
                 type: "int",
                 nullable: true);
-
         }
     }
 }

@@ -9,10 +9,10 @@ using SnitzCore.Data;
 
 #nullable disable
 
-namespace WebApplication1.Migrations
+namespace Migrations
 {
     [DbContext(typeof(SnitzDbContext))]
-    [Migration("20240311211131_SnitzCore")]
+    [Migration("20240311223854_SnitzCore")]
     partial class SnitzCore
     {
         /// <inheritdoc />

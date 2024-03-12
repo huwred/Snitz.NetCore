@@ -8,7 +8,7 @@ using SnitzCore.Data;
 
 #nullable disable
 
-namespace WebApplication1.Migrations
+namespace Migrations
 {
     [DbContext(typeof(SnitzDbContext))]
     partial class SnitzDbContextModelSnapshot : ModelSnapshot
