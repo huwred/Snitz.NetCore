@@ -67,7 +67,8 @@ namespace SnitzCore.Service
                     myObj.Status = category.Status;
                     myObj.Sort = category.Sort;
                     myObj.Subscription = category.Subscription;
-                     await _dbContext.SaveChangesAsync();
+                    _dbContext.Update(myObj);
+
                 }
             }
             catch (Exception e)
