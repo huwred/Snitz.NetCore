@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using System;
 using System.Text.Encodings.Web;
 
 namespace MVCForum.TagHelpers

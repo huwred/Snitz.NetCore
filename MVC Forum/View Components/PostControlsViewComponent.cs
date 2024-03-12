@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using MVCForum.ViewModels.Post;
-using SnitzCore.Data.Models;
 using SnitzCore.Data.Interfaces;
 
 namespace MVCForum.View_Components
@@ -27,7 +26,6 @@ namespace MVCForum.View_Components
                 var topic = _postService.GetTopic(post.Id);
                 return await Task.FromResult((IViewComponentResult)View("Topic",topic));
             }
-            return await Task.FromResult((IViewComponentResult)View());
         }
     }
 }

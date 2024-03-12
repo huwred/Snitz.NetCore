@@ -8,7 +8,6 @@ using System;
 using System.Reflection;
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Logging;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MVCForum.TagHelpers
 {

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using MailKit;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using MVCForum.Extensions;
 using SnitzCore.Service.Extensions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MVCForum.TagHelpers
 {

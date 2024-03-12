@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using System;
 using System.Globalization;
 using System.Linq;
-using SnitzCore.Data.Extensions;
 
 namespace MVCForum.TagHelpers
 {

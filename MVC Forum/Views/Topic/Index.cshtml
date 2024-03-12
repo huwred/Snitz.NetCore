@@ -153,7 +153,7 @@
 else
 {
     <p snitz-if="@User.Identity.IsAuthenticated && !Model.IsLocked" class="p-4">@Localizer["lblNoReplyMessage"]</p>
-        <p snitz-if="!@User.Identity.IsAuthenticated && !Model.IsLocked" class="p-4">@Localizer["lblNoReplies"]</p>
+    <p snitz-if="!@User.Identity.IsAuthenticated && !Model.IsLocked" class="p-4">@Localizer["lblNoReplies"]</p>
 }
     <!--Reply Area-->
     <div snitz-if="!@Model.IsLocked" class="comment-area @replyClass mt-2" id="reply-area">
@@ -168,23 +168,22 @@ else
                     <div class="col-6 form-check">
                         <input class="form-check-input" id="show-sig" name="UseSignature" tabindex="5" type="checkbox" value="true" checked="@(currmember.SigDefault == 1)">
                         <input name="UseSignature" type="hidden" value="false">
-                        <label class="form-check-label mt-1" for="show-sig"> @Localizer["cbxShowSig"]</label>
+                        <label class="form-check-label mt-1" for="show-sig">&nbsp;@Localizer["cbxShowSig"]</label>
                     </div>
                 }
                 @if (User.IsInRole("Administrator"))
                 {
                     <div class="col-6 form-check">
                         <input class="form-check-input" asp-for="IsLocked" tabindex="5" type="checkbox" checked="@Model.IsLocked">
-                        <label class="form-check-label mt-1" for="IsLocked"> @Localizer["cbxLockTopic"]</label>
+                        <label class="form-check-label mt-1" for="IsLocked">&nbsp;@Localizer["cbxLockTopic"]</label>
                     </div>
                     @if (SnitzConfig.GetIntValue("STRSTICKYTOPIC") == 1)
                     {
                         <div class="col-6 form-check">
                             <input class="form-check-input" asp-for="IsSticky" tabindex="5" type="checkbox" checked="@Model.IsSticky">
-                            <label class="form-check-label mt-1" for="IsSticky">@Localizer["cbxMakeSticky"]</label>
+                            <label class="form-check-label mt-1" for="IsSticky">&nbsp;@Localizer["cbxMakeSticky"]</label>
                         </div>
                     }
-
                 }
                 <div class="col-6" style="display: none;">
                     <input id="SaveDraft" name="SaveDraft" tabindex="5" type="checkbox" value="true"><input name="SaveDraft" type="hidden" value="false">
@@ -197,7 +196,6 @@ else
             </div>
         </form>
     </div>
-
 </div>
 
 
@@ -232,17 +230,14 @@ else
             <div class="modal-header">
                 <h5 class="modal-title" id="uploadModalLabel">
                     @Localizer["lblFileUpload"]
-                </h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </h5> 
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="upload-content">
-                    
-                </div>
+                <div id="upload-content"></div>
             </div>
             <div class="modal-footer">
-                <p class="footer-title">
-                    If you're having problems uploading, try choosing a smaller image.
-                </p>
+                <p class="footer-title">If you're having problems uploading, try choosing a smaller image.</p>
             </div>
         </div>
     </div>

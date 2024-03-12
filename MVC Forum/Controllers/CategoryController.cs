@@ -33,7 +33,7 @@ namespace MVCForum.Controllers
         }
 
         
-        [Breadcrumb("ttlForums",FromAction = "Index",FromController = typeof(HomeController))]
+        [Breadcrumb("AllForums",FromAction = "Index",FromController = typeof(HomeController))]
         [Route("Forums")]
         [Route("Category/{id?}")]
         [Route("Category/Index/{id}")]

@@ -39,16 +39,16 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
     options.UseDatabase(builder.Configuration.GetConnectionString("DBProvider"), builder.Configuration, System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 },ServiceLifetime.Transient);
-using (var scope = builder.Services.BuildServiceProvider().CreateScope())
-{
-    using (var dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
-    {
-        if (dbContext.Database.GetPendingMigrations().Any())
-        {
-            dbContext.Database.Migrate();
-        }
-    }
-}
+//using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+//{
+//    using (var dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
+//    {
+//        if (dbContext.Database.GetPendingMigrations().Any())
+//        {
+//            dbContext.Database.Migrate();
+//        }
+//    }
+//}
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ForumUser>(options =>
@@ -81,7 +81,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 
 });
-builder.Services.Configure<DataProtectionTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromHours(2));
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromHours(12));
 builder.Services.Configure<EmailConfirmationTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromDays(14));
 
 builder.Services.AddScoped<ICategory, CategoryService>();
@@ -131,7 +131,8 @@ builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(15);
+    options.IdleTimeout = TimeSpan.FromHours(13);
+    options.Cookie.Name = ".snitzCore.Session";
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });

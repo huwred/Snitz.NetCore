@@ -17,7 +17,6 @@ using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
 using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Post;
-using Microsoft.Extensions.Hosting;
 
 namespace MVCForum.Controllers
 {
@@ -91,7 +90,7 @@ namespace MVCForum.Controllers
                 switch (defaultdays)
                 {
                     case -1 : //AllOpen 
-                        forumPosts = forumPosts?.Where(f => f.Status == 0);
+                        forumPosts = forumPosts?.Where(f => f.Status == 1);
                         break;
                     //case -99 : //Archived
                     //    //TODO: Arcvied Topics                      
