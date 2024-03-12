@@ -42,7 +42,7 @@
                     @if (SnitzConfig.GetIntValue("STRSIGNATURES") == 1)
                     {
                         <div class="pl-3 col-6">
-                            <input id="show-sig" name="UseSignature" tabindex="5" type="checkbox" value="true">
+                            <input id="show-sig" name="UseSignature" tabindex="5" type="checkbox" value="true" checked="@Model.UseSignature">
                             <input name="UseSignature" type="hidden" value="false">
                             <label>@Localizer["cbxShowSig"]</label>
                         </div>

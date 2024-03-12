@@ -34,7 +34,7 @@ namespace SnitzCore.Service
         public async Task Create(Post post)
         {
             post.LastPostDate = post.Created;
-            post.Status = 0;
+            //post.Status = 1;
             post.LastPostAuthorId = post.MemberId;
             await _dbContext.Posts.AddAsync(post);
             await _dbContext.SaveChangesAsync();

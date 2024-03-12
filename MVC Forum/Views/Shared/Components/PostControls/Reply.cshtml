@@ -2,7 +2,7 @@
 @inject IBookmark Bookmarks;
 @{
     bool isadmin = User.IsInRole("Administrator");
-    bool islocked = Model.Topic.Status == 1;
+    bool islocked = Model.Topic.Status == 0;
     bool isTopicAuthor = User.Identity.Name == Model.Topic.Member.Name;
     bool isauthor = User.Identity.Name == Model.Member.Name;
 }
@@ -22,8 +22,8 @@
         {
             <i snitz-if="@(!islocked)" class="fa fa-pencil m-1 reply-edit" title="@Localizer["tipEditReply"]" data-id="@Model.Id"></i>
             <i class="fa fa-trash m-1 reply-del" title="@Localizer["tipDelReply"]" data-id="@Model.Id"></i>
-            <i snitz-if="@islocked" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.PostId" data-status="@Model.Topic.Status"></i>
-            <i snitz-if="!@islocked" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.PostId" data-status="@Model.Topic.Status"></i>
+            <i snitz-if="@islocked" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.PostId" data-status="1"></i>
+            <i snitz-if="!@islocked" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.PostId" data-status="0"></i>
         }
     </div>
 }

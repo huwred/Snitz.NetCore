@@ -328,10 +328,18 @@ footer{
         flex: 15%;
     }
 
-    .content {
-        flex: 80%;
-        max-width:80%;
-    }
+.content {
+    flex: 80%;
+    max-width: 80%;
+    position: relative;
+}
+        .content .author-sig {
+            width:99%;
+            border-top:1px dashed black;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
     .toolbar {
         flex: 5%;
     }
@@ -511,6 +519,12 @@ img.flag {
 }
 .validation-summary-valid span {
     display: none;
+}
+.validation-summary-errors ul {
+    list-style-type: none;
+}
+.validation-summary-errors {
+    color: var(--bs-form-invalid-color);
 }
 .overlay {
     position: fixed;

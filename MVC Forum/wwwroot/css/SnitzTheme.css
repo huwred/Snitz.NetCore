@@ -450,7 +450,7 @@ blockquote.newquote {
     color: rgba(var(--bs-success-rgb)) !important;
 }
 
-.postTitle a {
+a.latestpost-title {
     display: block;
     white-space: nowrap;
     width: 95%;

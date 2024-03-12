@@ -16,9 +16,12 @@ namespace MVCForum.ViewModels.Post
         public int Views { get; set; }
         public SnitzCore.Data.Models.Member Author { get; set; } = null!;
         public bool IsLocked { get; set; }
+        public bool IsSticky { get; set; }
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
         public bool Answered { get; set; }
+
+        public bool ShowSig { get; set; }
     }
 }

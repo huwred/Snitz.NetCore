@@ -45,7 +45,7 @@
         <div class="col">
             @foreach (var categoryForums in Model.ForumList?.GroupBy(f => f.CategoryId)!)
             {
-                <div class="subforum">
+                <div class="subforum border-1 border-primary">
                     <div class="subforum-title rounded">
                         <h1 style="display: inline-block;"><a href="/Category/@categoryForums.Key">@categoryForums.FirstOrDefault()?.CategoryName</a></h1>
                     </div>

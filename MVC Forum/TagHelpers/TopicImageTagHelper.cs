@@ -48,7 +48,7 @@ namespace MVCForum.TagHelpers
                 output.AddClass("center",HtmlEncoder.Default);
                 return;
             }
-            if (Status == "1")
+            if (Status == "0")
             {
                 output.Attributes.Add("title","Locked");
                 output.AddClass("fa-lock",HtmlEncoder.Default);
@@ -86,7 +86,7 @@ namespace MVCForum.TagHelpers
                 {
                     if (LastPost > lasthere)
                     {
-                        if (Status == "1")
+                        if (Status == "0")
                         {
                             output.Attributes.Add("title","Locked, Contains new posts");
                             output.AddClass("fa-lock",HtmlEncoder.Default);

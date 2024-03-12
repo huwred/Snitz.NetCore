@@ -2,7 +2,7 @@
 @inject IBookmark Bookmarks;
 @{
     bool isadmin = User.IsInRole("Administrator");
-    bool islocked = Model.Status == 1;
+    bool islocked = Model.Status == 0;
     bool isauthor = User.Identity.Name == Model.Member.Name;
 }
 @if (User.Identity.IsAuthenticated)
@@ -26,11 +26,11 @@
             <i class="fa fa-trash m-1 post-del" title="@Localizer["tipTopicDel"]" data-id="@Model.Id"></i>
             @if (islocked && isadmin)
             {
-                <i class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.Id" data-status="0"></i>
+                <i class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.Id" data-status="1"></i>
             }
             else if(isadmin && !islocked)
             {
-                <i class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.Id" data-status="1"></i>
+                <i class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.Id" data-status="0"></i>
             }
         }
     </div>

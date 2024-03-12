@@ -96,12 +96,13 @@ namespace MVCForum.Controllers
                 Title = post.Title,
                 Author = post.Member!,
                 AuthorId = post.Member!.Id,
+                ShowSig = post.Sig == 1,
                 Views = post.ViewCount,
-                IsLocked = post.Status == 1 || post.Forum?.Status == 0,
+                IsLocked = post.Status == 0 || post.Forum?.Status == 0,
+                IsSticky = post.IsSticky == 1,
                 Answered = post.Answered,
                 //AuthorRating = post.User?.Rating ?? 0,
                 AuthorName = post.Member?.Name ?? "Unknown",
-                //AuthorImageUrl = post.User?.ProfileImageUrl ?? "/images/avatar.png",
                 Created = post.Created.FromForumDateStr(),
                 Content = post.Content,
                 Replies = replies,
@@ -161,7 +162,7 @@ namespace MVCForum.Controllers
                 IsPost = false,
                 AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 1,
+                Lock = topic.Status == 0,
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
             };
@@ -324,7 +325,7 @@ namespace MVCForum.Controllers
                 post.Title = model.Title;
                 post.IsSticky = (short)(model.Sticky ? 1 : 0);
                 post.Sig = (short)(model.UseSignature ? 1 : 0);
-                post.Status = (short)(model.Lock ? 1 : 0);
+                post.Status = (short)(model.Lock ? 0 : 1);
                 post.ArchiveFlag = model.DoNotArchive ? 1 : 0;
                 post.Content = model.Content;
                 post.LastEdit = DateTime.UtcNow.ToForumDateStr();

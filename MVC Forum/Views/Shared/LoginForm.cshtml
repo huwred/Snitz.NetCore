@@ -25,19 +25,20 @@
                 <div class="form-group">
                     <label asp-for="Username">@Localizer["Username"]</label>
                     <input asp-for="Username" class="form-control" />
-                    <div class="invalid-feedback">@Localizer["PropertyRequired", Localizer["Username"]]</div>
+                    <div class="invalid-feedback">@Localizer["PropertyRequired", Localizer["Username"].Value]</div>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label asp-for="Password">@Localizer["Password"]</label>
                     <div class="input-group" id="show_hide_password">
                         @Html.PasswordFor(m => m.Password,new{@class="form-control"})
                     </div>
-                    <div class="invalid-feedback">@Localizer["PropertyRequired", Localizer["Password"]]</div>
+                    <div class="invalid-feedback">@Localizer["PropertyRequired", Localizer["Password"].Value]</div>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label asp-for="RememberMe">@Localizer["RememberMe"]</label>
                     @Html.CheckBoxFor(m=>m.RememberMe,new{@class="checkbox"})
                 </div>
+                @Html.ValidationSummary()
                 <input name="ReturnUrl" value="@returnurl" type="hidden"/>
                 <button type="submit" class="btn btn-primary">@Localizer["SignIn"]</button>
                 <div class="form-group">

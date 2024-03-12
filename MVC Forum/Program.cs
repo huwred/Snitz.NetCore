@@ -39,16 +39,16 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
     options.UseDatabase(builder.Configuration.GetConnectionString("DBProvider"), builder.Configuration, System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 },ServiceLifetime.Transient);
-//using (var scope = builder.Services.BuildServiceProvider().CreateScope())
-//{
-//    using (var dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
-//    {
-//        if (dbContext.Database.GetPendingMigrations().Any())
-//        {
-//            dbContext.Database.Migrate();
-//        }
-//    }
-//}
+using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+{
+    using (var dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
+    {
+        if (dbContext.Database.GetPendingMigrations().Any())
+        {
+            dbContext.Database.Migrate();
+        }
+    }
+}
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ForumUser>(options =>
@@ -100,10 +100,10 @@ builder.Services.AddScoped<IBookmark, BookmarkService>();
 #region localization
 var supportedCultures = new List<CultureInfo>
 {
-    new CultureInfo("en-GB"),
-    new CultureInfo("no"),
-    new CultureInfo("fa"),
-    new CultureInfo("ro")
+    new("en-GB"),
+    new ("no"),
+    new ("fa"),
+    new ("ro")
 };
 builder.Services.AddSingleton<IHtmlLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddMvc().AddViewLocalization();
@@ -173,7 +173,7 @@ builder.Services.AddImageSharp(
     });
 
 var app = builder.Build();
-app.MigrateDatabase();
+//app.MigrateDatabase();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

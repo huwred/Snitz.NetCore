@@ -4,9 +4,11 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MVCForum.TagHelpers
 @using SmartBreadcrumbs
+@using SnitzCore.Data
 @using SnitzCore.Service.TagHelpers
 @inject ICodeProcessor BbCodeProcessor
 @inject SignInManager<ForumUser> SignInManager
+@inject IMember MemberService
 @section MetaData
 {
     <meta name="title" content="Topic: @Model.Title" />
@@ -20,7 +22,7 @@
 
 @{
     ViewBag.PageCount = Model.PageCount;
-
+    var currmember = MemberService.Current();
     string pagenum = (Model.PageNum.ToString() ?? Context.Request.Query["page"])! ;
     var replyClass = "d-none";
     var loggedin = SignInManager.IsSignedIn(User);
@@ -32,7 +34,7 @@
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
     <!--Topic Section-->
-    <topic-buttons snitz-if="@SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 || @SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1 || @SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1" topic-print="@Model.Id" topic-email="@Model.Id" topic-share="@SnitzConfig.GetIntValue("STRSOCIALSHARE")"></topic-buttons>
+    <topic-buttons text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" snitz-if="@SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 || @SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1 || @SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1" topic-print="@Model.Id" topic-email="@Model.Id" topic-share="@SnitzConfig.GetIntValue("STRSOCIALSHARE")"></topic-buttons>
     <div snitz-if="@SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (@SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && int.Parse(@pagenum) < 2)" class="card mb-2 topic-container bg-white">
         @{
             var answer = "";
@@ -49,7 +51,12 @@
                 <partial name="PostAuthor" model="Model.Author"/>
                 <div class="content">
                     @Html.Raw(BbCodeProcessor.Format(Model.Content))
+                    @if (Model.ShowSig)
+                    {
+                        <div class="author-sig">@Html.Raw(@Model.Author.Signature)</div>
+                    }
                 </div>
+
             </div>
         </div>
         <div snitz-if="@User.Identity.IsAuthenticated || @Model.Edited != null" class="card-footer text-dark">
@@ -145,8 +152,8 @@
 }
 else
 {
-    <p snitz-if="@User.Identity.IsAuthenticated" class="p-4">@Localizer["lblNoReplyMessage"]</p>
-    <p snitz-if="!@User.Identity.IsAuthenticated" class="p-4">@Localizer["lblNoReplies"]</p>
+    <p snitz-if="@User.Identity.IsAuthenticated && !Model.IsLocked" class="p-4">@Localizer["lblNoReplyMessage"]</p>
+        <p snitz-if="!@User.Identity.IsAuthenticated && !Model.IsLocked" class="p-4">@Localizer["lblNoReplies"]</p>
 }
     <!--Reply Area-->
     <div snitz-if="!@Model.IsLocked" class="comment-area @replyClass mt-2" id="reply-area">
@@ -155,6 +162,35 @@ else
             <div class="invalid-feedback text-danger-emphasis">@Localizer["MessageRequired"]</div>
             <input name="TopicId" type="hidden" value="@Model.Id"/>
             <input asp-for="ForumId" type="hidden"/>
+            <div class="mb-3 p-3 row">
+                @if (SnitzConfig.GetIntValue("STRSIGNATURES") == 1 && currmember != null)
+                {
+                    <div class="col-6 form-check">
+                        <input class="form-check-input" id="show-sig" name="UseSignature" tabindex="5" type="checkbox" value="true" checked="@(currmember.SigDefault == 1)">
+                        <input name="UseSignature" type="hidden" value="false">
+                        <label class="form-check-label mt-1" for="show-sig"> @Localizer["cbxShowSig"]</label>
+                    </div>
+                }
+                @if (User.IsInRole("Administrator"))
+                {
+                    <div class="col-6 form-check">
+                        <input class="form-check-input" asp-for="IsLocked" tabindex="5" type="checkbox" checked="@Model.IsLocked">
+                        <label class="form-check-label mt-1" for="IsLocked"> @Localizer["cbxLockTopic"]</label>
+                    </div>
+                    @if (SnitzConfig.GetIntValue("STRSTICKYTOPIC") == 1)
+                    {
+                        <div class="col-6 form-check">
+                            <input class="form-check-input" asp-for="IsSticky" tabindex="5" type="checkbox" checked="@Model.IsSticky">
+                            <label class="form-check-label mt-1" for="IsSticky">@Localizer["cbxMakeSticky"]</label>
+                        </div>
+                    }
+
+                }
+                <div class="col-6" style="display: none;">
+                    <input id="SaveDraft" name="SaveDraft" tabindex="5" type="checkbox" value="true"><input name="SaveDraft" type="hidden" value="false">
+                    <label>@Localizer["cbxDraft"]</label>
+                </div>
+            </div>
             <div class="mb-3 mt-2">
                 <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
                 <button type="submit" class="btn  btn-success">@Localizer["btnPost"]</button>
