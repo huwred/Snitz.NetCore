@@ -120,10 +120,12 @@ h1 {
 /* For the smartphones */
 @media screen and (max-width: 460px) {
     .subforum-divider {
+        margin: 0;
         display: block;
         border: 0;
         height: 1px;
-        background-image: linear-gradient(to right, rgba(190, 190, 190, 0), rgba(255, 255, 255, 0.75), rgba(190, 190, 190, 0));
+        background-color: black;
+        /*background-image: linear-gradient(to right, rgba(190, 190, 190, 0), rgba(255, 255, 255, 0.75), rgba(190, 190, 190, 0));*/
     }
     .body {
         display: flex;
@@ -456,4 +458,55 @@ a.latestpost-title {
     width: 95%;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+
+/* Media Query for Mobile Devices */
+@media (max-width: 480px) {
+    body {
+        background-color: red;
+    }
+}
+
+/* Media Query for low resolution  Tablets, Ipads */
+@media (min-width: 481px) and (max-width: 767px) {
+    body {
+        background-color: yellow;
+    }
+}
+
+/* Media Query for Tablets Ipads portrait mode */
+@media (min-width: 768px) and (max-width: 1024px) {
+    body {
+        background-color: blue;
+    }
+    .subforum-row.subforum-weblink {
+        display: grid;
+        grid-template-columns: 100%;
+    }
+
+    .subforum-row {
+        display: grid;
+        grid-template-columns: 10% 60% 30%;
+
+        overflow: hidden;
+    }
+
+    .subforum-stats {
+        display: none;
+    }
+}
+
+/* Media Query for Laptops and Desktops */
+@media (min-width: 1025px) and (max-width: 1280px) {
+    body {
+        background-color: green;
+    }
+}
+
+/* Media Query for Large screens */
+@media (min-width: 1281px) {
+    body {
+        background-color: white;
+    }
 }

@@ -9,23 +9,12 @@ cite {
 a.btn:hover {
     text-decoration: none;
 }
-/* ########################################### */
-/*           Forums.html                       */
-/* ########################################### */
-/*.container {
-    margin: 30px 10px;
-    padding: 20px 10px 20px 10px;
-}
 
 .container{ margin-top: 42px;}*/
-.subforum{
-    /*margin-top:20px;*/
-}
 
 .subforum-title{
     padding: 5px;
     border-radius: 5px;
-    /*margin:4px;*/
 }
 
 .subforum-row{
@@ -65,15 +54,8 @@ a.btn:hover {
 
 
 /* For the smartphones */
-@media screen and (max-width: 460px) {
-/*    .container {
-        margin: 10px;
-        padding: 10px 0 10px 0;
-    }
-        .container .container {
-            margin: 0;
-            padding: 10px 0 10px 0;
-        }*/
+@media (max-width: 480px) {
+
     .subforum-row.subforum-weblink {
         display: grid;
         grid-template-columns: 100%;
@@ -93,21 +75,27 @@ a.btn:hover {
     .user-icon i {
         font-size: 14px;
     }
+    .content {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
+    .forum .input-group-addon, .forum .input-group-append, .input-group.forum .form-control {
+        display: block;
+        margin-bottom: 10px;
+        clear: both;
+    }
 
-        .content {
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
+    .input-group.forum {
+        position: relative;
+        display: block !important;
+        border-collapse: separate;
+    }
 }
 
 /* For the tablets */
-@media screen and (min-width: 460px) and (max-width: 1024px) {
-/*    .container {
-        margin: 15px;
-        padding: 15px 5px 15px 5px;
-    }*/
+
+@media (min-width: 481px) and (max-width: 1024px) {
 
     .subforum-row{
         display: grid;
@@ -133,15 +121,9 @@ header{
     margin-inline: 10px;
 }
 
-/*.navigation{
-    padding: 10px;
-    width: 65%;
-    display: inline-block;
-    border-radius: 5px;
-    max-height: 80px;
-    margin-right:10px;
-
-}*/
+.navbar-brand{
+    padding-left: 5px;
+}
 
 .close-icon i{
     font-size:60px;
@@ -149,26 +131,9 @@ header{
     cursor: pointer;
 }
 
-/*.nav-list{
-    list-style-type:none;
-    overflow: hidden;
-}*/
-
 .hide {
     display: none;
 }
-
-/*.bar-icon{
-    font-size: 60px;
-    display: inline-block;
-    margin-right:10px;
-    cursor: pointer;
-}
-
-.brand{
-    font-size:60px;
-    display: inline-block;
-}*/
 
 /* forum info Styling */
 .forum-info{
@@ -396,10 +361,6 @@ footer{
         max-width: 400px !important;
     }
 
-/*    .tbl .row {
-        margin: 0px;
-    }*/
-
     i.fa-reply, i.fa-trash, i.fa-share, i.fa-close, i.fa-pencil, i.fa-comment-o,i.fa-commenting {
         cursor: pointer;
     }
@@ -412,40 +373,6 @@ footer{
         border-top: 0;
     }
 
-/*    .container {
-        max-width: 99% !important;
-    }*/
-
-/*.tbl {
-    display: flex;
-    flex-direction: column;
-}
-
-.row {
-    display: flex;*/
-    /*min-height: 50px;*/
-/*}
-
-.cell {
-    flex: 1;
-    border: 1px solid white;
-}
-
-.cell.span3-4 {
-    flex: 2 24px;*/ /*  col 3,4 flex-grow/border/padding  */
-/*}
-
-.row:first-child .cell {
-    display: flex;
-    justify-content: left;*/ /*  center horiz. */
-    /*align-items: flex-start*/ /*  center vert. */
-/*}
-
-.row .cell {
-    padding: 5px;
-    vertical-align: top;
-    box-sizing: border-box;
-}*/
 .field-validation-error,.is-invalid {
     color: red;
     font-size: smaller;
@@ -652,4 +579,12 @@ pre.language-markup{
 /* When you move the mouse over the icon, change color */
 .fa-trash:hover {
     color: #eee;
+}
+
+legend {
+    width: auto;
+    float: revert;
+}
+fieldset {
+    margin-bottom: 1rem;
 }
