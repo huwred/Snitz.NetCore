@@ -1,0 +1,58 @@
+﻿@using System.Resources
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Data.Interfaces
+@using SnitzCore.Data.Models
+@using SnitzCore.Service.TagHelpers
+@using SnitzEvents.Helpers
+@model Snitz.Events.ViewModels.CalAdminViewModel
+
+<div class="mb-3 form-check">
+    <input class="form-check-input" id="IsPublic" type="checkbox" name="INTCALPUBLIC" data-size="mini" checked="@Model.IsPublic" value="1" />
+    <label for="IsPublic" class="form-check-label">@Localizer["calIsPublic"]</label>
+    <input type="checkbox" name="INTCALPUBLIC" checked value="0" style="display:none" />
+</div>
+<div class="mb-3 form-check">
+    <input class="form-check-input" id="UpcomingEvents" type="checkbox" name="INTCALUPCOMINGEVENTS" data-size="mini" checked="@Model.UpcomingEvents" value="1" />
+    <label for="UpcomingEvents" class="form-check-label">@Localizer["calUpcomingWidget"]</label>
+    <input type="checkbox" name="INTCALUPCOMINGEVENTS" checked value="0" style="display:none" />
+</div>
+
+<div class="mb-3">
+    <label for="MaxRecords" class="form-label">@Localizer["calMaxRecords"]</label>
+    <div class="col-2">
+        <input type="text" name="INTCALMAXRECORDS" id="MaxRecords" class="form-control" value="@Model.MaxRecords" />
+    </div>
+</div>
+<div class="mb-3">
+    <label for="FirstDayofWeek" class="form-label col-3">@Localizer["calFirstDayofWeek"]</label>
+    <div class="col-4">
+        <select class="form-select-sm" name="INTFIRSTDAYOFWEEK" asp-for="FirstDayofWeek" asp-items="@Html.GetEnumSelectList<CalEnums.CalDays>()">
+            <option>Please Select</option>
+        </select>
+    </div>
+</div>
+<div class="mb-3 form-check">
+    <input class="form-check-input" id="ShowBirthdays" type="checkbox" name="INTCALSHOWBDAYS" data-size="mini" checked="@Model.ShowBirthdays" value="1" />
+    <label for="ShowBirthdays" class="form-check-label">@Localizer["calShowBDays"]</label>
+    <input type="checkbox" name="INTCALSHOWBDAYS" checked value="0" style="display:none" />
+</div>
+<div class="mb-3 form-check">
+    <input class="form-check-input" id="PublicHolidays" type="checkbox" name="INTCALPUBLICHOLIDAYS" data-size="mini" checked="@Model.PublicHolidays" value="1" />
+    <label for="PublicHolidays" class="form-check-label">@Localizer["calPublicHolidays"]</label>
+    <input type="checkbox" name="INTCALPUBLICHOLIDAYS" checked value="0" style="display:none" />
+</div>
+<div class="mb-3">
+    <div class="col-3">
+        @* @Html.DropDownListFor(model => model.CountryCode, new SelectList(Model.Countries, "CountryCode", "Name"), new { @class = "form-select", id = "eventCountry", Name = "STRCALCOUNTRY" }) *@
+        @Html.DropDownList("STRCALCOUNTRY",
+                 new SelectList(Model.Countries, "CountryCode", "Name",Model.CountryCode),
+            "Select Country",
+            new { @class = "form-select" })
+    </div>
+    <div class="col-3">
+        <select class="form-control" name="Region" id="countryRegion" style="display: none;">
+            <option value=''>No Regions</option>
+        </select>
+    </div>
+    <span class="col-10 form-text">Public holiday data supplied by <a href="http://kayaposoft.com/enrico/" title="Enrico Service is a free service written in PHP providing public holidays for several countries" data-toggle="tooltip">Enrico</a></span>
+</div>
