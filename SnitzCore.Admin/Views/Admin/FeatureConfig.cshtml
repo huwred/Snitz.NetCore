@@ -17,6 +17,7 @@
     <button class="nav-link" id="v-pills-spam-tab" data-bs-toggle="pill" data-bs-target="#v-pills-spam" type="button" role="tab" aria-controls="v-pills-spam" aria-selected="false">Anti-Spam</button>
     <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Private Messaging</button>
     <button class="nav-link" id="v-pills-announce-tab" data-bs-toggle="pill" data-bs-target="#v-pills-announce" type="button" role="tab" aria-controls="v-pills-announce" aria-selected="false">Announcement</button>
+    <button class="nav-link" id="v-pills-plugin-tab" data-bs-toggle="pill" data-bs-target="#v-pills-plugin" type="button" role="tab" aria-controls="v-pills-plugin" aria-selected="false">Plugins</button>
 </div>
 <div class="tab-content bg-white p-4" id="v-pills-tabContent">
 <div class="tab-pane fade show active w-100" id="v-pills-general" role="tabpanel" aria-labelledby="feature-tab">
@@ -112,7 +113,10 @@
     <hr/>
     <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
         <div class="mb-3">
-                        <admin-config config-key="STRBOOKMARK" config-label="Allow Bookmarks" config-val="@SnitzConfig.GetIntValue("STRBOOKMARK",0)"></admin-config>
+            @if (SnitzConfig.TableExists("FORUM_BOOKMARKS"))
+            {
+                <admin-config config-key="STRBOOKMARK" config-label="Allow Bookmarks" config-val="@SnitzConfig.GetIntValue("STRBOOKMARK", 0)"></admin-config>
+            }
             <admin-config config-key="STRSTICKYTOPIC" config-label="Allow Sticky Topics" config-val="@SnitzConfig.GetIntValue("STRSTICKYTOPIC")"></admin-config>
             <admin-config config-key="STRHOTTOPIC" config-label="Hot Topics" config-val="@SnitzConfig.GetIntValue("STRHOTTOPIC")"></admin-config>
             <fieldset @(SnitzConfig.GetIntValue("STRHOTTOPIC") == 0 ? "disabled" : "") id="HOTTOPICSENABLED">
@@ -184,8 +188,11 @@
             </fieldset>
             @if (SnitzConfig.TableExists("FORUM_IMAGES") && SnitzConfig.GetIntValue("STRALLOWUPLOADS") == 1)
             {
-                <admin-config config-key="STRPHOTOALBUM" config-label="Enable Albums" config-val="@SnitzConfig.GetIntValue("STRPHOTOALBUM")"></admin-config>
-                    <fieldset  @(SnitzConfig.GetIntValue("STRALLOWUPLOADS") == 0 ? "disabled" : "") id="ALBUMENABLED">
+                if (SnitzConfig.TableExists("FORUM_IMAGES"))
+                {
+                    <admin-config config-key="STRPHOTOALBUM" config-label="Enable Albums" config-val="@SnitzConfig.GetIntValue("STRPHOTOALBUM")"></admin-config>
+                }
+                <fieldset  @(SnitzConfig.GetIntValue("STRALLOWUPLOADS") == 0 ? "disabled" : "") id="ALBUMENABLED">
                     <div class="row">
                         <div class="col">
                             <admin-config config-key="INTMAXIMAGESIZE" config-label="Max File size (Mb)" config-val="@SnitzConfig.GetValue("INTMAXIMAGESIZE", "5")"></admin-config>
@@ -274,6 +281,36 @@
         <partial name="_FormButtons"/>
     </form>
 </div>
+<div class="tab-pane fade w-100" id="v-pills-plugin" role="tabpanel" aria-labelledby="plugin-tab">
+    <legend>Plugins</legend>
+    <hr/>
+    <form id="feature-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
+        @if (SnitzConfig.TableExists("FORUM_IMAGES"))
+        {
+            <admin-config config-key="STRPHOTOALBUM" config-label="Enable Image Albums" config-val="@SnitzConfig.GetIntValue("STRPHOTOALBUM")"></admin-config>
+        }
+        @if (SnitzConfig.TableExists("FORUM_BOOKMARKS"))
+        {
+            <admin-config config-key="STRBOOKMARK" config-label="Enable Bookmarks" config-val="@SnitzConfig.GetIntValue("STRBOOKMARK", 0)"></admin-config>
+        }
+        @if (SnitzConfig.TableExists("CAL_EVENTS"))
+        {
+            <admin-config config-key="INTCALEVENTS" config-label="Enable Events" config-val="@SnitzConfig.GetIntValue("INTCALEVENTS", 0)"></admin-config>
+        }
+    </form> 
+    <div id="result"></div>
+        @if (SnitzConfig.TableExists("CAL_EVENTS"))
+        {
+            <form asp-action="SaveFeatures" asp-controller="Calendar" method="POST" data-ajax="true" data-ajax-update="#event-result">
+                <fieldset @(SnitzConfig.GetIntValue("INTCALEVENTS") == 0 ? "disabled" : "") class="border rounded-3 p-3 mb3" id="EVENTSADMIN">@await Component.InvokeAsync("Events", "Admin")</fieldset>
+                <fieldset @(SnitzConfig.GetIntValue("INTCALEVENTS") == 0 ? "disabled" : "") class="border rounded-3 p-3" id="EVENTSCONFIG">@await Component.InvokeAsync("Events", "Config")</fieldset>
+                <partial name="_FormButtons" />
+            </form>
+            <div id="event-result"></div>
+        }
+
+
+</div>
 <div class="tab-pane fade w-100" id="v-pills-api" role="tabpanel" aria-labelledby="api-tab">
     @*            @Html.ConfigInt("[API] Max images per post", "INTAPIMAXUPLOADS", 0, 5, "1", false, "control-label col-xs-8 col-sm-3", "col-xs-4 col-sm-2")
 <div class="form-group">
@@ -352,6 +389,17 @@
         document.querySelector('#STRSHOWANNOUNCE').addEventListener('click', (e) => {
             document.querySelector('#ANNOUNCEENABLED').disabled = !e.target.checked;
         });
+        document.querySelector('#STRPHOTOALBUM').addEventListener('click', (e) => {
+            document.getElementById("feature-enable").requestSubmit();
+        });
+        document.querySelector('#STRBOOKMARK').addEventListener('click', (e) => {
+            document.getElementById("feature-enable").requestSubmit();
+        });
+        document.querySelector('#INTCALEVENTS').addEventListener('click', (e) => {
+            document.getElementById("feature-enable").requestSubmit();
+            document.querySelector('#EVENTSADMIN').disabled = !e.target.checked;
+            document.querySelector('#EVENTSCONFIG').disabled = !e.target.checked;
+        });
         document.querySelector('#STRIPLOGGING').addEventListener('click', (e) => {
             document.querySelector('#IPLOGENABLED').disabled = !e.target.checked;
         });
@@ -371,6 +419,38 @@
         document.querySelector('#STRPMSTATUS').addEventListener('click', (e) => {
             document.querySelector('#PMENABLED').disabled = !e.target.checked;
         });
+
+        document.getElementById("feature-enable").addEventListener("submit", handleSubmit);
+
+        async function handleSubmit(event) {
+            console.log("submit");
+            event.preventDefault();
+            form = document.getElementById("feature-enable");
+            var status = document.getElementById("result");
+            var data = new FormData(event.target);
+            fetch(event.target.action, {
+                method: form.method,
+                body: data,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    status.innerHTML = "Thanks for your submission!";
+                    //form.reset()
+                } else {
+                    response.json().then(data => {
+                        if (Object.hasOwn(data, 'errors')) {
+                            status.innerHTML = data["errors"].map(error => error["message"]).join(", ")
+                        } else {
+                            status.innerHTML = "Oops! There was a problem submitting your form"
+                        }
+                    })
+                }
+            }).catch(error => {
+                status.innerHTML = "Oops! There was a problem submitting your form"
+            });
+        }
     </script>
 }
 
