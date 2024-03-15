@@ -1,16 +1,27 @@
 ﻿using System;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using SnitzCore.Data;
+using Microsoft.Extensions.Configuration;
 
 #nullable disable
 
 namespace Migrations
 {
+
     /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
+            if (migrationBuilder.TableExists("AspNetRoles"))
+            {
+                return;
+            }
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
