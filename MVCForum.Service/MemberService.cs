@@ -41,6 +41,7 @@ namespace SnitzCore.Service
                 return null;
             var member =  _dbContext.Members.AsNoTracking()
                 .First(m => m.Id == id);
+            if(member == null) return null;
 
             var curruser = _userManager.FindByNameAsync(member.Name).Result;
             if (curruser != null)
