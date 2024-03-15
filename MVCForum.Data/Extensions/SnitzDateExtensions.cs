@@ -37,8 +37,12 @@ namespace SnitzCore.Data.Extensions
                 return dateonly ? DateTime.UtcNow.Date : DateTime.UtcNow;
             }
         }
-        public static string ToForumDateStr(this DateTime date)
+        public static string ToForumDateStr(this DateTime date, bool dateonly = false)
         {
+            if (dateonly)
+            {
+                return date.ToString(DateFormat);
+            }
             return date.ToString(DateTimeFormat);
         }
     }

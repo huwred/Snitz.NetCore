@@ -68,7 +68,7 @@ public class Forum
     public int ArchivedTopics { get; set; }
 
     [Column("F_A_COUNT")]
-    public int ArchivedCount { get; set; }
+    public int? ArchivedCount { get; set; }
 
     [Column("F_MODERATION")]
     public int Moderation { get; set; }

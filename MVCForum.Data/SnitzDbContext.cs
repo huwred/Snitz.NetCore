@@ -119,6 +119,7 @@ namespace SnitzCore.Data
 
             modelBuilder.Entity<BookmarkEntry>();
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.PhotoAlbum"));
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.Events"));
             modelBuilder.Entity<OldUserInRole>().HasNoKey();
         }
         //Assembly GetAssemblyByName(string name)

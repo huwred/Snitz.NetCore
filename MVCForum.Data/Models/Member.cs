@@ -21,7 +21,7 @@ public partial class Member
     [Column("M_EMAIL")]
     [ProfileDisplay("Email",Order=9999,ReadOnly = true,SystemField = true)]
     [StringLength(50)]
-    public string Email { get; set; } = null!;
+    public string? Email { get; set; }
     [Column("M_TITLE")]
     [ProfileDisplay("Title",ReadOnly = true, SystemField = true)]
     [StringLength(50)]
@@ -187,7 +187,7 @@ public partial class Member
 
         [Column("M_SHA256")]
         [ProfileDisplay("Sha256",SystemField = true,Order=9999)]
-        public short Sha256 { get; set; }
+        public short? Sha256 { get; set; }
 
         [Column("M_LASTACTIVITY")]
         [StringLength(20)]
