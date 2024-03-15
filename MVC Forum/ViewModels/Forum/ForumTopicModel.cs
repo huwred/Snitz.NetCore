@@ -13,6 +13,9 @@ namespace MVCForum.ViewModels.Forum
         public IEnumerable<PostListingModel>? StickyPosts { get; set; }
         public int? PageNum { get; set; }
         public int PageSize { get; set; } = 10;
+
+        public bool PasswordRequired { get; set; }
+        public bool AccessDenied { get; set; }
     }
 
     public class ActiveTopicModel

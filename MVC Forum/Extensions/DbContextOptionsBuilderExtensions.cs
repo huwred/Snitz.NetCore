@@ -14,20 +14,20 @@ namespace MVCForum.Extensions
         {
             ArgumentException.ThrowIfNullOrEmpty(nameof(provider), provider);
             provider = provider?.ToLower();
-            var test = configuration.GetConnectionString("SnitzConnection");
+            var connectionstring = configuration.GetConnectionString("SnitzConnection");
             return provider switch
             {
-                Mssql => builder.UseSqlServer(configuration.GetConnectionString("SnitzConnection"), opt => 
+                Mssql => builder.UseSqlServer(connectionstring, opt => 
                 {
                     opt.MigrationsAssembly("MSSqlMigrations");
                 }),
 
-                Sqlite => builder.UseSqlite(configuration.GetConnectionString("SnitzConnection")?.Replace("|DataDirectory|",path), opt => 
+                Sqlite => builder.UseSqlite(connectionstring?.Replace("|DataDirectory|",path), opt => 
                 {
                     opt.MigrationsAssembly("SqliteMigrations");
                 }),
 
-                //Npgsql => builder.UseNpgsql(configuration.GetConnectionString("SnitzConnection"), opt => 
+                //Npgsql => builder.UseNpgsql(connectionstring, opt => 
                 //{
                 //    opt.MigrationsAssembly("NpgsqlMigrations");
                 //}),

@@ -1,3 +1,3 @@
 ﻿<footer>
-    <span>@Html.Raw(SnitzConfig.ForumTitle) - &copy; @SnitzConfig.GetValue("STRCOPYRIGHT") </span>
+    <span>@Html.Raw(SnitzConfig.ForumTitle) - &copy; @string.Format(SnitzConfig.GetValue("STRCOPYRIGHT"),DateTime.UtcNow.Year) </span>
 </footer>

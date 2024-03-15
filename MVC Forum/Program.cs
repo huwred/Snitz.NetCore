@@ -29,6 +29,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Processors;
+using Snitz.Events.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,17 +39,19 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
 {
     options.UseDatabase(builder.Configuration.GetConnectionString("DBProvider"), builder.Configuration, System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    options.EnableDetailedErrors();
+
 },ServiceLifetime.Transient);
-//using (var scope = builder.Services.BuildServiceProvider().CreateScope())
-//{
-//    using (var dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
-//    {
-//        if (dbContext.Database.GetPendingMigrations().Any())
-//        {
-//            dbContext.Database.Migrate();
-//        }
-//    }
-//}
+using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+{
+    using (var dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
+    {
+        if (dbContext.Database.GetPendingMigrations().Any())
+        {
+            dbContext.Database.Migrate();
+        }
+    }
+}
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ForumUser>(options =>
@@ -172,10 +175,9 @@ builder.Services.AddImageSharp(
             return Task.CompletedTask;
         };
     });
-
+builder.Services.AddEventsServices();
 var app = builder.Build();
-//app.MigrateDatabase();
-
+app.MigrateDatabase();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

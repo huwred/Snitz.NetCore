@@ -51,7 +51,7 @@
                     </div>
                     @foreach (var forum in categoryForums)
                     {
-                        @if (HasAccess(forum.AccessType))
+                        @if (HasAccess(forum.AccessType, forum.Id))
                         {
                             var weblinkclass = "";
                             if (forum.ForumType == ForumType.WebLink)
@@ -69,6 +69,7 @@
                                     }
                                     else
                                     {
+                                        
                                         <h4><a href="/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
                                     }
                                     <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
@@ -83,7 +84,7 @@
                                         {
                                             <text>@Localizer["lblPostedBy"]</text>
                                             <member-link member-id="@forum.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link>
-                                            <br/><lastpost-link reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                                            <br class="d-none d-sm-block"/><lastpost-link reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
                                         }
                                     </div>
                                 }
@@ -94,7 +95,7 @@
                 </div>
             }
         </div>
-        <div class="d-none d-md-block col-3">
+        <div class="d-none d-lg-block col-3">
             <partial name="QuickSearch"/>
             <partial name="LoginForm" model="new UserSignInModel()" />
             <partial name="LatestPosts" model="@Model.LatestPosts"/>
@@ -112,16 +113,41 @@
 
 @functions
 {
-    bool HasAccess(ForumAuthType authType)
+    bool HasAccess(ForumAuthType authType,int forumId)
     {
-        if(authType == ForumAuthType.All)
-            return true;
-        if (SignInManager.IsSignedIn(User))
+        switch (authType)
         {
-            if(authType == ForumAuthType.Members || authType == ForumAuthType.MembersPassword
-               || authType == ForumAuthType.AllowedMembers)
+            case ForumAuthType.All:
                 return true;
+            case ForumAuthType.AllowedMembers:
+                if (SignInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forumId) || User.IsInRole("Administrator")))
+                {
+                    return true;
+                }
+                return false;
+            case ForumAuthType.PasswordProtected:
+                return true;
+            case ForumAuthType.AllowedMemberPassword:
+                // if (SignInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forumId) || User.IsInRole("Administrator")))
+                // {
+                //     return true;
+                // }
+                return true;
+            case ForumAuthType.Members:
+                // if (SignInManager.IsSignedIn(User))
+                //     return true;
+                return true;
+            case ForumAuthType.MembersHidden:
+                return false;
+            case ForumAuthType.AllowedMembersHidden:
+                return false;
+            case ForumAuthType.MembersPassword:
+                // if (SignInManager.IsSignedIn(User))
+                //     return true;
+                return true;
+
         }
+
         return false;
     }
 }

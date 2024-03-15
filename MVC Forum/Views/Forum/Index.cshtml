@@ -1,7 +1,11 @@
 @model MVCForum.ViewModels.Forum.ForumTopicModel
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MVCForum.TagHelpers
-
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.TagHelpers
+@using SnitzCore.Service.TagHelpers
+@inject SignInManager<ForumUser> SignInManager
 @section MetaData
 {
     <meta name="title" content="Forum: @Model.Forum?.Title" />
@@ -14,12 +18,37 @@
     var pagesize = Context.Request.Query["pagesize"];
     ViewBag.PageSize = pagesize.Count < 1 ? 20 : Convert.ToInt32(pagesize);
     ViewBag.PageNum = pagenum;
+    if (Model.AccessDenied)
+    {
+        if (!SignInManager.IsSignedIn(User))
+        {
+            <div class="container">
+                <h3>You do not have access to this forum, please try <a href="/Account/Login">logging in</a> first</h3>
+            </div>
+        }
+        else
+        {
+            <div class="container">
+                <h3>You do not have access to this forum</h3>
+            </div>
+        }
+
+        return;
+    }
+    if (Model.PasswordRequired)
+    {
+        <div class="container">
+            <h2>This Forum needs a password</h2>
+        </div>
+        return;
+    }
+
 }
 <div class="container pt-0">
-    <snitz-breadcrumb></snitz-breadcrumb>
+    <snitz-breadcrumb class="d-none d-sm-block"></snitz-breadcrumb>
     <form id="defaultdays-form" asp-action="Index" class="form-inline">
         <div class="row m-1">
-            <div class="input-group">
+            <div class="input-group forum">
                 <enum-select id="default-days" enum-type="typeof(DefaultDays)" selected-value="(int)Model.Forum.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                 <select name="OrderBy" id="orderby" class="form-select mb-2" title="Order by" aria-invalid="false">
                     <option value="pd" selected-val="@Model.Forum?.OrderBy">@Localizer["optPostDate"]</option>
@@ -36,9 +65,9 @@
                 @if (SnitzConfig.GetValue("STRFORUMPAGESIZES", "") != "")
                 {
                     var ischecked = Model.PageSize;
-                    <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
+                    <span class="form-text mb-2 d-none d-sm-block">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
 
-                    <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
+                    <div class="radioBtn btn-group d-none d-sm-block" role="group" aria-label="Select page size" title="Select page size">
                         @foreach (var size in SnitzConfig.GetValue("STRFORUMPAGESIZES", "").Split(","))
                         {
                             <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if(ischecked == Convert.ToInt32(size)){@Html.Raw("checked")} />

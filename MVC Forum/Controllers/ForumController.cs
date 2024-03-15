@@ -17,6 +17,7 @@ using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
 using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Post;
+using Microsoft.AspNetCore.Identity;
 
 namespace MVCForum.Controllers
 {
@@ -26,13 +27,15 @@ namespace MVCForum.Controllers
         private readonly IForum _forumService;
         private readonly IPost _postService;
         private readonly ISnitzCookie _cookie;
+        private readonly SignInManager<ForumUser> _signInManager;
 
         public ForumController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
-            IForum forumService,IPost postService,ISnitzCookie snitzCookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
+            IForum forumService,IPost postService,ISnitzCookie snitzCookie,SignInManager<ForumUser> SignInManager) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _forumService = forumService;
             _postService = postService;
             _cookie = snitzCookie;
+            _signInManager = SignInManager;
             
         }
         
@@ -41,11 +44,62 @@ namespace MVCForum.Controllers
         [Route("Forum/Index/{id:int}")]
         public IActionResult Index(int id, int page = 1, int defaultdays=30,string orderby = "lpd",string sortdir="des", int pagesize = 10)
         {
+            bool passwordrequired = false;
+            bool notallowed = false;
             if (User.Identity is { IsAuthenticated: true })
             {
                 _memberService.SetLastHere(User);
             }
             var forum = _forumService.GetById(id);
+            switch (forum.Privateforums)
+            {
+                case ForumAuthType.AllowedMembers:
+                    if (_signInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forum.Id) || User.IsInRole("Administrator")))
+                    {
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                case ForumAuthType.PasswordProtected:
+                    passwordrequired = true;
+                    break;
+                case ForumAuthType.AllowedMemberPassword:
+                    if (_signInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forum.Id) || User.IsInRole("Administrator")))
+                    {
+                        passwordrequired = true;
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                case ForumAuthType.Members:
+                    if (_signInManager.IsSignedIn(User))
+                        break;
+                    notallowed = true;
+                    break;
+                case ForumAuthType.MembersHidden:
+                    if (_signInManager.IsSignedIn(User))
+                        break;
+                    notallowed = true;
+                    break;
+                case ForumAuthType.AllowedMembersHidden:
+                    if (_signInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forum.Id) || User.IsInRole("Administrator")))
+                    {
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                case ForumAuthType.MembersPassword:
+                    if (_signInManager.IsSignedIn(User))
+                    {
+                        passwordrequired = true;
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                default:
+                    break;
+
+            }
             var forumPage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name) { Parent = forumPage,RouteValues = new {id=forum.Category?.Id}};
             var topicPage = new MvcBreadcrumbNode("Index", "Post", forum.Title) { Parent = catPage };
@@ -159,6 +213,8 @@ namespace MVCForum.Controllers
             {
                 var model = new ForumTopicModel()
                 {
+                    AccessDenied = notallowed,
+                    PasswordRequired = passwordrequired,
                     StickyPosts = stickylistings,
                     Posts = postlistings,
                     Forum = BuildForumListing(forum,defaultdays,orderby,sortdir),

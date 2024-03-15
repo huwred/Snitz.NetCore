@@ -200,6 +200,7 @@
     <ProjectReference Include="..\Migrators\SqliteMigrations\SqliteMigrations.csproj" />
     <ProjectReference Include="..\MVCForum.Data\SnitzCore.Data.csproj" />
     <ProjectReference Include="..\MVCForum.Service\SnitzCore.Service.csproj" />
+    <ProjectReference Include="..\Snitz.Events\Snitz.Events.csproj" />
     <ProjectReference Include="..\Snitz.PhotoAlbum\Snitz.PhotoAlbum.csproj" />
     <ProjectReference Include="..\SnitzCore.Admin\SnitzCore.BackOffice.csproj" />
   </ItemGroup>

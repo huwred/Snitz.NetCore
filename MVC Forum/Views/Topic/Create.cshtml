@@ -18,11 +18,9 @@
             @if (Model.IsPost)
             {
                 <div class="mb-3 row">
-                    <label asp-for="Title" class="form-label col-2"></label>
-                    <div class="col-10">
-                        <input asp-for="Title" class="form-control"/>
-                        <div class="invalid-feedback">You must provide a title.</div>
-                    </div>
+                    <label asp-for="Title" class="form-label"></label>
+                    <input asp-for="Title" class="form-control"/>
+                    <div class="invalid-feedback">You must provide a title.</div>
                 </div>
             }
             <input asp-for="ForumId" type="hidden" />
@@ -41,7 +39,7 @@
                 <div class="col row">
                     @if (SnitzConfig.GetIntValue("STRSIGNATURES") == 1)
                     {
-                        <div class="pl-3 col-6">
+                        <div class="pl-3 col-12 col-md-6">
                             <input id="show-sig" name="UseSignature" tabindex="5" type="checkbox" value="true" checked="@Model.UseSignature">
                             <input name="UseSignature" type="hidden" value="false">
                             <label>@Localizer["cbxShowSig"]</label>
@@ -49,26 +47,26 @@
                     }
                     @if (User.IsInRole("Administrator"))
                     {
-                        <div class="pl-3 col-6">
+                        <div class="pl-3 col-12 col-md-6">
                             <input asp-for="Lock" tabindex="5" type="checkbox" checked="@Model.Lock">
                             <label>@Localizer["cbxLockTopic"]</label>
                         </div>
                         @if (SnitzConfig.GetIntValue("STRSTICKYTOPIC") == 1)
                         {
-                            <div class="pl-3 col-6">
+                            <div class="pl-3 col-12 col-md-6">
                                 <input asp-for="Sticky" tabindex="5" type="checkbox" checked="@Model.Sticky">
                                 <label>@Localizer["cbxMakeSticky"]</label>
                             </div>
                         }
                         @if (SnitzConfig.GetIntValue("STRARCHIVESTATE") == 1)
                         {
-                            <div class="pl-3 col-6">
+                            <div class="pl-3 col-12 col-md-6">
                                 <input asp-for="DoNotArchive" tabindex="5" type="checkbox" checked="@Model.DoNotArchive">
                                 <label>@Localizer["cbxNoArchive"]</label>
                             </div>
                         }
                     }
-                    <div class="pl-3 col-6" style="display: none;">
+                    <div class="pl-3 col-12 col-md-6" style="display: none;">
                         <input id="SaveDraft" name="SaveDraft" tabindex="5" type="checkbox" value="true"><input name="SaveDraft" type="hidden" value="false">
                         <label>@Localizer["cbxDraft"]</label>
                     </div>

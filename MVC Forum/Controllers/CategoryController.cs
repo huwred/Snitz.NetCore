@@ -57,7 +57,7 @@ namespace MVCForum.Controllers
                 LastPostAuthorId = forum.LastPostAuthorId,
                 LastPostTopicId = forum.LatestTopicId,
                 LastPostReplyId = forum.LatestReplyId,
-                LastPostAuthor = _memberService.GetById(forum.LastPostAuthorId),
+                LastPostAuthor = forum.LastPostAuthorId != null ? _memberService.GetById(forum.LastPostAuthorId) : null,
                 AccessType = forum.Privateforums,
                 ForumType = (ForumType)forum.Type,
                 Url = forum.Url,
