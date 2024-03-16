@@ -21,13 +21,13 @@ namespace Snitz.PhotoAlbum.Controllers
     public class PhotoAlbumController : Controller
     {
         private readonly IWebHostEnvironment _environment;
-        private readonly SnitzDbContext _dbContext;
+        private readonly PhotoContext _dbContext;
         private readonly IMember _memberservice;
         private readonly LanguageService  _languageResource;
         private readonly ISnitzConfig _config;
         private readonly IFileProvider _fileProvider;
 
-        public PhotoAlbumController(IWebHostEnvironment hostingEnvironment, SnitzDbContext dbContext,IMember memberservice,IHtmlLocalizerFactory localizerFactory,ISnitzConfig config)
+        public PhotoAlbumController(IWebHostEnvironment hostingEnvironment, PhotoContext dbContext,IMember memberservice,IHtmlLocalizerFactory localizerFactory,ISnitzConfig config)
         {
             _environment = hostingEnvironment;
             _dbContext = dbContext;
@@ -43,19 +43,30 @@ namespace Snitz.PhotoAlbum.Controllers
 
             try
             {
-
-                var model =
-                    from ai in _dbContext.Set<AlbumImage>()
-                    join m in _dbContext.Members on ai.MemberId equals m.Id
-                    where m.Status == 1
-                    group ai by new{ai.MemberId,m.Name} into lJ
-                    select new AlbumList()
+                var model = _dbContext.AlbumImages
+                    .Include(ai => ai.Member)
+                    .Where(ai => ai.Member != null && ai.Member.Status == 1)
+                    .GroupBy(p => new {MemberId = p.MemberId, MemberName = p.Member.Name})
+                    .Select(ai => new AlbumList
                     {
-                        MemberId = lJ.Key.MemberId,
-                        Username = lJ.Key.Name,
-                        imgLastUpload = lJ.Max(l=>l.Timestamp),
-                        imgCount = lJ.Count()
-                    };
+                        MemberId = ai.Key.MemberId,
+                        Username = ai.Key.MemberName,
+                        imgLastUpload = ai.Max(l=>l.Timestamp),
+                        imgCount = ai.Count()
+                    });
+
+                //var model =
+                //    from ai in _dbContext.Set<AlbumImage>()
+                //    join m in _dbContext.Members on ai.MemberId equals m.Id
+                //    where m.Status == 1
+                //    group ai by new{ai.MemberId,m.Name} into lJ
+                //    select new AlbumList()
+                //    {
+                //        MemberId = lJ.Key.MemberId,
+                //        Username = lJ.Key.Name,
+                //        imgLastUpload = lJ.Max(l=>l.Timestamp),
+                //        imgCount = lJ.Count()
+                //    };
 
                 ViewBag.SortUser = ViewBag.SortDate = ViewBag.SortCount = "asc";
                 ViewBag.SortDir = sortdir;
@@ -157,36 +168,6 @@ namespace Snitz.PhotoAlbum.Controllers
                 .Where(i=>i.MemberId == memberid)
                 .OrderByDescending(i=>i.Timestamp);
 
-            //var images = from ai in _dbContext.Set<AlbumImage>()
-            //    join m in _dbContext.Members on ai.MemberId equals m.Id
-            //    join ag in _dbContext.Set<AlbumGroup>() on ai.GroupId equals ag.Id into res
-            //    from albumgroup in res.DefaultIfEmpty()
-            //    join ac in _dbContext.Set<AlbumCategory>() on  new {Key1 = ai.CategoryId, Key2 = ai.MemberId} equals new {Key1 = ac.CatId,Key2 = ac.MemberId} into res1
-            //    from albumcat in res1.DefaultIfEmpty()
-            //    where m.Id == memberid
-            //    orderby ai.Timestamp descending 
-
-            //     select new AlbumImage() {
-            //         Id = ai.Id,
-            //         MemberId = m.Id,
-            //         Member = m,
-            //         ImageName = $"{ai.Timestamp}_{ai.Location}",
-            //         Mime = ai.Mime,
-            //         GroupId = ai.GroupId,
-            //         Group = albumgroup,
-            //         Timestamp = ai.Timestamp,
-            //         CategoryId = ai.CategoryId,
-            //         Category = albumcat,
-            //         CommonName = ai.CommonName,
-            //         ScientificName = ai.ScientificName,
-            //         IsPrivate = ai.IsPrivate,
-            //         Width = ai.Width,
-            //         Height = ai.Height,
-            //         Size = ai.Size,
-            //         Views = ai.Views,
-            //         Location = ai.Location,
-            //         Description = ai.Description
-            //     };
             ViewBag.Username = id;
             ViewBag.MemberId = memberid;
 
