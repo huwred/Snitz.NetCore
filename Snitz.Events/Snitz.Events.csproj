@@ -1,11 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <Version>1.0.0-rc1.35</Version>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\**\*.*" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="bundleconfig.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -13,10 +22,15 @@
 
   <ItemGroup>
     <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="7.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BbCodeFormatter\BbCodeFormatter.csproj" />
     <ProjectReference Include="..\MVCForum.Service\SnitzCore.Service.csproj" />
   </ItemGroup>
 
@@ -31,6 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Calendar\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\Admin.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\Config.cshtml" />
   </ItemGroup>
@@ -38,6 +53,16 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\Components\Events\Admin.cshtml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Calendar\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bundleconfig.json" />
+  </ItemGroup>
+
+
 
 
 

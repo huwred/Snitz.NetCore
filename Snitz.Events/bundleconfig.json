@@ -1,0 +1,14 @@
+[
+  {
+    "outputFileName": "wwwroot/js/pluginjs/snitz.cal.min.js",
+    "inputFiles": [
+      "wwwroot/js/pluginjs/snitz.cal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pluginjs/fullcalendar-year.min.js",
+    "inputFiles": [
+      "wwwroot/js/pluginjs/fullcalendar-year.js"
+    ]
+  }
+]

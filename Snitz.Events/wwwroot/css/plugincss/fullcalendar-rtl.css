@@ -1,0 +1,193 @@
+﻿/* 65 of 355 CSS properties converted by rtl.daskhat.ir 
+ These properties should be override originals. 
+ just load rtl css file after original css file.*/
+
+/* body {direction:rtl;} */
+
+.fc {
+    direction: rtl;
+    text-align: right;
+}
+
+.fc-rtl {
+    text-align: left;
+}
+
+.fc-icon-left-single-arrow:after {
+    right: 3%;
+}
+
+.fc-icon-right-single-arrow:after {
+    right: -3%;
+}
+
+.fc-icon-left-triangle:after {
+    right: -2%;
+}
+
+.fc-icon-right-triangle:after {
+    right: 2%;
+}
+
+.fc-state-default {
+    border-color: black;
+}
+
+    .fc-state-default.fc-corner-left {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+    }
+
+    .fc-state-default.fc-corner-right {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+    }
+
+.fc-state-hover {
+    background-position: right -15px;
+}
+
+.fc .fc-button-group > * {
+    float: right;
+    margin: 0 -1px 0 0;
+}
+
+.fc .fc-button-group > :first-child {
+    margin-right: 0;
+}
+
+.fc-ltr .fc-popover .fc-header .fc-title, .fc-rtl .fc-popover .fc-header .fc-close {
+    float: right;
+}
+
+.fc-rtl .fc-popover .fc-header .fc-title, .fc-ltr .fc-popover .fc-header .fc-close {
+    float: left;
+}
+
+.fc-bg, .fc-bgevent-skeleton, .fc-highlight-skeleton, .fc-helper-skeleton {
+    right: 0;
+    left: 0;
+}
+
+.fc-row table {
+    border-right: 0 hidden transparent;
+    border-left: 0 hidden transparent;
+}
+
+.fc-ltr .fc-h-event.fc-not-start, .fc-rtl .fc-h-event.fc-not-end {
+    margin-right: 0;
+    border-right-width: 0;
+    padding-right: 1px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.fc-ltr .fc-h-event.fc-not-end, .fc-rtl .fc-h-event.fc-not-start {
+    margin-left: 0;
+    border-left-width: 0;
+    padding-left: 1px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.fc-h-event .fc-resizer {
+    right: -1px;
+    left: -1px;
+}
+
+.fc-ltr .fc-h-event .fc-start-resizer, .fc-ltr .fc-h-event .fc-start-resizer:before, .fc-ltr .fc-h-event .fc-start-resizer:after, .fc-rtl .fc-h-event .fc-end-resizer, .fc-rtl .fc-h-event .fc-end-resizer:before, .fc-rtl .fc-h-event .fc-end-resizer:after {
+    left: auto;
+}
+
+.fc-ltr .fc-h-event .fc-end-resizer, .fc-ltr .fc-h-event .fc-end-resizer:before, .fc-ltr .fc-h-event .fc-end-resizer:after, .fc-rtl .fc-h-event .fc-start-resizer, .fc-rtl .fc-h-event .fc-start-resizer:before, .fc-rtl .fc-h-event .fc-start-resizer:after {
+    right: auto;
+}
+
+.fc-day-grid-event .fc-resizer {
+    right: -3px;
+    left: -3px;
+}
+
+.fc-toolbar .fc-left {
+    float: right;
+}
+
+.fc-toolbar .fc-right {
+    float: left;
+}
+
+.fc .fc-toolbar > * > * {
+    float: right;
+    margin-right: .75em;
+}
+
+.fc .fc-toolbar > * > :first-child {
+    margin-right: 0;
+}
+
+.fc-row.fc-rigid .fc-content-skeleton {
+    right: 0;
+    left: 0;
+}
+
+.fc-ltr .fc-basic-view .fc-day-number {
+    text-align: left;
+}
+
+.fc-rtl .fc-basic-view .fc-day-number {
+    text-align: right;
+}
+
+.fc-ltr .fc-axis {
+    text-align: left;
+}
+
+.fc-rtl .fc-axis {
+    text-align: right;
+}
+
+.fc-time-grid .fc-bgevent-skeleton, .fc-time-grid .fc-content-skeleton {
+    right: 0;
+    left: 0;
+}
+
+.fc-time-grid .fc-highlight {
+    right: 0;
+    left: 0;
+}
+
+.fc-ltr .fc-time-grid .fc-event-container {
+    margin: 0 2px 0 2.5%;
+}
+
+.fc-rtl .fc-time-grid .fc-event-container {
+    margin: 0 2.5% 0 2px;
+}
+
+.fc-time-grid .fc-bgevent {
+    right: 0;
+    left: 0;
+}
+
+.fc-v-event.fc-not-start {
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+}
+
+.fc-v-event.fc-not-end {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.fc-time-grid-event .fc-resizer {
+    right: 0;
+    left: 0;
+}
+
+.my-fc-header-day {
+    float: right;
+}
+
+.my-fc-header-date {
+    float: left;
+}

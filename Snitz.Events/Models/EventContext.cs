@@ -1,54 +1,38 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using SnitzCore.Data;
 using SnitzEvents.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Snitz.Events.Models
 {
     public static class Extensions
     {
-        public static void AddEventsServices(this IServiceCollection serviceCollection)
+        public static void AddEventsServices(this IServiceCollection serviceCollection,ConfigurationManager configuration)
         {
-            //serviceCollection.AddTransient<SnitzDbContext, EventContext>();
-            //serviceCollection.AddScoped<IRclService2, RclService2>();
+            var connectionString = configuration.GetConnectionString("SnitzConnection");
+
+            serviceCollection.AddDbContext<EventContext>(
+                options => options.UseSqlServer(connectionString,o => o.MigrationsAssembly("Snitz.Events"))
+            );
+            using (var scope = serviceCollection.BuildServiceProvider().CreateScope())
+            {
+                using (var dbContext = scope.ServiceProvider.GetRequiredService<EventContext>())
+                {
+                    if (dbContext.Database.GetPendingMigrations().Any())
+                    {
+                        dbContext.Database.Migrate();
+                    }
+                }
+            }
         }
     }
 
-    public class EventContext : SnitzDbContext
+    public class EventContext : DbContext
     {
-        private readonly IConfiguration _configuration;
 
         public DbSet<CalendarEventItem> EventItems { get; set; }
-        //public DbSet<AlbumGroup> AlbumGroups { get; set; }
-        //public DbSet<AlbumCategory> AlbumCategories { get; set; }
-        //public DbSet<ExtendedMember> ExtendedMembers { get; set; }
-        public EventContext(){}
-        public EventContext(DbContextOptions<SnitzDbContext> options,IServiceProvider serviceProvider,IConfiguration configuration) : base(options,serviceProvider)
-        {
-            _configuration = configuration;
-        }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                IConfigurationRoot configuration = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json")
-                    .Build();
-                var connectionString = configuration.GetConnectionString("SnitzConnection");
-
-                optionsBuilder.UseSqlServer(connectionString,
-                    options => options.MigrationsAssembly("MSSqlMigrations"));
-            }
-            base.OnConfiguring(optionsBuilder);
-        }
+        public EventContext(DbContextOptions<EventContext> options) : base(options){}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

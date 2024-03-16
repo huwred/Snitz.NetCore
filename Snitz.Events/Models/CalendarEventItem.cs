@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Models;
 using SnitzEvents.Helpers;
 
 namespace SnitzEvents.Models
@@ -46,33 +47,53 @@ namespace SnitzEvents.Models
         [Column("EVENT_ALLDAY")]
         public bool IsAllDayEvent { get; set; }
         [Column("EVENT_DATE")]
-        public String Start { get; set; }
+        public string Start { get; set; }
         [Column("EVENT_ENDDATE")]
-        public String End { get; set; }
+        public string? End { get; set; }
         [Column("EVENT_RECURS")]
         public CalEnums.CalRecur Recurs { get; set; }
         [Column("EVENT_DAYS")]
-        public string RecurDays { get; set; }
+        public string? RecurDays { get; set; }
+        [Column("EVENT_TITLE")]
+        public string? Title { get; set; }
+        [Column("EVENT_DETAILS")]
+        public string? Description { get; set; }
+        [Column("DATE_ADDED")]
+        public string? Posted { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string Title { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string Description { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string Author { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [Column("CLUB_ID")]
+        public int? ClubId { get; set; }
+        [Column("CAT_ID")]
+        public int? CatId { get; set; }
+        [Column("LOC_ID")]
+        public int? LocId { get; set; }
+        [Column("AUTHOR_ID")]
+        public int? AuthorId { get; set; }
+
+        public virtual Member? Author { get; set; }
+
+        [NotMapped]
+        public virtual Post? Topic { get; set; }
+
+        [NotMapped]
         public DateTime? StartDate
         {
-            get { return Start.FromForumDateStr(); }
+            get
+            {
+                return Start.FromForumDateStr();
+            }
             set
             {
                 Start = value.HasValue ? value.Value.ToForumDateStr() : null;
             }
         }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [NotMapped]
         public DateTime? EndDate
         {
-            get { return End.FromForumDateStr(); }
+            get
+            {
+                return End.FromForumDateStr();
+            }
             set
             {
                 End = value.HasValue ? value.Value.ToForumDateStr() : null;
@@ -81,50 +102,33 @@ namespace SnitzEvents.Models
 
         [NotMapped]
         public virtual IEnumerable<string> SelectedDays { get; set; }
-         
+
+        public virtual ClubCalendarCategory Cat { get; set; }
+        public virtual ClubCalendarClub Club { get; set; }
+        public virtual ClubCalendarLocation Loc { get; set; }
+
         [NotMapped]
         public virtual int[] Days { get; set; }
 
-        //public CalendarEventItem()
-        //{
-        //    StartDate = null;
-        //    EndDate = null;
-        //    TopicId = -1;
-        //}
     }
 
 
-    [SnitzTable("CAL_EVENTS", "")]
+
     public class ClubCalendarEventItem : CalendarEventItem
     {
-        [Column("EVENT_TITLE")]
-        [Required]
-        public new string EventTitle { get; set; }
-        [Column("EVENT_DETAILS")]
-        public new string Description { get; set; }
-        [Column("DATE_ADDED")]
-        public string Posted { get; set; }
-
-        [Column("CLUB_ID")]
-        public int ClubId { get; set; }
-        [Column("CAT_ID")]
-        public int CatId { get; set; }
-        [Column("LOC_ID")]
-        public int LocId { get; set; }
-        [Column("AUTHOR_ID")]
-        public int PostedById { get; set; }
 
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+
+        [NotMapped]
         public string CategoryName { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [NotMapped]
         public string ClubName { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [NotMapped]
         public string ClubAbbr { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [NotMapped]
         public string Location { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [NotMapped]
         public DateTime? PostedDate
         {
             get { return Posted.FromForumDateStr(); }

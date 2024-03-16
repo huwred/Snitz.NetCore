@@ -1,0 +1,105 @@
+﻿@using System.Globalization
+@using System.Resources
+@model dynamic
+
+@{
+    Layout = "Layout";
+    ViewBag.Title = SnitzConfig.ForumTitle + " | " + @Localizer["calTitle"];
+    CultureInfo ci = CultureInfo.CurrentUICulture;
+    string clang = ci.TwoLetterISOLanguageName;
+    string[] rtlLangs = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur", "yi", "he" };
+    string[] arabic = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur" }; //Cairo
+    string[] aramaic = new string[] { "yi", "he" }; //Tinos
+
+    bool isRighToLeft = (rtlLangs.Contains(clang));
+
+    // if (!SessionData.Contains("isRighToLeft") || isRighToLeft != SessionData.Get<bool>("isRighToLeft"))
+    // {
+    //     SessionData.Set("isRighToLeft", isRighToLeft);
+    // }
+}
+@section Styles {
+    <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar.min.css">
+    <link rel="stylesheet" href="~/_content/Snitz.Events/css/jquery-ui-timepicker-addon.min.css">
+@*     //Themecss
+    <link rel="stylesheet" href="~/css/plugincss/fullcalendar.min.css"> *@
+    @if (isRighToLeft)
+    {
+        <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar-rtl.css">
+    }
+}
+<div class="chunk-main">
+    <h5>@Localizer["calTitle"]</h5>
+    <hr class="title" />
+    <div class="row-fluid">
+        <div id="calendar"></div>
+    </div>
+    <div class="row-fluid"></div>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        var upComingEventsTitle = '[@Localizer["upComingEventTitle"]]';
+        var pastEventsTitle = '[@Localizer["upPastEventsTitle"]]';
+
+    </script>
+    <script src="/_content/Snitz.Events/js/moment.min.js"></script>
+
+    @if (clang == "fa")
+    {
+        <script src="/_content/Snitz.Events/js/moment-jalaali.min.js"></script>
+        <script src="/_content/Snitz.Events/js/pluginjs/fullcalendar-year.min.js"></script>
+
+    }
+    else
+    {
+        clang = clang + ".js";
+        <script src="/_content/Snitz.Events/js/pluginjs/fullcalendar-year.js"></script>
+        <script src="/_content/Snitz.Events/js/lang/@clang"></script>
+    }
+    <script src="/_content/Snitz.Events/js/pluginjs/snitz.cal.min.js"></script>
+
+    <script type="text/javascript">
+        $(document)
+            .ready(function () {
+
+                $('#countryRegion').change(function () {
+                    var val = $('#change-holidays').val() + '|' + $(this).val();
+                    FullCalendar("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', '?country=' + val);
+                });
+
+                $('#change-holidays')
+                    .change(function () {
+                        var val = $(this).val();
+                        populateRegions(val);
+                    FullCalendar("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', '?country=' + val);
+
+                    });
+
+                FullCalendar("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', '');
+                @* populateRegions($('#change-holidays').val()); *@
+            });
+        function populateRegions(country) {
+            var subItems = "";
+            $.getJSON("@Url.Action("GetRegions", "Calendar")", { id: country }, function (data) {
+
+                $.each(data, function (index, item) {
+                if (item === '@SnitzConfig.GetValue("STRCALREGION")') {
+                        subItems += "<option value='" + item + "' selected>" + item + "</option>";
+                    } else {
+                        subItems += "<option value='" + item + "'>" + item + "</option>";
+                    }
+                });
+                if (subItems.length > 1) {
+                    subItems = "<option value=''>Select Region</option>" + subItems;
+                    $("#countryRegion").html(subItems);
+                    $("#countryRegion").show();
+                } else {
+                    subItems = "<option value='' selected>No Regions</option>";
+                    $("#countryRegion").html(subItems);
+                    $("#countryRegion").hide();
+                }
+
+            });
+        }
+    </script>
+}
