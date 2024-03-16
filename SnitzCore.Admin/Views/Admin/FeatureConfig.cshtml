@@ -451,6 +451,39 @@
                 status.innerHTML = "Oops! There was a problem submitting your form"
             });
         }
+
+        $(document).ready(function () {
+            $("#STRCALCOUNTRY").change(function () {
+                populateRegions($(this).val());
+            });
+            populateRegions($("#STRCALCOUNTRY").val());
+        });
+        function populateRegions(country) {
+            console.log(country);
+            var subItems="";
+            $.getJSON("/Calendar/GetRegions/", { id: country }, function (data) {
+                subItems = "";
+                $.each(data, function (index, item) {
+                    if (item === '@SnitzConfig.GetValue("STRCALREGION")') {
+                        subItems += "<option value='" + item + "' selected>" + item + "</option>";
+                    } else {
+                        subItems += "<option value='" + item + "'>" + item + "</option>";
+                    }
+                });
+                if (subItems.length > 1) {
+                    subItems = "<option value=''>Select Region</option>" + subItems;
+                    $("#countryRegion").html(subItems);
+                    $("#countryRegion").show();
+                } else {
+                    subItems = "<option value=''>No Regions</option>";
+                    $("#countryRegion").html(subItems);
+                    $("#countryRegion").hide();
+                }
+
+            });
+        }
+        $("#admin-nav li a.nav-link.active").removeClass("active");
+        $("#feature-config").addClass("active");
     </script>
 }
 

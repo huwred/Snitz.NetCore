@@ -30,6 +30,7 @@ using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Processors;
 using Snitz.Events.Models;
+using Snitz.PhotoAlbum.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -175,7 +176,9 @@ builder.Services.AddImageSharp(
             return Task.CompletedTask;
         };
     });
-builder.Services.AddEventsServices();
+builder.Services.AddEventsServices(builder.Configuration);
+builder.Services.AddAlbumServices(builder.Configuration);
+
 var app = builder.Build();
 app.MigrateDatabase();
 // Configure the HTTP request pipeline.

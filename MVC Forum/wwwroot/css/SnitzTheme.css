@@ -12,6 +12,11 @@ h4,.h4 {
     border-bottom-right-radius: 0 !important;
 }
  /* Navbar Styles */
+.nav-tabs .nav-item .nav-link.active {
+    background-color: #8199DA;
+    color: #FFF;
+}
+
 .bg-dark {
     background-color: #191970 !important;
 }
@@ -509,4 +514,21 @@ a.latestpost-title {
     body {
         background-color: white;
     }
+}
+
+.accordion-button:not(.collapsed) {
+    color: #F5FFFA !important;
+    background-color: #6A5ACD;
+    box-shadow: revert;
+}
+.accordion-button:focus {
+    z-index: 3;
+    border-color: var(--bs-accordion-btn-focus-border-color);
+    outline: 0;
+    box-shadow: var(--bs-accordion-btn-focus-box-shadow);
+}
+.accordion-button {
+    color: #F5FFFA !important;
+    background-color: #6A5ACD;
+    box-shadow: revert;
 }

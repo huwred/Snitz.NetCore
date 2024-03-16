@@ -9,10 +9,10 @@
 @inject ICodeProcessor BbCodeProcessor
 @{
     var cat = Context.Request.Query["id"];
-    var test = Context.GetRouteValue("id");
-    if (test != null)
+    var routeid = Context.GetRouteValue("id");
+    if (routeid != null)
     {
-        cat = (string)test;
+        cat = (string)routeid;
     }
 }
 <div class="container pt-0">
@@ -42,56 +42,66 @@
 
 
     <div class="row">
-        <div class="col">
+        <div class="col accordion">
+
             @foreach (var categoryForums in Model.ForumList?.GroupBy(f => f.CategoryId)!)
             {
-                <div class="subforum border-1 border-primary">
-                    <div class="subforum-title rounded">
-                        <h1 style="display: inline-block;"><a href="/Category/@categoryForums.Key">@categoryForums.FirstOrDefault()?.CategoryName</a></h1>
-                    </div>
-                    @foreach (var forum in categoryForums)
-                    {
-                        @if (HasAccess(forum.AccessType, forum.Id))
+                var ID = categoryForums.Key;
+                <div class="subforum border-0 border-primary accordion-item">
+                    <h4 class="accordion-header subforum-title rounded" id="heading_@ID">
+                        <button style="display: inline; width: 40px;" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@ID" aria-expanded="true" aria-controls="collapseOne">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <a style="display: inline;" href="/Category/@categoryForums.Key">@categoryForums.FirstOrDefault()?.CategoryName</a>
+                    </h4>
+
+                    <div class="accordion-collapse collapse show" id="collapse_@ID" aria-labelledby="heading_@ID">
+                        @foreach (var forum in categoryForums)
                         {
-                            var weblinkclass = "";
-                            if (forum.ForumType == ForumType.WebLink)
+                            @if (HasAccess(forum.AccessType, forum.Id))
                             {
-                                weblinkclass = "subforum-weblink";
-                            }
-                            <div class="subforum-row @weblinkclass">
-                                <div class="subforum-icon subforum-column center">
-                                    <snitz-forum-icon status="@forum.Status" forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
-                                </div>
-                                <div class="subforum-description subforum-column">
-                                    @if (forum.ForumType == ForumType.WebLink)
-                                    {
-                                        <h4><a href="@forum.Url" target="_blank" title="">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
-                                    }
-                                    else
-                                    {
-                                        
-                                        <h4><a href="/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
-                                    }
-                                    <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
-                                </div>
-                                @if (forum.ForumType != ForumType.WebLink)
+                                var weblinkclass = "";
+                                if (forum.ForumType == ForumType.WebLink)
                                 {
-                                    <div class="subforum-stats subforum-column">
-                                        <span>@forum.Posts @Localizer["lblPosts"] @Localizer["lblin"] @forum.Topics @Localizer["lblTopics"]</span>
-                                    </div>
-                                    <div class="subforum-info subforum-column">
-                                        @if (forum.LastPostTopicId.HasValue)
-                                        {
-                                            <text>@Localizer["lblPostedBy"]</text>
-                                            <member-link member-id="@forum.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link>
-                                            <br class="d-none d-sm-block"/><lastpost-link reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
-                                        }
-                                    </div>
+                                    weblinkclass = "subforum-weblink";
                                 }
-                            </div>
-                            <hr class="subforum-divider">
+
+                                <div class="subforum-row @weblinkclass ">
+                                    <div class="subforum-icon subforum-column center">
+                                        <snitz-forum-icon status="@forum.Status" forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
+                                    </div>
+                                    <div class="subforum-description subforum-column">
+                                        @if (forum.ForumType == ForumType.WebLink)
+                                        {
+                                            <h4><a href="@forum.Url" target="_blank" title="">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
+                                        }
+                                        else
+                                        {
+
+                                            <h4><a href="/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
+                                        }
+                                        <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
+                                    </div>
+                                    @if (forum.ForumType != ForumType.WebLink)
+                                    {
+                                        <div class="subforum-stats subforum-column">
+                                            <span>@forum.Posts @Localizer["lblPosts"] @Localizer["lblin"] @forum.Topics @Localizer["lblTopics"]</span>
+                                        </div>
+                                        <div class="subforum-info subforum-column">
+                                            @if (forum.LastPostTopicId.HasValue)
+                                            {
+                                                <text>@Localizer["lblPostedBy"]</text>
+                                                <member-link member-id="@forum.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link>
+                                                <br class="d-none d-sm-block"/>
+                                                <lastpost-link reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                                <hr class="subforum-divider">
+                            }
                         }
-                    }
+                    </div>
                 </div>
             }
         </div>

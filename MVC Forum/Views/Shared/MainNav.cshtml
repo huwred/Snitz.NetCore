@@ -26,7 +26,7 @@
                     <li><a class="dropdown-item" asp-controller="Forum" asp-action="Active">@Localizer["mnuForumActive"]</a></li>
                     <li><a class="dropdown-item" asp-controller="Account" asp-action="Index">@Localizer["mnuForumMembers"]</a></li>
                     <li><a class="dropdown-item" asp-controller="Forum" asp-action="Search">@Localizer["mnuForumSearch"]</a></li>
-                    <li snitz-if="@((SnitzConfig.TableExists("CAL_EVENTS") && SnitzConfig.GetIntValue("INTCALEVENTS") == 1) && showcalendar)"><a class="dropdown-item" asp-controller="" asp-action="">@Localizer["mnuCalendar"]</a></li>
+                    <li snitz-if="@((SnitzConfig.TableExists("CAL_EVENTS") && SnitzConfig.GetIntValue("INTCALEVENTS") == 1) && showcalendar)"><a class="dropdown-item" asp-controller="Calendar" asp-action="Index">@Localizer["mnuCalendar"]</a></li>
                 </ul>
             </li>
             <li class="nav-item dropdown" snitz-if="@(SnitzConfig.TableExists("FORUM_IMAGES") && SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)">

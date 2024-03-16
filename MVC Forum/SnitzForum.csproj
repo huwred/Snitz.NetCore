@@ -200,7 +200,6 @@
     <ProjectReference Include="..\Migrators\SqliteMigrations\SqliteMigrations.csproj" />
     <ProjectReference Include="..\MVCForum.Data\SnitzCore.Data.csproj" />
     <ProjectReference Include="..\MVCForum.Service\SnitzCore.Service.csproj" />
-    <ProjectReference Include="..\Snitz.Events\Snitz.Events.csproj" />
     <ProjectReference Include="..\Snitz.PhotoAlbum\Snitz.PhotoAlbum.csproj" />
     <ProjectReference Include="..\SnitzCore.Admin\SnitzCore.BackOffice.csproj" />
   </ItemGroup>
@@ -231,6 +230,7 @@
     <PackageReference Include="NuGet.Protocol" Version="6.3.3" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.1" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
+    <PackageReference Include="Snitz.Events" Version="1.0.0-rc1.35" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
