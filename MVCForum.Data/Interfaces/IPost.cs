@@ -32,5 +32,7 @@ namespace SnitzCore.Data.Interfaces
         Task<bool> Answer(int id);
         ArchivedTopic GetArchivedTopic(int id);
         ArchivedTopic GetArchivedTopicWithRelated(int id);
+        Task SetStatus(int id, Status status);
+        Task SetReplyStatus(int id, Status status);
     }
 }

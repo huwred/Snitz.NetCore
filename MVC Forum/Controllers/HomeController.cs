@@ -87,7 +87,8 @@ namespace MVCForum.Controllers
                 AccessType = forum.Privateforums,
                 ForumType = (ForumType)forum.Type,
                 Url = forum.Url,
-                DefaultView = (DefaultDays)forum.Defaultdays
+                DefaultView = (DefaultDays)forum.Defaultdays,
+                ForumModeration = forum.Moderation
                 //ImageUrl = forum.ImageUrl
             };
         }

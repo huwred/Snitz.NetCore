@@ -1,13 +1,25 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Data
 @model IEnumerable<MVCForum.ViewModels.Post.PostListingModel>
+@inject IMember MemberService
+@{
+    var posts = Model;
+
+    if (!User.IsInRole("Administrator"))
+    {
+        var curuser = MemberService.Current()?.Id;
+        posts = posts.Where(t => t.Status < 2 || t.AuthorId == curuser);
+    }
+    
+}
 <div class="subforum latest-posts">
     <ul class="list-group">
         <li class="list-group-item subforum-title">
             <h1 id="latestPosts"><a asp-action="Active" asp-controller="Forum" title="TODO:">@Localizer["lblRecentActivity"]</a></h1>
         </li>
-        @foreach (var p in Model)
+        @foreach (var p in posts)
         {
-            <li class="list-group-item">
+            <li class="list-group-item modstatus-@p.Status">
                 <div class="forumLogo" style="background-image: url(@p.Forum?.ImageUrl); background-size: 100%"></div>
                 <div class="postTitle">
                     <a class="latestpost-title" asp-controller="Topic" asp-action="Index" asp-route-id="@p.Id" title="@p.Title">@p.Title</a>

@@ -333,5 +333,27 @@ namespace SnitzCore.Service
 
             return true;
         }
+
+        public async Task SetStatus(int id, Status status)
+        {
+            var topic = _dbContext.Posts.Find(id);
+            if (topic != null)
+            {
+                topic.Status = (short)status;
+                _dbContext.Update(topic);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task SetReplyStatus(int id, Status status)
+        {
+            var reply = _dbContext.Replies.Find(id);
+            if (reply != null)
+            {
+                reply.Status = (short)status;
+                _dbContext.Update(reply);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
     }
 }

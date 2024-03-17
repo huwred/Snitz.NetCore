@@ -588,3 +588,15 @@ legend {
 fieldset {
     margin-bottom: 1rem;
 }
+
+.modstatus-2, .modstatus-2 div {
+    background-color: orange !important;
+}
+i[class^="modstatus-"] {
+    display: none;
+}
+i.modstatus-2 {
+    display: inline-block;
+    float: right;
+    cursor: pointer;
+}

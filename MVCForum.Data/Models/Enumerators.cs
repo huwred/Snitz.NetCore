@@ -143,7 +143,18 @@ namespace SnitzCore.Data.Models
     public enum Status
     {
         Closed = 0,
-        Open = 1
+        Open = 1,
+        UnModerated = 2,
+        OnHold = 3,
+
+        Draft = 99
+    }
+    public enum Moderation
+    {
+        UnModerated = 0,
+        AllPosts,
+        Topics,
+        Replies
     }
     public enum ModerationLevel
     {
@@ -163,7 +174,15 @@ namespace SnitzCore.Data.Models
         [Display(Name = "CategorySubscription_TopicSubscriptions")] 
         TopicSubscription
     }
-
+    /// <summary>
+    /// Allowed Subscription level
+    /// </summary>
+    public enum Subscription
+    {
+        None = 0,
+        ForumSubscription,
+        TopicSubscription
+    }
     /// <summary>
     /// Forum Subscription Level
     /// </summary>

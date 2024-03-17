@@ -18,6 +18,12 @@ namespace SnitzCore.Service
             _bbCodeProcessor = bbCodeProcessor;
         }
 
+        public void ModerationEmail(Member? author, string subject, string message, Forum forum, dynamic post)
+        {
+            //TODO: Moderation Email
+            return;
+        }
+
         public Task SendEmailAsync(EmailMessage message)
         {
             var emailMessage = CreateEmailMessage(message);

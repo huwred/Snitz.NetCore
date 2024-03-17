@@ -43,8 +43,9 @@
                 answer = "bg-success";
             }
         }
-        <div class="card-header @answer">
+        <div class="card-header @answer modstatus-@Model.Status">
             @Model.Title - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (@Model.Views @Localizer["Views"])</span>
+            <a asp-controller="Topic" asp-action="Moderate" asp-route-id="@Model.Id" title="Moderate" class="modal-link"><i class="modstatus-@Model.Status fa fa-hand-stop-o"></i></a>
         </div>
         <div class="card-body">
             <div class="body topic">
@@ -115,10 +116,12 @@
                 hideme = "display:none;";
             }
             first = false;
-            <div class="card mb-3 reply-card" >
+            <div class="card mb-3 reply-card " >
                 <div style="@hideme">
-                    <div class="card-header @answer">
+                        <div class="card-header @answer modstatus-@reply.Status">
                         @Localizer["lblPosted"] <snitz-datetime datetime="@reply.Created"></snitz-datetime>
+                        <a snitz-if="@(User.IsInRole("Administrator") || User.IsInRole("Forum_" + Model.ForumId))" asp-controller="Reply" asp-action="Moderate" asp-route-id="@reply.Id" title="Moderate" class="modal-link"><i class="modstatus-@reply.Status fa fa-hand-stop-o"></i></a>
+
                     </div>
                     <div class="card-body" id="reply-@reply.Id">
                         <div class="body @rowclass">
@@ -214,6 +217,11 @@ else
                 <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">@Localizer["btnCancel"]</a>
             </div>
         </div>
+    </div>
+</div>
+<div class="modal fade" id="moderateModal" tabindex="-1" aria-labelledby="moderateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="posModeration"></div>
     </div>
 </div>
 @{

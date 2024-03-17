@@ -22,6 +22,7 @@ using System.Resources;
 using MVCForum.ViewModels;
 using Microsoft.Extensions.Hosting;
 using System.Drawing.Printing;
+using Microsoft.EntityFrameworkCore;
 
 namespace MVCForum.Controllers
 {
@@ -106,6 +107,7 @@ namespace MVCForum.Controllers
                 AuthorId = post.Member!.Id,
                 ShowSig = post.Sig == 1,
                 Views = post.ViewCount,
+                Status = post.Status,
                 IsLocked = post.Status == 0 || post.Forum?.Status == 0,
                 IsSticky = post.IsSticky == 1,
                 Answered = post.Answered,
@@ -338,6 +340,7 @@ namespace MVCForum.Controllers
                 post.Content = model.Content;
                 post.LastEdit = DateTime.UtcNow.ToForumDateStr();
                 post.LastEditby = user.MemberId;
+
                 await _postService.Update(post);
             }
             else
@@ -540,7 +543,7 @@ namespace MVCForum.Controllers
                 var topic = _postService.GetArchivedTopic(id);
                 if (topic != null)
                 {
-                    moderator = User.IsInRole("FORUM_" + topic.ForumId);
+                    moderator = User.IsInRole("Forum_" + topic.ForumId);
                     admin = User.IsInRole("Administrator");
 
                 }
@@ -562,6 +565,7 @@ namespace MVCForum.Controllers
                     AuthorId = topic.Member!.Id,
                     ShowSig = topic.Sig == 1,
                     Views = topic.ViewCount,
+                    Status = topic.Status,
                     IsLocked = topic.Status == 0 || topic.Forum?.Status == 0,
                     IsSticky = topic.IsSticky == 1,
                     //AuthorRating = post.User?.Rating ?? 0,
@@ -584,7 +588,7 @@ namespace MVCForum.Controllers
                 var topic = _postService.GetTopic(id);
                 if (topic != null)
                 {
-                    moderator = User.IsInRole("FORUM_" + topic.ForumId);
+                    moderator = User.IsInRole("Forum_" + topic.ForumId);
                     admin = User.IsInRole("Administrator");
 
                 }
@@ -637,13 +641,94 @@ namespace MVCForum.Controllers
 
             return View(templateView + "Print", model);
         }
+        /// <summary>
+        /// Process Topic Moderation
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Roles = "Administrator,Moderator")]
+        [ValidateAntiForgeryToken]
+        [Route("Topic/ModeratePost/")]
+        public async Task<ActionResult> ModeratePost(ApproveTopicViewModal vm)
+        {
 
+            if (ModelState.IsValid)
+            {
+                var topic = _postService.GetTopic(vm.Id);
+                var author = _memberService.GetById(topic.MemberId);
+                var forum = _forumService.GetById(topic.ForumId);
+                var subject = "";
+                var message = "";
+                
+
+                switch (vm.PostStatus)
+                {
+                    case "Approve" :
+                        await _postService.SetStatus(vm.Id, Status.Open);
+                        //Send email
+                            subject = _config.ForumTitle + ": Post Approved";
+                            message = "Has been approved. You can view it at " + Environment.NewLine +
+                                      _config.ForumUrl + "Topic/Posts/" + topic.Id + "?pagenum=-1" +
+                                            Environment.NewLine +
+                                            vm.ApprovalMessage;
+                        var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBCRIPTION");
+                        if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
+                        {
+                            switch ((Subscription)forum.Subscription)
+                            {
+                                case Subscription.ForumSubscription:
+                                    //TODO: BackgroundJob.Enqueue(() => ProcessSubscriptions.Topic(vm.Id));
+                                    break;
+                            }
+                        }
+                        break;
+                    case "Reject":
+                        
+                        _postService.DeleteTopic(topic.Id);
+                        //Send email
+                            subject = _config.ForumTitle + ": Post rejected";
+                            message = "Has been rejected. " + Environment.NewLine +
+                                            vm.ApprovalMessage;
+                        break;
+                    case "Hold":
+                        await _postService.SetStatus(vm.Id, Status.OnHold);
+                        //Send email
+                            subject = _config.ForumTitle + ": Post placed on Hold";
+                            message = "Has been placed on Hold. " + Environment.NewLine +
+                                            vm.ApprovalMessage;
+                        break;
+                }
+                if (vm.EmailAuthor)
+                {
+                    _mailSender.ModerationEmail(author, subject, message, forum, topic);
+                }
+                
+                return RedirectToAction("Index", "Forum", new { id=topic.ForumId});
+            }
+
+            return PartialView("popModerate",vm);
+        }
+        /// <summary>
+        /// Open moderation Popup window
+        /// </summary>
+        /// <param name="id">Id of Unmoderated <see cref="Topic"/></param>
+        /// <returns>PopUp Window</returns>
+        [Authorize(Roles = "Administrator,Moderator")]
+        public PartialViewResult Moderate(int id)
+        {
+            ApproveTopicViewModal vm = new ApproveTopicViewModal {Id = id};
+            return PartialView("popModerate",vm);
+        }
         private Post BuildPost(NewPostModel model, int memberid)
         {
             if (model.TopicId != 0)
             {
                 return _postService.GetTopic(model.TopicId);
             }
+
+            var donotModerate = User.IsInRole("Administrator") || User.IsInRole("Forum_" + model.ForumId);
+            var forum = _forumService.GetById(model.ForumId);
             return new Post()
             {
                 Id = model.TopicId,
@@ -657,7 +742,9 @@ namespace MVCForum.Controllers
                 //Forum = forum,
                 IsSticky = (short)(model.Sticky ? 1 : 0),
                 ArchiveFlag = model.DoNotArchive ? 1 : 0,
-                Status = (short)(model.Lock ? 0 : 1),
+                Status = (forum.Moderation == Moderation.AllPosts || forum.Moderation == Moderation.Topics) && !(donotModerate)
+                ? (short)Status.UnModerated
+                : (short)Status.Open,
                 Sig = (short)(model.UseSignature ? 1 : 0),
             };
 
@@ -668,12 +755,17 @@ namespace MVCForum.Controllers
             {
                 return _postService.GetReply(model.Id);
             }
+
+            var donotModerate = User.IsInRole("Administrator") || User.IsInRole("Forum_" + model.ForumId);
+            var forum = _forumService.GetById(model.ForumId);
             return new PostReply()
             {
                 Id = model.Id,
                 Content = model.Content,
                 Created = DateTime.UtcNow.ToForumDateStr(),
-                Status = (short)(model.Lock ? 0 : 1),
+                Status = (forum.Moderation == Moderation.AllPosts) && !(donotModerate)
+                ? (short)Status.UnModerated
+                : (short)Status.Open,
                 MemberId = memberid,
                 PostId = model.TopicId,
                 ForumId = model.ForumId,
@@ -698,6 +790,7 @@ namespace MVCForum.Controllers
                 AuthorPosts = reply.Member.Posts,
                 AuthorRole = reply.Member.Level,
                 Edited = reply.LastEdited?.FromForumDateStr(),
+                Status = reply.Status,
                 EditedBy = reply.LastEditby == null ? "" : _memberService.GetMemberName(reply.LastEditby.Value)
             });
         }

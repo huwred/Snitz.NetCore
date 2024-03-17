@@ -23,5 +23,7 @@ namespace MVCForum.ViewModels.Post
         public bool Answered { get; set; }
 
         public bool ShowSig { get; set; }
+
+        public int Status { get; set; }
     }
 }

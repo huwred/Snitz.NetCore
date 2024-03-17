@@ -6,6 +6,7 @@
 @using MVCForum.TagHelpers
 @using MVCForum.ViewModels.User
 @using System.Linq
+@using SnitzCore.Data.Models
 @inject SignInManager<ForumUser> SignInManager
 @inject ICodeProcessor BbCodeProcessor
 @{
@@ -75,6 +76,7 @@
 
                                             <i class="fa fa-trash weblink-del" data-id="@forum.Id"></i>
                                         }
+                                
                                     </div>
                                     <div class="subforum-description subforum-column">
                                         @if (forum.ForumType == ForumType.WebLink)
@@ -87,6 +89,11 @@
                                             <h4><a href="/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
                                         }
                                         <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
+                                        @if (forum.ForumModeration != Moderation.UnModerated)
+                                        {
+                                            <p class="mt-2 fst-italic">This Forum is moderated</p>
+                                        }
+                                        
                                     </div>
                                     @if (forum.ForumType != ForumType.WebLink)
                                     {

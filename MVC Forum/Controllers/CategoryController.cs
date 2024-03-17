@@ -62,6 +62,7 @@ namespace MVCForum.Controllers
                 LastPostReplyId = forum.LatestReplyId,
                 LastPostAuthor = forum.LastPostAuthorId != null && forum.LastPostAuthorId != 0 ? _memberService.GetById(forum.LastPostAuthorId) : null,
                 AccessType = forum.Privateforums,
+                ForumModeration = forum.Moderation,
                 ForumType = (ForumType)forum.Type,
                 Url = forum.Url,
                 Status = forum.Status,
@@ -194,7 +195,8 @@ namespace MVCForum.Controllers
                 Url = forum.Url,
                 DefaultView = (DefaultDays)forum.Defaultdays,
                 CategoryId = forum.CategoryId,
-                Status = forum.Status
+                Status = forum.Status,
+                ForumModeration = forum.Moderation,
                 //ImageUrl = forum.ImageUrl
             };
         }

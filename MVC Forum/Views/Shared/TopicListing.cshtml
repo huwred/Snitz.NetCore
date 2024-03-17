@@ -12,7 +12,7 @@
         answeredClass = "answered-overlay";
     }
 }
-<div class="table-row @answeredClass rounded-2">
+<div class="table-row @answeredClass rounded-2 modstatus-@Model.Status">
 
     <div class="status" data-status="@Model.Status" style="z-index:2">
         <snitz-topic-icon answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>

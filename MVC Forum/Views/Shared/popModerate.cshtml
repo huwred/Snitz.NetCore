@@ -1,0 +1,53 @@
+﻿
+@model MVCForum.ViewModels.Post.ApproveTopicViewModal
+@{
+    var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+
+}
+<div class="modal-header">
+    <button type="button" class="btn btn-outline-danger" class="close" data-bs-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+    <h5 class="modal-title" id="moderateModalLabel">Post Moderation</h5>
+</div>
+<div class="modal-body clearfix">
+    <div class="container" id="approvalForm">
+        @using (Html.BeginForm("ModeratePost", controllerName))
+        {
+            @Html.HiddenFor(m => m.Id)
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="checkbox-inline"> @Html.CheckBoxFor(m => m.EmailAuthor, new { id = "emailAuthor" }) <b>Send email to Author</b> </label>
+                </div>
+                <div class="form-group">
+                    <textarea disabled class="form-control" rows="4" name="ApprovalMessage" id="approvalMessage" placeholder="Add an extra message to the email">@Model.ApprovalMessage</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="text-inline"><b>Action:</b> </label>
+                    <label class="radio-inline">
+                        @Html.RadioButtonFor(m => m.PostStatus, "Approve", new { id = "inlineRadio1" }) Approve
+                    </label>
+                    <label class="radio-inline">
+                        @Html.RadioButtonFor(m => m.PostStatus, "Reject", new { id = "inlineRadio2" }) Reject
+                    </label>
+                    <label class="radio-inline">
+                        @Html.RadioButtonFor(m => m.PostStatus, "Hold", new { id = "inlineRadio3" }) Hold
+                    </label>
+                    <label class="text-inline">@Html.ValidationMessageFor(m => m.PostStatus, null, new { @class = "text-warning" })</label>
+                </div>
+                <div class="form-group pull-right flip">
+                    <button type="button" class="btn btn-sm btn-warning" data-bs-dismiss="modal">@Localizer["btnCancel"]</button>
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.validator.unobtrusive.parse('#approvalForm');
+            $('body').on('change', '#emailAuthor', function () {
+                $('#approvalMessage').prop("disabled", $('#emailAuthor').prop('checked') == false);
+            });
+        });
+    </script>
+ 

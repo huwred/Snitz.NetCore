@@ -35,7 +35,7 @@
 
         return;
     }
-    if (Model.PasswordRequired)
+    if (Model.PasswordRequired && !User.IsInRole("Administrator"))
     {
         <div class="container">
             <h2>This Forum needs a password</h2>

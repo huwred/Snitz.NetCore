@@ -26,6 +26,8 @@ namespace MVCForum.ViewModels.Forum
         [Display(Name = "Allowed Acccess")]
         public ForumAuthType AuthType { get; set; }
 
+        public Moderation Moderation { get; set; }
+
         [Display(Name = "Increment post count")]
         public bool IncrementMemberPosts { get; set; } = true;
         public Dictionary<int, string>? CategoryList { get; set; }

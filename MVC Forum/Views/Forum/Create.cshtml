@@ -59,6 +59,12 @@
                 <enum-select name="AuthType" enum-type="typeof(ForumAuthType)" selected-value="(int)Model.AuthType" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
             </div>
         </div>
+        <div snitz-if="@(SnitzConfig.GetIntValue("STRMODERATION") == 1)" class="mb-3 row">
+            <label asp-for="Moderation" class="form-label col-2">@Localizer["forumModeration"]</label>
+            <div class="col-10 col-lg-4">
+                <enum-select name="Moderation" enum-type="typeof(Moderation)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+            </div>
+        </div>
         <div class="mb-3 row">
             <label asp-for="IncrementMemberPosts" class="form-label col-2">@Localizer["forumPostCount"]</label>
             <div class="col-3 col-lg-2">

@@ -71,7 +71,7 @@ public class Forum
     public int? ArchivedCount { get; set; }
 
     [Column("F_MODERATION")]
-    public int Moderation { get; set; }
+    public Moderation Moderation { get; set; }
 
     [Column("F_SUBSCRIPTION")]
     public int Subscription { get; set; }

@@ -51,19 +51,20 @@ namespace SnitzCore.Service
         public async Task Update(Forum forum)
         {
 
-            var myObj = await _dbContext.Forums.FindAsync(forum.Id);
-            if (myObj != null)
+            var updForum = await _dbContext.Forums.FindAsync(forum.Id);
+            if (updForum != null)
             {
-                myObj.Title = forum.Title;
-                myObj.Description = forum.Description;
-                myObj.CategoryId = forum.CategoryId;
-                myObj.Type = forum.Type;
-                myObj.Privateforums = forum.Privateforums;
-                myObj.Status = forum.Status;
-                myObj.Order = forum.Order;
-                myObj.Defaultdays = forum.Defaultdays;
-                myObj.CountMemberPosts = forum.CountMemberPosts;
-                _dbContext.Update(myObj);
+                updForum.Title = forum.Title;
+                updForum.Description = forum.Description;
+                updForum.CategoryId = forum.CategoryId;
+                updForum.Type = forum.Type;
+                updForum.Privateforums = forum.Privateforums;
+                updForum.Status = forum.Status;
+                updForum.Order = forum.Order;
+                updForum.Defaultdays = forum.Defaultdays;
+                updForum.CountMemberPosts = forum.CountMemberPosts;
+                updForum.Moderation = forum.Moderation;
+                _dbContext.Update(updForum);
             }
 
             await _dbContext.SaveChangesAsync();

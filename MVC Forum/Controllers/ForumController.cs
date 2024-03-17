@@ -129,10 +129,16 @@ namespace MVCForum.Controllers
             });
             
             IEnumerable<Post>? forumPosts = forum?.Posts?.Where(p => p.IsSticky != 1);
+
             if (_config.GetIntValue("STRSTICKYTOPIC") != 1)
             {
                 stickylistings = null;
                 forumPosts = forum?.Posts;
+            }
+            if (!(User.IsInRole("Administrator") || User.IsInRole("Forum_" + forum.Id)))
+            {
+                var curuser = _memberService.Current()?.Id;
+                forumPosts = forumPosts.Where(t => t.Status < 2 || t.MemberId == curuser);
             }
             if (defaultdays != null)
             {
@@ -319,8 +325,13 @@ namespace MVCForum.Controllers
                 };
                 
             }
-            var posts = _postService.GetAllTopicsAndRelated().Where(f => f.IsSticky != 1 && f.LastPostDate?.FromForumDateStr() > lastvisit).OrderByDescending(t=>t.LastPostDate);
-
+            var posts = _postService.GetAllTopicsAndRelated()
+                .Where(f => f.IsSticky != 1 && f.LastPostDate?.FromForumDateStr() > lastvisit)
+                .OrderByDescending(t=>t.LastPostDate).AsEnumerable();
+            if (!User.IsInRole("Administrator")) //TODO: Is the member a moderator?
+            {
+                posts = posts.Where(p => p.Status < 2 || p.MemberId == member?.Id);
+            }
             PagedList<Post> latestPosts = new(posts, page, pagesize);
                 
             var activeposts = latestPosts.Select(p => new PostListingModel()
@@ -395,7 +406,8 @@ namespace MVCForum.Controllers
                         Status = (short)(model.Status ? 1 : 0),
                         Order = model.Order,
                         Defaultdays = (int)model.DefaultView,
-                        CountMemberPosts = (short)(model.IncrementMemberPosts ? 1 : 0)
+                        CountMemberPosts = (short)(model.IncrementMemberPosts ? 1 : 0),
+                        Moderation = model.Moderation
                     };
                     if (model.ForumId != 0)
                     {
@@ -590,7 +602,8 @@ namespace MVCForum.Controllers
                 CategoryId = forum.CategoryId,
                 Status = forum.Status,
                 Topics = forum.TopicCount,
-                Posts = forum.ReplyCount
+                Posts = forum.ReplyCount,
+                ForumModeration = forum.Moderation
                 //ImageUrl = forum.ImageUrl
 
             };
@@ -617,7 +630,8 @@ namespace MVCForum.Controllers
                 Url = forum.Url,
                 DefaultView = (DefaultDays)forum.Defaultdays,
                 CategoryId = forum.CategoryId,
-                Status = forum.Status
+                Status = forum.Status,
+                ForumModeration = forum.Moderation
                 //ImageUrl = forum.ImageUrl
             };
         }
