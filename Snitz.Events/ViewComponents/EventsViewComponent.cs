@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Snitz.Events.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
+using SnitzCore.Data.Models;
 using SnitzEvents.Helpers;
 using SnitzEvents.Models;
 
@@ -22,13 +23,26 @@ namespace Snitz.Events.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync(string template)
         {
+            if (template == "EnableButton")
+            {
+                var installed = _config.TableExists("CAL_EVENTS");
+                return await Task.FromResult((IViewComponentResult)View(template,installed));
+            }
+            if (template == "MenuItem")
+            {
+                var showcalendar = _config.TableExists("CAL_EVENTS") && _config.GetIntValue("INTCALPUBLIC") == 1 && !(_config.GetIntValue("INTCALPUBLICHOLIDAYS", -1) == -1);
+
+                return await Task.FromResult((IViewComponentResult)View(template,showcalendar));
+            }
             if (template == "Config")
             {
                 var vm = new EventsAdminViewModel
                 {
                     Categories = _dbContext.Set<ClubCalendarCategory>().ToDictionary(t => t.Id, t => t.Name),
                     Locations = _dbContext.Set<ClubCalendarLocation>().ToDictionary(t => t.Id, t => t.Name),
-                    Clubs = _dbContext.Set<ClubCalendarClub>().ToDictionary(t => t.Id, t => t.ShortName)
+                    Clubs = _dbContext.Set<ClubCalendarClub>().ToDictionary(t => t.Id, t => t.ShortName),
+                    Subs = _config.TableExists("EVENT_SUBSCRIPTIONS"),
+                    EnableEvents = _config.GetIntValue("INTCALEVENTS") == 1
                 };
 
                 return await Task.FromResult((IViewComponentResult)View(template,vm));
@@ -39,6 +53,7 @@ namespace Snitz.Events.ViewComponents
                 int dow = _config.GetIntValue("INTFIRSTDAYOFWEEK");
                 var vm = new CalAdminViewModel
                 {
+                    Installed = _config.TableExists("CAL_EVENTS"),
                     Enabled = _config.GetIntValue("INTCALEVENTS") == 1,
                     EnableEvents = _config.GetIntValue("INTCLUBEVENTS") == 1,
                     ShowInCalendar = _config.GetIntValue("INTCALSHOWEVENTS") == 1,

@@ -19,15 +19,17 @@ namespace Snitz.Events.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TOPIC_ID = table.Column<int>(type: "int", nullable: false),
                     EVENT_ALLDAY = table.Column<bool>(type: "bit", nullable: false),
-                    EVENT_DATE = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EVENT_ENDDATE = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EVENT_DATE = table.Column<string>(type: "varchar(14)", nullable: true),
+                    EVENT_ENDDATE = table.Column<string>(type: "varchar(14)", nullable: true),
                     EVENT_RECURS = table.Column<int>(type: "int", nullable: false),
-                    EVENT_DAYS = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Author = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    EVENT_DAYS = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EVENT_TITLE = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EVENT_DETAILS = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AUTHOR_ID = table.Column<int>(type: "int", nullable: true),
+                    DATE_ADDED = table.Column<string>(type: "varchar(14)", nullable: true),
+                    CLUB_ID = table.Column<int>(type: "int", nullable: true),
+                    CAT_ID = table.Column<int>(type: "int", nullable: true),
+                    LOC_ID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -93,7 +95,29 @@ namespace Snitz.Events.Migrations
                     table.PrimaryKey("PK_EVENT_SUBSCRIPTIONS", x => x.SUB_ID);
                 });
 
+            migrationBuilder.CreateIndex(
+                name: "IX_EVENT_LOCATION_LOC_ID",
+                table: "EVENT_LOCATION",
+                column: "LOC_ID",
+                unique: true);
 
+            migrationBuilder.CreateIndex(
+                name: "IX_EVENT_CLUB_CLUB_ID",
+                table: "EVENT_CLUB",
+                column: "CLUB_ID",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EVENT_CAT_CAT_ID",
+                table: "EVENT_CAT",
+                column: "CAT_ID",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CAL_EVENTS_C_ID",
+                table: "CAL_EVENTS",
+                column: "C_ID",
+                unique: true);
         }
 
         /// <inheritdoc />

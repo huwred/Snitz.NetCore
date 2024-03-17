@@ -12,5 +12,6 @@
         public bool ShowInCalendar { get; set; }
 
         public string? Roles { get; set; }
+        public bool Subs { get; set; }
     }
 }

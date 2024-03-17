@@ -47,7 +47,7 @@ namespace SnitzEvents.Models
         [Column("EVENT_ALLDAY")]
         public bool IsAllDayEvent { get; set; }
         [Column("EVENT_DATE")]
-        public string Start { get; set; }
+        public string? Start { get; set; }
         [Column("EVENT_ENDDATE")]
         public string? End { get; set; }
         [Column("EVENT_RECURS")]

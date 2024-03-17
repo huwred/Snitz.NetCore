@@ -148,7 +148,32 @@ public class CalendarController : Controller
         }
 
     }
+
     public JsonResult GetRegions(string id)
+    {
+        var ctry = id.Split('|')[0];
+        try
+        {
+            var country = GetCountries().SingleOrDefault(c => c.CountryCode == ctry);
+            if (country == null)
+            {
+                throw new Exception("Invalid country code");
+            }
+            return Json(country.Regions);
+        }
+        catch (Exception ex)
+        {
+            Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            List<string> errors = new List<string>
+            {
+                //..some processing
+                ex.Message,
+                //..some processing
+                ex.InnerException.Message
+            };
+            return Json(errors);
+        }
+    }
 
 
     private List<EnricoCountry> GetCountries()
@@ -244,7 +269,7 @@ public class CalendarController : Controller
     {
         try
         {
-            _context.Database.BeginTransaction();
+            _snitzContext.Database.BeginTransaction();
 
             foreach (var formKey in form.Keys.Where(k => !k.StartsWith("_")))
             {
@@ -267,16 +292,16 @@ public class CalendarController : Controller
                     }
                 }
             }
-            _context.SaveChanges(true);
+            _snitzContext.SaveChanges(true);
         }
         catch (Exception e)
         {
-            _context.Database.RollbackTransaction();
+            _snitzContext.Database.RollbackTransaction();
             return e.Message;
         }
         finally
         {
-            _context.Database.CommitTransaction();
+            _snitzContext.Database.CommitTransaction();
         }
 
         return "Settings saved successfully";

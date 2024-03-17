@@ -1,49 +1,75 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using SnitzEvents.Helpers
+@using System.Drawing.Text
 @model Snitz.Events.ViewModels.CalAdminViewModel
+@if (Model.Installed)
+{
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="flush-headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                Calendar/Events
+            </button>
+        </h2>
+        <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+                <form id="events-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
+                    @await Component.InvokeAsync("Events", "EnableButton")
+                </form> 
+                <div id="result"></div>
+                <form asp-action="SaveFeatures" asp-controller="Calendar" method="POST" data-ajax="true" data-ajax-update="#event-result">
+                    <fieldset class="border rounded-3 p-3 mb3" id="EVENTSADMIN" @(!Model.Enabled ? "disabled" : "")>
+                        <div class="mb-3 form-check">
+                            <input class="form-check-input" id="IsPublic" type="checkbox" name="INTCALPUBLIC" data-size="mini" checked="@Model.IsPublic" value="1" />
+                            <label for="IsPublic" class="form-check-label">@Localizer["calIsPublic"]</label>
+                            <input type="checkbox" name="INTCALPUBLIC" checked value="0" style="display:none" />
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input class="form-check-input" id="UpcomingEvents" type="checkbox" name="INTCALUPCOMINGEVENTS" data-size="mini" checked="@Model.UpcomingEvents" value="1" />
+                            <label for="UpcomingEvents" class="form-check-label">@Localizer["calUpcomingWidget"]</label>
+                            <input type="checkbox" name="INTCALUPCOMINGEVENTS" checked value="0" style="display:none" />
+                        </div>
 
-<div class="mb-3 form-check">
-    <input class="form-check-input" id="IsPublic" type="checkbox" name="INTCALPUBLIC" data-size="mini" checked="@Model.IsPublic" value="1" />
-    <label for="IsPublic" class="form-check-label">@Localizer["calIsPublic"]</label>
-    <input type="checkbox" name="INTCALPUBLIC" checked value="0" style="display:none" />
-</div>
-<div class="mb-3 form-check">
-    <input class="form-check-input" id="UpcomingEvents" type="checkbox" name="INTCALUPCOMINGEVENTS" data-size="mini" checked="@Model.UpcomingEvents" value="1" />
-    <label for="UpcomingEvents" class="form-check-label">@Localizer["calUpcomingWidget"]</label>
-    <input type="checkbox" name="INTCALUPCOMINGEVENTS" checked value="0" style="display:none" />
-</div>
+                        <div class="mb-3">
+                            <label for="MaxRecords" class="form-label">@Localizer["calMaxRecords"]</label>
+                            <input type="number" name="INTCALMAXRECORDS" id="MaxRecords" class="form-control col-3" value="@Model.MaxRecords" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="FirstDayofWeek" class="form-label">@Localizer["calFirstDayofWeek"]</label>
+                            <select class="form-select-sm" name="INTFIRSTDAYOFWEEK" asp-for="FirstDayofWeek" asp-items="@Html.GetEnumSelectList<CalEnums.CalDays>()">
+                                <option>Please Select</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input class="form-check-input" id="ShowBirthdays" type="checkbox" name="INTCALSHOWBDAYS" data-size="mini" checked="@Model.ShowBirthdays" value="1" />
+                            <label for="ShowBirthdays" class="form-check-label">@Localizer["calShowBDays"]</label>
+                            <input type="checkbox" name="INTCALSHOWBDAYS" checked value="0" style="display:none" />
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input class="form-check-input" id="PublicHolidays" type="checkbox" name="INTCALPUBLICHOLIDAYS" data-size="mini" checked="@Model.PublicHolidays" value="1" />
+                            <label for="PublicHolidays" class="form-check-label">@Localizer["calPublicHolidays"]</label>
+                            <input type="checkbox" name="INTCALPUBLICHOLIDAYS" checked value="0" style="display:none" />
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-3">
+                                @Html.DropDownList("STRCALCOUNTRY",
+                                         new SelectList(Model.Countries, "CountryCode", "Name", Model.CountryCode),
+                                         "Select Country",
+                                         new { @class = "form-select" })
+                            </div>
+                            <div class="col-3">
+                                <select class="form-select" name="STRCALREGION" id="countryRegion" style="display: none;">
+                                    <option value=''>No Regions</option>
+                                </select>
+                            </div>
+                            <span class="col-10 form-text">Public holiday data supplied by <a href="http://kayaposoft.com/enrico/" title="Enrico Service is a free service written in PHP providing public holidays for several countries" data-toggle="tooltip">Enrico</a></span>
+                        </div>
+                    </fieldset>
+                    @await Component.InvokeAsync("Events", "Config")
+                    <partial name="_FormButtons" />
+                </form>
+                <div id="event-result"></div>
+            </div>
+        </div>
+    </div>
 
-<div class="mb-3">
-    <label for="MaxRecords" class="form-label">@Localizer["calMaxRecords"]</label>
-    <input type="number" name="INTCALMAXRECORDS" id="MaxRecords" class="form-control col-3" value="@Model.MaxRecords" />
-</div>
-<div class="mb-3">
-    <label for="FirstDayofWeek" class="form-label">@Localizer["calFirstDayofWeek"]</label>
-    <select class="form-select-sm" name="INTFIRSTDAYOFWEEK" asp-for="FirstDayofWeek" asp-items="@Html.GetEnumSelectList<CalEnums.CalDays>()">
-        <option>Please Select</option>
-    </select>
-</div>
-<div class="mb-3 form-check">
-    <input class="form-check-input" id="ShowBirthdays" type="checkbox" name="INTCALSHOWBDAYS" data-size="mini" checked="@Model.ShowBirthdays" value="1" />
-    <label for="ShowBirthdays" class="form-check-label">@Localizer["calShowBDays"]</label>
-    <input type="checkbox" name="INTCALSHOWBDAYS" checked value="0" style="display:none" />
-</div>
-<div class="mb-3 form-check">
-    <input class="form-check-input" id="PublicHolidays" type="checkbox" name="INTCALPUBLICHOLIDAYS" data-size="mini" checked="@Model.PublicHolidays" value="1" />
-    <label for="PublicHolidays" class="form-check-label">@Localizer["calPublicHolidays"]</label>
-    <input type="checkbox" name="INTCALPUBLICHOLIDAYS" checked value="0" style="display:none" />
-</div>
-<div class="row mb-3">
-    <div class="col-3">
-        @Html.DropDownList("STRCALCOUNTRY",
-                 new SelectList(Model.Countries, "CountryCode", "Name",Model.CountryCode),
-            "Select Country",
-            new { @class = "form-select" })
-    </div>
-    <div class="col-3">
-        <select class="form-select" name="STRCALREGION" id="countryRegion" style="display: none;">
-            <option value=''>No Regions</option>
-        </select>
-    </div>
-    <span class="col-10 form-text">Public holiday data supplied by <a href="http://kayaposoft.com/enrico/" title="Enrico Service is a free service written in PHP providing public holidays for several countries" data-toggle="tooltip">Enrico</a></span>
-</div>
+}

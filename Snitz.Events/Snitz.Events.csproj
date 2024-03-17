@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.0-rc1.35</Version>
+    <Version>1.0.0-rc1.44</Version>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
@@ -48,6 +48,7 @@
     <_ContentIncludedByDefault Remove="Views\Calendar\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\Admin.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\Config.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\MenuItem.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +61,10 @@
 
   <ItemGroup>
     <None Include="bundleconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\Components\Events\MenuItem.cshtml" />
   </ItemGroup>
 
 

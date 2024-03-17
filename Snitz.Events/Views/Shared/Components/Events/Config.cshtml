@@ -1,6 +1,8 @@
 ﻿@model Snitz.Events.ViewModels.EventsAdminViewModel
-@if (SnitzConfig.TableExists("EVENT_SUBSCRIPTIONS"))
+@inject ISnitzConfig SnitzConfig
+@if (Model.Subs)
 {
+    <fieldset @(!Model.EnableEvents ? "disabled" : "") class="border rounded-3 p-3" id="EVENTSCONFIG">
     <legend>Club/Society Events Add On</legend>
     <div class="mb-3 form-check">
         <input class="form-check-input" id="EnableEvents" type="checkbox" name="INTCLUBEVENTS" data-size="mini" checked="@SnitzConfig.GetIntValue("INTCLUBEVENTS") == 1" value="1" />
@@ -17,39 +19,41 @@
         <input type="text" id="STRRESTRICTROLES" name="STRRESTRICTROLES" class="form-control" value="@Model.Roles" />
         <label class="form-text">restrict access to specific Roles, comma seperated list.</label>
     </div>
+    <div class="row">
+        <h5>Lookup data</h5>
+
+        <div class="form-group col-4">
+            <label class="control-label">Categories</label>
+            @Html.ListBox("CategoriesList", new SelectList(Model.Categories, "Key", "Value"), new { @class = "form-control", id = "cat-select" })
+            <div class="btn-group">
+                <a href="#" class="edit-event-cat" title="edit selected category" data-toggle="tooltip"><i class="fa fa-edit"></i></a>
+                <a href="#" class="add-event-cat" title="add new category" data-toggle="tooltip"><i class="fa fa-plus"></i></a>
+                <a href="#" class="del-event-cat" title="delete selected category" data-toggle="tooltip"><i class="fa fa-trash-o"></i></a>
+            </div>
+        </div>
+        <div class="form-group col-4">
+            <label class="control-label">Clubs</label>
+            @Html.ListBox("ClubsList", new SelectList(Model.Clubs, "Key", "Value"), new { @class = "form-control", id = "club-select" })
+            <div class="btn-group">
+                <a href="#" class="edit-event-club" title="edit selected club" data-toggle="tooltip"><i class="fa fa-edit"></i></a>
+                <a href="#" class="add-event-club" title="add new club" data-toggle="tooltip"><i class="fa fa-plus"></i></a>
+                <a href="#" class="del-event-club" title="delete selected club" data-toggle="tooltip"><i class="fa fa-trash-o"></i></a>
+            </div>
+        </div>
+        <div class="form-group col-4">
+            <label class="control-label">Locations</label>
+            @Html.ListBox("LocationsList", new SelectList(Model.Locations, "Key", "Value"), new { @class = "form-control", id = "loc-select" })
+            <div class="btn-group">
+                <a href="#" class="edit-event-loc" title="edit selected location" data-toggle="tooltip"><i class="fa fa-edit"></i></a>
+                <a href="#" class="add-event-loc" title="add new location" data-toggle="tooltip"><i class="fa fa-plus"></i></a>
+                <a href="#" class="del-event-loc" title="delete selected location" data-toggle="tooltip"><i class="fa fa-trash-o"></i></a>
+            </div>
+        </div>
+    </div>
+    </fieldset>
 
 }
-<div class="row">
-    <h5>Lookup data</h5>
 
-    <div class="form-group col-4">
-        <label class="control-label">Categories</label>
-        @Html.ListBox("CategoriesList", new SelectList(Model.Categories, "Key", "Value"), new { @class = "form-control", id = "cat-select" })
-        <div class="btn-group">
-            <a href="#" class="edit-event-cat" title="edit selected category" data-toggle="tooltip"><i class="fa fa-edit"></i></a>
-            <a href="#" class="add-event-cat" title="add new category" data-toggle="tooltip"><i class="fa fa-plus"></i></a>
-            <a href="#" class="del-event-cat" title="delete selected category" data-toggle="tooltip"><i class="fa fa-trash-o"></i></a>
-        </div>
-    </div>
-    <div class="form-group col-4">
-        <label class="control-label">Clubs</label>
-        @Html.ListBox("ClubsList", new SelectList(Model.Clubs, "Key", "Value"), new { @class = "form-control", id = "club-select" })
-        <div class="btn-group">
-            <a href="#" class="edit-event-club" title="edit selected club" data-toggle="tooltip"><i class="fa fa-edit"></i></a>
-            <a href="#" class="add-event-club" title="add new club" data-toggle="tooltip"><i class="fa fa-plus"></i></a>
-            <a href="#" class="del-event-club" title="delete selected club" data-toggle="tooltip"><i class="fa fa-trash-o"></i></a>
-        </div>
-    </div>
-    <div class="form-group col-4">
-        <label class="control-label">Locations</label>
-        @Html.ListBox("LocationsList", new SelectList(Model.Locations, "Key", "Value"), new { @class = "form-control", id = "loc-select" })
-        <div class="btn-group">
-            <a href="#" class="edit-event-loc" title="edit selected location" data-toggle="tooltip"><i class="fa fa-edit"></i></a>
-            <a href="#" class="add-event-loc" title="add new location" data-toggle="tooltip"><i class="fa fa-plus"></i></a>
-            <a href="#" class="del-event-loc" title="delete selected location" data-toggle="tooltip"><i class="fa fa-trash-o"></i></a>
-        </div>
-    </div>
-</div>
 
 <div id='listeditor' class='modal fade in' aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">

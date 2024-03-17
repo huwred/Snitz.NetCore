@@ -18,8 +18,20 @@ namespace Snitz.Events.Models
         {
 
         }
+        public CalendarEventItem? GetById(int id)
+        {
+            return _dbContext.EventItems.Include(e=>e.Topic).FirstOrDefault(e=>e.Id == id);
+        }
 
-        public IEnumerable<CalendarEventItem> GetAllClubEvents(string catid, string old, string start, string end)
+        public CalendarEventItem? GetClubEventById(int id)
+        {
+            return _dbContext.EventItems.Include(e=>e.Author)
+                .Include(ce => ce.Cat)
+                .Include(ce => ce.Club)
+                .Include(ce => ce.Loc)                
+                .FirstOrDefault(e=>e.Id == id && e.ClubId != null);
+        }
+        public IEnumerable<CalendarEventItem> GetAllClubEvents(string catid, string old, string? start, string? end)
         {
             var clubevents = _dbContext.EventItems
                 .Include(ce => ce.Author)

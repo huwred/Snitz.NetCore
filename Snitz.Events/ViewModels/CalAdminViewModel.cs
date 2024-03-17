@@ -5,6 +5,7 @@ namespace Snitz.Events.ViewModels
 {
     public class CalAdminViewModel
     {
+        public bool Installed { get; set; }
         public bool Enabled { get; set; }
         public bool EnableEvents { get; set; }
         public CalEnums.CalAllowed IntCalMlev { get; set; }
