@@ -1,4 +1,19 @@
-﻿        $(document).ready(function() {
+﻿$.extend({
+    getUrlParams: function () {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
+    },
+    getUrlParam: function (name) {
+        return $.getUrlParams()[name];
+    }
+});        
+    $(document).ready(function() {
             $(window).scroll(lazyload);
             $(".fig-caption").each(function() {
                 var test = $(this);
@@ -10,6 +25,40 @@
                         test.html(data);
                     }
                 });
+            });
+        });
+        $('.send-email').on('click', function (e) {
+            e.preventDefault();
+            var userid = $(this).data('id');
+            $.get(window.SnitzVars.baseUrl + 'Account/EmailMember/' + userid, function (data) {
+                $('#emailContainer').html(data);
+                $.validator.unobtrusive.parse($("#emailMemberForm"));
+                $('#emailModal').modal('show');
+
+            });
+        });
+        $('.sendpm-link').on('click', function () {
+            var username = $(this).data('id');
+            $.get(window.SnitzVars.baseUrl + 'PrivateMessage/SendMemberPm/' + username, function (data) {
+                $('#pmContainer').html(data);
+                $.validator.unobtrusive.parse($("#sendPMForm"));
+                $('#modal-sendpm').modal('show');
+            });
+        });
+        $(document).on("click","#PrintTopic",function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            var archive = $.getUrlParam('archived');
+            location.href = '/Topic/Print/' + id + '?archived=' + archive;
+
+        });
+        $(document).on('click','.sendto-link', function () {
+            var id = $(this).data('id');
+            var archive = $.getUrlParam('archived');
+            $.get('/Topic/SendTo/' + id + '?archived=' + archive, function (data) {
+                $('#sendToContainer').html(data);
+                $.validator.unobtrusive.parse($("#sendToForm"));
+                $('#modal-sendto').modal('show');
             });
         });
         $(document).on('click', '#submitUpload', function(e) {

@@ -173,7 +173,9 @@ footer {
 .cell {
     border: 1px solid gray;
 }
-
+.bg-dark {
+    background-color: #eee !important;
+}
 h1.bg-dark {
     background-color: #eee !important;
 
@@ -188,4 +190,44 @@ tr.bg-dark, .card-header.bg-dark, .btn-group.btn-dark {
 #theme-change {
     background-color: #eee;
     color: black;
+}
+
+#ForumLang.en, #ForumLang.en-GB {
+    background-image: url(images/flags/en.png);
+    background-repeat: no-repeat;
+    width: 24px; /*or your image's width*/
+    height: 24px; /*or your image's height*/
+    margin: 0;
+    padding: 0;
+    background-size: contain;
+}
+
+#ForumLang.no {
+    background-image: url(images/flags/no.png);
+    background-repeat: no-repeat;
+    width: 24px; /*or your image's width*/
+    height: 24px; /*or your image's height*/
+    margin: 0;
+    padding: 0;
+    background-size: contain;
+}
+
+#ForumLang.ro {
+    background-image: url(images/flags/ro.png);
+    background-repeat: no-repeat;
+    width: 24px; /*or your image's width*/
+    height: 24px; /*or your image's height*/
+    margin: 0;
+    padding: 0;
+    background-size: contain;
+}
+
+#ForumLang.fa {
+    background-image: url(images/flags/fa.png);
+    background-repeat: no-repeat;
+    width: 24px; /*or your image's width*/
+    height: 24px; /*or your image's height*/
+    margin: 0;
+    padding: 0;
+    background-size: contain;
 }

@@ -1,0 +1,182 @@
+﻿/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+    padding: 30px;
+    color: #191970 !important;
+    background-color: white !important;
+    line-height: 1.1em !important;
+}
+blockquote.quoteMessage { margin-left: 10px;border: 0px;font-size:smaller}
+blockquote.quoteMessage:before {
+    font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+    font-size: 1.2em;
+    vertical-align: super;
+  content: "\f10d";
+}
+
+blockquote.quoteMessage:after {
+    font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+    font-size: 1.2em;
+    vertical-align: sub;
+  content: "\f10e";
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;left: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 40px;
+  background-color: #d3d3d3;
+}
+.container {
+  padding-right: 10px !important;
+  padding-left: 10px !important;
+}
+.container .text-muted {
+  margin: 10px 0;
+}
+
+hr#quote{ margin: 0;}
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+.bottom {
+    position: absolute;
+    bottom: 0;
+    margin-right: 0;
+}
+.row-eq-height {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+.rank-label{ display: block;margin: 0px;}
+h2,.h2{ margin-top: 10px;}
+img.avatar{border:1px solid black; opacity: .4;margin: 2px;width: auto;max-width:80%;border-radius: 8px;display: block;}
+img.avatarsmall{ opacity: .4;margin: 2px;width: auto;max-width:100%;max-height:100%;}
+img.online{opacity:1}
+img.small{ width: 30px;}
+.icon-overlay{position:absolute;left:52px;top:-16px;z-index:200}
+img.icon-overlay-small{position:absolute;z-index: 200;left: 0px;top:0px}
+img.emote{ margin: 2px;}
+.title hr{ margin-top: 0px;margin-bottom: 4px;border-color: #888888;}
+
+
+div a[class^=icon-], .proficon {display: inline-block;margin: 1px;}
+i.fa-slack {
+    -ms-transform: rotate(19deg);
+    -webkit-transform: rotate(19deg);
+    transform: rotate(19deg);
+}
+.row-no-padding [class*="col-"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+.row-sm-padding [class*="col-"] {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+  }
+.padding-xs{    padding-left: 2px !important;
+    padding-right: 2px !important;}
+.padding-sm{    padding-left: 5px !important;
+    padding-right: 5px !important;}
+.padding-md{    padding-left: 10px !important;
+    padding-right: 10px !important;}
+.list-inline { margin-left: 0;}
+.row .message { margin-right: 5px !important;}
+.message-container,.message-container-topic{ border: #888888 1px solid;margin: 5px !important;background-color: white}
+.messagebar{background-color: silver;min-height: 28px;border-top-right-radius: 8px;padding: 5px;height: auto;padding-top: 2px;}
+.messagebar-reply{background-color: #dedede;}
+
+.messagebar a{color: #191970 !important;}
+ul.messagebar-right{ float: right;list-style-type: none;margin: 0 0 5px;padding:0px}
+.messagebar-right li { padding: 0;}
+.messagebar-right img { padding:0;margin: 1px;}
+.message-footer {
+  width: 99%;
+  min-height: 10px;
+  border-top: #191970 1px dotted;
+}
+
+.message-reply{padding: 0px !important;height: auto;width: 100% !important;border-bottom: 1px solid black;margin-bottom: 6px;}
+div.message-sig{margin-top:5px;border-top:1px solid gray;}
+.message{ margin-bottom: 30px;height: auto;min-height: 40px;}
+.message-profile { display: none;}
+
+h3.message-subject{ margin-top: 0px !important;}
+.message img{ max-width: 98% !important;}
+.multi-line { height:15em; width:95%; }
+.qr-editor-field .multi-line{ height: 8em;width:95%;}
+.pager{ margin: 0 !important;}
+.pager-bottom{ margin-bottom: 3px !important;}
+
+
+.bbc-codetitle, .bbc-quotetitle { margin: 1em 1.5em 0; padding: 2px 4px; 
+	background-color: lightgray; font-weight: bold; }
+.bbc-codecontent, .bbc-quotecontent { margin: 0 1.5em 1em; padding: 5px; 
+	border: solid 1px #A0B3CA; background-color: #fff; }
+.bbc-codecontent pre { margin: 0; padding: 0;height: auto;}
+.bbc-highlight { background-color: #FFFF00; color: #333399; }
+.bbc-spoiler { color: #C0C0C0; background-color: #C0C0C0; }
+.bbc-indent { padding: 0 1em; }
+.bbc-list { margin: 1em; } 
+
+@media print {
+    .button{ display: none;}
+}
+
+/* divTable */
+.divTable {
+    display: table;
+    border-collapse: collapse;
+    max-width: 90% !important;
+    width: auto;
+}
+
+.divTableRow {
+    display: table-row;
+}
+
+.divTableHeading {
+    background-color: #EEE;
+    display: table-header-group;
+}
+
+.divTableCell, .divTableHead {
+    border: 1px solid #337ab7;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: table-cell;
+    padding: 3px 5px;
+}
+
+.divTableHeading {
+    background-color: #EEE;
+    display: table-header-group;
+    font-weight: bold;
+}
+
+.divTableFoot {
+    background-color: #EEE;
+    display: table-footer-group;
+    font-weight: bold;
+}
+
+.divTableBody {
+    display: table-row-group;
+}
