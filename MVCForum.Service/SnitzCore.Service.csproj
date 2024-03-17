@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BbCodeFormatter\BbCodeFormatter.csproj" />
     <ProjectReference Include="..\MVCForum.Data\SnitzCore.Data.csproj" />
   </ItemGroup>
 

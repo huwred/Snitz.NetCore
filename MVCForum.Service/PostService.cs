@@ -170,10 +170,36 @@ namespace SnitzCore.Service
                 .Single(p => p.Id == id);
             return post;
         }
+        public ArchivedTopic GetArchivedTopic(int id)
+        {
+            var post = _dbContext.ArchivedTopics
+                .AsNoTracking()
+                .Include(p => p.Category).AsNoTracking()
+                .Include(p => p.Forum).AsNoTracking()
+                .Include(p => p.Member).AsNoTracking()
+                .Single(p => p.Id == id);
+            return post;
+        }
         public Post GetTopicWithRelated(int id)
         {
 
             var post = _dbContext.Posts.Where(p => p.Id == id)
+                .AsNoTrackingWithIdentityResolution()
+                .Include(p => p.Member).AsNoTracking()
+                .Include(p => p.LastPostAuthor).AsNoTracking()
+                .Include(p => p.Category).AsNoTracking()
+                .Include(p => p.Forum).AsNoTracking()
+                .Include(p => p.Replies!.OrderByDescending(r => r.Created))
+                .ThenInclude(r => r.Member).AsNoTracking()
+                //.AsSplitQuery()
+                .Single();
+
+            return post;
+        }
+        public ArchivedTopic GetArchivedTopicWithRelated(int id)
+        {
+
+            var post = _dbContext.ArchivedTopics.Where(p => p.Id == id)
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Member).AsNoTracking()
                 .Include(p => p.LastPostAuthor).AsNoTracking()

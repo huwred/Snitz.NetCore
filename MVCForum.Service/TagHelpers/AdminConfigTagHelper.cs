@@ -10,6 +10,11 @@ using System.Formats.Asn1;
 using System.Reflection;
 using System.Resources;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Org.BouncyCastle.Asn1.X509.Qualified;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace SnitzCore.Services.TagHelpers
 {
@@ -30,6 +35,7 @@ namespace SnitzCore.Services.TagHelpers
         public string? ControlType { get; set; }
         [HtmlAttributeName("disabled")]
         public bool Disabled { get; set; }
+        public Func<string, string>? TextLocalizerDelegate { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -92,6 +98,37 @@ namespace SnitzCore.Services.TagHelpers
                         $@"<input type=""{valtype}"" name=""{Key}"" id=""{Key}"" value=""{Value}"" />");
                     output.TagMode = TagMode.StartTagAndEndTag;
                     break;
+                case "select-subs" :
+                    output.TagName = "div";
+                    output.AddClass("mb-3",HtmlEncoder.Default);
+
+                    var items = GetEnumSelectList(Value);
+                    StringBuilder options = new StringBuilder();
+                    foreach (var item in items)
+                    {
+                        if (item.Selected)
+                        {
+                            options.Append($"<option value=\"{item.Value}\" selected>{item.Text}</option>");
+                        }
+                        else
+                        {
+                            options.Append($"<option value=\"{item.Value}\">{item.Text}</option>");
+
+                        }
+                    }
+                    output.Content.AppendHtml(
+
+                        $@"<label for=""{Key}"" class=""form-label"">{Label}</label>
+                            <select class=""form-select"">
+                                <option>-- Select Me --</option>{options}
+
+                            </select>");
+
+                    //output.Content.AppendHtml(GenerateDropDownList(required));
+                    output.Content.AppendHtml($@"<div class=""invalid-feedback"">You must select a value for {Key}.</div>");
+
+                    output.TagMode = TagMode.StartTagAndEndTag;
+                    break;
                 case "datepicker":
                     output.TagName = "div";
                     output.AddClass("form-group",HtmlEncoder.Default);
@@ -116,6 +153,59 @@ namespace SnitzCore.Services.TagHelpers
             }
 
         }
+        private IEnumerable<SelectListItem> GetEnumSelectList(string selected)
+        {
+            var enumValues = Enum.GetValues(typeof(SubscriptionLevel)).Cast<SubscriptionLevel>();
+            return enumValues.Select(v => new SelectListItem
+            {
+                Text = v.ToString(),
+                Value = ((int)v).ToString(),
+                Selected = ((int)v).ToString() == selected
+            }).ToList();
 
+            //return (Enum.GetValues(typeof(T)).Cast<T>().Select(
+            //    enu => new SelectListItem() { Text = enu.ToString(), Value = (int)enu,Selected = selected==enu.ToString()})).ToList();
+        }
+        //private IHtmlContent GenerateDropDownList(string required)
+        //{
+        //    TagBuilder tb = new TagBuilder("select");
+        //    if (PropertyInfo != null)
+        //    {
+        //        var enumname = PropertyInfo.GetSelectEnum();
+        //        Type? test = EnumExtensions.GetEnumType (enumname);
+        //        if (enumname != null)
+        //        {
+        //            tb.AddCssClass("form-select");
+        //            tb.Attributes.Add("Name",PropertyInfo.Name);
+        //            tb.MergeAttribute("id", PropertyInfo.Name + "-dd");
+        //            tb.InnerHtml.AppendHtml(required);
+        //            foreach (SelectListItem item in test!.GetEnumSelectList())
+        //            {
+        //                TagBuilder op = new TagBuilder("option");
+        //                op.Attributes.Add("value",item.Value);
+        //                if (TextLocalizerDelegate != null) op.InnerHtml.AppendHtml(TextLocalizerDelegate(item.Text));
+        //                tb.InnerHtml.AppendHtml(op);
+                    
+        //                if (item.Value == Value)
+        //                {
+        //                    op.Attributes.Add("selected","selected");
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    tb.InnerHtml.AppendHtml(this.GenerateInput());
+        //    return tb;
+        //}
+        //private IHtmlContent GenerateInput()
+        //{
+        //    TagBuilder tb = new TagBuilder("input");
+
+        //    tb.TagRenderMode = TagRenderMode.SelfClosing;
+        //    tb.MergeAttribute("name", PropertyInfo?.Name);
+        //    tb.MergeAttribute("type", "hidden");
+        //    tb.MergeAttribute("value", Value);
+        //    return tb;
+        //}
     }
 }

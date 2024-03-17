@@ -4,21 +4,34 @@ using MimeKit;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System.Threading.Tasks;
+using BbCodeFormatter;
 
 namespace SnitzCore.Service
 {
     public class EmailSender : IEmailSender
     {
         private readonly EmailConfiguration _emailConfig;
-        public EmailSender(EmailConfiguration emailConfig)
+        private readonly ICodeProcessor _bbCodeProcessor;
+        public EmailSender(EmailConfiguration emailConfig,ICodeProcessor bbCodeProcessor )
         {
             _emailConfig = emailConfig;
+            _bbCodeProcessor = bbCodeProcessor;
         }
 
         public Task SendEmailAsync(EmailMessage message)
         {
             var emailMessage = CreateEmailMessage(message);
             return Send(emailMessage);
+        }
+
+        public void SendToFreind(dynamic model)
+        {
+            var emailMessage = new MimeMessage();
+            emailMessage.From.Add(new MailboxAddress("email", model.FromEmail));
+            emailMessage.To.Add(new MailboxAddress(model.ToName, model.ToEmail));
+            emailMessage.Subject = model.Subject;
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = _bbCodeProcessor.Format(model.Message) };
+            Send(emailMessage);
         }
 
         private MimeMessage CreateEmailMessage(EmailMessage message)
