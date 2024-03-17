@@ -2,8 +2,8 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
-using SnitzCore.Data;
 using Microsoft.Extensions.Configuration;
+using SnitzCore.Data.Extensions;
 
 #nullable disable
 

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 
-namespace SnitzCore.Data
+namespace SnitzCore.Data.Extensions
 {
     public static class MigrationBuilderExtensions
     {
@@ -20,10 +14,10 @@ namespace SnitzCore.Data
             {
                 conn.ConnectionString = connstring;
                 conn.Open();
-  
+
                 SqlCommand cmd = conn.CreateCommand();
                 cmd.CommandText = $"SELECT COUNT(*) FROM sys.tables WHERE name = '{table}'";
-  
+
                 int count = (int)cmd.ExecuteScalar();
                 conn.Close();
                 return count > 0;
@@ -37,17 +31,17 @@ namespace SnitzCore.Data
             {
                 conn.ConnectionString = connstring;
                 conn.Open();
-  
+
                 SqlCommand cmd = conn.CreateCommand();
                 cmd.CommandText = $"SELECT COUNT(*) FROM sys.columns WHERE Name = N'{column}' AND Object_ID = Object_ID(N'{tableName}')";
-  
+
                 int count = (int)cmd.ExecuteScalar();
                 conn.Close();
                 return count > 0;
             }
 
         }
-        public static bool IndexExists(this MigrationBuilder migrationBuilder,string query)
+        public static bool IndexExists(this MigrationBuilder migrationBuilder, string query)
         {
             var connstring = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["SnitzConnection"];
 
@@ -55,7 +49,7 @@ namespace SnitzCore.Data
             {
                 conn.ConnectionString = connstring;
                 conn.Open();
-  
+
                 SqlCommand cmd = conn.CreateCommand();
                 cmd.CommandText = query;
                 int count = (int)cmd.ExecuteScalar();
