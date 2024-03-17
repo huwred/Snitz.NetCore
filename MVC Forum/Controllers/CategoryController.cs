@@ -57,16 +57,16 @@ namespace MVCForum.Controllers
                 LastPostAuthorId = forum.LastPostAuthorId,
                 LastPostTopicId = forum.LatestTopicId,
                 LastPostReplyId = forum.LatestReplyId,
-                LastPostAuthor = forum.LastPostAuthorId != null ? _memberService.GetById(forum.LastPostAuthorId) : null,
+                LastPostAuthor = forum.LastPostAuthorId != null && forum.LastPostAuthorId != 0 ? _memberService.GetById(forum.LastPostAuthorId) : null,
                 AccessType = forum.Privateforums,
                 ForumType = (ForumType)forum.Type,
                 Url = forum.Url,
                 Status = forum.Status
                 
-            });
+            }).ToList();
             if (id > 0)
             {
-                forums = forums.Where(f => f.CategoryId == id);
+                forums = forums.Where(f => f.CategoryId == id).ToList();
                 var forumPage = new MvcBreadcrumbNode("Forums", "Category", "ttlForums");
                 var topicPage = new MvcBreadcrumbNode("", "Category", forums.First().CategoryName) { Parent = forumPage,RouteValues = new{id=forums.First().CategoryId}};
                 ViewData["BreadcrumbNode"] = topicPage; 

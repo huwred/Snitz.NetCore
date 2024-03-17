@@ -17,6 +17,11 @@ using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Snitz.PhotoAlbum.ViewModels;
 using MVCForum.ViewModels.Post;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using System.Resources;
+using MVCForum.ViewModels;
+using Microsoft.Extensions.Hosting;
+using System.Drawing.Printing;
 
 namespace MVCForum.Controllers
 {
@@ -27,14 +32,17 @@ namespace MVCForum.Controllers
         private readonly IForum _forumService;
         private readonly UserManager<ForumUser> _userManager;
         private readonly IWebHostEnvironment _environment;
+        private readonly IEmailSender _mailSender;
 
         public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
-            IPost postService, IForum forumService, UserManager<ForumUser> userManager,IWebHostEnvironment environment) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
+            IPost postService, IForum forumService, UserManager<ForumUser> userManager,IWebHostEnvironment environment,
+            IEmailSender mailSender) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
         {
             _postService = postService;
             _forumService = forumService;
             _userManager = userManager;
             _environment = environment;
+            _mailSender = mailSender;
         }
 
         [Route("{id:int}")]
@@ -433,15 +441,201 @@ namespace MVCForum.Controllers
             return result ? Json(new { result = result, data = id }) : Json(new { result = result, error = "Unable to toggle Status" });
             
         }
-        public async Task<IActionResult> Print(int id)
+
+        [Authorize]
+        public ActionResult SendTo(int id, int archived)
         {
-            var member = await _memberService.GetById(User);
-            throw new NotImplementedException();
+            EmailViewModel em = new EmailViewModel();
+            //var archived = Request.Query["archived"] == "1";
+            
+            if (archived == 1)
+            {
+                var topic = _postService.GetArchivedTopic(id);
+                Member from = _memberService.Current();
+                
+                if (from != null)
+                {
+                    em.FromEmail = from.Email;
+                    em.FromName = from.Name;
+                }
+                else
+                {
+                    ViewBag.Sent = true;
+                    ViewBag.Error = "Error loading data";
+                    return View("Error");
+                }
+                em.ReturnUrl = topic.Id.ToString();
+                
+                em.Subject = _languageResource["sendtoSubject", from.Name].Value;
+                
+                em.Message =
+                    String.Format(
+                        _languageResource["sendtoMessage"].Value,
+                        _config.ForumTitle, _config.ForumUrl,
+                        topic.Id, Request.Query["archived"], topic.Subject);
+                ViewBag.TopicTitle = topic.Subject;
+                
+                ViewBag.Sent = false;
+                return PartialView("popSendTo", em);
+            }
+            else
+            {
+                var topic = _postService.GetTopic(id);
+                Member from = _memberService.Current();
+                
+                if (from != null)
+                {
+                    em.FromEmail = from.Email;
+                    em.FromName = from.Name;
+                }
+                else
+                {
+                    ViewBag.Sent = true;
+                    ViewBag.Error = "Error loading data";
+                    return View("Error");
+                }
+                em.ReturnUrl = topic.Id.ToString();
+                
+                em.Subject = _languageResource["sendtoSubject", from.Name].Value;
+                
+                em.Message =
+                    String.Format(
+                        _languageResource["sendtoMessage"].Value,
+                        _config.ForumTitle, _config.ForumUrl,
+                        topic.Id, Request.Query["archived"], topic.Title);
+                ViewBag.TopicTitle = topic.Title;
+                
+                ViewBag.Sent = false;
+                return PartialView("popSendTo", em);
+            }
+
+            ViewBag.Error = _languageResource["InvalidID"]; 
+            return PartialView("_Error");
         }
-        public async Task<IActionResult> Send(int id)
+        
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public ActionResult SendTo(EmailViewModel model)
         {
-            var member = await _memberService.GetById(User);
-            throw new NotImplementedException();
+            
+            _mailSender.SendToFreind( model);
+
+
+            TempData["Success"] = "Email sent successfully";
+            return RedirectToAction("Index", "Topic", new { id=model.ReturnUrl, pagenum = -1 });
+            //return PartialView("popSendTo",model);
+        }
+
+        public ActionResult Print(int id)
+        {
+            bool moderator;
+            bool admin;
+            string templateView = "";
+            PostIndexModel model;
+
+            var archived = Request.Query["archived"] == "1";
+            if (archived)
+            {
+                var topic = _postService.GetArchivedTopic(id);
+                if (topic != null)
+                {
+                    moderator = User.IsInRole("FORUM_" + topic.ForumId);
+                    admin = User.IsInRole("Administrator");
+
+                }
+                else
+                {
+                    ViewBag.Error = "No Topic Found with that ID";
+                    return View("Error");
+                }
+                if (topic.ReplyCount > 0)
+                {
+                    topic = _postService.GetArchivedTopicWithRelated(id);
+                }
+                PagedList<ArchivedReply>? pagedReplies = PagedReplies(1, 100, "desc", topic);
+                model = new PostIndexModel()
+                {
+                    Id = topic.Id,
+                    Title = topic.Subject,
+                    Author = topic.Member!,
+                    AuthorId = topic.Member!.Id,
+                    ShowSig = topic.Sig == 1,
+                    Views = topic.ViewCount,
+                    IsLocked = topic.Status == 0 || topic.Forum?.Status == 0,
+                    IsSticky = topic.IsSticky == 1,
+                    //AuthorRating = post.User?.Rating ?? 0,
+                    AuthorName = topic.Member?.Name ?? "Unknown",
+                    Created = topic.Date.FromForumDateStr(),
+                    Content = topic.Message,
+                    Replies = pagedReplies != null ? BuildPostReplies(pagedReplies) : null,
+                    ForumId = topic.Forum!.Id,
+                    ForumName = topic.Forum.Title,
+                    PageNum = 1,
+                    PageCount = 10,
+                    PageSize = 100,
+                    SortDir = "desc",
+                    Edited = topic.LastEdit?.FromForumDateStr(),
+                    EditedBy = topic.LastEditby == null ? "" : _memberService.GetMemberName(topic.LastEditby.Value)
+                };
+            }
+            else
+            {
+                var topic = _postService.GetTopic(id);
+                if (topic != null)
+                {
+                    moderator = User.IsInRole("FORUM_" + topic.ForumId);
+                    admin = User.IsInRole("Administrator");
+
+                }
+                else
+                {
+                    ViewBag.Error = "No Topic Found with that ID";
+                    return View("Error");
+                }
+                if (topic.ReplyCount > 0)
+                {
+                    topic = _postService.GetTopicWithRelated(id);
+                }
+                PagedList<PostReply>? pagedReplies = PagedReplies(1, 100, "desc", topic);
+                model = new PostIndexModel()
+                {
+                    Id = topic.Id,
+                    Title = topic.Title,
+                    Author = topic.Member!,
+                    AuthorId = topic.Member!.Id,
+                    ShowSig = topic.Sig == 1,
+                    Views = topic.ViewCount,
+                    IsLocked = topic.Status == 0 || topic.Forum?.Status == 0,
+                    IsSticky = topic.IsSticky == 1,
+                    Answered = topic.Answered,
+                    //AuthorRating = post.User?.Rating ?? 0,
+                    AuthorName = topic.Member?.Name ?? "Unknown",
+                    Created = topic.Created.FromForumDateStr(),
+                    Content = topic.Content,
+                    Replies = pagedReplies != null ? BuildPostReplies(pagedReplies) : null,
+                    ForumId = topic.Forum!.Id,
+                    ForumName = topic.Forum.Title,
+                    PageNum = 1,
+                    PageCount = 10,
+                    PageSize = 100,
+                    SortDir = "desc",
+                    Edited = topic.LastEdit?.FromForumDateStr(),
+                    EditedBy = topic.LastEditby == null ? "" : _memberService.GetMemberName(topic.LastEditby.Value)
+                };
+            }
+
+            //if (topic.Forum.Type == Enumerators.ForumType.BlogPosts)
+            //{
+            //    templateView = "Blog/";
+            //}
+
+
+            ViewBag.IsForumModerator = moderator;
+            ViewBag.IsAdministrator = admin;
+
+
+            return View(templateView + "Print", model);
         }
 
         private Post BuildPost(NewPostModel model, int memberid)
@@ -507,6 +701,23 @@ namespace MVCForum.Controllers
                 EditedBy = reply.LastEditby == null ? "" : _memberService.GetMemberName(reply.LastEditby.Value)
             });
         }
+        private IEnumerable<PostReplyModel> BuildPostReplies(IEnumerable<ArchivedReply> replies)
+        {
+            return replies.Select(reply => new PostReplyModel()
+            {
+                Id = reply.Id,
+                AuthorId = reply.Member!.Id,
+                Author = reply.Member,
+                AuthorName = reply.Member.Name,
+                Answer = false,
+                Created = reply.Created.FromForumDateStr(),
+                Content = reply.Content,
+                AuthorPosts = reply.Member.Posts,
+                AuthorRole = reply.Member.Level,
+                Edited = reply.LastEdited?.FromForumDateStr(),
+                EditedBy = reply.LastEditby == null ? "" : _memberService.GetMemberName(reply.LastEditby.Value)
+            });
+        }
         private PagedList<PostReply>? PagedReplies(int page, int pagesize, string sortdir, Post post)
         {
             if(post.ReplyCount < 1) return null;
@@ -515,7 +726,14 @@ namespace MVCForum.Controllers
                 : new PagedList<PostReply>(post?.Replies?.OrderByDescending(r => r.Created), page, pagesize);
             return pagedReplies;
         }
-
+        private PagedList<ArchivedReply>? PagedReplies(int page, int pagesize, string sortdir, ArchivedTopic post)
+        {
+            if(post.ReplyCount < 1) return null;
+            var pagedReplies = sortdir == "asc"
+                ? new PagedList<ArchivedReply>(post?.Replies?.OrderBy(r => r.Created), page, pagesize)
+                : new PagedList<ArchivedReply>(post?.Replies?.OrderByDescending(r => r.Created), page, pagesize);
+            return pagedReplies;
+        }
         /// <summary>
         /// File upload handler for Topics
         /// </summary>

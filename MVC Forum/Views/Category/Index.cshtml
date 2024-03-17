@@ -23,9 +23,9 @@
         {
             <form>
                 <div class="btn-group mb-2">
+                    <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" title=" @Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
                     <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" title="@Localizer["tipEditCategory"]" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> @Localizer["tipEditCategory"]</span></button>
                     <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@cat" href="/Category/Delete/?id=" title="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
-                    <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" title=" @Localizer["tipNewForum"]" class="btn btn-outline-success"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
                 </div>
             </form>
         }
@@ -33,8 +33,8 @@
         {
             <form >
                 <div class="btn-group mb-2">
-                    <button asp-controller="Category" type="submit" asp-action="Create" title="@Localizer["tipNewCategory"]" class="btn btn-outline-warning"><i class="fa fa-folder-open"></i><span class="d-none d-md-inline"> @Localizer["tipNewCategory"]</span></button>
-                    <button asp-controller="Forum" type="submit" asp-action="Create" title="@Localizer["tipNewForum"]" class="btn btn-outline-warning"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
+                    <button asp-controller="Category" type="submit" asp-action="Create" title="@Localizer["tipNewCategory"]" class="btn btn-outline-primary"><i class="fa fa-folder-open"></i><span class="d-none d-md-inline"> @Localizer["tipNewCategory"]</span></button>
+                    <button asp-controller="Forum" type="submit" asp-action="Create" title="@Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
                 </div>
             </form>
         }
@@ -48,12 +48,12 @@
             {
                 var ID = categoryForums.Key;
                 <div class="subforum border-0 border-primary accordion-item">
-                    <h4 class="accordion-header subforum-title rounded" id="heading_@ID">
+                    <h5 class="accordion-header subforum-title rounded" id="heading_@ID">
                         <button style="display: inline; width: 40px;" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@ID" aria-expanded="true" aria-controls="collapseOne">
                             <i class="fa fa-minus"></i>
                         </button>
                         <a style="display: inline;" href="/Category/@categoryForums.Key">@categoryForums.FirstOrDefault()?.CategoryName</a>
-                    </h4>
+                    </h5>
 
                     <div class="accordion-collapse collapse show" id="collapse_@ID" aria-labelledby="heading_@ID">
                         @foreach (var forum in categoryForums)
@@ -88,7 +88,7 @@
                                             <span>@forum.Posts @Localizer["lblPosts"] @Localizer["lblin"] @forum.Topics @Localizer["lblTopics"]</span>
                                         </div>
                                         <div class="subforum-info subforum-column">
-                                            @if (forum.LastPostTopicId.HasValue)
+                                            @if (forum.LastPostTopicId.HasValue && forum.LastPostTopicId.Value > 0)
                                             {
                                                 <text>@Localizer["lblPostedBy"]</text>
                                                 <member-link member-id="@forum.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link>

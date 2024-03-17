@@ -10,26 +10,36 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Admin\**" />
+    <Compile Remove="Views\Shared\Components\Events\**" />
     <Compile Remove="wwwroot\Content\Members\**" />
     <Compile Remove="wwwroot\Content\PhotoAlbum\**" />
     <Compile Remove="wwwroot\images\forum\**" />
     <Compile Remove="wwwroot\is-cache\**" />
     <Compile Remove="wwwroot\js\codemirror\**" />
+    <Content Remove="Views\Admin\**" />
+    <Content Remove="Views\Shared\Components\Events\**" />
     <Content Remove="wwwroot\Content\Members\**" />
     <Content Remove="wwwroot\Content\PhotoAlbum\**" />
     <Content Remove="wwwroot\images\forum\**" />
     <Content Remove="wwwroot\is-cache\**" />
     <Content Remove="wwwroot\js\codemirror\**" />
+    <EmbeddedResource Remove="Views\Admin\**" />
+    <EmbeddedResource Remove="Views\Shared\Components\Events\**" />
     <EmbeddedResource Remove="wwwroot\Content\Members\**" />
     <EmbeddedResource Remove="wwwroot\Content\PhotoAlbum\**" />
     <EmbeddedResource Remove="wwwroot\images\forum\**" />
     <EmbeddedResource Remove="wwwroot\is-cache\**" />
     <EmbeddedResource Remove="wwwroot\js\codemirror\**" />
+    <None Remove="Views\Admin\**" />
+    <None Remove="Views\Shared\Components\Events\**" />
     <None Remove="wwwroot\Content\Members\**" />
     <None Remove="wwwroot\Content\PhotoAlbum\**" />
     <None Remove="wwwroot\images\forum\**" />
     <None Remove="wwwroot\is-cache\**" />
     <None Remove="wwwroot\js\codemirror\**" />
+    <TypeScriptCompile Remove="Views\Admin\**" />
+    <TypeScriptCompile Remove="Views\Shared\Components\Events\**" />
     <TypeScriptCompile Remove="wwwroot\Content\Members\**" />
     <TypeScriptCompile Remove="wwwroot\Content\PhotoAlbum\**" />
     <TypeScriptCompile Remove="wwwroot\is-cache\**" />
@@ -230,7 +240,7 @@
     <PackageReference Include="NuGet.Protocol" Version="6.3.3" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.1" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="Snitz.Events" Version="1.0.0-rc1.35" />
+    <PackageReference Include="Snitz.Events" Version="1.0.0-rc1.44" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />

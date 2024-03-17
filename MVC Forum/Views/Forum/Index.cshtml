@@ -119,7 +119,7 @@
         @foreach (var post in Model.Posts!){
             <partial name="TopicListing" model="post" view-data="ViewData" />
         }
-        @if (Model.Forum.Posts == 0)
+        @if (Model.Forum.Topics == 0)
         {
             <p class="text-center p-4">@Localizer["lblNoForumTopics"]</p>
         }else if (Model.Posts == null || Model.Posts?.Count() == 0)

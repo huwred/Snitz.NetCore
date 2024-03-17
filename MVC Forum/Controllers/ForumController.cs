@@ -42,7 +42,7 @@ namespace MVCForum.Controllers
         //[Breadcrumb("Forums",FromAction = "Index",FromController = typeof(CategoryController))]
         [Route("Forum/{id:int}")]
         [Route("Forum/Index/{id:int}")]
-        public IActionResult Index(int id, int page = 1, int defaultdays=30,string orderby = "lpd",string sortdir="des", int pagesize = 10)
+        public IActionResult Index(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 10)
         {
             bool passwordrequired = false;
             bool notallowed = false;
@@ -133,15 +133,48 @@ namespace MVCForum.Controllers
                 stickylistings = null;
                 forumPosts = forum?.Posts;
             }
-            
-            if (defaultdays > 0)
+            if (defaultdays != null)
             {
-                forumPosts = forumPosts?.Where(f => f.LastPostDate?.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays * -1) ||
-                                                    (f.LastPostDate == null && f.Created?.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays * -1)));
+                HttpContext.Session.SetInt32($"Forum_{forum.Id}", defaultdays.Value);
             }
             else
             {
-                switch (defaultdays)
+                defaultdays = HttpContext.Session.GetInt32($"Forum_{forum.Id}");
+            }
+
+            if (defaultdays != null && defaultdays.Value > 0)
+            {
+                forumPosts = forumPosts?.Where(f => f.LastPostDate?.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays.Value * -1) ||
+                                                    (f.LastPostDate == null && f.Created?.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays.Value * -1)));
+            }
+            else if (defaultdays != null)
+            {
+                switch (defaultdays.Value)
+                {
+                    case -1 : //AllOpen 
+                        forumPosts = forumPosts?.Where(f => f.Status == 1);
+                        break;
+                    //case -99 : //Archived
+                    //    //TODO: Arcvied Topics                      
+                    //    break;
+                    case -999: //NoReplies
+                        forumPosts = forumPosts?.Where(f => f is { Status: 1, ReplyCount: 0 });
+                        break;
+                    case -9999: //Draft
+                        forumPosts = forumPosts?.Where(f => f.Status == 99 ); //TODO: current user check
+                        break;
+                    case -88: //Hot
+                        if (_config.GetIntValue("STRHOTTOPIC") == 1)
+                        {
+                            var hottopicount = _config.GetIntValue("INTHOTTOPICNUM",25);
+                            forumPosts = forumPosts?.Where(f => f.ReplyCount > hottopicount);
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                switch (forum.Defaultdays)
                 {
                     case -1 : //AllOpen 
                         forumPosts = forumPosts?.Where(f => f.Status == 1);
@@ -162,7 +195,12 @@ namespace MVCForum.Controllers
                             forumPosts = forumPosts?.Where(f => f.ReplyCount > hottopicount);
                         }
                         break;
-                }
+                    default:
+                        if(forum.Defaultdays > 0)
+                            forumPosts = forumPosts?.Where(f => f.LastPostDate?.FromForumDateStr() > DateTime.UtcNow.AddDays(forum.Defaultdays * -1) ||
+                                                                (f.LastPostDate == null && f.Created?.FromForumDateStr() > DateTime.UtcNow.AddDays(forum.Defaultdays * -1)));
+                        break;
+                }                
             }
 
             forumPosts = orderby switch

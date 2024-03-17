@@ -40,5 +40,11 @@
     "inputFiles": [
       "wwwroot/js/site.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/print.min.css",
+    "inputFiles": [
+      "wwwroot/css/print.css"
+    ]
   }
 ]

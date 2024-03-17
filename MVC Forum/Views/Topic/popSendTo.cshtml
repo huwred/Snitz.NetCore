@@ -1,0 +1,50 @@
+﻿@model MVCForum.ViewModels.EmailViewModel
+@{
+    ViewBag.Title = Localizer["tipSendTopic"];
+}
+@if ((bool) ViewBag.Sent)
+{
+    <div class="row text-center">
+    <label>@ViewBag.Message</label>
+        </div>
+}
+else
+{
+
+using (Html.BeginForm("SendTo", "Topic", FormMethod.Post, new { id = "sendToForm" }))
+{
+    @Html.HiddenFor(model=>model.FromEmail)
+    @Html.HiddenFor(model=>model.FromName)
+    @Html.HiddenFor(model=>model.ReturnUrl)
+    @Html.AntiForgeryToken()
+    <div class="container">
+        <div class="panel panel-info">
+            <div class="panel-heading form-horizontal">
+                <div class="mb-3">
+                    <label asp-for="ToName" class="form-label flip text-right">@Localizer["EmailModel_Name"]</label>
+                    @Html.TextBoxFor(model => model.ToName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.ToName)
+                </div>
+                <div class="mb-3">
+                    <label asp-for="ToEmail" class="form-label flip text-right">@Localizer["Email"]</label>
+                    @Html.TextBoxFor(model => model.ToEmail, new { @class = "form-control ltr" })
+                    @Html.ValidationMessageFor(m => m.ToEmail)
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Subject" class="form-label flip text-right">@Localizer["Subject"]</label>
+                    @Html.TextBoxFor(model => model.Subject, new { @class = "form-control" })
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Message" class="form-label flip text-right">@Localizer["Message"]</label>
+                    <textarea rows="9" name="Message" class="bbc-code-editor form-control" id="Message" data-val-required="@Localizer["MessageRequired"]" data-val="true">@Model.Message</textarea>
+                </div>
+            </div>
+        </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">@Localizer["btnCancel"]</button>
+        <input type="submit" class="btn btn-primary" value="@Localizer["btnSend"]"/>
+    </div>
+    </div>
+    
+    }    
+}
