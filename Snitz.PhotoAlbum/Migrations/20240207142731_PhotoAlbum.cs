@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using SnitzCore.Data;
 
 #nullable disable
 
@@ -13,7 +14,10 @@ namespace Snitz.PhotoAlbum.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
+            if (migrationBuilder.TableExists("FORUM_IMAGES"))
+            {
+                return;
+            }
             migrationBuilder.CreateTable(
                 name: "FORUM_IMAGE_CAT",
                 columns: table => new
@@ -50,17 +54,17 @@ namespace Snitz.PhotoAlbum.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     I_MID = table.Column<int>(type: "int", nullable: false),
                     I_CAT = table.Column<int>(type: "int", nullable: false),
-                    I_WIDTH = table.Column<int>(type: "int", nullable: false),
-                    I_HEIGHT = table.Column<int>(type: "int", nullable: false),
+                    I_WIDTH = table.Column<int>(type: "int", nullable: true),
+                    I_HEIGHT = table.Column<int>(type: "int", nullable: true),
                     I_SIZE = table.Column<int>(type: "int", nullable: false),
-                    I_VIEWS = table.Column<int>(type: "int", nullable: false),
+                    I_VIEWS = table.Column<int>(type: "int", nullable: true),
                     I_LOC = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     I_DESC = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    I_TYPE = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    I_TYPE = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     I_DATE = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    I_GROUP_ID = table.Column<int>(type: "int", nullable: false),
-                    I_SCIENTIFICNAME = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    I_NORWEGIANNAME = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    I_GROUP_ID = table.Column<int>(type: "int", nullable: true),
+                    I_SCIENTIFICNAME = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    I_NORWEGIANNAME = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     I_PRIVATE = table.Column<bool>(type: "bit", nullable: false),
                     I_NOTFEATURED = table.Column<bool>(type: "bit", nullable: false)
                 },
