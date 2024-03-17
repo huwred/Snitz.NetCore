@@ -29,5 +29,6 @@ namespace MVCForum.ViewModels.Forum
         public string? OrderBy { get; set; }
         public string? SortDir { get; set; }
         public int? LastPostReplyId { get; set; }
+        public int Order { get; set; }
     }
 }

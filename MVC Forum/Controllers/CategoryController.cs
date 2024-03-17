@@ -43,6 +43,9 @@ namespace MVCForum.Controllers
             {
                 _memberService.SetLastHere(User);
             }
+
+            var categories = _categoryService.GetAll().OrderBy(c=>c.Sort).ToList();
+
             var forums = _forumService.GetAll().Select(forum => new ForumListingModel()
             {
                 Id = forum.Id,
@@ -61,14 +64,15 @@ namespace MVCForum.Controllers
                 AccessType = forum.Privateforums,
                 ForumType = (ForumType)forum.Type,
                 Url = forum.Url,
-                Status = forum.Status
+                Status = forum.Status,
+                Order = forum.Order
                 
             }).ToList();
             if (id > 0)
             {
-                forums = forums.Where(f => f.CategoryId == id).ToList();
+                categories = categories.Where(f => f.Id == id).ToList();
                 var forumPage = new MvcBreadcrumbNode("Forums", "Category", "ttlForums");
-                var topicPage = new MvcBreadcrumbNode("", "Category", forums.First().CategoryName) { Parent = forumPage,RouteValues = new{id=forums.First().CategoryId}};
+                var topicPage = new MvcBreadcrumbNode("", "Category", categories.First().Name) { Parent = forumPage,RouteValues = new{id=categories.First().Id}};
                 ViewData["BreadcrumbNode"] = topicPage; 
             }
             else
@@ -98,6 +102,7 @@ namespace MVCForum.Controllers
             });
             var model = new ForumIndexModel()
             {
+                Categories = categories,
                 ForumList = forums,
                 LatestPosts = latestPosts
             };

@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Post;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace MVCForum.Controllers
 {
@@ -445,10 +446,10 @@ namespace MVCForum.Controllers
         [Authorize(Roles="Administrator")]
         public async Task<IActionResult> Delete(int id)
         {
+            string referer = Request.Headers["Referer"].ToString();
             var catid = _forumService.GetById(id).CategoryId;
             await _forumService.Delete(id);
-            return Json(new { redirectToUrl = Url.Action("Index", "Category",new{id = catid}) });
-            //return RedirectToAction("Index", "Category",new{id = forum.CategoryId});
+            return Json(new { redirectToUrl = referer ?? Url.Action("Index", "Category",new{id = catid}) });
         }
 
         public IActionResult Search(string? searchFor, int pagesize=10,int page=1)
