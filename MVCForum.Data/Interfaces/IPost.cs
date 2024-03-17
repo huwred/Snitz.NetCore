@@ -30,5 +30,7 @@ namespace SnitzCore.Data.Interfaces
 
         Task UpdateLastPost(int topicid);
         Task<bool> Answer(int id);
+        ArchivedTopic GetArchivedTopic(int id);
+        ArchivedTopic GetArchivedTopicWithRelated(int id);
     }
 }

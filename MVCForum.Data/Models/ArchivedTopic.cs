@@ -1,4 +1,5 @@
-﻿using SnitzCore.Data.Extensions;
+﻿using System.Collections.Generic;
+using SnitzCore.Data.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -91,4 +92,10 @@ public partial class ArchivedTopic
 
     [Column("T_ALLOW_RATING")]
     public int AllowRating { get; set; }
+
+    public virtual Member? Member { get; set; }
+    public virtual Member? LastPostAuthor { get; set; }
+    public virtual Forum? Forum { get; set; }
+    public virtual Category? Category { get; set; }
+    public virtual IEnumerable<ArchivedReply>? Replies { get; set; }
 }

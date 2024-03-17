@@ -11,6 +11,7 @@ namespace SnitzCore.Data.Extensions
 {
     public static class PropertyExtensions
     {
+
         public static bool IsNumeric(this string value)
         {
             if (string.IsNullOrWhiteSpace(value))

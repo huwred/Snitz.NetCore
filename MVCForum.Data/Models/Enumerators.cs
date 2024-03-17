@@ -163,4 +163,16 @@ namespace SnitzCore.Data.Models
         [Display(Name = "CategorySubscription_TopicSubscriptions")] 
         TopicSubscription
     }
+
+    /// <summary>
+    /// Forum Subscription Level
+    /// </summary>
+    public enum SubscriptionLevel
+    {
+        None = 0,
+        Board,
+        Category,
+        Forum,
+        Topic
+    }
 }
