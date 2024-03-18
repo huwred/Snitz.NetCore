@@ -8,8 +8,11 @@ namespace SnitzCore.Data.Interfaces
     public interface IPost
     {
         Post GetTopic(int id);
+        Post GetTopicForUpdate(int id);
         Post GetTopicWithRelated(int id);
         PostReply GetReply(int id);
+        PostReply GetReplyForUdate(int id);
+
         IEnumerable<Post> GetAllTopicsAndRelated();
         IPagedList<Post> GetFilteredPost(string searchQuery, out int totalcount, int pagesize, int page);
         IPagedList<Post> Find(ForumSearch searchQuery, out int totalcount, int pagesize, int page);
@@ -19,7 +22,7 @@ namespace SnitzCore.Data.Interfaces
         Task DeleteReply(int id);
         Task Update(Post post);
         Task Update(PostReply post);
-
+        void IncrementUnModeratedCount(int id, int count);
         Task UpdateTopicContent(int id, string content);
         Task UpdateReplyContent(int id, string content);
         Task UpdateViewCount(int id);
@@ -28,7 +31,7 @@ namespace SnitzCore.Data.Interfaces
         Task Create(PostReply post);
         Task<bool> LockTopic(int id, short status);
 
-        Task UpdateLastPost(int topicid);
+        Task UpdateLastPost(int topicid, int? moderatedcount);
         Task<bool> Answer(int id);
         ArchivedTopic GetArchivedTopic(int id);
         ArchivedTopic GetArchivedTopicWithRelated(int id);

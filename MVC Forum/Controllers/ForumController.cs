@@ -118,6 +118,7 @@ namespace MVCForum.Controllers
                 Created = p.Created.FromForumDateStr(),
                 RepliesCount = p.ReplyCount,
                 ViewCount = p.ViewCount,
+                UnmoderatedReplies = p.UnmoderatedReplies,
                 IsSticky = p.IsSticky == 1 && _config.GetIntValue("STRSTICKYTOPIC") == 1,
                 Status = p.Status,
                 Message = p.Content,
@@ -244,6 +245,7 @@ namespace MVCForum.Controllers
                 Created = p.Created.FromForumDateStr(),
                 RepliesCount = p.ReplyCount,
                 ViewCount = p.ViewCount,
+                UnmoderatedReplies = p.UnmoderatedReplies,
                 IsSticky = p.IsSticky == 1 && _config.GetIntValue("STRSTICKYTOPIC") == 1,
                 Status = p.Status,
                 Message = p.Content,
@@ -344,6 +346,7 @@ namespace MVCForum.Controllers
                 Created = p.Created.FromForumDateStr(),
                 RepliesCount = p.ReplyCount,
                 ViewCount = p.ViewCount,
+                UnmoderatedReplies = p.UnmoderatedReplies,
                 IsSticky = p.IsSticky == 1,
                 Status = p.Status,
                 Message = p.Content,
@@ -449,6 +452,7 @@ namespace MVCForum.Controllers
                 Subject = forum.Title,
                 Type = (ForumType)forum.Type,
                 Status = forum.Status == 1,
+                Moderation = forum.Moderation,
                 ForumId = id
             };
             return View("Create",model);
@@ -500,6 +504,7 @@ namespace MVCForum.Controllers
                 Created = p.Created.FromForumDateStr(),
                 RepliesCount = p.ReplyCount,
                 ViewCount = p.ViewCount,
+                UnmoderatedReplies = p.UnmoderatedReplies,
                 IsSticky = p.IsSticky == 1,
                 Status = p.Status,
                 Message = p.Content,
@@ -559,6 +564,7 @@ namespace MVCForum.Controllers
                 Created = p.Created.FromForumDateStr(),
                 RepliesCount = p.ReplyCount,
                 ViewCount = p.ViewCount,
+
                 IsSticky = p.IsSticky == 1,
                 Status = p.Status,
                 Message = p.Content,

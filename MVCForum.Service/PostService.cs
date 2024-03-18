@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Org.BouncyCastle.Crypto.Operators;
 using X.PagedList;
 
 namespace SnitzCore.Service
@@ -40,6 +41,7 @@ namespace SnitzCore.Service
             await _dbContext.SaveChangesAsync();
 
             var forum = await _forumservice.UpdateLastPost(post.ForumId);
+            
             if (forum.CountMemberPosts == 1)
             {
                 await _memberService.UpdatePostCount(post.MemberId);
@@ -55,15 +57,28 @@ namespace SnitzCore.Service
         public async Task Create(PostReply post)
         {
             _dbContext.Replies.Add(post);
+            int? moderated = null;
             await _dbContext.SaveChangesAsync();
             //update topic stuff
-            await UpdateLastPost(post.PostId);
+            if (post.Status == (short)Status.UnModerated)
+            {
+                moderated = 1;
+            }
+            await UpdateLastPost(post.PostId,moderated);
             //update Forum
             var forum = await _forumservice.UpdateLastPost(post.ForumId);
             if (forum.CountMemberPosts == 1)
             {
                 await _memberService.UpdatePostCount(post.MemberId);
             }
+        }
+
+        public void IncrementUnModeratedCount(int id, int count)
+        {
+            var topic = GetTopicForUpdate(id);
+            topic.UnmoderatedReplies += count;
+            _dbContext.Update(topic);
+            _dbContext.SaveChanges();
         }
 
         public async Task<bool> LockTopic(int id, short status = 0)
@@ -94,6 +109,11 @@ namespace SnitzCore.Service
         public async Task DeleteReply(int id)
         {
             var post = _dbContext.Replies.SingleOrDefault(f => f.Id == id);
+            int? moderated = null;
+            if (post.Status == (short)Status.UnModerated || post.Status == (short)Status.OnHold)
+            {
+                moderated = -1;
+            }
             if (post != null)
             {
                 var topicid = post.PostId;
@@ -101,7 +121,7 @@ namespace SnitzCore.Service
                 _dbContext.Replies.Remove(post);
                 await _dbContext.SaveChangesAsync();
 
-                await UpdateLastPost(topicid);
+                await UpdateLastPost(topicid, moderated);
                 await _forumservice.UpdateLastPost(forumid);
 
             }
@@ -170,6 +190,13 @@ namespace SnitzCore.Service
                 .Single(p => p.Id == id);
             return post;
         }
+        public Post GetTopicForUpdate(int id)
+        {
+            var post = _dbContext.Posts
+                .AsNoTrackingWithIdentityResolution()
+                .Single(p => p.Id == id);
+            return post;
+        }
         public ArchivedTopic GetArchivedTopic(int id)
         {
             var post = _dbContext.ArchivedTopics
@@ -217,13 +244,21 @@ namespace SnitzCore.Service
 
             var post = _dbContext.Replies.Where(p => p.Id == id)
                 .AsNoTrackingWithIdentityResolution()
-                .Include(p => p.Member).AsNoTracking()
+                .Include(p => p.Member).AsNoTrackingWithIdentityResolution()
                 .Include(r => r.Topic).ThenInclude(t=>t.Member).AsNoTracking()
                 .Single();
 
             return post;
         }
+        public PostReply GetReplyForUdate(int id)
+        {
 
+            var post = _dbContext.Replies.Where(p => p.Id == id)
+                .AsNoTrackingWithIdentityResolution()
+                .Single();
+
+            return post;
+        }
         public IPagedList<Post> GetFilteredPost(string? searchQuery,out int totalcount, int pagesize=25, int page=1)
         {
             if (searchQuery == null)
@@ -291,10 +326,10 @@ namespace SnitzCore.Service
         {
             throw new NotImplementedException();
         }
-        public async Task UpdateLastPost(int topicid)
+        public async Task UpdateLastPost(int topicid, int? moderatedcount)
         {
-            var topic = GetTopic(topicid);
-            var lastreply = _dbContext.Replies
+            var topic = GetTopicForUpdate(topicid);
+            var lastreply = _dbContext.Replies.AsNoTrackingWithIdentityResolution()
                 .Where(t=>t.PostId == topicid && t.Status < 2)
                 .OrderByDescending(t=>t.Created)
                 .Select(p => new { LastPostId = p.Id, LastPostAuthorId = p.MemberId,LastPostDate = p.Created, PostCount = _dbContext.Replies.Count(r=>r.PostId == topicid && r.Status <2) })
@@ -313,6 +348,11 @@ namespace SnitzCore.Service
                 topic.LastPostDate = lastreply.LastPostDate;
                 topic.LastPostAuthorId = lastreply.LastPostAuthorId;
                 topic.ReplyCount = lastreply.PostCount;
+            }
+
+            if (moderatedcount != null)
+            {
+                topic.UnmoderatedReplies += moderatedcount.Value;
             }
             _dbContext.Update(topic);
             await _dbContext.SaveChangesAsync();
@@ -353,6 +393,7 @@ namespace SnitzCore.Service
                 reply.Status = (short)status;
                 _dbContext.Update(reply);
                 await _dbContext.SaveChangesAsync();
+
             }
         }
     }

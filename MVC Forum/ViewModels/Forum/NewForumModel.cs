@@ -18,7 +18,6 @@ namespace MVCForum.ViewModels.Forum
         public ForumType Type { get; set; }
 
         public bool Status { get; set; }
-
         public int Order { get; set; } = 99;
         [Display(Name = "Default view")]
         public DefaultDays DefaultView { get; set; } = DefaultDays.Last30Days;

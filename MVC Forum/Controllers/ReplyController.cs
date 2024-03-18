@@ -68,6 +68,13 @@ namespace MVCForum.Controllers
                 {
                     case "Approve" :
                         await _postService.SetReplyStatus(vm.Id, Status.Open);
+                        await _postService.UpdateLastPost(reply.PostId, -1);
+                        //update Forum
+                        forum = await _forumService.UpdateLastPost(reply.ForumId);
+                        if (forum.CountMemberPosts == 1)
+                        {
+                            await _memberService.UpdatePostCount(reply.MemberId);
+                        }
                         //Send email
                             subject = _config.ForumTitle + ": Post Approved";
                             message = "Has been approved. You can view it at " + Environment.NewLine +

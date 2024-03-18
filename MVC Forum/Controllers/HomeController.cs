@@ -63,6 +63,7 @@ namespace MVCForum.Controllers
                 Forum = GetForumListingForPost(post),
                 RepliesCount = post.ReplyCount,
                 ViewCount = post.ViewCount,
+                UnmoderatedReplies = post.UnmoderatedReplies,
                 IsSticky = post.IsSticky == 1,
                 Status = post.Status,
                 Answered = post.Answered

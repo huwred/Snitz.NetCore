@@ -19,7 +19,12 @@
         </li>
         @foreach (var p in posts)
         {
-            <li class="list-group-item modstatus-@p.Status">
+            var moderatedClass = $"modstatus-{p.Status}";
+            if (p.UnmoderatedReplies > 0)
+            {
+                moderatedClass = "modstatus-2";
+            }
+            <li class="list-group-item @moderatedClass">
                 <div class="forumLogo" style="background-image: url(@p.Forum?.ImageUrl); background-size: 100%"></div>
                 <div class="postTitle">
                     <a class="latestpost-title" asp-controller="Topic" asp-action="Index" asp-route-id="@p.Id" title="@p.Title">@p.Title</a>

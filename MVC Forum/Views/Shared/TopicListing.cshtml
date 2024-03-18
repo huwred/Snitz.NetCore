@@ -7,12 +7,17 @@
 @{
     Layout = null;
     var answeredClass = "";
+    var moderatedClass = $"modstatus-{Model.Status}";
+    if (Model.UnmoderatedReplies > 0)
+    {
+        moderatedClass = "modstatus-2";
+    }
     if (Model.Answered)
     {
         answeredClass = "answered-overlay";
     }
 }
-<div class="table-row @answeredClass rounded-2 modstatus-@Model.Status">
+<div class="table-row @answeredClass rounded-2 @moderatedClass">
 
     <div class="status" data-status="@Model.Status" style="z-index:2">
         <snitz-topic-icon answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>

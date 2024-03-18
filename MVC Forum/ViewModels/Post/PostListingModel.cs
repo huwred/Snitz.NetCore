@@ -9,8 +9,9 @@ namespace MVCForum.ViewModels.Post
         public string Message { get; set; } = null!;
         public ForumListingModel? Forum { get; set; }
 
-        public int RepliesCount;
-        public int ViewCount;
+        public int RepliesCount { get; set; }
+        public int ViewCount { get; set; }
+        public int UnmoderatedReplies { get; set; }
 
         //public DateTime Edited { get; set; }
         public DateTime? LastPostDate { get; set; }

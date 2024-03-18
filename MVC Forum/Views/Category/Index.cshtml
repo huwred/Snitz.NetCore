@@ -91,7 +91,7 @@
                                         <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
                                         @if (forum.ForumModeration != Moderation.UnModerated)
                                         {
-                                            <p class="mt-2 fst-italic">This Forum is moderated</p>
+                                            <p class="mt-2 fst-italic">This Forum is moderated @forum.ForumModeration</p>
                                         }
                                         
                                     </div>

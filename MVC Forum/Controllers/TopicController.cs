@@ -305,7 +305,7 @@ namespace MVCForum.Controllers
                 Content = reply.Content,
                 AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 1,
+                Lock = topic.Status == 0,
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = reply.Created.FromForumDateStr(),
@@ -357,26 +357,28 @@ namespace MVCForum.Controllers
         [Route("AddReply/")]
         public async Task<IActionResult> AddReply(NewPostModel model)
         {
-            var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId!);
-            var reply = BuildReply(model, user!.MemberId);
+            //var userId = _userManager.GetUserId(User);
+            //var user = await _userManager.FindByIdAsync(userId!);
+            var member = _memberService.GetByUsername(User.Identity.Name);
+            var reply = BuildReply(model, member.Id);
             if (model.Id != 0)
             {
                 reply.Content = model.Content;
                 reply.Sig = (short)(model.UseSignature ? 1 : 0);
                 reply.LastEdited = DateTime.UtcNow.ToForumDateStr();
-                reply.LastEditby = user.MemberId;
+                reply.LastEditby = member.Id;
                 await _postService.Update(reply);
             }
             else
             {
                 await _postService.Create(reply);
             }
-            var topic = _postService.GetTopic(reply.PostId);
-            topic.Status = (short)(model.Lock ? 1 : 0);
+            var topic = _postService.GetTopicForUpdate(reply.PostId);
+            topic.Status = (short)(model.Lock ? 0 : 1);
             topic.IsSticky = (short)(model.Sticky ? 1 : 0);
             topic.ArchiveFlag = (short)(model.DoNotArchive ? 1 : 0);
             _postService?.Update(topic);
+            
             // TODO: Implement User Rating Management
             return RedirectToAction("Index", "Topic", new { id = reply.PostId });
         }
@@ -389,7 +391,7 @@ namespace MVCForum.Controllers
             var member = _memberService.GetById(User).Result;
             var post = _postService.GetReply(id);
             //if this isn't the last post then can't delete it
-            if ((post.MemberId == member!.Id && post!.Topic!.LastPostReplyId != id) && !member.Roles.Contains("Administrator"))
+            if ((post.MemberId == member!.Id && post!.Topic!.LastPostReplyId != id) && !member.Roles.Contains("Administrator") && post.Status < 2)
             {
                 ModelState.AddModelError("","Unable to delete this reply");
                 return Json(new { result = false, error = "Unable to delete this reply" });
@@ -666,6 +668,13 @@ namespace MVCForum.Controllers
                 {
                     case "Approve" :
                         await _postService.SetStatus(vm.Id, Status.Open);
+                        await _postService.UpdateLastPost(vm.Id,null);
+                        //update Forum
+                        forum = await _forumService.UpdateLastPost(topic.ForumId);
+                        if (forum.CountMemberPosts == 1)
+                        {
+                            await _memberService.UpdatePostCount(topic.MemberId);
+                        }
                         //Send email
                             subject = _config.ForumTitle + ": Post Approved";
                             message = "Has been approved. You can view it at " + Environment.NewLine +
@@ -753,7 +762,7 @@ namespace MVCForum.Controllers
         {
             if (model.Id != 0)
             {
-                return _postService.GetReply(model.Id);
+                return _postService.GetReplyForUdate(model.Id);
             }
 
             var donotModerate = User.IsInRole("Administrator") || User.IsInRole("Forum_" + model.ForumId);

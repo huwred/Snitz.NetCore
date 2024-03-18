@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 
 namespace MVCForum.Extensions
@@ -19,6 +20,7 @@ namespace MVCForum.Extensions
             {
                 Mssql => builder.UseSqlServer(connectionstring, opt => 
                 {
+                    
                     opt.MigrationsAssembly("MSSqlMigrations");
                 }),
 
