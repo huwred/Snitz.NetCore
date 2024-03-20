@@ -53,7 +53,7 @@
                         <button style="display: inline; width: 40px;" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@ID" aria-expanded="true" aria-controls="collapseOne">
                             <i class="fa fa-minus"></i>
                         </button>
-                        <a style="display: inline;" href="/Category/@ID">@category.Name</a>
+                        <a style="display: inline;" href="/Category/@ID">@category.Name @((CategorySubscription)category.Subscription)</a>
                     </h5>
 
                     <div class="accordion-collapse collapse show" id="collapse_@ID" aria-labelledby="heading_@ID">
@@ -93,7 +93,7 @@
                                         {
                                             <p class="mt-2 fst-italic">This Forum is moderated @forum.ForumModeration</p>
                                         }
-                                        
+                                        <p>@forum.ForumSubscription</p>
                                     </div>
                                     @if (forum.ForumType != ForumType.WebLink)
                                     {

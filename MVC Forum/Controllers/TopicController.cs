@@ -17,12 +17,10 @@ using X.PagedList;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Snitz.PhotoAlbum.ViewModels;
 using MVCForum.ViewModels.Post;
-using static Org.BouncyCastle.Math.EC.ECCurve;
-using System.Resources;
 using MVCForum.ViewModels;
-using Microsoft.Extensions.Hosting;
-using System.Drawing.Printing;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Threading;
 
 namespace MVCForum.Controllers
 {
@@ -56,7 +54,7 @@ namespace MVCForum.Controllers
                 _memberService.SetLastHere(User);
             }
             var post = _postService.GetTopic(id);
-            if (post.ReplyCount > 0)
+            if (post.ReplyCount > 0 || post.UnmoderatedReplies > 0)
             {
                 post = _postService.GetTopicWithRelated(id);
             }
@@ -657,17 +655,20 @@ namespace MVCForum.Controllers
 
             if (ModelState.IsValid)
             {
-                var topic = _postService.GetTopic(vm.Id);
+                var topic = _postService.GetTopicForUpdate(vm.Id);
                 var author = _memberService.GetById(topic.MemberId);
                 var forum = _forumService.GetById(topic.ForumId);
                 var subject = "";
                 var message = "";
                 
-
+                CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+                var topicLink = Url.Action("Index", "Topic", new { id = topic.Id, pagenum=-1}, Request.Scheme);
                 switch (vm.PostStatus)
                 {
                     case "Approve" :
-                        await _postService.SetStatus(vm.Id, Status.Open);
+                        topic.Status = 1;
+                        _snitzDbContext.Update(topic);
+                        await _snitzDbContext.SaveChangesAsync();
                         await _postService.UpdateLastPost(vm.Id,null);
                         //update Forum
                         forum = await _forumService.UpdateLastPost(topic.ForumId);
@@ -676,17 +677,16 @@ namespace MVCForum.Controllers
                             await _memberService.UpdatePostCount(topic.MemberId);
                         }
                         //Send email
-                            subject = _config.ForumTitle + ": Post Approved";
-                            message = "Has been approved. You can view it at " + Environment.NewLine +
-                                      _config.ForumUrl + "Topic/Posts/" + topic.Id + "?pagenum=-1" +
-                                            Environment.NewLine +
-                                            vm.ApprovalMessage;
+                        subject = _config.ForumTitle + ": Topic Approved";
+                        message = 
+                            _mailSender.ParseTemplate("approvePost.html",_languageResource["tipApproveTopic"].Value,author.Email,author.Name, topicLink, cultureInfo,vm.ApprovalMessage);
+
                         var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBCRIPTION");
                         if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
                         {
-                            switch ((Subscription)forum.Subscription)
+                            switch ((ForumSubscription)forum.Subscription)
                             {
-                                case Subscription.ForumSubscription:
+                                case ForumSubscription.ForumSubscription:
                                     //TODO: BackgroundJob.Enqueue(() => ProcessSubscriptions.Topic(vm.Id));
                                     break;
                             }
@@ -694,18 +694,20 @@ namespace MVCForum.Controllers
                         break;
                     case "Reject":
                         
-                        _postService.DeleteTopic(topic.Id);
+                        await _postService.DeleteTopic(topic.Id);
                         //Send email
-                            subject = _config.ForumTitle + ": Post rejected";
-                            message = "Has been rejected. " + Environment.NewLine +
-                                            vm.ApprovalMessage;
+                            subject = _config.ForumTitle + ": Topic rejected";
+                            message = 
+                            _mailSender.ParseTemplate("rejectPost.html",_languageResource["tipRejectTopic"].Value,author.Email,author.Name, "", cultureInfo,vm.ApprovalMessage);
+
                         break;
                     case "Hold":
                         await _postService.SetStatus(vm.Id, Status.OnHold);
                         //Send email
-                            subject = _config.ForumTitle + ": Post placed on Hold";
-                            message = "Has been placed on Hold. " + Environment.NewLine +
-                                            vm.ApprovalMessage;
+                            subject = _config.ForumTitle + ": Topic placed on Hold";
+                            message =                             
+                                _mailSender.ParseTemplate("onholdPost.html",_languageResource["tipOnholdTopic"].Value,author.Email,author.Name, topicLink, cultureInfo,vm.ApprovalMessage);
+
                         break;
                 }
                 if (vm.EmailAuthor)
@@ -822,7 +824,7 @@ namespace MVCForum.Controllers
         }
         private PagedList<PostReply>? PagedReplies(int page, int pagesize, string sortdir, Post post)
         {
-            if(post.ReplyCount < 1) return null;
+            if(post.ReplyCount < 1 && post.UnmoderatedReplies < 1) return null;
             var pagedReplies = sortdir == "asc"
                 ? new PagedList<PostReply>(post?.Replies?.OrderBy(r => r.Created), page, pagesize)
                 : new PagedList<PostReply>(post?.Replies?.OrderByDescending(r => r.Created), page, pagesize);

@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
+using NuGet.Common;
+using System.Globalization;
+using System.Threading;
 
 namespace MVCForum.Controllers
 {
@@ -63,7 +66,8 @@ namespace MVCForum.Controllers
                 var subject = "";
                 var message = "";
                 
-
+                CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+                var topicLink = Url.Action("Index", "Topic", new { id = reply.PostId, pagenum=-1}, Request.Scheme);
                 switch (vm.PostStatus)
                 {
                     case "Approve" :
@@ -76,36 +80,38 @@ namespace MVCForum.Controllers
                             await _memberService.UpdatePostCount(reply.MemberId);
                         }
                         //Send email
-                            subject = _config.ForumTitle + ": Post Approved";
-                            message = "Has been approved. You can view it at " + Environment.NewLine +
-                                      _config.ForumUrl + "Topic/Posts/" + reply.PostId + "?pagenum=-1" +
-                                            Environment.NewLine +
-                                            vm.ApprovalMessage;
+                            subject = _config.ForumTitle + ": Reply Approved";
+                            message = 
+                            _mailSender.ParseTemplate("approvePost.html",_languageResource["tipApproveReply"].Value,author.Email,author.Name, topicLink, cultureInfo,vm.ApprovalMessage);
+
                         var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBCRIPTION");
                         if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
                         {
-                            switch ((Subscription)forum.Subscription)
+                            switch ((ForumSubscription)forum.Subscription)
                             {
-                                case Subscription.ForumSubscription:
+                                case ForumSubscription.ForumSubscription:
                                     //TODO: BackgroundJob.Enqueue(() => ProcessSubscriptions.Topic(vm.Id));
                                     break;
                             }
                         }
                         break;
                     case "Reject":
-                        
-                        _postService.DeleteReply(reply.Id);
+                        await _postService.DeleteReply(reply.Id);
+                        await _postService.UpdateLastPost(reply.PostId, -1);
                         //Send email
-                            subject = _config.ForumTitle + ": Post rejected";
-                            message = "Has been rejected. " + Environment.NewLine +
-                                            vm.ApprovalMessage;
+                            subject = _config.ForumTitle + ": Reply rejected";
+                            message = 
+                            _mailSender.ParseTemplate("rejectPost.html",_languageResource["tipRejectReply"].Value,author.Email,author.Name, "", cultureInfo,vm.ApprovalMessage);
+
                         break;
                     case "Hold":
                         await _postService.SetReplyStatus(vm.Id, Status.OnHold);
                         //Send email
-                            subject = _config.ForumTitle + ": Post placed on Hold";
-                            message = "Has been placed on Hold. " + Environment.NewLine +
-                                            vm.ApprovalMessage;
+
+                            subject = _config.ForumTitle + ": Reply placed on Hold";
+                            message = 
+                            _mailSender.ParseTemplate("onholdPost.html",_languageResource["tipOnHoldReply"].Value,author.Email,author.Name, topicLink, cultureInfo,vm.ApprovalMessage);
+
                         break;
                 }
                 if (vm.EmailAuthor)

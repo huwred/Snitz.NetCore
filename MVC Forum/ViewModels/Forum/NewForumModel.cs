@@ -24,6 +24,7 @@ namespace MVCForum.ViewModels.Forum
 
         [Display(Name = "Allowed Acccess")]
         public ForumAuthType AuthType { get; set; }
+        public ForumSubscription Subscription { get; set; }
 
         public Moderation Moderation { get; set; }
 

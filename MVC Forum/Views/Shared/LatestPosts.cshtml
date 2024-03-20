@@ -20,7 +20,7 @@
         @foreach (var p in posts)
         {
             var moderatedClass = $"modstatus-{p.Status}";
-            if (p.UnmoderatedReplies > 0)
+            if (p.UnmoderatedReplies > 0 && User.IsInRole("Administrator"))
             {
                 moderatedClass = "modstatus-2";
             }

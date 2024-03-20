@@ -13,6 +13,8 @@ namespace MVCForum.ViewModels.Forum
         public int Status { get; set; }
         public ForumAuthType AccessType { get; set; }
         public Moderation ForumModeration { get; set; }
+        public CategorySubscription CategorySubscription { get; set; }
+        public ForumSubscription ForumSubscription { get; set; }
         public DateTime? LastPostDateTime { get; set; }
         public int? LastPostAuthorId { get; set; }
         public int? LastPostTopicId { get; set; }

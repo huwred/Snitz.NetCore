@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Org.BouncyCastle.Crypto.Operators;
 using X.PagedList;
+using SkiaSharp;
 
 namespace SnitzCore.Service
 {
@@ -57,8 +58,8 @@ namespace SnitzCore.Service
         public async Task Create(PostReply post)
         {
             _dbContext.Replies.Add(post);
-            int? moderated = null;
             await _dbContext.SaveChangesAsync();
+            int? moderated = null;
             //update topic stuff
             if (post.Status == (short)Status.UnModerated)
             {
@@ -71,14 +72,6 @@ namespace SnitzCore.Service
             {
                 await _memberService.UpdatePostCount(post.MemberId);
             }
-        }
-
-        public void IncrementUnModeratedCount(int id, int count)
-        {
-            var topic = GetTopicForUpdate(id);
-            topic.UnmoderatedReplies += count;
-            _dbContext.Update(topic);
-            _dbContext.SaveChanges();
         }
 
         public async Task<bool> LockTopic(int id, short status = 0)
@@ -195,7 +188,7 @@ namespace SnitzCore.Service
             var post = _dbContext.Posts
                 .AsNoTrackingWithIdentityResolution()
                 .Single(p => p.Id == id);
-            return post;
+            return post; 
         }
         public ArchivedTopic GetArchivedTopic(int id)
         {

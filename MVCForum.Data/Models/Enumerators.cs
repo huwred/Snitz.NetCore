@@ -177,10 +177,13 @@ namespace SnitzCore.Data.Models
     /// <summary>
     /// Allowed Subscription level
     /// </summary>
-    public enum Subscription
+    public enum ForumSubscription
     {
+        [Display(Name = "Subscription_None")]
         None = 0,
+        [Display(Name = "Subscription_ForumSubscription")]
         ForumSubscription,
+        [Display(Name = "Subscription_TopicSubscriptions")]
         TopicSubscription
     }
     /// <summary>

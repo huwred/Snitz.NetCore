@@ -8,7 +8,7 @@
     Layout = null;
     var answeredClass = "";
     var moderatedClass = $"modstatus-{Model.Status}";
-    if (Model.UnmoderatedReplies > 0)
+    if (Model.UnmoderatedReplies > 0 && User.IsInRole("Administrator"))
     {
         moderatedClass = "modstatus-2";
     }
@@ -55,4 +55,5 @@
             <span class=""><br/>@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
         }
     </div>
+    <div class="subscribe">@if(Model.Forum.ForumSubscription == ForumSubscription.TopicSubscription){<i class="fa fa-share-square-o"></i>}</div>
 </div>

@@ -27,10 +27,7 @@
                 });
             });
         });
-        //$(document).on("click","i.modstatus-2",function(e) {
-        //    e.preventDefault();
-        //    alert("Moderation required");
-        //});
+
         $('.modal-link').on('click', function (e) {
             e.preventDefault();
             $.get($(this).attr("href"),function(data) {

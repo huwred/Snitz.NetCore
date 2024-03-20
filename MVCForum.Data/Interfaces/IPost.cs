@@ -22,7 +22,6 @@ namespace SnitzCore.Data.Interfaces
         Task DeleteReply(int id);
         Task Update(Post post);
         Task Update(PostReply post);
-        void IncrementUnModeratedCount(int id, int count);
         Task UpdateTopicContent(int id, string content);
         Task UpdateReplyContent(int id, string content);
         Task UpdateViewCount(int id);

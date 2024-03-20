@@ -31,10 +31,10 @@
                 @switch (Model.Status)
                 {
                     case 1:
-                        <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="@Localizer["tipAuthorUnLock"]" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-lock"></i></a>
+                        <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="@Localizer["tipAuthorLock"]" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-lock"></i></a>
                         break;
                     default:
-                        <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="@Localizer["tipAuthorLock"]" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-unlock"></i></a>
+                        <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="@Localizer["tipAuthorUnLock"]" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-unlock"></i></a>
                         break;
                 }
             </li>

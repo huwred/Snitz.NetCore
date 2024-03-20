@@ -198,11 +198,17 @@ footer{
 }
 
 .table-row .status{
+
     flex: 5%;
     font-size: 30px;
     text-align: center;
 }
-
+.table-head .status {
+    padding: 10px;
+    flex: 5%;
+    font-size: 30px;
+    text-align: center;
+}
 .table-row .subjects{
     flex: 70%;
 }
@@ -212,7 +218,11 @@ footer{
 }
 
 .table-row .last-reply{
-    flex: 15%;
+    flex: 12%;
+}
+.table-row .subscribe {
+    flex: 3%;
+    font-size: 24px;
 }
 @media screen and (max-width: 460px) {
     .table-head .subjects {
@@ -592,10 +602,13 @@ fieldset {
 .modstatus-2, .modstatus-2 div {
     background-color: orange !important;
 }
+.modstatus-3, .modstatus-3 div {
+    background-color: orange !important;
+}
 i[class^="modstatus-"] {
     display: none;
 }
-i.modstatus-2 {
+i.modstatus-2, i.modstatus-3 {
     display: inline-block;
     float: right;
     cursor: pointer;

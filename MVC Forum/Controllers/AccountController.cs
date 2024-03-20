@@ -53,7 +53,7 @@ namespace MVCForum.Controllers
             _signInManager = signinMgr;
             _ranking = memberService.GetRankings();
             _cookie = snitzcookie;
-            _pageSize = config.DefaultPageSize;
+            _pageSize = 20;
             _emailSender = mailSender;
             _env = env;
             _roleManager = roleManager;
@@ -243,7 +243,7 @@ namespace MVCForum.Controllers
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, username = user.Name }, Request.Scheme);
             var message = new EmailMessage(new[] { user.Email }, 
                 _languageResource["Confirm"].Value, 
-                ParseTemplate("confirmEmail.html",_languageResource["Confirm"].Value,user.Email,user.Name, confirmationLink!, cultureInfo));
+                _emailSender.ParseTemplate("confirmEmail.html",_languageResource["Confirm"].Value,user.Email,user.Name, confirmationLink!, cultureInfo));
             
             await _emailSender.SendEmailAsync(message);
             await _userManager.AddToRoleAsync(appUser, "Visitor");
@@ -440,7 +440,7 @@ namespace MVCForum.Controllers
             CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
             var message = new EmailMessage(new[] { user.Email! }, 
                 _languageResource["Confirm"].Value, 
-                ParseTemplate("forgotPassword.html",_languageResource["Confirm"].Value,user.Email!,user.UserName!,callbackUrl!, cultureInfo));
+                _emailSender.ParseTemplate("forgotPassword.html",_languageResource["Confirm"].Value,user.Email!,user.UserName!,callbackUrl!, cultureInfo));
             
             await _emailSender.SendEmailAsync(message);
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
@@ -655,7 +655,7 @@ namespace MVCForum.Controllers
             var confirmationLink = Url.Action(nameof(ChangeEmail), "Account", new { token, username = member.Name }, Request.Scheme);
             var message = new EmailMessage(new[] { model.NewEmail }, 
                 _languageResource["Confirm"].Value, 
-                ParseTemplate("changeEmail.html",_languageResource["Confirm"].Value,model.NewEmail,member.Name, confirmationLink!, cultureInfo));
+                _emailSender.ParseTemplate("changeEmail.html",_languageResource["Confirm"].Value,model.NewEmail,member.Name, confirmationLink!, cultureInfo));
             
             await _emailSender.SendEmailAsync(message);
             ViewBag.Message = _languageResource.GetString("EmailConfirm");
@@ -884,35 +884,6 @@ namespace MVCForum.Controllers
             
             return rankInfoHelper.Title;
         }
-        private string ParseTemplate(string template,string subject, string email,string username, string callbackUrl, CultureInfo? culture)
-        {
-            if (culture != null)
-            {
-                template = culture.Name + Path.DirectorySeparatorChar + template;
-            }
-            var pathToFile = _env.WebRootPath  
-                             + Path.DirectorySeparatorChar  
-                             + "Templates"  
-                             + Path.DirectorySeparatorChar  
-                             + template;
-            var builder = new BodyBuilder();
-            using (StreamReader sourceReader = System.IO.File.OpenText(pathToFile))
-            {
-
-                builder.HtmlBody = sourceReader.ReadToEnd();
-
-            }
-
-            string messageBody = builder.HtmlBody
-                .Replace("[SUBJECT]",subject)
-                .Replace("[DATE]",$"{DateTime.Now:dddd, d MMMM yyyy}")
-                .Replace("[EMAIL]",email)
-                .Replace("[USER]",username)
-                .Replace("[SERVER]",_config.ForumUrl)
-                .Replace("[FORUM]",_config.ForumTitle)
-                .Replace("[URL]",callbackUrl);
-            return messageBody;
-        }
         private string GeneratePassword()
         {
             var test = _configuration.Value; // here 
@@ -962,7 +933,6 @@ namespace MVCForum.Controllers
 
             return new string(chars.ToArray());
         }
-
 
     }
 }

@@ -66,7 +66,9 @@ namespace MVCForum.Controllers
                 ForumType = (ForumType)forum.Type,
                 Url = forum.Url,
                 Status = forum.Status,
-                Order = forum.Order
+                Order = forum.Order,
+                CategorySubscription = (CategorySubscription)forum.Category.Subscription,
+                ForumSubscription = (ForumSubscription)forum.Subscription
                 
             }).ToList();
             if (id > 0)

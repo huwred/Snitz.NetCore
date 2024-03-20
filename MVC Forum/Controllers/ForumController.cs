@@ -267,7 +267,8 @@ namespace MVCForum.Controllers
                     Forum = BuildForumListing(forum,defaultdays,orderby,sortdir),
                     PageCount = pagedTopics.PageCount,
                     PageNum = pagedTopics.PageNumber,
-                    PageSize = pagesize
+                    PageSize = pagesize,
+                    
                 };
 
                 return View("Index",model);
@@ -410,7 +411,8 @@ namespace MVCForum.Controllers
                         Order = model.Order,
                         Defaultdays = (int)model.DefaultView,
                         CountMemberPosts = (short)(model.IncrementMemberPosts ? 1 : 0),
-                        Moderation = model.Moderation
+                        Moderation = model.Moderation,
+                        Subscription = (int)model.Subscription
                     };
                     if (model.ForumId != 0)
                     {
@@ -453,6 +455,7 @@ namespace MVCForum.Controllers
                 Type = (ForumType)forum.Type,
                 Status = forum.Status == 1,
                 Moderation = forum.Moderation,
+                Subscription = (ForumSubscription)forum.Subscription,
                 ForumId = id
             };
             return View("Create",model);
@@ -609,7 +612,8 @@ namespace MVCForum.Controllers
                 Status = forum.Status,
                 Topics = forum.TopicCount,
                 Posts = forum.ReplyCount,
-                ForumModeration = forum.Moderation
+                ForumModeration = forum.Moderation,
+                ForumSubscription = (ForumSubscription)forum.Subscription
                 //ImageUrl = forum.ImageUrl
 
             };
