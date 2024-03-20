@@ -14,6 +14,7 @@ using SnitzCore.Data.Interfaces;
 using NuGet.Common;
 using System.Globalization;
 using System.Threading;
+using Hangfire;
 
 namespace MVCForum.Controllers
 {
@@ -24,16 +25,18 @@ namespace MVCForum.Controllers
         private readonly UserManager<ForumUser> _userManager;
         private readonly IWebHostEnvironment _environment;
         private readonly IEmailSender _mailSender;
+        private readonly ISubscriptions _processSubscriptions;
 
         public ReplyController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             IPost postService, IForum forumService, UserManager<ForumUser> userManager,IWebHostEnvironment environment,
-            IEmailSender mailSender) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
+            IEmailSender mailSender, ISubscriptions processSubscriptions) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
         {
             _postService = postService;
             _forumService = forumService;
             _userManager = userManager;
             _environment = environment;
             _mailSender = mailSender;
+            _processSubscriptions = processSubscriptions;
         }
         /// <summary>
         /// Open moderation Popup window
@@ -84,13 +87,14 @@ namespace MVCForum.Controllers
                             message = 
                             _mailSender.ParseTemplate("approvePost.html",_languageResource["tipApproveReply"].Value,author.Email,author.Name, topicLink, cultureInfo,vm.ApprovalMessage);
 
-                        var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBCRIPTION");
+                        var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
                         if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
                         {
                             switch ((ForumSubscription)forum.Subscription)
                             {
                                 case ForumSubscription.ForumSubscription:
-                                    //TODO: BackgroundJob.Enqueue(() => ProcessSubscriptions.Topic(vm.Id));
+                                case ForumSubscription.TopicSubscription:
+                                    BackgroundJob.Enqueue(() => _processSubscriptions.Reply(vm.Id));
                                     break;
                             }
                         }

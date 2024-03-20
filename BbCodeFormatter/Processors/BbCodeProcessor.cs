@@ -32,7 +32,7 @@ public class BbCodeProcessor : ICodeProcessor
 
     #region  Static Constructors
 
-    public BbCodeProcessor(ISnitzConfig config,IHttpContextAccessor httpContextAccessor,SnitzDbContext dbContext)
+    public BbCodeProcessor(ISnitzConfig config,SnitzDbContext dbContext)
     {
         _config = config;
         _formatters = new List<IHtmlFormatter>();
@@ -158,7 +158,7 @@ public class BbCodeProcessor : ICodeProcessor
 
     _formatters.Add(new RegexFormatter(@"&(?![A-Za-z]+;|#[0-9]+;)", "&amp;", false));
     if(_config.GetIntValue("STRICONS")==1)
-        _formatters.Add(new EmoticonFormatter(config,httpContextAccessor));
+        _formatters.Add(new EmoticonFormatter(config));
   
 
     #region PostFormat

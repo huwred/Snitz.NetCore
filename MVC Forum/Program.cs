@@ -21,6 +21,8 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
@@ -31,6 +33,7 @@ using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Processors;
 using Snitz.Events.Models;
 using Snitz.PhotoAlbum.Models;
+using SnitzCore.Service.Extensions;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -93,14 +96,15 @@ builder.Services.AddScoped<IMember, MemberService>();
 builder.Services.AddScoped<IForum, ForumService>();
 builder.Services.AddScoped<IPost, PostService>();
 builder.Services.AddScoped<IPrivateMessage, PrivateMessageService>();
-builder.Services.AddScoped<ISnitzConfig, ConfigService>();
-builder.Services.AddScoped<ICodeProcessor, BbCodeProcessor>();
+builder.Services.AddTransient<ISnitzConfig, ConfigService>();
+builder.Services.AddTransient<ICodeProcessor, BbCodeProcessor>();
 builder.Services.AddScoped<IEmoticon, EmoticonService>();
 builder.Services.AddScoped<ISnitz, SnitzService>();
 builder.Services.AddScoped<ISnitzCookie, SnitzCookie>();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IBookmark, BookmarkService>();
+builder.Services.AddScoped<ISubscriptions, ProcessSubscriptions>();
 #region localization
 var supportedCultures = new List<CultureInfo>
 {
@@ -178,6 +182,15 @@ builder.Services.AddImageSharp(
     });
 builder.Services.AddEventsServices(builder.Configuration);
 builder.Services.AddAlbumServices(builder.Configuration);
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_110)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .SetStorage(builder.Configuration.GetConnectionString("HangfireConnection"),builder.Configuration.GetConnectionString("DBProvider"))
+
+    );
+
+builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 app.MigrateDatabase();
@@ -210,6 +223,7 @@ app.UseAuthorization();
 app.UseSession();
 app.UseImageSharp();
 app.UseStaticFiles();
+app.UseHangfireDashboard();
 
 app.MapControllerRoute(
 name: "default",

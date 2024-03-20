@@ -1,11 +1,35 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Threading.Tasks;
+using Hangfire.SqlServer;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols;
+using Hangfire.SQLite;
 
 namespace SnitzCore.Service.Extensions
 {
     public static class DbContextsExtensions
     {
+        public static IGlobalConfiguration SetStorage(
+            this IGlobalConfiguration configuration,
+            string nameOrConnectionString, string dbProvider)
+        {
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+            if (nameOrConnectionString == null) throw new ArgumentNullException(nameof(nameOrConnectionString));
+
+            switch (dbProvider)
+            {
+                case "sqlite":
+
+                    return configuration.UseStorage(new SQLiteStorage(nameOrConnectionString));
+                default:
+
+                    return configuration.UseStorage(new SqlServerStorage(nameOrConnectionString));
+            }
+
+        }
         public static async Task<bool> TableExists(this DbContext context, string tableName)
         {
             var connection = context.Database.GetDbConnection();

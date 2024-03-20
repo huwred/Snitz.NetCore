@@ -136,5 +136,10 @@ namespace SnitzCore.Service
             }
             return Task.CompletedTask;
         }
+
+        public string ParseSubscriptionTemplate(string template, string subject, string email, string username, string callbackUrl, CultureInfo? culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

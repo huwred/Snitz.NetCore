@@ -13,5 +13,8 @@ namespace SnitzCore.Data.Interfaces
 
         string ParseTemplate(string template, string subject, string email, string username, string callbackUrl,
             CultureInfo? culture, string? Extras = null);
+
+        string ParseSubscriptionTemplate(string template, string subject, string email, string username, string callbackUrl,
+            CultureInfo? culture);
     }
 }

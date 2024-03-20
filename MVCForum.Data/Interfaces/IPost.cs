@@ -17,7 +17,7 @@ namespace SnitzCore.Data.Interfaces
         IPagedList<Post> GetFilteredPost(string searchQuery, out int totalcount, int pagesize, int page);
         IPagedList<Post> Find(ForumSearch searchQuery, out int totalcount, int pagesize, int page);
         Post GetLatestReply(int id);
-        Task Create(Post post);
+        Task<int>  Create(Post post);
         Task DeleteTopic(int id);
         Task DeleteReply(int id);
         Task Update(Post post);
@@ -27,7 +27,7 @@ namespace SnitzCore.Data.Interfaces
         Task UpdateViewCount(int id);
         IEnumerable<Post> GetLatestPosts(int n);
         IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize, int pagenumber);
-        Task Create(PostReply post);
+        Task<int>  Create(PostReply post);
         Task<bool> LockTopic(int id, short status);
 
         Task UpdateLastPost(int topicid, int? moderatedcount);

@@ -33,7 +33,7 @@ namespace SnitzCore.Service
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        public async Task Create(Post post)
+        public async Task<int> Create(Post post)
         {
             post.LastPostDate = post.Created;
             //post.Status = 1;
@@ -47,7 +47,8 @@ namespace SnitzCore.Service
             {
                 await _memberService.UpdatePostCount(post.MemberId);
             }
-            //TODO: Process Subscriptions
+
+            return post.Id;
         }
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace SnitzCore.Service
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        public async Task Create(PostReply post)
+        public async Task<int> Create(PostReply post)
         {
             _dbContext.Replies.Add(post);
             await _dbContext.SaveChangesAsync();
@@ -72,7 +73,7 @@ namespace SnitzCore.Service
             {
                 await _memberService.UpdatePostCount(post.MemberId);
             }
-            //TODO: Process Subscriptions
+            return post.Id;
         }
 
         public async Task<bool> LockTopic(int id, short status = 0)

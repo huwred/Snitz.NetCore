@@ -21,6 +21,7 @@ using MVCForum.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Threading;
+using Hangfire;
 
 namespace MVCForum.Controllers
 {
@@ -32,16 +33,18 @@ namespace MVCForum.Controllers
         private readonly UserManager<ForumUser> _userManager;
         private readonly IWebHostEnvironment _environment;
         private readonly IEmailSender _mailSender;
+        private readonly ISubscriptions _processSubscriptions;
 
         public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             IPost postService, IForum forumService, UserManager<ForumUser> userManager,IWebHostEnvironment environment,
-            IEmailSender mailSender) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
+            IEmailSender mailSender, ISubscriptions processSubscriptions) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
         {
             _postService = postService;
             _forumService = forumService;
             _userManager = userManager;
             _environment = environment;
             _mailSender = mailSender;
+            _processSubscriptions = processSubscriptions;
         }
 
         [Route("{id:int}")]
@@ -343,7 +346,17 @@ namespace MVCForum.Controllers
             }
             else
             {
-                await _postService.Create(post);
+                var topicid = await _postService.Create(post);
+                var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
+                if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
+                {
+                    switch ((ForumSubscription)post.Forum.Subscription)
+                    {
+                        case ForumSubscription.ForumSubscription:
+                            BackgroundJob.Enqueue(() => _processSubscriptions.Topic(topicid));
+                            break;
+                    }
+                }
             }
             
 
@@ -367,7 +380,19 @@ namespace MVCForum.Controllers
             }
             else
             {
-                await _postService.Create(reply);
+                var replyid = await _postService.Create(reply);
+                var forum = _forumService.GetById(reply.ForumId);
+                //var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
+                //if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
+                //{
+                //    switch ((ForumSubscription)forum.Subscription)
+                //    {
+                //        case ForumSubscription.ForumSubscription:
+                //        case ForumSubscription.TopicSubscription:
+                //            BackgroundJob.Enqueue(() => _processSubscriptions.Reply(replyid));
+                //            break;
+                //    }
+                //}
             }
             var topic = _postService.GetTopicForUpdate(reply.PostId);
             topic.Status = (short)(model.Lock ? 0 : 1);
@@ -673,13 +698,13 @@ namespace MVCForum.Controllers
                         message = 
                             _mailSender.ParseTemplate("approvePost.html",_languageResource["tipApproveTopic"].Value,author.Email,author.Name, topicLink, cultureInfo,vm.ApprovalMessage);
 
-                        var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBCRIPTION");
+                        var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
                         if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
                         {
                             switch ((ForumSubscription)forum.Subscription)
                             {
                                 case ForumSubscription.ForumSubscription:
-                                    //TODO: BackgroundJob.Enqueue(() => ProcessSubscriptions.Topic(vm.Id));
+                                    BackgroundJob.Enqueue(() => _processSubscriptions.Topic(vm.Id));
                                     break;
                             }
                         }
