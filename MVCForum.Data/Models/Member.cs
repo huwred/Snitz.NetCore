@@ -250,4 +250,5 @@ public partial class Member
     [ProfileDisplay("Roles",Order=9999,ReadOnly = true,SystemField = true,LayoutSection = MemberLayout.Extra)]
     public List<string> Roles { get; set; } = new List<string>();
 
+    public virtual List<MemberSubscription>? Subscriptions { get; set; } = new List<MemberSubscription>();
 }

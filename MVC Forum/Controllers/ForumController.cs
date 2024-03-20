@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Post;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace MVCForum.Controllers
 {
@@ -40,7 +40,6 @@ namespace MVCForum.Controllers
             
         }
         
-        //[Breadcrumb("Forums",FromAction = "Index",FromController = typeof(CategoryController))]
         [Route("Forum/{id:int}")]
         [Route("Forum/Index/{id:int}")]
         public IActionResult Index(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 10)
@@ -163,7 +162,7 @@ namespace MVCForum.Controllers
                         forumPosts = forumPosts?.Where(f => f.Status == 1);
                         break;
                     //case -99 : //Archived
-                    //    //TODO: Arcvied Topics                      
+                    //    //TODO: Archived Topics                      
                     //    break;
                     case -999: //NoReplies
                         forumPosts = forumPosts?.Where(f => f is { Status: 1, ReplyCount: 0 });
@@ -188,7 +187,7 @@ namespace MVCForum.Controllers
                         forumPosts = forumPosts?.Where(f => f.Status == 1);
                         break;
                     //case -99 : //Archived
-                    //    //TODO: Arcvied Topics                      
+                    //    //TODO: Archived Topics                      
                     //    break;
                     case -999: //NoReplies
                         forumPosts = forumPosts?.Where(f => f is { Status: 0, ReplyCount: 0 });
@@ -470,7 +469,33 @@ namespace MVCForum.Controllers
             await _forumService.Delete(id);
             return Json(new { redirectToUrl = referer ?? Url.Action("Index", "Category",new{id = catid}) });
         }
-
+        [HttpGet]
+        [Authorize]
+        [Route("Forum/Subscribe/")]
+        public IActionResult Subscribe(int id)
+        {
+            var forum = _forumService.GetById(id);
+            var member = _memberService.Current();
+            _snitzDbContext.MemberSubscription.Add(new MemberSubscription()
+            {
+                MemberId = member.Id,
+                CategoryId = forum.CategoryId,
+                ForumId = forum.Id,
+                PostId = 0
+            });
+            _snitzDbContext.SaveChanges();
+            return Content("OK");
+        }
+        [HttpGet]
+        [Authorize]
+        [Route("Forum/UnSubscribe/")]
+        public IActionResult UnSubscribe(int id)
+        {
+            var member = _memberService.Current();
+            _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member.Id && s.ForumId == id && s.PostId == 0)
+                .ExecuteDelete();
+            return Content("OK");
+        }
         public IActionResult Search(string? searchFor, int pagesize=10,int page=1)
         {
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");

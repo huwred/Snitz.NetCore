@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Category;
 using MVCForum.ViewModels.Post;
@@ -184,6 +185,33 @@ namespace MVCForum.Controllers
             _categoryService.Delete(id);
             return Json(new { redirectToUrl = Url.Action("Index", "Category") });
 
+        }
+        [HttpGet]
+        [Authorize]
+        [Route("Category/Subscribe/")]
+        public IActionResult Subscribe(int id)
+        {
+            var category = _categoryService.GetById(id);
+            var member = _memberService.Current();
+            _snitzDbContext.MemberSubscription.Add(new MemberSubscription()
+            {
+                MemberId = member.Id,
+                CategoryId = category.Id,
+                ForumId = 0,
+                PostId = 0
+            });
+            _snitzDbContext.SaveChanges();
+            return Content("OK");
+        }
+        [HttpGet]
+        [Authorize]
+        [Route("Category/UnSubscribe/")]
+        public IActionResult UnSubscribe(int id)
+        {
+            var member = _memberService.Current();
+            _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member.Id && s.CategoryId == id && s.ForumId == 0)
+                .ExecuteDelete();
+            return Content("OK");
         }
         private ForumListingModel GetForumListingForPost(Post post)
         {

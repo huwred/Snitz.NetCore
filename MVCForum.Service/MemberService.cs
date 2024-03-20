@@ -225,7 +225,9 @@ namespace SnitzCore.Service
 
         public Member? GetByUsername(string username)
         {
-            return _dbContext.Members.AsNoTracking().SingleOrDefault(m=>m.Name == username);
+            return _dbContext.Members.AsNoTracking()
+                .Include(m=>m.Subscriptions).AsNoTracking()
+                .SingleOrDefault(m=>m.Name == username);
         }
 
         public IPagedList<Member> GetByInitial(string initial,out int totalcount,int pagesize = 20, int page = 1)

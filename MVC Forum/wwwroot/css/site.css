@@ -371,10 +371,14 @@ footer{
         max-width: 400px !important;
     }
 
-    i.fa-reply, i.fa-trash, i.fa-share, i.fa-close, i.fa-pencil, i.fa-comment-o,i.fa-commenting {
-        cursor: pointer;
-    }
-
+i.fa-reply, i.fa-trash, i.fa-share, i.fa-close, i.fa-pencil, i.fa-comment-o, i.fa-commenting, i.fa-share-square, i.fa-share-square-o {
+    cursor: pointer;
+}
+i.fa-share-square.category, i.fa-share-square-o.category {
+    float: right;
+    margin: .5rem;
+    font-size: 1.5em;
+}
     i.fa-lock.admin, i.fa-unlock.admin {
         cursor: pointer;
     }

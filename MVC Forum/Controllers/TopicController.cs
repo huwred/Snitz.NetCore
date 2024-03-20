@@ -355,8 +355,6 @@ namespace MVCForum.Controllers
         [Route("AddReply/")]
         public async Task<IActionResult> AddReply(NewPostModel model)
         {
-            //var userId = _userManager.GetUserId(User);
-            //var user = await _userManager.FindByIdAsync(userId!);
             var member = _memberService.GetByUsername(User.Identity.Name);
             var reply = BuildReply(model, member.Id);
             if (model.Id != 0)
@@ -512,8 +510,6 @@ namespace MVCForum.Controllers
                 return PartialView("popSendTo", em);
             }
 
-            ViewBag.Error = _languageResource["InvalidID"]; 
-            return PartialView("_Error");
         }
         
         [HttpPost]
@@ -521,13 +517,9 @@ namespace MVCForum.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SendTo(EmailViewModel model)
         {
-            
             _mailSender.SendToFreind( model);
-
-
             TempData["Success"] = "Email sent successfully";
             return RedirectToAction("Index", "Topic", new { id=model.ReturnUrl, pagenum = -1 });
-            //return PartialView("popSendTo",model);
         }
 
         public ActionResult Print(int id)
@@ -730,6 +722,33 @@ namespace MVCForum.Controllers
         {
             ApproveTopicViewModal vm = new ApproveTopicViewModal {Id = id};
             return PartialView("popModerate",vm);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("Topic/Subscribe/")]
+        public IActionResult Subscribe(int id)
+        {
+            var topic = _postService.GetTopic(id);
+            var member = _memberService.Current();
+            _snitzDbContext.MemberSubscription.Add(new MemberSubscription()
+            {
+                MemberId = member.Id,
+                CategoryId = topic.CategoryId,
+                ForumId = topic.ForumId,
+                PostId = id
+            });
+            _snitzDbContext.SaveChanges();
+            return Content("OK");
+        }
+        [HttpGet]
+        [Authorize]
+        [Route("Topic/UnSubscribe/")]
+        public IActionResult UnSubscribe(int id)
+        {
+            var member = _memberService.Current();
+            _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member.Id && s.PostId == id).ExecuteDelete();
+            return Content("OK");
         }
         private Post BuildPost(NewPostModel model, int memberid)
         {

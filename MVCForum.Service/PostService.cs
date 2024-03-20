@@ -47,7 +47,7 @@ namespace SnitzCore.Service
             {
                 await _memberService.UpdatePostCount(post.MemberId);
             }
-
+            //TODO: Process Subscriptions
         }
 
         /// <summary>
@@ -72,6 +72,7 @@ namespace SnitzCore.Service
             {
                 await _memberService.UpdatePostCount(post.MemberId);
             }
+            //TODO: Process Subscriptions
         }
 
         public async Task<bool> LockTopic(int id, short status = 0)
