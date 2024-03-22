@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Subscription Email from [FORUM]</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        .card {
+            margin: 0 auto; /* Added */
+            float: none; /* Added */
+            margin-bottom: 10px; /* Added */
+        }
+    </style>
+</head>
+<body>
+<div class="card" style="width: 600px; border-top-left-radius: 5%; border-top-right-radius: 5% ">
+    <div class="row no-gutters pb-4">
+        <div class="col-auto">
+            <img src="[SERVER]/Templates/images/Weak_Password.gif" class="img-fluid" alt="">
+        </div>
+        <div class="col">
+            <div class="card-block px-2">
+                <h4 class="card-title">Notification</h4>
+                <p class="card-text">
+                    Hello [USER],<br />
+                    <br />
+                    [AUTHOR] has replied to a topic in the [POSTEDIN] [POSTEDNAME] <br />
+                    You are receiving this email because you requested notifications.
+                </p>
+                <a href='[URL]' title='link to new post'>Read the post here</a>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-footer w-100 text-muted" style="border-bottom-left-radius: 5%; border-bottom-right-radius: 5% ">
+        <p>Sent from [FORUM]</p>
+        <p style='font-size: small; color: darkslategray;'>If you no longer wish to receive these notifications, You can use the <a href='[UNSUBSCRIBE]' title='un-subscribe'>Un-subscribe</a> link</p>
+
+    </div>
+</div>
+</body>
+</html>
