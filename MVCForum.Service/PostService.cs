@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -8,9 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Org.BouncyCastle.Crypto.Operators;
 using X.PagedList;
-using SkiaSharp;
 
 namespace SnitzCore.Service
 {
@@ -19,13 +16,14 @@ namespace SnitzCore.Service
         private readonly SnitzDbContext _dbContext;
         private readonly IMember _memberService;
         private readonly IForum _forumservice;
+        private readonly ISnitzConfig _config;
 
-        public PostService(SnitzDbContext dbContext, IMember memberService,IForum forumservice)
+        public PostService(SnitzDbContext dbContext, IMember memberService,IForum forumservice,ISnitzConfig config)
         {
             _dbContext = dbContext;
             _memberService = memberService;
             _forumservice = forumservice;
-
+            _config = config;
         }
 
         /// <summary>
@@ -35,6 +33,15 @@ namespace SnitzCore.Service
         /// <returns></returns>
         public async Task<int> Create(Post post)
         {
+            if (_config.GetIntValue("STRBADWORDFILTER") == 1)
+            {
+                var badwords = _dbContext.Badwords.AsNoTracking()
+                    .ToDictionary(t=>t.Word);
+                foreach (var badword in badwords)
+                {
+                    post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
+                }
+            }
             post.LastPostDate = post.Created;
             //post.Status = 1;
             post.LastPostAuthorId = post.MemberId;
@@ -58,6 +65,15 @@ namespace SnitzCore.Service
         /// <returns></returns>
         public async Task<int> Create(PostReply post)
         {
+            if (_config.GetIntValue("STRBADWORDFILTER") == 1)
+            {
+                var badwords = _dbContext.Badwords.AsNoTracking()
+                    .ToDictionary(t=>t.Word);
+                foreach (var badword in badwords)
+                {
+                    post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
+                }
+            }
             _dbContext.Replies.Add(post);
             await _dbContext.SaveChangesAsync();
             int? moderated = null;
@@ -124,11 +140,29 @@ namespace SnitzCore.Service
 
         public async Task Update(Post post)
         {
+            if (_config.GetIntValue("STRBADWORDFILTER") == 1)
+            {
+                var badwords = _dbContext.Badwords.AsNoTracking()
+                    .ToDictionary(t=>t.Word);
+                foreach (var badword in badwords)
+                {
+                    post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
+                }
+            }
             _dbContext.Update(post);
             await _dbContext.SaveChangesAsync();
         }
         public async Task Update(PostReply post)
         {
+            if (_config.GetIntValue("STRBADWORDFILTER") == 1)
+            {
+                var badwords = _dbContext.Badwords.AsNoTracking()
+                    .ToDictionary(t=>t.Word);
+                foreach (var badword in badwords)
+                {
+                    post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
+                }
+            }
             _dbContext.Update(post);
             await _dbContext.SaveChangesAsync();
         }
