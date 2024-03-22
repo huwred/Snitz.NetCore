@@ -22,6 +22,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Hangfire;
+using Hangfire.Dashboard;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -34,6 +35,8 @@ using SixLabors.ImageSharp.Web.Processors;
 using Snitz.Events.Models;
 using Snitz.PhotoAlbum.Models;
 using SnitzCore.Service.Extensions;
+using Microsoft.AspNetCore.Mvc.Filters;
+using SnitzCore.Service.Hangfire;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -223,7 +226,11 @@ app.UseAuthorization();
 app.UseSession();
 app.UseImageSharp();
 app.UseStaticFiles();
-app.UseHangfireDashboard();
+
+app.UseHangfireDashboard("/snitzjobs",new DashboardOptions
+{
+    Authorization = new [] { new SnitzAuthorizationFilter() }
+});
 
 app.MapControllerRoute(
 name: "default",

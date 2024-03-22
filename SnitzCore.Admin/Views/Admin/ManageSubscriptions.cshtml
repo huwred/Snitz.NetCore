@@ -1,0 +1,47 @@
+﻿@model SnitzCore.BackOffice.ViewModels.SubscriptionsViewModel
+@using SnitzCore.BackOffice.TagHelpers
+@using SnitzCore.Data.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Diagnostics.Metrics
+@{
+    Layout = null;
+}
+<h4>Highest level of Subscription: @SnitzConfig.GetIntValue("STRSUBSCRIPTION")</h4>
+
+@{
+    var subscriptions = Html.GetEnumSelectList<SubscriptionLevel>().Where(s => s.Value != "0");
+}
+<form asp-action="ManageSubscriptions" method="post" data-ajax="true" data-ajax-update="#member-subscriptions">
+    <div class="input-group mb-3">
+        <span class="input-group-text">Show Subscriptions for</span>
+        <select asp-for="Filter" id="filter-subs" asp-items="subscriptions" asp-sel class="form-select">
+            <option value="0">All</option>
+        </select>
+        <button class="btn btn-outline-danger" title="Delete All" type="submit"><i class="fa fa-trash fa-2x"></i></button>
+    </div>
+@if (Model.Subscriptions.Any())
+{
+    <ul style="display: flex;flex-wrap: wrap;" class="list-unstyled bg-primary text-bg-dark rounded pb-3 pt-2">
+            <li style="flex: 0 1 5%;display: flex;"><i class="fa fa-trash-o center px-2 pt-1" title="Delete Selected"></i></li>
+        <li style="flex: 0 1 10%;display: flex;">Member</li>
+        <li style="flex: 1 0 18%;display: flex;">Category</li>
+        <li style="flex: 1 0 18%;display: flex;">Forum</li>
+        <li style="flex: 1 0 25%;display: flex;">Topic</li>
+    </ul>
+    @foreach (dynamic sub in Model.Subscriptions)
+    {
+        <ul style="display: flex;flex-wrap: wrap;" class="list-unstyled">
+                <li style="flex: 0 1 5%;display: flex;"><input name="SubscriptionId" type="checkbox" value="@sub.SubscriptionId" /></li>
+                <li style="flex: 0 1 10%;display: flex;">@sub.MemberName</li>
+                <li style="flex: 1 0 18%;display: flex;">@sub.CategoryName</li>
+                <li style="flex: 1 0 18%;display: flex;">@sub.ForumName</li>
+                <li style="flex: 1 0 25%;display: flex;">@sub.Topic</li>
+        </ul>
+    }
+}
+else
+{
+    <h5 class="center">No Subscriptions</h5>
+}
+
+</form>

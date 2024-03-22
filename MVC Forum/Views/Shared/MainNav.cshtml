@@ -6,7 +6,7 @@
 @inject SignInManager<ForumUser> SignInManager
 @inject ISnitzCookie SnitzCookie
 @{
-    var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? "SnitzTheme";
+    var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? SnitzConfig.GetValue("STRDEFAULTTHEME", "SnitzTheme");
     var currForumUser = UserManager.GetUserAsync(User).Result;
 }
 <nav class="navbar navbar-expand-md bg-dark @* navbar-custom  *@fixed-top">
@@ -61,15 +61,12 @@
                                 <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">@Localizer["mnuAdminMainConfig"]</a></li>
                                 <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">@Localizer["tipNewCategory"]</a></li>
                                 <li><a href="~/LanguageManager/" class="dropdown-item">@Localizer["mnuAdminLangResources"]</a></li>
-                                
                                 <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search">Search Language</a></li>
                                 <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">@Localizer["tipNewForum"]</a></li>
                                 <li><hr/></li>
                                 <li>
                                     <link-confirm title="Restart Application" jq-selector="confirm-restart" href="/Admin/Restart" class="dropdown-item text-warning"></link-confirm>
-
                                 </li>
-
                             </ul>
                         </li>
                     }

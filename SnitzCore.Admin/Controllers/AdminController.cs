@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -74,6 +73,117 @@ namespace SnitzCore.BackOffice.Controllers
         public IActionResult Members()
         {
             return View();
+        }
+        [HttpGet]
+        public IActionResult ManageSubscriptions(int id)
+        {
+            var subs = new List<SubscriptionItemViewModel>();
+            switch (id)
+            {
+                case 0 :
+                    subs = _dbcontext.MemberSubscription
+                        .AsNoTracking()
+                        .Select(subscription => new SubscriptionItemViewModel
+                        {
+                            SubscriptionId = subscription.Id,
+                            MemberName = subscription.Member.Name,
+                            CategoryName = subscription.Category.Name ?? "",
+                            ForumName = subscription.Forum.Title ?? "",
+                            Topic = subscription.Post.Title ?? ""
+                        })
+                        .ToList();
+                    break;
+                case 1 :  //board
+                    subs = _dbcontext.MemberSubscription
+                            .Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId == 0)
+                            .AsNoTracking()
+                            .Select(subscription => new SubscriptionItemViewModel
+                            {
+                                SubscriptionId = subscription.Id,
+                                MemberName = subscription.Member.Name,
+                            })
+
+                        .ToList();
+                    break;
+
+                case 2: //category
+                    subs = _dbcontext.MemberSubscription
+                        .Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId != 0)
+                        .AsNoTracking()
+                        .Select(subscription => new SubscriptionItemViewModel
+                        {
+                            SubscriptionId = subscription.Id,
+                            MemberName = subscription.Member.Name,
+                            CategoryName = subscription.Category.Name
+                        })
+                        .ToList();
+                    break;
+
+                case 3: //forum
+                    subs = _dbcontext.MemberSubscription
+                        .Where(ms=>ms.PostId == 0 && ms.ForumId != 0)
+                        .AsNoTracking()
+                        .Select(subscription => new SubscriptionItemViewModel
+                        {
+                            SubscriptionId = subscription.Id,
+                            MemberName = subscription.Member.Name,
+                            CategoryName = subscription.Category.Name,
+                            ForumName = subscription.Forum.Title
+                        })
+                        .ToList();
+                    break;
+
+                case 4: //topic
+                    subs = _dbcontext.MemberSubscription
+                        .Where(ms=>ms.PostId != 0)
+                        .AsNoTracking()
+                        .Select(subscription => new SubscriptionItemViewModel
+                        {
+                            SubscriptionId = subscription.Id,
+                            MemberName = subscription.Member.Name,
+                            CategoryName = subscription.Category.Name,
+                            ForumName = subscription.Forum.Title,
+                            Topic = subscription.Post.Title
+                        })
+                        .ToList();
+                    break;
+
+            }
+
+            var vm = new SubscriptionsViewModel()
+            {
+                Filter = id,
+                Subscriptions = subs
+            };
+
+            return PartialView(vm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ManageSubscriptions(IFormCollection form)
+        {
+            var filter = Convert.ToInt32(form["Filter"]);
+            switch (form["Filter"])
+            {
+                case "1" :  //board
+                     _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId == 0).ExecuteDeleteAsync();
+                    break;
+
+                case "2": //category
+                     _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId != 0).ExecuteDeleteAsync();
+                    break;
+
+                case "3": //forum
+                     _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId != 0).ExecuteDeleteAsync();
+                    break;
+
+                case "4": //topic
+                     _dbcontext.MemberSubscription.Where(ms=>ms.PostId != 0).ExecuteDeleteAsync();
+                    break;
+
+            }
+            return RedirectToAction("ManageSubscriptions",new{id=filter});
+
         }
         public ActionResult ManageGroups(int id = 0)
         {

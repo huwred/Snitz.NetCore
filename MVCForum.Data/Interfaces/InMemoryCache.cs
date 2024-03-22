@@ -3,11 +3,6 @@ using System.Runtime.Caching;
 
 namespace SnitzCore.Data.Interfaces
 {
-    interface ICacheService
-    {
-        T GetOrSet<T>(string cacheKey, Func<T> getItemCallback) where T : class?;
-        T? Get<T>(string cacheKey) where T : class;
-    }
     public class InMemoryCache : ICacheService
     {
         /// <summary>
@@ -55,16 +50,6 @@ namespace SnitzCore.Data.Interfaces
         {
             return MemoryCache.Default.Get(cacheKey) as T;
 
-        }
-        public T GetOrSet<T>(string cacheKey, Func<T> getItemCallback, string? region) where T : class
-        {
-            T? item = MemoryCache.Default.Get(cacheKey) as T;
-            if (item == null)
-            {
-                item = getItemCallback();
-                MemoryCache.Default.Add(cacheKey, item, DateTimeOffset.Now.AddMinutes(_expireIn));
-            }
-            return item;
         }
         public void Remove(string cacheKey)
         {
