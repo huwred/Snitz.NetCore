@@ -6,6 +6,7 @@
 @using MVCForum.TagHelpers
 @using SnitzCore.Data
 @using SnitzCore.Service.TagHelpers
+@using Microsoft.AspNetCore.Http
 @inject SignInManager<ForumUser> SignInManager
 @inject IMember MemberService
 @section MetaData
@@ -17,8 +18,8 @@
 @{
     ViewBag.PageCount = Model.PageCount;
     var pagenum = Model.PageNum?.ToString() ??  Context.Request.Query["page"];
-    var pagesize = Context.Request.Query["pagesize"];
-    ViewBag.PageSize = pagesize.Count < 1 ? 20 : Convert.ToInt32(pagesize);
+    var pagesize = Context.Session.GetInt32("TopicPageSize");
+    ViewBag.PageSize = pagesize ?? 10;
     ViewBag.PageNum = pagenum;
     if (Model.AccessDenied)
     {
@@ -98,9 +99,11 @@
     <!--Display posts table-->
     <div class="posts-table">
         <div class="table-head">
-            <div class="status rounded-2">@if (Model.Forum.ForumSubscription == ForumSubscription.ForumSubscription)
+            <div class="status rounded-2">
+
+                @if (Model.Forum.ForumSubscription == ForumSubscription.ForumSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
                 {
-                    if (subscriptions.Where(s=>s.ForumId == Model.Forum.Id && s.PostId == 0).Select(s=>s.ForumId).Any())
+                    if (subscriptions.Where(s => s.ForumId == Model.Forum.Id && s.PostId == 0).Select(s => s.ForumId).Any())
                     {
                         <i class="fa fa-share-square forum center" title="@Localizer["btnUnsubscribe"]" data-id="@Model.Forum.Id"></i>
                     }
@@ -150,6 +153,7 @@
                                     {
                                         PageCount = Model.PageCount,
                                         Page = pagenum != null ? Convert.ToInt32(pagenum) : 1,
+                                        PageSize = ViewBag.PageSize,
                                         OrderBy = Model.Forum!.OrderBy,
                                         SortDir = Model.Forum.SortDir,
                                         DefaultDays = (int)Model.Forum.DefaultView

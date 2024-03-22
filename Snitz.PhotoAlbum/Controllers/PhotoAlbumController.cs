@@ -325,7 +325,11 @@ namespace Snitz.PhotoAlbum.Controllers
             var resizedPath = Combine(uploadFolder,"thumbs");
 
             var fileInfo = _fileProvider.GetFileInfo(Combine(uploadFolder,$"{orgimage.Timestamp}_{orgimage.Location}"));
-            if (!fileInfo.Exists) { return NotFound(); }
+            if (!fileInfo.Exists)
+            {
+                return File("/images/notfound.jpg", "image/jpeg");
+                ;// NotFound();
+            }
 
             // Create the destination folder tree if it doesn't already exist
             if (!Directory.Exists(Path.Combine(_environment.WebRootPath, resizedPath.Replace("/","\\"))))

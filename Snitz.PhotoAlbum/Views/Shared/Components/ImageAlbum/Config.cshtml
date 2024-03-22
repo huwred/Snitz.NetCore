@@ -15,6 +15,16 @@
                         <input type="checkbox" name="STRPHOTOALBUM" value="0" checked="" style="display: none">
                         <label class="form-check-label" for="STRPHOTOALBUM">Enable Photo Albums</label>
                     </div>
+                    <fieldset @(SnitzConfig.GetIntValue("STRPHOTOALBUM") == 0 ? "disabled" : "") id="ALBUMENABLED">
+                        <div class="row">
+                            <div class="col">
+                                <admin-config config-key="INTMAXIMAGESIZE" config-label="Max File size (Mb)" config-val="@SnitzConfig.GetValue("INTMAXIMAGESIZE", "5")"></admin-config>
+                            </div>
+                            <div class="col">
+                                <admin-config config-key="STRIMAGETYPES" config-label="Allowed Extensions" config-val="@SnitzConfig.GetValue("STRIMAGETYPES", ".png,.jpg")"></admin-config>
+                            </div>
+                        </div>
+                    </fieldset>
                 </form>
             }
         </div>

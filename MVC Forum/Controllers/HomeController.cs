@@ -48,8 +48,8 @@ namespace MVCForum.Controllers
 
         private HomeIndexModel BuildHomeIndexModel()
         {
-            var latestPosts = _postService.GetLatestPosts(10);
-            var posts = latestPosts.Select(post => new PostListingModel
+            var latestPosts = _postService.GetLatestPosts(_config.GetIntValue("INTRECENTCOUNT",10))
+            .Select(post => new PostListingModel
             {
                 Id = post.Id,
                 Title = post.Title,
@@ -71,10 +71,9 @@ namespace MVCForum.Controllers
 
             return new HomeIndexModel
             {
-                LatestPosts = posts,
+                LatestPosts = latestPosts,
                 SearchQuery = ""
             };
-
         }
 
         private ForumListingModel GetForumListingForPost(Post post)

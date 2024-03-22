@@ -80,6 +80,7 @@
                  name="ListPaging" 
                  model="@(new PagingModel {
                              PageCount = Model.PageCount,
+                             PageSize = Model.PageSize,
                              Page = pagenum != null ? Convert.ToInt32(pagenum) : 1 })" />
         <!--pagination ends-->
     }

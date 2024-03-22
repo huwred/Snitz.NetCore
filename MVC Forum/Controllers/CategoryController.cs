@@ -84,7 +84,7 @@ namespace MVCForum.Controllers
                 var forumPage = new MvcBreadcrumbNode("", "Category", "ttlForums");
                 ViewData["BreadcrumbNode"] = forumPage;
             }
-            var latestPosts = _postService.GetLatestPosts(10)
+            var latestPosts = _postService.GetLatestPosts(_config.GetIntValue("INTRECENTCOUNT",10))
             .Select(post => new PostListingModel
             {
                 Id = post.Id,

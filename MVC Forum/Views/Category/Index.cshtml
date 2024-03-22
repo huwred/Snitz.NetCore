@@ -57,7 +57,7 @@
                         <button style="display: inline; width: 40px;" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@ID" aria-expanded="true" aria-controls="collapseOne">
                             <i class="fa fa-minus"></i>
                         </button>
-                        <a style="display: inline;" href="/Category/@ID">@category.Name</a>
+                        <a snitz-if="@(SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)" style="display: inline;" href="/Category/@ID">@category.Name</a>
                         @if (category.Subscription == (int)CategorySubscription.CategorySubscription)
                         {
                             if (subscriptions.Where(s => s.CategoryId == category.Id && s.PostId == 0).Select(s => s.CategoryId).Any())
@@ -104,11 +104,14 @@
                                             <h4><a href="/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
                                         }
                                         <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
-                                        @if (forum.ForumModeration != Moderation.UnModerated)
+                                        @if (forum.ForumModeration != Moderation.UnModerated )
                                         {
                                             <p class="mt-2 fst-italic">This Forum is moderated @forum.ForumModeration</p>
                                         }
-                                        <p>@forum.ForumSubscription</p>
+                                        @if (SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
+                                        {
+                                            <p>@forum.ForumSubscription</p>
+                                        }
                                     </div>
                                     @if (forum.ForumType != ForumType.WebLink)
                                     {
@@ -139,7 +142,10 @@
             <partial name="LatestPosts" model="@Model.LatestPosts"/>
         </div>
     </div>
-    <partial name="ForumStats" />
+    @if (SnitzConfig.GetIntValue("STRSHOWSTATISTICS") == 1)
+    {
+        <partial name="ForumStats" />
+    }
 </div>
 @{
     var confModel = new ConfirmDialogViewModel() { 

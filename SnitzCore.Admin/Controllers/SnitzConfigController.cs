@@ -176,7 +176,7 @@ namespace SnitzCore.BackOffice.Controllers
             {
                 _context.Database.BeginTransaction();
 
-                foreach (var formKey in form.Keys.Where(k => !k.StartsWith("_")))
+                foreach (var formKey in form.Keys.Where(k => !k.StartsWith("_") && !k.StartsWith("X-")))
                 {
                     var val = form[formKey][0];
                     var conf = _context.SnitzConfig.FirstOrDefault(f => f.Key == formKey);
@@ -191,10 +191,7 @@ namespace SnitzCore.BackOffice.Controllers
                     }
                     else
                     {
-                        if (val != "0" && val != "")
-                        {
-                            _context.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = formKey, Value = val });
-                        }
+                        _context.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = formKey, Value = val });
                     }
                 }
                 _context.SaveChanges(true);

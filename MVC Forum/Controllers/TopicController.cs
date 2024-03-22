@@ -50,7 +50,7 @@ namespace MVCForum.Controllers
         [Route("{id:int}")]
         [Route("Topic/{id}")]
         [Route("Topic/Index/{id}")]
-        public IActionResult Index(int id,int page = 1, int pagesize = 20, string sortdir="desc", int? replyid = null)
+        public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
         {
             if (User.Identity is { IsAuthenticated: true })
             {
@@ -68,6 +68,15 @@ namespace MVCForum.Controllers
                 _postService.UpdateViewCount(post.Id);
             }
 
+            if (HttpContext.Session.GetInt32("TopicPageSize") != null && pagesize == 0)
+            {
+                pagesize = HttpContext.Session.GetInt32("TopicPageSize").Value;
+            }
+            else if (pagesize == 0)
+            {
+                pagesize = 10;
+            }
+            HttpContext.Session.SetInt32("TopicPageSize",pagesize);
 
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", post.Category?.Name){ Parent = homePage,RouteValues = new{id=post.Category?.Id}};

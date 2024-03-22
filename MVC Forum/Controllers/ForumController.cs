@@ -42,8 +42,18 @@ namespace MVCForum.Controllers
         
         [Route("Forum/{id:int}")]
         [Route("Forum/Index/{id:int}")]
-        public IActionResult Index(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 10)
+        public IActionResult Index(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 0)
         {
+            if (HttpContext.Session.GetInt32("ForumPageSize") != null && pagesize == 0)
+            {
+                pagesize = HttpContext.Session.GetInt32("ForumPageSize").Value;
+            }
+            else if (pagesize == 0)
+            {
+                pagesize = 10;
+            }
+            HttpContext.Session.SetInt32("ForumPageSize",pagesize);
+
             bool passwordrequired = false;
             bool notallowed = false;
             if (User.Identity is { IsAuthenticated: true })
@@ -275,8 +285,18 @@ namespace MVCForum.Controllers
             return View("Index");
         }
 
-        public IActionResult Active(int page = 1, int pagesize = 20,ActiveRefresh? Refresh = null,ActiveSince? Since = null)
+        public IActionResult Active(int page = 1, int pagesize = 0,ActiveRefresh? Refresh = null,ActiveSince? Since = null)
         {
+            if (HttpContext.Session.GetInt32("ActivePageSize") != null && pagesize == 0)
+            {
+                pagesize = HttpContext.Session.GetInt32("ActivePageSize").Value;
+            }
+            else if (pagesize == 0)
+            {
+                pagesize = 20;
+            }
+            HttpContext.Session.SetInt32("ActivePageSize",pagesize);
+
             if (User.Identity is { IsAuthenticated: true })
             {
                 _memberService.SetLastHere(User);

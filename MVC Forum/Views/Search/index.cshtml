@@ -51,6 +51,7 @@
         <partial snitz-if="@(Model.Results.PageCount > 1)" name="ListPaging" model="@(new PagingModel
                                                                                     {
                                                                                         PageCount = Model.Results.PageCount,
+                                                                                        PageSize = Model.Results.PageSize,
                                                                                         Page = Convert.ToInt32(pagenum)
                                                                                     })" />
         <!--pagination ends-->
