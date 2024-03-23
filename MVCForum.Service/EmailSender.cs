@@ -10,6 +10,7 @@ using SnitzCore.Data.Models;
 using System.Threading.Tasks;
 using BbCodeFormatter;
 using Microsoft.AspNetCore.Hosting;
+using System.Text.RegularExpressions;
 
 namespace SnitzCore.Service
 {
@@ -52,7 +53,7 @@ namespace SnitzCore.Service
             Send(emailMessage);
         }
 
-        public string ParseTemplate(string template,string subject, string email,string username, string callbackUrl, CultureInfo? culture, string? Extras = null)
+        public string ParseTemplate(string template,string subject, string toemail,string tousername, string callbackUrl, CultureInfo? culture, string? Extras = null)
         {
             if (culture != null)
             {
@@ -74,8 +75,8 @@ namespace SnitzCore.Service
             string messageBody = builder.HtmlBody
                 .Replace("[SUBJECT]",subject)
                 .Replace("[DATE]",$"{DateTime.Now:dddd, d MMMM yyyy}")
-                .Replace("[EMAIL]",email)
-                .Replace("[USER]",username)
+                .Replace("[EMAIL]",toemail)
+                .Replace("[USER]",tousername)
                 .Replace("[SERVER]",_config.ForumUrl)
                 .Replace("[FORUM]",_config.ForumTitle)
                 .Replace("[URL]",callbackUrl);
@@ -137,7 +138,40 @@ namespace SnitzCore.Service
             return Task.CompletedTask;
         }
 
-        public string ParseSubscriptionTemplate(string template, string subject, string email, string username, string callbackUrl, CultureInfo? culture)
+        public string ParseSubscriptionTemplate(string template, string posttype, string postname, string authorname, string toname, string postUrl, string unsubUrl,
+                string? lang)
+        {
+            if (lang != null)
+            {
+                template = lang + Path.DirectorySeparatorChar + template;
+            }
+            var pathToFile = _env.WebRootPath  
+                             + Path.DirectorySeparatorChar  
+                             + "Templates"  
+                             + Path.DirectorySeparatorChar  
+                             + template;
+            var builder = new BodyBuilder();
+            using (StreamReader sourceReader = System.IO.File.OpenText(pathToFile))
+            {
+
+                builder.HtmlBody = sourceReader.ReadToEnd();
+
+            }
+
+            string messageBody = builder.HtmlBody
+                .Replace("[DATE]",$"{DateTime.Now:dddd, d MMMM yyyy}")
+                .Replace("[AUTHOR]",authorname)
+                .Replace("[USER]",toname)
+                .Replace("[SERVER]",_config.ForumUrl)
+                .Replace("[FORUM]",_config.ForumTitle)
+                .Replace("[POSTEDIN]",posttype)
+                .Replace("[POSTEDNAME]",postname)
+                .Replace("[URL]",postUrl)
+                .Replace("[UNSUBSCRIBE]",unsubUrl);
+            return messageBody;
+        }
+
+        public void SubscriptionEmail(Member recipient, string subject, string message)
         {
             throw new NotImplementedException();
         }

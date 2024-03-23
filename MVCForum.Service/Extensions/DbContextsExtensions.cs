@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Hangfire.SqlServer;
 using Hangfire;
@@ -12,6 +14,10 @@ namespace SnitzCore.Service.Extensions
 {
     public static class DbContextsExtensions
     {
+        public static IQueryable<TSource> DistinctBy<TSource, TKey>  (this IQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector)
+        {
+            return source.GroupBy(keySelector).Select(x => x.FirstOrDefault());
+        }
         public static IGlobalConfiguration SetStorage(
             this IGlobalConfiguration configuration,
             string nameOrConnectionString, string dbProvider)

@@ -8,13 +8,14 @@ namespace SnitzCore.Data.Interfaces
     public interface IEmailSender
     {
         void ModerationEmail(Member? author, string subject, string message, Forum forum, dynamic post);
+        void SubscriptionEmail(Member recipient, string subject, string message);
         Task SendEmailAsync(EmailMessage message);
         void SendToFreind(dynamic model);
 
-        string ParseTemplate(string template, string subject, string email, string username, string callbackUrl,
+        string ParseTemplate(string template, string subject, string toemail, string tousername, string callbackUrl,
             CultureInfo? culture, string? Extras = null);
 
-        string ParseSubscriptionTemplate(string template, string subject, string email, string username, string callbackUrl,
-            CultureInfo? culture);
+        string ParseSubscriptionTemplate(string template, string posttype, string postname, string authorname,string toname, string postUrl, string unsubUrl,
+            string? lang);
     }
 }

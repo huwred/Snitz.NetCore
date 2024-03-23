@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace SnitzCore.Service
 {
@@ -33,35 +34,49 @@ namespace SnitzCore.Service
                 return;
             }
 
-            foreach (var a in _dbContext.MemberSubscription.Include(s=>s.Member)
-                         .Include(s=>s.Forum)
-                         .Include(s=>s.Category).Where(s=>s.PostId == topicid || s.ForumId == topic.ForumId))
+            var subs = _dbContext.MemberSubscription.Include(s => s.Member)
+                .Include(s => s.Forum)
+                .Include(s => s.Category)
+                .Where(s => s.CategoryId == topic.CategoryId || s.ForumId == topic.ForumId)
+                .Where(s => s.PostId == 0)
+                .Where(s => s.MemberId != topic.MemberId);
+
+            foreach (var a in subs)
             {
 
                 dynamic email = new TopicSubscriptionEmail();
                 email.To = a.Member.Email;
                 email.UserName = a.Member.Name;
                 email.Subject = _config.ForumTitle;
-                email.ForumTitle = _config.ForumTitle;
+
                 email.Unsubscribe = string.Format("{0}Topic/UnSubscribe/{1}?forumid={2}&catid={3}&userid={4}", _config.ForumUrl, a.PostId, a.ForumId, a.CategoryId, a.MemberId);
-                email.Topiclink = string.Format("{0}Topic/Posts/{1}?pagenum=-1", _config.ForumUrl, topic.Id);
+                email.Topiclink = string.Format("{0}Topic/Index/{1}?pagenum=-1", _config.ForumUrl, topic.Id);
                 email.Author = topic.Member.Name;
 
-                if (a.ForumId > 0 && a.Forum.Subscription == (int)ForumSubscription.ForumSubscription)
-                {
-                    email.PostedIn = "Forum";
-                    email.PostedInName = a.Forum.Title;
-                }
-                else if (a.Category.Subscription == (int)CategorySubscription.CategorySubscription)
-                {
-                    email.PostedIn = "Category";
-                    email.PostedInName = a.Category.Name;
-                }
                 try
                 {
-                    _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To }, email.Subject,
-                        "Test message"));
-                    //email.Send();
+                    if (a.ForumId == topic.ForumId && a.MemberId != topic.MemberId && a.Forum.Subscription == (int)ForumSubscription.ForumSubscription)
+                    {
+                        email.PostedIn = "Forum";
+                        email.PostedInName = a.Forum.Title;
+                        var message = _emailsender.ParseSubscriptionTemplate("topicsubscription.html"
+                            , email.PostedIn, email.PostedInName, email.Author, email.UserName, email.Topiclink,
+                            email.Unsubscribe, CultureInfo.CurrentUICulture.Name);
+
+                        _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To }, email.Subject,
+                            message));
+                    }
+                    else if (a.CategoryId == topic.CategoryId && a.MemberId != topic.MemberId && a.Category.Subscription == (int)CategorySubscription.CategorySubscription)
+                    {
+                        email.PostedIn = "Category";
+                        email.PostedInName = a.Category.Name;
+                        var message = _emailsender.ParseSubscriptionTemplate("topicsubscription.html"
+                            , email.PostedIn, email.PostedInName, email.Author, email.UserName, email.Topiclink,
+                            email.Unsubscribe, CultureInfo.CurrentUICulture.Name);
+
+                        _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To }, email.Subject,
+                            message));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -83,10 +98,14 @@ namespace SnitzCore.Service
                 return;
             }
 
-            foreach (var a in _dbContext.MemberSubscription.Include(s=>s.Member)
-                         .Include(s=>s.Post)
-                         .Include(s=>s.Forum)
-                         .Include(s=>s.Category).Where(s=>s.PostId == reply.PostId || s.ForumId == reply.ForumId))
+            var subs = _dbContext.MemberSubscription.Include(s => s.Member)
+                .Include(s => s.Post)
+                .Include(s => s.Forum)
+                .Include(s => s.Category)
+                .Where(s => s.PostId == reply.PostId || s.ForumId == reply.ForumId || s.CategoryId == reply.CategoryId)
+                .Where(s => s.MemberId != reply.MemberId);
+
+            foreach (var a in subs)
             {
                 try
                 {
@@ -95,28 +114,47 @@ namespace SnitzCore.Service
                     email.UserName = a.Member.Name;
                     email.Subject = _config.ForumTitle ;
                     email.Unsubscribe = string.Format("{0}Topic/UnSubscribe/{1}?forumid={2}&catid={3}&userid={4}", _config.ForumUrl, a.PostId, a.ForumId, a.CategoryId, a.MemberId);
-                    email.Topiclink = string.Format("{0}Topic/Posts/{1}?pagenum=-1#{2}", _config.ForumUrl, reply.PostId, reply.Id);
-                    email.ForumTitle = _config.ForumTitle; 
+                    email.Topiclink = string.Format("{0}Topic/Index/{1}?pagenum=-1#{2}", _config.ForumUrl, reply.PostId, reply.Id);
+
                     email.Author = reply.Member.Name;
 
-                    if (a.PostId > 0)
+                    if (a.PostId == reply.PostId && a.MemberId != reply.MemberId)
                     {
                         email.PostedIn = "Topic";
                         email.PostedInName = a.Post.Title;
+                        var message = _emailsender.ParseSubscriptionTemplate("replysubscription.html"
+                            , email.PostedIn, email.PostedInName, email.Author, email.UserName, email.Topiclink,
+                            email.Unsubscribe, CultureInfo.CurrentUICulture.Name);
+
+                        _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To }, email.Subject,
+                            message));
+
                     }
-                    else if (a.ForumId > 0 && a.Forum.Subscription == (int)ForumSubscription.ForumSubscription)
+                    else if (a.ForumId == reply.ForumId && a.MemberId != reply.MemberId && a.Forum.Subscription == (int)ForumSubscription.ForumSubscription)
                     {
                         email.PostedIn = "Forum";
                         email.PostedInName = a.Forum.Title;
+                        var message = _emailsender.ParseSubscriptionTemplate("replysubscription.html"
+                            , email.PostedIn, email.PostedInName, email.Author, email.UserName, email.Topiclink,
+                            email.Unsubscribe, CultureInfo.CurrentUICulture.Name);
+
+                        _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To }, email.Subject,
+                            message));
+
                     }
-                    else if (a.Category.Subscription == (int)CategorySubscription.CategorySubscription)
+                    else if (a.CategoryId == reply.CategoryId && a.MemberId != reply.MemberId && a.Category.Subscription == (int)CategorySubscription.CategorySubscription)
                     {
                         email.PostedIn = "Category";
                         email.PostedInName = a.Category.Name;
+                        var message = _emailsender.ParseSubscriptionTemplate("replysubscription.html"
+                            , email.PostedIn, email.PostedInName, email.Author, email.UserName, email.Topiclink,
+                            email.Unsubscribe, CultureInfo.CurrentUICulture.Name);
+
+                        _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To }, email.Subject,
+                            message));
+
                     }
 
-                    _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To }, email.Subject,
-                        "Test message"));
 
                     //email.Send();
                 }
@@ -127,6 +165,5 @@ namespace SnitzCore.Service
             }
         }
     }
-
 
 }
