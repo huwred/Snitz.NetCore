@@ -248,7 +248,7 @@ namespace MVCForum.Controllers
                 Content = topic.Content,
                 AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 1,
+                Lock = topic.Status == 0,
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = topic.Created.FromForumDateStr(),
@@ -356,16 +356,28 @@ namespace MVCForum.Controllers
             else
             {
                 var topicid = await _postService.Create(post);
-                var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
-                if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
+                if (post.Status < 2) //not waiting to be moderated
                 {
-                    switch ((ForumSubscription)post.Forum.Subscription)
+                    var sub = _config.GetIntValue("STRSUBSCRIPTION");
+                    if (!(sub == 0 || sub == 4))
                     {
-                        case ForumSubscription.ForumSubscription:
-                            BackgroundJob.Enqueue(() => _processSubscriptions.Topic(topicid));
-                            break;
+                        var forum = _forumService.GetById(post.ForumId);
+                        switch (forum.Category.Subscription)
+                        {
+                            case 1 :
+                                BackgroundJob.Enqueue(() => _processSubscriptions.Topic(topicid));
+                                break;
+                        }
+
+                        switch (forum.Subscription)
+                        {
+                            case 1:
+                                BackgroundJob.Enqueue(() => _processSubscriptions.Topic(topicid));
+                                break;
+                        }
                     }
                 }
+
             }
             
 
@@ -390,18 +402,28 @@ namespace MVCForum.Controllers
             else
             {
                 var replyid = await _postService.Create(reply);
-                var forum = _forumService.GetById(reply.ForumId);
-                //var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
-                //if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
-                //{
-                //    switch ((ForumSubscription)forum.Subscription)
-                //    {
-                //        case ForumSubscription.ForumSubscription:
-                //        case ForumSubscription.TopicSubscription:
-                //            BackgroundJob.Enqueue(() => _processSubscriptions.Reply(replyid));
-                //            break;
-                //    }
-                //}
+                if (reply.Status < 2) //not waiting to be moderated
+                {
+                    var forum = _forumService.GetById(reply.ForumId);
+                    var sub = _config.GetIntValue("STRSUBSCRIPTION");
+                    if (sub != 0)
+                    {
+                        switch (forum.Category.Subscription)
+                        {
+                            case 1 :
+                                BackgroundJob.Enqueue(() => _processSubscriptions.Reply(replyid));
+                                break;
+                        }
+                        switch (forum.Subscription)
+                        {
+                            case 1:
+                            case 2:
+                                BackgroundJob.Enqueue(() => _processSubscriptions.Reply(replyid));
+                                break;
+                        }
+                    }
+                }
+
             }
             var topic = _postService.GetTopicForUpdate(reply.PostId);
             topic.Status = (short)(model.Lock ? 0 : 1);
@@ -705,7 +727,7 @@ namespace MVCForum.Controllers
                         //Send email
                         subject = _config.ForumTitle + ": Topic Approved";
                         message = 
-                            _mailSender.ParseTemplate("approvePost.html",_languageResource["tipApproveTopic"].Value,author.Email,author.Name, topicLink, cultureInfo,vm.ApprovalMessage);
+                            _mailSender.ParseTemplate("approvePost.html",_languageResource["tipApproveTopic"].Value,author.Email,author.Name, topicLink, cultureInfo.Name,vm.ApprovalMessage);
 
                         var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
                         if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
@@ -724,7 +746,7 @@ namespace MVCForum.Controllers
                         //Send email
                             subject = _config.ForumTitle + ": Topic rejected";
                             message = 
-                            _mailSender.ParseTemplate("rejectPost.html",_languageResource["tipRejectTopic"].Value,author.Email,author.Name, "", cultureInfo,vm.ApprovalMessage);
+                            _mailSender.ParseTemplate("rejectPost.html",_languageResource["tipRejectTopic"].Value,author.Email,author.Name, "", cultureInfo.Name,vm.ApprovalMessage);
 
                         break;
                     case "Hold":
@@ -732,7 +754,7 @@ namespace MVCForum.Controllers
                         //Send email
                             subject = _config.ForumTitle + ": Topic placed on Hold";
                             message =                             
-                                _mailSender.ParseTemplate("onholdPost.html",_languageResource["tipOnholdTopic"].Value,author.Email,author.Name, topicLink, cultureInfo,vm.ApprovalMessage);
+                                _mailSender.ParseTemplate("onholdPost.html",_languageResource["tipOnholdTopic"].Value,author.Email,author.Name, topicLink, cultureInfo.Name,vm.ApprovalMessage);
 
                         break;
                 }

@@ -85,7 +85,7 @@ namespace MVCForum.Controllers
                         //Send email
                             subject = _config.ForumTitle + ": Reply Approved";
                             message = 
-                            _mailSender.ParseTemplate("approvePost.html",_languageResource["tipApproveReply"].Value,author.Email,author.Name, topicLink, cultureInfo,vm.ApprovalMessage);
+                            _mailSender.ParseTemplate("approvePost.html",_languageResource["tipApproveReply"].Value,author.Email,author.Name, topicLink, cultureInfo.Name,vm.ApprovalMessage);
 
                         var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
                         if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
@@ -105,7 +105,7 @@ namespace MVCForum.Controllers
                         //Send email
                             subject = _config.ForumTitle + ": Reply rejected";
                             message = 
-                            _mailSender.ParseTemplate("rejectPost.html",_languageResource["tipRejectReply"].Value,author.Email,author.Name, "", cultureInfo,vm.ApprovalMessage);
+                            _mailSender.ParseTemplate("rejectPost.html",_languageResource["tipRejectReply"].Value,author.Email,author.Name, "", cultureInfo.Name,vm.ApprovalMessage);
 
                         break;
                     case "Hold":
@@ -114,7 +114,7 @@ namespace MVCForum.Controllers
 
                             subject = _config.ForumTitle + ": Reply placed on Hold";
                             message = 
-                            _mailSender.ParseTemplate("onholdPost.html",_languageResource["tipOnHoldReply"].Value,author.Email,author.Name, topicLink, cultureInfo,vm.ApprovalMessage);
+                            _mailSender.ParseTemplate("onholdPost.html",_languageResource["tipOnHoldReply"].Value,author.Email,author.Name, topicLink, cultureInfo.Name,vm.ApprovalMessage);
 
                         break;
                 }

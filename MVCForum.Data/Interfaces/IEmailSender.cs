@@ -13,7 +13,7 @@ namespace SnitzCore.Data.Interfaces
         void SendToFreind(dynamic model);
 
         string ParseTemplate(string template, string subject, string toemail, string tousername, string callbackUrl,
-            CultureInfo? culture, string? Extras = null);
+            string? lang, string? Extras = null);
 
         string ParseSubscriptionTemplate(string template, string posttype, string postname, string authorname,string toname, string postUrl, string unsubUrl,
             string? lang);

@@ -243,7 +243,7 @@ namespace MVCForum.Controllers
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, username = user.Name }, Request.Scheme);
             var message = new EmailMessage(new[] { user.Email }, 
                 _languageResource["Confirm"].Value, 
-                _emailSender.ParseTemplate("confirmEmail.html",_languageResource["Confirm"].Value,user.Email,user.Name, confirmationLink!, cultureInfo));
+                _emailSender.ParseTemplate("confirmEmail.html",_languageResource["Confirm"].Value,user.Email,user.Name, confirmationLink!, cultureInfo.Name));
             
             await _emailSender.SendEmailAsync(message);
             await _userManager.AddToRoleAsync(appUser, "Visitor");
@@ -440,7 +440,7 @@ namespace MVCForum.Controllers
             CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
             var message = new EmailMessage(new[] { user.Email! }, 
                 _languageResource["Confirm"].Value, 
-                _emailSender.ParseTemplate("forgotPassword.html",_languageResource["Confirm"].Value,user.Email!,user.UserName!,callbackUrl!, cultureInfo));
+                _emailSender.ParseTemplate("forgotPassword.html",_languageResource["Confirm"].Value,user.Email!,user.UserName!,callbackUrl!, cultureInfo.Name));
             
             await _emailSender.SendEmailAsync(message);
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
@@ -655,7 +655,7 @@ namespace MVCForum.Controllers
             var confirmationLink = Url.Action(nameof(ChangeEmail), "Account", new { token, username = member.Name }, Request.Scheme);
             var message = new EmailMessage(new[] { model.NewEmail }, 
                 _languageResource["Confirm"].Value, 
-                _emailSender.ParseTemplate("changeEmail.html",_languageResource["Confirm"].Value,model.NewEmail,member.Name, confirmationLink!, cultureInfo));
+                _emailSender.ParseTemplate("changeEmail.html",_languageResource["Confirm"].Value,model.NewEmail,member.Name, confirmationLink!, cultureInfo.Name));
             
             await _emailSender.SendEmailAsync(message);
             ViewBag.Message = _languageResource.GetString("EmailConfirm");

@@ -104,8 +104,6 @@ namespace MVCForum.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-
-        //[HttpPost]
         public IActionResult SetLanguage(string lang, string returnUrl)
         {
             Response.Cookies.Append(
@@ -116,7 +114,5 @@ namespace MVCForum.Controllers
 
             return LocalRedirect(returnUrl);
         }
-
-
     }
 }

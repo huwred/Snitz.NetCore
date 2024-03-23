@@ -15,7 +15,7 @@
     <div>@Html.MemberRankStars(Model, ranking,Localizer)</div>
     <div>
         <ul class="list-group list-group-horizontal list-unstyled mb-0">
-            <li snitz-if="@Model.ReceiveEmail == 1 && @User.Identity!.IsAuthenticated" class="p-1">
+            <li snitz-if="@(Model.ReceiveEmail == 1 && User.Identity!.IsAuthenticated && SnitzConfig.GetIntValue("STREMAIL") == 1)" class="p-1">
                 <a href="#" title="@Localizer["tipAuthorEmail"]" data-toggle="tooltip" class="email-link" data-url="@Url.Action("EmailMember", "Account")" data-id="@Model.Id" data-original-title="@Localizer["tipAuthorEmail"]"><i class="fa fa-2x fa-envelope"></i></a>
             </li>
             <li snitz-if="@SnitzConfig.GetIntValue("STRPMSTATUS") == 1 && @Model.Pmreceive == 1 && @User.Identity!.IsAuthenticated" class="p-1">

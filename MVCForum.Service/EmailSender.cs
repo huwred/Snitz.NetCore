@@ -53,17 +53,9 @@ namespace SnitzCore.Service
             Send(emailMessage);
         }
 
-        public string ParseTemplate(string template,string subject, string toemail,string tousername, string callbackUrl, CultureInfo? culture, string? Extras = null)
+        public string ParseTemplate(string template,string subject, string toemail,string tousername, string callbackUrl, string? lang, string? Extras = null)
         {
-            if (culture != null)
-            {
-                template = culture.Name + Path.DirectorySeparatorChar + template;
-            }
-            var pathToFile = _env.WebRootPath  
-                             + Path.DirectorySeparatorChar  
-                             + "Templates"  
-                             + Path.DirectorySeparatorChar  
-                             + template;
+            var pathToFile = TemplateFile(template, lang);
             var builder = new BodyBuilder();
             using (StreamReader sourceReader = System.IO.File.OpenText(pathToFile))
             {
@@ -89,6 +81,30 @@ namespace SnitzCore.Service
                 messageBody = messageBody.Replace("[EXTRATEXT]", "");
             }
             return messageBody;
+        }
+
+        private string TemplateFile(string template, string? lang)
+        {
+            if (lang != null)
+            {
+                template = lang + Path.DirectorySeparatorChar + template;
+            }
+            var pathToFile = _env.WebRootPath  
+                             + Path.DirectorySeparatorChar  
+                             + "Templates"  
+                             + Path.DirectorySeparatorChar  
+                             + template;
+            if (!File.Exists(pathToFile)) //fallback to english
+            {
+                template = "en-GB" + Path.DirectorySeparatorChar + template;
+                pathToFile = _env.WebRootPath  
+                             + Path.DirectorySeparatorChar  
+                             + "Templates"  
+                             + Path.DirectorySeparatorChar  
+                             + template;
+            }
+
+            return pathToFile;
         }
 
         private MimeMessage CreateEmailMessage(EmailMessage message)
@@ -139,17 +155,9 @@ namespace SnitzCore.Service
         }
 
         public string ParseSubscriptionTemplate(string template, string posttype, string postname, string authorname, string toname, string postUrl, string unsubUrl,
-                string? lang)
+            string? lang)
         {
-            if (lang != null)
-            {
-                template = lang + Path.DirectorySeparatorChar + template;
-            }
-            var pathToFile = _env.WebRootPath  
-                             + Path.DirectorySeparatorChar  
-                             + "Templates"  
-                             + Path.DirectorySeparatorChar  
-                             + template;
+            var pathToFile = TemplateFile(template, lang);
             var builder = new BodyBuilder();
             using (StreamReader sourceReader = System.IO.File.OpenText(pathToFile))
             {
