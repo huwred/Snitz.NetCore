@@ -120,6 +120,7 @@
     <_ContentIncludedByDefault Remove="bundleconfig.json" />
     <_ContentIncludedByDefault Remove="Views\Account\ChangeUsername.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Account\EmailMember.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Home\CookiePolicy.cshtml" />
     <_ContentIncludedByDefault Remove="Views\PrivateMessage\Search.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\ConfirmDIalog.cshtml" />
@@ -282,5 +283,8 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Account\ChangeUsername.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Home\CookiePolicy.cshtml" />
   </ItemGroup>
 </Project>

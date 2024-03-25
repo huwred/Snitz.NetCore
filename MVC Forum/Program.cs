@@ -3,12 +3,10 @@ using BbCodeFormatter.Processors;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MVCForum.Extensions;
-using SmartBreadcrumbs.Extensions;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -22,20 +20,19 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Hangfire;
-using Hangfire.Dashboard;
-using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Processors;
+using SmartBreadcrumbs.Extensions;
 using Snitz.Events.Models;
 using Snitz.PhotoAlbum.Models;
 using SnitzCore.Service.Extensions;
-using Microsoft.AspNetCore.Mvc.Filters;
 using SnitzCore.Service.Hangfire;
 
 
@@ -91,6 +88,14 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 
 });
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    // This lambda determines whether user consent for non-essential 
+    // cookies is needed for a given request.
+    options.CheckConsentNeeded = context => true;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+    options.ConsentCookieValue = "true";
+});
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromHours(12));
 builder.Services.Configure<EmailConfirmationTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromDays(14));
 
@@ -100,6 +105,7 @@ builder.Services.AddScoped<IForum, ForumService>();
 builder.Services.AddScoped<IPost, PostService>();
 builder.Services.AddScoped<IPrivateMessage, PrivateMessageService>();
 builder.Services.AddTransient<ISnitzConfig, ConfigService>();
+
 builder.Services.AddTransient<ICodeProcessor, BbCodeProcessor>();
 builder.Services.AddScoped<IEmoticon, EmoticonService>();
 builder.Services.AddScoped<ISnitz, SnitzService>();
@@ -151,6 +157,9 @@ EmailConfiguration emailConfig = builder.Configuration
     .GetSection("MailSettings")
     .Get<EmailConfiguration>()!;
 builder.Services.AddSingleton(emailConfig);
+//builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection(EmailConfiguration.SectionName));
+
+
 builder.Services.Configure<SnitzForums>(builder.Configuration.GetSection(SnitzForums.SectionName));
 
 builder.Logging.ClearProviders();
@@ -226,7 +235,7 @@ app.UseAuthorization();
 app.UseSession();
 app.UseImageSharp();
 app.UseStaticFiles();
-
+app.UseCookiePolicy();
 app.UseHangfireDashboard("/snitzjobs",new DashboardOptions
 {
     Authorization = new [] { new SnitzAuthorizationFilter() }

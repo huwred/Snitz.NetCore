@@ -166,9 +166,9 @@
                     </div>
                 </div>
                 <admin-config config-key="STRBADWORDFILTER" config-label="Filter out bad words" config-val="@SnitzConfig.GetIntValue("STRBADWORDFILTER")"></admin-config>
-                <admin-config config-key="STRALLOWFORUMCODE" config-label="Allow Forum Code" config-val="@SnitzConfig.GetIntValue("STRALLOWFORUMCODE")"></admin-config>
-                <admin-config config-key="STRIMGINPOSTS" config-label="Allow images" config-val="@SnitzConfig.GetIntValue("STRIMGINPOSTS")"></admin-config>
-                <admin-config disabled="true" config-key="STRICONS" config-label="Allow icons" config-type="" config-val="@SnitzConfig.GetIntValue("STRICONS")"></admin-config>
+                <input type="hidden" value="1" name="STRALLOWFORUMCODE" />
+                <input type="hidden" value="1" name="STRIMGINPOSTS" />
+                <input type="hidden" value="1" name="STRICONS" />
                 <admin-config config-key="STRALLOWUPLOADS" config-label="Allow File Attachments" config-val="@SnitzConfig.GetIntValue("STRALLOWUPLOADS")"></admin-config>
                 <fieldset @(SnitzConfig.GetIntValue("STRALLOWUPLOADS") == 0 ? "disabled" : "") id="UPLOADSENABLED">
                     <div class="row">
@@ -301,9 +301,7 @@
             document.querySelector('#STRSHOWANNOUNCE').addEventListener('click', (e) => {
                 document.querySelector('#ANNOUNCEENABLED').disabled = !e.target.checked;
             });
-            $(document).on("click", "#STRPHOTOALBUM", function (e) {
-                $("#photoalbum-enable").submit();
-            });
+
             $(document).on("click", "#STRBOOKMARK", function (e) {
                 $("#bookmark-enable").submit();
             });
@@ -333,9 +331,9 @@
                 document.querySelector('#PMENABLED').disabled = !e.target.checked;
             });
 
-            document.getElementById("photoalbum-enable").addEventListener("submit", handleSubmit);
-            document.getElementById("bookmark-enable").addEventListener("submit", handleSubmit);
-            document.getElementById("events-enable").addEventListener("submit", handleSubmit);
+            // document.getElementById("photoalbum-enable").addEventListener("submit", handleSubmit);
+            // document.getElementById("bookmark-enable").addEventListener("submit", handleSubmit);
+            // document.getElementById("events-enable").addEventListener("submit", handleSubmit);
         })
 
 
@@ -402,5 +400,6 @@
         $("#admin-nav li a.nav-link.active").removeClass("active");
         $("#feature-config").addClass("active");
     </script>
+    <renderstoredcontent asp-key="album-groups"></renderstoredcontent>
 }
 

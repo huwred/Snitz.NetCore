@@ -1,0 +1,227 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Snitz.PhotoAlbum.ViewModels
+@model bool
+
+@{
+    ViewBag.Title = "Photo Album Configuration";
+    ViewBag.PageTitle = "Photo Album Configuration";
+    Layout = null;
+    ViewBag.NoImages = true;
+    var disabled = "";
+    if (SnitzConfig.GetIntValue("STRPHOTOALBUM") == 0)
+    {
+        disabled = "disabled";
+    } 
+}
+@section styles
+{
+    <style>
+.forum-header th:nth-child(1){width:20px;}
+.forum-header th:nth-child(2){width:160px;}
+.forum-header th:nth-child(3){width:40px;}
+.forum-header th:nth-child(4){width:40px;}
+    </style>
+}
+
+<div class="container-fluid form-horizontal">
+<h5>Album plugin Settings</h5>
+<hr class="title"/>
+<div class="row-fluid">
+    <div class="mb-3">
+        <div class="form-check form-switch mb-3">
+            <input type="checkbox" role="switch" name="STRPHOTOALBUM" id="STRPHOTOALBUM" value="1" class="form-check-input" checked="" style="transform: scale(1.4);">
+            <input type="checkbox" name="STRPHOTOALBUM" value="0" checked="" style="display: none">
+            <label class="form-check-label" for="STRPHOTOALBUM">Enable Photo Albums</label>
+        </div>
+    </div>
+</div>
+    <form asp-action="SaveSettings" asp-controller="SnitzConfig" id="limitsForm" data-ajax="true" data-ajax-update="#pa-results" disabled="@disabled" aria-disabled="@disabled">
+
+    <div class="mb-3">
+        <div class="form-check form-switch mb-3">
+            <input type="checkbox" role="switch" name="INTCOMMONALBUM" id="INTCOMMONALBUM" value="1" class="form-check-input" checked="@(SnitzConfig.GetIntValue("INTCOMMONALBUM")==1)" style="transform: scale(1.4);">
+                <input type="checkbox" name="INTCOMMONALBUM" value="0" checked="" style="display: none">
+            <label class="form-check-label" for="INTCOMMONALBUM">Show consolidated album</label>
+            <p class="form-text">Shows a link to <b>ALL</b> uploaded images in one consolidated Album. The label for the album uses the ResourceId 'mnuCommonAlbum'.</p>
+        </div>
+        <div class="form-check form-switch mb-3">
+                <input type="checkbox" role="switch" name="INTFEATUREDPHOTO" id="INTFEATUREDPHOTO" value="1" class="form-check-input" checked="@(SnitzConfig.GetIntValue("INTFEATUREDPHOTO")==1)" style="transform: scale(1.4);">
+            <input type="checkbox" name="INTFEATUREDPHOTO" value="0" checked="" style="display: none">
+            <label class="form-check-label" for="INTFEATUREDPHOTO">Featured image</label>
+            <p class="form-text">Display a random image from the albums in the sidebar</p>
+        </div>
+        <div class="mb-3">
+            @if (ViewBag.NoImages)
+            {
+                <p class="form-text">No images to feature</p>
+            }
+        </div>
+        <div snitz-if="@(SnitzConfig.GetIntValue("INTPROTECTCONTENT") == 1)" class="form-check form-switch mb-3">
+            <input type="checkbox" role="switch" name="INTPROTECTPHOTO" id="INTPROTECTPHOTO" value="1" class="form-check-input" checked="@(SnitzConfig.GetIntValue("INTPROTECTPHOTO")==1)" style="transform: scale(1.4);">
+            <input type="checkbox" name="INTPROTECTPHOTO" value="0" checked="@(SnitzConfig.GetIntValue("INTPROTECTPHOTO")==0)" style="display: none">
+            <label class="form-check-label" for="INTPROTECTPHOTO">Protected Folder</label>
+            <p class="form-text">Store images in the protected Folder if enabled</p>
+        </div>
+        <div snitz-if="@(SnitzConfig.TableExists("FORUM_IMAGE_COMMENT"))" class="form-check form-switch mb-3">
+            <input type="checkbox" role="switch" name="INTIMGCOMMENT" id="INTIMGCOMMENT" value="1" class="form-check-input" checked="@(SnitzConfig.GetIntValue("INTIMGCOMMENT")==1)" style="transform: scale(1.4);">
+            <input type="checkbox" name="INTIMGCOMMENT" value="0" checked="" style="display: none">
+            <label class="form-check-label" for="INTIMGCOMMENT">Allow Comments</label>
+
+        </div>
+    </div>
+
+    <h5>Limits</h5>
+    <hr class="title"/>
+    <div class="row-fluid">
+            <div class="mb-3">
+                <label for="INTMAXIMAGESIZE" class="form-label col-xs-4">Maximum image size (Mb)</label>
+                <div class="col-xs-2 col-lg-1">
+                    <input id="INTMAXIMAGESIZE" class="form-control" name="INTMAXIMAGESIZE" min="1" type="number" value="@SnitzConfig.GetValue("INTMAXIMAGESIZE")"/>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="INTMAXIMUMFILES" class="form-label col-xs-4">Maximum number of files</label>
+                <div class="col-xs-2 col-lg-1">
+                    <input id="INTMAXIMUMFILES" class="form-control" name="INTMAXIMUMFILES" min="1" type="number" value="@SnitzConfig.GetIntValue("INTMAXIMUMFILES")"/>
+                </div>
+                <div class="col-xs-5 col-lg-5">
+                    <p class="form-text">Limit for a members album will be the lower of the two options, either @SnitzConfig.GetIntValue("INTMAXIMUMFILES") files or @SnitzConfig.GetIntValue("INTALBUMLIMIT")Mb.<br />0 means no limit</p>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="INTALBUMLIMIT" class="form-label col-xs-4">Maximum album size (Mb)</label>
+                <div class="col-xs-2 col-lg-1">
+                    <input id="INTALBUMLIMIT" class="form-control" name="INTALBUMLIMIT" min="1" type="number" value="@SnitzConfig.GetIntValue("INTALBUMLIMIT")"/>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="STRIMAGETYPES" class="form-label col-xs-4">Allowed image types</label>
+                <div class="col-xs-3 col-lg-3">
+                    <input id="STRIMAGETYPES" type="text" class="form-control" name="STRIMAGETYPES" value="@SnitzConfig.GetValue("STRIMAGETYPES")"/>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="STRTHUMBTYPE" class="form-label col-xs-4">Thumbnail type</label>
+                <div class="col-xs-2 col-lg-2">
+                    @{
+                        var scaleselected = "";
+                        var cropselected = "";
+                        if (SnitzConfig.GetValue("STRTHUMBTYPE") == "scaled")
+                        {
+                            scaleselected = "selected";
+                        }
+                        else
+                        {
+                            cropselected = "selected";
+                        }
+                    }
+                    <select id="STRTHUMBTYPE" class="form-control" name="STRTHUMBTYPE">
+                        <option value="scaled" selected="@scaleselected">Scaled</option>
+                        <option value="crop" selected="@cropselected">Cropped</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="INTMAXTHUMBSIZE" class="form-label col-xs-4">Max thumbnail size</label>
+                <div class="col-xs-2 col-lg-1">
+                    <input id="INTMAXTHUMBSIZE" type="number" class="form-control" name="INTMAXTHUMBSIZE" value="@SnitzConfig.GetIntValue("INTMAXTHUMBSIZE")"/>
+                </div>
+            </div>
+            <div class="mb-3">
+                <button id="btnSubmit" type="submit" class="btn btn-success">Save Changes</button>
+            </div>
+    </div>
+    <div id="pa-results"></div>
+    </form>
+    <div class="row-fluid">
+        <h5>Groups</h5>
+        <hr class="title"/>
+        <div id="gridContent" class="col-xs-8" style="padding: 20px;">
+            @await Component.InvokeAsync("ImageAlbum", "Groups")
+        </div>
+        <p>&nbsp;</p>
+        <p class="help-block">The description will be used as part of the resource key to lookup the display string. i.e. Group_Description (with spaces stripped)</p>
+        <p><button id="add" class="btn btn-xs btn-success">Add Group</button></p>
+    </div>
+    <div class="row-fluid"></div>
+</div>
+@section scripts
+{
+<script type="text/javascript" >  
+    $(function () {  
+        $.fn.bootstrapSwitch.defaults.size = 'mini';
+        $.fn.bootstrapSwitch.defaults.onColor = 'success';
+        $.fn.bootstrapSwitch.defaults.offColor = 'warning';
+
+        $("[type='checkbox']").bootstrapSwitch();
+        $("[type='checkbox']").on('switchChange.bootstrapSwitch', function (event, state) {
+            var key = $(this).data("key");
+            if ((key === "INTCOMMONALBUM" || key === "INTFEATUREDPHOTO") && state === true) {
+                //check if albums are allow
+                if ($('[name=MemberAlbums').bootstrapSwitch('state') === false) {
+                    $(this).bootstrapSwitch('state', false);
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_WARNING,
+                        title: 'Error: ',
+                        message: 'Need to enable albums first',
+                        size: BootstrapDialog.SIZE_SMALL
+                    });
+                    return false;
+                }
+            }
+            $.ajax({
+                url: SnitzVars.baseUrl + 'PhotoAlbum/SaveConfigBool',
+                type: 'POST',
+                data: { 'id': key, 'value': JSON.stringify(state) },
+                cache: false,
+                error: function (jqXHR, exception) {
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_WARNING,
+                        title: 'Error: ' + jqXHR.status,
+                        message: exception,
+                        size: BootstrapDialog.SIZE_SMALL
+                    });
+                }
+            });
+            
+            if (key === "STRPHOTOALBUM" && state === false) {
+                $('.linked').bootstrapSwitch('state', false);
+            }
+        });
+
+
+        $('#limitsForm').on('click', '#btnSubmit', function (event) {
+            event.preventDefault();
+
+            $.ajax({
+                url: SnitzVars.baseUrl + "PhotoAlbum/SaveLimits",
+                type: "POST",
+                dataType: "json",
+                data: $('#limitsForm').serialize(),
+                error: function (xhr, textStatus, exceptionThrown) {
+                    debugger;
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_WARNING,
+                        title: 'Error: ' + xhr.status,
+                        message: exceptionThrown,
+                        size: BootstrapDialog.SIZE_SMALL
+                    });
+                },
+                success: function (data) {
+
+                    BootstrapDialog.success(data, function () {
+                        location.reload();
+                    });
+
+                }
+            });
+
+            return false;
+        });
+    })
+</script> 
+    
+}
+
+

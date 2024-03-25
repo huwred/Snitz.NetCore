@@ -50,12 +50,17 @@
 </ItemGroup>
 
 <ItemGroup>
+  <_ContentIncludedByDefault Remove="Views\PhotoAlbum\Admin.cshtml" />
   <_ContentIncludedByDefault Remove="Views\PhotoAlbum\_MemberSlideShow.cshtml" />
   <_ContentIncludedByDefault Remove="Views\Shared\Components\ImageAlbum\Config.cshtml" />
 </ItemGroup>
 
 <ItemGroup>
   <UpToDateCheckInput Remove="Views\Shared\Components\ImageAlbum\Config.cshtml" />
+</ItemGroup>
+
+<ItemGroup>
+  <UpToDateCheckInput Remove="Views\PhotoAlbum\Admin.cshtml" />
 </ItemGroup>
 
 </Project>

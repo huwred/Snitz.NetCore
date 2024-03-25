@@ -33,7 +33,7 @@
             </select>
             <div class="valid-feedback"></div>
         </div>
-        <div class="col-3 mb-3">
+        <div class="col-2 mb-3">
             <label for="Name" class="form-label">Resource Key</label>
             <input type="text" class="form-control" id="Name" name="Name" aria-required="true">
             <div class="valid-feedback"></div>
@@ -59,7 +59,14 @@
                 }
             </select>
         </div>
-        <div class="col-1 mb-3"><button type="submit" class="btn btn-success mt-4" title="Add Resource"><i class="fa fa-save"></i></button></div>
+        <div class="col-1 mb-3">
+            <label for="del-resource" class="form-label d-block" tabindex="-1">&nbsp;</label>
+            <button id="del-resource" type="submit" class="btn btn-success" title="Add Resource"><i class="fa fa-save"></i></button>
+        </div>
+        <div class="col-1 mb-3">
+            <label class="form-label d-block" tabindex="-1">&nbsp;</label>
+            <a href="/LanguageManager/Search" class="btn btn-primary text-white" title="Find a Resource"><i class="fa fa-search"></i></a>
+        </div>
     </form>
     <div id="result-resource"></div>
     <hr/>
@@ -68,7 +75,7 @@
             <li class="fw-bold list-group-item">Resource Sets</li>
             @foreach (var lang in Model.Resources.GroupBy(l => l.ResourceSet).OrderBy(o=>o.Key))
             {
-                if (lang.Key == "Administrator")
+                if (lang.Key == "Admin")
                 {
                     <li data-id="@lang.Key" class="resource-set list-group-item active" style="cursor: pointer">@lang.Key</li>
                 }
@@ -87,17 +94,36 @@
 <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="close">×</a>
+            <div class="modal-header bg-primary">
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline-danger">X</a>
                 <h3>Delete Resource</h3>
             </div>
             <div class="modal-body">
-                <p>Delete this Resource.</p>
-                <p>Do you want to proceed?</p>
+                <p>Delete this Resource.<br /><span class="form-text">This will remove the Resource and all it's translations.</span></p>
+                
             </div>
             <div class="modal-footer">
-                <a href="#" id="btnYes" class="btn danger">Yes</a>
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">No</a>
+                <p>Do you want to proceed?</p>
+                <a href="#" id="btnYes" class="btn btn-danger">Yes</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-warning">No</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="rsModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="rsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline-danger">X</a>
+                <h3>Delete ResourceSet</h3>
+            </div>
+            <div class="modal-body">
+                <p>Delete current ResourceSet.<br /><span class="form-text">This will remove the ResourceSet and all it's Resources.</span></p>
+            </div>
+            <div class="modal-footer">
+                <label class="form-label">Do you wish to proceed?</label>
+                <a href="#" id="rsbtnYes" class="btn btn-danger">Yes</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-warning">No</a>
             </div>
         </div>
     </div>
@@ -145,6 +171,24 @@
             var href = $(this).attr('href');
             $('#myModal').data('id', id).data('url', href).modal('show');
         });
+        $(document).on('click','#del-resourceset', function(e) {
+
+            e.preventDefault();
+            var id = $(this).data('id');
+            var href = $(this).attr('href');
+            $('#rsModal').data('id', id).data('url', href).modal('show');
+        });
+        $(document).on('click','#rsbtnYes',function(e) {
+            // handle deletion here
+            e.preventDefault();
+            var url = $('#rsModal').data('url') + $('#rsModal').data('id');
+
+            $.get(url, function(result) {
+                $('#rsModal').modal('hide');
+                $('#resource-card')
+                    .load("/LanguageManager/ResourceSet/?id=" + $('#ResourceSet').val());
+            });
+        });
         $(document).on('click','#btnYes',function(e) {
             // handle deletion here
             e.preventDefault();
@@ -158,5 +202,6 @@
         });
         $("#admin-nav li a.nav-link.active").removeClass("active");
         $("#lang-settings").addClass("active");
+
     </script>
 }

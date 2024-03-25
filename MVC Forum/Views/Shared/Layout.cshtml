@@ -51,6 +51,7 @@
 }
 
 @await RenderSectionAsync("Scripts", required: false)
+
 @if (User.IsInRole("Administrator"))
 {
     <div id="confirmRestart" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">

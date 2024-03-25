@@ -474,21 +474,19 @@ namespace SnitzCore.BackOffice.Controllers
             
 
             var mailSettings =
-                _webconfiguration.GetSection("MailSettings");
+                _webconfiguration["MailSettings"];
 
-            if (mailSettings.GetChildren().Any())
-            {
-                vm.Port = _emailconfig.Value.Port;// Convert.ToInt32(mailSettings.GetChildren().Single(s=>s.Key == "Port").Value);
-                vm.Server = _emailconfig.Value.SmtpServer;// mailSettings.GetChildren().Single(s=>s.Key == "SmtpServer").Value;
-                vm.Password = _emailconfig.Value.Password;// mailSettings.GetChildren().Single(s=>s.Key == "Password").Value;
-                vm.Username = _emailconfig.Value.UserName;// mailSettings.GetChildren().Single(s=>s.Key == "UserName").Value;
-                vm.From = _emailconfig.Value.From!;// mailSettings.GetChildren().Single(s=>s.Key == "From").Value;
-                vm.SslMode = _emailconfig.Value.SecureSocketOptions;// mailSettings.GetChildren().Single(s => s.Key == "SecureSocketOptions").Value;
-                vm.DefaultCred = false;
-                if (vm.DefaultCred || !string.IsNullOrEmpty(vm.Username))
-                    vm.Auth = true;
-                vm.Auth = vm.Auth || mailSettings.GetChildren().Single(s => s.Key == "RequireLogin").Value == "true";
-            }
+            vm.Port = _emailconfig.Value.Port;// Convert.ToInt32(mailSettings.GetChildren().Single(s=>s.Key == "Port").Value);
+            vm.Server = _emailconfig.Value.SmtpServer;// mailSettings.GetChildren().Single(s=>s.Key == "SmtpServer").Value;
+            vm.Password = _emailconfig.Value.Password;// mailSettings.GetChildren().Single(s=>s.Key == "Password").Value;
+            vm.Username = _emailconfig.Value.UserName;// mailSettings.GetChildren().Single(s=>s.Key == "UserName").Value;
+            vm.From = _emailconfig.Value.From!;// mailSettings.GetChildren().Single(s=>s.Key == "From").Value;
+            vm.SslMode = _emailconfig.Value.SecureSocketOptions;// mailSettings.GetChildren().Single(s => s.Key == "SecureSocketOptions").Value;
+            vm.DefaultCred = false;
+            if (vm.DefaultCred || !string.IsNullOrEmpty(vm.Username))
+                vm.Auth = true;
+            //vm.Auth = vm.Auth || mailSettings.GetChildren().Single(s => s.Key == "RequireLogin").Value == "true";
+            
             vm.EmailMode = _snitzconfig.GetValue("STREMAIL");
             vm.UseSpamFilter = _snitzconfig.GetValue("STRFILTEREMAILADDRESSES");
             vm.ContactEmail = _snitzconfig.GetValue("STRCONTACTEMAIL",null) ?? vm.From;

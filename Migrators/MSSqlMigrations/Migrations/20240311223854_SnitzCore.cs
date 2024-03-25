@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using SnitzCore.Data;
+using SnitzCore.Data.Extensions;
 
 #nullable disable
 
@@ -13,47 +14,12 @@ namespace Migrations
     /// <inheritdoc />
     public partial class SnitzCore : Migration
     {
-        private static bool Exists(string tableName)
-        {
-            var connstring = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["SnitzConnection"];
-            int count = 0;
-            using (SqlConnection conn = new SqlConnection())
-            {
-                conn.ConnectionString = connstring;
-                conn.Open();
-  
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = $"SELECT COUNT(*) FROM sys.tables WHERE name = '{tableName}'";
-  
-                count = (int)cmd.ExecuteScalar();
-                conn.Close();
-                return count > 0;
-            }
-
-        }
-        private static bool ColumnExists(string tableName, string column)
-        {
-            var connstring = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["SnitzConnection"];
-            int count = 0;
-            using (SqlConnection conn = new SqlConnection())
-            {
-                conn.ConnectionString = connstring;
-                conn.Open();
-  
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = $"SELECT COUNT(*) FROM sys.columns WHERE Name = N'{column}' AND Object_ID = Object_ID(N'{tableName}')";
-  
-                count = (int)cmd.ExecuteScalar();
-                conn.Close();
-                return count > 0;
-            }
-
-        }
+ 
 
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            if (!ColumnExists("FORUM_TOPICS", "T_ANSWERED"))
+            if (!migrationBuilder.ColumnExists("FORUM_TOPICS", "T_ANSWERED"))
             {
             migrationBuilder.AddColumn<bool>(
                 name: "T_ANSWERED",
@@ -63,7 +29,7 @@ namespace Migrations
                 defaultValue: false);
             }
 
-            if (!ColumnExists("FORUM_REPLY", "R_ANSWER"))
+            if (!migrationBuilder.ColumnExists("FORUM_REPLY", "R_ANSWER"))
             {
             migrationBuilder.AddColumn<bool>(
                 name: "R_ANSWER",
@@ -74,7 +40,7 @@ namespace Migrations
             }
 
 
-            if (!Exists("FORUM_BOOKMARKS"))
+            if (!migrationBuilder.TableExists("FORUM_BOOKMARKS"))
             {
                 migrationBuilder.CreateTable(
                     name: "FORUM_BOOKMARKS",
@@ -112,7 +78,7 @@ namespace Migrations
                     column: "B_TOPICID");
             }
 
-            if (!Exists("FORUM_IMAGES"))
+            if (!migrationBuilder.TableExists("FORUM_IMAGES"))
             {
                 migrationBuilder.CreateTable(
                     name: "FORUM_IMAGE_CAT",
@@ -208,7 +174,7 @@ namespace Migrations
                     column: "I_MID");
             }
 
-            if (!Exists("FORUM_SPAM_MAIL"))
+            if (!migrationBuilder.TableExists("FORUM_SPAM_MAIL"))
             {
                 migrationBuilder.CreateTable(
                     name: "FORUM_SPAM_MAIL",
@@ -224,7 +190,7 @@ namespace Migrations
                     });
             }
 
-            if (!Exists("webpages_Membership"))
+            if (!migrationBuilder.TableExists("webpages_Membership"))
             {
                 migrationBuilder.CreateTable(
                     name: "webpages_Membership",

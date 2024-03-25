@@ -1,0 +1,114 @@
+﻿@model IQueryable<Snitz.PhotoAlbum.Models.AlbumGroup>
+
+
+<table class="table table-sm table-striped table-hover">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Description</th>
+        <th scope="col">Order</th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var group in Model.OrderBy(g=>g.Order).ToList())
+    {
+        <tr id="group_@group.Id">
+            <form id="groupform_@group.Id" asp-controller="PhotoAlbum" asp-action="UpdateGroup">
+                <th scope="row">@group.Id
+                    <input type="hidden" name="Id" value="@group.Id" /></th>
+                <td>
+                    <div class="fieldReadOnly" data-dominofield="Description" id="desc_@group.Id">@group.Description</div>
+                </td>
+                <td>
+                    <div class="fieldReadOnly" data-dominofield="Order" id="order_@group.Id">@group.Order</div>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary group-edit" data-id="@group.Id"><i class="fa fa-pencil "></i></button>
+                    <button class="btn btn-sm btn-outline-success group-edit" data-id="@group.Id"><i class="fa fa-save "></i></button>
+                    <button class="btn btn-sm btn-outline-danger group-edit" data-id="@group.Id"><i class="fa fa-trash "></i></button>
+                </td>
+            </form>
+        </tr>
+    }
+    </tbody>
+</table>
+<storecontent asp-key="album-groups">
+    <script type="text/javascript">
+        // Image Groups
+        $('.btn-outline-success.group-edit').attr("disabled", true);
+        $(document).on('click', '.btn-outline-success.group-edit', function (e) {
+            e.preventDefault();
+            var groupid = $(this).data("id");
+            // Get all input fields used for Domino
+            var grpstr = "[id=group_" + groupid + "] [data-dominofield]";
+            var inputs = $(grpstr);
+            var form = $("#groupform_" + groupid);
+            //enable/disable buttons
+            $("#group_" + groupid + " .btn-outline-primary.group-edit").attr('disabled', false);
+            $(this).attr('disabled', true);
+            //post the form
+            var formData = new FormData(form[0]);
+            inputs.each(function() {
+                var input = $(this);
+                formData.append(input.data('dominofield'), input.val());
+            });
+
+            $.ajax({
+                url: $("#groupform_" + groupid).attr("action"),
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data.result) {
+                        location.reload();
+                    }
+                },
+                error: function (data) {
+                    alert("error");
+                    $('#result').html(data);
+                },
+                complete: function (data) {
+                    // Process each field
+                    inputs.each(function () {
+                        // Build new DIV element
+                        var input = $(this);
+                        var div = '<div class="fieldReadOnly" ';
+                        div += 'data-dominofield="' + input.data('dominofield') + '" ';
+                        div += 'id="' + input.attr('id') + '">';
+                        div += input.val() + '</div>';
+                        // Insert the new div element in front of input field
+                        input.before(div);
+                        // Remove input field
+                        input.remove();
+                    });
+                }
+            });
+
+
+        });
+        $(document).on('click', '.btn-outline-primary.group-edit', function () {
+            var groupid = $(this).data("id");
+            var grpstr = "[id=group_" + groupid + "] [data-dominofield]";
+            // Get all input fields used for Domino
+            var divs = $(grpstr);
+            // Process each field
+            divs.each(function () {
+                // Build new INPUT element
+                var div = $(this);
+                var input = '<input type="text" class="form-control" ';
+                input += 'name="' + div.data('dominofield') + '" ';
+                input += 'data-dominofield="' + div.data('dominofield') + '" ';
+                input += 'value="' + div.html() + '" ';
+                input += 'id="' + div.attr('id') + '">';
+                // Insert the new input element in front of existing div field
+                div.before(input);
+                // Remove div field
+                div.remove();
+            });
+            $("[id=group_" + groupid + "] .btn-outline-success.group-edit").attr('disabled', false);
+            $(this).attr('disabled', true);
+        });
+    </script>
+</storecontent>

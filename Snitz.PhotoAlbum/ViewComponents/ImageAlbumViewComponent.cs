@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Snitz.PhotoAlbum.Models;
 
 namespace Snitz.PhotoAlbum.ViewComponents
 {
@@ -23,6 +24,11 @@ namespace Snitz.PhotoAlbum.ViewComponents
             if (template == "Config")
             {
                 return await Task.FromResult((IViewComponentResult)View(template,_config.TableExists("FORUM_IMAGES")));
+            }
+            if (template == "Groups")
+            {
+                var albumgroups = _dbContext.Set<AlbumGroup>().AsQueryable();
+                return await Task.FromResult((IViewComponentResult)View(template,albumgroups));
             }
             return await Task.FromResult((IViewComponentResult)View());
         }

@@ -43,8 +43,19 @@ public class LanguageManagerController : Controller
         }
         return View("Search",vm);
     }    
+    [HttpPost]
     public IActionResult SearchUpdate(TranslationViewModel vm)
     {
+        if (vm.Resources.Any())
+        {
+            var itemToUpdate = _dbcontext.LanguageResources.Find(vm.Resources[0].Id);
+            if (itemToUpdate != null)
+            {
+                itemToUpdate.Value = vm.Resources[0].Value;
+                _dbcontext.LanguageResources.Update(itemToUpdate);
+                _dbcontext.SaveChanges();
+            }
+        }
 
         if (vm.filter != "")
         {
@@ -52,6 +63,25 @@ public class LanguageManagerController : Controller
         }
         return View("Search",vm);
     }  
+    [HttpPost]
+    public IActionResult SearchDelete(TranslationViewModel vm)
+    {
+        if (vm.Resources.Any())
+        {
+            var itemToUpdate = _dbcontext.LanguageResources.AsNoTracking().FirstOrDefault(l=> l.Id == vm.Resources[0].Id);
+            if (itemToUpdate != null)
+            {
+                _dbcontext.LanguageResources.Where(l=>l.Name == vm.Resources[0].Name).ExecuteDelete();
+
+            }
+        }
+
+        if (vm.filter != "")
+        {
+            vm.Resources = vm.filterby == "id" ? GetStrings().Where(s => s.Name.ToLower().Contains(vm.filter!.ToLower())).ToList() : GetStrings().Where(s => s.Value.ToLower().Contains(vm.filter!.ToLower())).ToList();
+        }
+        return View("Search",vm);
+    } 
     public IActionResult ResourceSet(string id,string culture = "en",string filter = "")
     {
         var model = new LanguageViewModel
@@ -134,13 +164,14 @@ public class LanguageManagerController : Controller
         _dbcontext.LanguageResources.Where(l => l.Name == id).ExecuteDelete();
         return Content("");
     }
+    [HttpGet]
+    public IActionResult DeleteResourceSet(string id)
+    {
+        _dbcontext.LanguageResources.Where(l => l.ResourceSet == id).ExecuteDeleteAsync();
+        return Content("");
+    }
     public IActionResult AddResource(LanguageResource res)
     {
-        //TranslationViewModel vm = new TranslationViewModel
-        //{
-        //    Resources = GetStrings().ToList(),
-        //    ResourceSets = _dbcontext.LanguageResources.Select(l=>l.ResourceSet).Distinct().ToList()
-        //};
         
         if (ModelState.IsValid)
         {

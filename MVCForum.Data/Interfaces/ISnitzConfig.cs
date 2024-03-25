@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SnitzCore.Data.Interfaces
 {
+
     public interface ISnitzConfig
     {
         string DateTimeFormat { get; }

@@ -14,6 +14,7 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Service;
 using Microsoft.Extensions.FileProviders;
 using X.PagedList;
+using Microsoft.AspNetCore.Http;
 
 namespace Snitz.PhotoAlbum.Controllers
 {
@@ -35,6 +36,11 @@ namespace Snitz.PhotoAlbum.Controllers
             _config = config;
             _fileProvider = hostingEnvironment.WebRootFileProvider;
             _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
+        }
+
+        public IActionResult Admin()
+        {
+            return View(new AdminAlbumViewModel());
         }
         public IActionResult Index(int page = 1, string sortdir = "asc", string orderby = "user", string term = "")
         {
@@ -463,6 +469,11 @@ namespace Snitz.PhotoAlbum.Controllers
             }
 
             return RedirectToAction("MemberImages", new {id=memberid,display=1 });
+        }
+
+        public IActionResult UpdateGroup(IFormCollection group)
+        {
+            return Content("");
         }
         private static IImageProcessingContext ConvertToThumb(IImageProcessingContext context, Size size)
         {

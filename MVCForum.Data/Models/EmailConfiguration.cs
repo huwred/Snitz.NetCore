@@ -1,9 +1,12 @@
 ﻿
 
+using SnitzCore.Data.Interfaces;
+
 namespace SnitzCore.Data.Models
 {
-    public class EmailConfiguration
+    public class EmailConfiguration 
     {
+        public const string SectionName = "MailSettings";
         public string? From { get; set; }
         public string? SmtpServer { get; set; }
         public int Port { get; set; } = 25;
