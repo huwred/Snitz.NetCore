@@ -19,6 +19,7 @@ public class BbCodeProcessor : ICodeProcessor
   {
     #region  Private Class Member Declarations
         private readonly ISnitzConfig _config;
+        private readonly SnitzDbContext _dbContext;
         private bool _useFullUrl;
     private readonly List<IHtmlFormatter> _formatters;
     private readonly List<IHtmlFormatter> _postformatters;
@@ -35,6 +36,7 @@ public class BbCodeProcessor : ICodeProcessor
     public BbCodeProcessor(ISnitzConfig config,SnitzDbContext dbContext)
     {
         _config = config;
+        _dbContext = dbContext;
         _formatters = new List<IHtmlFormatter>();
         _tables = new List<IHtmlFormatter>();
         _postformatters = new List<IHtmlFormatter>();
@@ -173,7 +175,7 @@ public class BbCodeProcessor : ICodeProcessor
     _postformatters.Add(new SearchReplaceFormatter("[hr]", "<hr noshade size=\"1\">"));
     if (_config.GetIntValue("STRBADWORDFILTER") == 1)
     {
-        _postformatters.Add(new BadWordFilter(dbContext));
+        _postformatters.Add(new BadWordFilter(_dbContext));
     }
 
     #endregion

@@ -1,5 +1,7 @@
-﻿using SnitzCore.Data.Extensions;
+﻿using System.Collections.Generic;
+using SnitzCore.Data.Extensions;
 using System.ComponentModel.DataAnnotations;
+using MVCForum.ViewModels.Forum;
 
 namespace MVCForum.ViewModels.Post
 {
@@ -22,5 +24,7 @@ namespace MVCForum.ViewModels.Post
         public bool Sticky { get; set; }
         public bool DoNotArchive { get; set; }
         public bool Answer { get; internal set; }
+
+        public Dictionary<int, string> Forums { get; set; }
     }
 }

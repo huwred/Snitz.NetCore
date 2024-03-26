@@ -101,6 +101,7 @@ public partial class Post
     public bool Answered { get; set; }
     public virtual Member? Member { get; set; }
     public virtual Member? LastPostAuthor { get; set; }
+
     public virtual Forum? Forum { get; set; }
     public virtual Category? Category { get; set; }
     public virtual IEnumerable<PostReply>? Replies { get; set; }

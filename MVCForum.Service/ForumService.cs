@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
@@ -162,7 +165,7 @@ namespace SnitzCore.Service
         }
         public Dictionary<int, string> ForumList()
         {
-            return _dbContext.Forums.AsNoTracking().Where(f=>f.Privateforums == ForumAuthType.All).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value);
+            return _dbContext.Forums.AsNoTracking().Where(f=>f.Privateforums == ForumAuthType.All).OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value);
         }
 
         public string ForumName(string rolename)
@@ -226,6 +229,41 @@ namespace SnitzCore.Service
             return forum;
             //var cacheService = new InMemoryCache();
             //cacheService.Remove("category.forums");           
+        }
+
+        public PagedList<Post> FetchMyForumTopics(int pagesize, int pagenum, IEnumerable<int> forumids)
+        {
+            var result = _dbContext.Posts.AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Forum)
+                .Include(p => p.Member).Include(p => p.LastPostAuthor)
+                .Where(p=> forumids.Contains(p.ForumId))
+                .Where(p=>p.Status < 2)
+                .OrderByDescending(p=>p.LastPostDate);
+            return new PagedList<Post>(result, pagenum, pagesize);
+        }
+
+        public IEnumerable<string> GetTagStrings(List<int> list)
+        {
+            return _dbContext.Posts.Where(f => list.Contains(f.ForumId)).Select(p => p.Content);
+
+        }
+        [OutputCache(Duration = 3600)]
+        public IEnumerable<MyViewTopic> FetchAllMyForumTopics(IEnumerable<int> forumids)
+        {
+            var result = _dbContext.Posts.AsNoTracking()
+                .Include(p => p.Forum)
+                .Where(p=> forumids.Contains(p.ForumId))
+                .Where(p=>p.Status < 2)
+                .OrderByDescending(p=>p.LastPostDate)
+                .Select(post => new MyViewTopic
+                {
+                    Id = post.Id,
+                    Subject = post.Title,
+                    Date = post.Created,
+                    LastPost = post.LastPostDate
+                });
+            return result;
         }
     }
 }

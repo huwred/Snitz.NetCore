@@ -14,6 +14,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.OutputCaching;
 using X.PagedList;
 
 namespace SnitzCore.Service
@@ -350,6 +351,19 @@ namespace SnitzCore.Service
                 areSame &= (a[i] == b[i]);
             }
             return areSame;
+        }
+
+        //[OutputCache(Duration = 600)]
+        public IEnumerable<int> ForumSubscriptions()
+        {
+            var memberid = Current()?.Id;
+            if (memberid.HasValue)
+            {
+                return _dbContext.MemberSubscription.Where(s => s.MemberId == memberid).Select(s => s.ForumId).Distinct();
+
+            }
+
+            return new List<int>();
         }
     }
 }

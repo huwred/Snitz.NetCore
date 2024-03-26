@@ -19,6 +19,8 @@ using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Post;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MVCForum.ViewModels;
+using System.Drawing.Printing;
 
 namespace MVCForum.Controllers
 {
@@ -633,7 +635,32 @@ namespace MVCForum.Controllers
             model.Results = topicModel;
             return View("../Search/Index",model);
         }
+        public IActionResult MyView(int pagenum=1, MyTopicsSince activesince = MyTopicsSince.Last12Months)
+        {
+            var forumsubs = _memberService.ForumSubscriptions().ToList();
+            var result = _forumService.FetchMyForumTopics(5, pagenum, forumsubs);
 
+            MyTopicsViewModel vm = new MyTopicsViewModel
+            {
+                Topics = result,
+                AllTopics = _forumService.FetchAllMyForumTopics(forumsubs),
+                ActiveSince = activesince
+            };
+
+            return View(vm);
+        }
+        [HttpGet]
+        public IActionResult MyViewNext(int nextpage, string refresh = "NO" )
+        {
+            var forumsubs = _memberService.ForumSubscriptions().ToList();
+            var result = _forumService.FetchMyForumTopics(5, nextpage, forumsubs);
+            MyTopicsViewModel vm = new MyTopicsViewModel
+            {
+                Topics = result,
+            };
+            return ViewComponent("MyView", new { template = "Posts", model = vm });
+
+        }
         private ForumListingModel BuildForumListing(Post post)
         {
             var forum = post.Forum!;

@@ -22,5 +22,8 @@ namespace SnitzCore.Data.Interfaces
         string ForumName(string rolename);
         Task EmptyForum(int id);
         Task<Forum> UpdateLastPost(int forumid);
+        PagedList<Post> FetchMyForumTopics(int pagesize, int pagenum, IEnumerable<int> forumids);
+        IEnumerable<string> GetTagStrings(List<int> list);
+        IEnumerable<MyViewTopic> FetchAllMyForumTopics(IEnumerable<int> forumids);
     }
 }

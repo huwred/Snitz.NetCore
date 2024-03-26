@@ -33,6 +33,7 @@
     }
     </tbody>
 </table>
+<div id="groups-result"></div>
 <storecontent asp-key="album-groups">
     <script type="text/javascript">
         // Image Groups
@@ -67,7 +68,7 @@
                 },
                 error: function (data) {
                     alert("error");
-                    $('#result').html(data);
+                    $('#groups-result').html(data);
                 },
                 complete: function (data) {
                     // Process each field

@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using BbCodeFormatter;
 using Microsoft.AspNetCore.Hosting;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc.Localization;
+using System.Net.Mail;
+using System.Threading;
 
 namespace SnitzCore.Service
 {
@@ -20,12 +23,14 @@ namespace SnitzCore.Service
         private readonly ICodeProcessor _bbCodeProcessor;
         private readonly ISnitzConfig _config;
         private readonly IWebHostEnvironment _env;
-        public EmailSender(EmailConfiguration emailConfig,ICodeProcessor bbCodeProcessor,IWebHostEnvironment env,ISnitzConfig config)
+        private readonly LanguageService  _languageResource;
+        public EmailSender(EmailConfiguration emailConfig,ICodeProcessor bbCodeProcessor,IWebHostEnvironment env,ISnitzConfig config,IHtmlLocalizerFactory localizerFactory)
         {
             _emailConfig = emailConfig;
             _bbCodeProcessor = bbCodeProcessor;
             _env = env;
             _config = config;
+            _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
         }
 
         public void ModerationEmail(Member? author, string subject, string message, Forum forum, dynamic post)
@@ -53,6 +58,43 @@ namespace SnitzCore.Service
             Send(emailMessage);
         }
 
+        public Task MoveNotify(Member author, Post topic)
+        {
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;;
+            
+            EmailMessage emessage = new EmailMessage(new List<string>(){author.Email}, _languageResource.GetString("MoveNotify"), 
+                ParseTemplate("movenotify.html",_languageResource.GetString("MoveNotify"),author.Email,author.Name, $"{_config.ForumUrl}Topic/Index/{topic.Id}" , cultureInfo.Name));
+
+            var emailMessage = CreateEmailMessage(emessage);
+            return Send(emailMessage);
+        }
+
+        public string ParseSubscriptionTemplate(string template, string posttype, string postname, string authorname, string toname, string postUrl, string unsubUrl,
+            string? lang)
+        {
+            var pathToFile = TemplateFile(template, lang);
+            var builder = new BodyBuilder();
+            using (StreamReader sourceReader = System.IO.File.OpenText(pathToFile))
+            {
+
+                builder.HtmlBody = sourceReader.ReadToEnd();
+
+            }
+
+            string messageBody = builder.HtmlBody
+                .Replace("[DATE]",$"{DateTime.Now:dddd, d MMMM yyyy}")
+                .Replace("[AUTHOR]",authorname)
+                .Replace("[USER]",toname)
+                .Replace("[SERVER]",_config.ForumUrl)
+                .Replace("[FORUM]",_config.ForumTitle)
+                .Replace("[POSTEDIN]",posttype)
+                .Replace("[POSTEDNAME]",postname)
+                .Replace("[URL]",postUrl)
+                .Replace("[UNSUBSCRIBE]",unsubUrl);
+            return messageBody;
+        }
+
+
         public string ParseTemplate(string template,string subject, string toemail,string tousername, string callbackUrl, string? lang, string? Extras = null)
         {
             var pathToFile = TemplateFile(template, lang);
@@ -72,14 +114,7 @@ namespace SnitzCore.Service
                 .Replace("[SERVER]",_config.ForumUrl)
                 .Replace("[FORUM]",_config.ForumTitle)
                 .Replace("[URL]",callbackUrl);
-            if (Extras != null)
-            {
-                messageBody = messageBody.Replace("[EXTRATEXT]", Extras);
-            }
-            else
-            {
-                messageBody = messageBody.Replace("[EXTRATEXT]", "");
-            }
+            messageBody = messageBody.Replace("[EXTRATEXT]", Extras ?? "");
             return messageBody;
         }
 
@@ -118,7 +153,7 @@ namespace SnitzCore.Service
         }
         private Task Send(MimeMessage mailMessage)
         {
-            using (var client = new SmtpClient())
+            using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
                 try
                 {
@@ -154,34 +189,5 @@ namespace SnitzCore.Service
             return Task.CompletedTask;
         }
 
-        public string ParseSubscriptionTemplate(string template, string posttype, string postname, string authorname, string toname, string postUrl, string unsubUrl,
-            string? lang)
-        {
-            var pathToFile = TemplateFile(template, lang);
-            var builder = new BodyBuilder();
-            using (StreamReader sourceReader = System.IO.File.OpenText(pathToFile))
-            {
-
-                builder.HtmlBody = sourceReader.ReadToEnd();
-
-            }
-
-            string messageBody = builder.HtmlBody
-                .Replace("[DATE]",$"{DateTime.Now:dddd, d MMMM yyyy}")
-                .Replace("[AUTHOR]",authorname)
-                .Replace("[USER]",toname)
-                .Replace("[SERVER]",_config.ForumUrl)
-                .Replace("[FORUM]",_config.ForumTitle)
-                .Replace("[POSTEDIN]",posttype)
-                .Replace("[POSTEDNAME]",postname)
-                .Replace("[URL]",postUrl)
-                .Replace("[UNSUBSCRIBE]",unsubUrl);
-            return messageBody;
-        }
-
-        public void SubscriptionEmail(Member recipient, string subject, string message)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

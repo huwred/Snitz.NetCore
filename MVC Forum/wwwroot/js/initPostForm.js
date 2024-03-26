@@ -31,7 +31,7 @@ tinymce.init({
     menubar: 'favs edit insert format table help',
     language: curLang,
     directionality: langDirection,
-    height: 200,
+/*    height: 200,*/
     browser_spellcheck: true,
     contextmenu: false,
     plugins:  [

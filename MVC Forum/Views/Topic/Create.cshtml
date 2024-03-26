@@ -15,54 +15,86 @@
     <snitz-breadcrumb></snitz-breadcrumb>
     <div class="row">
         <form asp-controller="Topic" asp-action="@formaction" method="post" id="addPostForm" class="needs-validation col col-md-8 offset-md-2 bg-form p-4 rounded" novalidate>
+            @if ((User.IsInRole("Administrator") || User.IsInRole("Forum_" + Model.ForumId)) && Model.IsPost)
+            {
+                if (SnitzConfig.GetIntValue("STRMOVETOPICMODE") == 0 || User.IsInRole("Administrator"))
+                {
+                    <div class="mb-3">
+                        <label asp-for="ForumId" class="form-label">@Localizer["lblForum"]</label>
+                        <select asp-for="ForumId" class="form-select">
+                            @foreach (var forum in Model.Forums)
+                            {
+                                <option value="@forum.Key">@forum.Value</option>
+                            }
+                        </select>
+                    </div>
+                }
+                else if (User.IsInRole("Forum_" + Model.ForumId))
+                {
+                    <div class="mb-3">
+                        <label asp-for="ForumId" class="form-label">@Localizer["lblForum"]</label>
+                        <select asp-for="ForumId" class="form-select">
+                            @foreach (var forum in Model.Forums)
+                            {
+                                if (User.IsInRole("Forum_" + forum.Key))
+                                {
+                                    <option value="@forum.Key">@forum.Value</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                }
+
+            }
+            else
+            {
+                <input asp-for="ForumId" type="hidden" />
+            }
             @if (Model.IsPost)
             {
-                <div class="mb-3 row">
+                <div class="mb-3 ">
                     <label asp-for="Title" class="form-label"></label>
                     <input asp-for="Title" class="form-control"/>
                     <div class="invalid-feedback">You must provide a title.</div>
                 </div>
             }
-            <input asp-for="ForumId" type="hidden" />
             <input asp-for="CatId" type="hidden" />
             <input snitz-if="@Model.Id > 0" asp-for="Id" type="hidden" />
             <input asp-for="TopicId" type="hidden" />
             <input asp-for="IsPost" type="hidden" />            
             <input asp-for="Created" type="hidden"/>
-            <div class="mb-3 row">
-                <div class="col">
-                    <textarea asp-for="Content" class="form-control" id="msg-text" rows="6" required="required"></textarea>
-                    <div class="invalid-feedback">@Localizer["MessageRequired"]</div>
-                </div>
+            <div class="mb-3">
+                <textarea asp-for="Content" class="form-control" id="msg-text" rows="12" required="required"></textarea>
+                <div class="invalid-feedback">@Localizer["MessageRequired"]</div>
             </div>
-            <div class="mb-3 row">
-                <div class="col row">
+            <div class="mb-3">
+                <div class="row g-0">
                     @if (SnitzConfig.GetIntValue("STRSIGNATURES") == 1)
                     {
-                        <div class="pl-3 col-12 col-md-6">
-                            <input id="show-sig" name="UseSignature" tabindex="5" type="checkbox" value="true" checked="@Model.UseSignature">
+                        <div class="pl-3 col-12 col-md-6 form-check">
+                            <input class="form-check-input" id="show-sig" name="UseSignature" tabindex="5" type="checkbox" value="true" checked="@Model.UseSignature">
                             <input name="UseSignature" type="hidden" value="false">
-                            <label>@Localizer["cbxShowSig"]</label>
+                            <label class="form-check-label">@Localizer["cbxShowSig"]</label>
                         </div>
                     }
                     @if (User.IsInRole("Administrator"))
                     {
-                        <div class="pl-3 col-12 col-md-6">
-                            <input asp-for="Lock" tabindex="5" type="checkbox" checked="@Model.Lock">
-                            <label>@Localizer["cbxLockTopic"]</label>
+                        <div class="pl-3 col-12 col-md-6 form-check">
+                            <input class="form-check-input" asp-for="Lock" tabindex="5" type="checkbox" checked="@Model.Lock">
+                            <label class="form-check-label">@Localizer["cbxLockTopic"]</label>
                         </div>
                         @if (SnitzConfig.GetIntValue("STRSTICKYTOPIC") == 1)
                         {
-                            <div class="pl-3 col-12 col-md-6">
-                                <input asp-for="Sticky" tabindex="5" type="checkbox" checked="@Model.Sticky">
-                                <label>@Localizer["cbxMakeSticky"]</label>
+                            <div class="pl-3 col-12 col-md-6 form-check">
+                                <input class="form-check-input" asp-for="Sticky" tabindex="5" type="checkbox" checked="@Model.Sticky">
+                                <label class="form-check-label">@Localizer["cbxMakeSticky"]</label>
                             </div>
                         }
                         @if (SnitzConfig.GetIntValue("STRARCHIVESTATE") == 1)
                         {
-                            <div class="pl-3 col-12 col-md-6">
-                                <input asp-for="DoNotArchive" tabindex="5" type="checkbox" checked="@Model.DoNotArchive">
-                                <label>@Localizer["cbxNoArchive"]</label>
+                            <div class="pl-3 col-12 col-md-6 form-check">
+                                <input class="form-check" asp-for="DoNotArchive" tabindex="5" type="checkbox" checked="@Model.DoNotArchive">
+                                <label class="form-check-label">@Localizer["cbxNoArchive"]</label>
                             </div>
                         }
                     }
@@ -72,9 +104,9 @@
                         <input asp-for="Sticky" tabindex="5" type="hidden" value="@(Model.Sticky ? 1 : 0)">
                         <input asp-for="DoNotArchive" tabindex="5" type="hidden" value="@(Model.DoNotArchive ? 1 : 0)">
                     }
-                    <div class="pl-3 col-12 col-md-6" style="display: none;">
-                        <input id="SaveDraft" name="SaveDraft" tabindex="5" type="checkbox" value="true"><input name="SaveDraft" type="hidden" value="false">
-                        <label>@Localizer["cbxDraft"]</label>
+                    <div class="pl-3 col-12 col-md-6 form-check" style="display: none;">
+                        <input class="form-check-input" id="SaveDraft" name="SaveDraft" tabindex="5" type="checkbox" value="true"><input name="SaveDraft" type="hidden" value="false">
+                        <label class="form-check-label">@Localizer["cbxDraft"]</label>
                     </div>
                 </div>
             </div>

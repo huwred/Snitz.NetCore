@@ -22,6 +22,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Threading;
 using Hangfire;
+using SnitzCore.Service;
 
 namespace MVCForum.Controllers
 {
@@ -150,6 +151,7 @@ namespace MVCForum.Controllers
                 CatId = forum.CategoryId,
                 ForumName = forum.Title,
                 ForumId = id,
+                Forums = _forumService.ForumList(),
                 IsPost = true,
                 AuthorName = User.Identity?.Name!,
                 UseSignature = member!.SigDefault == 1,
@@ -214,7 +216,7 @@ namespace MVCForum.Controllers
                 Content = $"[quote]{topic.Content}[/quote=Originally posted by {topic.Member?.Name}]",
                 AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 1,
+                Lock = topic.Status == 0,
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
             };
@@ -242,6 +244,7 @@ namespace MVCForum.Controllers
                 TopicId = id,
                 ForumName = forum.Title,
                 ForumId = topic.ForumId,
+                Forums = _forumService.ForumList(),
                 CatId = forum.CategoryId,
                 Title = topic.Title,
                 IsPost = true,
@@ -282,7 +285,7 @@ namespace MVCForum.Controllers
                 Content = $"[quote]{reply.Content}[/quote=Originally posted by {reply.Member!.Name}]<br/>",
                 AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 1,
+                Lock = topic.Status == 0,
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = DateTime.UtcNow
@@ -345,13 +348,35 @@ namespace MVCForum.Controllers
                 post.Title = model.Title;
                 post.IsSticky = (short)(model.Sticky ? 1 : 0);
                 post.Sig = (short)(model.UseSignature ? 1 : 0);
-                post.Status = (short)(model.Lock ? 0 : 1);
+                post.Status = (short)(model.Lock ? 0 : post.Status);
                 post.ArchiveFlag = model.DoNotArchive ? 1 : 0;
                 post.Content = model.Content;
                 post.LastEdit = DateTime.UtcNow.ToForumDateStr();
                 post.LastEditby = user.MemberId;
-
-                await _postService.Update(post);
+                if (post.ForumId != model.ForumId)
+                {
+                    var forum = _snitzDbContext.Forums.AsNoTracking().First(f => f.Id == model.ForumId);
+                    var author = _memberService.GetById(post.MemberId);
+                    post.ForumId = model.ForumId;
+                    post.CategoryId = forum.CategoryId;
+                    await _postService.Update(post);
+                    //We are moving the topic so need to update the ForumId and CategoryId for the replies
+                    var replies = _snitzDbContext.Replies.Where(r => r.PostId == model.TopicId);
+                    await replies
+                        .ExecuteUpdateAsync(s => s
+                            .SetProperty(e => e.ForumId, forum.Id)
+                            .SetProperty(e => e.CategoryId, forum.CategoryId));
+                    await _forumService.UpdateLastPost(model.ForumId);
+                    if (_config.GetIntValue("STRMOVENOTIFY") == 1)
+                    {
+                        await _mailSender.MoveNotify(author,post);
+                    }
+                }
+                else
+                {
+                    await _postService.Update(post);
+                }
+                
             }
             else
             {
@@ -810,7 +835,7 @@ namespace MVCForum.Controllers
         {
             if (model.TopicId != 0)
             {
-                return _postService.GetTopic(model.TopicId);
+                return _postService.GetTopicForUpdate(model.TopicId);
             }
 
             var donotModerate = User.IsInRole("Administrator") || User.IsInRole("Forum_" + model.ForumId);
@@ -825,7 +850,6 @@ namespace MVCForum.Controllers
                 //Member = user,
                 ForumId = model.ForumId,
                 CategoryId = model.CatId,
-                //Forum = forum,
                 IsSticky = (short)(model.Sticky ? 1 : 0),
                 ArchiveFlag = model.DoNotArchive ? 1 : 0,
                 Status = (forum.Moderation == Moderation.AllPosts || forum.Moderation == Moderation.Topics) && !(donotModerate)

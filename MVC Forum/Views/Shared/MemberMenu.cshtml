@@ -9,6 +9,9 @@
         </a>
         <ul class="dropdown-menu" aria-labelledby="navbarDropdownUserLink">
             <li><a class="dropdown-item" asp-controller="Account" asp-action="Detail" asp-route-id="">@Localizer["mnuAccountProfile"]</a></li>
+            <li snitz-if="@(MemberService.ForumSubscriptions().Count() > 0)">
+                <a class="dropdown-item" asp-controller="Forum" asp-action="MyView">@Localizer["mnuMyView"]</a>
+            </li>
             <li><a class="dropdown-item" asp-controller="PrivateMessage" asp-action="Inbox">@Localizer["mnuAccountPM"]</a></li>
             <li snitz-if="@SnitzConfig.GetIntValue("STRBOOKMARK") == 1"><a class="dropdown-item" asp-controller="Bookmark" asp-action="Index" asp-route-id="">@Localizer["mnuBookMarks"]</a></li>
             <li snitz-if="@(SnitzConfig.TableExists("FORUM_IMAGES") && SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="">@Localizer["mnuMyAlbum"]</a></li>

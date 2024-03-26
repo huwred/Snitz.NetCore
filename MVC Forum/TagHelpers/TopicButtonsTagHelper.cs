@@ -32,6 +32,7 @@ namespace MVCForum.TagHelpers
         public int SendTopic { get; set; }
         [HtmlAttributeName("topic-share")]
         public int SocialMedia { get; set; }
+        public string? Class { get; set; }
         public Func<string, string>? TextLocalizerDelegate { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -74,7 +75,7 @@ namespace MVCForum.TagHelpers
 
                 var fbButton = new TagBuilder("a");
                 fbButton.Attributes.Add("id", "ShareFacebook");
-                fbButton.Attributes.Add("class", "btn btn-outline-primary");
+                fbButton.Attributes.Add("class", Class ?? "btn btn-outline-primary ");
                 fbButton.Attributes.Add("data-id", SocialMedia.ToString());
                 fbButton.Attributes.Add("href", $"https://www.facebook.com/share.php?u={pageUrl}&title={forumTitle}");
                 fbButton.Attributes.Add("rel","noopener nofollow");
@@ -85,8 +86,8 @@ namespace MVCForum.TagHelpers
 
                 var twButton = new TagBuilder("a");
                 twButton.Attributes.Add("id", "ShareTwitter");
-                twButton.Attributes.Add("class", "btn btn-outline-primary");
-                twButton.Attributes.Add("type", "button");
+                twButton.Attributes.Add("class", Class ?? "btn btn-outline-primary ");
+                //twButton.Attributes.Add("type", "button");
                 twButton.Attributes.Add("data-id", SocialMedia.ToString());
                 twButton.Attributes.Add("href", $"https://twitter.com/home?status={forumTitle}+{pageUrl}");
                 twButton.Attributes.Add("rel","noopener nofollow");

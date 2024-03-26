@@ -1,0 +1,112 @@
+﻿@using System.Globalization
+@using System.IO
+@using Azure
+@using BbCodeFormatter
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.Razor
+@using Microsoft.Extensions.Hosting.Internal
+@using SnitzCore.Data
+@using SnitzCore.Data.Extensions
+@model MVCForum.ViewModels.MyTopicsViewModel
+@inject IMember memberService
+@inject ICodeProcessor BbCodeProcessor
+@inject UserManager<ForumUser> userManager
+
+
+
+
+
+@foreach (Post topic in Model.Topics)
+{
+        //ViewBag.RatingSum =  Model.GetTopicRating();
+        // bool allowrating = Model.Forum != null ? Model.Forum.AllowTopicRating : Model.ForumAllowRating==1;
+        // allowrating = allowrating && Model.AllowRating == 1 && ClassicConfig.GetIntValue("INTTOPICRATING", 0) == 1;
+        string postsclass = "read";
+        string forumTitle = Uri.EscapeDataString(SnitzConfig.ForumTitle);
+        var actionuri = Url.Action("Posts", "Topic", new { id = topic.Id });
+        string pageUrl = Uri.EscapeDataString(actionuri);
+        string tracked = null; //SnitzCookie.Tracked(Model.Id.ToString());
+        bool newPosts = false;
+        int replies = topic.ReplyCount;
+        var lpAuthor = memberService.GetById(topic.LastPostAuthorId);
+        var author = memberService.GetById(topic.MemberId);
+        string rolecssLP = lpAuthor.Roles.Contains("Administrator") ? "administrator" : lpAuthor.Roles.Contains("Moderator") ? "moderator" : "member";
+        string rolecssAU = author.Roles.Contains("Administrator") ? "administrator" : author.Roles.Contains("Moderator") ? "moderator" : "member";
+
+        if (User.IsInRole("Administrator") /* || User.IsForumModerator(Model.ForumId) */)
+        {
+            replies += topic.UnmoderatedReplies;
+        }
+        if (tracked != null)
+        {
+            var today = DateTime.UtcNow.ToString("yyyyMM");
+            newPosts = (today + tracked).FromForumDateStr() < topic.LastPostDate?.FromForumDateStr();
+        }
+        else
+        {
+            newPosts = (DateTime?)TempData["LastVisitDateTime"] < topic.LastPostDate?.FromForumDateStr();
+        }
+        if (newPosts)
+        {
+            postsclass = "unread";
+
+        }
+        if (topic.LastPostAuthorId == memberService.Current()?.Id)
+        {
+            postsclass += "_mine";
+        }
+
+    <div class="card @postsclass mb-3 ">
+        <div class="row g-3">
+            <div class="col-2">
+                <span class="hidden-xs center authors p-2">
+                    <snitz-avatar src="/Content/Avatar/@topic.Member.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid rounded-circle" />
+                </span>
+                <p class="card-text center">
+                    <a class="@rolecssAU" href="@Url.Action("UserProfile", "Account", new { id = topic.Member.Name })">
+                        @topic.Member.Name
+                    </a>
+                </p>
+            </div>
+            <div class="col-10">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="@Url.Action("Index", "Forum", new {id = topic.ForumId, pagenum = 1})">@topic.Forum.Title</a>: <a href="@Url.Action("Posts", "Topic", new {id = topic.Id, pagenum = 1, archived = 0})" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" title='@topic.Title'>@topic.Title</a>&nbsp;
+                        @if (topic.LastPostReplyId > 0)
+                        {
+                            <a href="@Url.Action("Index", "Topic", new {id = topic.Id, pagenum = -1, archived = 0})#@topic.LastPostReplyId" data-toggle="tooltip" class="topic-link" data-placement="auto" title='@Localizer["tipLastPost"]'><i class="fa fa-chevron-right"></i></a>
+
+                        }
+                        <span class="small text-right">@Localizer["lblPostedBy"] @Html.ActionLink(" " + lpAuthor.Name, "UserProfile", "Account", new { id = lpAuthor.Name }, new { title = Localizer["tipViewProfile"].Value, data_toggle = "tooltip", @class = rolecssLP })</span>
+                    </h5>
+                    <div class="truncate-overflow" style="min-height: 100px;">
+                        <p>@Html.Raw(BbCodeProcessor.Format(topic.Content))</p>
+                    </div>
+                    <ul class="list-inline list-unstyled mb-1 border-top border-1" >
+                        <li class="list-inline-item"><span><i class="fa fa-calendar m-2"></i><snitz-datetime datetime="@topic.Created.FromForumDateStr()"></snitz-datetime></span></li>
+                        <li class="list-inline-item">|</li>
+                        <li class="list-inline-item">@topic.ViewCount</li>
+                        <li class="list-inline-item">|</li>
+                    @*                 @if (allowrating && ViewBag.RatingSum > 0)
+                    {
+                    <li class="list-inline-item"><input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs"/></li><li>|</li>
+                    } *@
+                        <li class="list-inline-item hidden-xs">
+                            <topic-buttons class=" " text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" topic-share="@SnitzConfig.GetIntValue("STRSOCIALSHARE")"></topic-buttons>
+
+                            @* <partial name="_SocialMedia" /> *@
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+}
+
+
+
+
+

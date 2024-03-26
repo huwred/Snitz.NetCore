@@ -33,4 +33,10 @@ namespace MVCForum.ViewModels.Forum
         public int? LastPostReplyId { get; set; }
         public int Order { get; set; }
     }
+
+    public class ForumList{
+        public int ForumId { get; set; }
+        public string ForumName { get; set; }
+        public int CatId { get; set; }
+    }
 }

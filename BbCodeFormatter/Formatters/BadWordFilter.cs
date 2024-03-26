@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data;
 
 namespace BbCodeFormatter.Formatters
@@ -16,7 +17,7 @@ namespace BbCodeFormatter.Formatters
         public BadWordFilter(SnitzDbContext dbContext)
         {
             _formatters = new List<IHtmlFormatter>();
-            var badwords = dbContext.Badwords.AsQueryable();
+            var badwords = dbContext.Badwords.AsNoTracking().ToList();
             foreach (var badword in badwords)
             {
                 _formatters.Add(new RegexFormatter(@"\b" + Regex.Escape(badword.Word) + @"\b", badword.ReplaceWith!));

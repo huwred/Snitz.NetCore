@@ -1,0 +1,97 @@
+﻿@model MVCForum.ViewModels.MyTopicsViewModel
+@using SnitzCore.Data
+@using MVCForum.ViewModels
+@{
+    ViewBag.Title = "title";
+    Layout = "Layout";
+}
+
+@section MetaData
+{
+    <meta name="author" content="@(SnitzConfig.ForumTitle)">
+}
+@section Styles
+{
+    <link href="@SnitzConfig.ThemeCss("star-rating.min.css")" rel="stylesheet" />
+    <link href="@SnitzConfig.ThemeCss("tag_cloud.css")" rel="stylesheet" />
+}
+<div class="container">
+    <div class="row">
+        <div class="col-8 mt-3">
+            <div id="topic-panel">
+                <div id="docsContainer">
+                    @await Component.InvokeAsync("MyView", new { template = "Posts", model = Model })
+                </div>
+                <div id="progress" class="align-center" style="display: none;">
+                    <i class="fa fa-3x fa-spinner"></i>
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-lg-block col-4 mt-3">
+            @await Component.InvokeAsync("MyView", new { template = "TagCloud",model = new MyTopicsViewModel() })
+            @await Component.InvokeAsync("MyView", new { template = "MyViewList", model = Model })
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript" src="/js/star-rating.min.js"></script>
+    <script type="text/javascript">
+        /*
+                This is not necessary, but gives the tag-cloud a nice fade-in effect.
+        */
+        var page = 2;
+
+        $(document).ready(function onPageLoad() {
+            var animatedProperties = {
+                paddingLeft: '30px',
+                paddingTop: '40px',
+                paddingBottom: '55px',
+                paddingRight: '45px',
+                opacity: 1
+            };
+
+            $('.tag-cloud').animate(animatedProperties, 500);
+        });
+        $(document).ready(function () {
+            $(document.body).on('touchmove', loadTopics);
+            $(window).bind('scroll', loadTopics);
+
+        });
+        var loadTopics = function () {
+
+            if ($(window).scrollTop() + window.innerHeight >= document.body.scrollHeight - 40) {
+                $(window).unbind('scroll');
+                GetMyTopics();
+            }
+        };
+
+        $("#docsContainer ul .fa").removeClass("fa-2x");
+
+        function GetMyTopics() {
+            $.ajax({
+                type: 'GET',
+                url: '/Forum/MyViewNext/?nextpage=' + page + '&refresh=YES',
+                success: function (data) {
+                    if (data != null) {
+                        $("#docsContainer").append(data);
+                        page++;
+                        $("#docsContainer ul .fa").removeClass("fa-2x");
+                    }
+                },
+                beforeSend: function () {
+                    $("#progress").show();
+                },
+                complete: function () {
+                    $("#progress").hide();
+                    $(window).bind('scroll', loadTopics);
+                    $("time.timeago").timeago();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Error while retrieving data! " + errorThrown);
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,11 @@
+﻿@model IEnumerable<TagCloud.TagCloudTag>
+
+@*<h5 class="title clearfix">@ResourceManager.GetLocalisedString("lblTagCloud", "BlogPages")</h5>
+<hr class="title">*@
+<div class="tag-cloud mb-3">
+    @foreach (var tag in Model)
+    {
+        <span class="tag kind-@tag.Category">@tag.Text</span>
+    }
+</div>
+

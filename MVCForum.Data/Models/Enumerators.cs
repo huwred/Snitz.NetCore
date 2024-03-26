@@ -3,6 +3,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SnitzCore.Data.Models
 {
+    public enum MyTopicsSince
+    {
+        LastVisit = 0,
+        LastHour,
+        Last2Hours,
+        Last6Hours,
+        Last12Hours,
+        LastDay,
+        LastWeek,
+        LastMonth,
+        Last6Months,
+        Last12Months
+    }
     public enum MemberLayout
     {
         Profile,

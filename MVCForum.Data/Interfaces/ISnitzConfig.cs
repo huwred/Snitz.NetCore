@@ -24,5 +24,7 @@ namespace SnitzCore.Data.Interfaces
         void RemoveFromCache(string key);
         IEnumerable<Badword> GetBadwords();
 
+        string ThemeCss(string cssfile);
+
     }
 }

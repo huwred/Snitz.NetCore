@@ -116,6 +116,7 @@ namespace SnitzCore.Service
             _config = config;
             _httpContextAccessor = httpContextAccessor;
             _env = env;
+
         }
 
         public void RemoveFromCache(string key)
@@ -203,5 +204,11 @@ namespace SnitzCore.Service
             }
         }
 
+        public string ThemeCss(string cssfile)
+        {
+            //var currentTheme = _snitzcookie.GetCookieValue("snitztheme") ?? GetValue("STRDEFAULTTHEME", "SnitzTheme");
+            var currentTheme = GetValue("STRDEFAULTTHEME", "SnitzTheme");
+            return $"/css/themes/{currentTheme}/{cssfile}";
+        }
     }
 }

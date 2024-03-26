@@ -617,3 +617,14 @@ i.modstatus-2, i.modstatus-3 {
     float: right;
     cursor: pointer;
 }
+
+.truncate-overflow {
+    overflow: hidden;
+    position: relative;
+    line-height: 1.2em;
+    min-height: 3em;
+    max-height: 12em;
+    /*text-align: justify;*/
+    margin-right: -1em;
+    padding-right: 2em;
+}

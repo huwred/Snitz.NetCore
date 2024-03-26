@@ -35,5 +35,6 @@ namespace SnitzCore.Data
 
         Member? Current();
         Task UpdatePostCount(int memberid);
+        IEnumerable<int> ForumSubscriptions();
     }
 }
