@@ -205,11 +205,12 @@
         });
         $(document).on("click", ".weblink-del", function (e) {
             e.preventDefault();
-            $.get("/Forum/Delete/" + $(this).data("id"),function(data) {
-                if (data) {
-                    location.href = data.redirectToUrl;
-                }
-            })
+            $.get("/Forum/Delete/" + $(this).data("id"),
+                function(data) {
+                    if (data) {
+                        location.href = data.redirectToUrl;
+                    }
+                });
             //location.href = "/Forum/Edit/" + $(this).data("id");
         });
     </script>

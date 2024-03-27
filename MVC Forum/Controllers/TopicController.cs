@@ -21,6 +21,7 @@ using MVCForum.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Threading;
+using BbCodeFormatter;
 using Hangfire;
 using SnitzCore.Service;
 
@@ -35,10 +36,11 @@ namespace MVCForum.Controllers
         private readonly IWebHostEnvironment _environment;
         private readonly IEmailSender _mailSender;
         private readonly ISubscriptions _processSubscriptions;
+        private readonly ICodeProcessor _bbcodeProcessor;
 
         public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             IPost postService, IForum forumService, UserManager<ForumUser> userManager,IWebHostEnvironment environment,
-            IEmailSender mailSender, ISubscriptions processSubscriptions) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
+            IEmailSender mailSender, ISubscriptions processSubscriptions, ICodeProcessor bbcodeProcessor) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
         {
             _postService = postService;
             _forumService = forumService;
@@ -46,6 +48,7 @@ namespace MVCForum.Controllers
             _environment = environment;
             _mailSender = mailSender;
             _processSubscriptions = processSubscriptions;
+            _bbcodeProcessor = bbcodeProcessor;
         }
 
         [Route("{id:int}")]
@@ -315,7 +318,7 @@ namespace MVCForum.Controllers
                 ForumId = topic.ForumId,
                 CatId = topic.CategoryId,
                 IsPost = false,
-                Content = reply.Content,
+                Content = _bbcodeProcessor.CleanCode(reply.Content),
                 AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
                 Lock = topic.Status == 0,
