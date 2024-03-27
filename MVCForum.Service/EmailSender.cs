@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 using SnitzCore.Data.Interfaces;
@@ -10,9 +9,7 @@ using SnitzCore.Data.Models;
 using System.Threading.Tasks;
 using BbCodeFormatter;
 using Microsoft.AspNetCore.Hosting;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.Localization;
-using System.Net.Mail;
 using System.Threading;
 
 namespace SnitzCore.Service
