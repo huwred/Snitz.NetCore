@@ -38,6 +38,17 @@
     <script type="text/javascript">
         // Image Groups
         $('.btn-outline-success.group-edit').attr("disabled", true);
+        $(document).on('click', '.btn-outline-danger.group-edit', function (e) {
+            e.preventDefault();
+            var groupid = $(this).data("id");
+            $.get("/PhotoAlbum/DeleteGroup/" + groupid,
+                function(data) {
+                    if (data) {
+                        $('#groups-result').html(data);
+                        $('tr[id="group_' + groupid + '"]').remove();
+                    }
+                });
+        });
         $(document).on('click', '.btn-outline-success.group-edit', function (e) {
             e.preventDefault();
             var groupid = $(this).data("id");

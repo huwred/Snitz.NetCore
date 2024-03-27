@@ -7,6 +7,7 @@ using Snitz.PhotoAlbum.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using LinqKit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -471,9 +472,34 @@ namespace Snitz.PhotoAlbum.Controllers
             return RedirectToAction("MemberImages", new {id=memberid,display=1 });
         }
 
-        public IActionResult UpdateGroup(IFormCollection group)
+        public IActionResult UpdateGroup(AlbumGroup group)
         {
-            return Content("");
+            var albumGroup = _dbContext.Set<AlbumGroup>().Find(group.Id);
+            if (albumGroup != null)
+            {
+                albumGroup.Description = group.Description;
+                albumGroup.Order = group.Order;
+                _dbContext.Update(albumGroup);
+                _dbContext.SaveChanges();
+            }
+            return Content("Updated");
+        }
+        [HttpPost]
+        [Authorize]
+        public IActionResult AddGroup(AlbumGroup group)
+        {
+            _dbContext.Set<AlbumGroup>().Add(group);
+            _dbContext.SaveChanges();
+
+            return Content("Group added, Reload page to view/edit groups.");
+        }
+        [HttpGet]
+        [Authorize]
+        public IActionResult DeleteGroup(int id)
+        {
+            _dbContext.Set<AlbumGroup>().Where(g => g.Id == id).ExecuteDelete();
+
+            return Content("Group removed.");
         }
         private static IImageProcessingContext ConvertToThumb(IImageProcessingContext context, Size size)
         {
@@ -630,6 +656,7 @@ namespace Snitz.PhotoAlbum.Controllers
             }
             return gList;
         }
+
 
     }
 }

@@ -141,10 +141,20 @@
             @await Component.InvokeAsync("ImageAlbum", "Groups")
         </div>
         <p>&nbsp;</p>
-        <p class="help-block">The description will be used as part of the resource key to lookup the display string. i.e. Group_Description (with spaces stripped)</p>
-        <p><button id="add" class="btn btn-xs btn-success">Add Group</button></p>
+        <p class="help-block">The description will be used as part of the resource key to look up the display string. i.e. Group_Description (with spaces stripped)</p>
     </div>
-    <div class="row-fluid"></div>
+    <div class="row-fluid">
+        <form asp-action="AddGroup" asp-controller="PhotoAlbum" data-ajax="true" data-ajax-update="#gridContent">
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="inputGroupSelect01">Group Description</label>
+                <input type="text" name="Description" class="form-control" placeholder="Enter a description" aria-label="Description">
+                <label class="input-group-text" for="inputGroupSelect01">Sort Order</label>
+                <input type="number" name="Order" class="form-control" placeholder="Order" value="99" aria-label="Order">
+                <button class="btn btn-outline-success" type="submit">Add Group</button>
+            </div>
+        </form>
+        <div id="add-results"></div>
+    </div>
 </div>
 @section scripts
 {
