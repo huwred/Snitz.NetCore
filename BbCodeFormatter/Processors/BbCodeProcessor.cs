@@ -54,8 +54,8 @@ public class BbCodeProcessor : ICodeProcessor
         _urlformatters.Add(new UrlFormatter(config.ForumUrl + "faq.asp", config.ForumUrl + "Help"));
         //Parse links not in [Url] tags
 
-        _urlformatters.Add(new UrlFormatter(@"(?<rawurl>(?<=([^'""-=\]]|^))(?:(?:https?|ftp|file)://)[^\s]*[A-Z0-9+&@#/%=~_|$])", "<a href=\"${rawurl}\" target=\"_blank\" rel=\"nofollow\" title=\"${rawurl}\">${rawurl}</a>"));
-        _urlformatters.Add(new UrlFormatter(@"(?<=(\s|^))(?:(?:www|forum)\.)[^\s|\[]*[A-Z0-9+&@#/%=~_|$]", "<a href=\"http://$&\" target=\"_blank\" rel=\"nofollow\" title=\"$&\">$&</a>"));
+        //_urlformatters.Add(new UrlFormatter(@"(?<rawurl>(?<=([^'""-=\]]|^))(?:(?:https?|ftp|file)://)[^\s]*[A-Z0-9+&@#/%=~_|$])", "<a href=\"${rawurl}\" target=\"_blank\" rel=\"nofollow\" title=\"${rawurl}\">${rawurl}</a>"));
+        //_urlformatters.Add(new UrlFormatter(@"(?<=(\s|^))(?:(?:www|forum)\.)[^\s|\[]*[A-Z0-9+&@#/%=~_|$]", "<a href=\"http://$&\" target=\"_blank\" rel=\"nofollow\" title=\"$&\">$&</a>"));
         //parse any [url] tags without http etc
         _urlformatters.Add((new UrlFormatter(@"(?<start>\[url(?:\s*)\])(?!(https?|ftp|file|/))(?<url>(.|\n)*?)(?<end>\[/url(?:\s*)\])", "[url=\"http://${url}\"]${url}[/url]")));
         _urlformatters.Add(new UrlFormatter(@"(?<start>\[url=)(?:['""])(?!(https?|ftp|file|/))(?<url>(?:.|\n)*?)(?:['""])*(?<end>(?:\s*)\](?<content>(?:.|\n)*?)\[/url(?:\s*)\])", "${start}\"http://${url}\"${end}"));
@@ -250,6 +250,7 @@ public class BbCodeProcessor : ICodeProcessor
     _cleancodeformatters.Add(new SearchReplaceFormatter("&#39;","'"));
     _cleancodeformatters.Add(new SearchReplaceFormatter("&#187;", "»"));
     _cleancodeformatters.Add(new SearchReplaceFormatter("&#171;", "«"));
+    _cleancodeformatters.Add(new RegexFormatter(@"(?:[>])(\r\n)(?:[<])", "><"));
     #endregion
 
     }
