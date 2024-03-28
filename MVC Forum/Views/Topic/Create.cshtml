@@ -1,15 +1,27 @@
 ﻿@using SmartBreadcrumbs
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using BbCodeFormatter
+@using Snitz.Events.Helpers
+@using Snitz.Events.Models
+@using SnitzCore.Data
 @model MVCForum.ViewModels.Post.NewPostModel
 @inject ICodeProcessor BbCodeProcessor
+@inject IEnumerable<ISnitzStartupService> pluginservices
+@section Styles
+{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
+}
 @{
+    var eventservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(CalEventsService));
+
     var formaction = "AddPost";
     if (!Model.IsPost)
     {
         formaction = "AddReply";
     }
     Model.Content = BbCodeProcessor.Format(Model.Content)!;
+    var addEvent = Context.Request.Query["isevent"];
+    var addPoll = Context.Request.Query["ispoll"];
 }
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
@@ -110,8 +122,21 @@
                     </div>
                 </div>
             </div>
+
             <partial name="FormButtons"/>
         </form>
+        @if (addPoll.Count > 0)
+        {
+            <div class="mt-3 mb-3 col col-md-8 offset-md-2 bg-form p-4 rounded" id="poll-form">
+                @await Component.InvokeAsync("Polls", new { template = "AddPoll", catid = Model.CatId, forumid = Model.ForumId })
+            </div>
+        }
+        @if (addEvent.Count > 0)
+        {
+            <div class="mt-3 mb-3 col col-md-8 offset-md-2 bg-form p-4 rounded" id="event-form">
+                @await Component.InvokeAsync("Events", new { template = "AddEvent", id = MemberService.Current().Id })
+            </div>
+        }
     </div>
 </div>
 <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
@@ -137,9 +162,99 @@
 </div>
 @section Scripts
 {
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+
     <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="/js/initPostForm.js"></script>
     <script type="text/javascript">
+        $('.date').datepicker({
+            autoclose: true,
+            format: {
+                /*
+                 * Say our UI should display a week ahead,
+                 * but textbox should store the actual date.
+                 * This is useful if we need UI to select local dates,
+                 * but store in UTC
+                 */
+                    
+                toDisplay: function (date, format, language) {
+                    var d = new Date(date);
+                    d.setDate(d.getDate());
+                    return d.toLocaleDateString();
+                },
+                toValue: function (date, format, language) {
+                    let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
+                    let lastFirst = date.replace(re, '$1-$2-$3');
+                    var d = new Date(lastFirst);
+                    d.setDate(d.getDate());
+                    return new Date(d);
+                }
+            }
+        });
+        $("#addPostForm").submit(function (e) {
+            e.preventDefault();
+
+            tinyMCE.get("msg-text").save();
+            var form = $("#addPostForm");
+            var formData = new FormData(form[0]);
+            $.ajax({
+                url: $(this).attr("action"),
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    console.log(data);
+                    if ($('#event-form').length > 0) {
+                        var evtform = $('#event-form').find('form');
+
+                        $('#event-topic').val(data.id);
+                        var eventData = new FormData(evtform[0]);
+                        $.ajax({
+                            url: evtform.attr("action"),
+                            type: "POST",
+                            data: eventData,
+                            contentType: false,
+                            processData: false,
+                            success: function (data) {
+                                location.href = data.url;
+                            },
+                            error:function(err){
+                                console.log(err);
+                            }
+                        }); 
+                        //save event data for Topic
+                    }
+                    else if ($('#poll-form').length > 0) {
+                        //save poll data for Topic
+                        var evtform = $('#poll-form').find('form');
+
+                        $('#poll-topic').val(data.id);
+                        var eventData = new FormData(evtform[0]);
+                        $.ajax({
+                            url: evtform.attr("action"),
+                            type: "POST",
+                            data: eventData,
+                            contentType: false,
+                            processData: false,
+                            success: function (data) {
+                                location.href = data.url;
+                            },
+                            error:function(err){
+                                console.log(err);
+                            }
+                        }); 
+                    } else {
+                        location.href = data.url;
+                    };
+
+                },
+                error:function(err){
+                    console.log(err);
+                }
+            }); 
+            return false;
+        });
         $(document).ready(function () {
             $(".fig-caption").each(function () {
                 var test = $(this);

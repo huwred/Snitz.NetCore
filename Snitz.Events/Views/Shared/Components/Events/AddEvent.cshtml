@@ -1,0 +1,99 @@
+﻿@using Snitz.Events.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Snitz.Events.Models.CalendarEventItem
+@inject EventContext dbContext
+@{
+    var Categories = dbContext.Set<ClubCalendarCategory>().ToDictionary(t => t.Id, t => t.Name);
+    var Locations = dbContext.Set<ClubCalendarLocation>().ToDictionary(t => t.Id, t => t.Name);
+    var Clubs = dbContext.Set<ClubCalendarClub>().ToDictionary(t => t.Id, t => t.ShortName);
+}
+<form asp-action="AddEvent" asp-controller="Events">
+<fieldset>
+    <h5>@Localizer["AddEvent"]</h5>
+    <hr/>
+    <input type="hidden" name="AuthorId" value="@Model.AuthorId" />
+    <input type="hidden" name="TopicId" id="event-topic"/>
+        <input type="hidden" name="CatId" value="@Model.CatId" />
+        <input type="hidden" name="ClubId" value="@Model.ClubId" />
+        <input type="hidden" name="LocId" value="@Model.LocId" />
+
+    <div class="mb-3">
+        <label class="control-label col-2">@Localizer["lblEventTitle"]</label>
+        <div class="col-5">
+            @Html.TextBoxFor(model => model.Title, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="control-label col-2">@Localizer["lblStartDate"]</label>
+        <div class="col-6">
+            @if (Model.StartDate.HasValue)
+            {
+                <div class="input-group date" data-provide="datepicker" id="calendar-start-date">
+                    <input type="text" class="form-control" id="startdate" name="StartDate" />
+                    <span class="input-group-append">
+                        <span class="input-group-text bg-light d-block">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                    </span>
+                </div>
+            }
+            else
+            {
+                <div class="input-group date" data-provide="datepicker" id="calendar-start-date">
+                    <input type="text" class="form-control" id="startdate" name="StartDate" />
+                    <span class="input-group-append">
+                        <span class="input-group-text bg-light d-block">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="control-label col-2">@Localizer["lblEndDate"]</label>
+        <div class="col-6">
+            @if (Model.EndDate.HasValue)
+            {
+                    <div class="input-group date" data-provide="datepicker" id="calendar-end-date">
+                    <input type="text" class="form-control" id="enddate" name="EndDate" />
+                    <span class="input-group-append">
+                        <span class="input-group-text bg-light d-block">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                    </span>
+                </div>
+            }
+            else
+            {
+                <div class="input-group date" data-provide="datepicker" id="calendar-end-date">
+                    <input type="text" class="form-control" id="date" name="EndDate" />
+                    <span class="input-group-append">
+                        <span class="input-group-text bg-light d-block">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="control-label col-2">@Localizer["lblEventCategory"]</label>
+        <div class="col-3">
+            @Html.DropDownListFor(model => model.CatId, new SelectList(Categories, "Key", "Value"), new {@class = "form-control", @tabindex = 1})
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="control-label col-2">@Localizer["lblEventClub"]</label>
+        <div class="col-3">
+            @Html.DropDownListFor(model => model.ClubId, new SelectList(Clubs, "Key", "Value"), new { @class = "form-control", @tabindex = 1 })
+        </div>
+    </div>
+        <div class="mb-3">
+        <label class="control-label col-2">@Localizer["lblEventLocation"]</label>
+        <div class="col-3">
+            @Html.DropDownListFor(model => model.LocId, new SelectList(Locations, "Key", "Value"), new { @class = "form-control", @tabindex = 1 })
+        </div>
+    </div>
+</fieldset>
+</form>

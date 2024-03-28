@@ -1,5 +1,4 @@
-﻿using SnitzEvents.Helpers;
-using SnitzEvents.Models;
+﻿using Snitz.Events.Models;
 
 namespace Snitz.Events.ViewModels
 {

@@ -1,0 +1,73 @@
+﻿@model Poll
+<form asp-action="AddPoll">
+    <input type="hidden" name="CatId" id="poll-cat" value="@Model.CatId" />
+    <input type="hidden" name="ForumId" id="poll-forum" value="@Model.ForumId" />
+    <input type="hidden" name="TopicId" id="poll-topic" value=""/>
+    <div id="topic-poll-container">
+        <h5>Poll</h5>
+        <hr class="title">
+        <div class="mb-3">
+            <label class="form-label">Question</label>
+            <input class="form-control required-val" data-val="true" data-val-conditional="PollQuestion is required" data-val-conditional-dependentproperty="IsPoll" data-val-conditional-targetvalue="True" id="PollQuestion" name="Question" type="text" value="">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Who can vote</label>
+            <select name="Whovotes" class="form-select">
+                <option value="members">Members only</option>
+                <option value="everyone">Everyone</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label col-2">Answers</label>
+        </div>
+        <div class="mb-3 row">
+            <div class="input-group">
+                <span class="input-group-text">Order</span>
+                <span class="input-group-text col-2">
+                    <input class="form-control" type="number" data-val="true" data-val-number="The field Order must be a number." data-val-required="The Order field is required." id="PollAnswers_0__Order" name="PollAnswers[0].Order" type="text" value="0"/>
+                </span>
+                <span class="input-group-text">Answer</span>
+                <input class="form-control" id="PollAnswers_0__Label" name="PollAnswers[0].Label" type="text" value="" />
+                <input data-val="true" data-val-number="The field Id must be a number." data-val-required="The Id field is required." id="PollAnswers_0__Id" name="PollAnswers[0].Id" type="hidden" value="0"/>
+                <input data-val="true" data-val-number="The field PollId must be a number." data-val-required="The PollId field is required." id="PollAnswers_0__PollId" name="PollAnswers[0].PollId" type="hidden" value="0"><input data-val="true" data-val-number="The field Votes must be a number." data-val-required="The Votes field is required." id="PollAnswers_0__Votes" name="PollAnswers[0].Votes" type="hidden" value="0"/>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="input-group">
+                <span class="input-group-text">Order</span>
+                <span class="input-group-text col-2">
+                    <input class="form-control" type="number" data-val="true" data-val-number="The field Order must be a number." data-val-required="The Order field is required." id="PollAnswers_1__Order" name="PollAnswers[1].Order" type="text" value="1"/>
+                </span>
+                <span class="input-group-text">Answer</span>
+                <input class="form-control" id="PollAnswers_1__Label" name="PollAnswers[1].Label" type="text" value="" />
+                <input data-val="true" data-val-number="The field Id must be a number." data-val-required="The Id field is required." id="PollAnswers_1__Id" name="PollAnswers[1].Id" type="hidden" value="0"/>
+                <input data-val="true" data-val-number="The field PollId must be a number." data-val-required="The PollId field is required." id="PollAnswers_1__PollId" name="PollAnswers[1].PollId" type="hidden" value="0"><input data-val="true" data-val-number="The field Votes must be a number." data-val-required="The Votes field is required." id="PollAnswers_1__Votes" name="PollAnswers[1].Votes" type="hidden" value="0"/>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="input-group">
+                <span class="input-group-text">Order</span>
+                <span class="input-group-text col-2">
+                    <input class="form-control" type="number" data-val="true" data-val-number="The field Order must be a number." data-val-required="The Order field is required." id="PollAnswers_2__Order" name="PollAnswers[2].Order" type="text" value="2"/>
+                </span>
+                <span class="input-group-text">Answer</span>
+                <input class="form-control" id="PollAnswers_2__Label" name="PollAnswers[2].Label" type="text" value="" />
+                <input data-val="true" data-val-number="The field Id must be a number." data-val-required="The Id field is required." id="PollAnswers_2__Id" name="PollAnswers[2].Id" type="hidden" value="0"/>
+                <input data-val="true" data-val-number="The field PollId must be a number." data-val-required="The PollId field is required." id="PollAnswers_2__PollId" name="PollAnswers[2].PollId" type="hidden" value="0"><input data-val="true" data-val-number="The field Votes must be a number." data-val-required="The Votes field is required." id="PollAnswers_2__Votes" name="PollAnswers[2].Votes" type="hidden" value="0"/>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="input-group">
+                <span class="input-group-text">Order</span>
+                <span class="input-group-text col-2">
+                    <input class="form-control" type="number" data-val="true" data-val-number="The field Order must be a number." data-val-required="The Order field is required." id="PollAnswers_3__Order" name="PollAnswers[3].Order" type="text" value="3"/>
+                </span>
+                <span class="input-group-text">Answer</span>
+                <input class="form-control" id="PollAnswers_3__Label" name="PollAnswers[3].Label" type="text" value="" />
+                <input data-val="true" data-val-number="The field Id must be a number." data-val-required="The Id field is required." id="PollAnswers_3__Id" name="PollAnswers[3].Id" type="hidden" value="0"/>
+                <input data-val="true" data-val-number="The field PollId must be a number." data-val-required="The PollId field is required." id="PollAnswers_3__PollId" name="PollAnswers[3].PollId" type="hidden" value="0"><input data-val="true" data-val-number="The field Votes must be a number." data-val-required="The Votes field is required." id="PollAnswers_3__Votes" name="PollAnswers[3].Votes" type="hidden" value="0"/>
+            </div>
+        </div>
+    </div>
+
+</form>

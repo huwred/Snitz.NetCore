@@ -1,4 +1,5 @@
-﻿using SnitzCore.Data.Extensions;
+﻿using System.Collections.Generic;
+using SnitzCore.Data.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -31,4 +32,8 @@ public partial class Poll
     [Column("P_QUESTION")]
     [StringLength(255)]
     public string Question { get; set; } = null!;
+
+    public virtual Post? Topic { get; set; }
+    public virtual IEnumerable<PollAnswer> PollAnswers { get; set; }
+    public virtual IEnumerable<PollVote> PollVotes { get; set; }
 }

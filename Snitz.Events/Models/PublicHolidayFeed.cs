@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SnitzEvents.Models
+namespace Snitz.Events.Models
 {
 
     public class PublicHoliday

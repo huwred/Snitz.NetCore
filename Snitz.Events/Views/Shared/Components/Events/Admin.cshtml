@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@using SnitzEvents.Helpers
 @using System.Drawing.Text
+@using Snitz.Events.Models
 @model Snitz.Events.ViewModels.CalAdminViewModel
 @if (Model.Installed)
 {
@@ -13,7 +13,7 @@
         <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
             <div class="accordion-body">
                 <form id="events-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
-                    @await Component.InvokeAsync("Events", "EnableButton")
+                    @await Component.InvokeAsync("Events", new {template="EnableButton"})
                 </form> 
                 <div id="result"></div>
                 <form asp-action="SaveFeatures" asp-controller="Calendar" method="POST" data-ajax="true" data-ajax-update="#event-result">
@@ -63,7 +63,7 @@
                             <span class="col-10 form-text">Public holiday data supplied by <a href="http://kayaposoft.com/enrico/" title="Enrico Service is a free service written in PHP providing public holidays for several countries" data-toggle="tooltip">Enrico</a></span>
                         </div>
                     </fieldset>
-                    @await Component.InvokeAsync("Events", "Config")
+                    @await Component.InvokeAsync("Events", new { template = "Config" })
                     <partial name="_FormButtons" />
                 </form>
                 <div id="event-result"></div>

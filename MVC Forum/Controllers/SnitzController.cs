@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
+using SnitzCore.Data.Models;
+using SnitzCore.Data.Models;
 using SnitzCore.Service;
 
 namespace MVCForum.Controllers

@@ -4,9 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Models;
-using SnitzEvents.Helpers;
 
-namespace SnitzEvents.Models
+namespace Snitz.Events.Models
 {
     public class CalendarEventItemEntityConfiguration: IEntityTypeConfiguration<CalendarEventItem>
     {

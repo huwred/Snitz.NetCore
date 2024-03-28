@@ -69,7 +69,8 @@ namespace MVCForum.Controllers
                 Status = forum.Status,
                 Order = forum.Order,
                 CategorySubscription = (CategorySubscription)forum.Category.Subscription,
-                ForumSubscription = (ForumSubscription)forum.Subscription
+                ForumSubscription = (ForumSubscription)forum.Subscription,
+                Polls = forum.Polls
                 
             }).ToList();
             if (id > 0)
@@ -84,6 +85,7 @@ namespace MVCForum.Controllers
                 var forumPage = new MvcBreadcrumbNode("", "Category", "ttlForums");
                 ViewData["BreadcrumbNode"] = forumPage;
             }
+            
             var latestPosts = _postService.GetLatestPosts(_config.GetIntValue("INTRECENTCOUNT",10))
             .Select(post => new PostListingModel
             {
@@ -103,6 +105,7 @@ namespace MVCForum.Controllers
                 UnmoderatedReplies = post.UnmoderatedReplies,
                 IsSticky = post.IsSticky == 1,
                 Status = post.Status,
+                HasPoll = _postService.HasPoll(post.Id),
                 Answered = post.Answered
             });
             var model = new ForumIndexModel()
@@ -228,6 +231,7 @@ namespace MVCForum.Controllers
                 CategoryId = forum.CategoryId,
                 Status = forum.Status,
                 ForumModeration = forum.Moderation,
+                Polls = forum.Polls
                 //ImageUrl = forum.ImageUrl
             };
         }

@@ -22,5 +22,6 @@ namespace MVCForum.ViewModels.Post
         public int? LatestReply { get; set; }
 
         public bool Answered { get; set; }
+        public bool HasPoll { get; set; }
     }
 }

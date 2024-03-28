@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Helpers\IPhotoAlbumService.cs" />
     <Compile Remove="Models\PhotoRepository.cs" />
     <Compile Remove="Models\ThumbnailResult.cs" />
   </ItemGroup>

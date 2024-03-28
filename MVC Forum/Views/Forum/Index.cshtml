@@ -2,13 +2,11 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MVCForum.TagHelpers
 @using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-@using MVCForum.TagHelpers
-@using SnitzCore.Data
 @using SnitzCore.Service.TagHelpers
 @using Microsoft.AspNetCore.Http
+@using Snitz.Events.Helpers
 @inject SignInManager<ForumUser> SignInManager
-@inject IMember MemberService
+@inject IEnumerable<ISnitzStartupService> pluginservices
 @section MetaData
 {
     <meta name="title" content="Forum: @Model.Forum?.Title" />
@@ -16,6 +14,8 @@
     <meta name="robots" content="index,nofollow" />
 }
 @{
+    var eventservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(CalEventsService));
+
     ViewBag.PageCount = Model.PageCount;
     var pagenum = Model.PageNum?.ToString() ??  Context.Request.Query["page"];
     var pagesize = Context.Session.GetInt32("TopicPageSize");
@@ -87,6 +87,29 @@
                         {
                             <button asp-controller="Forum" asp-action="Edit" asp-route-id="@Model.Forum!.Id" title="Edit Forum" class="btn  btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> @Localizer["tipEditForum"]</span></button>
                             <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Forum!.Id" href="/Forum/Delete/?id=" title="@Localizer["cnfDeleteForum"].Value"></button-confirm>
+                        }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            if (SnitzConfig.GetIntValue("INTPOLLS") == 1 && Model.Forum.Polls != (int)PollAuth.Disallow)
+                            {
+                                if ((Model.Forum.Polls == (int)PollAuth.Members) || (Model.Forum.Polls == (int)PollAuth.AdminModerators && User.IsInRole("Forum_" + Model.Forum.Id)) || User.IsInRole("Administrator"))
+                                {
+                                    <a class="btn btn-outline-primary" title="@Localizer["tipAddPoll"]" data-toggle="tooltip" href="@Url.Action("Create", "Topic", new {id = Model.Forum.Id, ispoll = true})">
+                                        <i class="fa fa-bar-chart"></i>
+                                    </a>
+                                }
+                            }
+                            if (SnitzConfig.GetIntValue("INTCALEVENTS", 0) == 1)
+                            {
+                                int authlevel = eventservice.AuthLevel(Model.Forum.Id);
+
+                                if (authlevel == 2 || authlevel == 3 && (User.IsInRole("Admininstrator") || User.IsInRole("Moderator")) || authlevel == 4 && User.IsInRole("Administrator"))
+                                {
+                                    <a class="btn btn-outline-primary" title="@Localizer["tipAddEvent"]" data-toggle="tooltip" href="@Url.Action("Create", "Topic", new { id = Model.Forum.Id, isevent = true })">
+                                        <i class="fa fa-calendar-plus-o"></i>
+                                    </a>
+                                }
+                            }
                         }
                     </div>
                 </span>

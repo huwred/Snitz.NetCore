@@ -628,3 +628,6 @@ i.modstatus-2, i.modstatus-3 {
     margin-right: -1em;
     padding-right: 2em;
 }
+.event-label {
+    display: block;
+}

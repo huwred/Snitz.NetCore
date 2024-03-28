@@ -7,7 +7,7 @@ namespace MVCForum.ViewModels.Forum
     {
         public int CategoryId { get; set; }
         public int Id { get; set; }
-
+        public int Polls { get; set; }
         public int Topics { get; set; }
         public int Posts { get; set; }
         public int Status { get; set; }

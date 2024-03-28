@@ -66,7 +66,8 @@ namespace MVCForum.Controllers
                 UnmoderatedReplies = post.UnmoderatedReplies,
                 IsSticky = post.IsSticky == 1,
                 Status = post.Status,
-                Answered = post.Answered
+                Answered = post.Answered,
+                HasPoll = _postService.HasPoll(post.Id),
             });
 
             return new HomeIndexModel
@@ -88,7 +89,8 @@ namespace MVCForum.Controllers
                 ForumType = (ForumType)forum.Type,
                 Url = forum.Url,
                 DefaultView = (DefaultDays)forum.Defaultdays,
-                ForumModeration = forum.Moderation
+                ForumModeration = forum.Moderation,
+                Polls = forum.Polls
                 //ImageUrl = forum.ImageUrl
             };
         }

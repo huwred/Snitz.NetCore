@@ -25,6 +25,6 @@ namespace SnitzCore.Data.Interfaces
         IEnumerable<Badword> GetBadwords();
 
         string ThemeCss(string cssfile);
-
+        void SetValue(string v1, string v2);
     }
 }

@@ -1,0 +1,5 @@
+﻿@model Snitz.Events.Models.CalendarEventItem
+@{
+    var startdate = Model.StartDate.Value.ToShortDateString();
+}
+<span class="form-text event-label"><i class="fa fa-calendar"></i> @Model.Description @Model.StartDate - @Model.EndDate.ToString().Replace(startdate,"")</span>

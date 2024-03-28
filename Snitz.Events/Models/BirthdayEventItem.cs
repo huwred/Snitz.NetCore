@@ -1,6 +1,6 @@
 ﻿using SnitzCore.Data.Extensions;
 
-namespace SnitzEvents.Models
+namespace Snitz.Events.Models
 {
     public class BirthdayEventItem
     {

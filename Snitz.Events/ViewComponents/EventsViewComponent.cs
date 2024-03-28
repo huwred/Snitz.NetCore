@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 using Snitz.Events.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
+using Snitz.Events.Models;
 using SnitzCore.Data.Models;
-using SnitzEvents.Helpers;
-using SnitzEvents.Models;
+using SnitzCore.Data.Models;
 
 namespace Snitz.Events.ViewComponents
 {
@@ -14,15 +14,32 @@ namespace Snitz.Events.ViewComponents
     {
         private readonly SnitzDbContext _dbContext;
         private readonly ISnitzConfig _config;
+        private readonly EventContext _eventContext;
 
-        public EventsViewComponent(SnitzDbContext dbContext, ISnitzConfig config)
+        public EventsViewComponent(SnitzDbContext dbContext, ISnitzConfig config,EventContext eventContext)
         {
             _dbContext = dbContext;
             _config = config;
+            _eventContext = eventContext;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string template)
+        public async Task<IViewComponentResult> InvokeAsync(string template,int id = 0)
         {
+            if (template == "TopicSummary")
+            {
+                var eventitem = _eventContext.EventItems.FirstOrDefault(e=>e.TopicId == id);
+                return await Task.FromResult((IViewComponentResult)View(template,eventitem));
+            }
+            if (template == "AddEvent")
+            {
+                var calendaritem = new CalendarEventItem()
+                {
+                    AuthorId = id,
+                    StartDate = DateTime.UtcNow,
+                    EndDate = DateTime.UtcNow.AddMinutes(30)
+                };
+                return await Task.FromResult((IViewComponentResult)View(template,new CalendarEventItem()));
+            }
             if (template == "EnableButton")
             {
                 var installed = _config.TableExists("CAL_EVENTS");

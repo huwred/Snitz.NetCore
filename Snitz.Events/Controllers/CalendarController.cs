@@ -9,7 +9,7 @@ using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service.Extensions;
-using SnitzEvents.Models;
+
 
 namespace Snitz.Events.Controllers;
 

@@ -28,4 +28,6 @@ public partial class PollVote
 
     [Column("GUEST_VOTE")]
     public int GuestVote { get; set; }
+
+    public virtual Poll Poll { get; set; }
 }

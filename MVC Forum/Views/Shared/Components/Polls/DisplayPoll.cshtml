@@ -1,0 +1,65 @@
+﻿@model MVCForum.ViewModels.Post.PollViewModel
+@inject ISnitzCookie SnitzCookie
+@if (Model.Poll == null)
+{
+    
+}
+else
+{
+    var memberid = MemberService.Current()?.Id;
+    if (Model.Votes.SingleOrDefault(v => v.MemberId == memberid) != null || SnitzCookie.HasVoted(Model.Poll.Id))
+    {
+        @await Component.InvokeAsync("Polls", new { template = "PollSummary", topicid = Model.TopicId })
+    }
+    else
+    {
+        bool votingAllowed = false;
+        if (!string.IsNullOrEmpty(Model.Poll.Whovotes))
+        {
+            votingAllowed = Model.Poll.Whovotes == "everyone";
+        }
+
+        if (User.Identity.IsAuthenticated)
+        {
+            if (Model.Poll.Whovotes == "members")
+            {
+                votingAllowed = true;
+            }
+        }
+        <form asp-action="Vote" asp-controller="Polls" data-ajax="true" data-ajax-update="#PollPanel">
+            <input type="hidden" name="PollId" value="@Model.Poll.Id"/>
+            <div class="user-poll-section">
+                <div class="card col-12 col-md-6">
+                    <div class="card-header @ViewData["panel"] tex-@ViewData["panel"]">
+                        <strong>@Localizer["pollQuestion"] : </strong>@Model.Poll.Question ?
+                        @if( User.IsInRole("Administrator") && Model.Poll.Topic.Status==1)
+                        {
+                            <span class="pull-right flip"><a href="@Url.Action("MakeFeaturedPoll","Polls",new{id=Model.Poll.Id})" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a></span>
+                        }
+                    </div>
+                    <div class="card-body p-2">
+                        @foreach (var ans in Model.Poll.PollAnswers.OrderBy(a=>a.Order))
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="voteid" value="@ans.Id">
+                                <label class="form-check-label" for="flexRadioDefault1">
+                                    @ans.Label
+                                </label>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        @if (votingAllowed)
+                        {
+                            <button class="btn btn-success btn-sm" type="submit"><span class="fa fa-bell"></span>@Localizer["MarkYourVote"]</button>
+                        }
+                        else
+                        {
+                            @Html.Raw(string.Format(Localizer["LoginToVote"].Value, Html.ActionLink(Localizer["SignIn"].Value, "Login", "Account", new { ReturnUrl = Context.Request.PathBase }, htmlAttributes: new { id = "loginLink" })))
+                        }
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+}

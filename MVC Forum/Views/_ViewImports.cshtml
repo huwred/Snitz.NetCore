@@ -3,11 +3,12 @@
 @using MVCForum
 @using SnitzCore.Data.Interfaces
 @using SixLabors.ImageSharp.Web
+@using SnitzCore.Data
 @using SnitzCore.Data.Models
 @inject IViewLocalizer Localizer
 @inject ISnitzConfig SnitzConfig
 @inject IOptions<SnitzForums> Config
-
+@inject IMember MemberService
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, SnitzForum
 @addTagHelper *, SnitzCore.Service

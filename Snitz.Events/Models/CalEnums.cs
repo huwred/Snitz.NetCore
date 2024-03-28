@@ -1,4 +1,4 @@
-﻿namespace SnitzEvents.Helpers
+﻿namespace Snitz.Events.Models
 {
     public static class CalEnums
     {

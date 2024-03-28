@@ -1,10 +1,21 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace SnitzCore.Data.Extensions;
 
 public static class XmlExtensions
 {
+    public static IDictionary<string, string> FromLegacyCookieString(this string legacyCookie)
+    {
+        return legacyCookie.Split('&').Select(s => s.Split('=')).ToDictionary(kvp => kvp[0], kvp => kvp[1]);
+    }
+
+    public static string ToLegacyCookieString(this IDictionary<string, string> dict)
+    {
+        return string.Join("&", dict.Select(kvp => string.Join("=", kvp.Key, kvp.Value)));
+    }
     public static T DeserializeListFromXml<T>(string filePath)
     {
         XmlSerializer serializer = new(typeof(T));

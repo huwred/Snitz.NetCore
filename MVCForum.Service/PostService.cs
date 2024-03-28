@@ -425,5 +425,10 @@ namespace SnitzCore.Service
 
             }
         }
+
+        public bool HasPoll(int id)
+        {
+            return _dbContext.Polls.SingleOrDefault(p=>p.TopicId == id) != null;
+        }
     }
 }

@@ -156,9 +156,9 @@ namespace SnitzCore.Data
         public DbSet<LanguageResource> LanguageResources { get; set; }
         public DbSet<SpamFilter> SpamFilter { get; set; }
         public DbSet<TopicRating> TopicRating { get; set; }
-        //public DbSet<Poll> Polls { get; set; }
-        //public DbSet<PollAnswer> PollAnswers { get; set; }
-        //public DbSet<PollVote> PollVotes { get; set; }
+        public DbSet<Poll> Polls { get; set; }
+        public DbSet<PollAnswer> PollAnswers { get; set; }
+        public DbSet<PollVote> PollVotes { get; set; }
         public DbSet<PrivateMessage> PrivateMessages { get; set; }
         public DbSet<PrivateMessageBlocklist> PrivateMessagesBlocklist { get; set; }
         public DbSet<MemberRanking> MemberRanking { get; set; }

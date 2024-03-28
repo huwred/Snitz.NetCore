@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NetCore.AutoRegisterDi;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
@@ -34,6 +35,7 @@ using Snitz.Events.Models;
 using Snitz.PhotoAlbum.Models;
 using SnitzCore.Service.Extensions;
 using SnitzCore.Service.Hangfire;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -157,10 +159,12 @@ EmailConfiguration emailConfig = builder.Configuration
     .GetSection("MailSettings")
     .Get<EmailConfiguration>()!;
 builder.Services.AddSingleton(emailConfig);
-//builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection(EmailConfiguration.SectionName));
-
-
 builder.Services.Configure<SnitzForums>(builder.Configuration.GetSection(SnitzForums.SectionName));
+
+var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.StartsWith("Snitz.")).ToArray();
+var results = builder.Services.RegisterAssemblyPublicNonGenericClasses(assemblies)
+    .Where(c => c.Name.EndsWith("Service"))
+    .AsPublicImplementedInterfaces();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddLog4Net("log4net.config");
@@ -199,9 +203,7 @@ builder.Services.AddHangfire(configuration => configuration
     .UseSimpleAssemblyNameTypeSerializer()
     .UseRecommendedSerializerSettings()
     .SetStorage(builder.Configuration.GetConnectionString("HangfireConnection"),builder.Configuration.GetConnectionString("DBProvider"))
-
     );
-
 builder.Services.AddHangfireServer();
 
 var app = builder.Build();

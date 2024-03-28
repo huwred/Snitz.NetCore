@@ -1,15 +1,7 @@
-﻿@using System.Globalization
-@using System.IO
-@using Azure
-@using BbCodeFormatter
-@using Microsoft.AspNetCore.Http
+﻿@using BbCodeFormatter
 @using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.Mvc.Razor
-@using Microsoft.Extensions.Hosting.Internal
-@using SnitzCore.Data
 @using SnitzCore.Data.Extensions
 @model MVCForum.ViewModels.MyTopicsViewModel
-@inject IMember memberService
 @inject ICodeProcessor BbCodeProcessor
 @inject UserManager<ForumUser> userManager
 
@@ -24,13 +16,13 @@
         // allowrating = allowrating && Model.AllowRating == 1 && ClassicConfig.GetIntValue("INTTOPICRATING", 0) == 1;
         string postsclass = "read";
         string forumTitle = Uri.EscapeDataString(SnitzConfig.ForumTitle);
-        var actionuri = Url.Action("Posts", "Topic", new { id = topic.Id });
+        var actionuri = Url.Action("Index", "Topic", new { id = topic.Id });
         string pageUrl = Uri.EscapeDataString(actionuri);
         string tracked = null; //SnitzCookie.Tracked(Model.Id.ToString());
         bool newPosts = false;
         int replies = topic.ReplyCount;
-        var lpAuthor = memberService.GetById(topic.LastPostAuthorId);
-        var author = memberService.GetById(topic.MemberId);
+        var lpAuthor = MemberService.GetById(topic.LastPostAuthorId);
+        var author = MemberService.GetById(topic.MemberId);
         string rolecssLP = lpAuthor.Roles.Contains("Administrator") ? "administrator" : lpAuthor.Roles.Contains("Moderator") ? "moderator" : "member";
         string rolecssAU = author.Roles.Contains("Administrator") ? "administrator" : author.Roles.Contains("Moderator") ? "moderator" : "member";
 
@@ -52,7 +44,7 @@
             postsclass = "unread";
 
         }
-        if (topic.LastPostAuthorId == memberService.Current()?.Id)
+        if (topic.LastPostAuthorId == MemberService.Current()?.Id)
         {
             postsclass += "_mine";
         }

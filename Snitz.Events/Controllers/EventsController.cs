@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data;
-using SnitzEvents.Models;
 using System.Net;
 using Snitz.Events.Models;
 using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Models;
 
 namespace Snitz.Events.Controllers;
 
@@ -22,6 +22,12 @@ public class EventsController : Controller
         _context = dbContext;
         _bbCodeProcessor = BbCodeProcessor;
         _memberService = memberService;
+    }
+
+    [HttpPost]
+    public IActionResult AddEvent(CalendarEventItem model)
+    {
+        return Json(new{url=Url.Action("Index", "Topic", new { id = model.TopicId }),id = model.TopicId});
     }
     [HttpGet]
     public JsonResult GetClubCalendarEvents(string id,string old, int calendar = 0, string start = "", string end = "")

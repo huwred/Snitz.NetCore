@@ -283,7 +283,7 @@
                     </div>
                 </div>
             </div>
-            @await Component.InvokeAsync("Events", "Admin")
+                @await Component.InvokeAsync("Events", new { template = "Admin" })
         </div>
     </div>
 

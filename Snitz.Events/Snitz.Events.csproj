@@ -3,13 +3,17 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.0-rc1.44</Version>
+    <Version>1.0.0-rc1.72</Version>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="wwwroot\**\*.*" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Helpers\ICalEventsService.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +30,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="NetCore.AutoRegisterDi" Version="2.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
@@ -46,9 +51,11 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\Calendar\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\AddEvent.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\Admin.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\Config.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\MenuItem.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\TopicSummary.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,6 +72,14 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\Components\Events\MenuItem.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\Components\Events\AddEvent.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\Components\Events\TopicSummary.cshtml" />
   </ItemGroup>
 
 

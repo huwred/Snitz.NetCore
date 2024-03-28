@@ -60,6 +60,8 @@ namespace MVCForum.Controllers
             {
                 _memberService.SetLastHere(User);
             }
+
+            var haspoll = _postService.HasPoll(id);
             var post = _postService.GetTopic(id);
             if (post.ReplyCount > 0 || post.UnmoderatedReplies > 0)
             {
@@ -124,6 +126,7 @@ namespace MVCForum.Controllers
                 Status = post.Status,
                 IsLocked = post.Status == 0 || post.Forum?.Status == 0,
                 IsSticky = post.IsSticky == 1,
+                HasPoll = haspoll,
                 Answered = post.Answered,
                 //AuthorRating = post.User?.Rating ?? 0,
                 AuthorName = post.Member?.Name ?? "Unknown",
@@ -407,11 +410,47 @@ namespace MVCForum.Controllers
                 }
 
             }
-            
 
+            return Json(new{url=Url.Action("Index", "Topic", new { id = post.Id }),id=post.Id});
             // TODO: Implement User Rating Management
-            return RedirectToAction("Index", "Topic", new { id = post.Id });
+            //return RedirectToAction("Index", "Topic", new { id = post.Id });
         }
+        
+        [HttpPost]
+        [Route("AddPoll/")]
+        public IActionResult AddPoll(Poll poll)
+        {
+            try
+            {
+                var polltoadd = new Poll()
+                {
+                    TopicId = poll.TopicId,
+                    ForumId = poll.ForumId,
+                    CatId = poll.CatId,
+                    Question = poll.Question,
+                    Whovotes = poll.Whovotes
+                };
+                _snitzDbContext.Polls.Add(polltoadd);
+                _snitzDbContext.SaveChanges();
+                foreach (PollAnswer pollAnswer in poll.PollAnswers)
+                {
+                    if (!string.IsNullOrWhiteSpace(pollAnswer.Label))
+                    {
+                        pollAnswer.PollId = polltoadd.Id;
+                        _snitzDbContext.PollAnswers.Add(pollAnswer);
+                    }
+                }
+                _snitzDbContext.SaveChanges(); 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+               
+            return Json(new{url=Url.Action("Index", "Topic", new { id = poll.TopicId }),id = poll.TopicId});
+        }
+
         [HttpPost]
         [Authorize]
         [Route("AddReply/")]
@@ -644,6 +683,7 @@ namespace MVCForum.Controllers
                     Status = topic.Status,
                     IsLocked = topic.Status == 0 || topic.Forum?.Status == 0,
                     IsSticky = topic.IsSticky == 1,
+                    HasPoll = _postService.HasPoll(topic.Id),
                     //AuthorRating = post.User?.Rating ?? 0,
                     AuthorName = topic.Member?.Name ?? "Unknown",
                     Created = topic.Date.FromForumDateStr(),
@@ -688,6 +728,7 @@ namespace MVCForum.Controllers
                     Views = topic.ViewCount,
                     IsLocked = topic.Status == 0 || topic.Forum?.Status == 0,
                     IsSticky = topic.IsSticky == 1,
+                    HasPoll = _postService.HasPoll(topic.Id),
                     Answered = topic.Answered,
                     //AuthorRating = post.User?.Rating ?? 0,
                     AuthorName = topic.Member?.Name ?? "Unknown",

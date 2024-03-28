@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Service.Extensions;
-using SnitzEvents.Models;
 
 namespace Snitz.Events.Models
 {

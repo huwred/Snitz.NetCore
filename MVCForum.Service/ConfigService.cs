@@ -210,5 +210,24 @@ namespace SnitzCore.Service
             var currentTheme = GetValue("STRDEFAULTTHEME", "SnitzTheme");
             return $"/css/themes/{currentTheme}/{cssfile}";
         }
+
+        public void SetValue(string key, string value)
+        {
+            var configval = _dbContext.SnitzConfig.SingleOrDefault(c=>c.Key == key);
+            if (configval == null)
+            {
+                _dbContext.SnitzConfig.Add(new SnitzConfig()
+                {
+                    Key = key,
+                    Value = value
+                });
+            }
+            else
+            {
+                configval.Value = value;
+            }
+
+            _dbContext.SaveChanges();
+        }
     }
 }

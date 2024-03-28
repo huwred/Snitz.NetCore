@@ -25,5 +25,7 @@ namespace MVCForum.ViewModels.Post
         public bool ShowSig { get; set; }
 
         public int Status { get; set; }
+
+        public bool HasPoll { get; set; }
     }
 }

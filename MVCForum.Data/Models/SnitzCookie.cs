@@ -2,6 +2,9 @@
 using SnitzCore.Data.Interfaces;
 using System;
 using System.Collections.Generic;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using System.Collections.Specialized;
+using SnitzCore.Data.Extensions;
 
 namespace SnitzCore.Data.Models
 {
@@ -84,30 +87,30 @@ namespace SnitzCore.Data.Models
         #endregion
 
         #region Poll vote tracker
-        //public  void PollVote(int pollid)
-        //{
-        //    Dictionary<string, string> pages = GetMultipleUsingSingleKeyCookies("votetracker");
+        public void PollVote(int pollid)
+        {
+            IDictionary<string, string> pages = GetMultipleUsingSingleKeyCookies("votetracker");
 
-        //    if (pages.ContainsKey(pollid.ToString()))
-        //    {
-        //        int lastpage = Convert.ToInt32(pages[pollid.ToString()]);
-        //        pages[pollid.ToString()] = "1";
-        //    }
-        //    else
-        //    {
-        //        pages.Add(pollid.ToString(), "1");
-        //    }
-        //    SetMultipleUsingSingleKeyCookies("votetracker", pages);
-        //}
-        //public  bool HasVoted(int pollid)
-        //{
-        //    var pages = GetMultipleUsingSingleKeyCookies("votetracker");
-        //    if (pages.ContainsKey(pollid.ToString()))
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
+            if (pages.ContainsKey(pollid.ToString()))
+            {
+                int lastpage = Convert.ToInt32(pages[pollid.ToString()]);
+                pages[pollid.ToString()] = "1";
+            }
+            else
+            {
+                pages.Add(pollid.ToString(), "1");
+            }
+            SetMultipleUsingSingleKeyCookies("votetracker", pages);
+        }
+        public bool HasVoted(int pollid)
+        {
+            var pages = GetMultipleUsingSingleKeyCookies("votetracker");
+            if (pages.ContainsKey(pollid.ToString()))
+            {
+                return true;
+            }
+            return false;
+        }
         #endregion
 
 
@@ -173,6 +176,40 @@ namespace SnitzCore.Data.Models
         }
 
         #endregion
+        public IDictionary<string, string> GetMultipleUsingSingleKeyCookies(string cookieName)
+        {
 
+            //creating dic to return as collection.
+            IDictionary<string, string> dicVal = new Dictionary<string, string>();
+
+            //Check whether the cookie available or not.
+            if (_httpContextAccessor.HttpContext?.Request.Cookies[cookieName] != null)
+            {
+                //Creating a cookie.
+                return _httpContextAccessor.HttpContext?.Request.Cookies[cookieName].FromLegacyCookieString();
+
+            }
+            return dicVal;
+        }
+
+        private void SetMultipleUsingSingleKeyCookies(string cookieName, IDictionary<string, string> dic, bool persist = true)
+        {
+            if (!_cookieCollection.Contains(cookieName))
+            {
+                _cookieCollection.Add(cookieName);
+            }
+
+            var cookie = _httpContextAccessor.HttpContext?.Request.Cookies[cookieName];
+            CookieOptions options = new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = true,
+                Path = _snitzConfig.CookiePath,
+                Expires = DateTime.UtcNow.AddDays(30),
+                Domain = _httpContextAccessor.HttpContext?.Request.Host.Host
+            };
+            _httpContextAccessor.HttpContext?.Response.Cookies.Append(cookieName, dic.ToLegacyCookieString(), options);
+
+        }
     }
 }

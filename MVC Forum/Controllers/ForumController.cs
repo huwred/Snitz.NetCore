@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MVCForum.ViewModels;
 using System.Drawing.Printing;
+using Microsoft.Extensions.Hosting;
 
 namespace MVCForum.Controllers
 {
@@ -137,7 +138,8 @@ namespace MVCForum.Controllers
                 LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p),
-                Answered = p.Answered
+                Answered = p.Answered,
+                HasPoll = _postService.HasPoll(p.Id),
             });
             
             IEnumerable<Post>? forumPosts = forum?.Posts?.Where(p => p.IsSticky != 1);
@@ -264,7 +266,8 @@ namespace MVCForum.Controllers
                 LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p),
-                Answered = p.Answered
+                Answered = p.Answered,
+                HasPoll = _postService.HasPoll(p.Id),
             });
 
             if (forum != null)
@@ -376,7 +379,8 @@ namespace MVCForum.Controllers
                 LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p),
-                Answered = p.Answered
+                Answered = p.Answered,
+                HasPoll = _postService.HasPoll(p.Id),
             });
             if (Refresh == null)
             {
@@ -562,7 +566,8 @@ namespace MVCForum.Controllers
                 LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p),
-                Answered = p.Answered
+                Answered = p.Answered,
+                HasPoll = _postService.HasPoll(p.Id),
             });
 
             var pageCount = (int)Math.Ceiling((double)totalcount / pagesize);
@@ -622,7 +627,8 @@ namespace MVCForum.Controllers
                 LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p),
-                Answered = p.Answered
+                Answered = p.Answered,
+                HasPoll = _postService.HasPoll(p.Id),
             }).OrderBy(p=>p.LastPostDate);
 
             var pageCount = (int)Math.Ceiling((double)totalcount / pagesize);
@@ -685,7 +691,8 @@ namespace MVCForum.Controllers
                 Topics = forum.TopicCount,
                 Posts = forum.ReplyCount,
                 ForumModeration = forum.Moderation,
-                ForumSubscription = (ForumSubscription)forum.Subscription
+                ForumSubscription = (ForumSubscription)forum.Subscription,
+                Polls = forum.Polls
                 //ImageUrl = forum.ImageUrl
 
             };
@@ -713,7 +720,8 @@ namespace MVCForum.Controllers
                 DefaultView = (DefaultDays)forum.Defaultdays,
                 CategoryId = forum.CategoryId,
                 Status = forum.Status,
-                ForumModeration = forum.Moderation
+                ForumModeration = forum.Moderation,
+                Polls = forum.Polls
                 //ImageUrl = forum.ImageUrl
             };
         }

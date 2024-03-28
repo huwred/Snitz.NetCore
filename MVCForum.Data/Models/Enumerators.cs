@@ -3,6 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SnitzCore.Data.Models
 {
+    public enum PollAuth
+    {
+        Disallow,
+        Members,
+        AdminModerators
+    }
     public enum MyTopicsSince
     {
         LastVisit = 0,

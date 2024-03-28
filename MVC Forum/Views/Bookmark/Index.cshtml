@@ -4,7 +4,6 @@
 @using SnitzCore.Data
 @using SnitzCore.Service.TagHelpers
 @model MVCForum.ViewModels.BookmarkViewModel
-@inject IMember MemberService
 @{
     var lastvisit = DateTime.UtcNow;
     if (User.Identity!.IsAuthenticated)

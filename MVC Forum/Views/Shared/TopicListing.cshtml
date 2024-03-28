@@ -1,13 +1,15 @@
 ﻿@using MVCForum.TagHelpers
 @using BbCodeFormatter
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Snitz.Events.Helpers
 @using SnitzCore.Data
 @using SnitzCore.Service.TagHelpers
 @model MVCForum.ViewModels.Post.PostListingModel
 @inject ICodeProcessor BbCodeProcessor
-@inject IMember MemberService
+@inject IEnumerable<ISnitzStartupService> pluginservices
 @{
     Layout = null;
+    var eventservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(CalEventsService));
     var answeredClass = "";
     var moderatedClass = $"modstatus-{Model.Status}";
     if (Model.UnmoderatedReplies > 0 && User.IsInRole("Administrator"))
@@ -22,8 +24,18 @@
 }
 <div class="table-row @answeredClass rounded-2 @moderatedClass">
 
-    <div class="status" data-status="@Model.Status" style="z-index:2">
-        <snitz-topic-icon answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+    <div class="status" data-status="@Model.Status" style="z-index: 2">
+        @if (eventservice.EnabledForTopic(Model.Id))
+        {
+            <i class="fa fa-calendar"></i>
+        }else if (Model.HasPoll)
+        {
+            <i class="fa fa-bar-chart"></i>
+        }
+        else
+        {
+            <snitz-topic-icon answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+        }
     </div>
     <div class="subjects" style="z-index:2">
         <a href="/Topic/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a>

@@ -1,0 +1,56 @@
+﻿@using System.Globalization
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Service.Extensions
+@using SnitzCore.Service.TagHelpers
+@model MVCForum.ViewModels.Post.PollViewModel
+@{
+    var totalvotes = Model.Poll.PollAnswers.Sum(a => a.Count);
+    CultureInfo uk = new CultureInfo("en-GB");
+    string culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+}
+<div class="user-poll-section">
+    <div class="card col-12 col-md-7 ">
+        <div class="card-header  @TempData["panel"] text-@TempData["panel"]">
+            @if ((bool)TempData["featured"])
+            {
+                <h4>@Localizer["FeaturedPoll"]</h4>
+            }
+            <span>@Model.Poll.Question @if (!Model.Poll.Question.Contains("?")) { @Html.Raw("?"); }</span>
+            @if (!(bool)TempData["featured"] && User.IsInRole("Administrator") && Model.Poll.Topic.Status == 1)
+            {
+                <span class="pull-right flip">
+                    <a href="@Url.Action("MakeFeaturedPoll","Polls",new{id=Model.Poll.Id})" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a>
+                    @if (Model.Poll.Topic == null)
+                    {
+                        <a href="@Url.Action("Delete", "Polls", new {id = Model.Poll.Id})" title="Delete Poll" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Lock","Polls",new{id=Model.TopicId, pollid=Model.Poll.Id})" title="Lock Poll" data-toggle="tooltip"><i class="fa fa-lock"></i></a>
+                    }
+                </span>
+            }
+
+        </div>
+        <div class="card-body p-2">
+            <h5 class="text-danger">@Localizer["ResultTitle"]</h5>
+            <hr class="title">
+            @foreach (var ans in Model.Poll.PollAnswers.OrderBy(a => a.Order))
+            {
+                var percent = (ans.Count / (double)totalvotes * 100);
+                <span>@ans.Label&nbsp;@Localizer["VoteCount", ans.Count]</span>
+                <div class="progress progress-striped active">
+                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="@percent.ToString("00.00",uk)" aria-valuemin="0" aria-valuemax="100" style="width: @percent.ToString("00.00",uk)%;">
+                        <span class="sr-only">@Html.Raw(percent.ToString("00.00", uk) + "% Complete (success)")</span>
+                    </div>
+                </div>
+            }
+            <label>@Localizer["VotesCast"]:&nbsp;</label>@totalvotes.ToLangNum(culture) <br />
+            <label>@Localizer["LastVote"]:&nbsp;</label>
+            <snitz-datetime snitz-if="@(Model.Poll.Lastvote != null)" datetime="@Model.Poll.Lastvote.FromForumDateStr()"></snitz-datetime>
+
+        </div>
+        <div class="card-footer">@Html.ActionLink(Localizer["ViewComments"].Value, "Index", "Topic", new { id = Model.TopicId }, null) @Localizer["CommentCount", Model.Poll.Topic.ReplyCount.ToLangNum(culture)] </div>
+
+    </div>
+</div>

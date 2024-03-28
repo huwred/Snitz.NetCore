@@ -4,11 +4,12 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MVCForum.TagHelpers
 @using SmartBreadcrumbs
+@using Snitz.Events.Helpers
 @using SnitzCore.Data
 @using SnitzCore.Service.TagHelpers
 @inject ICodeProcessor BbCodeProcessor
 @inject SignInManager<ForumUser> SignInManager
-@inject IMember MemberService
+@inject IEnumerable<ISnitzStartupService> pluginservices
 @section MetaData
 {
     <meta name="title" content="Topic: @Model.Title" />
@@ -21,6 +22,7 @@
 }
 
 @{
+    var eventservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(CalEventsService));
     ViewBag.PageCount = Model.PageCount;
     var currmember = MemberService.Current();
     string pagenum = (Model.PageNum.ToString() ?? Context.Request.Query["page"])! ;
@@ -51,6 +53,16 @@
             <div class="body topic">
                 <partial name="PostAuthor" model="Model.Author"/>
                 <div class="content">
+                    @if (eventservice.EnabledForTopic(Model.Id))
+                    {
+                        @await Component.InvokeAsync("Events", new { template = "TopicSummary", id = Model.Id })
+                    }
+                    @if (Model.HasPoll)
+                    {
+                        <div id="PollPanel">
+                        @await Component.InvokeAsync("Polls", new { template = "DisplayPoll", catid = 0, forumid = 0, topicid = Model.Id })
+                        </div>
+                    }
                     @Html.Raw(BbCodeProcessor.Format(Model.Content))
                     @if (Model.ShowSig)
                     {

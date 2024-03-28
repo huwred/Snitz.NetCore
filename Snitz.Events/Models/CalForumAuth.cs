@@ -1,6 +1,4 @@
-using SnitzEvents.Helpers;
-
-namespace SnitzEvents.Models
+namespace Snitz.Events.Models
 {
     public class CalForumAuth
     {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using SnitzEvents.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Snitz.Events.Models
