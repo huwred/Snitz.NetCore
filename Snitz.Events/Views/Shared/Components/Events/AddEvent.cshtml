@@ -11,89 +11,64 @@
 <fieldset>
     <h5>@Localizer["AddEvent"]</h5>
     <hr/>
+    <input type="hidden" name="Id" value="@Model.Id" />
     <input type="hidden" name="AuthorId" value="@Model.AuthorId" />
-    <input type="hidden" name="TopicId" id="event-topic"/>
-        <input type="hidden" name="CatId" value="@Model.CatId" />
-        <input type="hidden" name="ClubId" value="@Model.ClubId" />
-        <input type="hidden" name="LocId" value="@Model.LocId" />
+    <input type="hidden" name="TopicId" id="event-topic" value="@Model.TopicId"/>
 
     <div class="mb-3">
-        <label class="control-label col-2">@Localizer["lblEventTitle"]</label>
+        <label class="form-label">@Localizer["lblEventTitle"]</label>
         <div class="col-5">
-            @Html.TextBoxFor(model => model.Title, new { @class = "form-control" })
+            <input type="text" class="form-control" name="Title" value="@Model.Title" />
         </div>
     </div>
     <div class="mb-3">
-        <label class="control-label col-2">@Localizer["lblStartDate"]</label>
-        <div class="col-6">
-            @if (Model.StartDate.HasValue)
-            {
-                <div class="input-group date" data-provide="datepicker" id="calendar-start-date">
-                    <input type="text" class="form-control" id="startdate" name="StartDate" />
-                    <span class="input-group-append">
-                        <span class="input-group-text bg-light d-block">
-                            <i class="fa fa-calendar"></i>
-                        </span>
-                    </span>
-                </div>
-            }
-            else
-            {
-                <div class="input-group date" data-provide="datepicker" id="calendar-start-date">
-                    <input type="text" class="form-control" id="startdate" name="StartDate" />
-                    <span class="input-group-append">
-                        <span class="input-group-text bg-light d-block">
-                            <i class="fa fa-calendar"></i>
-                        </span>
-                    </span>
-                </div>
-            }
-        </div>
+        <label class="form-label">@Localizer["lblEventDescription"]</label>
+        <textarea type="text" class="form-control" name="Title" rows="2">@Model.Description</textarea>
     </div>
     <div class="mb-3">
-        <label class="control-label col-2">@Localizer["lblEndDate"]</label>
-        <div class="col-6">
-            @if (Model.EndDate.HasValue)
-            {
-                    <div class="input-group date" data-provide="datepicker" id="calendar-end-date">
-                    <input type="text" class="form-control" id="enddate" name="EndDate" />
-                    <span class="input-group-append">
-                        <span class="input-group-text bg-light d-block">
-                            <i class="fa fa-calendar"></i>
-                        </span>
-                    </span>
-                </div>
-            }
-            else
-            {
-                <div class="input-group date" data-provide="datepicker" id="calendar-end-date">
-                    <input type="text" class="form-control" id="date" name="EndDate" />
-                    <span class="input-group-append">
-                        <span class="input-group-text bg-light d-block">
-                            <i class="fa fa-calendar"></i>
-                        </span>
-                    </span>
-                </div>
-            }
+        <div class="row">
+            <div class="col-6">
+                <label class="form-label">@Localizer["lblStartDate"]</label>
+                @if (Model.StartDate.HasValue)
+                {
+                        <input type="datetime-local" class="form-control" id="startdate" name="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-ddTHH:mm")" />
+                }
+                else
+                {
+                    <input type="datetime-local" class="form-control" id="startdate" name="StartDate" />
+                }
+            </div>
+            <div class="col-6">
+                <label class="form-label">@Localizer["lblEndDate"]</label>
+                @if (Model.EndDate.HasValue)
+                {
+                        <input type="datetime-local" class="form-control" id="enddate" name="EndDate" value="@Model.EndDate?.ToString("yyyy-MM-ddTHH:mm")" />
+                }
+                else
+                {
+                    <input type="datetime-local" class="form-control" id="enddate" name="EndDate"  />
+                }
+            </div>
         </div>
     </div>
+
     <div class="mb-3">
-        <label class="control-label col-2">@Localizer["lblEventCategory"]</label>
-        <div class="col-3">
-            @Html.DropDownListFor(model => model.CatId, new SelectList(Categories, "Key", "Value"), new {@class = "form-control", @tabindex = 1})
+        <div class="row">
+            <div class="col-4">
+                <label class="form-label">@Localizer["lblEventCategory"]</label>
+                @Html.DropDownListFor(model => model.CatId, new SelectList(Categories, "Key", "Value", Model.CatId), new { @class = "form-select", @tabindex = 1 })
+            </div>
+            <div class="col-4">
+                <label class="form-label">@Localizer["lblEventClub"]</label>
+                @Html.DropDownListFor(model => model.ClubId, new SelectList(Clubs, "Key", "Value",Model.ClubId), new { @class = "form-select", @tabindex = 1 })
+            </div>
+            <div class="col-4">
+                <label class="form-label">@Localizer["lblEventLocation"]</label>
+                @Html.DropDownListFor(model => model.LocId, new SelectList(Locations, "Key", "Value",Model.LocId), new { @class = "form-select", @tabindex = 1 })
+            </div>
         </div>
+
     </div>
-    <div class="mb-3">
-        <label class="control-label col-2">@Localizer["lblEventClub"]</label>
-        <div class="col-3">
-            @Html.DropDownListFor(model => model.ClubId, new SelectList(Clubs, "Key", "Value"), new { @class = "form-control", @tabindex = 1 })
-        </div>
-    </div>
-        <div class="mb-3">
-        <label class="control-label col-2">@Localizer["lblEventLocation"]</label>
-        <div class="col-3">
-            @Html.DropDownListFor(model => model.LocId, new SelectList(Locations, "Key", "Value"), new { @class = "form-control", @tabindex = 1 })
-        </div>
-    </div>
+
 </fieldset>
 </form>

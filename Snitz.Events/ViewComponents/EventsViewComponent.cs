@@ -23,8 +23,13 @@ namespace Snitz.Events.ViewComponents
             _eventContext = eventContext;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string template,int id = 0)
+        public async Task<IViewComponentResult> InvokeAsync(string template,int id = 0,int? topicid = 0)
         {
+            if (template == "ForumConfig")
+            {
+                var forum = _dbContext.Forums.Find(id);
+                return await Task.FromResult((IViewComponentResult)View(template,forum));
+            }
             if (template == "TopicSummary")
             {
                 var eventitem = _eventContext.EventItems.FirstOrDefault(e=>e.TopicId == id);
@@ -37,8 +42,13 @@ namespace Snitz.Events.ViewComponents
                     AuthorId = id,
                     StartDate = DateTime.UtcNow,
                     EndDate = DateTime.UtcNow.AddMinutes(30)
-                };
-                return await Task.FromResult((IViewComponentResult)View(template,new CalendarEventItem()));
+                };                
+                if (topicid != null && topicid > 0)
+                {
+                    calendaritem = _eventContext.EventItems.FirstOrDefault(e=>e.TopicId == topicid);
+                }
+
+                return await Task.FromResult((IViewComponentResult)View(template,calendaritem));
             }
             if (template == "EnableButton")
             {

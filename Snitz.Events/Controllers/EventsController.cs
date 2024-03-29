@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data;
 using System.Net;
+using Microsoft.AspNetCore.Http;
 using Snitz.Events.Models;
 using SnitzCore.Data.Extensions;
-using SnitzCore.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Snitz.Events.Controllers;
 
@@ -16,7 +17,8 @@ public class EventsController : Controller
     private readonly ICodeProcessor _bbCodeProcessor;
     private readonly IMember _memberService;
 
-    public EventsController(ISnitzConfig config,EventContext dbContext,ICodeProcessor BbCodeProcessor,IMember memberService)
+    public EventsController(ISnitzConfig config,EventContext dbContext,ICodeProcessor BbCodeProcessor,
+        IMember memberService)
     {
         _config = config;
         _context = dbContext;
@@ -27,7 +29,40 @@ public class EventsController : Controller
     [HttpPost]
     public IActionResult AddEvent(CalendarEventItem model)
     {
+        var existingevent = _context.EventItems.Find(model.Id);
+        if (existingevent != null)
+        {
+            existingevent.Title = model.Title;
+            existingevent.Description = model.Description;
+            existingevent.StartDate = model.StartDate;
+            existingevent.EndDate = model.EndDate;
+            existingevent.LocId = model.LocId;
+            existingevent.CatId = model.CatId;
+            existingevent.ClubId = model.ClubId;
+            _context.EventItems.Update(existingevent);
+        }
+        else
+        {
+            model.AuthorId = _memberService.Current()?.Id;
+            _context.EventItems.Add(model);
+        }
+        _context.SaveChanges();
         return Json(new{url=Url.Action("Index", "Topic", new { id = model.TopicId }),id = model.TopicId});
+    }
+
+    [HttpPost]
+    public IActionResult SaveForum(IFormCollection form)
+    {
+        try
+        {
+            _context.Database.ExecuteSql($"UPDATE FORUM_FORUM SET F_ALLOWEVENTS = {Convert.ToInt32(form["Allowed"])} WHERE FORUM_ID={Convert.ToInt32(form["ForumId"])}");
+            return Content("Config updated.");
+        }
+        catch (Exception e)
+        {
+            return Content(e.Message);
+        }
+
     }
     [HttpGet]
     public JsonResult GetClubCalendarEvents(string id,string old, int calendar = 0, string start = "", string end = "")

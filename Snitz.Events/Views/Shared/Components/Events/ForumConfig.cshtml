@@ -1,0 +1,38 @@
+﻿@model Forum
+@inject IForum forumService
+@{
+    var authlev = forumService.PollsAuth(Model.Id);
+}
+<div class="panel panel-default">
+    <div class="panel-heading">Calendar/Events Plugin<hr /></div>
+    <div class="mb-3 panel-body">
+        <form asp-action="SaveForum" asp-controller="Events" class="form" id="cal-forumAuth" method="post" novalidate="novalidate">    
+            <label class="form-label">Who can create Events</label>
+            <select class="form-select" data-val="true" data-val-required="The Allowed field is required." id="Allowed" name="Allowed">
+                <option selected="@(authlev == 0)" value="0">Events disabled</option>
+                <option selected="@(authlev == 2)" value="2">All members can post events</option>
+                <option selected="@(authlev == 3)" value="3">Only Admins/Moderators can add events</option>
+                <option selected="@(authlev == 4)" value="4">Only Administrators can add events</option>
+            </select>
+            <input data-val="true" data-val-number="The field ForumId must be a number." data-val-required="The ForumId field is required." id="cal-forumid" name="ForumId" type="hidden" value="@Model.Id" />
+        </form>
+        <div id="event-result"></div>
+    </div>
+</div>
+
+<storecontent asp-key="forum-plugins">
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(document).on('change', '#Allowed', function () {
+                var $form = $(this).closest('form');
+                $.post("/Events/SaveForum", $(this).closest('form').serialize(), function (data) {
+                    if (data) {
+                        $('#event-result').html(data);
+                    } else {
+                        alert(data);
+                    }
+                });
+            });
+        });
+    </script>
+</storecontent>

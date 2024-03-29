@@ -3,9 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.0-rc1.72</Version>
+    <Version>1.0.0-rc1.93</Version>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <PackageOutputPath>E:\Umbraco-Dev\Nuget</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -54,6 +55,7 @@
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\AddEvent.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\Admin.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\Config.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\ForumConfig.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\MenuItem.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Events\TopicSummary.cshtml" />
   </ItemGroup>
@@ -80,6 +82,10 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\Components\Events\TopicSummary.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\Components\Events\ForumConfig.cshtml" />
   </ItemGroup>
 
 
