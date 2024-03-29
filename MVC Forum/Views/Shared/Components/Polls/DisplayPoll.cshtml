@@ -31,8 +31,8 @@ else
             <div class="user-poll-section">
                 <div class="card">
                     <div class="card-header @ViewData["panel"] tex-@ViewData["panel"]">
-                        <strong>@Localizer["pollQuestion"] : </strong>@Model.Poll.Question ?
-                        @if( User.IsInRole("Administrator") && Model.Poll.Topic.Status==1)
+                        <strong>@Localizer["pollQuestion"] : </strong>@Model.Poll.Question ? 
+                        @if (User.IsInRole("Administrator") && Model.Poll.Topic.Status == 1 && SnitzConfig.GetIntValue("INTFEATUREDPOLLID") != Model.Poll.Id)
                         {
                             <span class="pull-right flip"><a href="@Url.Action("MakeFeaturedPoll","Polls",new{id=Model.Poll.Id})" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a></span>
                         }

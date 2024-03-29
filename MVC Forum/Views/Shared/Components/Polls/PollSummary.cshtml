@@ -19,14 +19,17 @@
             @if (!(bool)TempData["featured"] && User.IsInRole("Administrator") && Model.Poll.Topic.Status == 1)
             {
                 <span class="pull-right flip">
-                    <a href="@Url.Action("MakeFeaturedPoll","Polls",new{id=Model.Poll.Id})" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a>
+                    @if (SnitzConfig.GetIntValue("INTFEATUREDPOLLID") != Model.Poll.Id)
+                    {
+                        <a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = Model.Poll.Id })" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a>
+                    }
                     @if (Model.Poll.Topic == null)
                     {
-                        <a href="@Url.Action("Delete", "Polls", new {id = Model.Poll.Id})" title="Delete Poll" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                        <a href="@Url.Action("Delete", "Polls", new { id = Model.Poll.Id })" title="Delete Poll" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
                     }
                     else
                     {
-                        <a href="@Url.Action("Lock","Polls",new{id=Model.TopicId, pollid=Model.Poll.Id})" title="Lock Poll" data-toggle="tooltip"><i class="fa fa-lock"></i></a>
+                        <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="Lock Poll" data-toggle="tooltip"><i class="fa fa-lock"></i></a>
                     }
                 </span>
             }

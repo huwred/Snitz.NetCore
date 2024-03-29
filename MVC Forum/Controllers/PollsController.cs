@@ -8,6 +8,9 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
 using SnitzCore.Data.Extensions;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace MVCForum.Controllers
 {
@@ -18,7 +21,19 @@ namespace MVCForum.Controllers
             ISnitzCookie snitzCookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _snitzCookie = snitzCookie;
-        }        
+        }
+
+        public IActionResult Active()
+        {
+
+            var polls = _snitzDbContext.Polls.AsNoTracking().Include(p=>p.Topic).AsQueryable();
+            if (!User.IsInRole("Administrator"))
+            {
+                polls = polls.Where(p => p.Topic.Status == 1);
+            }
+
+            return View(polls.ToList());
+        }
         [HttpPost]
         public IActionResult Vote(IFormCollection form)
         {

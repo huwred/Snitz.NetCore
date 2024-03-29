@@ -19,6 +19,10 @@ namespace MVCForum.View_Components
 
         public async Task<IViewComponentResult> InvokeAsync(string template, int? catid, int? forumid, int topicid = 0)
         {
+            if (template == "MenuItem")
+            {
+                return await Task.FromResult((IViewComponentResult)View(template,false));
+            }
             if (template == "ForumConfig")
             {
                 var forum = _dbContext.Forums.Find(forumid);

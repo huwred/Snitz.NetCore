@@ -1,0 +1,13 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ForumUser> SignInManager
+@model bool
+@{
+
+    var showpolls = Model;
+    showpolls = showpolls || SignInManager.IsSignedIn(User);
+
+}
+@if (showpolls && SnitzConfig.GetIntValue("INTACTIVEPOLLS") == 1)
+{
+    <li><a class="dropdown-item" asp-controller="Polls" asp-action="Active">@Localizer["mnuActivePolls"]</a></li>
+}

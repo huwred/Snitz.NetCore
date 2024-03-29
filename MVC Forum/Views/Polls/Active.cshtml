@@ -1,0 +1,39 @@
+﻿@model List<Poll>
+@inject ISnitzCookie Cookie
+@{
+    Layout = "Layout";
+}
+
+<h5>@Localizer["mnuActivePolls"] </h5>
+<div id="PollPanel" class="row">
+    @if (Model.Count == 0)
+    {
+        <h5>@Localizer["lblNoActive"] </h5>
+    }
+    @foreach (var poll in Model)
+    {
+        string panel = "panel-info";
+        bool voted = Cookie.HasVoted(poll.Id, MemberService.Current()?.Id);
+
+        if (poll.Id == SnitzConfig.GetIntValue("INTFEATUREDPOLLID"))
+        {
+            panel = "panel-primary";
+        }
+        else if (poll.Topic?.Status == 1)
+        {
+            panel = "panel-default";
+        }
+        <div class="col-md-3 @panel">
+            @await Component.InvokeAsync("Polls", new { template = "DisplayPoll", catid = 0, forumid = 0, topicid = poll.TopicId })
+        </div>
+    }
+</div>
+
+@section Scripts
+{
+    <script>
+        $("#PollPanel .panel-default .card-header").removeClass("bg-primary").addClass("bg-info");
+        $("#PollPanel .panel-info .card-header").removeClass("bg-primary").addClass("bg-warning");
+        // $("#PollPanel .panel-primary .card-header").removeClass("bg-primary").addClass("bg-danger");
+    </script>
+}

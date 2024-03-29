@@ -186,7 +186,7 @@ else
     @if (SnitzConfig.GetIntValue("STRSHOWQUICKREPLY") == 1)
     {
         <div snitz-if="!@Model.IsLocked" class="comment-area @replyClass mt-2" id="reply-area">
-            <form asp-controller="Topic" asp-action="AddReply" class="needs-validation" novalidate>
+            <form asp-controller="Topic" asp-action="AddReply" class="needs-validation" id="QuickReply" novalidate>
                 <textarea name="Content" id="msg-text" placeholder="reply here ... " class="form-control" required="required" rows="6"></textarea>
                 <div class="invalid-feedback text-danger-emphasis">@Localizer["MessageRequired"]</div>
                 <input name="TopicId" type="hidden" value="@Model.Id"/>
@@ -308,4 +308,27 @@ else
     <script type="text/javascript" src="/js/initPostForm.js"></script>
     <script type="text/javascript" src="/js/prism.js" data-manual></script>
     <script type="text/javascript" src="/js/topic.min.js"></script>
+    <script type="text/javascript">
+        $("#QuickReply").submit(function (e) {
+            e.preventDefault();
+
+            tinyMCE.get("msg-text").save();
+            var form = $("#QuickReply");
+            var formData = new FormData(form[0]);
+            $.ajax({
+                url: $(this).attr("action"),
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    location.href = data.url;
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+            return false;
+        });
+    </script>
 }

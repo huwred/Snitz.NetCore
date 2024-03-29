@@ -13,20 +13,20 @@
         return $.getUrlParams()[name];
     }
 });        
-    $(document).ready(function() {
-            $(window).scroll(lazyload);
-            $(".fig-caption").each(function() {
-                var test = $(this);
-                $.ajax({
-                    url: "/PhotoAlbum/GetCaption/" + $(this).data("id"),
-                    type: "GET",
-                    success: function(data) {
-                        //alert(data); // the View
-                        test.html(data);
-                    }
-                });
-            });
+$(document).ready(function() {
+    $(window).scroll(lazyload);
+    $(".fig-caption").each(function() {
+        var test = $(this);
+        $.ajax({
+            url: "/PhotoAlbum/GetCaption/" + $(this).data("id"),
+            type: "GET",
+            success: function(data) {
+                //alert(data); // the View
+                test.html(data);
+            }
         });
+    });
+});
 
         $('.modal-link').on('click', function (e) {
             e.preventDefault();

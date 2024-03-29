@@ -44,8 +44,6 @@
             </form>
         }
     }
-
-
     <div class="row">
         <div class="col accordion">
             @foreach (var category in Model.Categories)
@@ -69,7 +67,6 @@
                             }
                         }
                     </h5>
-
                     <div class="accordion-collapse collapse show" id="collapse_@ID" aria-labelledby="heading_@ID">
                         @foreach (var forum in Model.ForumList.Where(f=>f.CategoryId == ID).OrderBy(f=>f.Order))
                         {
@@ -80,17 +77,14 @@
                                 {
                                     weblinkclass = "subforum-weblink";
                                 }
-
                                 <div class="subforum-row @weblinkclass ">
                                     <div class="subforum-icon subforum-column center">
                                         <snitz-forum-icon is-administrator="@User.IsInRole("Administrator")" forum-id="@forum.Id" status="@forum.Status" forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
                                         @if (User.IsInRole("Administrator") && forum.ForumType is ForumType.WebLink)
                                         {
                                             <br />
-
                                             <i class="fa fa-trash weblink-del" data-id="@forum.Id"></i>
                                         }
-                                
                                     </div>
                                     <div class="subforum-description subforum-column">
                                         @if (forum.ForumType == ForumType.WebLink)
@@ -99,17 +93,12 @@
                                         }
                                         else
                                         {
-
                                             <h4><a href="/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
                                         }
                                         <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
                                         @if (forum.ForumModeration != Moderation.UnModerated )
                                         {
-                                            <p class="mt-2 fst-italic">This Forum is moderated @forum.ForumModeration</p>
-                                        }
-                                        @if (SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
-                                        {
-                                            <p>@forum.ForumSubscription</p>
+                                            <p class="mt-2 fst-italic">@forum.ForumModeration are moderated in this Forum </p>
                                         }
                                     </div>
                                     @if (forum.ForumType != ForumType.WebLink)
@@ -150,8 +139,7 @@
 @{
     var confModel = new ConfirmDialogViewModel() { 
         Title = "Delete Category", 
-        Message = @"<p>You are about to delete this Category.</p>
-                <p>Do you wish to proceed?</p>" };
+        Message = @"<p>You are about to delete this Category.</p><p>Do you wish to proceed?</p>" };
 }
 <partial name="ConfirmDialog" model="@confModel" />
 
