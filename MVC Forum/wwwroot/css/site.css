@@ -322,7 +322,7 @@ footer{
     display: flex;
     margin-top: 0 !important;
 }
-.post-control-btn{ width: 99%;}
+/*.post-control-btn{ width: 100%;}*/
 
 
         .body .authors .username {
@@ -630,4 +630,8 @@ i.modstatus-2, i.modstatus-3 {
 }
 .event-label {
     display: block;
+}
+.input-group > .form-select {
+    width: auto !important;
+
 }
