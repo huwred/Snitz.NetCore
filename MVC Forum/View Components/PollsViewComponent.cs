@@ -19,7 +19,11 @@ namespace MVCForum.View_Components
 
         public async Task<IViewComponentResult> InvokeAsync(string template, int? catid, int? forumid, int topicid = 0)
         {
-            
+            if (template == "ForumConfig")
+            {
+                var forum = _dbContext.Forums.Find(forumid);
+                return await Task.FromResult((IViewComponentResult)View(template,forum));
+            }
             if (template == "AddPoll")
             {
                 var poll = new Poll
@@ -41,6 +45,16 @@ namespace MVCForum.View_Components
                 return await Task.FromResult((IViewComponentResult)View(template,vm));
             }
 
+            if (template == "Featured")
+            {
+                var vm = new PollViewModel()
+                {
+                    Poll = _dbContext.Polls.Include(p => p.PollAnswers).Include(p=>p.Topic).SingleOrDefault(x => x.Id == topicid),
+                    Votes = _dbContext.PollVotes.Include(p => p.Poll.PollAnswers).Where(p => p.PollId == topicid)
+                };
+
+                return await Task.FromResult((IViewComponentResult)View("DisplayPoll",vm));
+            }
             if (template == "PollSummary")
             {
                 TempData["featured"] = false;
@@ -52,6 +66,11 @@ namespace MVCForum.View_Components
                     Votes = _dbContext.PollVotes.Include(p => p.Poll.PollAnswers).Where(p => p.PostId == topicid)
                 };
                 return await Task.FromResult((IViewComponentResult)View(template,vm));
+            }
+
+            if (template == "Config")
+            {
+                return await Task.FromResult((IViewComponentResult)View("Config"));
             }
             return await Task.FromResult((IViewComponentResult)View("Default"));
         }

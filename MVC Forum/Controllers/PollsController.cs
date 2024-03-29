@@ -20,7 +20,7 @@ namespace MVCForum.Controllers
             _snitzCookie = snitzCookie;
         }        
         [HttpPost]
-        public IActionResult Vote(FormCollection form)
+        public IActionResult Vote(IFormCollection form)
         {
             Member? curUser = _memberService.Current();
             var poll = _snitzDbContext.Polls.Find(Convert.ToInt32(form["PollId"]));
@@ -40,8 +40,13 @@ namespace MVCForum.Controllers
                         PostId = poll.TopicId,
                         GuestVote = (curUser == null) ? 1 : 0
                     });
-                    if (answer != null) answer.Count += 1;
-                    _snitzDbContext.SaveChanges();
+                    if (answer != null)
+                    {
+                        answer.Count += 1;
+                        _snitzDbContext.PollAnswers.Update(answer);
+                        _snitzDbContext.SaveChanges();
+                    }
+                    
                     _snitzCookie.PollVote(poll.Id);
                 }
                 else
@@ -55,8 +60,13 @@ namespace MVCForum.Controllers
                         PostId = poll.TopicId,
                         GuestVote = 0
                     });
-                    if (answer != null) answer.Count += 1;
-                    _snitzDbContext.SaveChanges();
+                    if (answer != null)
+                    {
+                        answer.Count += 1;
+                        _snitzDbContext.PollAnswers.Update(answer);
+                        _snitzDbContext.SaveChanges();
+                    }
+
                     _snitzCookie.PollVote(poll.Id);
                 }
             }
@@ -117,5 +127,26 @@ namespace MVCForum.Controllers
             return Redirect(Request.Headers["Referer"].ToString());            
         }
 
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public IActionResult SaveForum(IFormCollection form)
+        {
+            try
+            {
+                var forum = _snitzDbContext.Forums.Find(Convert.ToInt32(form["ForumId"]));
+                if (forum != null)
+                {
+                    forum.Polls = Convert.ToInt32(form["PollsAuth"]);
+                    _snitzDbContext.Forums.Update(forum);
+                    _snitzDbContext.SaveChanges();
+                    return Content("Poll confg updated");
+                }
+                return Content("Problem updating");
+            }
+            catch (Exception e)
+            {
+                return Content(e.Message);
+            }
+        }
     }
 }

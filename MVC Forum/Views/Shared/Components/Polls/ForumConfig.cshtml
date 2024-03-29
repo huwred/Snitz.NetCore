@@ -1,0 +1,35 @@
+﻿@model Forum
+
+<div class="panel">
+    <div class="panel-heading">Polls<hr/></div>
+    <div class="panel-info panel-body">
+        <form asp-action="SaveForum" asp-controller="Polls" name="pollsAuthForm" id="pollsAuthForm" data-ajax="true" data-ajax-update="#pol-result">
+            <div class="form-group">
+                <label class="form-label" for="PollsAuth">Who can create Polls</label>
+                <select class="form-select" data-val="true" data-val-required="The Who can create Polls field is required." id="PollsAuth" name="PollsAuth">
+                    <option selected="@(Model.Polls==0)" value="0">Don't allow Polls</option>
+                    <option selected="@(Model.Polls==1)" value="1">Allow all Members</option>
+                    <option selected="@(Model.Polls==2)" value="2">Allow only Admins/Moderators</option>
+                </select>
+                <input data-val="true" data-val-number="The field ForumId must be a number." data-val-required="The ForumId field is required." id="poll-forumid" name="ForumId" type="hidden" value="@Model.Id">
+            </div>
+        </form>
+        <div id="poll-result"></div>
+    </div>
+</div>
+<storecontent asp-key="forum-plugins">
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(document).on('change', '#PollsAuth', function () {
+                var $form = $(this).closest('form');
+                $.post("/Polls/SaveForum", $(this).closest('form').serialize(), function (data) {
+                    if (data) {
+                        $('#poll-result').html(data);
+                    } else {
+                        alert(data);
+                    }
+                });
+            });
+        });
+    </script>
+</storecontent>

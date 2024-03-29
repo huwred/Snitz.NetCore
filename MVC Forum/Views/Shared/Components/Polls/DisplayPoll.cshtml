@@ -7,9 +7,9 @@
 else
 {
     var memberid = MemberService.Current()?.Id;
-    if (Model.Votes.SingleOrDefault(v => v.MemberId == memberid) != null || SnitzCookie.HasVoted(Model.Poll.Id))
+    if (Model.Votes.SingleOrDefault(v => v.MemberId == memberid && v.PollId == Model.Poll.Id) != null || SnitzCookie.HasVoted(Model.Poll.Id, memberid))
     {
-        @await Component.InvokeAsync("Polls", new { template = "PollSummary", topicid = Model.TopicId })
+        @await Component.InvokeAsync("Polls", new { template = "PollSummary", topicid = Model.Poll.TopicId })
     }
     else
     {
@@ -29,7 +29,7 @@ else
         <form asp-action="Vote" asp-controller="Polls" data-ajax="true" data-ajax-update="#PollPanel">
             <input type="hidden" name="PollId" value="@Model.Poll.Id"/>
             <div class="user-poll-section">
-                <div class="card col-12 col-md-6">
+                <div class="card">
                     <div class="card-header @ViewData["panel"] tex-@ViewData["panel"]">
                         <strong>@Localizer["pollQuestion"] : </strong>@Model.Poll.Question ?
                         @if( User.IsInRole("Administrator") && Model.Poll.Topic.Status==1)

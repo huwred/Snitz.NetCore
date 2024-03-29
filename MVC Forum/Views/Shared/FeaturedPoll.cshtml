@@ -1,0 +1,9 @@
+﻿@inject ISnitzCookie SnitzCookie
+@if (SnitzConfig.GetIntValue("INTFEATUREDPOLL") == 1)
+{
+    var pollid = SnitzConfig.GetIntValue("INTFEATUREDPOLLID");
+    if (SnitzConfig.GetIntValue("INTHIDEPOLL") != 1 || !SnitzCookie.HasVoted(pollid, MemberService.Current()?.Id))
+    {
+        @await Component.InvokeAsync("Polls", new { Template = "Featured", topicid = pollid })
+    }
+}

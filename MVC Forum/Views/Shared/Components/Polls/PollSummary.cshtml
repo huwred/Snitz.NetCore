@@ -9,7 +9,7 @@
     string culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
 }
 <div class="user-poll-section">
-    <div class="card col-12 col-md-7 ">
+    <div class="card col-12">
         <div class="card-header  @TempData["panel"] text-@TempData["panel"]">
             @if ((bool)TempData["featured"])
             {
@@ -46,7 +46,7 @@
                 </div>
             }
             <label>@Localizer["VotesCast"]:&nbsp;</label>@totalvotes.ToLangNum(culture) <br />
-            <label>@Localizer["LastVote"]:&nbsp;</label>
+            <label snitz-if="@(Model.Poll.Lastvote != null)">@Localizer["LastVote"]:&nbsp;</label>
             <snitz-datetime snitz-if="@(Model.Poll.Lastvote != null)" datetime="@Model.Poll.Lastvote.FromForumDateStr()"></snitz-datetime>
 
         </div>
