@@ -16,6 +16,6 @@ namespace SnitzCore.Data.Interfaces
         string? GetCookieValue(string cookieKey);
         void SetCookie(string name, string value, DateTime? expires = null);
         void PollVote(int pollid);
-        bool HasVoted(int pollid);
+        bool HasVoted(int pollid,int? memberid);
     }
 }

@@ -38,5 +38,6 @@ namespace SnitzCore.Data.Interfaces
         Task SetReplyStatus(int id, Status status);
 
         bool HasPoll(int id);
+        Poll? GetPoll(int topicid);
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 using System.Collections.Specialized;
 using SnitzCore.Data.Extensions;
+using System.Linq;
 
 namespace SnitzCore.Data.Models
 {
@@ -15,6 +16,7 @@ namespace SnitzCore.Data.Models
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISnitzConfig _snitzConfig;
+        private readonly SnitzDbContext _dbContext;
 
         private readonly List<string> _cookieCollection = new()
         {
@@ -23,10 +25,11 @@ namespace SnitzCore.Data.Models
             "timezoneoffset", "preservedurl", "User"
         };
 
-        public SnitzCookie(IHttpContextAccessor httpContextAccessor,ISnitzConfig snitzConfig)
+        public SnitzCookie(IHttpContextAccessor httpContextAccessor,ISnitzConfig snitzConfig, SnitzDbContext dbContext)
         {
             _httpContextAccessor = httpContextAccessor;
             _snitzConfig = snitzConfig;
+            _dbContext = dbContext;
             string? snitzUniqueId = snitzConfig.UniqueId;
             if (snitzUniqueId != null) _cookieCollection.Add(snitzUniqueId);
         }
@@ -102,10 +105,15 @@ namespace SnitzCore.Data.Models
             }
             SetMultipleUsingSingleKeyCookies("votetracker", pages);
         }
-        public bool HasVoted(int pollid)
+        public bool HasVoted(int pollid, int? memberid)
         {
             var pages = GetMultipleUsingSingleKeyCookies("votetracker");
             if (pages.ContainsKey(pollid.ToString()))
+            {
+                return true;
+            }
+
+            if (_dbContext.PollVotes.SingleOrDefault(v=>v.PollId == pollid && v.MemberId != null && v.MemberId == memberid) != null)
             {
                 return true;
             }

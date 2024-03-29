@@ -25,5 +25,7 @@ namespace SnitzCore.Data.Interfaces
         PagedList<Post> FetchMyForumTopics(int pagesize, int pagenum, IEnumerable<int> forumids);
         IEnumerable<string> GetTagStrings(List<int> list);
         IEnumerable<MyViewTopic> FetchAllMyForumTopics(IEnumerable<int> forumids);
+
+        int PollsAuth(int id);
     }
 }
