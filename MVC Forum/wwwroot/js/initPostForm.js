@@ -37,15 +37,15 @@ tinymce.init({
     plugins:  [
         'advlist autolink link lists charmap hr',
         'searchreplace wordcount code insertdatetime media',
-        'table emoticons paste help'
+        'table emoticons paste help codesample'
     ],
     branding: false,
     relative_urls : false,
     remove_script_host : true,
     document_base_url : window.location.protocol + "//" + window.location.host + "/",
     convert_urls: true,
-        toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright | ' +
-            'bullist numlist | link emoticons | fileButton imageButton media code',
+        toolbar: 'code undo redo | styleselect | bold italic | alignleft aligncenter alignright | ' +
+            'bullist numlist | link emoticons | fileButton imageButton media codesample',
     //toolbar: 'code undo redo | removeformat | styleselect | bullist numlist table | blockquote  | link codesample emoticons | fileButton imageButton media',
     images_upload_url: "/forumupload",
     images_upload_base_path: "/Content/PhotoAlbum/",
