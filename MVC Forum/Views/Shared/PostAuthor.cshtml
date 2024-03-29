@@ -1,17 +1,19 @@
 ﻿@using MVCForum.Extensions
+@using MVCForum.TagHelpers
+@using SnitzCore.Service.TagHelpers
 
-@model SnitzCore.Data.Models.Member
+@model Member
 
 @{
     var ranking = MemberService.GetRankings();
 }
-<div class="authors">
+<div class="authors flex-grow-0 flex-shrink-1">
     <div class="username"><a href="/Account/Detail/@Model.Name">@Model.Name</a></div>
-    <div>@Html.MemberRankTitle(Model, ranking,Localizer)</div>
+    <div>@Html.MemberRankTitle(Model, ranking, Localizer)</div>
     <snitz-avatar src="/Content/Avatar/@Model.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="rounded-circle" />
     <div>@Localizer["lblPosts"]: @Model.Posts</div>
-    <div>@Html.MemberRankStars(Model, ranking,Localizer)</div>
-    <div>
+    <div>@Html.MemberRankStars(Model, ranking, Localizer)</div>
+    <div class="d-none d-lg-inline-flex">
         <ul class="list-group list-group-horizontal list-unstyled mb-0">
             <li snitz-if="@(Model.ReceiveEmail == 1 && User.Identity!.IsAuthenticated && SnitzConfig.GetIntValue("STREMAIL") == 1)" class="p-1">
                 <a href="#" title="@Localizer["tipAuthorEmail"]" data-toggle="tooltip" class="email-link" data-url="@Url.Action("EmailMember", "Account")" data-id="@Model.Id" data-original-title="@Localizer["tipAuthorEmail"]"><i class="fa fa-2x fa-envelope"></i></a>

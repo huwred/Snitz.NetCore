@@ -125,16 +125,15 @@
 
             <partial name="FormButtons"/>
         </form>
-        @if (addPoll.Count > 0)
+        @if (addPoll.Count > 0 || (TempData["HasPoll"] != null && (bool)TempData["HasPoll"]))
         {
-            <div class="mt-3 mb-3 col col-md-8 offset-md-2 bg-form p-4 rounded" id="poll-form">
-                @await Component.InvokeAsync("Polls", new { template = "AddPoll", catid = Model.CatId, forumid = Model.ForumId })
-            </div>
+            @await Component.InvokeAsync("Polls", new { template = "AddPoll", catid = Model.CatId, forumid = Model.ForumId })
+
         }
-        @if (addEvent.Count > 0)
+        @if (addEvent.Count > 0 || eventservice.EnabledForTopic(Model.Id))
         {
             <div class="mt-3 mb-3 col col-md-8 offset-md-2 bg-form p-4 rounded" id="event-form">
-                @await Component.InvokeAsync("Events", new { template = "AddEvent", id = MemberService.Current().Id })
+                @await Component.InvokeAsync("Events", new { template = "AddEvent", id = MemberService.Current().Id, topicid=Model.Id })
             </div>
         }
     </div>

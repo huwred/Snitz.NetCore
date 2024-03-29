@@ -39,7 +39,7 @@ public class ButtonConfirmTagHelper : TagHelper
         }
         output.AddClass("btn-outline-danger",HtmlEncoder.Default);
         output.AddClass(Selector,HtmlEncoder.Default);
-        output.Content.AppendHtml($@"<i class='" + TagClass + $"'></i><span class='d-none d-md-inline'> {Title}</span>");
+        output.Content.AppendHtml($@"<i class='" + TagClass + $"'></i><span class='d-none d-lg-inline'> {Title}</span>");
     }
 
 }

@@ -265,6 +265,7 @@
     </div>
     <div class="tab-pane fade w-100" id="v-pills-plugin" role="tabpanel" aria-labelledby="plugin-tab">
         <div class="accordion accordion-flush" id="accordionFlushExample">
+            @await Component.InvokeAsync("Polls", new { template ="Config" })
             @await Component.InvokeAsync("ImageAlbum", "Config")
             <div class="accordion-item">
                 <h2 class="accordion-header" id="flush-headingTwo">
@@ -283,7 +284,7 @@
                     </div>
                 </div>
             </div>
-                @await Component.InvokeAsync("Events", new { template = "Admin" })
+            @await Component.InvokeAsync("Events", new { template = "Admin" })
         </div>
     </div>
 

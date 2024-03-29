@@ -430,5 +430,10 @@ namespace SnitzCore.Service
         {
             return _dbContext.Polls.SingleOrDefault(p=>p.TopicId == id) != null;
         }
+
+        public Poll? GetPoll(int topicid)
+        {
+            return _dbContext.Polls.Include(p=>p.PollAnswers).SingleOrDefault(p=>p.TopicId ==topicid);
+        }
     }
 }

@@ -24,6 +24,7 @@ using System.Threading;
 using BbCodeFormatter;
 using Hangfire;
 using SnitzCore.Service;
+using Microsoft.Extensions.Hosting;
 
 namespace MVCForum.Controllers
 {
@@ -242,7 +243,7 @@ namespace MVCForum.Controllers
 
             var member = await _memberService.GetById(User);
             var topic = _postService.GetTopicWithRelated(id);
-            
+            var haspoll = _postService.HasPoll(id);
             var forum = _forumService.GetById(topic.ForumId);
             var model = new NewPostModel()
             {
@@ -261,6 +262,7 @@ namespace MVCForum.Controllers
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = topic.Created.FromForumDateStr(),
+                
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
@@ -268,7 +270,11 @@ namespace MVCForum.Controllers
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
             var replyPage = new MvcBreadcrumbNode("Edit", "Topic", "Edit Post") { Parent = topicPage };
             ViewData["BreadcrumbNode"] = replyPage;
-
+            if (haspoll)
+            {
+                TempData["HasPoll"] = haspoll;
+                TempData["Poll"] = _postService.GetPoll(id);
+            };
             return View("Create", model);
 
         }
@@ -422,22 +428,52 @@ namespace MVCForum.Controllers
         {
             try
             {
+                var existingpoll = _snitzDbContext.Polls.Find(poll.Id);
                 var polltoadd = new Poll()
                 {
                     TopicId = poll.TopicId,
                     ForumId = poll.ForumId,
                     CatId = poll.CatId,
                     Question = poll.Question,
-                    Whovotes = poll.Whovotes
+                    Whovotes = poll.Whovotes,
+                    Lastvote = DateTime.UtcNow.ToForumDateStr()
                 };
-                _snitzDbContext.Polls.Add(polltoadd);
+                if (existingpoll == null)
+                {
+                    _snitzDbContext.Polls.Add(polltoadd);
+
+                }
+                else
+                {
+                    existingpoll.Question = poll.Question;
+                    existingpoll.Whovotes = poll.Whovotes;
+                    _snitzDbContext.Polls.Update(existingpoll);
+                }
                 _snitzDbContext.SaveChanges();
                 foreach (PollAnswer pollAnswer in poll.PollAnswers)
                 {
                     if (!string.IsNullOrWhiteSpace(pollAnswer.Label))
                     {
-                        pollAnswer.PollId = polltoadd.Id;
-                        _snitzDbContext.PollAnswers.Add(pollAnswer);
+                        if (existingpoll == null)
+                        {
+                            pollAnswer.PollId = polltoadd.Id;
+                            _snitzDbContext.PollAnswers.Add(pollAnswer);
+                        }
+                        else
+                        {
+                            var existinganswer = _snitzDbContext.PollAnswers.Find(pollAnswer.Id);
+                            if (existinganswer != null)
+                            {
+                                existinganswer.Order = pollAnswer.Order;
+                                existinganswer.Label = pollAnswer.Label;
+                                _snitzDbContext.PollAnswers.Update(existinganswer);
+                            }
+                            else
+                            {
+                                pollAnswer.PollId = polltoadd.Id;
+                                _snitzDbContext.PollAnswers.Add(pollAnswer);
+                            }
+                        }
                     }
                 }
                 _snitzDbContext.SaveChanges(); 
@@ -497,9 +533,10 @@ namespace MVCForum.Controllers
             topic.IsSticky = (short)(model.Sticky ? 1 : 0);
             topic.ArchiveFlag = (short)(model.DoNotArchive ? 1 : 0);
             _postService?.Update(topic);
-            
+
             // TODO: Implement User Rating Management
-            return RedirectToAction("Index", "Topic", new { id = reply.PostId });
+            return Json(new{url=Url.Action("Index", "Topic", new { id = reply.PostId }),id=reply.PostId});
+            //return RedirectToAction("Index", "Topic", new { id = reply.PostId });
         }
         [HttpPost]
         [Authorize]

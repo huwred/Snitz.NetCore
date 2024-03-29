@@ -265,5 +265,21 @@ namespace SnitzCore.Service
                 });
             return result;
         }
+
+        public int PollsAuth(int id)
+        {
+            try
+            {
+                var auth = _dbContext.Database.SqlQuery<int>(
+                    $"SELECT F_ALLOWEVENTS AS Value FROM FORUM_FORUM WHERE FORUM_ID={id}").Single();
+                return auth;
+            }
+            catch (Exception e)
+            {
+
+                return 0;
+            }
+
+        }
     }
 }

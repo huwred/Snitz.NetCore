@@ -7,91 +7,106 @@
 }
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
-
-    <form asp-action="Create" method="post" id="addForumForm" class="needs-validation bg-form p-4 rounded" novalidate>
-        <div class="mb-3 row">
-            <label asp-for="Category" class="form-label col-2">@Localizer["forumCategory"]</label>
-            <div class="col-10 col-lg-4">
-                @Html.DropDownListFor(m => m.Category, // Store selected value in Model.State
-                    new SelectList(Model.CategoryList, "Key", "Value"),
-                    "- Please select a category -",new { @class = "form-control" })
-                <div class="invalid-feedback">You must select a Category.</div>
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label asp-for="Type" class="form-label col-2">@Localizer["forumType"]</label>
-            <div class="col-10 col-lg-4">
-                <enum-select name="Type" enum-type="typeof(ForumType)" selected-value="@(int)Model.Type" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label asp-for="Subject" class="form-label col-2">@Localizer["forumSubject"]</label>
-            <div class="col-6">
-                <input asp-for="Subject" class="form-control"/>
-                <div class="invalid-feedback">You must provide a subject.</div>
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <div class="col-12 col-lg-2">
-
-            </div>
-            <div class="col-10">
-                <textarea asp-for="Description" class="form-control" id="msg-text" rows="6" required="required"></textarea>
-                <input asp-for="Id" type="hidden"/>
-                <div class="invalid-feedback">You must enter a description.</div>
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label asp-for="Order" class="form-label col-2">@Localizer["forumOrder"]</label>
-            <div class="col-2 col-lg-1">
-                <input asp-for="Order" class="form-control"/>
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label asp-for="DefaultView" class="form-label col-2">@Localizer["forumView"]</label>
-            <div class="col-10 col-lg-4">
-                <enum-select name="DefaultView" enum-type="typeof(DefaultDays)" selected-value="(int)Model.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label asp-for="AuthType" class="form-label col-2">@Localizer["forumAuthType"]</label>
-            <div class="col-10 col-lg-4">
-                <enum-select name="AuthType" enum-type="typeof(ForumAuthType)" selected-value="(int)Model.AuthType" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
-            </div>
-        </div>
-        <div snitz-if="@(SnitzConfig.GetIntValue("STRMODERATION") == 1)" class="mb-3 row">
-            <label asp-for="Moderation" class="form-label col-2">@Localizer["forumModeration"]</label>
-            <div class="col-10 col-lg-4">
-                <enum-select name="Moderation" enum-type="typeof(Moderation)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label asp-for="Subscription" class="form-label col-2">@Localizer["forumSubscription"]</label>
-            <div class="col-10 col-lg-4">
-                <enum-select name="Subscription" enum-type="typeof(ForumSubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
-            </div>
-        </div>
-        <div class="mb-3 form-check">
-            @Html.CheckBoxFor(m => m.IncrementMemberPosts, new { @class = "form-check-input" })
-            <label asp-for="IncrementMemberPosts" class="form-check-label">@Localizer["forumPostCount"]</label>
-        </div>
-        <div class="mb-3 form-check">
-            @Html.CheckBoxFor(m => m.Status, new { @class = "form-check-input" })
-            <label asp-for="Status" class="form-check-label">@Localizer["forumStatus"]</label>
-        </div>
-        @if (Model.Id > 0)
-        {
-            <div class="mb-3 row">
-                <label class="form-label col-2">Delete all posts in the Forum</label>
-                <div class="col-3 col-lg-2">
-                    <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Id" href="/Forum/EmptyForum/?id=" title="Empty Forum"></button-confirm>
+    <div class="row bg-form p-4 rounded">
+        <div class="col-7">
+            <form asp-action="Create" method="post" id="addForumForm" class="needs-validation " novalidate>
+                <div class="mb-3 row">
+                    <label asp-for="Category" class="form-label col-2">@Localizer["forumCategory"]</label>
+                    <div class="col-10 col-lg-4">
+                        @Html.DropDownListFor(m => m.Category, // Store selected value in Model.State
+                                 new SelectList(Model.CategoryList, "Key", "Value"),
+                                 "- Please select a category -", new { @class = "form-control" })
+                        <div class="invalid-feedback">You must select a Category.</div>
+                    </div>
                 </div>
-            </div>
-        }
-        <input name="ForumId" style="display: none;" value="@Model.ForumId" />
-        <partial name="FormButtons"/>
+                <div class="mb-3 row">
+                    <label asp-for="Type" class="form-label col-2">@Localizer["forumType"]</label>
+                    <div class="col-10 col-lg-4">
+                        <enum-select name="Type" enum-type="typeof(ForumType)" selected-value="@(int)Model.Type" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label asp-for="Subject" class="form-label col-2">@Localizer["forumSubject"]</label>
+                    <div class="col-6">
+                        <input asp-for="Subject" class="form-control" />
+                        <div class="invalid-feedback">You must provide a subject.</div>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-12 col-lg-2">
+                    </div>
+                    <div class="col-10">
+                        <textarea asp-for="Description" class="form-control" id="msg-text" rows="6" required="required"></textarea>
+                        <input asp-for="Id" type="hidden" />
+                        <div class="invalid-feedback">You must enter a description.</div>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label asp-for="Order" class="form-label col-2">@Localizer["forumOrder"]</label>
+                    <div class="col-3 col-lg-2">
+                        <input asp-for="Order" class="form-control" />
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label asp-for="DefaultView" class="form-label col-2">@Localizer["forumView"]</label>
+                    <div class="col-10 col-lg-5">
+                        <enum-select name="DefaultView" enum-type="typeof(DefaultDays)" selected-value="(int)Model.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label asp-for="AuthType" class="form-label col-2">@Localizer["forumAuthType"]</label>
+                    <div class="col-10 col-lg-5">
+                        <enum-select name="AuthType" enum-type="typeof(ForumAuthType)" selected-value="(int)Model.AuthType" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    </div>
+                </div>
+                <div snitz-if="@(SnitzConfig.GetIntValue("STRMODERATION") == 1)" class="mb-3 row">
+                    <label asp-for="Moderation" class="form-label col-2">@Localizer["forumModeration"]</label>
+                    <div class="col-10 col-lg-5">
+                        <enum-select name="Moderation" enum-type="typeof(Moderation)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label asp-for="Subscription" class="form-label col-2">@Localizer["forumSubscription"]</label>
+                    <div class="col-10 col-lg-5">
+                        <enum-select name="Subscription" enum-type="typeof(ForumSubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    </div>
+                </div>
+                <div class="mb-3 form-check">
+                    @Html.CheckBoxFor(m => m.IncrementMemberPosts, new { @class = "form-check-input" })
+                    <label asp-for="IncrementMemberPosts" class="form-check-label">@Localizer["forumPostCount"]</label>
+                </div>
+                <div class="mb-3 form-check">
+                    @Html.CheckBoxFor(m => m.Status, new { @class = "form-check-input" })
+                    <label asp-for="Status" class="form-check-label">@Localizer["Active"]</label>
+                </div>
+                @if (Model.Id > 0)
+                {
+                    <div class="mb-3 row">
+                        <label class="form-label col-4">Delete all posts in the Forum</label>
+                        <div class="col-6 col-lg-3">
+                            <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Id" href="/Forum/EmptyForum/?id=" title="Empty Forum"></button-confirm>
+                        </div>
+                    </div>
+                }
+                <input name="ForumId" style="display: none;" value="@Model.ForumId" />
+                <partial name="FormButtons" />
 
-    </form>
+            </form>
+        </div>
+        <div class="col-5">
+            <fieldset>
+                <legend>Plugins</legend>
+                <div class="mb-3 bg-primary text-bg-primary p-3 rounded">
+                    @await Component.InvokeAsync("Events", new { template = "ForumConfig", id = Model.ForumId, topicid = 0 })
+                </div>
+                <div class="mb-3 bg-primary text-bg-primary p-3 rounded">
+                    @await Component.InvokeAsync("Polls", new { template = "ForumConfig", forumid = Model.ForumId })
+                </div>
+            </fieldset>
+        </div>
+    </div>
+
+
 </div>
 @{
     var confModel = new ConfirmDialogViewModel()
@@ -108,4 +123,5 @@
     <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="/js/initPostForm.js"></script>
     <script type="text/javascript" src="/js/ConfirmDialog.js" crossorigin="anonymous"></script>
+    <renderstoredcontent asp-key="forum-plugins"></renderstoredcontent>
 }

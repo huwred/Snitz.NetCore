@@ -123,6 +123,7 @@
     <_ContentIncludedByDefault Remove="Views\Home\CookiePolicy.cshtml" />
     <_ContentIncludedByDefault Remove="Views\PrivateMessage\Search.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\Polls\Config.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\ConfirmDIalog.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\FormButtons.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_BookmarkLink.cshtml" />
@@ -242,7 +243,7 @@
     <PackageReference Include="NuGet.Protocol" Version="6.3.3" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.1" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="Snitz.Events" Version="1.0.0-rc1.72" />
+    <PackageReference Include="Snitz.Events" Version="1.0.0-rc1.93" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
@@ -288,5 +289,8 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Home\CookiePolicy.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\Components\Polls\Config.cshtml" />
   </ItemGroup>
 </Project>
