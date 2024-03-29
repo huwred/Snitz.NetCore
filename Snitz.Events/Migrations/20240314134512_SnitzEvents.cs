@@ -11,7 +11,14 @@ namespace Snitz.Events.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
+            if (!migrationBuilder.ColumnExists("FORUM_FORUM", "F_ALLOWEVENTS"))
+            {
+                migrationBuilder.AddColumn<int>(
+                    name: "F_ALLOWEVENTS",
+                    table: "FORUM_FORUM",
+                    type: "int",
+                    nullable: true);
+            }
             migrationBuilder.CreateTable(
                 name: "CAL_EVENTS",
                 columns: table => new
@@ -95,14 +102,7 @@ namespace Snitz.Events.Migrations
                 {
                     table.PrimaryKey("PK_EVENT_SUBSCRIPTIONS", x => x.SUB_ID);
                 });
-            if (!migrationBuilder.ColumnExists("FORUM_FORUM", "F_ALLOWEVENTS"))
-            {
-                migrationBuilder.AddColumn<int>(
-                    name: "F_ALLOWEVENTS",
-                    table: "FORUM_FORUM",
-                    type: "int",
-                    nullable: true);
-            }
+
             migrationBuilder.CreateIndex(
                 name: "IX_EVENT_LOCATION_LOC_ID",
                 table: "EVENT_LOCATION",
