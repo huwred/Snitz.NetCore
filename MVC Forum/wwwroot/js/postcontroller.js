@@ -103,6 +103,7 @@ $(document).on('click',
         $('#confirmModal').on('click','#btnYes',function(e) {
             // handle deletion here
             e.preventDefault();
+            e.stopPropagation();
             $.post("/Bookmark/Create",
                 {
                     id: postid
@@ -159,6 +160,7 @@ $(document).on('click', '.post-lock', function (e) {
     $('#confirmModal').on('click','#btnYes',function(e) {
         // handle deletion here
         e.preventDefault();
+        e.stopPropagation();
         $.post("/Topic/LockTopic",
             {
                 id: postid,
@@ -206,6 +208,7 @@ $(document).on('click', '.reply-answer', function (e) {
     $('#confirmModal').on('click','#btnYes',function(e) {
         // handle deletion here
         e.preventDefault();
+        e.stopPropagation();
         $.post("/Topic/Answered",
             {
                 id: postid,
