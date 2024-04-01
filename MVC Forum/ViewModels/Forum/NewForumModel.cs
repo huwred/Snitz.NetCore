@@ -1,6 +1,7 @@
 ﻿using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SnitzCore.Data.Extensions;
 
 namespace MVCForum.ViewModels.Forum
 {
@@ -14,10 +15,13 @@ namespace MVCForum.ViewModels.Forum
 
         [Required]
         public string Description { get; set; } = null!;
+        
+        public string? NewPassword { get; set; }
+
 
         public ForumType Type { get; set; }
 
-        public bool Status { get; set; }
+        public int Status { get; set; }
         public int Order { get; set; } = 99;
         [Display(Name = "Default view")]
         public DefaultDays DefaultView { get; set; } = DefaultDays.Last30Days;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SnitzCore.Data.Models;
 
 namespace MVCForum.ViewModels.PrivateMessage
 {
