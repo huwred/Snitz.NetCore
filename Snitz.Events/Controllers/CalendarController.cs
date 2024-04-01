@@ -101,7 +101,7 @@ public class CalendarController : Controller
                     start = itemStartDate.Value.ToString("s"), //item.StartDate.Value.WithYear(today).ToString("s"),
                     allDay = true,
                     editable = false,
-                    url = "",
+                    url = "/Account/Detail/" + item.Title,
                     className = "event-birthday"
                 };
             var returnArray = eventList.ToArray();

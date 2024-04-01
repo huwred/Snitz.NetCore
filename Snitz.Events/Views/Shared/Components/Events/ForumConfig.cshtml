@@ -1,7 +1,13 @@
 ﻿@model Forum
 @inject IForum forumService
 @{
-    var authlev = forumService.PollsAuth(Model.Id);
+    var authlev = 0;
+    var id = 0;
+    if (Model != null)
+    {
+        authlev = forumService.PollsAuth(Model.Id);
+        id = Model.Id;
+    }
 }
 <div class="panel panel-default">
     <div class="panel-heading">Calendar/Events Plugin<hr /></div>
@@ -14,7 +20,7 @@
                 <option selected="@(authlev == 3)" value="3">Only Admins/Moderators can add events</option>
                 <option selected="@(authlev == 4)" value="4">Only Administrators can add events</option>
             </select>
-            <input data-val="true" data-val-number="The field ForumId must be a number." data-val-required="The ForumId field is required." id="cal-forumid" name="ForumId" type="hidden" value="@Model.Id" />
+            <input data-val="true" data-val-number="The field ForumId must be a number." data-val-required="The ForumId field is required." id="cal-forumid" name="ForumId" type="hidden" value="@id" />
         </form>
         <div id="event-result"></div>
     </div>

@@ -71,7 +71,6 @@ namespace Snitz.Events.Models
 
         public virtual Member? Author { get; set; }
 
-        [NotMapped]
         public virtual Post? Topic { get; set; }
 
         [NotMapped]

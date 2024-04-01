@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.0-rc1.94</Version>
+    <Version>1.0.0-rc1.103</Version>
+    <Authors>Huw Reddick</Authors>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <PackageOutputPath>E:\Umbraco-Dev\Nuget</PackageOutputPath>

@@ -37,7 +37,7 @@ namespace Snitz.Events.Models
                 .Include(ce => ce.Cat)
                 .Include(ce => ce.Club)
                 .Include(ce => ce.Loc)
-                .Where(ce => ce.ClubId != null)
+                .Where(ce => ce.ClubId != null && ce.TopicId < 0)
                 .ToList();
 
             if (start != null)

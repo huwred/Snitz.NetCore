@@ -1639,7 +1639,7 @@ namespace Snitz.Events.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
-                        .HasColumnName("BL_BLOCKEDNAME");
+                        .HasColumnName("BL_BLOCKED_NAME");
 
                     b.Property<int>("MemberId")
                         .HasColumnType("int")
