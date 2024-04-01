@@ -40,7 +40,7 @@
                         });
                     }
                 } else {
-                        if (confirm("@Localizer["PMDelConfirm"]")) {
+                        if (confirm("delete selected messages")) {
                         $.post("/PrivateMessage/DeleteMany", $("#pm-form").closest('form').serialize(), function (data) {
                             if (data.success) {
                                 alert(data.responseText);

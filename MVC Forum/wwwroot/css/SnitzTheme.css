@@ -564,3 +564,22 @@ a.latestpost-title {
     background-color: #6A5ACD;
     box-shadow: revert;
 }
+.newposts {
+    color: magenta !important;
+}
+
+.event-birthday div.fc-content span.fc-title:before, .event-birthday div.my-fc-time:before {
+    font-family: FontAwesome;
+    content: "\f1fd\00a0";
+    color: goldenrod !important
+}
+
+.event-birthday > div.fc-time:before {
+    font-family: FontAwesome;
+    content: "\f1fd\00a0";
+    color: goldenrod !important
+}
+
+.event-birthday div.fc-content span.fc-title {
+    color: goldenrod !important
+}

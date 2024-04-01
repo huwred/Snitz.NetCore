@@ -174,7 +174,7 @@ footer{
 }
 
 .table-head .subjects{
-    flex: 70%;
+    flex: 65%;
 }
 
 .table-head .replies{
@@ -182,9 +182,14 @@ footer{
 }
 
 .table-head .last-reply{
-    flex: 15%;
+    flex: 17%;
+    flex-grow: 1;
 }
-
+.table-head .subscribe {
+        flex: 3%;
+        flex-shrink: 1;
+        font-size: 24px;
+    }
 /* posts table's body  */
 
 .table-row{
@@ -210,7 +215,7 @@ footer{
     text-align: center;
 }
 .table-row .subjects{
-    flex: 70%;
+    flex: 65%;
 }
 
 .table-row .replies{
@@ -218,10 +223,12 @@ footer{
 }
 
 .table-row .last-reply{
-    flex: 12%;
+    flex: 17%;
+    flex-grow: 1;
 }
 .table-row .subscribe {
     flex: 3%;
+    flex-shrink: 1;
     font-size: 24px;
 }
 @media screen and (max-width: 460px) {
@@ -437,7 +444,7 @@ i.fa-share-square.category, i.fa-share-square-o.category {
     height: auto;
 }
 .input-group > .form-control, .input-group > .custom-select, .input-group > .custom-file {
-    width: auto;
+    /*width: auto;*/
 }
 img.selected {
     border: 1px solid darkblue;
@@ -634,4 +641,9 @@ i.modstatus-2, i.modstatus-3 {
 .input-group > .form-select {
     width: auto !important;
 
+}
+
+.row {
+
+    margin-left: calc(-.2*var(--bs-gutter-x));
 }

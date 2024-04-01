@@ -68,3 +68,72 @@ function ValidateForms() {
 
 
 }
+/*update the session topiclist if checkbox selected*/
+$(document).on('mouseup','.topic-select', function () {
+    $.ajax({
+        type: "POST",
+        url: "/Topic/UpdateTopicList/?id=" + $(this).val(),
+        data: { topicid: $(this).val() },
+        cache: false
+    });
+});
+/*hide the Merge button if < 2 checkboxes selected*/
+$(document).on('change','.topic-select', function () {
+    var checkedNum = $('input[name="topicselected"]').filter(":checked").length;
+    if (checkedNum <2) {
+        $('.fa-object-group').hide();
+    } else if (checkedNum>1){
+        $('.fa-object-group').show();
+    }
+
+});
+$(document).on('click','.fa-object-group',function(e) {
+    e.preventDefault();
+    var selected = [];
+    $('input[name="topicselected"]').filter(":checked").each(function() {
+        selected.push($(this).val());
+    });
+    //remove default click event
+    $(document).off('click', '#btnYes');
+    var href = '/Topic/Merge';
+    //
+    $('#confirmModal .text-bg-warning').html('Merge Topics');
+    $('#confirmModal #confirm-body').html('<p>You are about to Merge the select Topics.</p><p>Do you wish to proceed?</p>');
+    $('#confirmModal').data('id', 0).data('url', href).modal('show');
+    $('#confirmModal').one('click','#btnYes',function(e) {
+        // handle deletion here
+        e.preventDefault();
+        $.post('/Topic/Merge',
+            {
+                selected: selected
+            },
+            function(data) {
+                console.log(data);
+                if (!data) {
+                    alert(data.error);
+                } else {
+                    location.reload();
+                }
+            });
+    });
+});
+
+/*update the session replylist if checkbox selected*/
+$(document).on('mouseup','.reply-select', function () {
+
+    $.ajax({
+        type: "POST",
+        url: "/Topic/UpdateReplyList",
+        data: { replyid: $(this).val() },
+        cache: false
+    });
+});
+$(document).on('change','.reply-select', function () {
+    var checkedNum = $('input[name="replyselected"]').filter(":checked").length;
+    if (checkedNum <1) {
+        $('.fa-object-ungroup').hide();
+    } else if (checkedNum>0){
+        $('.fa-object-ungroup').show();
+    }
+
+});

@@ -1,0 +1,93 @@
+﻿body .fc {
+    font-size: 1em
+}
+
+.fc-unthemed .fc-today {
+    background: #aaa
+}
+
+.fc-event {
+    position: relative;
+    display: block;
+    font-size: .85em;
+    line-height: 1.3;
+    border-radius: 3px;
+    border: 1px solid #111;
+    background-color: #8199da;
+    font-weight: normal
+}
+
+.my-fc-list > div {
+    border-top: 1px solid #222
+}
+
+.my-fc-row {
+    padding: 3px
+}
+
+.my-fc-time {
+    width: 15%
+}
+
+th.fc-day-header, th.fc-month-name {
+    background-color: #232371;
+    color: white
+}
+
+th.fc-today {
+    background-color: #555 !important;
+    color: white
+}
+
+.fc-unthemed td.fc-today {
+    background: #bbb !important
+}
+
+td.fc-day {
+    background-color: #FFF
+}
+
+.event-birthday div.fc-content span.fc-title:before, .event-birthday div.my-fc-time:before {
+    font-family: FontAwesome;
+    content: "\f1fd\00a0";
+    color: goldenrod !important
+}
+
+.event-birthday > div.fc-time:before {
+    font-family: FontAwesome;
+    content: "\f1fd\00a0";
+    color: goldenrod !important
+}
+
+.event-birthday div.fc-content span.fc-title {
+    color: goldenrod !important
+}
+
+.fc-toolbar {
+    margin-bottom: 0.2em !important;
+    /*background-color: #232371;*/
+    color: #fff;
+    padding-left: 6px;
+}
+
+.fc-toolbar h5 {
+    color: #000;
+}
+
+.my-fc-header {
+    color: black;
+    background-color: #8199da;
+}
+.public-holiday div.fc-content {
+    background-color: green;
+    color: white;
+}
+.event-birthday {
+    color: black;
+    background-color: transparent !important;
+}
+
+.event-club {
+    color: midnightblue;
+    background-color: gray !important
+}
