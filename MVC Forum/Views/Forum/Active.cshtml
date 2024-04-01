@@ -25,11 +25,13 @@
         <meta http-equiv="refresh" content="@refresh">
     }
 }
+
+
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
     <form id="defaultdays-form" asp-action="Active" class="form-inline" method="get">
         <div class="row m-2">
-            <div class="col col-md-8">
+            <div class="col">
                 <div class="input-group mb-3">
                     <enum-select name="Since" id="default-days" last-visit="@lastvisit" enum-type="typeof(ActiveSince)" selected-value="(int)Model.Since" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                     <enum-select name="Refresh" id="active-refresh" enum-type="typeof(ActiveRefresh)" selected-value="(int)Model.Refresh" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
@@ -55,55 +57,58 @@
         <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;"/>
         <input type="hidden" name="fun" id="fun">
     </form>
-    @if (Model.Posts!.Any())
-    {
-        <div class="posts-table">
-            <div class="table-head">
-                <div class="status rounded-2"></div>
-                <div class="subjects rounded-2">@Localizer["lblSubject"]</div>
-                <div class="replies rounded-2">@Localizer["lblReplies"] / @Localizer["lblViews"]</div>
-                <div class="last-reply rounded-2">@Localizer["lblLastPost"]</div>
-            </div>
-            <!--Topics start here-->
-            @{
-                ViewData["ActiveTopics"] = true;
-            }
-            @foreach (var post in Model.Posts!)
+    <div class="row">
+        <div class="col">
+            @if (Model.Posts!.Any())
             {
-                <partial name="TopicListing" model="post" view-data="ViewData" />
-            }
-        </div>
-        <!--Pagination starts-->
-        <partial snitz-if="Model.PageCount > 1" 
-                 name="ListPaging" 
-                 model="@(new PagingModel {
+                <div class="posts-table">
+                    <partial name="TopicListingHeader" />
+                    <!--Topics start here-->
+                    @{
+                        ViewData["ActiveTopics"] = true;
+                    }
+                    @foreach (var post in Model.Posts!)
+                    {
+                        <partial name="TopicListing" model="post" view-data="ViewData" />
+                    }
+                </div>
+                <!--Pagination starts-->
+                <partial snitz-if="Model.PageCount > 1"
+                         name="ListPaging"
+                         model="@(new PagingModel {
                              PageCount = Model.PageCount,
                              PageSize = Model.PageSize,
                              Page = pagenum != null ? Convert.ToInt32(pagenum) : 1 })" />
-        <!--pagination ends-->
-    }
-    else
-    {
-        <div class="center"><h4>@Localizer["lblOldPosts"]</h4></div>
-    }
-        <partial name="IconInfo" />
+                <!--pagination ends-->
+            }
+            else
+            {
+                <div class="center"><h4>@Localizer["lblOldPosts"]</h4></div>
+            }
+            <partial name="IconInfo" />
+        </div>
 
+        <div class="d-none d-xxl-block col-3">
+            <partial name="QuickSearch" />
+            <partial name="FeaturedPoll" />
+        </div>
+    </div>
 </div>
 
 
 @section Scripts{
     <script type="text/javascript">
         $(document).on("change", "#default-days", function() {
-                $("#hdndefaultdays").val($(this).val());
-                $("#defaultdays-form").submit();
-            });
+            $("#hdndefaultdays").val($(this).val());
+            $("#defaultdays-form").submit();
+        });
         $(document).on("change", "#active-refresh", function() {
-                $("#hdndefaultdays").val($('#default-days').val());
-                $("#defaultdays-form").submit();
-            });
+            $("#hdndefaultdays").val($('#default-days').val());
+            $("#defaultdays-form").submit();
+        });
         $(document).on("change", "input[type=radio][name=pagesize]", function() {
-                $("#defaultdays-form").submit();
-            });
+            $("#defaultdays-form").submit();
+        });
 
         $(document).ready(function() {
             $('select option:contains("Last Visit")').text("Last Visit " + '(@lastvisit.ToLocalTime().ToForumDisplay()) ');
@@ -113,5 +118,7 @@
         if (refresh.length && refresh > 0) {
             setInterval("window.location.reload();", refresh);
         }
+
     </script>
+    <renderstoredcontent asp-key="topic-post-controls"></renderstoredcontent>
 }

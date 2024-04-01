@@ -1,48 +1,68 @@
-﻿@model PMSearchViewModel
+﻿@using System.ComponentModel.DataAnnotations
+@using SnitzCore.Data.Extensions
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVCForum.ViewModels.PMSearchViewModel
+<div class="card mt-2">
+    <div class="card-header bg-dark ">PM Search</div>
 
-<div class="form-group">
+    <form asp-action="Search" asp-controller="PrivateMessage" class="p-3">
+        <div class="mb-1">
 
-    @Html.LabelFor(model => model.Term, new { @class = "col-xs-4 control-label" })
+            <label class="form-label" asp-for="Term">@Localizer["Search_Term"]</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(model => model.Term, new { @class = "form-control", placeholder = @Localizer["plhSearchTerm"].Value })
+            </div>
+        </div>
+        <div class="mb-1">
+            <div class="col-lg-8">
+                @foreach (SearchFor c in Enum.GetValues(typeof(SearchFor)).OfType<SearchFor>())
+                {
+                    var displayName = c.GetAttribute<DisplayAttribute>()!.Name;
+                    <div class="form-check">
+                        <input asp-for="PhraseType" type="radio" class="form-check-input" value="@((int)c)" checked="@(c == Model.PhraseType)">
+                        <label asp-for="PhraseType" class="form-check-label">@Localizer[displayName]</label>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="mb-1">
+            <label class="form-label" asp-for="SearchIn">@Localizer["SearchIn"]</label>
+            <div class="col-lg-5">
+                <select class="form-select" name="SearchIn" asp-for="SearchIn">
+                    @foreach (SearchIn c in Enum.GetValues(typeof(SearchIn)).OfType<SearchIn>())
+                    {
+                        var displayName = c.GetAttribute<DisplayAttribute>()!.Name;
+                        <option value="@((int)c)">@Localizer[displayName]</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="mb-1">
+            <label class="form-label" asp-for="SearchByDays">@Localizer["Search_Date"]</label>
+            <div class="col-lg-6">
+                <select class="form-select" name="SearchByDays" asp-for="SearchByDays" >
+                    @foreach (SearchDate c in Enum.GetValues(typeof(SearchDate)).OfType<SearchDate>())
+                    {
+                        var displayName = c.GetAttribute<DisplayAttribute>()!.Name;
+                        <option value="@((int)c)">@Localizer[displayName]</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="mb-1">
+            <label class="form-label" asp-for="MemberName">@Localizer["UserName"]</label>
+            <div class="col-lg-5">
+                <input type="text" name="MemberName" id="MemberName" placeholder="@Localizer["plhUsername"]" class="form-control ltr" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" value=""/>
+            </div>
+        </div>
+        <div class="mb-1">
+            @Html.ValidationSummary(true, "", new { @class = "list-group-item-info" })
+        </div>
+        <div class="mb-3 padding-md pull-right flip">
+            <input type="button" value="@Localizer["btnCancel"]" class="btn btn-sm btn-warning cancel" />
+            <input type="reset" value="@Localizer["btnReset"]" class="btn btn-sm btn-primary" />
+            <input type="button" value="@Localizer["btnFind"]" id="pm-find" class="btn btn-sm btn-success" />
+        </div>
+    </form>
 
-    <div class="col-xs-7">
-        @Html.TextBoxFor(model => model.Term, new { @class = "form-control", placeholder = ResourceManager.GetLocalisedString("plhSearchTerm", "Controls") })
-    </div>
-</div>
-<div class="form-group">
-    <div class="col-xs-4">&nbsp;</div>
-    <div class="col-xs-7">
-        @Html.RadioButtonForSelectList(model => model.PhraseType, Model.PhraseType.ToSelectList(), Enumerators.Position.Vertical)
-    </div>
-
-</div>
-<div class="form-group">
-    @Html.LabelFor(model => model.SearchIn, new { @class = "col-xs-4 control-label" })
-    <div class="col-xs-5">
-        @Html.EnumDropDownListFor(model => model.SearchIn, new { @class = "form-control" }, "")
-    </div>
-</div>
-<div class="form-group">
-    @Html.LabelFor(model => model.SearchByDays, new { @class = "col-xs-4 control-label" })
-    <div class="col-xs-4">
-
-        @Html.EnumDropDownListFor(model => model.SearchByDays, new { @class = "form-control" }, "")
-    </div>
-</div>
-<div class="form-group">
-    @Html.LabelFor(model => model.MemberName, new { @class = "col-xs-4 control-label" })
-    <div class="col-xs-5">
-        <input type="text" name="MemberName" id="MemberName" placeholder="@ResourceManager.GetLocalisedString("plhUsername", "Controls")" class="form-control ltr" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" value="" />
-    </div>
-</div>
-<div class="form-group ">
-</div>
-<div class="form-group">
-    @Html.ValidationSummary(false, "", new { @class = "list-group-item-info" })
-</div>
-<div class="form-group padding-md pull-right flip">
-    <input type="button" value="@ResourceManager.GetLocalisedString("btnCancel", "labels")" class="btn btn-sm btn-warning cancel" />
-    <input type="reset" value="@ResourceManager.GetLocalisedString("btnReset", "labels")" class="btn btn-sm btn-primary" />
-    <input type="submit" value="@ViewBag.SubmitButton" class="btn btn-sm btn-success" />
-</div>
-<div class="form-group clearfix">
 </div>

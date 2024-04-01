@@ -18,15 +18,19 @@
     {
         cat = (string)routeid;
     }
+
+    TempData["CatId"] = cat;
+    TempData["ForumId"] = 0;
     var subscriptions = MemberService.Current()?.Subscriptions;
 }
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
+<div class="row">
     @if (User.IsInRole("Administrator"))
     {
         if (!string.IsNullOrWhiteSpace(cat))
         {
-            <form>
+            <form class="form-inline col-4 col-lg-6">
                 <div class="btn-group mb-2">
                     <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" title=" @Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
                     <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" title="@Localizer["tipEditCategory"]" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> @Localizer["tipEditCategory"]</span></button>
@@ -36,14 +40,15 @@
         }
         else
         {
-            <form >
+                <form class="form-inline col-4 col-lg-6">
                 <div class="btn-group mb-2">
                     <button asp-controller="Category" type="submit" asp-action="Create" title="@Localizer["tipNewCategory"]" class="btn btn-outline-primary"><i class="fa fa-folder-open"></i><span class="d-none d-md-inline"> @Localizer["tipNewCategory"]</span></button>
                     <button asp-controller="Forum" type="submit" asp-action="Create" title="@Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
                 </div>
             </form>
         }
-    }
+    }<div class="col-8 col-lg-3"><partial name="QuickSearch" /></div>
+    </div>
     <div class="row">
         <div class="col accordion">
             @foreach (var category in Model.Categories)
@@ -98,7 +103,11 @@
                                         <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
                                         @if (forum.ForumModeration != Moderation.UnModerated )
                                         {
-                                            <p class="mt-2 fst-italic">@forum.ForumModeration are moderated in this Forum </p>
+                                            <p class="form-text mt-2 fst-italic">@Localizer[$"Moderation_{forum.ForumModeration}"] in this Forum </p>
+                                        }
+                                        @if (forum.ForumSubscription != ForumSubscription.None)
+                                        {
+                                            <p class="form-text mt-2 fst-italic">@Localizer[$"Subscription_{forum.ForumSubscription}"]</p>
                                         }
                                     </div>
                                     @if (forum.ForumType != ForumType.WebLink)
@@ -106,13 +115,27 @@
                                         <div class="subforum-stats subforum-column">
                                             <span>@forum.Posts @Localizer["lblPosts"] @Localizer["lblin"] @forum.Topics @Localizer["lblTopics"]</span>
                                         </div>
+
                                         <div class="subforum-info subforum-column">
-                                            @if (forum.LastPostTopicId.HasValue && forum.LastPostTopicId.Value > 0)
+                                            @if (forum.AccessType == ForumAuthType.All || User.IsInRole("Administrator"))
                                             {
-                                                <text>@Localizer["lblPostedBy"]</text>
-                                                <member-link member-id="@forum.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link>
-                                                <br class="d-none d-sm-block" />
-                                                <lastpost-link reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                                                if (forum.LastPostTopicId.HasValue && forum.LastPostTopicId.Value > 0)
+                                                {
+                                                    <text>@Localizer["lblPostedBy"]</text>
+                                                    <member-link member-id="@forum.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link>
+                                                    <br class="d-none d-sm-block"/>
+                                                    <lastpost-link reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                                                }
+                                            }
+                                            else if (User.Identity.IsAuthenticated && (forum.AccessType == ForumAuthType.Members ))
+                                            {
+                                                if (forum.LastPostTopicId.HasValue && forum.LastPostTopicId.Value > 0)
+                                                {
+                                                    <text>@Localizer["lblPostedBy"]</text>
+                                                    <member-link member-id="@forum.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link>
+                                                    <br class="d-none d-sm-block" />
+                                                    <lastpost-link reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                                                }
                                             }
                                         </div>
                                     }
@@ -125,7 +148,7 @@
             }
         </div>
         <div class="d-none d-lg-block col-3">
-            <partial name="QuickSearch"/>
+            
             <partial name="LoginForm" model="new UserSignInModel()" />
             <partial name="FeaturedPoll" />
             <partial name="LatestPosts" model="@Model.LatestPosts"/>

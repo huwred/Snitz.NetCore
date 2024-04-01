@@ -49,20 +49,25 @@
             
             @if (SnitzConfig.GetValue("STRACCOUNTPAGESIZES", "") != "")
             {
-                <form asp-action="Index" id="pagesize-form">
+                var sizes = SnitzConfig.GetValue("STRACCOUNTPAGESIZES", "").Split(",");
+                if (sizes.Length > 1)
+                {
+                    <form asp-action="Index" id="pagesize-form">
 
-                <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
-                <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
-                    @foreach (var size in SnitzConfig.GetValue("STRACCOUNTPAGESIZES", "").Split(","))
-                    {
-                            <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (Model.PageSize == Convert.ToInt32(size))
-                            {
-                                @Html.Raw("checked")
-                            } />
-                        <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
-                    }
-                </div>
-                </form>
+                    <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
+                    <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
+                            @foreach (var size in sizes)
+                        {
+                                <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (Model.PageSize == Convert.ToInt32(size))
+                                {
+                                    @Html.Raw("checked")
+                                } />
+                            <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
+                        }
+                    </div>
+                    </form>
+                }
+
             }
             <table class="table table-sm table-bordered table-hover table-striped">
                 <thead>
@@ -103,11 +108,11 @@
                         <td class="d-none d-md-table-cell">@member.LastHereDate?.ToShortDateString()</td>
                         <td snitz-if="@userroles != null && @userroles.Contains("Administrator")" class="d-none d-md-table-cell">@member.Member.Email</td>
                         <td class="d-none d-md-table-cell">@member.Member.Country</td>
-                        <td snitz-if="@userroles != null && @userroles.Contains("Administrator")"class="d-none d-md-table-cell user-icon">
-                            <link-confirm title="@Localizer["tipAuthorUnlock"].Value" jq-selector="confirm-unlock" snitz-if="(member.Member.Status == 0)" href="/Account/LockMember/" config-class="fa fa-unlock" config-key="@member.Id"></link-confirm>
-                            <link-confirm title="@Localizer["tipAuthorLock"].Value" jq-selector="confirm-lock" snitz-if="(member.Member.Status != 0)" href="/Account/LockMember/" config-class="fa fa-lock" config-key="@member.Id"></link-confirm>
-                            <link-confirm title="@Localizer["tipDelMember"].Value" jq-selector="confirm-delete" snitz-if="(member.Member.Posts < 1)" href="/Account/Delete/" config-class="fa fa-trash" config-key="@member.Id"></link-confirm>
-                            <link-confirm title="@Localizer["tipZapMember"].Value" jq-selector="confirm-zap" snitz-if='(member.Member.Name != "zapped")' href="/Account/ZapMember/" config-class="fa fa-bolt" config-key="@member.Id"></link-confirm>
+                        <td snitz-if="@userroles != null && @userroles.Contains("Administrator") "class="d-none d-md-table-cell user-icon">
+                            <link-confirm title="@Localizer["tipAuthorUnlock"].Value" jq-selector="confirm-unlock" snitz-if="(member.Member.Status == 0 && showlink)" href="/Account/LockMember/" config-class="fa fa-unlock" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipAuthorLock"].Value" jq-selector="confirm-lock" snitz-if="(member.Member.Status != 0 && showlink)" href="/Account/LockMember/" config-class="fa fa-lock" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipDelMember"].Value" jq-selector="confirm-delete" snitz-if="(member.Member.Posts < 1 && showlink)" href="/Account/Delete/" config-class="fa fa-trash" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipZapMember"].Value" jq-selector="confirm-zap" snitz-if='@showlink' href="/Account/ZapMember/" config-class="fa fa-bolt" config-key="@member.Id"></link-confirm>
                         </td>
                     </tr>
                 }
@@ -171,12 +176,11 @@
                         {
                             id: postid
                         },
-                        function(data, status){
-                    
+                        function(data, status) {
                             if (!data.result) {
                                 alert(data.error);
                             } else {
-                                location.href = data.url;
+                                location.reload();
                             }
                         });
                 });
@@ -200,7 +204,7 @@
                             if (!data.result) {
                                 alert(data.error);
                             } else {
-                                location.href = data.url;
+                            location.reload();
                             }
                         });
                 });
@@ -223,9 +227,9 @@
                         function(data, status){
                     
                             if (!data.result) {
-                                alert(data.error);
+                                alert(data);
                             } else {
-                                location.href = data.url;
+                            location.reload();
                             }
                         });
                 });

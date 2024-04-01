@@ -20,7 +20,7 @@
     </div>
 </div>
     <div class="row">
-        <div class="col-6">
+        <div class="col-12 col-lg-6" id="msg-list">
             @if (Model.Inbox != null)
             {
                 @await Html.PartialAsync("inbox",Model)
@@ -30,7 +30,7 @@
                 @await Html.PartialAsync("outbox",Model)
             }
         </div>
-        <div class="col-6" id="pm-message">
+        <div class="col-12 col-lg-6" id="pm-message">
             @if (Model.Settings != null)
             {
                 <partial name="Settings" model="@Model.Settings"/>
@@ -41,87 +41,6 @@
 @section Scripts
 {
     <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
-        <script type="text/javascript">
-
-        $('[class^="pmread_"]').on("click",
-            function(e) {
-                e.preventDefault();
-                $('#pm-message').load("/PrivateMessage/Read/" + $(this).data("id"));
-            });
-        $(".pm-settings").on("click",
-            function(e) {
-                e.preventDefault();
-                $('#pm-message').load("/PrivateMessage/Settings/");
-            });
-        $(".pm-message").on("click",
-            function (e) {
-                e.preventDefault();
-                $('#pm-message').load("/PrivateMessage/Create/",function() {
-                    ValidateForms();
-                    revalidate();
-                });
-            });
-        $('#select_all').on("change",function() {
-            var checkboxes = $(this).closest('form').find(':checkbox');
-            checkboxes.prop('checked', $(this).is(':checked'));
-        });
-        $(".fa-trash").on("click",
-            function() {
-                if ($(this).data("id")) {
-                    if(confirm("delete this Message? ")) {
-
-                        $.post("/PrivateMessage/Delete", { pmid: $(this).data("id"), userid: $(this).data("user") }, function (data) {
-                            if (data.success) {
-                                alert(data.responseText);
-                                location.reload();
-                            } else {
-                                alert(data.responseText);
-                            }
-                        });
-                    }
-                } else {
-                        if (confirm("@Localizer["PMDelConfirm"]")) {
-                        $.post("/PrivateMessage/DeleteMany", $("#pm-form").closest('form').serialize(), function (data) {
-                            if (data.success) {
-                                alert(data.responseText);
-                                location.reload();
-                            } else {
-                                alert(data.responseText);
-                            }
-                        });
-                    }
-                }
-            });
-        $(document).on("click", ".fa-reply", function (e) {
-            $('#pm-message').load("/PrivateMessage/Reply/" + $(this).data("id"),function() {
-                ValidateForms();
-                revalidate();
-            });
-            e.stopPropagation();
-            return false;
-        });
-        $(document).on("click", ".fa-share", function (e) {
-            $('#pm-message').load("/PrivateMessage/Forward/" + $(this).data("id"), function () {
-                ValidateForms();
-                revalidate();
-            });
-            e.stopPropagation();
-            return false;
-        });
-        $(document).on("click", ".fa-search", function (e) {
-                $('#pm-message').load("/PrivateMessage/SearchMessages/" + $(this).data("id"), function () {
-                ValidateForms();
-                revalidate();
-            });
-            e.stopPropagation();
-            return false;
-        });
-        function revalidate() {
-            var container = document.getElementById("pm-message");
-            var forms = container.getElementsByTagName("form");
-            var newForm = forms[forms.length - 1];
-            $.validator.unobtrusive.parse(newForm);
-        }
-    </script>
+    <script type="text/javascript" src="/js/privatemessage.min.js"></script>
 }
 </div>

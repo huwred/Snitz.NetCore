@@ -2,7 +2,9 @@
     <form asp-controller="Forum" asp-action="Search" method="post" class="needs-validation" novalidate="">
         <div class="input-group">
             <input name="SearchFor" type="text" class="form-control homeSearch" placeholder="@Localizer["Search"] ..." required="required"/>
-                <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+            <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
         </div>
+        <input type="hidden" name="catid" value="@TempData["CatId"]" />
+        <input type="hidden" name="forumid" value="@TempData["ForumId"]" />
     </form>
 </div>

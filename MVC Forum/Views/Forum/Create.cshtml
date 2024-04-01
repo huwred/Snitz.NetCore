@@ -1,9 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MVCForum.TagHelpers
 @using SmartBreadcrumbs
+@using Microsoft.AspNetCore.Identity.EntityFrameworkCore
+@using SnitzCore.Service.TagHelpers
+@using Microsoft.AspNetCore.Identity
 @model MVCForum.ViewModels.Forum.NewForumModel
+@inject IForum ForumService
 @{
     var test = Model.Id;
+    var users = ForumService.GetAllowedUsers(Model.Id);
 }
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
@@ -49,14 +54,20 @@
                 </div>
                 <div class="mb-3 row">
                     <label asp-for="DefaultView" class="form-label col-2">@Localizer["forumView"]</label>
-                    <div class="col-10 col-lg-5">
+                    <div class="col-10 col-lg-6">
                         <enum-select name="DefaultView" enum-type="typeof(DefaultDays)" selected-value="(int)Model.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
                 </div>
                 <div class="mb-3 row">
                     <label asp-for="AuthType" class="form-label col-2">@Localizer["forumAuthType"]</label>
                     <div class="col-10 col-lg-5">
-                        <enum-select name="AuthType" enum-type="typeof(ForumAuthType)" selected-value="(int)Model.AuthType" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                        <enum-select name="AuthType" id="authtype" enum-type="typeof(ForumAuthType)" selected-value="(int)Model.AuthType" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    </div>
+                </div>
+                <div class="mb-3 row" id="req-password" style="display:none">
+                    <label asp-for="NewPassword" class="form-label col-2">@Localizer["Password"]</label>
+                    <div class="col-10 col-lg-6">
+                        <input name="NewPassword" type="password" class="form-control" value="@Model.NewPassword" />
                     </div>
                 </div>
                 <div snitz-if="@(SnitzConfig.GetIntValue("STRMODERATION") == 1)" class="mb-3 row">
@@ -67,17 +78,20 @@
                 </div>
                 <div class="mb-3 row">
                     <label asp-for="Subscription" class="form-label col-2">@Localizer["forumSubscription"]</label>
-                    <div class="col-10 col-lg-5">
+                    <div class="col-10 col-lg-6">
                         <enum-select name="Subscription" enum-type="typeof(ForumSubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label asp-for="Status" class="form-label col-2">@Localizer["catStatus"]</label>
+                    <div class="col-10 col-lg-4">
+                        <select class="form-select" name="Status" asp-for="Status" asp-items="@(Html.GetEnumSelectList<Status>().Where(s=>s.Value == "0" || s.Value == "1"))">
+                        </select>
                     </div>
                 </div>
                 <div class="mb-3 form-check">
                     @Html.CheckBoxFor(m => m.IncrementMemberPosts, new { @class = "form-check-input" })
                     <label asp-for="IncrementMemberPosts" class="form-check-label">@Localizer["forumPostCount"]</label>
-                </div>
-                <div class="mb-3 form-check">
-                    @Html.CheckBoxFor(m => m.Status, new { @class = "form-check-input" })
-                    <label asp-for="Status" class="form-check-label">@Localizer["Active"]</label>
                 </div>
                 @if (Model.Id > 0)
                 {
@@ -90,23 +104,65 @@
                 }
                 <input name="ForumId" style="display: none;" value="@Model.ForumId" />
                 <partial name="FormButtons" />
-
             </form>
         </div>
         <div class="col-5">
             <fieldset>
+                <div class="card" id="allowed-members">
+                    <div class="card-header">Allowed Members</div>
+                    @if (Model.ForumId == 0)
+                    {
+                        <div class="card-body p-2 text-warning text-center">
+                            <p>Forum needs to be saved before Members can be configured</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card-body p-2">
+                            <div class="mb-3">
+                                <form asp-controller="Forum" asp-action="RemoveAllowed" method="post" id="rem-allowedform">
+                                    <select class="form-control mb-3" id="AllowedMembers" multiple="multiple" name="AllowedMembers">
+                                        @foreach (var member in users)
+                                        {
+                                            <option value="@member.Key">@member.Value</option>
+                                        }
+                                    </select>
+                                    <input type="hidden" name="ForumId" value="@Model.ForumId" />
+                                    <button type="button" id="rem-allowed" class="btn btn-danger btn-sm" title="Remove member"><i class="fa fa-minus"></i> Remove member</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <form asp-controller="Forum" asp-action="AddAllowed" method="post" id="add-allowedform">
+                                <input type="hidden" name="ForumId" value="@Model.ForumId" />
+                                <label class="form-label">Add member</label>
+                                <div class="mb-3">
+                                    <input name="NewMember" id="new-allowed" type="text" placeholder="Type username to find member" class="form-control ltr ui-autocomplete-input" data-autocomplete-url="/Forum/AutoCompleteUsername" autocomplete="off">
+                                </div>
+                                <button type="button" id="add-allowed" class="btn btn-success btn-sm" title="Add member"><i class="fa fa-plus"></i> Add Member</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </fieldset>
+            <fieldset>
                 <legend>Plugins</legend>
-                <div class="mb-3 bg-primary text-bg-primary p-3 rounded">
-                    @await Component.InvokeAsync("Events", new { template = "ForumConfig", id = Model.ForumId, topicid = 0 })
-                </div>
-                <div class="mb-3 bg-primary text-bg-primary p-3 rounded">
-                    @await Component.InvokeAsync("Polls", new { template = "ForumConfig", forumid = Model.ForumId })
-                </div>
+                @if (Model.ForumId == 0)
+                {
+                    <h5 class="text-warning text-center">Forum needs to be save before plugins can be configured</h5>
+                }
+                else
+                {
+                    <div class="mb-3 bg-primary text-bg-primary p-3 rounded">
+                        @await Component.InvokeAsync("Events", new { template = "ForumConfig", id = Model.ForumId, topicid = 0 })
+                    </div>
+                    <div class="mb-3 bg-primary text-bg-primary p-3 rounded">
+                        @await Component.InvokeAsync("Polls", new { template = "ForumConfig", forumid = Model.ForumId })
+                    </div>
+                }
             </fieldset>
         </div>
     </div>
-
-
 </div>
 @{
     var confModel = new ConfirmDialogViewModel()
@@ -123,5 +179,64 @@
     <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="/js/initPostForm.js"></script>
     <script type="text/javascript" src="/js/ConfirmDialog.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var selected = $('#authtype').find(":selected").val();
+            if (selected == 2 || selected == 3 || selected == 7) {
+                $('#req-password').show();
+            }
+        });
+        $('#authtype').on('change',function() {
+            alert(this.value);
+            if (this.value == 2 || this.value == 3 || this.value == 7) {
+                $('#req-password').show();
+            } else {
+                $('#req-password').hide();
+            }
+        });
+        $('#add-allowed').on('click', function(e) {
+            e.preventDefault();
+            var form = $('#add-allowedform');
+            var actionUrl = form.attr('action');
+    
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: form.serialize(),
+                success: function(data)
+                {
+                    if (data.error) {
+                        alert(data.error);
+                        return false;
+                    }
+                    if (data.id !== 0) { // append the new item to select box.
+                        $("#AllowedMembers").append(new Option(data.name, data.id));
+                    }
+                }
+            });
+        });
+        $('#rem-allowed').on('click', function(e) {
+            e.preventDefault();
+            var form = $('#rem-allowedform');
+            var actionUrl = form.attr('action');
+            var selectedVal = $('#AllowedMembers').find(":selected").val();
+            var selectedName = $('#AllowedMembers').find(":selected").text();
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: form.serialize(),
+                success: function (data) {
+                    if (data.error) {
+                        alert(data.error);
+                        return false;
+                    }
+                    if (data.id) { //remove the value from select list
+                        $("#AllowedMembers option[value='" + data.id + "']").remove();
+                    }
+
+                }
+            });
+        });
+    </script>
     <renderstoredcontent asp-key="forum-plugins"></renderstoredcontent>
 }

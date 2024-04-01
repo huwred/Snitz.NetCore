@@ -31,12 +31,7 @@
         }
         <!--Display posts table-->
         <div class="posts-table">
-            <div class="table-head">
-                <div class="status">@Localizer["catStatus"]</div>
-                <div class="subjects">@Localizer["Subject"]</div>
-                <div class="replies">@Localizer["lblReplies"]/@Localizer["lblViews"]</div>
-                <div class="last-reply">@Localizer["lblLastPost"]</div>
-            </div>
+            <partial name="TopicListingHeader" />
             @{
                 ViewData["ActiveTopics"] = true;
             }

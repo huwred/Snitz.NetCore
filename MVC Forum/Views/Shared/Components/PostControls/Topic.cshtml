@@ -1,37 +1,81 @@
 ﻿@model Post
-@inject IBookmark Bookmarks;
+@inject IBookmark Bookmarks
+@inject IMember MemberService
 @{
     bool isadmin = User.IsInRole("Administrator");
     bool islocked = Model.Status == 0;
     bool isauthor = User.Identity.Name == Model.Member.Name;
+    var subscriptions = MemberService.Current()?.Subscriptions;
 }
 @if (User.Identity.IsAuthenticated)
 {
     <div class="post-control-btn">
-        <i snitz-if="@(!islocked || isadmin)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" data-id="@Model.Id"></i>
-        <i snitz-if="@(!islocked || isadmin)" class="fa fa-commenting m-1 post-quote" title="@Localizer["tipQuoteTopic"]" data-id="@Model.Id"></i>
+        @if (TempData["List"] != null && (bool)TempData["List"])
+        {
+            @if (Model.Forum.Subscription == (int)ForumSubscription.TopicSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
+            {
+                if (subscriptions != null && subscriptions.Where(s => s.PostId == Model.Id).Select(s => s.PostId).Any())
+                {
+                    <i class="fa fa-share-square topic" title="@Localizer["btnUnsubscribe"]" data-id="@Model.Id"></i>
+                }
+                else
+                {
+                    <i class="fa fa-share-square-o topic" title="@Localizer["cnfSubscribeTopic"]" data-id="@Model.Id"></i>
+                }
+            }
+        }
+        else
+        {
+            <i snitz-if="@(!islocked || isadmin)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" data-id="@Model.Id"></i>
+            <i snitz-if="@(!islocked || isadmin)" class="fa fa-commenting m-1 post-quote" title="@Localizer["tipQuoteTopic"]" data-id="@Model.Id"></i>
+        }
         @if (SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1)
         {
             <i snitz-if="@Bookmarks.IsBookmarked(Model.Id)" class="fa fa-bookmark m-1 bookmark-del" title="@Localizer["tipRemoveBookmark"]" data-id="@Model.Id"></i>
             <i snitz-if="!@Bookmarks.IsBookmarked(Model.Id)" class="fa fa-bookmark-o m-1 bookmark-add" title="@Localizer["tipBookmarkPost"]" data-id="@Model.Id"></i>
         }
-
         @if (isadmin || isauthor)
         {
-            @if (!islocked || isadmin)
-            {
-                <i class="fa fa-pencil m-1 post-edit" title="@Localizer["tipEditTopic"]" data-id="@Model.Id"></i>
-            }
-
+            <i snitz-if="@(!islocked || isadmin)" class="fa fa-pencil m-1 post-edit" title="@Localizer["tipEditTopic"]" data-id="@Model.Id"></i>
             <i class="fa fa-trash m-1 post-del" title="@Localizer["tipTopicDel"]" data-id="@Model.Id"></i>
-            @if (islocked && isadmin)
-            {
-                <i class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.Id" data-status="1"></i>
-            }
-            else if(isadmin && !islocked)
-            {
-                <i class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.Id" data-status="0"></i>
-            }
+            <i snitz-if="@(islocked && isadmin)" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.Id" data-status="1"></i>
+            <i snitz-if="@(isadmin && !islocked)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.Id" data-status="0"></i>
         }
     </div>
 }
+<storecontent asp-key="topic-post-controls">
+    <script>
+        $(document).on("click",
+            ".fa-share-square-o.forum",
+            function() {
+                $.get("/Forum/Subscribe/?id=" + $(this).data("id"),
+                    function() {
+                        location.reload();
+                    });
+            });
+        $(document).on("click",
+            ".fa-share-square.forum",
+            function() {
+                $.get("/Forum/UnSubscribe/?id=" + $(this).data("id"),
+                    function() {
+                        location.reload();
+                    })
+            });
+        $(document).on("click",
+            ".fa-share-square-o.topic",
+            function() {
+                $.get("/Topic/Subscribe/?id=" + $(this).data("id"),
+                    function() {
+                        location.reload();
+                    })
+            });
+        $(document).on("click",
+            ".fa-share-square.topic",
+            function() {
+                $.get("/Topic/UnSubscribe/?id=" + $(this).data("id"),
+                    function() {
+                        location.reload();
+                    })
+            });
+    </script>
+</storecontent>

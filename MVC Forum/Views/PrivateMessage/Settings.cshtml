@@ -22,14 +22,20 @@
     </form>
 </div>
 <div class="card mt-2">
+
     <div class="card-header bg-dark">Blocked Members</div>
     <div class="card-body text-dark">
-        <ul class="list-group list-group-flush">
-            @foreach (var blocked in Model.BlockedList!)
-            {
-                <li class="list-group-item" value="@blocked.BlockedId">@blocked.BlockedName</li>
-            }
-        </ul>
+        @if (Model.BlockedList != null)
+        {
+            <ul class="list-group list-group-flush">
+
+                @foreach (var blocked in Model.BlockedList!)
+                {
+                    <li class="list-group-item" value="@blocked.BlockedId">@blocked.BlockedName</li>
+                }
+            </ul>
+        }        
+
     </div>
     <div class="card-footer">
         <div class="col-6 offset-6"></div>
