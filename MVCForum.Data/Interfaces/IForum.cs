@@ -7,6 +7,7 @@ namespace SnitzCore.Data.Interfaces
 {
     public interface IForum
     {
+        Forum Get(int id);
         Forum GetById(int id);
         IPagedList<Post> GetPagedTopics(int id, int pagesize, int page);
         IEnumerable<Forum> GetAll();
@@ -27,5 +28,6 @@ namespace SnitzCore.Data.Interfaces
         IEnumerable<MyViewTopic> FetchAllMyForumTopics(IEnumerable<int> forumids);
 
         int PollsAuth(int id);
+        Dictionary<int, string> GetAllowedUsers(int id);
     }
 }

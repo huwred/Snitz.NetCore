@@ -9,12 +9,12 @@ namespace SnitzCore.Data.Interfaces
     {
         Post GetTopic(int id);
         Post GetTopicForUpdate(int id);
-        Post GetTopicWithRelated(int id);
+        Post? GetTopicWithRelated(int id);
         PostReply GetReply(int id);
         PostReply GetReplyForUdate(int id);
-
+        List<Post> GetById(int[] ids);
         IEnumerable<Post> GetAllTopicsAndRelated();
-        IPagedList<Post> GetFilteredPost(string searchQuery, out int totalcount, int pagesize, int page);
+        IPagedList<Post> GetFilteredPost(string searchQuery, out int totalcount, int pagesize, int page, int catid,int forumid);
         IPagedList<Post> Find(ForumSearch searchQuery, out int totalcount, int pagesize, int page);
         Post GetLatestReply(int id);
         Task<int>  Create(Post post);
@@ -28,6 +28,7 @@ namespace SnitzCore.Data.Interfaces
         IEnumerable<Post> GetLatestPosts(int n);
         IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize, int pagenumber);
         Task<int>  Create(PostReply post);
+        int  CreateForMerge(int[]? selected);
         Task<bool> LockTopic(int id, short status);
 
         Task UpdateLastPost(int topicid, int? moderatedcount);
@@ -39,5 +40,7 @@ namespace SnitzCore.Data.Interfaces
 
         bool HasPoll(int id);
         Poll? GetPoll(int topicid);
+        void MoveSubscriptions(int oldtopicid, int newtopicid, int newforumId, int newcatId);
+        void MoveReplies(int oldtopicid, Post newTopic);
     }
 }

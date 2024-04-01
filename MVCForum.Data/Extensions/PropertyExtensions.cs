@@ -98,7 +98,10 @@ namespace SnitzCore.Data.Extensions
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
                 .SingleOrDefault()!;
-
+            if (orderAttr == null)
+            {
+                return MemberLayout.Extra;
+            }
             return orderAttr.LayoutSection;
         }
         public static bool PropertyIsPersonal(this PropertyInfo propInfo)
@@ -150,13 +153,21 @@ namespace SnitzCore.Data.Extensions
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
                 .SingleOrDefault()!;
-            return orderAttr.SystemField;
+            if (orderAttr == null)
+            {
+                return false;
+            }
+            return  orderAttr.SystemField;
         }
 
         public static string PropertyFieldType(this PropertyInfo propInfo)
         {
             var orderAttr = (ProfileDisplayAttribute)propInfo.GetCustomAttributes(typeof(ProfileDisplayAttribute), true)
                 .SingleOrDefault()!;
+            if (orderAttr == null)
+            {
+                return string.Empty;
+            }
             return orderAttr.FieldType;
         }
         public static string? GetSelectEnum(this PropertyInfo propInfo)

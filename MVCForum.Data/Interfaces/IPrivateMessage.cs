@@ -18,8 +18,9 @@ public interface IPrivateMessage
     Task UpdateContent(int pmid, string content);
 
     IEnumerable<PrivateMessage> GetLatestPMs(int memberid, int count);
-    IEnumerable<PrivateMessageBlocklist> GetBlocklist(int memberid);
+    IEnumerable<PrivateMessageBlocklist>? GetBlocklist(int memberid);
     IEnumerable<int> GetBlocksByName(string membername);
     bool BlockListAdd(int memberid, string toblock);
     void Create(PrivateMessage postmodel);
+    IEnumerable<PrivateMessageListingModel> Find(int? curruser, string term, SearchIn searchIn, SearchFor phraseType, SearchDate searchByDays, int? memberId);
 }

@@ -1,4 +1,5 @@
-﻿using SnitzCore.Data.Extensions;
+﻿using System;
+using SnitzCore.Data.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -50,4 +51,28 @@ public partial class PrivateMessage
     [Column("PM_DEL_TO")]
     public int HideTo { get; set; }
 
+}
+
+public enum SearchIn
+{
+    [Display(Name="Message")]
+    Message,
+    [Display(Name="Subject")]
+    Subject
+}
+
+
+public class PrivateMessageListingModel
+{
+    public int Id { get; set; }
+
+    public bool Read { get; set; }
+    public DateTime? Sent { get; set; }
+    public string Title { get; set; } = null!;
+    public string? Description { get; set; }
+
+    public string? ToMemberName { get; set; }
+    public string? FromMemberName { get; set; }
+    public int ToMemberId { get; set; }
+    public int FromMemberId { get; set; }
 }

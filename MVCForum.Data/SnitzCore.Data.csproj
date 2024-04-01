@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <Compile Remove="BaseResourceProvider.cs" />
-    <Compile Remove="Extensions\Class1.cs" />
   </ItemGroup>
 
   <ItemGroup>

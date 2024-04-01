@@ -17,7 +17,7 @@ public partial class PrivateMessageBlocklist
     [Column("BL_BLOCKED_ID")]
     public int BlockedId { get; set; }
 
-    [Column("BL_BLOCKEDNAME")]
+    [Column("BL_BLOCKED_NAME")]
     [StringLength(100)]
     public string BlockedName { get; set; } = null!;
 }

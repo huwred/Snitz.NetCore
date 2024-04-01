@@ -139,9 +139,9 @@ namespace SnitzCore.Data.Models
         [Display(Name="SearchDays_Any")]
         AnyDate = 0,
         [Display(Name="SearchDays_Since1Day")]
-        Since1Day,
+        Since1Day = 1,
         [Display(Name="ActiveTopicsSince_Last2Days")]
-        Since2Days,
+        Since2Days = 2,
         [Display(Name="ActiveTopicsSince_Last5Days")]
         Since5Days = 5,
         [Display(Name="SearchDays_Since7Days")]
@@ -170,9 +170,13 @@ namespace SnitzCore.Data.Models
     }
     public enum Moderation
     {
+        [Display(Name = "Moderation_UnModerated")]
         UnModerated = 0,
+        [Display(Name = "Moderation_AllPosts")]
         AllPosts,
+        [Display(Name = "Moderation_Topics")]
         Topics,
+        [Display(Name = "Moderation_Replies")]
         Replies
     }
     public enum ModerationLevel
@@ -190,7 +194,7 @@ namespace SnitzCore.Data.Models
         CategorySubscription,
         [Display(Name = "CategorySubscription_ForumSubscription")]
         ForumSubscription,
-        [Display(Name = "CategorySubscription_TopicSubscriptions")] 
+        [Display(Name = "CategorySubscription_TopicSubscription")] 
         TopicSubscription
     }
     /// <summary>
@@ -202,7 +206,7 @@ namespace SnitzCore.Data.Models
         None = 0,
         [Display(Name = "Subscription_ForumSubscription")]
         ForumSubscription,
-        [Display(Name = "Subscription_TopicSubscriptions")]
+        [Display(Name = "Subscription_TopicSubscription")]
         TopicSubscription
     }
     /// <summary>
