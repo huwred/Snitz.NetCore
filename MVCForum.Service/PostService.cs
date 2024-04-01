@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -6,6 +8,7 @@ using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using X.PagedList;
 
@@ -91,7 +94,74 @@ namespace SnitzCore.Service
             }
             return post.Id;
         }
+        /// <summary>
+        /// Create a Reply
+        /// </summary>
+        /// <param name="post"></param>
+        /// <returns></returns>
+        public int CreateForMerge(int[]? selected)
+        {
+                    var topics = _dbContext.Posts.AsNoTracking().Where(p => selected.Contains(p.Id)).OrderBy(t => t.Created).ToList();
+                    int unmoderatedposts = 0;
+                    Post mainTopic = topics.First();
+                    int maintopicid = mainTopic.Id;
+                    unmoderatedposts += mainTopic.UnmoderatedReplies;
+                    Forum forum = _dbContext.Forums.Find(mainTopic.ForumId);
+                    Forum oldforum = null;
+                    foreach (Post topic in topics)
+                    {
+                        if (topic.Id != mainTopic.Id)
+                        {
+                            unmoderatedposts += topic.UnmoderatedReplies;
+                            //creat a reply from the topic
+                            if (topic.ForumId != mainTopic.ForumId)
+                            {
+                                oldforum = _dbContext.Forums.Find(topic.ForumId);
+                                if (oldforum == null)
+                                {
+                                    throw new Exception("Source FORUM_ID is invalid");
+                                }
+                            }
+                            var reply = new PostReply
+                            {
+                                CategoryId = mainTopic.CategoryId,
+                                ForumId = mainTopic.ForumId,
+                                PostId = mainTopic.Id,
+                                Created = topic.Created,
+                                MemberId = topic.MemberId,
+                                Sig = topic.Sig,
+                                Content = topic.Content,
+                                LastEdited = topic.LastEdit,
+                                Status = topic.Status,
+                                Ip = topic.Ip
+                            };
 
+                            _dbContext.Add<PostReply>(reply);
+                            _dbContext.Remove(topic);
+                            _dbContext.SaveChanges();
+                            if (topic.ForumId != mainTopic.ForumId)
+                            {
+                                topic.ForumId = mainTopic.ForumId;
+                                topic.CategoryId = mainTopic.CategoryId;
+                            }
+
+                            _dbContext.Database.ExecuteSql($"UPDATE FORUM_SUBSCRIPTIONS SET TOPIC_ID={mainTopic.Id}, FORUM_ID={mainTopic.ForumId}, CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
+                            _dbContext.Database.ExecuteSql(
+                                $"UPDATE FORUM_REPLY SET TOPIC_ID={mainTopic.Id},FORUM_ID={mainTopic.ForumId},CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
+                            if (oldforum != null)
+                            {
+                                _forumservice.UpdateLastPost(oldforum.Id);
+                            }
+                            //send move notify
+                            //if (_config.GetIntValue("STRMOVENOTIFY") == 1)
+                            //    EmailController.TopicMergeEmail(ControllerContext, topic, mainTopic);
+                        }
+                    }
+                    //update counts
+                    _forumservice.UpdateLastPost(forum.Id);
+                    UpdateLastPost(mainTopic.Id,unmoderatedposts);
+                    return maintopicid;
+        }
         public async Task<bool> LockTopic(int id, short status = 0)
         {
             var topic = _dbContext.Posts.SingleOrDefault(f => f.Id == id);
@@ -190,7 +260,11 @@ namespace SnitzCore.Service
 
         public IEnumerable<Post> GetLatestPosts(int n)
         {
-            return GetAllTopicsAndRelated().OrderByDescending(post => post.LastPostDate).Take(n);
+            return _dbContext.Posts
+                .AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Forum)
+                .Include(p => p.Member).OrderByDescending(post => post.LastPostDate).Take(n);
         }
         public IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize = 10, int pagenumber = 1)
         {
@@ -203,19 +277,20 @@ namespace SnitzCore.Service
         public IEnumerable<Post> GetAllTopicsAndRelated()
         {
             return _dbContext.Posts
-                .AsNoTrackingWithIdentityResolution()
-                .Include(p => p.Category).AsNoTracking()
-                .Include(p => p.Forum).AsNoTracking()
-                .Include(p => p.Member).AsNoTracking();
+                .AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Forum)
+                .Include(p => p.Member)
+                .Include(p=>p.LastPostAuthor);
         }
 
         public Post GetTopic(int id)
         {
             var post = _dbContext.Posts
-                .AsNoTrackingWithIdentityResolution()
-                .Include(p => p.Category).AsNoTracking()
-                .Include(p => p.Forum).AsNoTracking()
-                .Include(p => p.Member).AsNoTracking()
+                .AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Forum)
+                .Include(p => p.Member)
                 .Single(p => p.Id == id);
             return post;
         }
@@ -236,7 +311,7 @@ namespace SnitzCore.Service
                 .Single(p => p.Id == id);
             return post;
         }
-        public Post GetTopicWithRelated(int id)
+        public Post? GetTopicWithRelated(int id)
         {
 
             var post = _dbContext.Posts.Where(p => p.Id == id)
@@ -248,7 +323,7 @@ namespace SnitzCore.Service
                 .Include(p => p.Replies!.OrderByDescending(r => r.Created))
                 .ThenInclude(r => r.Member).AsNoTracking()
                 //.AsSplitQuery()
-                .Single();
+                .SingleOrDefault();
 
             return post;
         }
@@ -288,7 +363,7 @@ namespace SnitzCore.Service
 
             return post;
         }
-        public IPagedList<Post> GetFilteredPost(string? searchQuery,out int totalcount, int pagesize=25, int page=1)
+        public IPagedList<Post> GetFilteredPost(string? searchQuery,out int totalcount, int pagesize=25, int page=1,int catid=0,int forumid=0)
         {
             if (searchQuery == null)
             {
@@ -298,6 +373,15 @@ namespace SnitzCore.Service
             var posts = _dbContext.Posts.Where(p=>p.Title.Contains(searchQuery) || p.Content.Contains(searchQuery));
 
             posts = posts.Include(p => p.Forum).OrderByDescending(p=>p.LastPostDate??p.Created);
+            if (catid > 0)
+            {
+                posts = posts.Where(p => p.CategoryId == catid);
+            }
+            if (forumid > 0)
+            {
+                posts = posts.Where(p => p.ForumId == forumid);
+            }
+
             totalcount = posts.Count();
             return posts.ToPagedList(page, pagesize);
         }
@@ -434,6 +518,23 @@ namespace SnitzCore.Service
         public Poll? GetPoll(int topicid)
         {
             return _dbContext.Polls.Include(p=>p.PollAnswers).SingleOrDefault(p=>p.TopicId ==topicid);
+        }
+
+        public List<Post> GetById(int[] ids)
+        {
+            return _dbContext.Posts.AsNoTracking().Where(p => ids.Contains(p.Id)).OrderBy(t => t.Created).ToList();
+        }
+
+        public void MoveSubscriptions(int oldtopicid, int newtopicid, int newforumId, int newcatId)
+        {
+            _dbContext.Database.ExecuteSql($"UPDATE FORUM_SUBSCRIPTIONS SET TOPIC_ID={newtopicid}, FORUM_ID={newforumId}, CAT_ID={newcatId} WHERE TOPIC_ID={oldtopicid}");
+        }
+
+        public void MoveReplies(int oldtopicid, Post newTopic)
+        {
+            _dbContext.Database.ExecuteSql(
+                $"UPDATE FORUM_REPLY SET TOPIC_ID={newTopic.Id},FORUM_ID={newTopic.ForumId},CAT_ID={newTopic.CategoryId} WHERE TOPIC_ID={oldtopicid}");
+
         }
     }
 }

@@ -67,6 +67,8 @@ namespace SnitzCore.Service
                 updForum.Defaultdays = forum.Defaultdays;
                 updForum.CountMemberPosts = forum.CountMemberPosts;
                 updForum.Moderation = forum.Moderation;
+                updForum.Subscription = forum.Subscription;
+                updForum.Password = forum.Password;
                 _dbContext.Update(updForum);
             }
 
@@ -131,8 +133,8 @@ namespace SnitzCore.Service
         public IEnumerable<Forum> GetAll()
         {
             var forums = _dbContext.Forums
-                .Include(forum=>forum.Category)
                 .AsNoTracking()
+                .Include(f=>f.Category)
                 .OrderBy(forum=>forum.Category!.Sort).ThenBy(forum=>forum.Order);
 
             return forums;
@@ -149,6 +151,11 @@ namespace SnitzCore.Service
                 
                 .OrderByDescending(p=>p.Created)
                 .FirstOrDefault();
+        }
+        public Forum Get(int id)
+        {
+            return  _dbContext.Forums.AsNoTracking().First(f=>f.Id==id);
+
         }
         public Forum GetById(int id)
         {
@@ -248,7 +255,7 @@ namespace SnitzCore.Service
             return _dbContext.Posts.Where(f => list.Contains(f.ForumId)).Select(p => p.Content);
 
         }
-        [OutputCache(Duration = 3600)]
+        //[OutputCache(Duration = 3600)]
         public IEnumerable<MyViewTopic> FetchAllMyForumTopics(IEnumerable<int> forumids)
         {
             var result = _dbContext.Posts.AsNoTracking()
@@ -279,6 +286,13 @@ namespace SnitzCore.Service
 
                 return 0;
             }
+
+        }
+
+        public Dictionary<int, string> GetAllowedUsers(int id)
+        {
+            return _dbContext.ForumAllowedMembers.Include(am => am.Member).Where(am => am.ForumId == id)
+                .ToDictionary(u => u.MemberId, u => u.Member.Name);
 
         }
     }

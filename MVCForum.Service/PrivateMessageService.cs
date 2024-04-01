@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SnitzCore.Data.Extensions;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SnitzCore.Service
 {
@@ -128,9 +131,17 @@ namespace SnitzCore.Service
             return _dbContext.PrivateMessages.Where(pm=>pm.To == memberid && pm.HideTo == 0).OrderByDescending(pm=>pm.SentDate).Take(count);
         }
 
-        public IEnumerable<PrivateMessageBlocklist> GetBlocklist(int memberid)
+        public IEnumerable<PrivateMessageBlocklist>? GetBlocklist(int memberid)
         {
-            return _dbContext.PrivateMessagesBlocklist.Where(pm=>pm.MemberId == memberid);
+            try
+            {
+                return _dbContext.PrivateMessagesBlocklist.Where(pm=>pm.MemberId == memberid);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            
         }
 
         public IEnumerable<int> GetBlocksByName(string membername)
@@ -173,6 +184,67 @@ namespace SnitzCore.Service
         public IEnumerable<int> GetBlockedMembers(int memberid)
         {
             return _dbContext.PrivateMessagesBlocklist.Where(pm=>pm.MemberId == memberid).Select(pm=>pm.BlockedId);
+        }
+
+        public IEnumerable<PrivateMessageListingModel> Find(int? curruser, string term, SearchIn searchIn, SearchFor phraseType, SearchDate searchByDays, int? memberId)
+        {
+            var messages = from pm in _dbContext.PrivateMessages
+                join mfrom in _dbContext.Members on pm.From equals mfrom.Id 
+                join mto in _dbContext.Members on pm.To equals mto.Id 
+                where (pm.From == curruser || pm.To == curruser)
+                select new PrivateMessageListingModel()
+                {
+                    Id = pm.Id,
+                    Title = pm.Subject,
+                    Description = pm.Message,
+                    Sent = pm.SentDate.FromForumDateStr(),
+                    Read = pm.Read == 1,
+                    FromMemberId = pm.From,
+                    ToMemberId = pm.To,
+                    FromMemberName = mfrom == null ? "" : mfrom.Name,
+                    ToMemberName = mto == null ? "" : mto.Name,
+                };
+            if (memberId.HasValue && memberId > 0)
+            {
+                messages = messages.Where(pm => pm.FromMemberId == memberId.Value || pm.ToMemberId == memberId.Value);
+            }
+            if (searchByDays != SearchDate.AnyDate)
+            {
+                messages = messages.Where(pm=>pm.Sent > DateTime.UtcNow.AddDays(-(int)searchByDays)); 
+            }
+
+            if (memberId.HasValue && string.IsNullOrWhiteSpace(term))
+            {
+                return messages;
+            }
+            var terms = term.ToUpper().Split(" ");
+            switch (phraseType)
+            {
+                case SearchFor.AllTerms:
+                    switch (searchIn)
+                    {
+                        case SearchIn.Message:
+                            return messages.AsEnumerable().Where(pm=> terms.All(kw => pm.Description.ToUpper().Contains(kw)));
+                        default:
+                            return messages.AsEnumerable().Where(pm=> terms.All(kw => pm.Title.ToUpper().Contains(kw)));
+                    }
+                case SearchFor.AnyTerms:
+                    switch (searchIn)
+                    {
+                        case SearchIn.Message:
+                            return messages.AsEnumerable().Where(pm=> terms.Any(kw => pm.Description.ToUpper().Contains(kw)));
+                        default:
+                            return messages.AsEnumerable().Where(pm=> terms.Any(kw => pm.Title.ToUpper().Contains(kw)));
+                    }
+                default:
+                    switch (searchIn)
+                    {
+                        case SearchIn.Message:
+                            return messages.Where(pm=>pm.Description.Contains(term));
+                        default:
+                            return messages.Where(pm=>pm.Title.Contains(term));
+                    }
+            }
         }
     }
 }

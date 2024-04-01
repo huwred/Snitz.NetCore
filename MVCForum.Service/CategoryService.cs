@@ -6,6 +6,8 @@ using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SnitzCore.Service
 {
@@ -27,10 +29,10 @@ namespace SnitzCore.Service
             return category;
         }
 
+        [OutputCache(Duration = 600)]
         public IEnumerable<Category> GetAll()
         {
-            var result = _dbContext.Categories.Include(forum => forum.Forums)!
-            .ThenInclude(f=>f.Posts);
+            var result = _dbContext.Categories.AsEnumerable();
             return result;
         }
 
