@@ -337,17 +337,18 @@ namespace MVCForum.Controllers
 
         public PartialViewResult SearchMessages(int id)
         {
-            return PartialView("_Search", new PMSearchViewModel());
+            return PartialView("Search", new PMSearchViewModel());
         }
         [HttpPost]
         public PartialViewResult Search(PMSearchViewModel vm)
         {
-            //var memberId = -1;
-            //if (!String.IsNullOrWhiteSpace(vm.MemberName))
-            //    memberId = MemberManager.GetUser(vm.MemberName).UserId;
+            var curruser = _memberService.Current()?.Id;
+            int? memberId = -1;
+            if (!string.IsNullOrWhiteSpace(vm.MemberName))
+                memberId = _memberService.GetByUsername(vm.MemberName)?.Id;
 
-            //var result = PrivateMessage.Find(WebSecurity.CurrentUserId,vm.Term,vm.SearchIn, memberId, vm.PhraseType,vm.SearchByDays);
-            return PartialView("_SearchResult"/*, result*/);
+            var result = _pmService.Find(curruser,vm.Term,vm.SearchIn, vm.PhraseType,vm.SearchByDays, memberId);
+            return PartialView("SearchResult", result);
         }
 
     }

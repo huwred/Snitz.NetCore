@@ -46,5 +46,17 @@
     "inputFiles": [
       "wwwroot/css/print.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/postcontroller.min.js",
+    "inputFiles": [
+      "wwwroot/js/postcontroller.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/privatemessage.min.js",
+    "inputFiles": [
+      "wwwroot/js/privatemessage.js"
+    ]
   }
 ]

@@ -23,8 +23,8 @@ using System.Globalization;
 using System.Threading;
 using BbCodeFormatter;
 using Hangfire;
+using System.Net;
 using SnitzCore.Service;
-using Microsoft.Extensions.Hosting;
 
 namespace MVCForum.Controllers
 {
@@ -38,6 +38,7 @@ namespace MVCForum.Controllers
         private readonly IEmailSender _mailSender;
         private readonly ISubscriptions _processSubscriptions;
         private readonly ICodeProcessor _bbcodeProcessor;
+        private readonly HttpContext _httpcontext;
 
         public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             IPost postService, IForum forumService, UserManager<ForumUser> userManager,IWebHostEnvironment environment,
@@ -50,6 +51,7 @@ namespace MVCForum.Controllers
             _mailSender = mailSender;
             _processSubscriptions = processSubscriptions;
             _bbcodeProcessor = bbcodeProcessor;
+            _httpcontext = httpContextAccessor.HttpContext;
         }
 
         [Route("{id:int}")]
@@ -57,13 +59,30 @@ namespace MVCForum.Controllers
         [Route("Topic/Index/{id}")]
         public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
         {
+            bool signedin = false;
+            ViewBag.RequireAuth = false;
             if (User.Identity is { IsAuthenticated: true })
             {
                 _memberService.SetLastHere(User);
+                signedin = true;
             }
-
             var haspoll = _postService.HasPoll(id);
             var post = _postService.GetTopic(id);
+            bool passwordrequired = false;
+            bool notallowed = false;
+            bool ismoderator = User.IsInRole($"Forum_{post.ForumId}");
+            bool isadministrator = User.IsInRole("Administrator");
+
+            notallowed = CheckAuthorisation(post.Forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
+            if (!isadministrator && passwordrequired)
+            {
+                var auth = _httpcontext.Session.GetString("Pforum_" + post.ForumId) == null ? "" : _httpcontext.Session.GetString("Pforum_" + post.ForumId);
+                if (auth != post.Forum.Password)
+                {
+                    ViewBag.RequireAuth = true;
+                }
+            }
+
             if (post.ReplyCount > 0 || post.UnmoderatedReplies > 0)
             {
                 post = _postService.GetTopicWithRelated(id);
@@ -602,7 +621,17 @@ namespace MVCForum.Controllers
             return result ? Json(new { result = result, data = id }) : Json(new { result = result, error = "Unable to toggle Status" });
             
         }
+        public IActionResult PasswordCheck(string pwd,string forumid,string? topicid)
+        {
+            var forum = _forumService.GetById(Convert.ToInt32(forumid));
+            if (forum != null && forum.Password == pwd)
+            {
+                _httpcontext.Session.SetString("Pforum_" + forumid, pwd);
+                return Json(true);
+            }
 
+            return Json(false);
+        }
         [Authorize]
         public ActionResult SendTo(int id, int archived)
         {
@@ -912,6 +941,221 @@ namespace MVCForum.Controllers
             _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member.Id && s.PostId == id).ExecuteDelete();
             return Content("OK");
         }
+
+        [Authorize(Roles = "Administrator,Moderator")]
+        [Route("Topic/Merge/")]
+        public IActionResult Merge(int[]? selected)
+        {
+            try
+            {
+                var maintopicid = 0;
+                if (selected != null)
+                {
+                    if (selected.Length < 2)
+                    {
+                        Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Json("You must select at least two topics before merging");
+                    }
+
+                    try
+                    {
+                        maintopicid = _postService.CreateForMerge(selected);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        throw;
+                    }
+                    
+
+                    //var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
+                    //if (sub == SubscriptionLevel.Topic || sub == SubscriptionLevel.Forum || sub == SubscriptionLevel.Category)
+                    //{
+                    //    switch ((ForumSubscription)forum.Subscription)
+                    //    {
+                    //        case ForumSubscription.ForumSubscription:
+                    //        case ForumSubscription.TopicSubscription:
+                    //            BackgroundJob.Enqueue(() => _processSubscriptions.Topic(maintopicid));
+                    //            break;
+                    //    }
+                    //}
+                    string redirectUrl = Url.Action("Index","Topic", new { id = maintopicid, pagenum = 1 });
+
+                    return Json(new { data = redirectUrl });
+
+                }
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("You must select at least two topics before merging");
+
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new{error = e.Message});
+            }
+
+        }
+
+        [Authorize(Roles = "Administrator,Moderator")]
+        [HttpGet]
+        [Route("Topic/SplitTopic/")]
+        public IActionResult SplitTopic(int id, int replyid)
+        {
+            SplitTopicViewModel vm = new SplitTopicViewModel(_forumService);
+
+            var topic = _postService.GetTopicWithRelated(id);
+            if (topic != null)
+            {
+                vm.Topic = topic;
+                vm.Id = topic.Id;
+                vm.Replies = topic?.Replies;
+                ViewBag.ReplyId = replyid;
+            }
+            else
+            {
+                return View("Error");
+            }
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
+            var catPage = new MvcBreadcrumbNode("", "Category", topic.Category?.Name){ Parent = homePage,RouteValues = new{id=topic.Category?.Id}};
+            var forumPage = new MvcBreadcrumbNode("Index", "Forum", topic.Forum?.Title){ Parent = catPage,RouteValues = new{id=topic.ForumId}};
+            var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage };
+            ViewData["BreadcrumbNode"] = topicPage;
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator,Moderator")]
+        [ValidateAntiForgeryToken]
+        public IActionResult SplitTopic(SplitTopicViewModel vm)
+        {
+
+            string[] ids = HttpContext.Request.Form["check"];
+            if (ids == null || !ids.Any())
+            {
+                ModelState.AddModelError("Reply", _languageResource.GetString("TopicController_select_at_least_one_reply"));
+            }
+            bool first = true;
+            Post topic = null;
+            Forum forum = _forumService.GetById(vm.ForumId);
+            if (ModelState.IsValid)
+            {
+                if (ids != null)
+                {
+                    foreach (string id in ids.OrderBy(s => s))
+                    {
+                        //fetch the reply
+                        var reply = _postService.GetReply(Convert.ToInt32(id));
+
+                        if (first)
+                        {
+                            //first reply so create the Topic
+                            topic = new Post
+                            {
+                                CategoryId = forum.CategoryId,
+                                ForumId = forum.Id,
+                                //Subject = BbCodeProcessor.Subject(vm.Subject),
+                                Content = reply.Content,
+                                Created = reply.Created,
+                                MemberId = reply.MemberId,
+                                Sig = reply.Sig,
+                                LastPostAuthorId = reply.MemberId,
+                                LastPostReplyId = 0,
+                                Status =
+                                            (forum.Moderation == Moderation.AllPosts || forum.Moderation == Moderation.Topics)
+                                                ? (short)Status.UnModerated
+                                                : (short)Status.Open,
+                                LastPostDate = reply.Created
+                            };
+                            if (_config.GetIntValue("STRIPLOGGING") == 1)
+                            {
+                                Member member = _memberService.GetById(reply.MemberId);
+                                member.LastIp = topic.Ip;
+                                _memberService.Update(member);
+                            }
+                            _postService.Create(topic);
+                            _postService.DeleteReply(reply.Id);
+                            first = false;
+                        }
+                        else
+                        {
+                            reply.PostId = topic.Id;
+                            reply.ForumId = forum.Id;
+                            reply.CategoryId = forum.CategoryId;
+                            reply.Status = topic.Status;
+                            _postService.Update(reply);
+                        }
+                    }
+                    //        Dbcontext.UpdatePostCount();
+                    //        EmailController.TopicSplitEmail(ControllerContext, topic);
+                }
+            }
+            if (topic != null) return RedirectToAction("Posts", new { id = topic.Id, pagenum = 1 });
+            return View("Error");
+        }
+
+        /// <summary>
+        /// Tracks Checked Topic list
+        /// </summary>
+        /// <param name="topicid">Id of checked <see cref="Topic"/></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Administrator,Moderator")]
+        [HttpPost]
+        [Route("Topic/UpdateTopicList/")]
+        public EmptyResult UpdateTopicList(int topicid)
+        {
+            if (HttpContext.Session.GetObject<List<int>>("TopicList") != null)
+            {
+                List<int> selectedtopics = HttpContext.Session.GetObject<List<int>>("TopicList");
+                if (!selectedtopics.Contains(topicid))
+                {
+                    selectedtopics.Add(topicid);
+                }
+                else
+                {
+                    selectedtopics.Remove(topicid);
+                }
+                HttpContext.Session.SetObject("TopicList", selectedtopics);
+            }
+            else
+            {
+                List<int> topics = new List<int> {topicid};
+                HttpContext.Session.SetObject("TopicList", topics);
+            }
+
+            return new EmptyResult();
+        }
+        /// <summary>
+        /// Tracks Checked Topic list
+        /// </summary>
+        /// <param name="replyid">Id of checked <see cref="Topic"/></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Administrator,Moderator")]
+        [HttpPost]
+        [Route("Topic/UpdateReplyList/")]
+        public EmptyResult UpdateReplyList(int replyid)
+        {
+            if (HttpContext.Session.GetObject<List<int>>("ReplyList") != null)
+            {
+                List<int> selectedtopics = HttpContext.Session.GetObject<List<int>>("ReplyList");
+                if (!selectedtopics.Contains(replyid))
+                {
+                    selectedtopics.Add(replyid);
+                }
+                else
+                {
+                    selectedtopics.Remove(replyid);
+                }
+                HttpContext.Session.SetObject("ReplyList", selectedtopics);
+            }
+            else
+            {
+                List<int> topics = new List<int> {replyid};
+                HttpContext.Session.SetObject("ReplyList", topics);
+            }
+
+            return new EmptyResult();
+        }
         private Post BuildPost(NewPostModel model, int memberid)
         {
             if (model.TopicId != 0)
@@ -1074,5 +1318,62 @@ namespace MVCForum.Controllers
             return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
 
         }
+
+        private bool CheckAuthorisation(ForumAuthType auth,bool signedin, bool ismoderator, bool isadministrator, ref bool passwordrequired)
+        {
+            bool notallowed = false;
+            switch (auth)
+            {
+                case ForumAuthType.AllowedMembers:
+                    if (signedin && (ismoderator || isadministrator))
+                    {
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                case ForumAuthType.PasswordProtected:
+                    passwordrequired = true;
+                    break;
+                case ForumAuthType.AllowedMemberPassword:
+                    if (signedin && (ismoderator || isadministrator))
+                    {
+                        passwordrequired = true;
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                case ForumAuthType.Members:
+                    if (signedin)
+                        break;
+                    notallowed = true;
+                    break;
+                case ForumAuthType.MembersHidden:
+                    if (signedin)
+                        break;
+                    notallowed = true;
+                    break;
+                case ForumAuthType.AllowedMembersHidden:
+                    if (signedin && (ismoderator || isadministrator))
+                    {
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                case ForumAuthType.MembersPassword:
+                    if (signedin)
+                    {
+                        passwordrequired = true;
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                default:
+                    break;
+
+            }
+
+            return notallowed;
+        }
+
     }
 }

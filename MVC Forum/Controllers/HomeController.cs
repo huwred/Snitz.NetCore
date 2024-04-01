@@ -28,6 +28,7 @@ namespace MVCForum.Controllers
             _postService = postService;
         }
 
+        [ResponseCache(VaryByHeader = "User-Agent", Duration = 60)]
         public IActionResult Index()
         {            
             if (User.Identity is { IsAuthenticated: true })
@@ -59,15 +60,15 @@ namespace MVCForum.Controllers
                 //AuthorRating = post.User?.Rating ?? 0,
                 Created = post.Created.FromForumDateStr(),
                 LastPostDate = !post.LastPostDate.IsNullOrEmpty() ? post.LastPostDate.FromForumDateStr() : null,
-                LastPostAuthorName = post.LastPostAuthorId != null ? _memberService.GetById(post.LastPostAuthorId!.Value)?.Name : "",
-                Forum = GetForumListingForPost(post),
+                //LastPostAuthorName = post.LastPostAuthorId != null ? _memberService.GetById(post.LastPostAuthorId!.Value)?.Name : "",
+                //Forum = GetForumListingForPost(post),
                 RepliesCount = post.ReplyCount,
                 ViewCount = post.ViewCount,
                 UnmoderatedReplies = post.UnmoderatedReplies,
                 IsSticky = post.IsSticky == 1,
                 Status = post.Status,
                 Answered = post.Answered,
-                HasPoll = _postService.HasPoll(post.Id),
+                //HasPoll = _postService.HasPoll(post.Id),
             });
 
             return new HomeIndexModel

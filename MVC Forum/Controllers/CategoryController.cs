@@ -35,9 +35,10 @@ namespace MVCForum.Controllers
 
         
         [Breadcrumb("AllForums",FromAction = "Index",FromController = typeof(HomeController))]
-        [Route("Forums")]
+        [Route("AllForums")]
         [Route("Category/{id?}")]
         [Route("Category/Index/{id}")]
+        [ResponseCache(VaryByHeader = "User-Agent", Duration = 30,VaryByQueryKeys = new []{"*"})]
         public IActionResult Index(int id)
         {
             if (User.Identity is { IsAuthenticated: true })
@@ -46,7 +47,6 @@ namespace MVCForum.Controllers
             }
 
             var categories = _categoryService.GetAll().OrderBy(c=>c.Sort).ToList();
-
             var forums = _forumService.GetAll().Select(forum => new ForumListingModel()
             {
                 Id = forum.Id,
@@ -61,28 +61,30 @@ namespace MVCForum.Controllers
                 LastPostAuthorId = forum.LastPostAuthorId,
                 LastPostTopicId = forum.LatestTopicId,
                 LastPostReplyId = forum.LatestReplyId,
-                LastPostAuthor = forum.LastPostAuthorId != null && forum.LastPostAuthorId != 0 ? _memberService.GetById(forum.LastPostAuthorId) : null,
+                //LastPostAuthor = forum.LastPostAuthorId != null && forum.LastPostAuthorId != 0 ? _memberService.GetById(forum.LastPostAuthorId) : null,
                 AccessType = forum.Privateforums,
                 ForumModeration = forum.Moderation,
                 ForumType = (ForumType)forum.Type,
+                
                 Url = forum.Url,
                 Status = forum.Status,
                 Order = forum.Order,
                 CategorySubscription = (CategorySubscription)forum.Category.Subscription,
                 ForumSubscription = (ForumSubscription)forum.Subscription,
-                Polls = forum.Polls
+                //Polls = forum.Polls
                 
-            }).ToList();
+            });
             if (id > 0)
             {
                 categories = categories.Where(f => f.Id == id).ToList();
-                var forumPage = new MvcBreadcrumbNode("Forums", "Category", "ttlForums");
+                forums = forums.Where(f => f.CategoryId == id).ToList();
+                var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
                 var topicPage = new MvcBreadcrumbNode("", "Category", categories.First().Name) { Parent = forumPage,RouteValues = new{id=categories.First().Id}};
                 ViewData["BreadcrumbNode"] = topicPage; 
             }
             else
             {
-                var forumPage = new MvcBreadcrumbNode("", "Category", "ttlForums");
+                var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
                 ViewData["BreadcrumbNode"] = forumPage;
             }
             
@@ -97,15 +99,15 @@ namespace MVCForum.Controllers
                 //AuthorRating = post.User?.Rating ?? 0,
                 Created = post.Created.FromForumDateStr(),
                 LastPostDate = !post.LastPostDate.IsNullOrEmpty() ? post.LastPostDate.FromForumDateStr() : null,
-                LastPostAuthorName = post.LastPostAuthorId != null ? _memberService.GetById(post.LastPostAuthorId!.Value)?.Name : "",
+                //LastPostAuthorName = post.LastPostAuthorId != null ? _memberService.GetById(post.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = post.LastPostReplyId,
-                Forum = GetForumListingForPost(post),
+                Forum = id > 0 ? GetForumListingForPost(post) : null,
                 RepliesCount = post.ReplyCount,
                 ViewCount = post.ViewCount,
                 UnmoderatedReplies = post.UnmoderatedReplies,
                 IsSticky = post.IsSticky == 1,
                 Status = post.Status,
-                HasPoll = _postService.HasPoll(post.Id),
+                //HasPoll = _postService.HasPoll(post.Id),
                 Answered = post.Answered
             });
             var model = new ForumIndexModel()
@@ -118,10 +120,11 @@ namespace MVCForum.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
+        [HttpGet]
         public IActionResult Edit(int id)
         {
             var cat = _categoryService.GetById(id);
-            var forumPage = new MvcBreadcrumbNode("", "Category", "Categories");
+            var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
             var topicPage = new MvcBreadcrumbNode("", "Category", "New Category") { Parent = forumPage};
             CategoryViewModel vm = new CategoryViewModel();
 
@@ -140,6 +143,8 @@ namespace MVCForum.Controllers
             return View("CreateEdit",vm);
         }
         [Authorize(Roles = "Administrator")]
+        [HttpGet]
+        [Route("Category/Create")]
         public IActionResult Create()
         {
             var forumPage = new MvcBreadcrumbNode("", "Category", "Categories");

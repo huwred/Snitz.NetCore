@@ -13,12 +13,12 @@ namespace MVCForum.View_Components
         {
             _postService = postService;
         }
-        public async Task<IViewComponentResult> InvokeAsync(dynamic post)
+        public async Task<IViewComponentResult> InvokeAsync(dynamic post, bool forlist = false)
         {
+            TempData["List"] = forlist;
             if (post is PostReplyModel)
             {
                 var reply = _postService.GetReply(post.Id);
-
                 return await Task.FromResult((IViewComponentResult)View("Reply",reply));
             }
             else

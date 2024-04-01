@@ -205,6 +205,7 @@ builder.Services.AddHangfire(configuration => configuration
     .SetStorage(builder.Configuration.GetConnectionString("HangfireConnection"),builder.Configuration.GetConnectionString("DBProvider"))
     );
 builder.Services.AddHangfireServer();
+builder.Services.AddResponseCaching();
 
 var app = builder.Build();
 app.MigrateDatabase();
@@ -242,6 +243,7 @@ app.UseHangfireDashboard("/snitzjobs",new DashboardOptions
 {
     Authorization = new [] { new SnitzAuthorizationFilter() }
 });
+app.UseResponseCaching();
 
 app.MapControllerRoute(
 name: "default",

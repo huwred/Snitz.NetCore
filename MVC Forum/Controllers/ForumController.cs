@@ -20,8 +20,7 @@ using MVCForum.ViewModels.Post;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MVCForum.ViewModels;
-using System.Drawing.Printing;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace MVCForum.Controllers
 {
@@ -32,6 +31,7 @@ namespace MVCForum.Controllers
         private readonly IPost _postService;
         private readonly ISnitzCookie _cookie;
         private readonly SignInManager<ForumUser> _signInManager;
+        private readonly HttpContext _httpcontext;
 
         public ForumController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             IForum forumService,IPost postService,ISnitzCookie snitzCookie,SignInManager<ForumUser> SignInManager) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
@@ -40,116 +40,88 @@ namespace MVCForum.Controllers
             _postService = postService;
             _cookie = snitzCookie;
             _signInManager = SignInManager;
-            
+            _httpcontext = httpContextAccessor.HttpContext;
         }
         
         [Route("Forum/{id:int}")]
         [Route("Forum/Index/{id:int}")]
+        [ResponseCache(VaryByHeader = "User-Agent", Duration = 30, VaryByQueryKeys = new[]{"*"})]
         public IActionResult Index(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 0)
         {
-            if (HttpContext.Session.GetInt32("ForumPageSize") != null && pagesize == 0)
+            ViewBag.RequireAuth = false;
+            if (_httpcontext.Session.GetInt32("ForumPageSize") != null && pagesize == 0)
             {
-                pagesize = HttpContext.Session.GetInt32("ForumPageSize").Value;
+                pagesize = _httpcontext.Session.GetInt32("ForumPageSize").Value;
             }
             else if (pagesize == 0)
             {
                 pagesize = 10;
             }
-            HttpContext.Session.SetInt32("ForumPageSize",pagesize);
+            _httpcontext.Session.SetInt32("ForumPageSize",pagesize);
+            var forum = _forumService.GetById(id);
 
-            bool passwordrequired = false;
-            bool notallowed = false;
+            bool signedin = false;
             if (User.Identity is { IsAuthenticated: true })
             {
                 _memberService.SetLastHere(User);
+                signedin = true;
             }
-            var forum = _forumService.GetById(id);
-            switch (forum.Privateforums)
-            {
-                case ForumAuthType.AllowedMembers:
-                    if (_signInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forum.Id) || User.IsInRole("Administrator")))
-                    {
-                        break;
-                    }
-                    notallowed = true;
-                    break;
-                case ForumAuthType.PasswordProtected:
-                    passwordrequired = true;
-                    break;
-                case ForumAuthType.AllowedMemberPassword:
-                    if (_signInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forum.Id) || User.IsInRole("Administrator")))
-                    {
-                        passwordrequired = true;
-                        break;
-                    }
-                    notallowed = true;
-                    break;
-                case ForumAuthType.Members:
-                    if (_signInManager.IsSignedIn(User))
-                        break;
-                    notallowed = true;
-                    break;
-                case ForumAuthType.MembersHidden:
-                    if (_signInManager.IsSignedIn(User))
-                        break;
-                    notallowed = true;
-                    break;
-                case ForumAuthType.AllowedMembersHidden:
-                    if (_signInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forum.Id) || User.IsInRole("Administrator")))
-                    {
-                        break;
-                    }
-                    notallowed = true;
-                    break;
-                case ForumAuthType.MembersPassword:
-                    if (_signInManager.IsSignedIn(User))
-                    {
-                        passwordrequired = true;
-                        break;
-                    }
-                    notallowed = true;
-                    break;
-                default:
-                    break;
+            bool passwordrequired = false;
+            bool notallowed = false;
+            bool ismoderator = User.IsInRole($"Forum_{forum.Id}");
+            bool isadministrator = User.IsInRole("Administrator");
 
+            notallowed = CheckAuthorisation(forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
+            if (!isadministrator && passwordrequired)
+            {
+                var auth = _httpcontext.Session.GetString("Pforum_" + id) == null ? "" : _httpcontext.Session.GetString("Pforum_" + id);
+                if (auth != forum.Password)
+                {
+                    ViewBag.RequireAuth = true;
+                }
             }
-            var forumPage = new MvcBreadcrumbNode("", "Category", "ttlForums");
+            var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name) { Parent = forumPage,RouteValues = new {id=forum.Category?.Id}};
             var topicPage = new MvcBreadcrumbNode("Index", "Post", forum.Title) { Parent = catPage };
             ViewData["BreadcrumbNode"] = topicPage;
 
             ViewData["Title"] = forum.Title;
-            PagedList<Post> stickyTopics = new PagedList<Post>(forum?.Posts?.Where(p=>p.IsSticky == 1).OrderByDescending(p=>p.LastPostDate), page, pagesize);
-            var stickylistings = stickyTopics.Select(p => new PostListingModel()
-            {
-                Id = p.Id,
-                AuthorId = p.MemberId,
-                AuthorName = p.Member?.Name ?? "Unknown",
-                //AuthorRating = p.User?.Rating ?? 0,
-                Title = p.Title,
-                Created = p.Created.FromForumDateStr(),
-                RepliesCount = p.ReplyCount,
-                ViewCount = p.ViewCount,
-                UnmoderatedReplies = p.UnmoderatedReplies,
-                IsSticky = p.IsSticky == 1 && _config.GetIntValue("STRSTICKYTOPIC") == 1,
-                Status = p.Status,
-                Message = p.Content,
-                LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
-                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
-                LatestReply = p.LastPostReplyId,
-                Forum = BuildForumListing(p),
-                Answered = p.Answered,
-                HasPoll = _postService.HasPoll(p.Id),
-            });
+            bool showsticky = _config.GetIntValue("STRSTICKYTOPIC") == 1;
             
-            IEnumerable<Post>? forumPosts = forum?.Posts?.Where(p => p.IsSticky != 1);
+            List<PostListingModel> stickies = null;
+            IEnumerable<Post>? forumPosts = null;
 
-            if (_config.GetIntValue("STRSTICKYTOPIC") != 1)
+            if (!showsticky)
             {
-                stickylistings = null;
                 forumPosts = forum?.Posts;
             }
-            if (!(User.IsInRole("Administrator") || User.IsInRole("Forum_" + forum.Id)))
+            else
+            {
+                stickies = new PagedList<Post>(forum?.Posts?.Where(p=>p.IsSticky == 1).OrderByDescending(p=>p.LastPostDate), page, pagesize)
+                .Select(p => new PostListingModel()
+                {
+                    Id = p.Id,
+                    AuthorId = p.MemberId,
+                    AuthorName = p.Member?.Name ?? "Unknown",
+                    //AuthorRating = p.User?.Rating ?? 0,
+                    Title = p.Title,
+                    Created = p.Created.FromForumDateStr(),
+                    RepliesCount = p.ReplyCount,
+                    ViewCount = p.ViewCount,
+                    UnmoderatedReplies = p.UnmoderatedReplies,
+                    IsSticky = p.IsSticky == 1 && showsticky,
+                    Status = p.Status,
+                    Message = p.Content,
+                    LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
+                    LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
+                    LatestReply = p.LastPostReplyId,
+                    Forum = BuildForumListing(p.ForumId,p.Forum),
+                    Answered = p.Answered,
+                    HasPoll = _postService.HasPoll(p.Id),
+                }).ToList();
+                forumPosts = forum?.Posts?.Where(p => p.IsSticky != 1);
+            }
+            if (!(isadministrator || ismoderator))
             {
                 var curuser = _memberService.Current()?.Id;
                 forumPosts = forumPosts.Where(t => t.Status < 2 || t.MemberId == curuser);
@@ -224,61 +196,61 @@ namespace MVCForum.Controllers
                 }                
             }
 
-            forumPosts = orderby switch
-            {
-                "a" => sortdir == "des"
-                    ? forumPosts?.OrderByDescending(p => p.Member?.Name)
-                    : forumPosts?.OrderBy(p => p.Member?.Name),
-                "v" => sortdir == "des"
-                    ? forumPosts?.OrderByDescending(p => p.ViewCount)
-                    : forumPosts?.OrderBy(p => p.ViewCount),
-                "r" => sortdir == "des"
-                    ? forumPosts?.OrderByDescending(p => p.ReplyCount)
-                    : forumPosts?.OrderBy(p => p.ReplyCount),
-                "lpa" => sortdir == "des"
-                    ? forumPosts?.OrderByDescending(p => p.LastPostAuthor?.Name)
-                    : forumPosts?.OrderBy(p => p.LastPostAuthor?.Name),
-                "pd" => sortdir == "des"
-                    ? forumPosts?.OrderByDescending(p => p.Created)
-                    : forumPosts?.OrderBy(p => p.Created),
-                _ => sortdir == "des"
-                    ? forumPosts?.OrderByDescending(p => p.LastPostDate)
-                    : forumPosts?.OrderBy(p => p.LastPostDate)
-            };
-
-            PagedList<Post> pagedTopics = new PagedList<Post>(forumPosts, page, pagesize);
-
-            var postlistings = pagedTopics.Select(p => new PostListingModel()
-            {
-                Id = p.Id,
-                AuthorId = p.MemberId,
-                AuthorName = p.Member?.Name ?? "Unknown",
-                //AuthorRating = p.User?.Rating ?? 0,
-                Title = p.Title,
-                Created = p.Created.FromForumDateStr(),
-                RepliesCount = p.ReplyCount,
-                ViewCount = p.ViewCount,
-                UnmoderatedReplies = p.UnmoderatedReplies,
-                IsSticky = p.IsSticky == 1 && _config.GetIntValue("STRSTICKYTOPIC") == 1,
-                Status = p.Status,
-                Message = p.Content,
-                LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
-                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
-                LatestReply = p.LastPostReplyId,
-                Forum = BuildForumListing(p),
-                Answered = p.Answered,
-                HasPoll = _postService.HasPoll(p.Id),
-            });
-
             if (forum != null)
             {
+                forumPosts = orderby switch
+                {
+                    "a" => sortdir == "des"
+                        ? forumPosts?.OrderByDescending(p => p.Member?.Name)
+                        : forumPosts?.OrderBy(p => p.Member?.Name),
+                    "v" => sortdir == "des"
+                        ? forumPosts?.OrderByDescending(p => p.ViewCount)
+                        : forumPosts?.OrderBy(p => p.ViewCount),
+                    "r" => sortdir == "des"
+                        ? forumPosts?.OrderByDescending(p => p.ReplyCount)
+                        : forumPosts?.OrderBy(p => p.ReplyCount),
+                    "lpa" => sortdir == "des"
+                        ? forumPosts?.OrderByDescending(p => p.LastPostAuthor?.Name)
+                        : forumPosts?.OrderBy(p => p.LastPostAuthor?.Name),
+                    "pd" => sortdir == "des"
+                        ? forumPosts?.OrderByDescending(p => p.Created)
+                        : forumPosts?.OrderBy(p => p.Created),
+                    _ => sortdir == "des"
+                        ? forumPosts?.OrderByDescending(p => p.LastPostDate)
+                        : forumPosts?.OrderBy(p => p.LastPostDate)
+                };
+
+                PagedList<Post> pagedTopics = new PagedList<Post>(forumPosts, page, pagesize);
+
+                var postlistings = pagedTopics.Select(p => new PostListingModel()
+                {
+                    Id = p.Id,
+                    AuthorId = p.MemberId,
+                    AuthorName = p.Member?.Name ?? "Unknown",
+                    //AuthorRating = p.User?.Rating ?? 0,
+                    Title = p.Title,
+                    Created = p.Created.FromForumDateStr(),
+                    RepliesCount = p.ReplyCount,
+                    ViewCount = p.ViewCount,
+                    UnmoderatedReplies = p.UnmoderatedReplies,
+                    IsSticky = p.IsSticky == 1 && showsticky,
+                    Status = p.Status,
+                    Message = p.Content,
+                    LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
+                    LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
+                    LatestReply = p.LastPostReplyId,
+                    Forum = BuildForumListing(p),
+                    Answered = p.Answered,
+                    HasPoll = _postService.HasPoll(p.Id),
+                });
+
                 var model = new ForumTopicModel()
                 {
                     AccessDenied = notallowed,
                     PasswordRequired = passwordrequired,
-                    StickyPosts = stickylistings,
+                    StickyPosts = stickies,
                     Posts = postlistings,
-                    Forum = BuildForumListing(forum,defaultdays,orderby,sortdir),
+                    Forum = BuildForumListing(forum.Id,forum,defaultdays,orderby,sortdir),
                     PageCount = pagedTopics.PageCount,
                     PageNum = pagedTopics.PageNumber,
                     PageSize = pagesize,
@@ -290,6 +262,63 @@ namespace MVCForum.Controllers
             return View("Index");
         }
 
+        private bool CheckAuthorisation(ForumAuthType auth,bool signedin, bool ismoderator, bool isadministrator, ref bool passwordrequired)
+        {
+            bool notallowed = false;
+            switch (auth)
+            {
+                case ForumAuthType.AllowedMembers:
+                    if (signedin && (ismoderator || isadministrator))
+                    {
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                case ForumAuthType.PasswordProtected:
+                    passwordrequired = true;
+                    break;
+                case ForumAuthType.AllowedMemberPassword:
+                    if (signedin && (ismoderator || isadministrator))
+                    {
+                        passwordrequired = true;
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                case ForumAuthType.Members:
+                    if (signedin)
+                        break;
+                    notallowed = true;
+                    break;
+                case ForumAuthType.MembersHidden:
+                    if (signedin)
+                        break;
+                    notallowed = true;
+                    break;
+                case ForumAuthType.AllowedMembersHidden:
+                    if (signedin && (ismoderator || isadministrator))
+                    {
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                case ForumAuthType.MembersPassword:
+                    if (signedin)
+                    {
+                        passwordrequired = true;
+                        break;
+                    }
+                    notallowed = true;
+                    break;
+                default:
+                    break;
+
+            }
+
+            return notallowed;
+        }
+
+        [ResponseCache(VaryByHeader = "User-Agent", Duration = 30, VaryByQueryKeys = new[]{"*"})]
         public IActionResult Active(int page = 1, int pagesize = 0,ActiveRefresh? Refresh = null,ActiveSince? Since = null)
         {
             if (HttpContext.Session.GetInt32("ActivePageSize") != null && pagesize == 0)
@@ -306,7 +335,7 @@ namespace MVCForum.Controllers
             {
                 _memberService.SetLastHere(User);
             }
-            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
+            var homePage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
             var topicPage = new MvcBreadcrumbNode("Active", "Forum", "Active") { Parent = homePage };
             ViewData["BreadcrumbNode"] = topicPage;
             if (Since == null)
@@ -376,11 +405,11 @@ namespace MVCForum.Controllers
                 Status = p.Status,
                 Message = p.Content,
                 LastPostDate = !p.LastPostDate.IsNullOrEmpty() ? p.LastPostDate?.FromForumDateStr() : null,
-                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
+                LastPostAuthorName = p.LastPostAuthorId != null ? p.LastPostAuthor.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p),
                 Answered = p.Answered,
-                HasPoll = _postService.HasPoll(p.Id),
+                //HasPoll = _postService.HasPoll(p.Id),
             });
             if (Refresh == null)
             {
@@ -409,9 +438,27 @@ namespace MVCForum.Controllers
         
         [Breadcrumb(FromAction = "Index", FromController = typeof(CategoryController),Title = "Create Forum")]
         [Authorize(Roles="Administrator")]
+        [HttpGet]
         public IActionResult Create(int id)
         {
-            var model = new NewForumModel { CategoryList = _forumService.CategoryList()!,Category = id,ForumId = 0};
+             var catlist = _forumService.CategoryList();
+            if (id > 0)
+            {
+                var category = catlist.FirstOrDefault(f=>f.Key == id);
+                var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
+                var catPage = new MvcBreadcrumbNode("", "Category", category.Value) { Parent = forumPage,RouteValues = new {id=id}};
+                ViewData["BreadcrumbNode"] = catPage;
+            }
+            else
+            {
+                var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
+                var catPage = new MvcBreadcrumbNode("", "Category", "Create Forum") { Parent = forumPage};
+                ViewData["BreadcrumbNode"] = catPage;
+            }
+                
+
+
+            var model = new NewForumModel { CategoryList = catlist,Category = id,ForumId = 0};
             return View(model);
         }
 
@@ -432,12 +479,13 @@ namespace MVCForum.Controllers
                         CategoryId = model.Category,
                         Type = (short)model.Type,
                         Privateforums = model.AuthType,
-                        Status = (short)(model.Status ? 1 : 0),
+                        Status = (short)(model.Status),
                         Order = model.Order,
                         Defaultdays = (int)model.DefaultView,
                         CountMemberPosts = (short)(model.IncrementMemberPosts ? 1 : 0),
                         Moderation = model.Moderation,
-                        Subscription = (int)model.Subscription
+                        Subscription = (int)model.Subscription,
+                        Password = model.NewPassword
                     };
                     if (model.ForumId != 0)
                     {
@@ -461,39 +509,49 @@ namespace MVCForum.Controllers
             return RedirectToAction("Index","Category",new{id = model.Category});
         }
 
-        [Breadcrumb(FromAction = "Index",FromController = typeof(CategoryController), Title = "Edit Forum")]
+        //[Breadcrumb(FromAction = "Index",FromController = typeof(CategoryController), Title = "Edit Forum")]
         [Authorize(Roles="Administrator")]
+        [HttpGet]
         public IActionResult Edit(int id)
         {
             var forum = _forumService.GetById(id);
+            var catlist = _forumService.CategoryList();
+            var category = catlist.FirstOrDefault(f=>f.Key == forum.CategoryId);
+            var allforumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
+            var catPage = new MvcBreadcrumbNode("", "Category", category.Value) { Parent = allforumPage,RouteValues = new {id=forum.CategoryId}};
+            var forumPage = new MvcBreadcrumbNode("Index", "Post", forum.Title) { Parent = catPage };
+
+            ViewData["BreadcrumbNode"] = forumPage;
+
             var model = new NewForumModel
             {
-                CategoryList = _forumService.CategoryList()!,
+                CategoryList = catlist!,
                 Category = forum.CategoryId,
                 Id = id,
                 DefaultView = (DefaultDays)forum.Defaultdays,
                 Description = forum.Description,
                 IncrementMemberPosts = forum.CountMemberPosts == 1,
-                AuthType = (ForumAuthType)forum.Type,
+                AuthType = (ForumAuthType)forum.Privateforums,
                 Order = forum.Order,
                 Subject = forum.Title,
                 Type = (ForumType)forum.Type,
-                Status = forum.Status == 1,
+                Status = forum.Status,
                 Moderation = forum.Moderation,
                 Subscription = (ForumSubscription)forum.Subscription,
-                ForumId = id
+                ForumId = id,
+                NewPassword = forum.Password
             };
             return View("Create",model);
         }
 
         [Breadcrumb(FromAction = "Index",FromController = typeof(CategoryController), Title = "Delete Forum")]
         [Authorize(Roles="Administrator")]
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            string referer = Request.Headers["Referer"].ToString();
             var catid = _forumService.GetById(id).CategoryId;
             await _forumService.Delete(id);
-            return Json(new { redirectToUrl = referer ?? Url.Action("Index", "Category",new{id = catid}) });
+            return Json(new { redirectToUrl = Url.Action("Index", "Category",new{id = catid}) });
         }
         [HttpGet]
         [Authorize]
@@ -522,9 +580,9 @@ namespace MVCForum.Controllers
                 .ExecuteDelete();
             return Content("OK");
         }
-        public IActionResult Search(string? searchFor, int pagesize=10,int page=1)
+        public IActionResult Search(string? searchFor, int pagesize=10,int page=1,int catid = 0,int forumid=0)
         {
-            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
+            var homePage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
             var topicPage = new MvcBreadcrumbNode("Search", "Forum", "ViewData.Title") { Parent = homePage };
             ViewData["BreadcrumbNode"] = topicPage;
             ViewData["Title"] = "Search";
@@ -548,7 +606,7 @@ namespace MVCForum.Controllers
                 HttpContext.Session.SetString("searchFor",searchFor);
                 ViewData["Title"] = "SearchFor : " + searchFor;
             }
-            var posts = _postService.GetFilteredPost(searchFor!,out int totalcount,pagesize,page).Select(p => new PostListingModel()
+            var posts = _postService.GetFilteredPost(searchFor!,out int totalcount,pagesize,page,catid,forumid).Select(p => new PostListingModel()
             {
                 Id = p.Id,
                 AuthorId = p.MemberId,
@@ -592,7 +650,7 @@ namespace MVCForum.Controllers
         [HttpPost]
         public IActionResult SearchResult(ForumSearchModel model,int pagesize=10,int page=1)
         {
-            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
+            var homePage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
             var searchPage = new MvcBreadcrumbNode("Search", "Forum", "Search") { Parent = homePage };
             var topicPage = new MvcBreadcrumbNode("Search", "Forum", "ViewData.Title") { Parent = searchPage };
             ViewData["BreadcrumbNode"] = topicPage;
@@ -667,13 +725,26 @@ namespace MVCForum.Controllers
             return ViewComponent("MyView", new { template = "Posts", model = vm });
 
         }
+
+        public IActionResult PasswordCheck(string pwd,string forumid,string? topicid)
+        {
+            var forum = _forumService.GetById(Convert.ToInt32(forumid));
+            if (forum != null && forum.Password == pwd)
+            {
+                _httpcontext.Session.SetString("Pforum_" + forumid, pwd);
+                return Json(true);
+            }
+
+            return Json(false);
+        }
         private ForumListingModel BuildForumListing(Post post)
         {
             var forum = post.Forum!;
 
-            return BuildForumListing(forum);
+            return BuildForumListing(post.ForumId,forum);
         }
-        private ForumListingModel BuildForumListing(Forum forum, int? defaultdays = null, string orderby = "lpd", string sortdir = "des")
+        [OutputCache(Duration = 30,VaryByQueryKeys = new []{"forumid"})]
+        private ForumListingModel BuildForumListing(int forumid, Forum forum, int? defaultdays = null, string orderby = "lpd", string sortdir = "des")
         {
             return new ForumListingModel()
             {
@@ -734,5 +805,59 @@ namespace MVCForum.Controllers
 
         }
 
+        public IActionResult RemoveAllowed(IFormCollection form)
+        {
+            try
+            {
+                var member = Convert.ToInt32(form["AllowedMembers"]);
+                var forum = Convert.ToInt32(form["ForumId"]);
+                var allowedMember = _snitzDbContext.ForumAllowedMembers.SingleOrDefault(a=>a.MemberId == member && a.ForumId == forum);
+                if (allowedMember != null)
+                {
+                    _snitzDbContext.Remove(allowedMember);
+                    _snitzDbContext.SaveChanges();
+                    return Json(new{id = form["AllowedMembers"]});
+                }
+                return Json(new{error="Record not found"});
+            }
+            catch (Exception e)
+            {
+                return Json(new{error = e.Message});
+            }
+
+        }
+        public IActionResult AddAllowed(IFormCollection form)
+        {
+            try
+            {
+                var member = _memberService.GetByUsername(form["NewMember"]);
+                if (member != null)
+                {
+                    var allowed = new ForumAllowedMember()
+                    {
+                        MemberId = member.Id,
+                        ForumId = Convert.ToInt32(form["ForumId"])
+                    };
+                    try
+                    {
+                        _snitzDbContext.ForumAllowedMembers.Add(allowed);
+                        _snitzDbContext.SaveChanges();
+                        return Json(new{id=member.Id,name=member.Name});
+                    }
+                    catch (Exception e)
+                    {
+                        return Json(new{error=e.Message});
+                    }
+                }
+                return Json(new{error="Member not found"});
+            }
+            catch (Exception e)
+            {
+                return Json(new{error=e.Message});
+            }
+
+
+            
+        }
     }
 }

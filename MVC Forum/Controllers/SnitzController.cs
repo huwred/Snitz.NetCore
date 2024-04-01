@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using SnitzCore.Data;
@@ -27,7 +29,12 @@ namespace MVCForum.Controllers
             _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
         }
 
+        public JsonResult AutoCompleteUsername(string term)
+        {
+            IEnumerable<string> result = _memberService.GetAll().Where(m=>m.Status == 1).Where(r => r!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
 
+            return Json(result);
+        }
         public static string Combine(string uri1, string uri2)
         {
             uri1 = uri1.TrimEnd('/');
