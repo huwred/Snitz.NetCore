@@ -40,9 +40,9 @@
     <snitz-breadcrumb></snitz-breadcrumb>
     <form asp-action="MemberImages" asp-controller="PhotoAlbum" data-ajax="true" data-ajax-update="#ImageContainer">
         <div class="row">
-            <div class="col-6">
+            <div class="col col-lg-6">
+                <input type="text" value='@ViewBag.Display' name="display" id="display-template" style="display: none;" />
                 <div class="input-group">
-                    <input type="text" value='@ViewBag.Display' name="display" id="display-template" style="display: none;" />
                     <select class="form-select" id="album-sortby" name="SortBy">
                         <option value="id" snitz-if='@ViewBag.SortBy == "id"' selected>@Localizer["optSortId"]</option>
                         <option value="id" snitz-if='@ViewBag.SortBy != "id"'>@Localizer["optSortId"]</option>
@@ -143,8 +143,21 @@
 @section Scripts
 {
     <script src="~/js/jquery.unobtrusive-ajax.js"></script>
+    <script src="/js/jquery.lazyload-any.min.js" type="text/javascript"></script>
    <script type="text/javascript">
+       $('.lazyloadtr').lazyload({
+           // Sets the pixels to load earlier. Setting threshold to 200 causes image to load 200 pixels
+           // before it appears on viewport. It should be greater or equal zero.
+           threshold: 100,
 
+           // Sets the callback function when the load event is firing.
+           // element: The content in lazyload tag will be returned as a jQuery object.
+           load: function(element) {},
+
+           // Sets events to trigger lazyload. Default is customized event `appear`, it will trigger when
+           // element appear in screen. You could set other events including each one separated by a space.
+           trigger: "appear"
+       });
         $(document).on('click', '#submitUpload',
             function (e) {
                 e.preventDefault();

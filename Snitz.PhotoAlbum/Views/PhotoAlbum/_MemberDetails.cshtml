@@ -10,13 +10,13 @@
     <table class="table table-bordered table-striped member-details">
         <thead>
         <tr class="row bg-primary">
-            <th class="col-2 col-md-1 col-thumb">
-                <a href="&sortby=file">@Localizer["Image"]</a>
+            <th class="col-2 col-md-1 col-thumb center">
+                <a href="&sortby=file"><i class="fa fa-picture-o"</a>
             </th>
             <th class="col-2 d-none d-sm-none d-md-none d-lg-inline">
                 <a href="&sortby=id">@Localizer["lblForumcode"]</a>
             </th>
-            <th class="col-8 col-sm-4 col-md-2">
+            <th class="col-10 col-sm-4 col-md-2">
                 <a href="&sortby=localname">@Localizer["lblDescription"]</a>
             </th>
             <th class="col-2 d-none d-sm-none d-md-inline">
@@ -47,15 +47,15 @@
             <tbody>
                 @foreach (var photo in Model)
                 {
-                    <tr class="row" snitz-if="!@photo.IsPrivate || @showprivate">
+                    <tr class="row lazyloadtr" snitz-if="!@photo.IsPrivate || @showprivate">
                         <td class="col-2 col-md-1 col-thumb">
                             <a class="view-gallery" target="_blank" href="/PhotoAlbum/Gallery/@photo.MemberId/?photoid=@photo.Id&speciesOnly=false" title="Image @photo.Id">
                                 <album-image class="img-thumbnail" src="@photo.ImageName" width="100" height="100" org-width="@photo.Width" org-height="@photo.Height"></album-image>
                             </a>
                         </td>
                         <td class="col-2 d-none d-sm-none d-md-none d-lg-inline">[image=@photo.Id]</td>
-                        <td class="col-8 col-sm-4 col-md-2">@photo.Description</td>
-                        <td class="col-2 d-none d-sm-none d-md-inline"><a class="view-gallery" href="@Url.Action("Gallery", new {id = photo.MemberId, photoid = photo.Id,pagenum=1, searchparams= ViewBag.JsonParams})" title="@Localizer["lblImage"].Value @photo.Id">@photo.Location</a></td>
+                        <td class="col-10 col-sm-4 col-md-2 text-truncate">@photo.Description</td>
+                        <td class="col-2 d-none d-sm-none d-md-inline"><a class="view-gallery" href="@Url.Action("Gallery", new {id = photo.MemberId, photoid = photo.Id,pagenum=1})" title="@Localizer["lblImage"].Value @photo.Id">@photo.Location</a></td>
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Timestamp.FromForumDateStr().ToShortDateString()</td>
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Views</td>
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Width x @photo.Height</td>

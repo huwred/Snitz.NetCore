@@ -16,6 +16,8 @@ using SnitzCore.Service;
 using Microsoft.Extensions.FileProviders;
 using X.PagedList;
 using Microsoft.AspNetCore.Http;
+using SnitzCore.Data.Models;
+using SnitzCore.Data.Models;
 
 namespace Snitz.PhotoAlbum.Controllers
 {
@@ -62,22 +64,8 @@ namespace Snitz.PhotoAlbum.Controllers
                         imgCount = ai.Count()
                     });
 
-                //var model =
-                //    from ai in _dbContext.Set<AlbumImage>()
-                //    join m in _dbContext.Members on ai.MemberId equals m.Id
-                //    where m.Status == 1
-                //    group ai by new{ai.MemberId,m.Name} into lJ
-                //    select new AlbumList()
-                //    {
-                //        MemberId = lJ.Key.MemberId,
-                //        Username = lJ.Key.Name,
-                //        imgLastUpload = lJ.Max(l=>l.Timestamp),
-                //        imgCount = lJ.Count()
-                //    };
-
                 ViewBag.SortUser = ViewBag.SortDate = ViewBag.SortCount = "asc";
                 ViewBag.SortDir = sortdir;
-
                 ViewBag.SortBy = orderby;
                 ViewBag.SearchTerm = term;
                 if (!string.IsNullOrWhiteSpace(term))
@@ -104,32 +92,52 @@ namespace Snitz.PhotoAlbum.Controllers
             }
         }
 
-        private PagedList<AlbumList>? PagedPhotos(int pagenum, int pagesize, string sortOrder, string sortBy, IQueryable<AlbumList> model)
+        [HttpPost]
+        public IActionResult Search(SearchViewModel vm)
         {
-            if(!model.Any()) return null;
-            PagedList<AlbumList> pagedReplies;
-            switch (sortBy)
+            if (string.IsNullOrWhiteSpace(vm.searchTerms))
             {
-                case "user":
-                    pagedReplies = sortOrder == "asc"
-                        ? new PagedList<AlbumList>(model.OrderBy(r => r.Username), pagenum, pagesize)
-                        : new PagedList<AlbumList>(model.OrderByDescending(r => r.Username), pagenum, pagesize);
-                    return pagedReplies;                    break;
-                case "date":
-                    pagedReplies = sortOrder == "asc"
-                        ? new PagedList<AlbumList>(model.OrderBy(r => r.imgLastUpload), pagenum, pagesize)
-                        : new PagedList<AlbumList>(model.OrderByDescending(r => r.imgLastUpload), pagenum, pagesize);
-                    return pagedReplies;
-                    break;
-                case "count":
-                    pagedReplies = sortOrder == "asc"
-                        ? new PagedList<AlbumList>(model.OrderBy(r => r.imgCount), pagenum, pagesize)
-                        : new PagedList<AlbumList>(model.OrderByDescending(r => r.imgCount), pagenum, pagesize);
-                    return pagedReplies;                    break;
+                return RedirectToAction("Album");
             }
-            return null;
-        }
+            var albumPage = new MvcBreadcrumbNode("", "PhotoAlbum", _languageResource["mnuMemberAlbums"].Value);
+            ViewData["BreadcrumbNode"] = albumPage;
+            int pagesize = 24;
 
+            try
+            {
+                var images = GetSpeciesEntries(1, vm.SortBy ?? "id", vm.SrchGroupId, true, vm.SrchIn.ToList(),vm.searchTerms,vm.SortOrder == "asc" ? "" : "1" );
+                ViewBag.MemberId = 0;
+
+                ViewBag.IsOwner = false;
+                ViewBag.Display = 0;
+                ViewBag.SortBy = vm.SortBy ?? "0";
+                ViewBag.SortPage = vm.SortOrder;
+                ViewBag.SortHead = vm.SortOrder == "asc" ? "desc" : "asc";
+                ViewBag.SortDir = vm.SortOrder;
+                //Paging info
+                ViewBag.Page = 1;
+                ViewBag.PageCount = (images.Count() / pagesize) + 1;;
+
+                var displayvm = new SpeciesAlbum
+                {
+                    GroupList = GetGroupList(),
+                    Images = images,
+                    Thumbs = true,
+                    SpeciesOnly = true,
+                    SortBy = vm.SortBy,
+                    GroupFilter = vm.SrchGroupId
+                };
+                return View("Album", displayvm);
+            }
+            catch (Exception e)
+            {
+                ViewBag.Message = e.Message;
+                //This view is in main Snitz Views, just set a ViewBag.Message
+                return View("Error");
+            }
+
+            
+        }
         public IActionResult GetPhoto(int? id)
         {
             var orgimage = _dbContext.Set<AlbumImage>().Find(id);
@@ -146,7 +154,6 @@ namespace Snitz.PhotoAlbum.Controllers
         /// <param name="sortby"></param>
         /// <param name="sortorder"></param>
         /// <returns></returns>
-        //[ResponseCache(VaryByHeader = "User-Agent", Duration = 30)]
         public IActionResult Member(string id, int display = 0, int pagenum = 1, string sortby = "date",string sortorder = "desc", int uid=0)
         {
             var albumPage = new MvcBreadcrumbNode("", "PhotoAlbum", _languageResource["mnuMemberAlbums"].Value);
@@ -210,7 +217,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 SrchTerm = id,
                 SpeciesOnly = false
             };
-            ViewBag.JsonParams = JsonConvert.SerializeObject(param);
+           // ViewBag.JsonParams = JsonConvert.SerializeObject(param);
             return View(test.ToList());
 
         }
@@ -240,7 +247,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 filter = groupFilter;
             }
 
-            var images = GetSpeciesEntries(pagenum, sortby: sortby, filter: filter, speciesOnly: speciesOnly, sortDesc: sortOrder == "asc" ? "" : "1");
+            var images = GetSpeciesEntries(pagenum, sortby: sortby, groupid: filter, speciesOnly: speciesOnly, sortDesc: sortOrder == "asc" ? "" : "1");
             ViewBag.Username = id;
             ViewBag.MemberId = 0;
 
@@ -264,7 +271,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 GroupFilter = filter
             };
 
-            ViewBag.JsonParams = JsonConvert.SerializeObject(vm);
+            //ViewBag.JsonParams = JsonConvert.SerializeObject(vm);
             return View(vm);
 
         }
@@ -484,6 +491,7 @@ namespace Snitz.PhotoAlbum.Controllers
             }
             return Content("Updated");
         }
+
         [HttpPost]
         [Authorize]
         public IActionResult AddGroup(AlbumGroup group)
@@ -501,6 +509,33 @@ namespace Snitz.PhotoAlbum.Controllers
 
             return Content("Group removed.");
         }
+
+        private PagedList<AlbumList>? PagedPhotos(int pagenum, int pagesize, string sortOrder, string sortBy, IQueryable<AlbumList> model)
+        {
+            if(!model.Any()) return null;
+            PagedList<AlbumList> pagedReplies;
+            switch (sortBy)
+            {
+                case "user":
+                    pagedReplies = sortOrder == "asc"
+                        ? new PagedList<AlbumList>(model.OrderBy(r => r.Username), pagenum, pagesize)
+                        : new PagedList<AlbumList>(model.OrderByDescending(r => r.Username), pagenum, pagesize);
+                    return pagedReplies;                    break;
+                case "date":
+                    pagedReplies = sortOrder == "asc"
+                        ? new PagedList<AlbumList>(model.OrderBy(r => r.imgLastUpload), pagenum, pagesize)
+                        : new PagedList<AlbumList>(model.OrderByDescending(r => r.imgLastUpload), pagenum, pagesize);
+                    return pagedReplies;
+                    break;
+                case "count":
+                    pagedReplies = sortOrder == "asc"
+                        ? new PagedList<AlbumList>(model.OrderBy(r => r.imgCount), pagenum, pagesize)
+                        : new PagedList<AlbumList>(model.OrderByDescending(r => r.imgCount), pagenum, pagesize);
+                    return pagedReplies;                    break;
+            }
+            return null;
+        }
+
         private static IImageProcessingContext ConvertToThumb(IImageProcessingContext context, Size size)
         {
             return context.Resize(new ResizeOptions
@@ -509,7 +544,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 Mode = ResizeMode.Crop
             });
         }
-        private List<AlbumImage> GetSpeciesEntries(int pagenum, string? sortby = "id", int? filter = 0, bool? speciesOnly = true, List<string>? searchin = null, string? searchfor = null, string sortDesc="")
+        private List<AlbumImage> GetSpeciesEntries(int pagenum, string? sortby = "id", int? groupid = 0, bool? speciesOnly = true, List<string>? searchin = null, string? searchfor = null, string sortDesc="")
         {
             var currentmemberid = _memberservice.Current()?.Id;
 
@@ -545,9 +580,9 @@ namespace Snitz.PhotoAlbum.Controllers
                     images = (IOrderedQueryable<AlbumImage>)images.Where(i=> !string.IsNullOrWhiteSpace(i.Description));
                 }
 
-            if (filter > 0)
+            if (groupid > 0)
             {
-                images = (IOrderedQueryable<AlbumImage>)images.Where(i => i.GroupId == filter);
+                images = (IOrderedQueryable<AlbumImage>)images.Where(i => i.GroupId == groupid);
             }
             if (searchfor != null)
             {

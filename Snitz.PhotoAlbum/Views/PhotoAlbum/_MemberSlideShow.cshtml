@@ -37,7 +37,7 @@
                 else
                 {
                     <div class="carousel-item">
-                        <album-image data-id="@image.Id" org-width="@image.Width" org-height="@image.Height" width="800" height="600" src="@($"{image.Timestamp}_{image.Location}")" class="d-block" description="@image.Description"></album-image>
+                        <album-image data-id="@image.Id" org-width="@image.Width" org-height="@image.Height" width="800" height="600" src="@($"{image.Timestamp}_{image.Location}")" class="d-block img-fluid" description="@image.Description"></album-image>
                         <div class="carousel-caption d-none d-md-block">
                             <h5 class="text-dark">@image.ImageName</h5>
                             <p>@image.Description</p>
