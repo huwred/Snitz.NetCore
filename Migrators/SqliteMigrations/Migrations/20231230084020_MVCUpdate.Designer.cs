@@ -1479,7 +1479,7 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT")
-                        .HasColumnName("BL_BLOCKEDNAME");
+                        .HasColumnName("BL_BLOCKED_NAME");
 
                     b.Property<int>("MemberId")
                         .HasColumnType("INTEGER")

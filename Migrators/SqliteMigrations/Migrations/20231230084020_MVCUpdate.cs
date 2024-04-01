@@ -87,7 +87,7 @@ namespace WebApplication1.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     BL_MEMBER_ID = table.Column<int>(type: "INTEGER", nullable: false),
                     BL_BLOCKED_ID = table.Column<int>(type: "INTEGER", nullable: false),
-                    BL_BLOCKEDNAME = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
+                    BL_BLOCKED_NAME = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {

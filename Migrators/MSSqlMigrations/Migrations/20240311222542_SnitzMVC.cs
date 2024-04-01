@@ -324,7 +324,7 @@ namespace Migrations
                             .Annotation("SqlServer:Identity", "1, 1"),
                         BL_MEMBER_ID = table.Column<int>(type: "int", nullable: false),
                         BL_BLOCKED_ID = table.Column<int>(type: "int", nullable: false),
-                        BL_BLOCKEDNAME = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                        BL_BLOCKED_NAME = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                     },
                     constraints: table =>
                     {
