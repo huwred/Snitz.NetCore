@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
+using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using static SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel;
@@ -466,7 +467,73 @@ namespace SnitzCore.BackOffice.Controllers
 
         public IActionResult EmailConfigUpdate(AdminEmailServer model)
         {
-            return PartialView("SaveResult");
+            if (ModelState.IsValid)
+            {
+                SettingsHelpers.AddOrUpdateAppSetting("MailSettings:Port", model.Port);
+                SettingsHelpers.AddOrUpdateAppSetting("MailSettings:SmtpServer", model.Server);
+                SettingsHelpers.AddOrUpdateAppSetting("MailSettings:Password", model.Password);
+                SettingsHelpers.AddOrUpdateAppSetting("MailSettings:UserName", model.Username);
+                SettingsHelpers.AddOrUpdateAppSetting("MailSettings:From", model.From);
+                SettingsHelpers.AddOrUpdateAppSetting("MailSettings:RequireLogin", model.Auth);
+                SettingsHelpers.AddOrUpdateAppSetting("MailSettings:SecureSocketOptions", model.SslMode);
+
+            }
+            try
+            {
+                _dbcontext.Database.BeginTransaction();
+
+                var conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "STREMAIL");
+                if (conf != null)
+                {
+                    if (conf.Value != model.EmailMode)
+                    {
+                        conf.Value = model.EmailMode;
+                        _dbcontext.SnitzConfig.Update(conf);
+                    }
+                }
+                else
+                {
+                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STREMAIL", Value = model.EmailMode });
+                }
+                conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "STRFILTEREMAILADDRESSES");
+                if (conf != null)
+                {
+                    if (conf.Value != model.UseSpamFilter)
+                    {
+                        conf.Value = model.UseSpamFilter;
+                        _dbcontext.SnitzConfig.Update(conf);
+                    }
+                }
+                else
+                {
+                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STRFILTEREMAILADDRESSES", Value = model.UseSpamFilter });
+                }
+                conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "STRCONTACTEMAIL");
+                if (conf != null)
+                {
+                    if (conf.Value != model.ContactEmail)
+                    {
+                        conf.Value = model.ContactEmail;
+                        _dbcontext.SnitzConfig.Update(conf);
+                    }
+                }
+                else
+                {
+                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STRCONTACTEMAIL", Value = model.ContactEmail });
+                }
+                _dbcontext.SaveChanges(true);
+            }
+            catch (Exception e)
+            {
+                _dbcontext.Database.RollbackTransaction();
+                ViewBag.Error = e.Message;
+                return View("Error");
+            }
+            finally
+            {
+                _dbcontext.Database.CommitTransaction();
+            }
+            return PartialView("SaveResult","Settings saved successfully");
         }
         public IActionResult EmailConfig()
         {

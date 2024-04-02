@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
+using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 
@@ -28,6 +29,22 @@ namespace SnitzCore.BackOffice.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult SaveSettings(IFormCollection form)
         {
+            if (form.ContainsKey("_STRFORUMTITLE"))
+            {
+                SettingsHelpers.AddOrUpdateAppSetting("SnitzForums:strForumTitle", form["_STRFORUMTITLE"]);
+            }
+            if (form.ContainsKey("_STRCOPYRIGHT"))
+            {
+                SettingsHelpers.AddOrUpdateAppSetting("SnitzForums:strCopyright", form["_STRCOPYRIGHT"]);
+            }
+            if (form.ContainsKey("_STRFORUMDESC"))
+            {
+                SettingsHelpers.AddOrUpdateAppSetting("SnitzForums:strForumDescription", form["_STRFORUMDESC"]);
+            }
+            if (form.ContainsKey("_STRFORUMURL"))
+            {
+                SettingsHelpers.AddOrUpdateAppSetting("SnitzForums:strForumUrl", form["_STRFORUMURL"]);
+            }
             return PartialView("SaveResult",SaveForm(form));
         }
         [HttpPost]

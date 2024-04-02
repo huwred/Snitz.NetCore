@@ -1,4 +1,8 @@
-﻿@using SnitzCore.Data.Interfaces
+﻿@using SnitzCore.Services.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.Extensions.Options
+@using SnitzCore.Data.Models
+@inject IOptionsSnapshot<SnitzForums> Config
 @{
     Layout = "_MasterLayout";
 }
@@ -10,13 +14,16 @@
             <hr/>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRFORUMTITLE" config-label="Forum Title" config-val="@SnitzConfig.ForumTitle"></admin-config>
+                    <admin-config config-key="STRFORUMTITLE" config-label="Forum Title" config-val="@SnitzConfig.GetValue("STRFORUMTITLE")" disabled="true"></admin-config>
+                    <input type="text" name="_STRFORUMTITLE" value="@Config.Value.strForumTitle" class="form-control" />
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRCOPYRIGHT" config-label="Forum Copyright" config-val="@SnitzConfig.GetValue("STRCOPYRIGHT")"></admin-config>
+                    <admin-config config-key="STRCOPYRIGHT" config-label="Forum Copyright" config-val="@SnitzConfig.GetValue("STRCOPYRIGHT")" disabled="true"></admin-config>
+                    <input type="text" name="_STRCOPYRIGHT" value="@Config.Value.strCopyright" class="form-control" />
                 </div>
             </div>
-            <admin-config config-key="STRFORUMDESC" config-label="Forum Description" config-val="@SnitzConfig.GetValue("STRFORUMDESC")"></admin-config>
+            <admin-config config-key="STRFORUMDESC" config-label="Forum Description" config-val="@SnitzConfig.GetValue("STRFORUMDESC")" disabled="true"></admin-config>
+            <input type="text" name="_STRFORUMDESC" value="@Config.Value.strForumDescription" class="form-control" />
 
             <div class="row">
                 <div class="col">
@@ -24,6 +31,7 @@
                 </div>
                 <div class="col">
                     <admin-config config-key="STRFORUMURL" config-label="Forum URL" config-val="@SnitzConfig.ForumUrl"></admin-config>
+                    <input type="text" name="_STRFORUMURL" value="@Config.Value.strForumUrl" class="form-control" />
                 </div>
             </div>
             <div class="row">
