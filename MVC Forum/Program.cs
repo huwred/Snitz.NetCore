@@ -40,7 +40,13 @@ using SnitzCore.Service.Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)       
+    .AddJsonFile($"appsettings{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
+builder.Services.Configure<SnitzForums>(builder.Configuration.GetSection("SnitzForums"));
+builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddDbContext<SnitzDbContext>(options =>
 {
     options.UseDatabase(builder.Configuration.GetConnectionString("DBProvider"), builder.Configuration, System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data"));

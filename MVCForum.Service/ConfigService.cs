@@ -128,7 +128,8 @@ namespace SnitzCore.Service
         {
             if(string.IsNullOrWhiteSpace(key)) return defaultvalue;
             var service = new InMemoryCache() { DoNotExpire = true };
-            return int.Parse(service.GetOrSet("cfg_" + key, () => CachedIntValue(key,defaultvalue))!);
+            var result = service.GetOrSet("cfg_" + key, () => CachedIntValue(key, defaultvalue));
+            return result != null ? int.Parse(result) : defaultvalue;
 
         }
 
@@ -141,7 +142,7 @@ namespace SnitzCore.Service
             var config = _dbContext.SnitzConfig.SingleOrDefault(c => c.Key == key);
             if (config != null)
             {
-                    return config.Value;
+                return config.Value;
             }
 
             return defaultvalue.ToString();

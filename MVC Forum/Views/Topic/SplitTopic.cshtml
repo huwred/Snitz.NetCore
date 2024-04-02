@@ -1,4 +1,5 @@
 ﻿@using BbCodeFormatter
+@using Microsoft.AspNetCore.Http
 @using SnitzCore.Data.Extensions
 @model MVCForum.ViewModels.SplitTopicViewModel
 @inject ICodeProcessor BbCodeProcessor
@@ -12,9 +13,9 @@
     </style>
 }
 @{
-    ViewBag.Title = "Topic : " + Model.Topic.Title;
+    ViewBag.Title = "Topic : " + Model.Topic?.Title;
     List<int> selectedReplies = new List<int>();
-    if (Context.Session.GetObject<List<int>>("ReplyList") != null)
+    if (Context.Session.Get("ReplyList") != null)
     {
         selectedReplies = Context.Session.GetObject<List<int>>("ReplyList");
     }
@@ -43,15 +44,15 @@
                 <table class="table table-responsive table-bordered table-striped">
                     <tr class="row">
                         <th colspan="2">
-                            <label>@Model.Topic.Title</label>
+                            <label>@Model.Topic?.Title</label>
                         </th>
                     </tr>
                     <tr class="row">
-                        <td class="col-2">@Model.Topic.Member.Name</td>
+                        <td class="col-2">@Model.Topic?.Member?.Name</td>
                         <td class="col">
-                            @Model.Topic.Created.FromForumDateStr()
+                            @Model.Topic?.Created.FromForumDateStr()
                             <hr class="title" />
-                            @Html.Raw(BbCodeProcessor.Format(Model.Topic.Content))
+                            @Html.Raw(BbCodeProcessor.Format(Model.Topic?.Content))
                         </td>
                     </tr>
                 </table>
@@ -73,27 +74,30 @@
                             <th class="col-1"><input type="checkbox" id="checkAll" title="@Localizer["tipCheckAll"]" /></th>
                         </tr>
                     </thead>
-                    @foreach (var item in Model.Replies)
+                    @if (Model.Replies != null)
                     {
-                        <tr class="row">
-                            <td class="col-1">@Html.HiddenFor(i => i.Id)@item.Member.Name</td>
-                            <td class="form-text col-10">
-                                @item.Created.FromForumDateStr()
-                                <hr class="title" />
-                                @Html.Raw(BbCodeProcessor.Format(item.Content))
-                            </td>
-                            <td class="col-1">
-                                @if (selectedReplies.Contains(item.Id) || item.Id == ViewBag.ReplyId)
-                                {
-                                    <input type="checkbox" id="check" name="check" value="@item.Id" class="selector" checked="" />
-                                }
-                                else
-                                {
-                                    <input type="checkbox" id="check" name="check" value="@item.Id" class="selector" />
-                                }
+                        foreach (var item in Model.Replies)
+                        {
+                            <tr class="row">
+                                <td class="col-1">@Html.HiddenFor(i => i.Id)@item.Member?.Name</td>
+                                <td class="form-text col-10">
+                                    @item.Created.FromForumDateStr()
+                                    <hr class="title"/>
+                                    @Html.Raw(BbCodeProcessor.Format(item.Content))
+                                </td>
+                                <td class="col-1">
+                                    @if (selectedReplies.Contains(item.Id) || item.Id == ViewBag.ReplyId)
+                                    {
+                                        <input type="checkbox" id="check" name="check" value="@item.Id" class="selector" checked=""/>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id="check" name="check" value="@item.Id" class="selector"/>
+                                    }
 
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
+                        }
                     }
                 </table>
 
@@ -107,22 +111,8 @@
 
 
 @section Scripts {
-    <script src="~/js/jquery.unobtrusive-ajax.js"></script>
-    <script src="/js/jquery.lazyload-any.min.js" type="text/javascript"></script>
     <script type="text/javascript">
-        $('.lazyloadtr').lazyload({
-           // Sets the pixels to load earlier. Setting threshold to 200 causes image to load 200 pixels
-           // before it appears on viewport. It should be greater or equal zero.
-           threshold: 250,
 
-           // Sets the callback function when the load event is firing.
-           // element: The content in lazyload tag will be returned as a jQuery object.
-           load: function(element) {},
-
-           // Sets events to trigger lazyload. Default is customized event `appear`, it will trigger when
-           // element appear in screen. You could set other events including each one separated by a space.
-           trigger: "appear"
-       });
         $('#checkAll').change(function () {
             var checkboxes = $(this).closest('form').find(':checkbox');
             if ($(this).is(':checked')) {
