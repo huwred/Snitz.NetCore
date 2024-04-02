@@ -36,6 +36,10 @@ namespace SnitzCore.Data.Interfaces
             if (item == null)
             {
                 item = getItemCallback();
+                if (item == null)
+                {
+                    return item;
+                }
                 if (_policy != null)
                 {
                     MemoryCache.Default.Add(cacheKey, item!, _policy);
