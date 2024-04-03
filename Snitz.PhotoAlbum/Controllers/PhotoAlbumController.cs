@@ -234,7 +234,7 @@ namespace Snitz.PhotoAlbum.Controllers
         /// <param name="speciesOnly"></param>
         /// <returns></returns>
         public ActionResult Album(string id, int pagenum = 1, string sortby = "date", int groupFilter = -1,
-            string sortOrder = "desc", bool showThumbs = true, bool speciesOnly = true)
+            string sortOrder = "desc", bool showThumbs = true, int speciesOnly = 1)
         {
             var albumPage = new MvcBreadcrumbNode("Album", "PhotoAlbum", "Species Album");
             ViewData["BreadcrumbNode"] = albumPage;
@@ -247,7 +247,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 filter = groupFilter;
             }
 
-            var images = GetSpeciesEntries(pagenum, sortby: sortby, groupid: filter, speciesOnly: speciesOnly, sortDesc: sortOrder == "asc" ? "" : "1");
+            var images = GetSpeciesEntries(pagenum, sortby: sortby, groupid: filter, speciesOnly: speciesOnly == 1, sortDesc: sortOrder == "asc" ? "" : "1");
             ViewBag.Username = id;
             ViewBag.MemberId = 0;
 
@@ -266,7 +266,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 GroupList = GetGroupList(),
                 Images = images,
                 Thumbs = showThumbs,
-                SpeciesOnly = speciesOnly,
+                SpeciesOnly = speciesOnly == 1,
                 SortBy = sortby,
                 GroupFilter = filter
             };
@@ -478,7 +478,43 @@ namespace Snitz.PhotoAlbum.Controllers
 
             return RedirectToAction("MemberImages", new {id=memberid,display=1 });
         }
+        public IActionResult Delete(AlbumImage img)
+        {
+            var image = _dbContext.Set<AlbumImage>().Find(img.Id);
+            if (image != null)
+            {
+                _dbContext.Remove<AlbumImage>(image);
+                _dbContext.SaveChanges();
+            }
 
+            return RedirectToAction("Member", new {id=img.MemberId,display=1 });
+        }
+        [HttpGet]
+        public IActionResult Edit(int? id)
+        {
+            var origimage = _dbContext.Set<AlbumImage>().Include(a=>a.Member).SingleOrDefault(a=>a.Id==id);
+
+            return View(origimage);
+        }
+        [HttpPost]
+        public IActionResult Edit(AlbumImage img)
+        {
+            var image = _dbContext.Set<AlbumImage>().Find(img.Id);
+            if (image != null)
+            {
+                image.CommonName = img.CommonName;
+                image.ScientificName = img.ScientificName;
+                image.Description = img.Description;
+                image.GroupId = img.GroupId;
+                image.CategoryId = img.CategoryId;
+                image.IsPrivate = img.IsPrivate;
+                image.DoNotFeature = img.DoNotFeature;
+                _dbContext.Update(image);
+                _dbContext.SaveChanges();
+            }
+
+            return RedirectToAction("Member", new {id=img.MemberId });
+        }
         public IActionResult UpdateGroup(AlbumGroup group)
         {
             var albumGroup = _dbContext.Set<AlbumGroup>().Find(group.Id);

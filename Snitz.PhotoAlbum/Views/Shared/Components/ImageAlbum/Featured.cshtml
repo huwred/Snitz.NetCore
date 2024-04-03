@@ -1,0 +1,28 @@
+﻿@using SnitzCore.Data.Extensions
+@using SnitzCore.Service.Extensions
+@model Snitz.PhotoAlbum.Models.AlbumImage
+@{
+    string rootFolder = "Content";
+    string imagename =  $"{Url.Content("~/")}{rootFolder}/PhotoAlbum/{Model.ImageName}";
+}
+<div class="card mb-2" >
+    <div class="card-header subforum-title">
+        Featured Image
+    </div>
+    <img src="@imagename" alt="[Image=@Model.Id]" id="featured-img" class="img-fluid m-2"/>
+    <div class="card-body p-3">
+        <h5 class="card-title">@Model.Description</h5>
+        <ul class="list-unstyled form-text">
+            <li>Tag [Image=@Model.Id]</li>
+            <li>@Localizer["lblFileName"]: @Model.Location</li>
+            <li>@Localizer["lblScientificName"]: @Model.ScientificName</li>
+            <li>@Localizer["lblLocalName"]: @Model.CommonName</li>
+            <li>@Localizer["lblOwner"]: @Model.Member.Name</li>
+            <li>@Localizer["lblDate"]: @Model.Timestamp.FromForumDateStr().ToTimeagoDate()</li>
+        </ul>
+        @* <a href="#" class="btn btn-primary">Go somewhere</a> *@
+    </div>
+</div>
+
+
+

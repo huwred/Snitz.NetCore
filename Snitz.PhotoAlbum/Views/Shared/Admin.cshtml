@@ -50,12 +50,6 @@
             <label class="form-check-label" for="INTFEATUREDPHOTO">Featured image</label>
             <p class="form-text">Display a random image from the albums in the sidebar</p>
         </div>
-        <div class="mb-3">
-            @if (ViewBag.NoImages)
-            {
-                <p class="form-text">No images to feature</p>
-            }
-        </div>
         <div snitz-if="@(SnitzConfig.GetIntValue("INTPROTECTCONTENT") == 1)" class="form-check form-switch mb-3">
             <input type="checkbox" role="switch" name="INTPROTECTPHOTO" id="INTPROTECTPHOTO" value="1" class="form-check-input" checked="@(SnitzConfig.GetIntValue("INTPROTECTPHOTO")==1)" style="transform: scale(1.4);">
             <input type="checkbox" name="INTPROTECTPHOTO" value="0" checked="@(SnitzConfig.GetIntValue("INTPROTECTPHOTO")==0)" style="display: none">

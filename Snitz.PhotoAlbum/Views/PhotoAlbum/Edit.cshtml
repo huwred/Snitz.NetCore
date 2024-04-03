@@ -1,0 +1,57 @@
+﻿@using SnitzCore.Data.Extensions
+@using SnitzCore.Service.Extensions
+@model Snitz.PhotoAlbum.Models.AlbumImage
+
+@{
+    Layout = "Layout";
+}
+<div class="container center">
+<div class="card w-75 center">
+    <div class="card-header subforum-title">
+        <h5>Edit Image</h5>
+    </div>
+    <div class="card-body p-3">
+        <form asp-action="Edit">
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="MemberId" type="hidden" />
+            <input asp-for="ImageName" type="hidden" />
+            <ul class="list-unstyled">
+                <li class="mb-3 text-truncate">Image: @Model.ImageName</li>
+                <li class="mb-3"><label asp-for="CommonName" class="form-label"></label><input asp-for="CommonName" class="form-control" /></li>
+                <li class="mb-3"><label asp-for="ScientificName" class="form-label"></label><input asp-for="ScientificName" class="form-control" /></li>
+                <li class="mb-3"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control" rows="3"></textarea></li>
+                @* <li class="mb-3"><label asp-for="Location" class="form-label"></label><input asp-for="Location" class="form-control" /></li> *@
+                <li class="mb-3">CategoryId @Model.CategoryId <input asp-for="CategoryId" type="hidden" /></li>
+                <li class="mb-3">GroupId @Model.GroupId <input asp-for="GroupId" type="hidden" /></li>
+                <li class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="IsPrivate">
+                        <label class="form-check-label" asp-for="IsPrivate"></label>
+                    </div>
+                </li>
+                <li class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="DoNotFeature">
+                        <label class="form-check-label" asp-for="DoNotFeature"></label>
+                    </div>
+                </li>
+                <li class="mb-3">
+                    <button class="btn btn-success" type="submit">@Localizer["btnSave"]</button>
+                    <button class="btn btn-danger" asp-action="Delete" type="submit">@Localizer["tipDelImage"]</button>
+                </li>
+            </ul>
+        </form>
+
+    </div>
+    <div class="card-footer d-none d-lg-inline-block">
+        <ul class="list-unstyled list-inline">
+            <li class="list-inline-item">Views @Model.Views</li>
+            <li class="list-inline-item">Width @Model.Width</li>
+            <li class="list-inline-item">Height @Model.Height</li>
+            <li class="list-inline-item">Size @Model.Size</li>
+            <li class="list-inline-item">MimeType @Model.Mime</li>
+            <li class="list-inline-item">Date @Model.Timestamp.FromForumDateStr()</li>
+        </ul>
+    </div>
+</div>
+</div>

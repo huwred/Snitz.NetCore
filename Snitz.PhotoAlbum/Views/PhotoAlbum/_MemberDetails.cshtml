@@ -68,7 +68,7 @@
                                 <link-confirm snitz-if="@photo.DoNotFeature" title="@Localizer["lblDoNotFeature"].Value" jq-selector="confirm-feature" href="/PhotoAlbum/ToggleDoNotFeature/@photo.Id/?state=false&memberid=@photo.MemberId" config-class="fa fa-square-o" config-key="@photo.Id"></link-confirm>
                                 <link-confirm snitz-if="!@photo.DoNotFeature" title="@Localizer["imgFeature"].Value" jq-selector="confirm-feature" href="/PhotoAlbum/ToggleDoNotFeature/@photo.Id/?state=true&memberid=@photo.MemberId" config-class="fa fa-picture-o" config-key="@photo.Id"></link-confirm>
                                 <a href="@Url.Action("Edit", new {id = photo.Id})" class="gallery-link" title="@Localizer["tipEditImage"].Value" data-toggle="tooltip"><i class="fa fa-pencil-square-o"></i></a>
-                                <link-confirm title="@Localizer["tipDelImage"].Value" jq-selector="confirm-delete" href="/PhotoAlbum/DeleteImage/@photo.Id" config-class="fa fa-trash-o" config-key="@photo.Id"></link-confirm>
+                                <link-confirm title="@Localizer["tipDelImage"].Value" jq-selector="confirm-delete" href="/PhotoAlbum/DeleteImage/@photo.Id/?memberid=@photo.MemberId" config-class="fa fa-trash-o" config-key="@photo.Id"></link-confirm>
                                 <input type="checkbox" class="thumb" name="imgDelete" data-img="@photo.Location" value="@photo.Id" />
                             </td>
                         }

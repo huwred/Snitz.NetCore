@@ -11,7 +11,7 @@
 
     Layout = "Layout";
     bool showprivate = false;
-
+    var speciesonly = Model.SpeciesOnly ? 0 : 1;
 }
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
@@ -98,7 +98,7 @@
             <input type="hidden" name="SortOrder" value="@ViewBag.SortDir.ToLower()" />
         </div>
     </form>
-    <form asp-action="Album" asp-controller="PhotoAlbum" data-ajax="true" data-ajax-update="#ImageContainer">
+    <form asp-action="Album" asp-controller="PhotoAlbum">
         <div class="row">
             <div class="col-12 col-lg-8">
                 <div class="form-check form-check-inline">
@@ -106,14 +106,15 @@
                     <label class="form-check-label" for="ShowThumb">@Localizer["lblShowThumbnails"]</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="SpeciesOnly" value="1" checked="@Model.SpeciesOnly">
+                    <input class="form-check-input" type="checkbox" id="SpeciesOnly" value="1" checked="@(Model.SpeciesOnly)" onchange="javascript:this.form.submit()">
+                    <input class="form-check-input" type="text" name="speciesOnly" value="@speciesonly" style="display:none">
                     <label class="form-check-label" for="SpeciesOnly">@Localizer["lblShowOnlySpecies"]</label>
                 </div>
             </div>
             <div class="col-8 col-lg-8">
                 <div class="input-group">
                     <input type="text" value='@ViewBag.Display' name="display" id="display-template" style="display: none;"/>
-                    <select class="form-select" id="album-sortby" name="SortBy">
+                    <select class="form-select" id="album-sortby" name="SortBy" onchange="javascript:this.form.submit()">
                         <option value="id" snitz-if='@ViewBag.SortBy == "id"' selected>@Localizer["optSortId"]</option>
                         <option value="id" snitz-if='@ViewBag.SortBy != "id"'>@Localizer["optSortId"]</option>
                         <option value="date" snitz-if='@ViewBag.SortBy == "date"' selected>@Localizer["optSortDate"]</option>
@@ -129,7 +130,7 @@
                         <option value="scientific" snitz-if='@ViewBag.SortBy == "scientific"' selected>@Localizer["optSortScientific"]</option>
                         <option value="scientific" snitz-if='@ViewBag.SortBy != "scientific"'>@Localizer["optSortScientific"]</option>
                     </select>
-                    <select class="form-select" name="SortOrder" id="album-sortdesc">
+                    <select class="form-select" name="SortOrder" id="album-sortdesc" onchange="javascript:this.form.submit()">
                         <option value="desc" snitz-if="@(ViewBag.SortDir.ToLower() == "desc")" selected>@Localizer["optDesc"]</option>
                         <option value="desc" snitz-if="@(ViewBag.SortDir.ToLower() != "desc")">@Localizer["optDesc"]</option>
                         <option value="asc" snitz-if="@(ViewBag.SortDir.ToLower() == "asc")" selected>@Localizer["optAsc"]</option>
@@ -210,5 +211,6 @@
                 else
                     $('.col-thumb').css('display', 'none');
             });
+
     </script>
 }
