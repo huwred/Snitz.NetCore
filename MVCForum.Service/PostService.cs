@@ -101,66 +101,67 @@ namespace SnitzCore.Service
         /// <returns></returns>
         public int CreateForMerge(int[]? selected)
         {
-                    var topics = _dbContext.Posts.AsNoTracking().Where(p => selected.Contains(p.Id)).OrderBy(t => t.Created).ToList();
-                    int unmoderatedposts = 0;
-                    Post mainTopic = topics.First();
-                    int maintopicid = mainTopic.Id;
-                    unmoderatedposts += mainTopic.UnmoderatedReplies;
-                    Forum forum = _dbContext.Forums.Find(mainTopic.ForumId);
-                    Forum oldforum = null;
-                    foreach (Post topic in topics)
+            var topics = _dbContext.Posts.AsNoTracking().Where(p => selected.Contains(p.Id)).OrderBy(t => t.Created).ToList();
+            int unmoderatedposts = 0;
+            int replycounter = 0;
+            Post mainTopic = topics.First();
+            int maintopicid = mainTopic.Id;
+            unmoderatedposts += mainTopic.UnmoderatedReplies;
+            Forum forum = _dbContext.Forums.Find(mainTopic.ForumId);
+            Forum oldforum = null;
+            foreach (Post topic in topics)
+            {
+                if (topic.Id != mainTopic.Id)
+                {
+                    unmoderatedposts += topic.UnmoderatedReplies;
+                    //creat a new reply from the topic
+                    if (topic.ForumId != mainTopic.ForumId)
                     {
-                        if (topic.Id != mainTopic.Id)
+                        oldforum = _dbContext.Forums.Find(topic.ForumId);
+                        if (oldforum == null)
                         {
-                            unmoderatedposts += topic.UnmoderatedReplies;
-                            //creat a reply from the topic
-                            if (topic.ForumId != mainTopic.ForumId)
-                            {
-                                oldforum = _dbContext.Forums.Find(topic.ForumId);
-                                if (oldforum == null)
-                                {
-                                    throw new Exception("Source FORUM_ID is invalid");
-                                }
-                            }
-                            var reply = new PostReply
-                            {
-                                CategoryId = mainTopic.CategoryId,
-                                ForumId = mainTopic.ForumId,
-                                PostId = mainTopic.Id,
-                                Created = topic.Created,
-                                MemberId = topic.MemberId,
-                                Sig = topic.Sig,
-                                Content = topic.Content,
-                                LastEdited = topic.LastEdit,
-                                Status = topic.Status,
-                                Ip = topic.Ip
-                            };
-
-                            _dbContext.Add<PostReply>(reply);
-                            _dbContext.Remove(topic);
-                            _dbContext.SaveChanges();
-                            if (topic.ForumId != mainTopic.ForumId)
-                            {
-                                topic.ForumId = mainTopic.ForumId;
-                                topic.CategoryId = mainTopic.CategoryId;
-                            }
-
-                            _dbContext.Database.ExecuteSql($"UPDATE FORUM_SUBSCRIPTIONS SET TOPIC_ID={mainTopic.Id}, FORUM_ID={mainTopic.ForumId}, CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
-                            _dbContext.Database.ExecuteSql(
-                                $"UPDATE FORUM_REPLY SET TOPIC_ID={mainTopic.Id},FORUM_ID={mainTopic.ForumId},CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
-                            if (oldforum != null)
-                            {
-                                _forumservice.UpdateLastPost(oldforum.Id);
-                            }
-                            //send move notify
-                            //if (_config.GetIntValue("STRMOVENOTIFY") == 1)
-                            //    EmailController.TopicMergeEmail(ControllerContext, topic, mainTopic);
+                            throw new Exception("Source FORUM_ID is invalid");
                         }
                     }
-                    //update counts
-                    _forumservice.UpdateLastPost(forum.Id);
-                    UpdateLastPost(mainTopic.Id,unmoderatedposts);
-                    return maintopicid;
+                    var reply = new PostReply
+                    {
+                        CategoryId = mainTopic.CategoryId,
+                        ForumId = mainTopic.ForumId,
+                        PostId = mainTopic.Id,
+                        Created = topic.Created,
+                        MemberId = topic.MemberId,
+                        Sig = topic.Sig,
+                        Content = topic.Content,
+                        LastEdited = topic.LastEdit,
+                        Status = topic.Status,
+                        Ip = topic.Ip
+                    };
+                    replycounter += 1;
+                    _dbContext.Add<PostReply>(reply);
+                    _dbContext.Remove(topic);
+                    _dbContext.SaveChanges();
+                    //Update any subscriptionc for the old Topic with the new topic ID
+                    _dbContext.Database.ExecuteSql($"UPDATE FORUM_SUBSCRIPTIONS SET TOPIC_ID={mainTopic.Id}, FORUM_ID={mainTopic.ForumId}, CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
+                    //Update the replies with new topic ID and add the number updated to the replycounter
+                    replycounter += _dbContext.Database.ExecuteSql(
+                        $"UPDATE FORUM_REPLY SET TOPIC_ID={mainTopic.Id},FORUM_ID={mainTopic.ForumId},CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
+                    if (oldforum != null)
+                    {
+                        _forumservice.UpdateLastPost(oldforum.Id);
+                    }
+                    //TODO: send move notify
+                    //if (_config.GetIntValue("STRMOVENOTIFY") == 1)
+                    //    EmailController.TopicMergeEmail(ControllerContext, topic, mainTopic);
+                }
+            }
+
+            mainTopic.ReplyCount += replycounter;
+            _dbContext.Update(mainTopic);
+            _dbContext.SaveChanges();
+            //update counts
+            UpdateLastPost(mainTopic.Id,unmoderatedposts);
+            _forumservice.UpdateLastPost(forum.Id);
+            return maintopicid;
         }
         public async Task<bool> LockTopic(int id, short status = 0)
         {
@@ -358,7 +359,7 @@ namespace SnitzCore.Service
         {
 
             var post = _dbContext.Replies.Where(p => p.Id == id)
-                .AsNoTrackingWithIdentityResolution()
+                .AsNoTracking()
                 .Single();
 
             return post;
@@ -441,6 +442,7 @@ namespace SnitzCore.Service
         }
         public async Task UpdateLastPost(int topicid, int? moderatedcount)
         {
+            var count = _dbContext.Replies.Count(r => r.PostId == topicid && r.Status < 2);
             var topic = GetTopicForUpdate(topicid);
             var lastreply = _dbContext.Replies.AsNoTrackingWithIdentityResolution()
                 .Where(t=>t.PostId == topicid && t.Status < 2)
@@ -535,6 +537,87 @@ namespace SnitzCore.Service
             _dbContext.Database.ExecuteSql(
                 $"UPDATE FORUM_REPLY SET TOPIC_ID={newTopic.Id},FORUM_ID={newTopic.ForumId},CAT_ID={newTopic.CategoryId} WHERE TOPIC_ID={oldtopicid}");
 
+        }
+
+        public Post? SplitTopic(string[] ids, int forumId, string subject)
+        {
+            var forum = (from forums in _dbContext.Forums
+                    select forums).SingleOrDefault(f => f.Id == forumId);
+            int replycount = 0;
+            int originaltopicid = 0;
+            Post? topic = null;
+            bool first = true;
+            try
+            {
+                _dbContext.Database.BeginTransaction();
+                foreach (string id in ids.OrderByDescending(s => s))
+                {
+                    //fetch the reply
+                    var reply = (from replies in _dbContext.Replies
+                        select replies).SingleOrDefault(r=>r.Id == Convert.ToInt32(id));
+
+                    if (first)
+                    {
+                        originaltopicid = reply.PostId;
+                        //first reply so create the Topic
+                        topic = new Post
+                        {
+                            CategoryId = forum.CategoryId,
+                            ForumId = forum.Id,
+                            Title = subject,
+                            Content = reply.Content,
+                            Created = reply.Created,
+                            MemberId = reply.MemberId,
+                            Sig = reply.Sig,
+                            LastPostAuthorId = reply.MemberId,
+                            LastPostReplyId = 0,
+                            Status =(short)Status.Open,
+                            LastPostDate = reply.Created,
+                            ReplyCount = 0
+                        };
+
+                        _dbContext.Add(topic);
+                        _dbContext.Remove(reply);
+                        _dbContext.SaveChanges();
+                        first = false;
+                    }
+                    else
+                    {
+                        replycount += 1;
+
+                        reply.PostId = topic.Id;
+                        reply.ForumId = forum.Id;
+                        reply.CategoryId = forum.CategoryId;
+                        reply.Status = topic.Status;
+                        
+                        _dbContext.Update(reply);
+                        _dbContext.SaveChanges();
+                    }
+                }
+
+                topic.ReplyCount = replycount;
+                _dbContext.Update(topic);
+                _dbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                _dbContext.Database.RollbackTransaction();
+                throw;
+            }        
+            finally
+            {
+                _dbContext.Database.CommitTransaction();
+            }
+            Post originaltopic = (from t in _dbContext.Posts select t).FirstOrDefault(t=>t.Id == originaltopicid);
+            if (originaltopic != null)
+            {
+                originaltopic.ReplyCount -= replycount + 1;
+                _dbContext.Update(originaltopic);
+                _dbContext.SaveChanges();
+                UpdateLastPost(originaltopicid,0);
+                _forumservice.UpdateLastPost(originaltopic.ForumId);
+            }
+            return topic;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SnitzCore.Service.TagHelpers
             output.TagMode = TagMode.StartTagAndEndTag;
             output.TagName = "time";
             output.AddClass("timeago",HtmlEncoder.Default);
-            output.Attributes.Add("datetime",SnitzDate?.ToLocalTime().ToTimeagoDate());
+            output.Attributes.Add("datetime",SnitzDate?.ToTimeagoDate());
             output.Attributes.Add("aria-label", $"Posted on {SnitzDate?.ToLocalTime()}");
             output.PreContent.SetHtmlContent(SnitzDate?.ToLocalTime().ToForumDisplay());
 

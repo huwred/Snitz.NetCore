@@ -10,8 +10,8 @@ namespace SnitzCore.Data.Interfaces
         Post GetTopic(int id);
         Post GetTopicForUpdate(int id);
         Post? GetTopicWithRelated(int id);
-        PostReply GetReply(int id);
-        PostReply GetReplyForUdate(int id);
+        PostReply? GetReply(int id);
+        PostReply? GetReplyForUdate(int id);
         List<Post> GetById(int[] ids);
         IEnumerable<Post> GetAllTopicsAndRelated();
         IPagedList<Post> GetFilteredPost(string searchQuery, out int totalcount, int pagesize, int page, int catid,int forumid);
@@ -42,5 +42,6 @@ namespace SnitzCore.Data.Interfaces
         Poll? GetPoll(int topicid);
         void MoveSubscriptions(int oldtopicid, int newtopicid, int newforumId, int newcatId);
         void MoveReplies(int oldtopicid, Post newTopic);
+        Post? SplitTopic(string[] ids, int forumId, string subject);
     }
 }
