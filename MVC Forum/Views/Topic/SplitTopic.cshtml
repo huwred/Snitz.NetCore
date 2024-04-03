@@ -22,21 +22,26 @@
 }
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
-    <h5>Split Topic</h5>
-    <hr class="title" />
-    @using (Html.BeginForm("SplitTopic", "Topic", FormMethod.Post, new { @class = "form-horizontal" }))
-    {
+    <h5>Split @ViewBag.Title </h5>
+    <hr />
+    <form asp-action="SplitTopic" asp-controller="Topic" method="post" class="needs-validation" novalidate>
+        <input type="hidden" asp-for="Id" />
         @Html.AntiForgeryToken()
-        <div class="row mb-3">
-            <div class="col-12 col-lg-6">
+        <div class="row mb-3 ">
+            <div class="col-12 col-lg-6 bg-form rounded-3 p-3">
                 <p class="form-text">Select the replies you would like to move. They will be moved into a new Topic using the information provided below.</p>
-                <label for="ForumId" class="form-label">Forum</label>
-                @Html.DropDownListFor(model => model.ForumId, new SelectList(Model.ForumList, "Key", "Value"), new { @class = "form-select" })
-                <label for="Subject" class="form-label">New Subject</label>
-                @Html.TextBoxFor(model => model.Topic.Title, new { @class = "form-control mb-3",@name="Title" })
+                <div class="mb-3">
+                    <label for="ForumId" class="form-label">Forum</label>
+                    @Html.DropDownListFor(model => model.ForumId, new SelectList(Model.ForumList, "Key", "Value"), new { @class = "form-select" })
+                    <div class="invalid-feedback text-danger-emphasis">@Localizer["PropertyRequired", Localizer["Forum"].Value]</div>
+                </div>
+                <div class="mb-3">
+                    <label for="Subject" class="form-label">New Subject</label>
+                    @Html.TextBoxFor(model => model.Subject, new { @class = "form-control" })
+                    <div class="invalid-feedback text-danger-emphasis">@Localizer["PropertyRequired", Localizer["Subject"].Value]</div>
+                </div>
                 <div>
-                    <span>@Html.ValidationSummary(false)</span>
-                    <button class="btn btn-success">Split</button>
+                    <button class="btn btn-success" type="submit">Split</button>
                 </div>
             </div>
             <div class="col-12 col-lg-6">
@@ -79,7 +84,7 @@
                         foreach (var item in Model.Replies)
                         {
                             <tr class="row">
-                                <td class="col-1">@Html.HiddenFor(i => i.Id)@item.Member?.Name</td>
+                                <td class="col-1">@item.Member?.Name</td>
                                 <td class="form-text col-10">
                                     @item.Created.FromForumDateStr()
                                     <hr class="title"/>
@@ -88,11 +93,11 @@
                                 <td class="col-1">
                                     @if (selectedReplies.Contains(item.Id) || item.Id == ViewBag.ReplyId)
                                     {
-                                        <input type="checkbox" id="check" name="check" value="@item.Id" class="selector" checked=""/>
+                                        <input type="checkbox" name="check" value="@item.Id" class="selector" checked=""/>
                                     }
                                     else
                                     {
-                                        <input type="checkbox" id="check" name="check" value="@item.Id" class="selector"/>
+                                        <input type="checkbox" name="check" value="@item.Id" class="selector"/>
                                     }
 
                                 </td>
@@ -103,8 +108,8 @@
 
             </div>
         </div>
-    }
 
+    </form>
 </div>
 
 
@@ -112,7 +117,28 @@
 
 @section Scripts {
     <script type="text/javascript">
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Get the forms we want to add validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                
+                
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    
+                    form.addEventListener('submit', function(event) {
+                        console.log("form submitted: ");
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
 
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
         $('#checkAll').change(function () {
             var checkboxes = $(this).closest('form').find(':checkbox');
             if ($(this).is(':checked')) {
@@ -122,12 +148,9 @@
             }
         });
 
-        $.validator.addMethod('selector', function (value) {
-            return $('.selector:checked').size() > 0;
-        }, 'Please select at least one reply.');
+        // $.validator.addMethod('selector', function (value) {
+        //     return $('.selector:checked').size() > 0;
+        // }, 'Please select at least one reply.');
 
-        $(document).ready(function() {
-            $.lazyload.check();
-        });
     </script>
 }

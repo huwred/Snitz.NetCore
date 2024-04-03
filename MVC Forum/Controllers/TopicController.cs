@@ -411,6 +411,7 @@ namespace MVCForum.Controllers
             }
             else
             {
+                post.Created = DateTime.UtcNow.ToForumDateStr();
                 var topicid = await _postService.Create(post);
                 if (post.Status < 2) //not waiting to be moderated
                 {
@@ -1001,8 +1002,12 @@ namespace MVCForum.Controllers
         [Route("Topic/SplitTopic/")]
         public IActionResult SplitTopic(int id, int replyid)
         {
-            SplitTopicViewModel vm = new SplitTopicViewModel(_forumService);
-
+            SplitTopicViewModel vm = new SplitTopicViewModel();
+            foreach (KeyValuePair<int, string> forum in _forumService.ForumList())
+            {
+                if(!vm.ForumList.ContainsKey(forum.Key))
+                    vm.ForumList.Add(forum.Key, forum.Value);
+            }
             var topic = _postService.GetTopicWithRelated(id);
             if (topic != null)
             {
@@ -1027,70 +1032,46 @@ namespace MVCForum.Controllers
         [HttpPost]
         [Authorize(Roles = "Administrator,Moderator")]
         [ValidateAntiForgeryToken]
+        [Route("Topic/SplitTopic/")]
         public IActionResult SplitTopic(SplitTopicViewModel vm)
         {
+            if (!ModelState.IsValid)
+            {
+                foreach (KeyValuePair<int, string> vmforum in _forumService.ForumList())
+                {
+                    if(!vm.ForumList.ContainsKey(vmforum.Key))
+                        vm.ForumList.Add(vmforum.Key, vmforum.Value);
+                }
+                var vmtopic = _postService.GetTopicWithRelated(vm.Id);
+                if (vmtopic != null)
+                {
+                    vm.Topic = vmtopic;
+                    vm.Replies = vmtopic?.Replies;
+                }
 
-            string[] ids = HttpContext.Request.Form["check"];
+                return View(vm);
+            }
+            string[] ids = Request.Form["check"];
             if (ids == null || !ids.Any())
             {
-                ModelState.AddModelError("Reply", _languageResource.GetString("TopicController_select_at_least_one_reply"));
+                //ModelState.AddModelError("Reply", _languageResource.GetString("TopicController_select_at_least_one_reply"));
+                ViewBag.Error = _languageResource.GetString("TopicController_select_at_least_one_reply");
+                return View("Error");
             }
-            bool first = true;
-            Post topic = null;
-            Forum forum = _forumService.GetById(vm.ForumId);
-            if (ModelState.IsValid)
-            {
-                if (ids != null)
-                {
-                    foreach (string id in ids.OrderBy(s => s))
-                    {
-                        //fetch the reply
-                        var reply = _postService.GetReply(Convert.ToInt32(id));
+            Post? topic = null;
 
-                        if (first)
-                        {
-                            //first reply so create the Topic
-                            topic = new Post
-                            {
-                                CategoryId = forum.CategoryId,
-                                ForumId = forum.Id,
-                                //Subject = BbCodeProcessor.Subject(vm.Subject),
-                                Content = reply.Content,
-                                Created = reply.Created,
-                                MemberId = reply.MemberId,
-                                Sig = reply.Sig,
-                                LastPostAuthorId = reply.MemberId,
-                                LastPostReplyId = 0,
-                                Status =
-                                            (forum.Moderation == Moderation.AllPosts || forum.Moderation == Moderation.Topics)
-                                                ? (short)Status.UnModerated
-                                                : (short)Status.Open,
-                                LastPostDate = reply.Created
-                            };
-                            if (_config.GetIntValue("STRIPLOGGING") == 1)
-                            {
-                                Member member = _memberService.GetById(reply.MemberId);
-                                member.LastIp = topic.Ip;
-                                _memberService.Update(member);
-                            }
-                            _postService.Create(topic);
-                            _postService.DeleteReply(reply.Id);
-                            first = false;
-                        }
-                        else
-                        {
-                            reply.PostId = topic.Id;
-                            reply.ForumId = forum.Id;
-                            reply.CategoryId = forum.CategoryId;
-                            reply.Status = topic.Status;
-                            _postService.Update(reply);
-                        }
-                    }
-                    //        Dbcontext.UpdatePostCount();
-                    //        EmailController.TopicSplitEmail(ControllerContext, topic);
-                }
+            if (ids != null)
+            {
+                topic = _postService.SplitTopic(ids, vm.ForumId, vm.Subject);
+
+                _postService.UpdateLastPost(topic.Id,0);
+                _forumService.UpdateLastPost(topic.ForumId);
+
+                //        EmailController.TopicSplitEmail(ControllerContext, topic);
             }
-            if (topic != null) return RedirectToAction("Posts", new { id = topic.Id, pagenum = 1 });
+
+            if (topic != null) return RedirectToAction("Index", new { id = topic.Id, pagenum = 1 });
+            ViewBag.Error = "Unknown problem";
             return View("Error");
         }
 

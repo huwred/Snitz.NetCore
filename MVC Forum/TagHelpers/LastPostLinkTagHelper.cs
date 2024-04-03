@@ -25,7 +25,7 @@ namespace MVCForum.TagHelpers
             link.InnerHtml.AppendHtml(@"<i class=""fa fa-arrow-right""></i>");
 
             output.TagName = "span";
-            output.Content.AppendHtml($@"<time datetime=""{PostDate?.ToLocalTime().ToTimeagoDate()}"" class=""timeago"" aria-label=""Posted on {PostDate?.ToLocalTime()}"">{PostDate?.ToLocalTime().ToForumDisplay()}</time>&nbsp;");
+            output.Content.AppendHtml($@"<time datetime=""{PostDate?.ToTimeagoDate()}"" class=""timeago"" aria-label=""Posted on {PostDate?.ToLocalTime()}"">{PostDate?.ToLocalTime().ToForumDisplay()}</time>&nbsp;");
             output.Content.AppendHtml(link);
 
         }

@@ -95,8 +95,17 @@
     </div>
 </div>
 
-
+@{
+    var confModel = new ConfirmDialogViewModel()
+            {
+                Title = "Delete Forum",
+                Message = $@"<p>You are about to delete the Topic.</p>
+        <p>Do you wish to proceed?</p>"
+            };
+}
+<partial name="ConfirmDialog" model="@confModel" />
 @section Scripts{
+    <script type="text/javascript" src="/js/postcontroller.js"></script>
     <script type="text/javascript">
         $(document).on("change", "#default-days", function() {
             $("#hdndefaultdays").val($(this).val());

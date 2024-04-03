@@ -169,17 +169,20 @@ footer{
     font-weight: bold;
 }
 
-.table-head .status{
+.table-head .status {
     flex: 5%;
+    font-size: 30px;
+    text-align: center;
 }
 
 .table-head .subjects{
     flex: 65%;
 }
 
-.table-head .replies{
-    flex: 10%;
-}
+    .table-head .replies {
+        flex: 10%;
+        flex-grow: 0;
+    }
 
 .table-head .last-reply{
     flex: 17%;
@@ -208,18 +211,14 @@ footer{
     font-size: 30px;
     text-align: center;
 }
-.table-head .status {
-    padding: 10px;
-    flex: 5%;
-    font-size: 30px;
-    text-align: center;
-}
+
 .table-row .subjects{
     flex: 65%;
 }
 
 .table-row .replies{
     flex: 10%;
+
 }
 
 .table-row .last-reply{

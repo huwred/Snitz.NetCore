@@ -20,32 +20,17 @@ namespace MVCForum.ViewModels
 
         public Dictionary<int, string>? ForumList { get; set; }
 
-        [Required]
-        [Range(0, Int32.MaxValue,ErrorMessage = "You must select a Forum")]
+        [Range(1,Int32.MaxValue,ErrorMessage ="Please select a Forum")]
         public int ForumId { get; set; }
-        [Required]
+        
+        [Required(ErrorMessage = "Please provide a subject")]
         public string Subject { get; set; }
 
-        private readonly IForum _forumService;
-        public SplitTopicViewModel(IForum forumService)
+        public SplitTopicViewModel()
         {
-            this.ForumList = new Dictionary<int, string> { { -1, "Select Forum" } };
-            this._forumService = forumService;
-            foreach (KeyValuePair<int, string> forum in forumService.ForumList())
-            {
-                if(!this.ForumList.ContainsKey(forum.Key))
-                    this.ForumList.Add(forum.Key, forum.Value);
-            }
+            this.ForumList = new Dictionary<int, string> { { 0, "Select Forum" } };
+
         }
-        //public SplitTopicViewModel(IPrincipal user)
-        //{
-            
-        //    foreach (KeyValuePair<int, string> forum in _forumService.ForumList())
-        //    {
-        //        if(!this.ForumList.ContainsKey(forum.Key))
-        //            this.ForumList.Add(forum.Key, forum.Value);
-        //    }
-        //}
 
     }
 }

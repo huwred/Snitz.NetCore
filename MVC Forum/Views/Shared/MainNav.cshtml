@@ -31,7 +31,7 @@
                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownAlbumLink">@Localizer["mnuAlbums"]</a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownAlbumLink">
                     <li><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Index" asp-route-id="">@Localizer["mnuMemberAlbums"]</a></li>
-                    <li><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Album" asp-route-id="">@Localizer["mnuCommonAlbum"]</a></li>
+                    <li snitz-if="@(SnitzConfig.GetIntValue("INTCOMMONALBUM") == 1)"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Album" asp-route-id="">@Localizer["mnuCommonAlbum"]</a></li>
                     <li snitz-if="@SignInManager.IsSignedIn(User)"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="@currForumUser.MemberId">@Localizer["mnuMyAlbum"]</a></li>
 
                 </ul>

@@ -1,12 +1,22 @@
 ﻿@model Poll
 @{
     var vm = Model;
+    var votes = 0;
     if (TempData["Poll"] != null)
     {
         vm = (Poll)TempData["Poll"];
     }
-    var answers = vm.PollAnswers.ToArray();
-    var votes = answers.Sum(a => a.Count);
+    var answers = vm.PollAnswers?.ToArray();
+    if (answers != null)
+    {
+        votes = answers.Sum(a => a.Count);
+    }
+    else
+    {
+        answers = new PollAnswer[SnitzConfig.GetIntValue("INTMAXVOTES", 4)];
+    }
+
+    
 }
 @if (votes < 1)
 {
@@ -36,7 +46,7 @@
             @for (int i = 0; i < SnitzConfig.GetIntValue("INTMAXVOTES", 4); i++)
             {
                 var prefix = $"PollAnswers_{i}_";
-                if (i >= answers.Length)
+                if (answers != null && i >= answers.Length)
                 {
                     <div class="mb-3 row">
                         <div class="input-group">
@@ -61,7 +71,7 @@
                                 <input class="form-control" type="number" data-val="true" data-val-number="The field Order must be a number." data-val-required="The Order field is required." id="@(prefix)_Order" name="PollAnswers[@i].Order" type="text" value="@i"/>
                             </span>
                             <span class="input-group-text">Answer</span>
-                            <input class="form-control" id="@(prefix)_Label" name="PollAnswers[@i].Label" type="text" value="@answers[i].Label"/>
+                            <input class="form-control" id="@(prefix)_Label" name="PollAnswers[@i].Label" type="text" value="@answers[i]?.Label"/>
                             <input data-val="true" data-val-number="The field Id must be a number." data-val-required="The Id field is required." id="@(prefix)_Id" name="PollAnswers[@i].Id" type="hidden" value="@answers[i]?.Id"/>
                             <input data-val="true" data-val-number="The field PollId must be a number." data-val-required="The PollId field is required." id="@(prefix)_PollId" name="PollAnswers[@i].PollId" type="hidden" value="@answers[i]?.PollId"/>
                             <input data-val="true" data-val-number="The field Votes must be a number." data-val-required="The Votes field is required." id="@(prefix)_Votes" name="PollAnswers[@i].Votes" type="hidden" value="@answers[i]?.Count"/>

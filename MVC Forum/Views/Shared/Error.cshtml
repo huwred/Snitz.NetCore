@@ -1,11 +1,9 @@
-﻿@model MVCForum.ViewModels.ErrorViewModel
-@{
-    ViewData["Title"] = "Error";
-}
+﻿@* @model MVCForum.ViewModels.ErrorViewModel
+ *@
 
 <h1 class="text-danger">Error.</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
-
+<p>@ViewBag.Error</p>
 @* @if (Model.ShowRequestId)
 {
     <p>
