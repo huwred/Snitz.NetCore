@@ -961,25 +961,31 @@ namespace MVCForum.Controllers
                     try
                     {
                         maintopicid = _postService.CreateForMerge(selected);
+
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine(e);
                         throw;
                     }
-                    
 
-                    //var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
-                    //if (sub == SubscriptionLevel.Topic || sub == SubscriptionLevel.Forum || sub == SubscriptionLevel.Category)
-                    //{
-                    //    switch ((ForumSubscription)forum.Subscription)
-                    //    {
-                    //        case ForumSubscription.ForumSubscription:
-                    //        case ForumSubscription.TopicSubscription:
-                    //            BackgroundJob.Enqueue(() => _processSubscriptions.Topic(maintopicid));
-                    //            break;
-                    //    }
-                    //}
+
+                    var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
+                    var topic = _postService.GetTopic(maintopicid);
+                    if (topic != null)
+                    {
+                        if (sub == SubscriptionLevel.Topic || sub == SubscriptionLevel.Forum || sub == SubscriptionLevel.Category)
+                        {
+                            switch ((ForumSubscription)topic.Forum.Subscription)
+                            {
+                                case ForumSubscription.ForumSubscription:
+                                case ForumSubscription.TopicSubscription:
+                                    BackgroundJob.Enqueue(() => _processSubscriptions.Topic(maintopicid));
+                                    break;
+                            }
+                        }                        
+                    }
+
                     string redirectUrl = Url.Action("Index","Topic", new { id = maintopicid, pagenum = 1 });
 
                     return Json(new { data = redirectUrl });

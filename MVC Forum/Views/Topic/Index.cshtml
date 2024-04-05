@@ -72,7 +72,7 @@
             <div class="body topic">
                 <partial name="PostAuthor" model="Model.Author"/>
                 <div class="content flex-shrink-0 flex-grow-0">
-                    @if (eventservice.EnabledForTopic(Model.Id))
+                    @if (eventservice != null && eventservice.EnabledForTopic(Model.Id))
                     {
                         @await Component.InvokeAsync("Events", new { template = "TopicSummary", id = Model.Id })
                     }

@@ -58,5 +58,11 @@
     "inputFiles": [
       "wwwroot/js/privatemessage.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/jquery.unobtrusive-ajax.min.js",
+    "inputFiles": [
+      "wwwroot/js/jquery.unobtrusive-ajax.js"
+    ]
   }
 ]

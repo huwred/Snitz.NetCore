@@ -105,7 +105,7 @@
                         @if (SnitzConfig.GetIntValue("STRARCHIVESTATE") == 1)
                         {
                             <div class="pl-3 col-12 col-md-6 form-check">
-                                <input class="form-check" asp-for="DoNotArchive" tabindex="5" type="checkbox" checked="@Model.DoNotArchive">
+                                <input class="form-check-input" asp-for="DoNotArchive" tabindex="5" type="checkbox" checked="@Model.DoNotArchive">
                                 <label class="form-check-label">@Localizer["cbxNoArchive"]</label>
                             </div>
                         }
