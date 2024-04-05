@@ -12,8 +12,9 @@
 
         <div class="tab-content bg-white p-4">
             <div class="tab-pane fade w-100 active show" id="email-server" role="tabpanel" aria-labelledby="server-tab">
-                @using (Html.BeginForm("EmailConfigUpdate", "Admin", FormMethod.Post, new { @class = "form-inline row" }))
-                {
+            <form asp-action="EmailConfigUpdate" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="#ResultsDiv" class="form-inline row">
+
+
                     <div class="col-sm-5 text-left">
                         <fieldset>
                             <legend>Email Server</legend>
@@ -27,18 +28,19 @@
                                 @Html.TextBoxFor(model => model.Port, new { @class = "form-control" })
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Requires Authentication </label>
-                                @Html.CheckBoxFor(model => model.Auth, new { @class = "form-check-inline", id = "checkbox-auth" })
+                                <div class="form-check">
+                                    <input class="form-check-input" asp-for="Auth" type="checkbox" value="" id="checkbox-auth">
+                                    <label class="form-check-label" for="checkbox-auth">
+                                    Requires Authentication
+                                    </label>
+                                </div>
                             </div>
                             <div id="smtp-auth"
                                  @if (!Model.Auth)
                                  {
                                      @Html.Raw("style='display:none'")
                                  }>
-                                <div class="mb-3">
-                                    <label class="form-label">Use default credentials</label>
-                                    @Html.CheckBoxFor(model => model.DefaultCred, new { @class = "checkbox-inline", id = "checkbox-cred" })
-                                </div>
+
                                 <div class="mb-3 user-cred">
                                     <label class="form-label">Username</label>
                                     @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
@@ -101,17 +103,18 @@
 
                             <div class="mb-3">
                                 <label for="emailpostcount" class="form-label">Number of posts to allow sending email:</label>
-                                <input id="emailpostcount" class="form-control" type="number" name="emailpostcount" value="@(SnitzConfig.GetIntValue("INTMAXPOSTSTOEMAIL"))"/>
+                                <input id="emailpostcount" class="form-control" type="number" name="INTMAXPOSTSTOEMAIL" value="@(SnitzConfig.GetIntValue("INTMAXPOSTSTOEMAIL"))"/>
                                 <input type="text" id="emailadmin" name="emailadmin" value="1" style="display: none;"/>
                             </div>
                             <div class="mb-3">
-                                <textarea id="emailpostcount-error" class="form-control" name="emailpostcount-message" rows="4">@(SnitzConfig.GetValue("STRNOMAXPOSTSTOEMAIL"))</textarea>
+                                <textarea class="form-control" name="STRNOMAXPOSTSTOEMAIL" rows="4">@(SnitzConfig.GetValue("STRNOMAXPOSTSTOEMAIL"))</textarea>
                             </div>
                         </fieldset>
                     </div>
                     <div class="mb-3"><partial name="_FormButtons"/></div>
 
-                }
+                </form>
+                <div id="ResultsDiv"></div>
             </div>
 
             <div class="tab-pane fade w-100" id="email-spam" role="tabpanel" aria-labelledby="spam-tab">
@@ -172,8 +175,7 @@
 </div>
 @section Scripts
 {
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajax-unobtrusive/3.2.6/jquery.unobtrusive-ajax.js" integrity="sha256-v2nySZafnswY87um3ymbg7p9f766IQspC5oqaqZVX2c=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/jquery.unobtrusive-ajax.min.js" ></script>
     <script type="text/javascript">
         failed = function (xhr) {
             alert('Status: {xhr.status}, Status text: {xhr.statusText}');
@@ -206,4 +208,8 @@
         });
         $("#admin-nav li a.nav-link.active").removeClass("active");
         $("#email-setup").addClass("active");
+        $('#checkbox-auth').on('change',function() {
+            $('#smtp-auth').toggle();
+        })
+
     </script>}

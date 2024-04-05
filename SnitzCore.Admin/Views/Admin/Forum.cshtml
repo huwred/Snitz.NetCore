@@ -42,27 +42,31 @@
             <div class="tab-pane fade" id="v-pills-usernames" role="tabpanel" aria-labelledby="v-pills-usernames-tab">
                 <legend>Username Filter</legend>
                 <hr/>
-                <form asp-action="SaveUsername" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
+            <form asp-action="SaveUsername" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-namefilters">
 
                     <div class="mb-3">
                         <label class="form-label">Add name to disallow</label>
                         <div class="input-group mb-3">
                             <input type="text" name="Username" class="form-control" placeholder="Name to disallow" aria-label="Name to disallow" aria-describedby="button-addon2">
-                            <partial name="_FormButtons"/>
+                            <button class="btn btn-outline-warning" type="reset">Cancel</button>
+                            <button class="btn btn-outline-success" type="submit">Add</button>
                         </div>
                     </div>
                 </form>
-                <form asp-action="UpdateUsernameFilter" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-namefilters">
+                <form asp-action="UpdateUsernameFilter" asp-controller="SnitzConfig" id="userfilterForm" method="POST" data-ajax="true" data-ajax-update="#result-namefilters">
                     <ul class="list-group mb-3">
                         @for (int i = 0; i < Model.UserNamefilters?.Count; i++)
                         {
-                            <li class="list-group-item">
-                                <input type="hidden" asp-for="@Model.UserNamefilters[i].Id"/>
-                                <input type="text" class="form-control" asp-for="@Model.UserNamefilters[i].Name"/>
+                            <li class="list-group-item filter_@i">
+                                <div class="input-group">
+                                    <input type="hidden" asp-for="@Model.UserNamefilters[i].Id"/>
+                                    <input type="hidden" asp-for="@Model.UserNamefilters[i].IsDeleted" />
+                                    <input type="text" class="form-control" asp-for="@Model.UserNamefilters[i].Name"/>
+                                <button class="btn btn-outline-success ButtonType" type="submit" data-filter="@i" ><i class="fa fa-trash"></i></button>
+                                </div>
                             </li>
                         }
                     </ul>
-                    <button class="btn btn-outline-success" type="submit">Add</button>
                     <div id="result-namefilters"></div>
                 </form>
             </div>
@@ -85,11 +89,13 @@
                     @{
                         @for (int i = 0; i < Model.Badwords?.Count; i++)
                         {
-                            <div class="mb-3">
+                            <div class="mb-3" id="badword_@i">
                                 <div class="row">
                                     <input type="hidden" asp-for="@Model.Badwords[i].Id"/>
-                                    <div class="col-6"><input type="text" class="form-control" asp-for="@Model.Badwords[i].Word"/></div>
-                                    <div class="col-6"><input type="text" class="form-control" asp-for="@Model.Badwords[i].ReplaceWith"/></div>
+                                    <input type="hidden" asp-for="@Model.Badwords[i].IsDeleted"/>
+                                    <div class="col-5"><input type="text" class="form-control" asp-for="@Model.Badwords[i].Word"/></div>
+                                    <div class="col-5"><input type="text" class="form-control" asp-for="@Model.Badwords[i].ReplaceWith"/></div>
+                                    <div class="col-1"><i class="fa fa-trash del-badword" data-id="@i" title="Flag for deletion"></i></div>
                                 </div>
                             </div>
                         }
@@ -109,8 +115,7 @@
 
 @section Scripts
 {
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajax-unobtrusive/3.2.6/jquery.unobtrusive-ajax.js" integrity="sha256-v2nySZafnswY87um3ymbg7p9f766IQspC5oqaqZVX2c=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript" src="~/js/jquery.twosidedmultiselect.js"></script>
     <script type="text/javascript">
         $('.getModerators').on('change', function () {
@@ -118,6 +123,20 @@
                 $(".multiselect").twosidedmultiselect();
             });
 
+        });
+        $(document).ready(function(){
+            $('button[data-bs-toggle="pill"]').on('show.bs.tab', function (e) {
+                localStorage.setItem('activeTab', e.target.id);
+            });
+            var activeTab = localStorage.getItem('activeTab');
+            if(activeTab) {
+                $("#v-pills-tab .nav-link.active").removeClass("active");
+                $("#v-pills-tabContent .tab-pane.active").removeClass("active").removeClass("show");
+
+                $("#v-pills-tab #" + activeTab).addClass("active");
+                $("#v-pills-tabContent #" + activeTab.replace("-tab","")).addClass("active").addClass("show");
+                
+            }
         });
         $(document).on('shown.bs.tab',
             'button[data-bs-toggle="pill"]',
@@ -148,5 +167,27 @@
         });
         $("#admin-nav li a.nav-link.active").removeClass("active");
         $("#forum-options").addClass("active");
+        $(".ButtonType").on("click", function (e) {
+            e.preventDefault();
+            $("#UserNamefilters_" + $(this).data("filter") + "__IsDeleted").val("True");
+            $(".filter_" + $(this).data("filter")).hide();
+            $('#userfilterForm').submit();
+        });
+        $('.del-badword').on('click',function(e)
+        {
+            if ($("#Badwords_" + $(this).data("id") + "__IsDeleted").val() == "True") {
+                $(this).attr("title", "Flag for deletion");
+                $("#Badwords_" + $(this).data("id") + "__IsDeleted").val("False");
+                $('#badword_' + $(this).data('id') + " *").prop('readonly', false);
+                $('#badword_' + $(this).data('id') + " input").css('border-color', '');
+            } else {
+                $(this).attr("title", "Remove delete flag");
+                $("#Badwords_" + $(this).data("id") + "__IsDeleted").val("True");
+                $('#badword_' + $(this).data('id') + " *").prop('readonly', true);
+                $('#badword_' + $(this).data('id') + " input").css('border-color', 'red');
+            }
+
+            
+        });
     </script>
 }

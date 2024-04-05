@@ -13,19 +13,21 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <div class="d-flex flex-column" style="min-height: 100vh;">
-        <partial name="MainNav"/>
+<div class="d-flex flex-column" style="min-height: 100vh;">
+    <partial name="MainNav"/>
 
-        <div class="container mt-3">
-            <partial name="_Menu" />
-            <main role="main" class="p-2 bg-form rounded">
-                @RenderBody()
-            </main>
-        </div>
-        <partial name="Footer"/>
+    <div class="container mt-3">
+        <partial name="_Menu" />
+        <main role="main" class="p-2 bg-form rounded">
+            @RenderBody()
+        </main>
     </div>
+    <partial name="Footer"/>
+</div>
+
     <script type="text/javascript" src="~/js/bootstrap.bundle.min.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
     <partial name="ValidationScriptsPartial" />
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

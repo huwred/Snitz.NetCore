@@ -77,7 +77,7 @@ namespace SnitzCore.BackOffice.Controllers
 
                     _context.SaveChanges();
                 }
-                return PartialView("SaveResult","Badword saved");
+                return Content("<script>location.reload();</script>");
             }
             catch (Exception e)
             {
@@ -97,7 +97,11 @@ namespace SnitzCore.BackOffice.Controllers
                         var exists = _context.Badwords.Find(badword.Id);
                         if (exists != null)
                         {
-                            if (exists.Word != badword.Word || exists.ReplaceWith != badword.ReplaceWith)
+                            if (badword.IsDeleted)
+                            {
+                                _context.Remove(exists);
+                            }
+                            else if (exists.Word != badword.Word || exists.ReplaceWith != badword.ReplaceWith)
                             {
                                 exists.Word = badword.Word;
                                 exists.ReplaceWith = badword.ReplaceWith;
@@ -108,7 +112,7 @@ namespace SnitzCore.BackOffice.Controllers
 
                 _context.SaveChanges();
 
-                return PartialView("SaveResult","Badwords updated");
+                return Content("<script>location.reload();</script>");
             }
             catch (Exception e)
             {
@@ -135,7 +139,7 @@ namespace SnitzCore.BackOffice.Controllers
                     }
 
                 }
-                return PartialView("SaveResult", "Username saved");
+                return Content("<script>location.reload();</script>");
             }
             catch (Exception e)
             {
@@ -143,6 +147,8 @@ namespace SnitzCore.BackOffice.Controllers
             }
 
         }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateUsernameFilter(AdminModeratorsViewModel model)
@@ -155,7 +161,11 @@ namespace SnitzCore.BackOffice.Controllers
                         var exists = _context.MemberNamefilter.Find(namefilter.Id);
                         if (exists != null)
                         {
-                            if (exists.Name != namefilter.Name)
+                            if (namefilter.IsDeleted)
+                            {
+                                _context.Remove(exists);
+                            }
+                            else if (exists.Name != namefilter.Name)
                             {
                                 exists.Name = namefilter.Name;
                                 _context.Update(exists);
@@ -165,7 +175,7 @@ namespace SnitzCore.BackOffice.Controllers
 
                 _context.SaveChanges();
 
-                return PartialView("SaveResult","Username filters updated");
+                return Content("<script>location.reload();</script>");
             }
             catch (Exception e)
             {

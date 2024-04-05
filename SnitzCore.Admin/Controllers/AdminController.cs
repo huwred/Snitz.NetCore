@@ -471,10 +471,20 @@ namespace SnitzCore.BackOffice.Controllers
             {
                 SettingsHelpers.AddOrUpdateAppSetting("MailSettings:Port", model.Port);
                 SettingsHelpers.AddOrUpdateAppSetting("MailSettings:SmtpServer", model.Server);
-                SettingsHelpers.AddOrUpdateAppSetting("MailSettings:Password", model.Password);
-                SettingsHelpers.AddOrUpdateAppSetting("MailSettings:UserName", model.Username);
-                SettingsHelpers.AddOrUpdateAppSetting("MailSettings:From", model.From);
                 SettingsHelpers.AddOrUpdateAppSetting("MailSettings:RequireLogin", model.Auth);
+                if (model.Auth)
+                {
+                    SettingsHelpers.AddOrUpdateAppSetting("MailSettings:Password", model.Password);
+                    SettingsHelpers.AddOrUpdateAppSetting("MailSettings:UserName", model.Username);
+                }
+                else
+                {
+
+                    SettingsHelpers.AddOrUpdateAppSetting("MailSettings:Password", "");
+                    SettingsHelpers.AddOrUpdateAppSetting("MailSettings:UserName", "");
+                }
+
+                SettingsHelpers.AddOrUpdateAppSetting("MailSettings:From", model.From);
                 SettingsHelpers.AddOrUpdateAppSetting("MailSettings:SecureSocketOptions", model.SslMode);
 
             }
@@ -489,6 +499,7 @@ namespace SnitzCore.BackOffice.Controllers
                     {
                         conf.Value = model.EmailMode;
                         _dbcontext.SnitzConfig.Update(conf);
+                        _snitzconfig.RemoveFromCache("STREMAIL");
                     }
                 }
                 else
@@ -502,6 +513,7 @@ namespace SnitzCore.BackOffice.Controllers
                     {
                         conf.Value = model.UseSpamFilter;
                         _dbcontext.SnitzConfig.Update(conf);
+                        _snitzconfig.RemoveFromCache("STRFILTEREMAILADDRESSES");
                     }
                 }
                 else
@@ -515,11 +527,68 @@ namespace SnitzCore.BackOffice.Controllers
                     {
                         conf.Value = model.ContactEmail;
                         _dbcontext.SnitzConfig.Update(conf);
+                        _snitzconfig.RemoveFromCache("STRCONTACTEMAIL");
                     }
                 }
                 else
                 {
                     _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STRCONTACTEMAIL", Value = model.ContactEmail });
+                }
+                conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "STRLOGONFORMAIL");
+                if (conf != null)
+                {
+                    if (conf.Value != Request.Form["STRLOGONFORMAIL"][0])
+                    {
+                        conf.Value = Request.Form["STRLOGONFORMAIL"][0];
+                        _dbcontext.SnitzConfig.Update(conf);
+                        _snitzconfig.RemoveFromCache("STRLOGONFORMAIL");
+                    }
+                }
+                else
+                {
+                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STRLOGONFORMAIL", Value = Request.Form["STRLOGONFORMAIL"] });
+                }
+                conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "STRUNIQUEEMAIL");
+                if (conf != null)
+                {
+                    if (conf.Value != Request.Form["STRUNIQUEEMAIL"][0])
+                    {
+                        conf.Value = Request.Form["STRUNIQUEEMAIL"][0];
+                        _dbcontext.SnitzConfig.Update(conf);
+                        _snitzconfig.RemoveFromCache("STRUNIQUEEMAIL");
+                    }
+                }
+                else
+                {
+                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STRUNIQUEEMAIL", Value = Request.Form["STRUNIQUEEMAIL"] });
+                }
+                conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "INTMAXPOSTSTOEMAIL");
+                if (conf != null)
+                {
+                    if (conf.Value != Request.Form["INTMAXPOSTSTOEMAIL"])
+                    {
+                        conf.Value = Request.Form["INTMAXPOSTSTOEMAIL"];
+                        _dbcontext.SnitzConfig.Update(conf);
+                        _snitzconfig.RemoveFromCache("INTMAXPOSTSTOEMAIL");
+                    }
+                }
+                else
+                {
+                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "INTMAXPOSTSTOEMAIL", Value = Request.Form["INTMAXPOSTSTOEMAIL"] });
+                }
+                conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "STRNOMAXPOSTSTOEMAIL");
+                if (conf != null)
+                {
+                    if (conf.Value != Request.Form["STRNOMAXPOSTSTOEMAIL"])
+                    {
+                        conf.Value = Request.Form["STRNOMAXPOSTSTOEMAIL"];
+                        _dbcontext.SnitzConfig.Update(conf);
+                        _snitzconfig.RemoveFromCache("STRNOMAXPOSTSTOEMAIL");
+                    }
+                }
+                else
+                {
+                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STRNOMAXPOSTSTOEMAIL", Value = Request.Form["STRNOMAXPOSTSTOEMAIL"] });
                 }
                 _dbcontext.SaveChanges(true);
             }
