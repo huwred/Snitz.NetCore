@@ -1,6 +1,4 @@
-﻿using Azure;
-using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Crypto;
+﻿using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -8,7 +6,6 @@ using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using X.PagedList;
 
@@ -20,13 +17,15 @@ namespace SnitzCore.Service
         private readonly IMember _memberService;
         private readonly IForum _forumservice;
         private readonly ISnitzConfig _config;
+        private readonly IEmailSender _mailSender;
 
-        public PostService(SnitzDbContext dbContext, IMember memberService,IForum forumservice,ISnitzConfig config)
+        public PostService(SnitzDbContext dbContext, IMember memberService,IForum forumservice,ISnitzConfig config,IEmailSender mailSender)
         {
             _dbContext = dbContext;
             _memberService = memberService;
             _forumservice = forumservice;
             _config = config;
+            _mailSender = mailSender;
         }
 
         /// <summary>
@@ -149,9 +148,9 @@ namespace SnitzCore.Service
                     {
                         _forumservice.UpdateLastPost(oldforum.Id);
                     }
-                    //TODO: send move notify
-                    //if (_config.GetIntValue("STRMOVENOTIFY") == 1)
-                    //    EmailController.TopicMergeEmail(ControllerContext, topic, mainTopic);
+
+                    if (_config.GetIntValue("STRMOVENOTIFY") == 1)
+                        _mailSender.TopicMergeEmail(topic, mainTopic,topic.Member);
                 }
             }
 

@@ -20,6 +20,7 @@ namespace SnitzCore.Service
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _env;
 
+
         string? ISnitzConfig.RootFolder
         {
             get => _httpContextAccessor.HttpContext?.Request.PathBase == "/" ? "" : _httpContextAccessor.HttpContext?.Request.PathBase;
@@ -33,6 +34,11 @@ namespace SnitzCore.Service
         {
             get => _config.GetSection("SnitzForums").GetSection("strForumTitle").Value;
             set => AddOrUpdateAppSetting("strForumTitle",value);
+        }
+        string? ISnitzConfig.Copyright
+        {
+            get => _config.GetSection("SnitzForums").GetSection("strCopyright").Value;
+            set => AddOrUpdateAppSetting("strCopyright",value);
         }
         public string? UniqueId
         {
@@ -116,6 +122,7 @@ namespace SnitzCore.Service
             _config = config;
             _httpContextAccessor = httpContextAccessor;
             _env = env;
+
 
         }
 
@@ -207,8 +214,8 @@ namespace SnitzCore.Service
 
         public string ThemeCss(string cssfile)
         {
-            //var currentTheme = _snitzcookie.GetCookieValue("snitztheme") ?? GetValue("STRDEFAULTTHEME", "SnitzTheme");
-            var currentTheme = GetValue("STRDEFAULTTHEME", "SnitzTheme");
+            var currentTheme = _httpContextAccessor.HttpContext?.Request.Cookies["snitztheme"] ?? GetValue("STRDEFAULTTHEME", "SnitzTheme");
+            //var currentTheme = GetValue("STRDEFAULTTHEME", "SnitzTheme");
             return $"/css/themes/{currentTheme}/{cssfile}";
         }
 

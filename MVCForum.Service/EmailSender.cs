@@ -11,6 +11,9 @@ using BbCodeFormatter;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Localization;
 using System.Threading;
+using BbCodeFormatter.Processors;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using System.Net.Mail;
 
 namespace SnitzCore.Service
 {
@@ -186,5 +189,18 @@ namespace SnitzCore.Service
             return Task.CompletedTask;
         }
 
+        public Task TopicMergeEmail(Post topic, Post mainTopic, Member author)
+        {
+            if (_config.GetIntValue("STREMAIL",0) != 1)
+                return Task.CompletedTask;
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;;
+            
+            EmailMessage emessage = new EmailMessage(new List<string>(){author.Email}, _languageResource.GetString("MoveNotify"), 
+                ParseTemplate("mergetopic.html",_languageResource.GetString("tipMergeTopic"),author.Email,author.Name, $"{_config.ForumUrl}Topic/Index/{mainTopic.Id}" , cultureInfo.Name));
+
+            var emailMessage = CreateEmailMessage(emessage);
+            return Send(emailMessage);
+
+        }
     }
 }
