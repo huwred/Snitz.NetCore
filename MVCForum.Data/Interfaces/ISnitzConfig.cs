@@ -13,6 +13,7 @@ namespace SnitzCore.Data.Interfaces
         string? RootFolder { get; }
         string ContentFolder { get; set; }
         string? ForumTitle { get; set; }
+        string? Copyright { get; set; }
         string? UniqueId { get; set; }
         int DefaultPageSize { get; set; }
         IEnumerable<CaptchaOperator> CaptchaOperators { get; set; }

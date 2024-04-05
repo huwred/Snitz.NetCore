@@ -18,4 +18,7 @@ public partial class Badword
     [Column("B_REPLACE")]
     [StringLength(50)]
     public string? ReplaceWith { get; set; }
+
+    [NotMapped]
+    public bool IsDeleted { get; set; }
 }

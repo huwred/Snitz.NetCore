@@ -14,4 +14,7 @@ public partial class MemberNamefilter
     [Column("N_NAME")]
     [StringLength(75)]
     public string Name { get; set; } = null!;
+
+    [NotMapped]
+    public bool IsDeleted { get; set; }
 }
