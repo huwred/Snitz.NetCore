@@ -1,15 +1,16 @@
 ﻿@using Microsoft.AspNetCore.Builder
 @using Microsoft.AspNetCore.Localization
+@using System.Globalization
 
 @inject IOptions<RequestLocalizationOptions> LocOptions
 
 @{
-    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var requestCulture = CultureInfo.CurrentUICulture;
     var cultureItems = LocOptions.Value.SupportedUICultures!
         .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
         .ToList();
     var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}";
-    string clang = requestCulture?.RequestCulture.Culture.Name!;
+    string clang = requestCulture?.TwoLetterISOLanguageName;
 }
 
 <!-- Split dropend button -->

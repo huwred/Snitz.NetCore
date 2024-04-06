@@ -54,16 +54,16 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
     options.EnableDetailedErrors();
 
 },ServiceLifetime.Transient);
-using (var scope = builder.Services.BuildServiceProvider().CreateScope())
-{
-    using (var dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
-    {
-        if (dbContext.Database.GetPendingMigrations().Any())
-        {
-            dbContext.Database.Migrate();
-        }
-    }
-}
+//using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+//{
+//    using (var dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
+//    {
+//        if (dbContext.Database.GetPendingMigrations().Any())
+//        {
+//            dbContext.Database.Migrate();
+//        }
+//    }
+//}
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ForumUser>(options =>
@@ -106,6 +106,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 });
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromHours(12));
 builder.Services.Configure<EmailConfirmationTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromDays(14));
+builder.Services.AddTransient<ISnitzCookie, SnitzCookie>();
 
 builder.Services.AddScoped<ICategory, CategoryService>();
 builder.Services.AddScoped<IMember, MemberService>();
@@ -117,7 +118,6 @@ builder.Services.AddTransient<ISnitzConfig, ConfigService>();
 builder.Services.AddTransient<ICodeProcessor, BbCodeProcessor>();
 builder.Services.AddScoped<IEmoticon, EmoticonService>();
 builder.Services.AddScoped<ISnitz, SnitzService>();
-builder.Services.AddScoped<ISnitzCookie, SnitzCookie>();
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IBookmark, BookmarkService>();
@@ -130,7 +130,7 @@ var supportedCultures = new List<CultureInfo>
     new ("fa"),
     new ("ro")
 };
-builder.Services.AddSingleton<IHtmlLocalizerFactory, EFStringLocalizerFactory>();
+builder.Services.AddTransient<IHtmlLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddMvc().AddViewLocalization();
 
 builder.Services.Configure < RequestLocalizationOptions > (options => {

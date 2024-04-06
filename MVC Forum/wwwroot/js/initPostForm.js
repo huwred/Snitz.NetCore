@@ -7,13 +7,11 @@
 })();
 let curLang = "en";
 let langDirection = "ltr";
-if ($.cookie(".AspNetCore.Culture")) {
-    var storedCulture = $.cookie(".AspNetCore.Culture");
+if ($.cookie("CookieLang")) {
+    var storedCulture = $.cookie("CookieLang");
     // c=no|uic=no
     if (storedCulture !== '') {
-        var cultureArray = storedCulture.split('|');
-        var culture = cultureArray[0].split('=');
-        curLang = culture[1];
+        curLang = storedCulture;
     }
     console.log(curLang);
     if (curLang === "fa") {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,11 +20,21 @@ namespace SnitzCore.Service
     {
 
         private readonly IServiceProvider _serviceProvider;
+        private readonly ISnitzCookie _cookie;
+        private readonly string? _language;
 
-        public LanguageService(IServiceProvider serviceProvider)
+        public LanguageService(IServiceProvider serviceProvider,ISnitzCookie cookie)
         {
             _serviceProvider = serviceProvider;
-
+            _cookie = cookie;
+            var cookielang = cookie.GetCookieValue("CookieLang");
+            bool isRighToLeft = false;
+            if (cookielang != null)
+            {
+                var cultureInfo = new CultureInfo(cookielang);
+                CultureInfo.CurrentUICulture = cultureInfo;
+                _language = cultureInfo.TwoLetterISOLanguageName;
+            }
         }
 
         public LocalizedHtmlString this[string name]
@@ -48,7 +59,7 @@ namespace SnitzCore.Service
         public IHtmlLocalizer WithCulture(CultureInfo culture)
         {
             CultureInfo.DefaultThreadCurrentCulture = culture;
-            return new LanguageService(_serviceProvider);
+            return new LanguageService(_serviceProvider, _cookie);
             
         }
 
@@ -59,12 +70,16 @@ namespace SnitzCore.Service
 
         public IEnumerable<LocalizedString> GetAllStrings(bool includeAncestorCultures)
         {
-            var culture = CultureInfo.CurrentCulture.Name;
+            var culture = CultureInfo.CurrentUICulture.Name;
             if (culture.StartsWith("en-"))
             {
                 culture = "en";
             }
 
+            if (_language != null)
+            {
+                culture = _language;
+            }
             using var scope = _serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetService<SnitzDbContext>();
             var results = context!.LanguageResources
@@ -75,10 +90,16 @@ namespace SnitzCore.Service
 
         public LocalizedString GetString(string name)
         {
-            var culture = CultureInfo.CurrentCulture.Name;
+            
+            var culture = CultureInfo.CurrentUICulture.Name;
             if (culture.StartsWith("en-"))
             {
                 culture = "en";
+            }
+
+            if (_language != null)
+            {
+                culture = _language;
             }
             var service = new InMemoryCache(30);
             return service.GetOrSet($"{culture}_{name}", () => CachedStringValue(name,culture));

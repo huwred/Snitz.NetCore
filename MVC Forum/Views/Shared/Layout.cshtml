@@ -1,11 +1,18 @@
 ﻿@using System.Globalization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Service.TagHelpers
 @{
     //check the culture so we can set the page direction and language
+    var cookielang = SnitzCookie.GetCookieValue("CookieLang");
     CultureInfo ci = CultureInfo.CurrentUICulture;
     string clang = ci.TwoLetterISOLanguageName;
     bool isRighToLeft = false;
-
+    if (cookielang != null)
+    {
+        var cultureInfo = new CultureInfo(cookielang);
+        CultureInfo.CurrentUICulture = cultureInfo;
+        clang = cultureInfo.TwoLetterISOLanguageName;
+    }
 }
 <!DOCTYPE html>
 <html lang="en">
