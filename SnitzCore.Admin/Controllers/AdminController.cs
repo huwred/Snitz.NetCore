@@ -534,20 +534,7 @@ namespace SnitzCore.BackOffice.Controllers
                 {
                     _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STRCONTACTEMAIL", Value = model.ContactEmail });
                 }
-                conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "STRLOGONFORMAIL");
-                if (conf != null)
-                {
-                    if (conf.Value != Request.Form["STRLOGONFORMAIL"][0])
-                    {
-                        conf.Value = Request.Form["STRLOGONFORMAIL"][0];
-                        _dbcontext.SnitzConfig.Update(conf);
-                        _snitzconfig.RemoveFromCache("STRLOGONFORMAIL");
-                    }
-                }
-                else
-                {
-                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STRLOGONFORMAIL", Value = Request.Form["STRLOGONFORMAIL"] });
-                }
+
                 conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "STRUNIQUEEMAIL");
                 if (conf != null)
                 {
@@ -560,7 +547,35 @@ namespace SnitzCore.BackOffice.Controllers
                 }
                 else
                 {
-                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STRUNIQUEEMAIL", Value = Request.Form["STRUNIQUEEMAIL"] });
+                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STRUNIQUEEMAIL", Value = Request.Form["STRUNIQUEEMAIL"][0] });
+                }
+                conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "STREMAILVAL");
+                if (conf != null)
+                {
+                    if (conf.Value != Request.Form["STREMAILVAL"][0])
+                    {
+                        conf.Value = Request.Form["STREMAILVAL"][0];
+                        _dbcontext.SnitzConfig.Update(conf);
+                        _snitzconfig.RemoveFromCache("STREMAILVAL");
+                    }
+                }
+                else
+                {
+                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STREMAILVAL", Value = Request.Form["STREMAILVAL"][0] });
+                }
+                conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "STRLOGONFORMAIL");
+                if (conf != null)
+                {
+                    if (conf.Value != Request.Form["STRLOGONFORMAIL"][0])
+                    {
+                        conf.Value = Request.Form["STRLOGONFORMAIL"][0];
+                        _dbcontext.SnitzConfig.Update(conf);
+                        _snitzconfig.RemoveFromCache("STRLOGONFORMAIL");
+                    }
+                }
+                else
+                {
+                    _dbcontext.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = "STRLOGONFORMAIL", Value = Request.Form["STRLOGONFORMAIL"][0] });
                 }
                 conf = _dbcontext.SnitzConfig.FirstOrDefault(f => f.Key == "INTMAXPOSTSTOEMAIL");
                 if (conf != null)

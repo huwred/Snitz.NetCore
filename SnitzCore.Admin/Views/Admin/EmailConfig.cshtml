@@ -90,15 +90,8 @@
                             <hr/>
                             <div class="mb-3">
                                 <admin-config config-key="STRUNIQUEEMAIL" config-label="Require Unique Email" config-val="@SnitzConfig.GetIntValue("STRUNIQUEEMAIL")"></admin-config>
+                                <admin-config config-key="STREMAILVAL" config-label="Validate email addresses" config-val="@SnitzConfig.GetIntValue("STREMAILVAL")"></admin-config>
                                 <admin-config config-key="STRLOGONFORMAIL" config-label="Logon to send email" config-val="@SnitzConfig.GetIntValue("STRLOGONFORMAIL")"></admin-config>
-                                @if (SnitzConfig.GetIntValue("STREMAIL") == 1)
-                                {
-                                    <admin-config config-key="STREMAILVAL" config-label="Validate email addresses" config-val="@SnitzConfig.GetIntValue("STREMAILVAL")"></admin-config>
-                                }
-                                else
-                                {
-                                    <input type="hidden" id="STREMAILVAL" name="STREMAILVAL" value="0"/>
-                                }
                             </div>
 
                             <div class="mb-3">
