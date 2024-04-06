@@ -7,6 +7,7 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
@@ -15,6 +16,7 @@ using MVCForum.ViewModels;
 using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Home;
 using MVCForum.ViewModels.Post;
+using System.Threading;
 
 namespace MVCForum.Controllers
 {
@@ -22,10 +24,12 @@ namespace MVCForum.Controllers
     public class HomeController : SnitzController
     {
         private readonly IPost _postService;
+        private readonly ISnitzCookie _snitzcookie;
 
-        public HomeController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, IPost postService) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
+        public HomeController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, IPost postService,ISnitzCookie snitzcookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _postService = postService;
+            _snitzcookie = snitzcookie;
         }
 
         [ResponseCache(VaryByHeader = "User-Agent", Duration = 60)]
@@ -112,13 +116,32 @@ namespace MVCForum.Controllers
 
         public IActionResult SetLanguage(string lang, string returnUrl)
         {
-            Response.Cookies.Append(
-                CookieRequestCultureProvider.DefaultCookieName,
-                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(lang)),
-                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMonths(1) }
+
+            _snitzcookie.SetCookie(
+                "CookieLang",
+                lang,
+                DateTime.UtcNow.AddMonths(12) 
             );
 
+            try
+            {
+                NumberFormatInfo numberInfo = CultureInfo.CreateSpecificCulture(lang).NumberFormat;
+                CultureInfo info = new CultureInfo(lang)
+                {
+                    NumberFormat = numberInfo
+                };
+                //later, we will if-else the language here
+                //info.DateTimeFormat.DateSeparator = "/";
+                //info.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
+                CultureInfo.CurrentUICulture = info;
+                CultureInfo.CurrentCulture = info;
+            }
+            catch (Exception)
+            {
+
+            }
             return LocalRedirect(returnUrl);
         }
+
     }
 }
