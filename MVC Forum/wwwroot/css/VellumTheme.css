@@ -9,7 +9,7 @@
     --bs-btn-bg: #bcbf97;
     --bs-btn-border-color: #bcbf97;
     --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: #0b5ed7;
+    --bs-btn-hover-bg: #d3d6a9;
     --bs-btn-hover-border-color: #0a58ca;
     --bs-btn-focus-shadow-rgb: 49, 132, 253;
     --bs-btn-active-color: #fff;
@@ -202,7 +202,7 @@ h1 {
 /* Footer Styling */
 
 footer {
-    background-color: #ddd;
+    background-color: #d3d6a9;
 }
 
 /* ########################################### */
@@ -341,13 +341,13 @@ tr.bg-dark, .card-header.bg-dark {
     color: #fff;
 }
 .btn-secondary {
-    background-color: #fafafa;
+    background-color: #d3d6a9;
 }
 .bg-form {
     background-color: #fafafa;
 }
     .bg-form h1.bg-dark {
-        background-color: #6A5ACD !important;
+        background-color: #7d7f66 !important;
     }
 
     .new-posts {
@@ -555,13 +555,13 @@ a.latestpost-title {
 }
 .accordion-button:focus {
     z-index: 3;
-    border-color: var(--bs-accordion-btn-focus-border-color);
+    border-color: revert;
     outline: 0;
-    box-shadow: var(--bs-accordion-btn-focus-box-shadow);
+    box-shadow: revert;
 }
 .accordion-button {
     color: #F5FFFA !important;
-    background-color: #6A5ACD;
+    background-color: #d3d6a9;
     box-shadow: revert;
 }
 .newposts {

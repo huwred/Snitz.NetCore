@@ -51,7 +51,11 @@ a.btn:hover {
 .subforum-divider{
     display: none;   
 }
-
+.accordion-button:not(.collapsed) {
+    color: #F5FFFA !important;
+    background-color: #6A5ACD;
+    box-shadow: revert;
+}
 
 /* For the smartphones */
 @media (max-width: 480px) {

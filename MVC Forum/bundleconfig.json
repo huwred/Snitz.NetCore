@@ -64,5 +64,35 @@
     "inputFiles": [
       "wwwroot/js/jquery.unobtrusive-ajax.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/SnitzTheme.min.css",
+    "inputFiles": [
+      "wwwroot/css/SnitzTheme.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/VellumTheme.min.css",
+    "inputFiles": [
+      "wwwroot/css/VellumTheme.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/DarkTheme.min.css",
+    "inputFiles": [
+      "wwwroot/css/DarkTheme.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/OrangeTheme.min.css",
+    "inputFiles": [
+      "wwwroot/css/OrangeTheme.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/prism.min.css",
+    "inputFiles": [
+      "wwwroot/css/prism.css"
+    ]
   }
 ]
