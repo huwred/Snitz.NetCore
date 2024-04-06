@@ -9,7 +9,9 @@
 @inject ISnitzConfig SnitzConfig
 @inject IOptionsSnapshot<SnitzForums> Config
 @inject IMember MemberService
+@inject ISnitzCookie SnitzCookie
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers.Localization
 @addTagHelper *, SnitzForum
 @addTagHelper *, SnitzCore.Service
 @addTagHelper *, SmartBreadcrumbs
