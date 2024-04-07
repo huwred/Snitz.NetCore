@@ -176,6 +176,12 @@
 
 @section Scripts
 {
+    <script>
+        let ContentFolder = "/Content/PhotoAlbum/";
+        if ('@SnitzConfig.GetIntValue("INTPROTECTPHOTO")' == '1') {
+            ContentFolder = "/@SnitzConfig.ContentFolder/PhotoAlbum/"
+        }
+    </script>
     <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="/js/initPostForm.js"></script>
     <script type="text/javascript" src="/js/ConfirmDialog.js" crossorigin="anonymous"></script>

@@ -46,7 +46,7 @@ tinymce.init({
             'bullist numlist | link emoticons | fileButton imageButton media codesample',
     //toolbar: 'code undo redo | removeformat | styleselect | bullist numlist table | blockquote  | link codesample emoticons | fileButton imageButton media',
     images_upload_url: "/forumupload",
-    images_upload_base_path: "/Content/PhotoAlbum/",
+    images_upload_base_path: window.ContentFolder,
     images_reuse_filename: true,
     emoticons_database: 'emojiimages',
     emoticons_images_url: '/images/emoticon/',

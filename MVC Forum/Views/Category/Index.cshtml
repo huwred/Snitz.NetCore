@@ -64,11 +64,11 @@
                         {
                             if (subscriptions.Where(s => s.CategoryId == category.Id && s.PostId == 0).Select(s => s.CategoryId).Any())
                             {
-                                <i class="fa fa-share-square category center" title="@Localizer["btnUnsubscribe"]" data-id="@category.Id"></i>
+                                <i class="fa fa-share-square category center m-2" title="@Localizer["btnUnsubscribe"]" data-id="@category.Id"></i>
                             }
                             else
                             {
-                                <i class="fa fa-share-square-o category center " title="@Localizer["cnfSubscribeCategory"]" data-id="@category.Id"></i>
+                                <i class="fa fa-share-square-o category center m-2" title="@Localizer["cnfSubscribeCategory"]" data-id="@category.Id"></i>
                             }
                         }
                     </h5>

@@ -318,6 +318,12 @@ else
 
 @section Scripts
 {
+    <script>
+        let ContentFolder = "/Content/PhotoAlbum/";
+        if ('@SnitzConfig.GetIntValue("INTPROTECTPHOTO")' == '1') {
+            ContentFolder = "/@SnitzConfig.ContentFolder/PhotoAlbum/"
+        }
+    </script>
     <script type="text/javascript" src="/js/postcontroller.js"></script>
     <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="/js/initPostForm.js"></script>
@@ -362,9 +368,6 @@ else
                 $('.split-topic').on('click', function (e) {
                     e.preventDefault();
                     location.href = "/Topic/SplitTopic/?id=" + $(this).data("topic") + "&replyid=" + $(this).data("id");
-                    // $.get("/Topic/SplitTopic/?id=" + $(this).data("topic") + "&replyid=" + $(this).data("id"),function(data) {
-                    //     $('html').html(data);
-                    // });
                 });
             });
 
