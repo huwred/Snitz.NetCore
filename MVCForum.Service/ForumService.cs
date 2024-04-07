@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SnitzCore.Data;
+using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
@@ -9,6 +11,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using X.PagedList;
 
@@ -18,11 +22,13 @@ namespace SnitzCore.Service
     {
         private readonly SnitzDbContext _dbContext;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly string _tableprefix;
         
-        public ForumService(SnitzDbContext dbContext,RoleManager<IdentityRole> roleManager)
+        public ForumService(SnitzDbContext dbContext,RoleManager<IdentityRole> roleManager,IOptions<SnitzForums> config)
         {
             _dbContext = dbContext;
             _roleManager = roleManager;
+            _tableprefix = config.Value.forumTablePrefix;
         }
 
         public async Task Create(Forum forum)
@@ -294,6 +300,49 @@ namespace SnitzCore.Service
             return _dbContext.ForumAllowedMembers.Include(am => am.Member).Where(am => am.ForumId == id)
                 .ToDictionary(u => u.MemberId, u => u.Member.Name);
 
+        }
+
+        public void ArchiveTopics(int forumId, string? archiveDate)
+        {
+            IEnumerable<int> topics;
+
+            if (!string.IsNullOrWhiteSpace(archiveDate))
+            {
+                topics = _dbContext.Posts.AsNoTracking().Where(t => t.ForumId == forumId && t.LastPostDate.FromForumDateStr() < archiveDate.FromForumDateStr()).Select(t=>t.Id);
+            }
+            else
+            {
+                topics = _dbContext.Posts.AsNoTracking().Where(t => t.ForumId == forumId).Select(t=>t.Id);
+            }
+
+            if (topics.Any())
+            {
+                try
+                {
+                    var topiclist = string.Join(",", topics);
+                    var sql =
+                        @$"INSERT INTO {_tableprefix}A_REPLY (CAT_ID,FORUM_ID,TOPIC_ID,REPLY_ID,R_MAIL,R_AUTHOR,R_MESSAGE,R_DATE,R_IP,R_STATUS,R_LAST_EDIT,R_LAST_EDITBY,R_SIG,R_RATING)
+                        SELECT CAT_ID,FORUM_ID,TOPIC_ID,REPLY_ID,R_MAIL,R_AUTHOR,R_MESSAGE,R_DATE,R_IP,R_STATUS,R_LAST_EDIT,R_LAST_EDITBY,R_SIG,R_RATING FROM {_tableprefix}REPLY WHERE TOPIC_ID IN ({topiclist});
+                        INSERT INTO {_tableprefix}A_TOPICS (CAT_ID,FORUM_ID,TOPIC_ID,T_STATUS,T_MAIL,T_SUBJECT,T_MESSAGE,T_AUTHOR,T_REPLIES,T_UREPLIES,T_VIEW_COUNT,T_LAST_POST,T_DATE,T_LAST_POSTER,T_IP,T_LAST_POST_AUTHOR,T_LAST_POST_REPLY_ID,T_LAST_EDIT,T_LAST_EDITBY,T_STICKY,T_SIG)
+                        SELECT CAT_ID,FORUM_ID,TOPIC_ID,T_STATUS,T_MAIL,T_SUBJECT,T_MESSAGE,T_AUTHOR,T_REPLIES,T_UREPLIES,T_VIEW_COUNT,T_LAST_POST,T_DATE,T_LAST_POSTER,T_IP,T_LAST_POST_AUTHOR,T_LAST_POST_REPLY_ID,T_LAST_EDIT,T_LAST_EDITBY,T_STICKY,T_SIG FROM {_tableprefix}TOPICS WHERE TOPIC_ID IN ({topiclist});
+                        DELETE FROM {_tableprefix}REPLY WHERE TOPIC_ID IN ({topiclist}) ;
+                        DELETE FROM {_tableprefix}TOPICS WHERE TOPIC_ID IN ({topiclist});
+                        UPDATE {_tableprefix}FORUM SET F_L_ARCHIVE={DateTime.UtcNow.ToForumDateStr()} WHERE FORUM_ID={forumId}";
+
+                    var fs = FormattableStringFactory.Create(sql);
+                    _dbContext.Database.BeginTransaction();
+                    _dbContext.Database.ExecuteSql(fs);
+
+                }
+                catch (Exception e)
+                {
+                    _dbContext.Database.RollbackTransaction();
+                }
+                finally
+                {
+                    _dbContext.Database.CommitTransaction();
+                }
+            }
         }
     }
 }

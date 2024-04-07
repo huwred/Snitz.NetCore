@@ -452,7 +452,7 @@ namespace MVCForum.Controllers
             else
             {
                 var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
-                var catPage = new MvcBreadcrumbNode("", "Category", "Create Forum") { Parent = forumPage};
+                var catPage = new MvcBreadcrumbNode("", "Category", _languageResource.GetString("tipNewForum")) { Parent = forumPage};
                 ViewData["BreadcrumbNode"] = catPage;
             }
                 

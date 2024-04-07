@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -460,11 +461,6 @@ namespace SnitzCore.BackOffice.Controllers
 
         }
 
-        public IActionResult ArchiveForum(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         public IActionResult EmailConfigUpdate(AdminEmailServer model)
         {
             if (ModelState.IsValid)
@@ -758,6 +754,28 @@ namespace SnitzCore.BackOffice.Controllers
             string contents = System.IO.File.ReadAllText(_env.ContentRootPath + $@"\{id}");
 
             return Content(contents);
+        }
+
+        [HttpGet]
+        public IActionResult ArchiveForum(int id)
+        {
+            if (_snitzconfig.GetIntValue("STRARCHIVESTATE") != 1)
+            {
+                ViewBag.Error = "Archiving not enabled";
+                return View("Error");
+            }
+            ArchiveViewModel vm = new ArchiveViewModel {ForumId = id};
+            return PartialView("popArchiveForum", vm);
+        }
+
+        [HttpPost]
+        public IActionResult ArchiveForum(ArchiveViewModel vm)
+        {
+            var archiveDate = DateTime.UtcNow.AddMonths(-vm.MonthsOlder).ToForumDateStr();
+            BackgroundJob.Enqueue(() => _forumservice.ArchiveTopics(vm.ForumId, archiveDate));
+
+            var avm = new ArchivesViewModel() { Categories = _dbcontext.Categories.Include(c=>c.Forums).ToList() };
+            return View("ManageArchives", avm);
         }
     }
 }

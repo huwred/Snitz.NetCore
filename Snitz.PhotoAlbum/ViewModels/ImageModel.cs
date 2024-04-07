@@ -4,7 +4,7 @@ namespace Snitz.PhotoAlbum.ViewModels
 {
     public class ImageModel
     {
-        List<GalleryImage> _images = new List<GalleryImage>();
+        List<GalleryImage> _images = new();
 
         public ImageModel()
         {

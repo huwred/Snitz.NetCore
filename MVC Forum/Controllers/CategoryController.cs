@@ -147,8 +147,8 @@ namespace MVCForum.Controllers
         [Route("Category/Create")]
         public IActionResult Create()
         {
-            var forumPage = new MvcBreadcrumbNode("", "Category", "Categories");
-            var topicPage = new MvcBreadcrumbNode("", "Category", "New Category") { Parent = forumPage};
+            var forumPage = new MvcBreadcrumbNode("", "Category", _languageResource.GetString("lblCategories"));
+            var topicPage = new MvcBreadcrumbNode("", "Category", _languageResource.GetString("tipNewCategory")) { Parent = forumPage};
             CategoryViewModel vm = new CategoryViewModel();
 
             ViewData["BreadcrumbNode"] = topicPage;
@@ -159,8 +159,8 @@ namespace MVCForum.Controllers
         [Route("Category/CreateEdit")]
         public IActionResult CreateEdit(CategoryViewModel model)
         {
-            var forumPage = new MvcBreadcrumbNode("", "Category", "Categories");
-            var topicPage = new MvcBreadcrumbNode("", "Category", "New Category") { Parent = forumPage};
+            var forumPage = new MvcBreadcrumbNode("", "Category", _languageResource.GetString("lblCategories"));
+            var topicPage = new MvcBreadcrumbNode("", "Category", _languageResource.GetString("tipNewCategory")) { Parent = forumPage};
             ViewData["BreadcrumbNode"] = topicPage;
             if (ModelState.IsValid)
             {

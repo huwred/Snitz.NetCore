@@ -6,8 +6,8 @@
 }
 .btn-primary {
     --bs-btn-color: #fff;
-    --bs-btn-bg: #bcbf97;
-    --bs-btn-border-color: #bcbf97;
+    --bs-btn-bg: #7d7f66;
+    --bs-btn-border-color: #7d7f66;
     --bs-btn-hover-color: #fff;
     --bs-btn-hover-bg: #d3d6a9;
     --bs-btn-hover-border-color: #0a58ca;
@@ -17,23 +17,23 @@
     --bs-btn-active-border-color: #0a53be;
     --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
     --bs-btn-disabled-color: #fff;
-    --bs-btn-disabled-bg: #bcbf97;
-    --bs-btn-disabled-border-color: #bcbf97;
+    --bs-btn-disabled-bg: #7d7f66;
+    --bs-btn-disabled-border-color: #7d7f66;
 }
 .btn-outline-primary {
-    --bs-btn-color: #bcbf97;
-    --bs-btn-border-color: #bcbf97;
+    --bs-btn-color: #7d7f66;
+    --bs-btn-border-color: #7d7f66;
     --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: #bcbf97;
-    --bs-btn-hover-border-color: #bcbf97;
+    --bs-btn-hover-bg: #7d7f66;
+    --bs-btn-hover-border-color: #7d7f66;
     --bs-btn-focus-shadow-rgb: 13, 110, 253;
     --bs-btn-active-color: #fff;
-    --bs-btn-active-bg: #bcbf97;
-    --bs-btn-active-border-color: #bcbf97;
+    --bs-btn-active-bg: #7d7f66;
+    --bs-btn-active-border-color: #7d7f66;
     --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: #bcbf97;
+    --bs-btn-disabled-color: #7d7f66;
     --bs-btn-disabled-bg: transparent;
-    --bs-btn-disabled-border-color: #bcbf97;
+    --bs-btn-disabled-border-color: #7d7f66;
     --bs-gradient: none;
 }
 h4,.h4 {
@@ -46,7 +46,7 @@ h4,.h4 {
  /* Navbar Styles */
 .nav-tabs .nav-item .nav-link.active {
     background-color: #fafafa;
-    color: #FFF;
+    color: #888;
 }
 
 .bg-dark {
@@ -131,8 +131,8 @@ h1 {
 /* ########################################### */
 
 .subforum-title, .subforum-title a {
-    background-color: #d3d6a9;
-    color: #333 !important;
+    background-color: #7d7f66 !important;
+    color: #fff !important;
 }
 
 .subforum-column {
@@ -337,11 +337,11 @@ tr.bg-dark, .card-header.bg-dark {
 }
 
 #theme-change {
-    background-color: #888;
+    background-color: rgba(60,60,60,1);
     color: #fff;
 }
 .btn-secondary {
-    background-color: #d3d6a9;
+    background-color: #7d7f66;
 }
 .bg-form {
     background-color: #fafafa;
@@ -550,7 +550,7 @@ a.latestpost-title {
 
 .accordion-button:not(.collapsed) {
     color: #F5FFFA !important;
-    background-color: #d3d6a9;
+    background-color: #7d7f66;
     box-shadow: revert;
 }
 .accordion-button:focus {
@@ -561,7 +561,7 @@ a.latestpost-title {
 }
 .accordion-button {
     color: #F5FFFA !important;
-    background-color: #d3d6a9;
+    background-color: #7d7f66;
     box-shadow: revert;
 }
 .newposts {

@@ -29,5 +29,6 @@ namespace SnitzCore.Data.Interfaces
 
         int PollsAuth(int id);
         Dictionary<int, string> GetAllowedUsers(int id);
+        void ArchiveTopics(int forumId, string archiveDate);
     }
 }

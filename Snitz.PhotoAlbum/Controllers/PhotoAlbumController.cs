@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using SmartBreadcrumbs.Nodes;
 using Snitz.PhotoAlbum.Models;
 using Snitz.PhotoAlbum.ViewModels;
@@ -15,9 +14,7 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Service;
 using Microsoft.Extensions.FileProviders;
 using X.PagedList;
-using Microsoft.AspNetCore.Http;
-using SnitzCore.Data.Models;
-using SnitzCore.Data.Models;
+
 
 namespace Snitz.PhotoAlbum.Controllers
 {
@@ -55,11 +52,11 @@ namespace Snitz.PhotoAlbum.Controllers
                 var model = _dbContext.AlbumImages
                     .Include(ai => ai.Member)
                     .Where(ai => ai.Member != null && ai.Member.Status == 1)
-                    .GroupBy(p => new {MemberId = p.MemberId, MemberName = p.Member.Name})
+                    .GroupBy(p => new { p.MemberId,  p.Member.Name})
                     .Select(ai => new AlbumList
                     {
                         MemberId = ai.Key.MemberId,
-                        Username = ai.Key.MemberName,
+                        Username = ai.Key.Name,
                         imgLastUpload = ai.Max(l=>l.Timestamp),
                         imgCount = ai.Count()
                     });
@@ -105,7 +102,7 @@ namespace Snitz.PhotoAlbum.Controllers
 
             try
             {
-                var images = GetSpeciesEntries(1, vm.SortBy ?? "id", vm.SrchGroupId, true, vm.SrchIn.ToList(),vm.searchTerms,vm.SortOrder == "asc" ? "" : "1" );
+                var images = GetSpeciesEntries( vm.SortBy ?? "id", vm.SrchGroupId, true, vm.SrchIn.ToList(),vm.searchTerms,vm.SortOrder == "asc" ? "" : "1" );
                 ViewBag.MemberId = 0;
 
                 ViewBag.IsOwner = false;
@@ -116,7 +113,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 ViewBag.SortDir = vm.SortOrder;
                 //Paging info
                 ViewBag.Page = 1;
-                ViewBag.PageCount = (images.Count() / pagesize) + 1;;
+                ViewBag.PageCount = (images.Count / pagesize) + 1;;
 
                 var displayvm = new SpeciesAlbum
                 {
@@ -154,7 +151,7 @@ namespace Snitz.PhotoAlbum.Controllers
         /// <param name="sortby"></param>
         /// <param name="sortorder"></param>
         /// <returns></returns>
-        public IActionResult Member(string id, int display = 0, int pagenum = 1, string sortby = "date",string sortorder = "desc", int uid=0)
+        public IActionResult Member(string id, int display = 0, int pagenum = 1, string sortby = "date",string sortorder = "desc")
         {
             var albumPage = new MvcBreadcrumbNode("", "PhotoAlbum", _languageResource["mnuMemberAlbums"].Value);
 
@@ -208,7 +205,7 @@ namespace Snitz.PhotoAlbum.Controllers
             //Paging info
             ViewBag.Page = pagenum;
             ViewBag.PageCount = (test.Count() / pagesize) + 1;
-            SpeciesAlbum param = new SpeciesAlbum
+            SpeciesAlbum param = new()
             {
                 SortBy = sortby,
                 SortDesc = sortorder == "asc" ? "" : "1",
@@ -247,7 +244,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 filter = groupFilter;
             }
 
-            var images = GetSpeciesEntries(pagenum, sortby: sortby, groupid: filter, speciesOnly: speciesOnly == 1, sortDesc: sortOrder == "asc" ? "" : "1");
+            var images = GetSpeciesEntries( sortby, filter, speciesOnly == 1, null, sortOrder == "asc" ? "" : "1");
             ViewBag.Username = id;
             ViewBag.MemberId = 0;
 
@@ -259,7 +256,7 @@ namespace Snitz.PhotoAlbum.Controllers
             ViewBag.SortDir = sortOrder;// == "asc" ? "desc" : "asc";
             //Paging info
             ViewBag.Page = pagenum;
-            ViewBag.PageCount = (images.Count() / pagesize) + 1;;
+            ViewBag.PageCount = (images.Count / pagesize) + 1;;
 
             var vm = new SpeciesAlbum
             {
@@ -282,11 +279,11 @@ namespace Snitz.PhotoAlbum.Controllers
         /// <param name="id"></param>
         /// <param name="photoid"></param>
         /// <returns></returns>
-        public ActionResult Gallery(int id = 0, int photoid = 0, int pagenum = 1, string sortby = "date",string sortOrder = "desc", bool speciesOnly = true)
+        public ActionResult Gallery(int id = 0, int photoid = 0, string sortby = "date",string sortOrder = "desc", bool speciesOnly = true)
         {
             //todo:test member
 
-            var images = GetSpeciesEntries(pagenum, sortby, 0, speciesOnly, null,null, sortOrder == "desc" ? "1" : sortOrder == "1" ? "1" : "");
+            var images = GetSpeciesEntries(sortby, 0, speciesOnly, null,null, sortOrder == "desc" ? "1" : sortOrder == "1" ? "1" : "");
 
             var imageFiles = new ImageModel
             {
@@ -303,7 +300,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 Id = f.Id,
                 Name = f.ScientificName ?? f.CommonName ?? f.ImageName,
                 Path = imagename + f.ImageName,
-                Description = f.Description
+                Description = f?.Description
             }));
             ViewBag.footer = images[0].Member?.Name + " - " +
                              images[0].Timestamp.FromForumDateStr().ToLocalTime() + "<br/>" + images[0].Views +
@@ -342,7 +339,6 @@ namespace Snitz.PhotoAlbum.Controllers
             if (!fileInfo.Exists)
             {
                 return File("/images/notfound.jpg", "image/jpeg");
-                ;// NotFound();
             }
 
             // Create the destination folder tree if it doesn't already exist
@@ -546,7 +542,7 @@ namespace Snitz.PhotoAlbum.Controllers
             return Content("Group removed.");
         }
 
-        private PagedList<AlbumList>? PagedPhotos(int pagenum, int pagesize, string sortOrder, string sortBy, IQueryable<AlbumList> model)
+        private static PagedList<AlbumList>? PagedPhotos(int pagenum, int pagesize, string sortOrder, string sortBy, IQueryable<AlbumList> model)
         {
             if(!model.Any()) return null;
             PagedList<AlbumList> pagedReplies;
@@ -580,7 +576,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 Mode = ResizeMode.Crop
             });
         }
-        private List<AlbumImage> GetSpeciesEntries(int pagenum, string? sortby = "id", int? groupid = 0, bool? speciesOnly = true, List<string>? searchin = null, string? searchfor = null, string sortDesc="")
+        private List<AlbumImage> GetSpeciesEntries(string? sortby = "id", int groupid = 0, bool? speciesOnly = true, List<string>? searchin = null, string? searchfor = null, string sortDesc="")
         {
             var currentmemberid = _memberservice.Current()?.Id;
 
@@ -689,13 +685,13 @@ namespace Snitz.PhotoAlbum.Controllers
             return images.ToList();
 
         }
-        private string Combine(string uri1, string uri2)
+        private static string Combine(string uri1, string uri2)
         {
             uri1 = uri1.TrimEnd('/');
             uri2 = uri2.TrimStart('/');
             return $"{uri1}/{uri2}";
         }
-        private string GetUniqueFileName(string fileName, out string timestamp)
+        private static string GetUniqueFileName(string fileName, out string timestamp)
         {
             fileName = Path.GetFileName(fileName);
             timestamp = DateTime.UtcNow.ToForumDateStr();
@@ -711,10 +707,10 @@ namespace Snitz.PhotoAlbum.Controllers
         }
         private SelectList GetGroupList()
         {
-            SelectListItem selListItem = new SelectListItem() {Value = "0", Text = "All"};
+            SelectListItem selListItem = new() {Value = "0", Text = "All"};
 
             //Create a list of select list items - this will be returned as your select list
-            List<SelectListItem> groupList = new List<SelectListItem> { selListItem };
+            List<SelectListItem> groupList = new() { selListItem };
             groupList.AddRange(new SelectList(_dbContext.Set<AlbumGroup>(), "Id", "Description"));
 
             var gList = new SelectList(groupList, "Value", "Text", 0);

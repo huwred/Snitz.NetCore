@@ -49,8 +49,12 @@
                                                 </td>
                                                 <td class="col-2 align-center">@Html.TextBoxFor(m => forum!.ArchiveSched, new { @class = "form-control " })</td>
                                                 <td class="col-2 align-center">@Html.TextBoxFor(m => forum!.DeleteSched, new { @class = "form-control " })</td>
-                                                <td class="col-2 align-center">@Html.Raw(forum!.LastArchived.FromForumDateStr(true).ToShortDateString())</td>
-                                                <td class="col-2 align-center">@Html.Raw(forum.LastDelete.FromForumDateStr(true).ToShortDateString())</td>
+                                                <td class="col-2 align-center">
+                                                    <span snitz-if="@(forum!.LastArchived.FromForumDateStr(true) != DateTime.MinValue)">@forum!.LastArchived.FromForumDateStr(true).ToShortDateString()</span>
+                                                </td>
+                                                <td class="col-2 align-center">
+                                                    <span snitz-if="@(forum.LastDelete.FromForumDateStr(true) != DateTime.MinValue)">@forum.LastDelete.FromForumDateStr(true).ToShortDateString()</span>
+                                                </td>
                                                 <td class="align-center">
                                                     <link-confirm config-class="fa fa-archive" config-key="@forum.Id" href="/Admin/ArchiveForum" title="Archive posts in this forum"></link-confirm>
                                                     <link-confirm config-class="fa fa-trash-o" config-key="@forum.Id" href="/Admin/DeleteArchiveForum" title="Delete archived posts in this forum?"></link-confirm>

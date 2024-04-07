@@ -16,8 +16,8 @@
         <ul class="list-unstyled form-text">
             <li>Tag [Image=@Model.Id]</li>
             <li>@Localizer["lblFileName"]: @Model.Location</li>
-            <li>@Localizer["lblScientificName"]: @Model.ScientificName</li>
-            <li>@Localizer["lblLocalName"]: @Model.CommonName</li>
+            <li snitz-if="@(!string.IsNullOrWhiteSpace(Model.ScientificName))">@Localizer["lblScientificName"]: @Model.ScientificName</li>
+            <li snitz-if="@(!string.IsNullOrWhiteSpace(Model.CommonName))">@Localizer["lblLocalName"]: @Model.CommonName</li>
             <li>@Localizer["lblOwner"]: @Model.Member.Name</li>
             <li>@Localizer["lblDate"]: @Model.Timestamp.FromForumDateStr()</li>
         </ul>

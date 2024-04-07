@@ -87,11 +87,11 @@ namespace SnitzCore.Data.Models
     /// </summary>
     public enum ForumType
     {
-        [Display(Name = "Standard Forum")]
+        [Display(Name = "ForumType_Topics")]
         Topics = 0,
-        [Display(Name = "Url Link")]
+        [Display(Name = "ForumType_WebLink")]
         WebLink = 1,
-        [Display(Name = "Bug Forum")]
+        [Display(Name = "ForumType_BugReports")]
         BugReports = 3,
         BlogPosts = 4
     }
@@ -161,11 +161,15 @@ namespace SnitzCore.Data.Models
 
     public enum Status
     {
+        [Display(Name="PostStatus_Closed")]
         Closed = 0,
+        [Display(Name="PostStatus_Open")]
         Open = 1,
+        [Display(Name="PostStatus_Unmoderated")]
         UnModerated = 2,
+        [Display(Name="PostStatus_OnHold")]
         OnHold = 3,
-
+        [Display(Name="PostStatus_Draft")]
         Draft = 99
     }
     public enum Moderation

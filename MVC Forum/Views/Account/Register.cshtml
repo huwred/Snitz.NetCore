@@ -21,8 +21,9 @@ else
     <form asp-controller="Account" asp-action="Register" class="needs-validation p-2" novalidate>
         <div class="row pt-0">
             <div class="center m-2 ">
-                <div class="subforum col-6 p-2 bg-form border border-dark rounded">
+                <div class="subforum col-6 bg-form border border-dark rounded">
                     <h1 class="bg-dark text-white p-2">@Localizer["registerTitle"]</h1>
+                    <div class="p-2">
                     <div class="mb-3">
                         <label asp-for="Name" class="form-label">@Localizer["Username"]</label>
                         <input asp-for="Name" class="form-control" required="required" />
@@ -41,31 +42,34 @@ else
                         <label for="pwRepeat" class="form-label">@Localizer["ConfirmPassword"]</label>
                         <input type="password" name="pwRepeat" id="pwRepeat" class="form-control" />
                         <div class="invalid-feedback">@Localizer["compPassword", Localizer["Password"], Localizer["ConfirmPassword"]]</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row pt-0">
             <div class="center m-2 ">
-                <div class="subforum col-6 p-2 bg-form border border-dark rounded">
+                <div class="subforum col-6 bg-form border border-dark rounded">
                     <h1 class="bg-dark text-white p-2">@Localizer["Required"]</h1>
-                    @if (Model.RequiredFields != null)
-                    {
-                        var counter = 0;
-                        foreach (var field in Model.RequiredFields)
+                    <div class="p-2">
+                        @if (Model.RequiredFields != null)
                         {
-                            var fieldname = field.Replace("STRREQ", "STR");
-                            foreach (PropertyInfo property in typeof(Member).GetProperties().Where(p => !p.SystemProperty() && p.GetPropertyDisplayCheck<Member>() == fieldname).OrderBy(p => p.PropertyOrder()))
+                            var counter = 0;
+                            foreach (var field in Model.RequiredFields)
                             {
-                                <snitz-config name="RequiredFields[@counter]" can-edit="true" property-info="@property" property-val="" property-req="true" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
-                                <input type="hidden" name="RequiredProperty[@counter]" value="@property.Name" />
-                                counter++;
+                                var fieldname = field.Replace("STRREQ", "STR");
+                                foreach (PropertyInfo property in typeof(Member).GetProperties().Where(p => !p.SystemProperty() && p.GetPropertyDisplayCheck<Member>() == fieldname).OrderBy(p => p.PropertyOrder()))
+                                {
+                                    <snitz-config name="RequiredFields[@counter]" can-edit="true" property-info="@property" property-val="" property-req="true" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
+                                    <input type="hidden" name="RequiredProperty[@counter]" value="@property.Name" />
+                                    counter++;
+                                }
                             }
                         }
-                    }
-                    <div class="mb-3">
-                        <a href="/Forums" title="Cancel user creation" class="btn btn-danger">@Localizer["btnCancel"]</a>
-                        <button name="submit" type="submit" class="btn btn-primary" title="Register the user">@Localizer["btnRegister"]</button>
+                        <div class="mb-3">
+                            <a href="/Forums" title="Cancel user creation" class="btn btn-danger">@Localizer["btnCancel"]</a>
+                            <button name="submit" type="submit" class="btn btn-primary" title="Register the user">@Localizer["Register"]</button>
+                        </div>
                     </div>
                 </div>
             </div>

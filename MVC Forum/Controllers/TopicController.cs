@@ -24,6 +24,7 @@ using System.Threading;
 using BbCodeFormatter;
 using Hangfire;
 using System.Net;
+using System.Runtime.InteropServices.JavaScript;
 using SnitzCore.Service;
 
 namespace MVCForum.Controllers
@@ -170,6 +171,15 @@ namespace MVCForum.Controllers
         public async Task<IActionResult> Create(int id)
         {
             var member = await _memberService.GetById(User);
+            if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
+            {
+                var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
+                if (member.Lastpostdate.FromForumDateStr() < DateTime.UtcNow.AddSeconds(timeout))
+                {
+                    ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
+                    return View("Error");
+                }
+            }
             var forum = _forumService.GetById(id);
             var model = new NewPostModel()
             {
@@ -198,6 +208,15 @@ namespace MVCForum.Controllers
         {
 
             var member = await _memberService.GetById(User);
+            if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
+            {
+                var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
+                if (member.Lastpostdate.FromForumDateStr() < DateTime.UtcNow.AddSeconds(timeout))
+                {
+                    ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
+                    return View("Error");
+                }
+            }
             var topic = _postService.GetTopicWithRelated(id);
             
             var forum = _forumService.GetById(topic.ForumId);
@@ -218,7 +237,7 @@ namespace MVCForum.Controllers
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
-            var replyPage = new MvcBreadcrumbNode("Quote", "Topic", "Create Reply") { Parent = topicPage };
+            var replyPage = new MvcBreadcrumbNode("Quote", "Topic", "lblReply") { Parent = topicPage };
             ViewData["BreadcrumbNode"] = replyPage;
 
             return View("Create", model);

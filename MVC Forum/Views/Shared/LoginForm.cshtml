@@ -40,7 +40,7 @@
                 </div>
                 @Html.ValidationSummary()
                 <input name="ReturnUrl" value="@returnurl" type="hidden"/>
-                <button type="submit" class="btn btn-primary">@Localizer["SignIn"]</button>
+                <button type="submit" class="btn btn-primary mb-3">@Localizer["SignIn"]</button>
                 <div class="form-group">
                     <a asp-action="ForgotPassword" asp-controller="Account">@Localizer["SignInForgotPassword"]</a>
                 </div>
