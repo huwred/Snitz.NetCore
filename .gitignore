@@ -410,3 +410,5 @@ FodyWeavers.xsd
 /Migrators/SqliteMigrations.zip
 /MVC Forum/appsettings.Development.json
 /MVC Forum/migrate.sql
+/MVC Forum/wwwroot/ProtectedContent/Avatar
+/MVC Forum/wwwroot/ProtectedContent/Members/2
