@@ -21,7 +21,7 @@
         @{
             foreach (var image in Model)
             {
-                var path = $"/Content/PhotoAlbum/{image.Timestamp}_{image.Location}?width=1024&height=768&format=jpg&rmode=crop";
+                var path = $"{SnitzConfig.RootFolder}/Content/PhotoAlbum/{image.Timestamp}_{image.Location}?width=1024&height=768&format=jpg&rmode=crop";
                 if (idx == 0)
                 {
                     <div class="carousel-item active">

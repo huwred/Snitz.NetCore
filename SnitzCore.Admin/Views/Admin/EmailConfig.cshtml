@@ -168,7 +168,7 @@
 </div>
 @section Scripts
 {
-    <script type="text/javascript" src="/js/jquery.unobtrusive-ajax.min.js" ></script>
+    <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js" ></script>
     <script type="text/javascript">
         failed = function (xhr) {
             alert('Status: {xhr.status}, Status text: {xhr.statusText}');
@@ -176,26 +176,26 @@
         $(".delete-dom").on("click", function (e) {
             e.preventDefault();
             var id = $(this).data("id");
-            $("#form-banned_" + id).attr("data-ajax-url", "/Admin/DeleteSpamDomain");
+            $("#form-banned_" + id).attr("data-ajax-url", "~/Admin/DeleteSpamDomain");
             $("#form-banned_" + id).submit();
         });
         $("#button-addon2").on("click", function (e) {
             e.preventDefault();
             var id = $(this).data("id");
-            $("#form-adddom").attr("data-ajax-url", "/Admin/AddSpamDomain");
+            $("#form-adddom").attr("data-ajax-url", "~/Admin/AddSpamDomain");
             $("#form-adddom").submit();
         });
         $("#STRFILTEREMAILADDRESSES").on("change", function (e) {
             e.preventDefault();
             alert("change");
             var id = $(this).data("id");
-            $("#form-adddom").attr("data-ajax-url", "/Admin/AddSpamDomain");
+            $("#form-adddom").attr("data-ajax-url", "~/Admin/AddSpamDomain");
             $("#form-adddom").submit();
         });
         $(".save-dom").on("click", function (e) {
             e.preventDefault();
             var id = $(this).data("id");
-            $("#form-banned_" + id).attr("data-ajax-url", "/Admin/SaveSpamDomain");
+            $("#form-banned_" + id).attr("data-ajax-url", "~/Admin/SaveSpamDomain");
             $("#form-banned_" + id).submit();
 
         });

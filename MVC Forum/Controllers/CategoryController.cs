@@ -245,7 +245,7 @@ namespace MVCForum.Controllers
         public async Task<IActionResult> EmptyCategory(int id)
         {
             await _categoryService.DeleteForums(id);
-            return Json(new { redirectToUrl = "/Category" });
+            return Json(new { redirectToUrl = "~/Category" });
         }
 
     }

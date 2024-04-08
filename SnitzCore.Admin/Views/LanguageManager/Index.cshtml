@@ -65,7 +65,7 @@
         </div>
         <div class="col-1 mb-3">
             <label class="form-label d-block" tabindex="-1">&nbsp;</label>
-            <a href="/LanguageManager/Search" class="btn btn-primary text-white" title="Find a Resource"><i class="fa fa-search"></i></a>
+            <a href="~/LanguageManager/Search" class="btn btn-primary text-white" title="Find a Resource"><i class="fa fa-search"></i></a>
         </div>
     </form>
     <div id="result-resource"></div>
@@ -130,7 +130,7 @@
 </div>
 @section Scripts
 {
-    <script type="text/javascript" src="/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript">
         var $loading = $('#loader').hide();
         $(document)
@@ -142,7 +142,7 @@
             });
 
         $(document).ready(function() {
-            $('#resource-card').load("/LanguageManager/ResourceSet/Admin/?filter=" + $('#filter').val());
+            $('#resource-card').load("~/LanguageManager/ResourceSet/Admin/?filter=" + $('#filter').val());
         });
         $(document).on("click", ".resource-set",
             function() {
@@ -151,7 +151,7 @@
                 $(this).addClass("active");
 
                 $('#resource-card')
-                    .load("/LanguageManager/ResourceSet/" + $(this).data('id') + "/?filter=" + $('#filter').val());
+                    .load("~/LanguageManager/ResourceSet/" + $(this).data('id') + "/?filter=" + $('#filter').val());
                 $('html, body').scrollTop($("#select-lang").offset().top);
             });
         $(document).on("change",
@@ -185,7 +185,7 @@
             $.get(url, function(result) {
                 $('#rsModal').modal('hide');
                 $('#resource-card')
-                    .load("/LanguageManager/ResourceSet/?id=" + $('#ResourceSet').val());
+                    .load("~/LanguageManager/ResourceSet/?id=" + $('#ResourceSet').val());
             });
         });
         $(document).on('click','#btnYes',function(e) {
@@ -196,7 +196,7 @@
             $.get(url, function(result) {
                 $('#myModal').modal('hide');
                 $('#resource-card')
-                    .load("/LanguageManager/ResourceSet/" + $('#ResourceSet').val() + "/?filter=" + $('#filter').val());
+                    .load("~/LanguageManager/ResourceSet/" + $('#ResourceSet').val() + "/?filter=" + $('#filter').val());
             });
         });
         $("#admin-nav li a.nav-link.active").removeClass("active");

@@ -43,21 +43,21 @@
         var pastEventsTitle = '[@Localizer["upPastEventsTitle"]]';
 
     </script>
-    <script src="/_content/Snitz.Events/js/moment.min.js"></script>
+    <script src="~/_content/Snitz.Events/js/moment.min.js"></script>
 
     @if (clang == "fa")
     {
-        <script src="/_content/Snitz.Events/js/moment-jalaali.min.js"></script>
-        <script src="/_content/Snitz.Events/js/pluginjs/fullcalendar-year.min.js"></script>
+        <script src="~/_content/Snitz.Events/js/moment-jalaali.min.js"></script>
+        <script src="~/_content/Snitz.Events/js/pluginjs/fullcalendar-year.min.js"></script>
 
     }
     else
     {
         clang = clang + ".js";
-        <script src="/_content/Snitz.Events/js/pluginjs/fullcalendar-year.js" defer></script>
-        <script src="/_content/Snitz.Events/js/lang/@clang" defer></script>
+        <script src="~/_content/Snitz.Events/js/pluginjs/fullcalendar-year.js" defer></script>
+        <script src="~/_content/Snitz.Events/js/lang/@clang" defer></script>
     }
-    <script src="/_content/Snitz.Events/js/pluginjs/snitz.cal.min.js" defer></script>
+    <script src="~/_content/Snitz.Events/js/pluginjs/snitz.cal.min.js" defer></script>
 
     <script type="text/javascript">
         $(document)

@@ -38,7 +38,7 @@ public class MemberImageTagHelper : TagHelper
         {
             SourceFile = SourceFile.Replace("/Content/", "/" + _config.ContentFolder + "/");
         }
-        if(!File.Exists(_env.WebRootPath + urlHelper.Content(SourceFile)))
+        if(!File.Exists(_env.WebRootPath + SourceFile.Replace("/",@"\").Replace("~","")))
         {
             SourceFile = null;
         }
@@ -46,9 +46,9 @@ public class MemberImageTagHelper : TagHelper
         output.TagMode = TagMode.StartTagAndEndTag;
         output.TagName = "img";
         output.Attributes.Add("class", Classes);
-        output.Attributes.Add("src", SourceFile??Fallback);
+        output.Attributes.Add("src", urlHelper.Content(SourceFile)??Fallback);
 
-
+        output.Attributes.Add("alt",urlHelper.Content(SourceFile));
         //output.AddClass("center",HtmlEncoder.Default);
     }
 }

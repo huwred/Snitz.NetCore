@@ -163,13 +163,13 @@
 {
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
     <script>
-        let ContentFolder = "/Content/PhotoAlbum/";
+        let ContentFolder = "~/Content/PhotoAlbum/";
         if ('@SnitzConfig.GetIntValue("INTPROTECTPHOTO")' == '1') {
-            ContentFolder = "/@SnitzConfig.ContentFolder/PhotoAlbum/"
+            ContentFolder = "~/@SnitzConfig.ContentFolder/PhotoAlbum/"
         }
     </script>
-    <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
-    <script type="text/javascript" src="/js/initPostForm.js"></script>
+    <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="~/js/initPostForm.js"></script>
     <script type="text/javascript">
         $('.date').datepicker({
             autoclose: true,
@@ -263,7 +263,7 @@
             $(".fig-caption").each(function () {
                 var test = $(this);
                 $.ajax({
-                    url: "/PhotoAlbum/GetCaption/" + $(this).data("id"),
+                    url: "~/PhotoAlbum/GetCaption/" + $(this).data("id"),
                     type: "GET",
                     success: function (data) {
                         //alert(data); // the View

@@ -43,7 +43,7 @@
         if (!SignInManager.IsSignedIn(User))
         {
             <div class="container">
-                <h3>You do not have access to this forum, please try <a href="/Account/Login">logging in</a> first</h3>
+                <h3>You do not have access to this forum, please try <a href="~/Account/Login">logging in</a> first</h3>
             </div>
         }
         else
@@ -144,7 +144,7 @@
                         @if (User.IsInRole("Administrator"))
                         {
                             <button asp-controller="Forum" asp-action="Edit" asp-route-id="@Model.Forum!.Id" title="Edit Forum" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-lg-inline"> @Localizer["tipEditForum"]</span></button>
-                            <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Forum!.Id" href="/Forum/Delete/?id=" title="@Localizer["cnfDeleteForum"].Value"></button-confirm>
+                            <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Forum!.Id" href="~/Forum/Delete/?id=" title="@Localizer["cnfDeleteForum"].Value"></button-confirm>
                         }
 
                     </div>
@@ -236,8 +236,8 @@
 <input type="text" style="display: none;" id="req-forumid" value="@Model.Forum.Id" />
 <partial name="PasswordDlg" model='new ConfirmDialogViewModel(){Title="Password Required",Message ="You need a password to View this Forum "}' />
 @section Scripts {
-    <script type="text/javascript" src="/js/ConfirmDialog.js" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="/js/postcontroller.js"></script>
+    <script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="~/js/postcontroller.js"></script>
     <script type="text/javascript">
 
         $(window).on("load",

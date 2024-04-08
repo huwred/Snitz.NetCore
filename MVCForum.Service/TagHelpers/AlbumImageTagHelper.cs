@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using SnitzCore.Data.Interfaces;
 
 namespace SnitzCore.Service.TagHelpers
 {
@@ -25,13 +26,15 @@ namespace SnitzCore.Service.TagHelpers
 
         public int? OrgHeight { get; set; }
 
+        private readonly ISnitzConfig _config;
         public AlbumImageTagHelper(
             IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccesor,IWebHostEnvironment environment)
+            IActionContextAccessor actionContextAccesor,IWebHostEnvironment environment,ISnitzConfig config)
         {
             this.urlHelperFactory = urlHelperFactory;
             this.actionContextAccesor = actionContextAccesor;
             _env = environment;
+            _config = config;
         }
         private readonly IWebHostEnvironment _env;
         private readonly IUrlHelperFactory urlHelperFactory;
@@ -39,12 +42,13 @@ namespace SnitzCore.Service.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             var urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccesor.ActionContext!);
-            if(!File.Exists(_env.WebRootPath + urlHelper.Content("~/Content/PhotoAlbum/" + Src)))
+            if(!File.Exists(_env.WebRootPath + $@"\Content\PhotoAlbum\{Src}"))
             {
                 Src = null;
             }
 
-            Fallback ??= "/Content/notfound_lg.jpg";
+            Fallback ??= urlHelper.Content("~/Content/notfound_lg.jpg");
+            var imagevirt = urlHelper.Content($"~/Content/PhotoAlbum/{Src}");
             base.Process(context, output);
             output.TagMode = TagMode.StartTagAndEndTag;
             output.TagName = "img";
@@ -55,14 +59,14 @@ namespace SnitzCore.Service.TagHelpers
                 if (OrgWidth < Width && OrgHeight < Height)
                 {
                     output.Attributes.Add("width",$"{OrgWidth}");
-                    output.Attributes.Add("src", Src == null ? Fallback : $"/Content/PhotoAlbum/{Src}?width={OrgWidth}&format=jpg");
+                    output.Attributes.Add("src", Src == null ? Fallback : $"{imagevirt}?width={OrgWidth}&format=jpg");
 
                 }
                 else
                 {
                     output.Attributes.Add("width",$"{Width}");
                     output.Attributes.Add("height",$"{Height}");
-                    output.Attributes.Add("src", Src == null ? Fallback : $"/Content/PhotoAlbum/{Src}?width={Width}&height={Height}&rmode=crop&format=jpg");
+                    output.Attributes.Add("src", Src == null ? Fallback : $"{imagevirt}?width={Width}&height={Height}&rmode=crop&format=jpg");
 
                 }
             }
@@ -70,7 +74,7 @@ namespace SnitzCore.Service.TagHelpers
             {
                 output.Attributes.Add("width",$"{Width}");
                 output.Attributes.Add("height",$"{Height}");
-                output.Attributes.Add("src", Src == null ? Fallback : $"/Content/PhotoAlbum/{Src}?width={Width}&height={Height}&rmode=crop&format=jpg");
+                output.Attributes.Add("src", Src == null ? Fallback : $"{imagevirt}?width={Width}&height={Height}&rmode=crop&format=jpg");
 
             }
             output.Attributes.Add("alt",Description);

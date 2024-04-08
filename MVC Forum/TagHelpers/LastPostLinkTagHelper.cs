@@ -20,7 +20,7 @@ namespace MVCForum.TagHelpers
             var link = new TagBuilder("a");
 
             link.Attributes.Add("rel","index,follow");
-            link.Attributes.Add("href", $"/Topic/{TopicId}/?replyid={ReplyId}");
+            link.Attributes.Add("href", $"~/Topic/{TopicId}/?replyid={ReplyId}");
             if (TextLocalizerDelegate != null) link.Attributes.Add("title", TextLocalizerDelegate("tipLastPost"));
             link.InnerHtml.AppendHtml(@"<i class=""fa fa-arrow-right""></i>");
 

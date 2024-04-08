@@ -1,12 +1,12 @@
 ﻿            $(document).on("click", '[class^="pmread_"]',
             function(e) {
                 e.preventDefault();
-                $('#pm-message').load("/PrivateMessage/Read/" + $(this).data("id"));
+                $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Read/" + $(this).data("id"));
             });
         $(".pm-settings").on("click",
             function(e) {
                 e.preventDefault();
-                $('#pm-message').load("/PrivateMessage/Settings/",function() {
+                $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Settings/",function() {
                         $('.btn-success').focus();
                 });
 
@@ -15,7 +15,7 @@
         $(".pm-message").on("click",
             function (e) {
                 e.preventDefault();
-                $('#pm-message').load("/PrivateMessage/Create/",function() {
+                $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Create/",function() {
                     ValidateForms();
                     revalidate();
                     $('#To').focus();
@@ -30,7 +30,7 @@
                 if ($(this).data("id")) {
                     if(confirm("delete this Message? ")) {
 
-                        $.post("/PrivateMessage/Delete", { pmid: $(this).data("id"), userid: $(this).data("user") }, function (data) {
+                        $.post(SnitzVars.baseUrl + "/PrivateMessage/Delete", { pmid: $(this).data("id"), userid: $(this).data("user") }, function (data) {
                             if (data.success) {
                                 alert(data.responseText);
                                 location.reload();
@@ -41,7 +41,7 @@
                     }
                 } else {
                         if (confirm("delete selected messages")) {
-                        $.post("/PrivateMessage/DeleteMany", $("#pm-form").closest('form').serialize(), function (data) {
+                        $.post(SnitzVars.baseUrl + "/PrivateMessage/DeleteMany", $("#pm-form").closest('form').serialize(), function (data) {
                             if (data.success) {
                                 alert(data.responseText);
                                 location.reload();
@@ -55,7 +55,7 @@
         $(document).on('click', '#pm-find', function () {
             $(".pm-button").removeClass("active");
             var $form = $(this).closest('form');
-                $.post("/PrivateMessage/Search", $(this).closest('form').serialize(), function (data) {
+                $.post(SnitzVars.baseUrl + "/PrivateMessage/Search", $(this).closest('form').serialize(), function (data) {
                 if (data) {
                     $('#msg-list').html(data);
                 } else {
@@ -64,7 +64,7 @@
             });
         });
         $(document).on("click", ".fa-reply", function (e) {
-            $('#pm-message').load("/PrivateMessage/Reply/" + $(this).data("id"),function() {
+            $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Reply/" + $(this).data("id"),function() {
                 ValidateForms();
                 revalidate();
             });
@@ -72,7 +72,7 @@
             return false;
         });
         $(document).on("click", ".fa-share", function (e) {
-            $('#pm-message').load("/PrivateMessage/Forward/" + $(this).data("id"), function () {
+            $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Forward/" + $(this).data("id"), function () {
                 ValidateForms();
                 revalidate();
                 
@@ -81,7 +81,7 @@
             return false;
         });
         $(document).on("click", ".fa-search", function (e) {
-                $('#pm-message').load("/PrivateMessage/SearchMessages/" + $(this).data("id"), function () {
+                $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/SearchMessages/" + $(this).data("id"), function () {
                 ValidateForms();
                 revalidate();
                     $('#Term').focus();

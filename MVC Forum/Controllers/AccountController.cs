@@ -278,7 +278,7 @@ namespace MVCForum.Controllers
             {
                 return View(login);
             }
-            var returnUrl = login.ReturnUrl ?? Url.Content("~/");
+            var returnUrl = login.ReturnUrl ?? Url.Content($"~/");
 
             ForumUser? newIdentityUser;
             _logger.Warn($"Finding User {login.Username}");
@@ -392,7 +392,7 @@ namespace MVCForum.Controllers
                     }
                     if (!validpwd)
                     {
-                        return LocalRedirect("/Account/ForgotPassword");
+                        return LocalRedirect("~/Account/ForgotPassword");
                     }
                     await _signInManager.SignInAsync(existingUser, false);
                     return LocalRedirect(returnUrl);

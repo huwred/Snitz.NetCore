@@ -23,7 +23,7 @@ namespace SnitzCore.Service
 
         string? ISnitzConfig.RootFolder
         {
-            get => _httpContextAccessor.HttpContext?.Request.PathBase == "/" ? "" : _httpContextAccessor.HttpContext?.Request.PathBase;
+            get => _httpContextAccessor.HttpContext?.Request.PathBase == "" ? "/" : $"/{_httpContextAccessor.HttpContext?.Request.Path}/";
         }
         string ISnitzConfig.ContentFolder
         {
@@ -107,8 +107,8 @@ namespace SnitzCore.Service
                     {
                         HttpContext Current = _httpContextAccessor.HttpContext;
                         string AppBaseUrl = $"{Current.Request.PathBase}";
-                        if (AppBaseUrl != "/") 
-                            AppBaseUrl = "/" + AppBaseUrl;
+                        if (AppBaseUrl == "") 
+                            AppBaseUrl = "/";
                         return AppBaseUrl;
                     }
                 }

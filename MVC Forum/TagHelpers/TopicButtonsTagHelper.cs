@@ -49,7 +49,7 @@ namespace MVCForum.TagHelpers
                 tagButton.Attributes.Add("class", "btn btn-outline-primary");
                 tagButton.Attributes.Add("type", "button");
                 tagButton.Attributes.Add("data-id", PrintTopic.ToString());
-                tagButton.Attributes.Add("href", "/Topic/Print/" + PrintTopic.ToString());
+                tagButton.Attributes.Add("href", "~/Topic/Print/" + PrintTopic.ToString());
                 tagButton.Attributes.Add("rel","noopener nofollow");
                 tagButton.Attributes.Add("target","_blank");
                 if (TextLocalizerDelegate != null) tagButton.Attributes.Add("title", TextLocalizerDelegate("tipPrintTopic"));
@@ -63,7 +63,7 @@ namespace MVCForum.TagHelpers
                 tagButton.Attributes.Add("class", "btn btn-outline-primary sendto-link");
                 tagButton.Attributes.Add("type", "button");
                 tagButton.Attributes.Add("data-id", SendTopic.ToString());
-                tagButton.Attributes.Add("data-href", "/Topic/SendTo");
+                tagButton.Attributes.Add("data-href", "~/Topic/SendTo");
                 if (TextLocalizerDelegate != null) tagButton.Attributes.Add("title", TextLocalizerDelegate("tipSendTopic"));
                 tagButton.InnerHtml.AppendHtml("<i class=\"fa fa-envelope p-2\"></i>");
                 output.Content.AppendHtml(tagButton);

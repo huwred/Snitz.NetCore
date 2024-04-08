@@ -27,7 +27,7 @@ tinymce.init({
         favs: {title: 'My Favorites', items: 'code | searchreplace | emoticons'}
     },
     menubar: 'favs edit insert format table help',
-    language: curLang,
+    language: SnitzVars.forumlang,
     directionality: langDirection,
 /*    height: 200,*/
     browser_spellcheck: true,
@@ -40,16 +40,16 @@ tinymce.init({
     branding: false,
     relative_urls : false,
     remove_script_host : true,
-    document_base_url : window.location.protocol + "//" + window.location.host + "/",
+    document_base_url : SnitzVars.forumUrl,
     convert_urls: true,
         toolbar: 'code undo redo | styleselect | bold italic | alignleft aligncenter alignright | ' +
             'bullist numlist | link emoticons | fileButton imageButton media codesample',
     //toolbar: 'code undo redo | removeformat | styleselect | bullist numlist table | blockquote  | link codesample emoticons | fileButton imageButton media',
-    images_upload_url: "/forumupload",
+    images_upload_url: SnitzVars.baseUrl + "/forumupload",
     images_upload_base_path: window.ContentFolder,
     images_reuse_filename: true,
     emoticons_database: 'emojiimages',
-    emoticons_images_url: '/images/emoticon/',
+    emoticons_images_url: SnitzVars.baseUrl + '/images/emoticon/',
     content_style: `body { font-family:Helvetica,Arial,sans-serif; font-size:14px; } 
     .mce-content-body img {max-width: 99% !important;height: auto;} `,
     setup: function(editor) {
@@ -60,7 +60,7 @@ tinymce.init({
                     tooltip: 'Attach file to post',
                     onAction: function(_) {
                         $('#upload-content').html('');
-                        $('#upload-content').load("/Topic/UploadForm/",function() {
+                        $('#upload-content').load(SnitzVars.baseUrl + "/Topic/UploadForm/",function() {
                             $('#uploadModal').modal('show');
                         });
                     }
@@ -73,7 +73,7 @@ tinymce.init({
                     tooltip: 'Upload image to your album',
                     onAction: function(_) {
                         $('#upload-content').html('');
-                        $('#upload-content').load("/PhotoAlbum/UploadForm/?showall=false",function() {
+                        $('#upload-content').load(SnitzVars.baseUrl + "/PhotoAlbum/UploadForm/?showall=false",function() {
                             $('#uploadModal').modal('show');
                         });
                     }

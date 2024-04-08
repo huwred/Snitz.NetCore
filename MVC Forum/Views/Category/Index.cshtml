@@ -34,7 +34,7 @@
                 <div class="btn-group mb-2">
                     <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" title=" @Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
                     <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" title="@Localizer["tipEditCategory"]" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> @Localizer["tipEditCategory"]</span></button>
-                    <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@cat" href="/Category/Delete/?id=" title="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
+                    <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@cat" href="~/Category/Delete/?id=" title="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
                 </div>
             </form>
         }
@@ -59,7 +59,7 @@
                         <button style="display: inline; width: 40px;" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@ID" aria-expanded="true" aria-controls="collapseOne">
                             <i class="fa fa-minus"></i>
                         </button>
-                        <a snitz-if="@(SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)" style="display: inline;" href="/Category/@ID">@category.Name</a>
+                        <a snitz-if="@(SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)" style="display: inline;" href="~/Category/@ID">@category.Name</a>
                         @if (category.Subscription == (int)CategorySubscription.CategorySubscription)
                         {
                             if (subscriptions.Where(s => s.CategoryId == category.Id && s.PostId == 0).Select(s => s.CategoryId).Any())
@@ -98,7 +98,7 @@
                                         }
                                         else
                                         {
-                                            <h4><a href="/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
+                                            <h4><a href="~/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
                                         }
                                         <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
                                         @if (forum.ForumModeration != Moderation.UnModerated )
@@ -171,6 +171,10 @@
 {
     bool HasAccess(ForumAuthType authType,int forumId)
     {
+        if (User.IsInRole("Administrator"))
+        {
+            return true;
+        }
         switch (authType)
         {
             case ForumAuthType.All:
@@ -209,16 +213,16 @@
 }
 @section Scripts
 {
-    <script type="text/javascript" src="/js/ConfirmDialog.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
     <script>
         
         $(document).on("click", ".weblink-edit", function (e) {
             e.preventDefault();
-            location.href = "/Forum/Edit/" + $(this).data("id");
+            location.href = "~/Forum/Edit/" + $(this).data("id");
         });
         $(document).on("click", ".weblink-del", function (e) {
             e.preventDefault();
-            $.get("/Forum/Delete/" + $(this).data("id"),
+            $.get("~/Forum/Delete/" + $(this).data("id"),
                 function(data) {
                     if (data) {
                         location.href = data.redirectToUrl;

@@ -11,7 +11,7 @@
     @Localizer["allowedFiles", allowedTypes]
 </p>
 
-<form action="/Account/UploadAvatar/" method="post" enctype="multipart/form-data" role="form" id="upload-form" >
+<form action="~/Account/UploadAvatar/" method="post" enctype="multipart/form-data" role="form" id="upload-form" >
 
     <div class="photo-input mb-3">
         <input asp-for="AlbumImage" class="form-control" accept="@allowedTypes" max="" id="aFile_upload" />

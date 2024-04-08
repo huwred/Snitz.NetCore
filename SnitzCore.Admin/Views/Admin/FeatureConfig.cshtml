@@ -295,7 +295,7 @@
 @section Scripts
 {
     
-    <script type="text/javascript" src="/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
 
@@ -377,7 +377,7 @@
         function populateRegions(country) {
             console.log(country);
             var subItems="";
-            $.getJSON("/Calendar/GetRegions/", { id: country }, function (data) {
+            $.getJSON("~/Calendar/GetRegions/", { id: country }, function (data) {
                 subItems = "";
                 $.each(data, function (index, item) {
                     if (item === '@SnitzConfig.GetValue("STRCALREGION")') {

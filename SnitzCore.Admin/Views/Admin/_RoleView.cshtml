@@ -10,7 +10,7 @@
                     <li class="list-group-item">
                         @user.Name
                         <span class="pull-right">
-                            <link-confirm href="/Admin/DelMemberFromRole/?role=@Model.Rolename&username=@user.Name" config-class="@(@"fa fa-trash-o")" title="Remove Member from role?" config-key="@user.Name" config-role="@Model.Rolename"></link-confirm>
+                            <link-confirm href="~/Admin/DelMemberFromRole/?role=@Model.Rolename&username=@user.Name" config-class="@(@"fa fa-trash-o")" title="Remove Member from role?" config-key="@user.Name" config-role="@Model.Rolename"></link-confirm>
                         </span>
                     </li>
                 }

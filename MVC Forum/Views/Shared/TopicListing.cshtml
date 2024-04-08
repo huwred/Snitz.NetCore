@@ -40,14 +40,14 @@
     <div class="subjects" style="z-index: 2">
         <div class="d-lg-flex flex-row bd-highlight mb-3">
             <div class="p-2 flex-grow-1 bd-highlight">
-                <a href="/Topic/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a><br/>
+                <a href="~/Topic/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a><br/>
 
                 <span>
                     @Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model.AuthorId"></member-link>
                     @if ((bool)ViewData["ActiveTopics"])
                     {
                         @Localizer["lblin"]
-                        <a href="/Forum/@Model.Forum.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Forum.Title!))</a>
+                        <a href="~/Forum/@Model.Forum.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Forum.Title!))</a>
                     }
                     <snitz-datetime datetime="@Model.Created"></snitz-datetime> .
                 </span>

@@ -175,7 +175,7 @@
                 }
             }
             $.ajax({
-                url: SnitzVars.baseUrl + 'PhotoAlbum/SaveConfigBool',
+                url: SnitzVars.baseUrl + '/PhotoAlbum/SaveConfigBool',
                 type: 'POST',
                 data: { 'id': key, 'value': JSON.stringify(state) },
                 cache: false,
@@ -199,7 +199,7 @@
             event.preventDefault();
 
             $.ajax({
-                url: SnitzVars.baseUrl + "PhotoAlbum/SaveLimits",
+                url: SnitzVars.baseUrl + "/PhotoAlbum/SaveLimits",
                 type: "POST",
                 dataType: "json",
                 data: $('#limitsForm').serialize(),

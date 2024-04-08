@@ -23,9 +23,9 @@
         <form asp-action="Update" method="post" class="needs-validation" novalidate>
             <div class="row">
                 <div class="col-6 col-md-2 avatar-container">
-                    <snitz-avatar src="/Content/Avatar/@Model.Member!.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid"/>
+                    <snitz-avatar src="~/Content/Avatar/@Model.Member!.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="img-fluid"/>
                     <div class="overlay-delete" snitz-if="@canedit">
-                        <a href="#" class="icon" title="Delete Avatar" data-url="/Account/DeleteAvatar/" data-id="@Model.Member.Id">
+                        <a href="#" class="icon" title="Delete Avatar" data-url="~/Account/DeleteAvatar/" data-id="@Model.Member.Id">
                             <i class="fa fa-trash"></i>
                         </a>
                     </div>
@@ -213,7 +213,7 @@
 </div>
 @section Scripts
 {
-    <script type="text/javascript" src="/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
     <script type="text/javascript">
         // Disable form submissions if there are invalid fields
@@ -223,7 +223,7 @@
                 ValidateForms();
             }, false);
         })();
-        if ($('.img-fluid').attr("src") == "/images/ninja-1027877_960_720.webp") {
+        if ($('.img-fluid').attr("src") == "~/images/ninja-1027877_960_720.webp") {
             $(".icon").attr("title", "Add avatar");
             var el = document.querySelector('.fa-trash');
             el.classList.remove('fa-trash');
@@ -242,12 +242,12 @@
                             var el = document.querySelector('.fa-trash');
                             el.classList.remove('fa-trash');
                             el.classList.add('fa-upload');
-                            location.href = "/Account/Detail";
+                            location.href = "~/Account/Detail";
                         });
                 } else {
 
                     $('#upload-content').html('');
-                    $('#upload-content').load("/Account/UploadForm/",function() {
+                    $('#upload-content').load("~/Account/UploadForm/",function() {
                         $('#uploadModal').modal('show');
                     });
                 }
@@ -314,7 +314,7 @@
                     if (data.result) {
                         alert(data.data);
                         $(".img-fluid").attr('src', data.data);
-                        location.href = "/Account/Detail";
+                        location.href = "~/Account/Detail";
                     }
                 },
                 error: function (data) {

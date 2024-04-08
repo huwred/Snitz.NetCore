@@ -24,7 +24,7 @@ $(document).on("click",".reply-del", function() {
     let postid;
     if (confirm("Are you sure!") === true) {
         postid = $(this).data("id");
-        $.post("/Topic/DeleteReply",
+        $.post(SnitzVars.baseUrl + "/Topic/DeleteReply",
             {
                 id: postid
             },
@@ -48,7 +48,7 @@ $(document).on("click",".post-del", function(e) {
     $('#confirmModal').on('click','#btnYes',function(e) {
         // handle deletion here
         e.preventDefault();
-        $.post("/Topic/DeleteTopic",
+        $.post(SnitzVars.baseUrl + "/Topic/DeleteTopic",
             {
                 id: postid
             },
@@ -104,7 +104,7 @@ $(document).on('click',
             // handle deletion here
             e.preventDefault();
             e.stopPropagation();
-            $.post("/Bookmark/Create",
+            $.post(SnitzVars.baseUrl + "/Bookmark/Create",
                 {
                     id: postid
                 },
@@ -132,7 +132,7 @@ $(document).on('click',
             $('#confirmModal').on('click','#btnYes',function(e) {
                 // handle deletion here
                 e.preventDefault();
-                $.post("/Bookmark/Delete",
+                $.post(SnitzVars.baseUrl + "/Bookmark/Delete",
                     {
                         id: postid
                     },
@@ -161,7 +161,7 @@ $(document).on('click', '.post-lock', function (e) {
         // handle deletion here
         e.preventDefault();
         e.stopPropagation();
-        $.post("/Topic/LockTopic",
+        $.post(SnitzVars.baseUrl + "/Topic/LockTopic",
             {
                 id: postid,
                 status: poststatus
@@ -181,20 +181,20 @@ $(document).on('click', '.post-lock', function (e) {
 
 $(document).on("click",".reply-quote", function() {
     var postid = $(this).data("id");
-    location.href = "/Topic/QuoteReply/" + postid;
+    location.href = SnitzVars.baseUrl + "/Topic/QuoteReply/" + postid;
 });
 $(document).on("click",".post-quote", function() {
     var postid = $(this).data("id");
-    location.href = "/Topic/Quote/" + postid;
+    location.href = SnitzVars.baseUrl + "/Topic/Quote/" + postid;
 });
 $(document).on("click",".post-reply", function() {
     var postid = $(this).data("id");
-    location.href = "/Topic/Reply/" + postid;
+    location.href = SnitzVars.baseUrl + "/Topic/Reply/" + postid;
 });
 $(document).on("click",".reply-edit", function() {
 
     var postid = $(this).data("id");
-    location.href = "/Topic/EditReply/" + postid;
+    location.href = SnitzVars.baseUrl + "/Topic/EditReply/" + postid;
 });
 $(document).on('click', '.reply-answer', function (e) {
     e.preventDefault();
@@ -209,7 +209,7 @@ $(document).on('click', '.reply-answer', function (e) {
         // handle deletion here
         e.preventDefault();
         e.stopPropagation();
-        $.post("/Topic/Answered",
+        $.post(SnitzVars.baseUrl + "/Topic/Answered",
             {
                 id: postid,
                 status: poststatus
@@ -229,7 +229,7 @@ $(document).on('click', '.reply-answer', function (e) {
 $(document).on("click",".post-edit", function() {
 
     var postid = $(this).data("id");
-    location.href = "/Topic/Edit/" + postid;
+    location.href = SnitzVars.baseUrl + "/Topic/Edit/" + postid;
 
 });
 

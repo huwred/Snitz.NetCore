@@ -11,7 +11,7 @@
     @Localizer["allowedFiles", SnitzConfig.GetValue("STRFILETYPES")]
 </p>
 
-<form action="/Topic/Upload/" method="post" enctype="multipart/form-data" role="form" id="upload-form" >
+<form action="~/Topic/Upload/" method="post" enctype="multipart/form-data" role="form" id="upload-form" >
 
     <div class="photo-input mb-3">
         <input asp-for="AlbumImage" class="form-control" accept="@allowedTypes" id="aFile_upload" />

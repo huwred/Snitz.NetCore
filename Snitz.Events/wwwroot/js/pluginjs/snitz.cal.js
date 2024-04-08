@@ -73,12 +73,12 @@ UpComingCalendar = function(url, divid) {
             allDayText: 'all-day',
             dateFormat: 'DD/MM/YY',
             timeFormat: 'HH:mm',
-            titleFormat: SnitzVars.upComingEventsTitle,
+            titleFormat: upComingEventsTitle,
             height: 560,
             eventSources: [
                 { url: url },
-                { url: "/Calendar/GetHolidays" },
-                { url: "/Calendar/GetBirthDays" }
+                { url: SnitzVars.baseUrl + "/Calendar/GetHolidays" },
+                { url: SnitzVars.baseUrl + "/Calendar/GetBirthDays" }
             ],
             loading: function(bool) {
 
@@ -104,9 +104,9 @@ FullCalendar = function(url, divid, firstday, country) {
     if (country.length > 1) {
         $('#' + divid).fullCalendar('destroy');
     }
-    var holidayUrl = "/Calendar/GetHolidays/" + country;
-    var eventsUrl = "/Events/GetClubCalendarEvents/-1?old=0&calendar=1";
-    var birthdayUrl = "/Calendar/GetBirthDays";
+    var holidayUrl = SnitzVars.baseUrl + "/Calendar/GetHolidays/" + country;
+    var eventsUrl = SnitzVars.baseUrl + "/Events/GetClubCalendarEvents/-1?old=0&calendar=1";
+    var birthdayUrl = SnitzVars.baseUrl + "/Calendar/GetBirthDays";
 
     $('#' + divid)
         .fullCalendar({
@@ -168,13 +168,13 @@ ClubCalendar = function(url, divid, catfilter) {
                 upComing: {
                     type: 'callist',
                     duration: { weeks: 52 },
-                    titleFormat: SnitzVars.upComingEventsTitle,
+                    titleFormat: upComingEventsTitle,
                     rows: 26
                 },
                 disContinued: {
                     type: 'callist',
                     duration: { weeks: fullweeks },
-                    titleFormat: SnitzVars.pastEventsTitle,
+                    titleFormat: pastEventsTitle,
                     rows: 26
                 }
             },
@@ -208,7 +208,7 @@ calcWeeks = function(parm1) {
 postEvent = function(event, arr) {
 
     if ($('#calendar-start-date').val() === '') {
-        window.location.reload(arr[1]);
+        location.reload(arr[1]);
         return false;
     }
 
@@ -217,7 +217,7 @@ postEvent = function(event, arr) {
     event.preventDefault();
     $.ajax({
         type: "POST",
-        url: '/Calendar/SaveEvent',
+        url: SnitzVars.baseUrl + '/Calendar/SaveEvent',
         data: serializedForm,
         dataType: "json",
         success: function(data) {
@@ -227,7 +227,7 @@ postEvent = function(event, arr) {
                     title: "Event Info ",
                     message: data.responseText
                 });
-                window.location.href = arr[1];
+                location.href = arr[1];
                 return false;
             }
 
@@ -238,7 +238,7 @@ postEvent = function(event, arr) {
                 title: "Event Error ",
                 message: jqXHR.responseText
             });
-            window.location.href = arr[1];
+            location.href = arr[1];
             return false;
         }
     });
@@ -249,7 +249,7 @@ setForumEventsAuth = function(event) {
     event.preventDefault();
     $.ajax({
         type: "POST",
-        url: '/Calendar/SaveForum',
+        url: SnitzVars.baseUrl + '/Calendar/SaveForum',
         data: serializedForm,
         dataType: "json",
         success: function(data) {

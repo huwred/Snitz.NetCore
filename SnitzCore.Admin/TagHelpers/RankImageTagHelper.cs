@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using SnitzCore.Data.Interfaces;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace SnitzCore.BackOffice.TagHelpers
 {
@@ -16,15 +18,17 @@ namespace SnitzCore.BackOffice.TagHelpers
         [ViewContext]
         public ViewContext? ViewContext { set; get; }
         private readonly IWebHostEnvironment _environment;
-        public RankImageTagHelper(IWebHostEnvironment environment)
+        private readonly ISnitzConfig _config;
+        public RankImageTagHelper(IWebHostEnvironment environment,ISnitzConfig config)
         {
             _environment = environment;
+            _config = config;
         }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             //var physicalPath = _contextAccessor.Current.Server.MapPath("~/Content/rankimages");
-            var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, "Content/rankimages/"), "*.gif");
+            var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, $"{_config.RootFolder}/Content/rankimages/"), "*.gif");
             
             output.TagName = "div";
             output.TagMode = TagMode.StartTagAndEndTag;
@@ -34,7 +38,7 @@ namespace SnitzCore.BackOffice.TagHelpers
                 
                 var imagefile = Path.GetFileName(file);
                 string selected = Value != null && imagefile.Contains(Value) ? "selected" : "";
-                output.Content.AppendHtml($@"<img data-id=""rankImage_{Key}"" data-val=""{imagefile}"" src=""{ "/Content/rankimages/" + imagefile}"" title=""{imagefile}"" class=""rank {selected} rank-image rankImage_{Key}"" />");
+                output.Content.AppendHtml($@"<img data-id=""rankImage_{Key}"" data-val=""{imagefile}"" src=""{ "~/Content/rankimages/" + imagefile}"" title=""{imagefile}"" class=""rank {selected} rank-image rankImage_{Key}"" />");
 
             }
 

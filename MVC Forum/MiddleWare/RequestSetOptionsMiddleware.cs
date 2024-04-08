@@ -21,7 +21,7 @@ public class RequestSetOptionsMiddleware
         if (!string.IsNullOrWhiteSpace(option))
         {
             httpContext.Items.Add("upgrade",WebUtility.HtmlEncode(option));
-            httpContext.Response.Redirect("/Admin/Setup/",false);
+            httpContext.Response.Redirect("~/Admin/Setup/",false);
         }
 
         await _next(httpContext);

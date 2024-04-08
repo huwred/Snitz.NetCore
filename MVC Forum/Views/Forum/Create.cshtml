@@ -98,7 +98,7 @@
                     <div class="mb-3 row">
                         <label class="form-label col-4">Delete all posts in the Forum</label>
                         <div class="col-6 col-lg-3">
-                            <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Id" href="/Forum/EmptyForum/?id=" title="Empty Forum"></button-confirm>
+                            <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Id" href="~/Forum/EmptyForum/?id=" title="Empty Forum"></button-confirm>
                         </div>
                     </div>
                 }
@@ -137,7 +137,7 @@
                                 <input type="hidden" name="ForumId" value="@Model.ForumId" />
                                 <label class="form-label">Add member</label>
                                 <div class="mb-3">
-                                    <input name="NewMember" id="new-allowed" type="text" placeholder="Type username to find member" class="form-control ltr ui-autocomplete-input" data-autocomplete-url="/Forum/AutoCompleteUsername" autocomplete="off">
+                                    <input name="NewMember" id="new-allowed" type="text" placeholder="Type username to find member" class="form-control ltr ui-autocomplete-input" data-autocomplete-url="~/Forum/AutoCompleteUsername" autocomplete="off">
                                 </div>
                                 <button type="button" id="add-allowed" class="btn btn-success btn-sm" title="Add member"><i class="fa fa-plus"></i> Add Member</button>
                             </form>
@@ -177,14 +177,14 @@
 @section Scripts
 {
     <script>
-        let ContentFolder = "/Content/PhotoAlbum/";
+        let ContentFolder = "~/Content/PhotoAlbum/";
         if ('@SnitzConfig.GetIntValue("INTPROTECTPHOTO")' == '1') {
-            ContentFolder = "/@SnitzConfig.ContentFolder/PhotoAlbum/"
+            ContentFolder = "~/@SnitzConfig.ContentFolder/PhotoAlbum/"
         }
     </script>
-    <script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
-    <script type="text/javascript" src="/js/initPostForm.js"></script>
-    <script type="text/javascript" src="/js/ConfirmDialog.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="~/js/initPostForm.js"></script>
+    <script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             var selected = $('#authtype').find(":selected").val();

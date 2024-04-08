@@ -100,7 +100,7 @@
                             }
                         </td>
                         <td snitz-if="!showlink">@member.Member.Name</td>
-                        <td snitz-if="showlink"><a href="/Account/Detail/@Flurl.Url.Encode(member.Member.Name)" title="@Localizer["tipViewProfile"]">@member.Member.Name</a></td>
+                        <td snitz-if="showlink"><a href="~/Account/Detail/@Flurl.Url.Encode(member.Member.Name)" title="@Localizer["tipViewProfile"]">@member.Member.Name</a></td>
                         <td>@member.Title<br />@Html.MemberRankStars(member, ranking, Localizer)</td>
                         <td>@member.Member.Posts</td>
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>
@@ -109,10 +109,10 @@
                         <td snitz-if="@userroles != null && @userroles.Contains("Administrator")" class="d-none d-md-table-cell">@member.Member.Email</td>
                         <td class="d-none d-md-table-cell">@member.Member.Country</td>
                         <td snitz-if="@userroles != null && @userroles.Contains("Administrator") "class="d-none d-md-table-cell user-icon">
-                            <link-confirm title="@Localizer["tipAuthorUnlock"].Value" jq-selector="confirm-unlock" snitz-if="(member.Member.Status == 0 && showlink)" href="/Account/LockMember/" config-class="fa fa-unlock" config-key="@member.Id"></link-confirm>
-                            <link-confirm title="@Localizer["tipAuthorLock"].Value" jq-selector="confirm-lock" snitz-if="(member.Member.Status != 0 && showlink)" href="/Account/LockMember/" config-class="fa fa-lock" config-key="@member.Id"></link-confirm>
-                            <link-confirm title="@Localizer["tipDelMember"].Value" jq-selector="confirm-delete" snitz-if="(member.Member.Posts < 1 && showlink)" href="/Account/Delete/" config-class="fa fa-trash" config-key="@member.Id"></link-confirm>
-                            <link-confirm title="@Localizer["tipZapMember"].Value" jq-selector="confirm-zap" snitz-if='@showlink' href="/Account/ZapMember/" config-class="fa fa-bolt" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipAuthorUnlock"].Value" jq-selector="confirm-unlock" snitz-if="(member.Member.Status == 0 && showlink)" href="~/Account/LockMember/" config-class="fa fa-unlock" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipAuthorLock"].Value" jq-selector="confirm-lock" snitz-if="(member.Member.Status != 0 && showlink)" href="~/Account/LockMember/" config-class="fa fa-lock" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipDelMember"].Value" jq-selector="confirm-delete" snitz-if="(member.Member.Posts < 1 && showlink)" href="~/Account/Delete/" config-class="fa fa-trash" config-key="@member.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipZapMember"].Value" jq-selector="confirm-zap" snitz-if='@showlink' href="~/Account/ZapMember/" config-class="fa fa-bolt" config-key="@member.Id"></link-confirm>
                         </td>
                     </tr>
                 }

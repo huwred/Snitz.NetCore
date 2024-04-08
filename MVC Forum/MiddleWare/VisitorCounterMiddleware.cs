@@ -22,7 +22,7 @@ namespace MVCForum.MiddleWare
 
                 context.Response.Cookies.Append("VisitorId", Guid.NewGuid().ToString(), new CookieOptions()
                 {
-                    Path = "/",
+                    Path = "~/",
                     HttpOnly = true,
                     Secure = false,
                     SameSite = SameSiteMode.Strict,

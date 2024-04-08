@@ -20,7 +20,7 @@ namespace BbCodeFormatter.Formatters
             options |= RegexOptions.IgnoreCase;
 
             _replace =
-                "<figure><a href=\"" + config.ForumUrl + "PhotoAlbum/GetPhoto/${id}\" class=\"view-image\" target=\"_blank\"><img loading=\"lazy\" src=\"" + config.ForumUrl + "PhotoAlbum/Thumbnail/${id}\" border=\"0\" alt=\"\" /></a>" +
+                "<figure><a href=\"~/PhotoAlbum/GetPhoto/${id}\" class=\"view-image\" target=\"_blank\"><img loading=\"lazy\" src=\"~/PhotoAlbum/Thumbnail/${id}\" border=\"0\" alt=\"\" /></a>" +
                  "<figcaption class=\"fig-caption\" data-id=\"${id}\"></figcaption> " +
                 "</figure> ";
             _pattern = pattern;

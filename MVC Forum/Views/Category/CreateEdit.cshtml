@@ -47,8 +47,8 @@
         </div>
         <div class="col col-md-6">
             <form>
-                <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Id" href="/Category/EmptyCategory/?id=" title="Empty Category (delete forums)"></button-confirm>
-                <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Id" href="/Category/Delete/?id=" title="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
+                <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Id" href="~/Category/EmptyCategory/?id=" title="Empty Category (delete forums)"></button-confirm>
+                <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Id" href="~/Category/Delete/?id=" title="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
                 <div class="btn-group">
                 </div>
             </form>
@@ -67,6 +67,6 @@
 <partial name="ConfirmDialog" model="@confModel" />
 @section Scripts
 {
-    <script type="text/javascript" src="/js/ConfirmDialog.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
 
 }

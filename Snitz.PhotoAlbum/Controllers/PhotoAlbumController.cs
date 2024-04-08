@@ -244,7 +244,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 filter = groupFilter;
             }
 
-            var images = GetSpeciesEntries( sortby, filter, speciesOnly == 1, null, sortOrder == "asc" ? "" : "1");
+            var images = GetSpeciesEntries( sortby, filter, speciesOnly == 1, null,null, sortOrder == "asc" ? "" : "1");
             ViewBag.Username = id;
             ViewBag.MemberId = 0;
 
@@ -293,7 +293,7 @@ namespace Snitz.PhotoAlbum.Controllers
 
             ViewBag.Username = id;
             string rootFolder = "Content";
-            string imagename =  $"{Url.Content("~/")}{rootFolder}/PhotoAlbum/";
+            string imagename =  $"{Url.Content($"{_config.RootFolder}/")}{rootFolder}/PhotoAlbum/";
 
             imageFiles.Images.AddRange(images.Select(f => new GalleryImage()
             {
@@ -338,7 +338,7 @@ namespace Snitz.PhotoAlbum.Controllers
             var fileInfo = _fileProvider.GetFileInfo(Combine(uploadFolder,$"{orgimage.Timestamp}_{orgimage.Location}"));
             if (!fileInfo.Exists)
             {
-                return File("/images/notfound.jpg", "image/jpeg");
+                return File("~/images/notfound.jpg", "image/jpeg");
             }
 
             // Create the destination folder tree if it doesn't already exist

@@ -36,13 +36,13 @@ $(document).on("click",".btn-postform", function () {
 });
 $(document).on("click", ".cat-change",
     function() {
-        location.href = "/Forum";
+        location.href = SnitzVars.baseUrl + "/Forum";
 });
 
 $(document).on("change", "#theme-change",
     function() {
         //Account/SetTheme/?theme=
-        $.get( "/Account/SetTheme/?theme=" + $(this).val(), function( data ) {
+        $.get( SnitzVars.baseUrl + "/Account/SetTheme/?theme=" + $(this).val(), function( data ) {
             location.reload(true);
         });
     });
@@ -72,7 +72,7 @@ function ValidateForms() {
 $(document).on('mouseup','.topic-select', function () {
     $.ajax({
         type: "POST",
-        url: "/Topic/UpdateTopicList/?id=" + $(this).val(),
+        url: SnitzVars.baseUrl + "/Topic/UpdateTopicList/?id=" + $(this).val(),
         data: { topicid: $(this).val() },
         cache: false
     });
@@ -95,7 +95,7 @@ $(document).on('click','.fa-object-group',function(e) {
     });
     //remove default click event
     $(document).off('click', '#btnYes');
-    var href = '/Topic/Merge';
+    var href = SnitzVars.baseUrl + '/Topic/Merge';
     //
     $('#confirmModal .text-bg-warning').html('Merge Topics');
     $('#confirmModal #confirm-body').html('<p>You are about to Merge the select Topics.</p><p>Do you wish to proceed?</p>');
@@ -103,7 +103,7 @@ $(document).on('click','.fa-object-group',function(e) {
     $('#confirmModal').one('click','#btnYes',function(e) {
         // handle deletion here
         e.preventDefault();
-        $.post('/Topic/Merge',
+        $.post(SnitzVars.baseUrl + '/Topic/Merge',
             {
                 selected: selected
             },
@@ -123,7 +123,7 @@ $(document).on('mouseup','.reply-select', function () {
 
     $.ajax({
         type: "POST",
-        url: "/Topic/UpdateReplyList",
+        url: SnitzVars.baseUrl + "/Topic/UpdateReplyList",
         data: { replyid: $(this).val() },
         cache: false
     });

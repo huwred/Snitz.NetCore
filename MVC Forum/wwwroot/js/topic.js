@@ -18,7 +18,7 @@ $(document).ready(function() {
     $(".fig-caption").each(function() {
         var test = $(this);
         $.ajax({
-            url: "/PhotoAlbum/GetCaption/" + $(this).data("id"),
+            url: SnitzVars.baseUrl + "/PhotoAlbum/GetCaption/" + $(this).data("id"),
             type: "GET",
             success: function(data) {
                 //alert(data); // the View
@@ -38,7 +38,7 @@ $(document).ready(function() {
         $('.send-email').on('click', function (e) {
             e.preventDefault();
             var userid = $(this).data('id');
-            $.get(window.SnitzVars.baseUrl + 'Account/EmailMember/' + userid, function (data) {
+            $.get(SnitzVars.baseUrl +  + '/Account/EmailMember/' + userid, function (data) {
                 $('#emailContainer').html(data);
                 $.validator.unobtrusive.parse($("#emailMemberForm"));
                 $('#emailModal').modal('show');
@@ -47,7 +47,7 @@ $(document).ready(function() {
         });
         $('.sendpm-link').on('click', function () {
             var username = $(this).data('id');
-            $.get(window.SnitzVars.baseUrl + 'PrivateMessage/SendMemberPm/' + username, function (data) {
+            $.get(SnitzVars.baseUrl +  + '/PrivateMessage/SendMemberPm/' + username, function (data) {
                 $('#pmContainer').html(data);
                 $.validator.unobtrusive.parse($("#sendPMForm"));
                 $('#modal-sendpm').modal('show');
@@ -57,13 +57,13 @@ $(document).ready(function() {
             e.preventDefault();
             var id = $(this).data('id');
             var archive = $.getUrlParam('archived');
-            location.href = '/Topic/Print/' + id + '?archived=' + archive;
+            location.href = SnitzVars.baseUrl + '/Topic/Print/' + id + '?archived=' + archive;
 
         });
         $(document).on('click','.sendto-link', function () {
             var id = $(this).data('id');
             var archive = $.getUrlParam('archived');
-            $.get('/Topic/SendTo/' + id + '?archived=' + archive, function (data) {
+            $.get(SnitzVars.baseUrl + '/Topic/SendTo/' + id + '?archived=' + archive, function (data) {
                 $('#sendToContainer').html(data);
                 $.validator.unobtrusive.parse($("#sendToForm"));
                 $('#modal-sendto').modal('show');
