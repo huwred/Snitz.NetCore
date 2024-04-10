@@ -10,7 +10,7 @@
 <div class="authors flex-grow-0 flex-shrink-1">
     <div class="username"><a href="~/Account/Detail/@Model.Name">@Model.Name</a></div>
     <div>@Html.MemberRankTitle(Model, ranking, Localizer)</div>
-    <snitz-avatar src="~/Content/Avatar/@Model.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle" />
+    <snitz-avatar src="@SnitzConfig.RootFolder/Content/Avatar/@Model.PhotoUrl" def-src="@SnitzConfig.RootFolder/images/ninja-1027877_960_720.webp" class="rounded-circle" />
     <div>@Localizer["lblPosts"]: @Model.Posts</div>
     <div>@Html.MemberRankStars(Model, ranking, Localizer)</div>
     <div class="d-none d-lg-inline-flex">

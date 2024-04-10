@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace SnitzCore.Data
@@ -21,7 +18,7 @@ namespace SnitzCore.Data
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.EnableSensitiveDataLogging();
+            //optionsBuilder.EnableSensitiveDataLogging();
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -88,35 +85,7 @@ namespace SnitzCore.Data
             modelBuilder.Entity<Forum>();//.HasData(new Forum { Id = 1, CategoryId = 1, Defaultdays = 30, Status = 1, CountMemberPosts = 1, Title = "Testing Forums", Description = "This forum gives you a chance to become more familiar with how this product responds to different features and keeps testing in one place instead of posting tests all over. Happy Posting! [:)]" });
 
             modelBuilder.Entity<SnitzConfig>();
-            //.HasData(new List<SnitzConfig>()
-            //{
-            //    new (){Id=1,Key="STRICONS",Value="1"},
-            //    new (){Id=2,Key="STRALLOWFORUMCODE",Value="1"},
-            //    new (){Id=3,Key="STRPHOTOALBUM",Value="1"},
-            //    new (){Id=4,Key="STRBADWORDFILTER",Value="1"},
-            //    new (){Id=5,Key="STRIMGINPOSTS",Value="1"},
-            //    new (){Id=6,Key="INTHOTTOPICNUM",Value="25"},
-            //    new (){Id=7,Key="STRPAGESIZE",Value="15"},
-            //    new (){Id=8,Key="STRPAGENUMBERSIZE",Value="10"},
-            //    new (){Id=9,Key="STRMARSTATUS",Value="1"},
-            //    new (){Id=10,Key="STRFULLNAME",Value="1"},
-            //    new (){Id=11,Key="STRPICTURE",Value="1"},
-            //    new (){Id=12,Key="STRSEX",Value="1"},
-            //    new (){Id=13,Key="STRCITY",Value="1"},
-            //    new (){Id=14,Key="STRSTATE",Value="1"},
-            //    new (){Id=15,Key="STRAGE",Value="0"},
-            //    new (){Id=16,Key="STRAGEDOB",Value="1"},
-            //    new (){Id=17,Key="STRMINAGE",Value="14"},
-            //    new (){Id=18,Key="STRCOUNTRY",Value="1"},
-            //    new (){Id=19,Key="STROCCUPATION",Value="1"},
-            //    new (){Id=20,Key="STRFAVLINKS",Value="1"},
-            //    new (){Id=21,Key="STRBIO",Value="1"},
-            //    new (){Id=22,Key="STRHOBBIES",Value="1"},
-            //    new (){Id=23,Key="STRLNEWS",Value="1"},
-            //    new (){Id=24,Key="STRQUOTE",Value="1"},
-            //    new (){Id=25,Key="STRHOMEPAGE",Value="1"}
 
-            //});
             modelBuilder.Entity<PrivateMessage>();
             modelBuilder.Entity<PrivateMessageBlocklist>();
 
@@ -125,11 +94,7 @@ namespace SnitzCore.Data
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.Events"));
             modelBuilder.Entity<OldUserInRole>().HasNoKey();
         }
-        //Assembly GetAssemblyByName(string name)
-        //{
-        //    return AppDomain.CurrentDomain.GetAssemblies().
-        //        SingleOrDefault(assembly => assembly.GetName().Name == name);
-        //}
+
         public DbSet<ForumUser> ApplicationUser { get; set; }
 
         public DbSet<OldMembership> OldMemberships { get; set; }

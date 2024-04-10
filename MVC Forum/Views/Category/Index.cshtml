@@ -218,20 +218,18 @@
         
         $(document).on("click", ".weblink-edit", function (e) {
             e.preventDefault();
-            location.href = "~/Forum/Edit/" + $(this).data("id");
+            location.href = SnitzVars.baseUrl + "/Forum/Edit/" + $(this).data("id");
         });
         $(document).on("click", ".weblink-del", function (e) {
             e.preventDefault();
-            $.get("~/Forum/Delete/" + $(this).data("id"),
+            $.get(SnitzVars.baseUrl + "/Forum/Delete/" + $(this).data("id"),
                 function(data) {
                     if (data) {
                         location.href = data.redirectToUrl;
                     }
                 });
-            //location.href = "/Forum/Edit/" + $(this).data("id");
         });
-        // localStorage.clear();
-        // debugger;
+
         let selectedCollapse = localStorage.getItem('selectedCollapse');
 
         if(selectedCollapse !== "null" && selectedCollapse !== null) {

@@ -165,14 +165,14 @@ namespace SnitzCore.Service
         }
         public Forum GetById(int id)
         {
-            return _dbContext.Forums.Where(f => f.Id == id)
+            return _dbContext.Forums.AsNoTracking().Where(f => f.Id == id)
                 .Include(f=>f.Category)
                 
                 .Include(f => f.Posts!.OrderByDescending(p => p.Created))
                 .ThenInclude(p => p.Member)
                 .Include(f=>f.ForumModerators)!
                 .ThenInclude(p => p.Member)
-                .AsNoTracking()
+                
                 .Single();
 
         }
@@ -210,13 +210,22 @@ namespace SnitzCore.Service
 
         public async Task<Forum> UpdateLastPost(int forumid)
         {
-            var forum = await _dbContext.Forums.FirstAsync(f => f.Id == forumid);
+            Post? lasttopic = null;
+            try
+            {
+                var topics = _dbContext.Posts.AsNoTracking().Where(t=>t.ForumId == forumid && t.Status < 2).AsEnumerable();
+                if (topics.Count() > 0)
+                {
+                    lasttopic = topics.OrderByDescending(t => t.LastPostDate).FirstOrDefault();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
 
-            var lasttopic = _dbContext.Posts
-                .Where(t=>t.ForumId == forumid && t.Status < 2)
-                .OrderByDescending(t=>t.LastPostDate)
-                .Select(p => new { Post = p, Topics = _dbContext.Posts.Count(t=>t.ForumId == forumid && t.Status <2), Replies = _dbContext.Replies.Count(r=>r.ForumId == forumid && r.Status <2) })
-                .FirstOrDefault();
+            var forum = Get(forumid);
 
             if (lasttopic == null)
             {
@@ -229,16 +238,25 @@ namespace SnitzCore.Service
             }
             else
             {
-                forum.LatestTopicId = lasttopic.Post.Id;
-                forum.LatestReplyId = lasttopic.Post.LastPostReplyId;
-                forum.LastPost = lasttopic.Post.LastPostDate;
-                forum.LastPostAuthorId = lasttopic.Post.LastPostAuthorId;
-                forum.TopicCount = lasttopic.Topics;
-                forum.ReplyCount = lasttopic.Replies;
+                forum.LatestTopicId = lasttopic.Id;
+                forum.LatestReplyId = lasttopic.LastPostReplyId;
+                forum.LastPost = lasttopic.LastPostDate;
+                forum.LastPostAuthorId = lasttopic.LastPostAuthorId;
+                forum.TopicCount = _dbContext.Posts.Count(t=>t.ForumId == forumid && t.Status <2);
+                forum.ReplyCount = _dbContext.Replies.Count(r=>r.ForumId == forumid && r.Status <2);
             }
 
-            _dbContext.Forums.Update(forum);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                _dbContext.Forums.Update(forum);
+                _dbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
             return forum;
             //var cacheService = new InMemoryCache();
             //cacheService.Remove("category.forums");           
@@ -308,7 +326,7 @@ namespace SnitzCore.Service
 
             if (!string.IsNullOrWhiteSpace(archiveDate))
             {
-                topics = _dbContext.Posts.AsNoTracking().Where(t => t.ForumId == forumId && t.LastPostDate.FromForumDateStr() < archiveDate.FromForumDateStr()).Select(t=>t.Id);
+                topics = _dbContext.Posts.AsNoTracking().Where(t => t.ForumId == forumId && string.Compare(t.LastPostDate, archiveDate) < 0 ).Select(t=>t.Id);
             }
             else
             {
@@ -341,6 +359,7 @@ namespace SnitzCore.Service
                 finally
                 {
                     _dbContext.Database.CommitTransaction();
+                    _ = UpdateLastPost(forumId);
                 }
             }
         }

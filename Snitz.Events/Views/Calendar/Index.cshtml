@@ -1,33 +1,25 @@
 ﻿@using System.Globalization
 @using System.Resources
+@using Microsoft.AspNetCore.Http
 @model dynamic
 
 @{
     Layout = "Layout";
     ViewBag.Title = SnitzConfig.ForumTitle + " | " + @Localizer["calTitle"];
-    CultureInfo ci = CultureInfo.CurrentUICulture;
-    string clang = ci.TwoLetterISOLanguageName;
     string[] rtlLangs = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur", "yi", "he" };
     string[] arabic = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur" }; //Cairo
     string[] aramaic = new string[] { "yi", "he" }; //Tinos
-
+    string clang = Context.Session.GetString("culture");
     bool isRighToLeft = (rtlLangs.Contains(clang));
 
-    // if (!SessionData.Contains("isRighToLeft") || isRighToLeft != SessionData.Get<bool>("isRighToLeft"))
-    // {
-    //     SessionData.Set("isRighToLeft", isRighToLeft);
-    // }
+    clang = clang + ".js";
 }
 @section Styles {
     <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar.min.css">
     <link rel="stylesheet" href="~/_content/Snitz.Events/css/jquery-ui-timepicker-addon.min.css">
+    <link rel="stylesheet" href="~/css/fullcalendar.css">
+    <link snitz-if="@(isRighToLeft)" rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar-rtl.css">
 
-@*     //Themecss*@
-    <link rel="stylesheet" href="~/css/fullcalendar.css"> 
-    @if (isRighToLeft)
-    {
-        <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar-rtl.css">
-    }
 }
 <div class="chunk-main">
     <h5>@Localizer["calTitle"]</h5>
@@ -45,19 +37,14 @@
     </script>
     <script src="~/_content/Snitz.Events/js/moment.min.js"></script>
 
-    @if (clang == "fa")
+    @if (clang == "fa.js")
     {
         <script src="~/_content/Snitz.Events/js/moment-jalaali.min.js"></script>
-        <script src="~/_content/Snitz.Events/js/pluginjs/fullcalendar-year.min.js"></script>
+    }
 
-    }
-    else
-    {
-        clang = clang + ".js";
-        <script src="~/_content/Snitz.Events/js/pluginjs/fullcalendar-year.js" defer></script>
-        <script src="~/_content/Snitz.Events/js/lang/@clang" defer></script>
-    }
-    <script src="~/_content/Snitz.Events/js/pluginjs/snitz.cal.min.js" defer></script>
+    <script src="~/_content/Snitz.Events/js/pluginjs/fullcalendar-year.min.js" ></script>
+    <script src="~/_content/Snitz.Events/js/lang/@clang" ></script>
+    <script src="~/_content/Snitz.Events/js/pluginjs/snitz.cal.min.js" ></script>
 
     <script type="text/javascript">
         $(document)

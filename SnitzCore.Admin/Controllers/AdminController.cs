@@ -759,11 +759,11 @@ namespace SnitzCore.BackOffice.Controllers
         [HttpGet]
         public IActionResult ArchiveForum(int id)
         {
-            if (_snitzconfig.GetIntValue("STRARCHIVESTATE") != 1)
-            {
-                ViewBag.Error = "Archiving not enabled";
-                return View("Error");
-            }
+            //if (_snitzconfig.GetIntValue("STRARCHIVESTATE") != 1)
+            //{
+            //    ViewBag.Error = "Archiving not enabled";
+            //    return View("Error");
+            //}
             ArchiveViewModel vm = new ArchiveViewModel {ForumId = id};
             return PartialView("popArchiveForum", vm);
         }

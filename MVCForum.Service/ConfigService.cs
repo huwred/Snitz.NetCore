@@ -23,7 +23,7 @@ namespace SnitzCore.Service
 
         string? ISnitzConfig.RootFolder
         {
-            get => _httpContextAccessor.HttpContext?.Request.PathBase == "" ? "/" : $"/{_httpContextAccessor.HttpContext?.Request.Path}/";
+            get => _httpContextAccessor.HttpContext?.Request.PathBase;
         }
         string ISnitzConfig.ContentFolder
         {

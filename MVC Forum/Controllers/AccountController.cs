@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using MimeKit;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Member;
 using MVCForum.ViewModels.User;
@@ -309,6 +308,7 @@ namespace MVCForum.Controllers
             {
                 _logger.Warn($"Found {newIdentityUser.Email}");
                 await _signInManager.SignOutAsync();
+                
                 SignInResult result = await _signInManager.PasswordSignInAsync(newIdentityUser, login.Password, login.RememberMe, true);
                 if (result.Succeeded)
                 {
@@ -383,7 +383,7 @@ namespace MVCForum.Controllers
                         .Where(r => r.UserId == member.Id);
                     foreach (var userInRole in currroles)
                     {
-                        var exists = _roleManager.Roles.FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
+                        var exists = _roleManager.Roles.OrderBy(r=>r.Name).FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
                         if (exists == null)
                         {
                             await _roleManager.CreateAsync(new IdentityRole(userInRole.Role.RoleName));
@@ -394,7 +394,7 @@ namespace MVCForum.Controllers
                     {
                         return LocalRedirect("~/Account/ForgotPassword");
                     }
-                    await _signInManager.SignInAsync(existingUser, false);
+                    await _signInManager.SignInAsync(existingUser, login.RememberMe);
                     return LocalRedirect(returnUrl);
                 }
                 foreach (IdentityError error in result.Errors)

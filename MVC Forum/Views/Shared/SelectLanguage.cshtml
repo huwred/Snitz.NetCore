@@ -5,11 +5,18 @@
 @inject IOptions<RequestLocalizationOptions> LocOptions
 
 @{
+    var supportedCultures = new List<CultureInfo>
+    {
+        new CultureInfo("en"),
+        new CultureInfo("no"),
+        new CultureInfo("fa")
+    };
+
     var requestCulture = CultureInfo.CurrentUICulture;
-    var cultureItems = LocOptions.Value.SupportedUICultures!
+    var cultureItems = supportedCultures
         .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
         .ToList();
-    var returnUrl = string.IsNullOrEmpty(Context.Request.PathBase) ? $"{Context.Request.Path}" : $"/{Context.Request.PathBase}{Context.Request.Path.Value}";
+    var returnUrl = $"{Context.Request.PathBase}{Context.Request.Path.Value}";
     string clang = requestCulture?.TwoLetterISOLanguageName;
 }
 

@@ -144,7 +144,7 @@
                         @if (User.IsInRole("Administrator"))
                         {
                             <button asp-controller="Forum" asp-action="Edit" asp-route-id="@Model.Forum!.Id" title="Edit Forum" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-lg-inline"> @Localizer["tipEditForum"]</span></button>
-                            <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Forum!.Id" href="~/Forum/Delete/?id=" title="@Localizer["cnfDeleteForum"].Value"></button-confirm>
+                            <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Forum!.Id" href="@SnitzConfig.RootFolder/Forum/Delete/?id=" title="@Localizer["cnfDeleteForum"].Value"></button-confirm>
                         }
 
                     </div>
@@ -174,10 +174,9 @@
                     }
                 </div>
                 <div class="subjects rounded-2">@Localizer["lblSubject"]</div>
-                <div class="replies rounded-2">@Localizer["lblReplies"] / @Localizer["lblViews"]</div>
+                <div class="replies rounded-2"></div>
                 <div class="last-reply rounded-2">@Localizer["lblLastPost"]</div>
                 <div class="subscribe rounded-1 d-none d-md-inline-block"><i class="fa fa-object-group" title="@Localizer["tipMergeTopic"]" style="display: none;"></i></div>
-
             </div>
             @{
                 ViewData["ActiveTopics"] = false;

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System;
 using System.Globalization;
 using System.Linq;
+using SnitzCore.Service.Extensions;
 
 namespace MVCForum.TagHelpers
 {
@@ -77,8 +78,17 @@ namespace MVCForum.TagHelpers
         {
             var text = GetEnumFieldDisplayName(value);
 
+            if (LastVisit != null)
+            {
+                if (TextLocalizerDelegate != null)
+                    return TextLocalizerDelegate(text).Replace("[[LASTVISIT]]", LastVisit.Value.ToForumDateTimeDisplay());
+            }
+
             if (TextLocalizerDelegate != null)
-                return TextLocalizerDelegate(text).Replace("[[LASTVISIT]]", LastVisit?.ToLocalTime().ToString(CultureInfo.CurrentCulture));
+            {
+                return TextLocalizerDelegate(text);
+            }
+
             return text;
         }
     }

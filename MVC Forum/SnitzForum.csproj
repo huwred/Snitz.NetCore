@@ -133,6 +133,7 @@
     <_ContentIncludedByDefault Remove="Views\Shared\ConfirmDIalog.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\FormButtons.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_BookmarkLink.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\_PageNotFound.cshtml" />
     <_ContentIncludedByDefault Remove="wwwroot\css\SnitzTheme.min.css" />
   </ItemGroup>
 
@@ -252,8 +253,8 @@
     <PackageReference Include="NuGet.Protocol" Version="6.3.3" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.1" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="Snitz.Events" Version="1.0.0-rc116" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.0-rc80" />
+    <PackageReference Include="Snitz.Events" Version="1.0.0-rc123" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.0-rc90" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
@@ -306,5 +307,8 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\PrivateMessage\SearchResult.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\_PageNotFound.cshtml" />
   </ItemGroup>
 </Project>

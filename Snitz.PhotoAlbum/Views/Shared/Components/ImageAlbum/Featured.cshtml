@@ -3,7 +3,7 @@
 @model Snitz.PhotoAlbum.Models.AlbumImage
 @{
     string rootFolder = "Content";
-    string imagename =  $"{Url.Content("~/")}{rootFolder}/PhotoAlbum/{Model.ImageName}";
+    string imagename =  $"{Url.Content("~/")}{rootFolder}/PhotoAlbum/{Model.ImageName}?width=400&rmode=crop&format=jpg";
 }
 <div class="card mb-2" >
     <div class="card-header subforum-title">
@@ -19,7 +19,7 @@
             <li snitz-if="@(!string.IsNullOrWhiteSpace(Model.ScientificName))">@Localizer["lblScientificName"]: @Model.ScientificName</li>
             <li snitz-if="@(!string.IsNullOrWhiteSpace(Model.CommonName))">@Localizer["lblLocalName"]: @Model.CommonName</li>
             <li>@Localizer["lblOwner"]: @Model.Member.Name</li>
-            <li>@Localizer["lblDate"]: @Model.Timestamp.FromForumDateStr()</li>
+            <li>@Localizer["lblDate"]: @Model.Timestamp.FromForumDateStr().ToForumDisplay()</li>
         </ul>
         @* <a href="#" class="btn btn-primary">Go somewhere</a> *@
     </div>

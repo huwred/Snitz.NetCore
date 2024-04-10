@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Identity
 @using MVCForum.ViewModels.User
 @using SnitzCore.Data
+@using SnitzCore.Service.Extensions
 @using SnitzCore.Service.TagHelpers
 @model MVCForum.ViewModels.User.MemberIndexModel
 @inject UserManager<ForumUser> UserManager
@@ -105,7 +106,7 @@
                         <td>@member.Member.Posts</td>
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>
                         <td class="d-none d-md-table-cell">@member.MemberSince?.Year</td>
-                        <td class="d-none d-md-table-cell">@member.LastHereDate?.ToShortDateString()</td>
+                            <td class="d-none d-md-table-cell">@member.LastHereDate?.ToForumDateDisplay()</td>
                         <td snitz-if="@userroles != null && @userroles.Contains("Administrator")" class="d-none d-md-table-cell">@member.Member.Email</td>
                         <td class="d-none d-md-table-cell">@member.Member.Country</td>
                         <td snitz-if="@userroles != null && @userroles.Contains("Administrator") "class="d-none d-md-table-cell user-icon">

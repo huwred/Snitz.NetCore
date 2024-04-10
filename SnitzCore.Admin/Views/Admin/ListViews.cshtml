@@ -56,7 +56,7 @@
         $(".list-unstyled").on("click",function(e) {
             e.preventDefault();
             var encoded = encodeURIComponent($(this).data("path"));
-            $.get("~/Admin/LoadFile?id=" + encoded, function (data) {
+            $.get(SnitzVars.baseUrl + "/Admin/LoadFile?id=" + encoded, function (data) {
                 myCodeMirror.setValue(data);
                 myCodeMirror.setSize("98%", 300);
             });

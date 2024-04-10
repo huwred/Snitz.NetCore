@@ -48,7 +48,7 @@
         $(document).on("click",
             ".fa-share-square-o.forum",
             function() {
-                $.get("~/Forum/Subscribe/?id=" + $(this).data("id"),
+                $.get(SnitzVars.baseUrl + "/Forum/Subscribe/?id=" + $(this).data("id"),
                     function() {
                         location.reload();
                     });
@@ -56,7 +56,7 @@
         $(document).on("click",
             ".fa-share-square.forum",
             function() {
-                $.get("~/Forum/UnSubscribe/?id=" + $(this).data("id"),
+                $.get(SnitzVars.baseUrl + "/Forum/UnSubscribe/?id=" + $(this).data("id"),
                     function() {
                         location.reload();
                     })
@@ -64,7 +64,7 @@
         $(document).on("click",
             ".fa-share-square-o.topic",
             function() {
-                $.get("~/Topic/Subscribe/?id=" + $(this).data("id"),
+                $.get(SnitzVars.baseUrl + "/Topic/Subscribe/?id=" + $(this).data("id"),
                     function() {
                         location.reload();
                     })
@@ -72,7 +72,7 @@
         $(document).on("click",
             ".fa-share-square.topic",
             function() {
-                $.get("~/Topic/UnSubscribe/?id=" + $(this).data("id"),
+                $.get(SnitzVars.baseUrl + "/Topic/UnSubscribe/?id=" + $(this).data("id"),
                     function() {
                         location.reload();
                     })

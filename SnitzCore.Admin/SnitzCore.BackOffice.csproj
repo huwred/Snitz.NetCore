@@ -26,6 +26,7 @@
     <_ContentIncludedByDefault Remove="Views\Admin\Setup.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Admin\_RoleView.cshtml" />
     <_ContentIncludedByDefault Remove="Views\LanguageManager\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\popArchiveForum.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_FormButtons.cshtml" />
   </ItemGroup>
 
@@ -66,6 +67,9 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Admin\ManageSubscriptions.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\popArchiveForum.cshtml" />
   </ItemGroup>
 
 

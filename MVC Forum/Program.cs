@@ -35,6 +35,7 @@ using Snitz.Events.Models;
 using Snitz.PhotoAlbum.Models;
 using SnitzCore.Service.Extensions;
 using SnitzCore.Service.Hangfire;
+using MVCForum.MiddleWare;
 
 
 
@@ -54,16 +55,7 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
     options.EnableDetailedErrors();
 
 },ServiceLifetime.Transient);
-//using (var scope = builder.Services.BuildServiceProvider().CreateScope())
-//{
-//    using (var dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
-//    {
-//        if (dbContext.Database.GetPendingMigrations().Any())
-//        {
-//            dbContext.Database.Migrate();
-//        }
-//    }
-//}
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ForumUser>(options =>
@@ -83,6 +75,7 @@ builder.Services.AddDefaultIdentity<ForumUser>(options =>
     .AddPasswordValidator<CustomPasswordValidator<ForumUser>>();
 builder.Services.AddScoped<IPasswordHasher<IdentityUser>, CustomPasswordHasher>();
 builder.Services.Configure<IdentityOptions>(builder.Configuration.GetSection(nameof(IdentityOptions)));
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     //Location for your Custom Access Denied Page
@@ -113,33 +106,20 @@ builder.Services.AddScoped<IMember, MemberService>();
 builder.Services.AddScoped<IForum, ForumService>();
 builder.Services.AddScoped<IPost, PostService>();
 builder.Services.AddScoped<IPrivateMessage, PrivateMessageService>();
-builder.Services.AddTransient<ISnitzConfig, ConfigService>();
-
-builder.Services.AddTransient<ICodeProcessor, BbCodeProcessor>();
-builder.Services.AddScoped<IEmoticon, EmoticonService>();
-builder.Services.AddScoped<ISnitz, SnitzService>();
-builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IBookmark, BookmarkService>();
 builder.Services.AddScoped<ISubscriptions, ProcessSubscriptions>();
-#region localization
-var supportedCultures = new List<CultureInfo>
-{
-    new("en-GB"),
-    new ("no"),
-    new ("fa"),
-    new ("ro")
-};
+builder.Services.AddScoped<IEmoticon, EmoticonService>();
+builder.Services.AddScoped<ISnitz, SnitzService>();
+builder.Services.AddTransient<ISnitzConfig, ConfigService>();
+builder.Services.AddTransient<ICodeProcessor, BbCodeProcessor>();
+builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IHtmlLocalizerFactory, EFStringLocalizerFactory>();
+#region localization
+
+builder.Services.ConfigureOptions<SnitzRequestLocalizationOptions>();
 builder.Services.AddMvc().AddViewLocalization();
 
-builder.Services.Configure < RequestLocalizationOptions > (options => {
-
-    options.DefaultRequestCulture = new RequestCulture(culture: "en-GB", uiCulture: "en-GB");
-    options.SupportedCultures = supportedCultures;
-    options.SupportedUICultures = supportedCultures;
-    options.RequestCultureProviders.Insert(0, new QueryStringRequestCultureProvider());
-});
 #endregion
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddResponseCaching();
@@ -215,35 +195,57 @@ builder.Services.AddResponseCaching();
 
 var app = builder.Build();
 app.MigrateDatabase();
+
+app.Use(async (ctx, next) =>
+{
+    await next();
+
+    if(ctx.Response.StatusCode == 404 && !ctx.Response.HasStarted)
+    {
+        //Re-execute the request so the user gets the error page
+        string originalPath = ctx.Request.Path.Value;
+        ctx.Items["originalPath"] = originalPath;
+        ctx.Request.Path = "/error/404";
+        await next();
+    }
+});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseDeveloperExceptionPage();
+
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/error/handle-exception");
+    app.UseStatusCodePages(context => {
+        var response = context.HttpContext.Response;
+        if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
+        {
+            response.Redirect("/Account/Login");
+        }
+        return Task.CompletedTask;
+    });
+    app.UseStatusCodePagesWithReExecute("/error/{0}");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-app.UseStatusCodePages(context => {
-    var response = context.HttpContext.Response;
-    if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
-    {
-        response.Redirect("/Account/Login");
-    }
-    return Task.CompletedTask;
-});
+
 app.UseRequestLocalization(app.Services.GetRequiredService < IOptions < RequestLocalizationOptions >> ().Value);
+
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 app.UseImageSharp();
-app.UseStaticFiles();
+
+app.UseOnlineUsers();
 app.UseCookiePolicy();
 app.UseHangfireDashboard("/snitzjobs",new DashboardOptions
 {

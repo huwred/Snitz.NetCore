@@ -27,7 +27,7 @@ tinymce.init({
         favs: {title: 'My Favorites', items: 'code | searchreplace | emoticons'}
     },
     menubar: 'favs edit insert format table help',
-    language: SnitzVars.forumlang,
+    language: curLang,
     directionality: langDirection,
 /*    height: 200,*/
     browser_spellcheck: true,

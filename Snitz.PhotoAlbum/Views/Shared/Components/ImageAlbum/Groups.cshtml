@@ -41,7 +41,7 @@
         $(document).on('click', '.btn-outline-danger.group-edit', function (e) {
             e.preventDefault();
             var groupid = $(this).data("id");
-            $.get("~/PhotoAlbum/DeleteGroup/" + groupid,
+            $.get(SnitzVars.baseUrl + "/PhotoAlbum/DeleteGroup/" + groupid,
                 function(data) {
                     if (data) {
                         $('#groups-result').html(data);

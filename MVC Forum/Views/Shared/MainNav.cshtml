@@ -10,7 +10,7 @@
     var currForumUser = UserManager.GetUserAsync(User).Result;
 }
 <nav class="navbar navbar-expand-md bg-dark @* navbar-custom  *@fixed-top">
-    <a class="navbar-brand" asp-controller="Home" asp-action="Index" title="@Html.Raw(SnitzConfig.ForumTitle) Home page"><img src="~/images/logo.png" width="141" height="50" alt="Snitz Forums Logo" loading="lazy" /></a>
+    <a class="navbar-brand" asp-controller="Home" asp-action="Index" title="@Html.Raw(SnitzConfig.ForumTitle) Home page"><img src="@SnitzConfig.RootFolder/images/logo.png" width="141" height="50" alt="Snitz Forums Logo" loading="lazy" /></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -33,7 +33,6 @@
                     <li><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Index" asp-route-id="">@Localizer["mnuMemberAlbums"]</a></li>
                     <li snitz-if="@(SnitzConfig.GetIntValue("INTCOMMONALBUM") == 1)"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Album" asp-route-id="">@Localizer["mnuCommonAlbum"]</a></li>
                     <li snitz-if="@SignInManager.IsSignedIn(User)"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="@currForumUser.MemberId">@Localizer["mnuMyAlbum"]</a></li>
-
                 </ul>
             </li>
 

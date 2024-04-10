@@ -58,6 +58,7 @@ namespace MVCForum.Controllers
         [Route("{id:int}")]
         [Route("Topic/{id}")]
         [Route("Topic/Index/{id}")]
+        [Route("Topic/Posts/{id}")]
         public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
         {
             bool signedin = false;

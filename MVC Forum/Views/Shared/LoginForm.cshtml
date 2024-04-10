@@ -4,7 +4,7 @@
 @inject SignInManager<ForumUser> SignInManager
 @if (!SignInManager.IsSignedIn(User))
 {
-    var returnurl = Context.Request.HttpContext.Request.Path;
+    var returnurl = Context.Request.PathBase + Context.Request.Path;
     if (returnurl.ToString().Contains("Login"))
     {
         string referer = Context.Request.Headers["Referer"].ToString();
@@ -12,6 +12,7 @@
         {
             Uri baseUri = new Uri(referer);
             returnurl = baseUri.AbsolutePath;
+            returnurl = returnurl;
         }
         else
         {

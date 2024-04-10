@@ -40,8 +40,7 @@ namespace SnitzCore.Service
         {
             if (id == null)
                 return null;
-            var member =  _dbContext.Members.AsNoTracking()
-                .First(m => m.Id == id);
+            var member =  _dbContext.Members.AsNoTracking().First(m => m.Id == id);
             if(member == null) return null;
 
             var curruser = _userManager.FindByNameAsync(member.Name).Result;
@@ -53,7 +52,10 @@ namespace SnitzCore.Service
 
             return member;
         }
-
+        public Member? Get(int id)
+        {
+            return  _dbContext.Members.AsNoTracking().First(m => m.Id == id);
+        }
         public async Task<Member?> GetById(ClaimsPrincipal user)
         {
             var userId = _userManager.GetUserId(user);
@@ -102,7 +104,7 @@ namespace SnitzCore.Service
 
         public async Task UpdatePostCount(int memberid)
         {
-            var member = GetById(memberid);
+            var member = Get(memberid);
             if (member != null)
             {
                 member.Posts += 1;

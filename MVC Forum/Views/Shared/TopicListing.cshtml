@@ -41,7 +41,6 @@
         <div class="d-lg-flex flex-row bd-highlight mb-3">
             <div class="p-2 flex-grow-1 bd-highlight">
                 <a href="~/Topic/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a><br/>
-
                 <span>
                     @Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model.AuthorId"></member-link>
                     @if ((bool)ViewData["ActiveTopics"])
@@ -69,8 +68,6 @@
                 @await Component.InvokeAsync("PostControls", new { post = Model ,forlist = true})
             </div>
         </div>
-
-
     </div>
     <div class="replies">
         @Model.RepliesCount @Localizer["lblReplies"] <br/> @Model.ViewCount @Localizer["lblViews"]
