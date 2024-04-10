@@ -99,7 +99,7 @@ footer {
 
 /* posts table's body  */
 
-.table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply {
+.table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply, .table-row .subscribe {
     background-color: #ddd;
 }
 

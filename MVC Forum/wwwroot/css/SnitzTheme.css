@@ -450,6 +450,7 @@ blockquote.newquote {
 }
 
 .image-gallery .figure:hover .overlay {
+    display: block;
     opacity: .6;
 }
 

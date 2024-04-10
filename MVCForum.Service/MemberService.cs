@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OutputCaching;
 using X.PagedList;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using Microsoft.Extensions.Options;
 
 namespace SnitzCore.Service
 {
@@ -26,15 +28,18 @@ namespace SnitzCore.Service
         private readonly ISnitzCookie _cookie;
         private readonly UserManager<ForumUser> _userManager;
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly string _tableprefix;
+        private readonly string _memberprefix;
 
-        public MemberService(SnitzDbContext dbContext,ISnitzCookie snitzcookie,UserManager<ForumUser> userManager,IHttpContextAccessor contextAccessor)
+        public MemberService(SnitzDbContext dbContext,ISnitzCookie snitzcookie,UserManager<ForumUser> userManager,IHttpContextAccessor contextAccessor,IOptions<SnitzForums> config)
         {
             _dbContext = dbContext;
             _rankings = GetRankings();
             _cookie = snitzcookie;
             _userManager = userManager;
             _contextAccessor = contextAccessor;
-
+            _tableprefix = config.Value.forumTablePrefix;
+            _memberprefix = config.Value.memberTablePrefix;
         }
         public Member? GetById(int? id)
         {
@@ -133,13 +138,15 @@ namespace SnitzCore.Service
                 if (additionalField.Key.ToUpper() == "DOB")
                 {
                     var date = DateTime.Parse(additionalField.Value.ToString()!);
-                    _dbContext.Database.ExecuteSqlRaw($"UPDATE FORUM_MEMBERS SET M_{additionalField.Key.ToUpper()}='{date:yyyyMMdd}'");
+                    _dbContext.Database.ExecuteSqlRaw($"UPDATE {_memberprefix}MEMBERS SET M_{additionalField.Key.ToUpper()}='{date:yyyyMMdd}'");
                 }
                 else
                 {
-                    _dbContext.Database.ExecuteSqlRaw($"UPDATE FORUM_MEMBERS SET M_{additionalField.Key.ToUpper()}='{additionalField.Value}'");
+                    _dbContext.Database.ExecuteSqlRaw($"UPDATE {_memberprefix}MEMBERS SET M_{additionalField.Key.ToUpper()}='{additionalField.Value}'");
                 }
             }
+
+            _dbContext.Database.ExecuteSqlRaw($"UPDATE {_tableprefix}TOTALS SET U_COUNT = U_COUNT + 1;");
             _dbContext.Database.CommitTransaction();
 
             return result.Entity;

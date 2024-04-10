@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -18,14 +19,15 @@ namespace SnitzCore.Service
         private readonly IForum _forumservice;
         private readonly ISnitzConfig _config;
         private readonly IEmailSender _mailSender;
-
-        public PostService(SnitzDbContext dbContext, IMember memberService,IForum forumservice,ISnitzConfig config,IEmailSender mailSender)
+        private readonly string _tableprefix;
+        public PostService(SnitzDbContext dbContext, IMember memberService,IForum forumservice,ISnitzConfig config,IEmailSender mailSender,IOptions<SnitzForums> options)
         {
             _dbContext = dbContext;
             _memberService = memberService;
             _forumservice = forumservice;
             _config = config;
             _mailSender = mailSender;
+            _tableprefix = options.Value.forumTablePrefix;
         }
 
         /// <summary>
@@ -57,6 +59,9 @@ namespace SnitzCore.Service
                 await _memberService.UpdatePostCount(post.MemberId);
             }
 
+            var forumtotals = _dbContext.ForumTotal.First();
+            forumtotals.TopicCount += 1;
+            await _dbContext.SaveChangesAsync();
             return post.Id;
         }
 
@@ -91,6 +96,9 @@ namespace SnitzCore.Service
             {
                 await _memberService.UpdatePostCount(post.MemberId);
             }
+            var forumtotals = _dbContext.ForumTotal.First();
+            forumtotals.PostCount += 1;
+            await _dbContext.SaveChangesAsync();
             return post.Id;
         }
         /// <summary>
@@ -140,10 +148,10 @@ namespace SnitzCore.Service
                     _dbContext.Remove(topic);
                     _dbContext.SaveChanges();
                     //Update any subscriptionc for the old Topic with the new topic ID
-                    _dbContext.Database.ExecuteSql($"UPDATE FORUM_SUBSCRIPTIONS SET TOPIC_ID={mainTopic.Id}, FORUM_ID={mainTopic.ForumId}, CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
+                    _dbContext.Database.ExecuteSql($"UPDATE {_tableprefix}SUBSCRIPTIONS SET TOPIC_ID={mainTopic.Id}, FORUM_ID={mainTopic.ForumId}, CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
                     //Update the replies with new topic ID and add the number updated to the replycounter
                     replycounter += _dbContext.Database.ExecuteSql(
-                        $"UPDATE FORUM_REPLY SET TOPIC_ID={mainTopic.Id},FORUM_ID={mainTopic.ForumId},CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
+                        $"UPDATE {_tableprefix}REPLY SET TOPIC_ID={mainTopic.Id},FORUM_ID={mainTopic.ForumId},CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
                     if (oldforum != null)
                     {
                         _forumservice.UpdateLastPost(oldforum.Id);
@@ -528,13 +536,13 @@ namespace SnitzCore.Service
 
         public void MoveSubscriptions(int oldtopicid, int newtopicid, int newforumId, int newcatId)
         {
-            _dbContext.Database.ExecuteSql($"UPDATE FORUM_SUBSCRIPTIONS SET TOPIC_ID={newtopicid}, FORUM_ID={newforumId}, CAT_ID={newcatId} WHERE TOPIC_ID={oldtopicid}");
+            _dbContext.Database.ExecuteSql($"UPDATE {_tableprefix}SUBSCRIPTIONS SET TOPIC_ID={newtopicid}, FORUM_ID={newforumId}, CAT_ID={newcatId} WHERE TOPIC_ID={oldtopicid}");
         }
 
         public void MoveReplies(int oldtopicid, Post newTopic)
         {
             _dbContext.Database.ExecuteSql(
-                $"UPDATE FORUM_REPLY SET TOPIC_ID={newTopic.Id},FORUM_ID={newTopic.ForumId},CAT_ID={newTopic.CategoryId} WHERE TOPIC_ID={oldtopicid}");
+                $"UPDATE {_tableprefix}REPLY SET TOPIC_ID={newTopic.Id},FORUM_ID={newTopic.ForumId},CAT_ID={newTopic.CategoryId} WHERE TOPIC_ID={oldtopicid}");
 
         }
 

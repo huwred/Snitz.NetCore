@@ -49,7 +49,7 @@
         <div class="row g-3">
             <div class="col-2">
                 <span class="hidden-xs center authors p-2">
-                    <snitz-avatar src="~/Content/Avatar/@topic.Member.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="img-fluid rounded-circle" />
+                    <snitz-avatar src="@SnitzConfig.RootFolder/Content/Avatar/@topic.Member.PhotoUrl" def-src="@SnitzConfig.RootFolder/images/ninja-1027877_960_720.webp" class="img-fluid rounded-circle" />
                 </span>
                 <p class="card-text center">
                     <a class="@rolecssAU" href="@Url.Action("UserProfile", "Account", new { id = topic.Member.Name })">

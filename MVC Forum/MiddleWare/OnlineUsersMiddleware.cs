@@ -19,7 +19,7 @@ namespace MVCForum.MiddleWare
     {
         private readonly RequestDelegate _next;
         private readonly string _cookieName;
-        private readonly int _lastActivityMinutes = 10;
+        private readonly int _lastActivityMinutes;
         private static readonly ConcurrentDictionary<string, bool> _allKeys = new ConcurrentDictionary<string, bool>();
         protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
@@ -42,7 +42,7 @@ namespace MVCForum.MiddleWare
             {
                 return _next(context);
             }
-            _logger.Warn(test);
+            //_logger.Warn(test);
 
             if (context.Request.Cookies.TryGetValue(_cookieName, out var userGuid) == false)
             {

@@ -23,4 +23,7 @@ public partial class ForumTotal
 
     [Column("U_COUNT")]
     public int UserCount { get; set; }
+
+    [NotMapped]
+    public int ActiveMembers { get; set; }
 }

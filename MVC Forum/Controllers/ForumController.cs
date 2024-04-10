@@ -45,7 +45,6 @@ namespace MVCForum.Controllers
         
         [Route("Forum/{id:int}")]
         [Route("Forum/Index/{id:int}")]
-        [ResponseCache(VaryByHeader = "User-Agent", Duration = 30, VaryByQueryKeys = new[]{"*"})]
         public IActionResult Index(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 0)
         {
             ViewBag.RequireAuth = false;
@@ -318,7 +317,7 @@ namespace MVCForum.Controllers
             return notallowed;
         }
 
-        [ResponseCache(VaryByHeader = "User-Agent", Duration = 30, VaryByQueryKeys = new[]{"*"})]
+        [Route("Topic/Active")]
         public IActionResult Active(int page = 1, int pagesize = 0,ActiveRefresh? Refresh = null,ActiveSince? Since = null)
         {
             if (HttpContext.Session.GetInt32("ActivePageSize") != null && pagesize == 0)

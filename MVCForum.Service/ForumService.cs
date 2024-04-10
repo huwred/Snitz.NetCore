@@ -345,7 +345,8 @@ namespace SnitzCore.Service
                         SELECT CAT_ID,FORUM_ID,TOPIC_ID,T_STATUS,T_MAIL,T_SUBJECT,T_MESSAGE,T_AUTHOR,T_REPLIES,T_UREPLIES,T_VIEW_COUNT,T_LAST_POST,T_DATE,T_LAST_POSTER,T_IP,T_LAST_POST_AUTHOR,T_LAST_POST_REPLY_ID,T_LAST_EDIT,T_LAST_EDITBY,T_STICKY,T_SIG FROM {_tableprefix}TOPICS WHERE TOPIC_ID IN ({topiclist});
                         DELETE FROM {_tableprefix}REPLY WHERE TOPIC_ID IN ({topiclist}) ;
                         DELETE FROM {_tableprefix}TOPICS WHERE TOPIC_ID IN ({topiclist});
-                        UPDATE {_tableprefix}FORUM SET F_L_ARCHIVE={DateTime.UtcNow.ToForumDateStr()} WHERE FORUM_ID={forumId}";
+                        UPDATE {_tableprefix}FORUM SET F_L_ARCHIVE={DateTime.UtcNow.ToForumDateStr()} WHERE FORUM_ID={forumId}
+                        UPDATE {_tableprefix}TOTALS SET T_A_COUNT = (SELECT COUNT(TOPIC_ID) FROM {_tableprefix}A_TOPICS), P_A_COUNT = (SELECT COUNT(REPLY_ID) FROM {_tableprefix}A_REPLY)";
 
                     var fs = FormattableStringFactory.Create(sql);
                     _dbContext.Database.BeginTransaction();

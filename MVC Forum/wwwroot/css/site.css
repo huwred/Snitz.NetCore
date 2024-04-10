@@ -208,13 +208,14 @@ footer{
     margin: 2px;
 
 }
-
-.table-row .status{
-
-    flex: 5%;
-    font-size: 30px;
-    text-align: center;
-}
+    .table-row .subscribe {
+        font-size: 20px;
+    }
+    .table-row .status {
+        flex: 5%;
+        font-size: 30px;
+        text-align: center;
+    }
 
 .table-row .subjects{
     flex: 65%;

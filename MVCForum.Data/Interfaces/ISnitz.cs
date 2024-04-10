@@ -10,5 +10,8 @@ namespace SnitzCore.Data.Interfaces
         IEnumerable<SnitzConfig> GetConfig();
         int ForumCount();
         IEnumerable<KeyValuePair<int, string>> GetForumModerators();
+
+        string NewestMember();
+        int ActiveSince(string lastvisit);
     }
 }

@@ -38,7 +38,7 @@ namespace MVCForum.Controllers
         [Route("AllForums")]
         [Route("Category/{id?}")]
         [Route("Category/Index/{id}")]
-        [ResponseCache(VaryByHeader = "User-Agent", Duration = 30,VaryByQueryKeys = new []{"*"})]
+        //[ResponseCache(VaryByHeader = "User-Agent", Duration = 30,VaryByQueryKeys = new []{"*"})]
         public IActionResult Index(int id)
         {
             if (User.Identity is { IsAuthenticated: true })

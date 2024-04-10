@@ -1,18 +1,26 @@
 ﻿@using SnitzCore.Data.Extensions
 @using MVCForum.TagHelpers
+@using MVCForum.MiddleWare
 @inject ISnitz SnitzService
 
 @{
     ForumTotal Stats = SnitzService.Totals();
     var LastPost = SnitzService.LastPost();
-
     var lastpostdate = LastPost.LastPostDate?.FromForumDateStr();
+    var lastvisit = MemberService.Current()?.Lastheredate;
+    var newestmember = SnitzService.NewestMember();
 }
 <div class="forum-info rounded mt-2">
     <div class="chart">
-        @Localizer["lblForumStats"] &nbsp;<i class="fa fa-bar-chart"></i>
+        <i class="fa fa-bar-chart"></i>&nbsp;@Localizer["lblForumStats"]
     </div>
-    <span>@Localizer["staMembers", Stats.PostCount, Stats.TopicCount, Stats.UserCount, SnitzService.ForumCount()]</span><br/>
+    <span>@Localizer["staMembers", Stats.ActiveMembers, Stats.UserCount, Stats.PostCount + Stats.TopicCount, SnitzService.ForumCount()]</span><br />
     <span>@Localizer["ProfileLastPost"]: <b><lastpost-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" topic-id="@LastPost.LastTopic" post-date="@lastpostdate" reply-id="@LastPost?.LastReply"></lastpost-link></b> @Localizer["lblPostedBy"] <member-link member-id="@LastPost?.LastPostAuthor" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link></span>.<br />
-    <span>@Localizer["lblCheckActive"] .</span><br/>
+    <span>@Localizer["staTopics", Stats.TopicCount, SnitzService.ActiveSince(lastvisit)]</span><br />
+    <span>@Localizer["staArchive", Stats.ArchivedPostCount, Stats.ArchivedTopicCount]</span><br />
+    <span>@Localizer["staNewMember", "<a href=\"" + SnitzConfig.RootFolder + "/Account/Detail/" + newestmember + "\">" + newestmember + "</a>"]</span><br />
+    <span>@Localizer["lblCheckActive", OnlineUsersMiddleware.GetOnlineUsersCount()]</span><br />
 </div>
+@* There are currently 3019 topics and 0 active topics since you last visited.
+There are 415190 archived posts in 60256 archived topics.
+Please welcome our newest member anne2121212 *@

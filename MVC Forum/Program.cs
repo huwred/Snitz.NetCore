@@ -236,6 +236,7 @@ else
 app.UseHttpsRedirection();
 
 app.UseRequestLocalization(app.Services.GetRequiredService < IOptions < RequestLocalizationOptions >> ().Value);
+app.UseImageSharp();
 
 app.UseStaticFiles();
 app.UseRouting();
@@ -243,7 +244,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
-app.UseImageSharp();
 
 app.UseOnlineUsers();
 app.UseCookiePolicy();
