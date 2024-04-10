@@ -1,6 +1,7 @@
 ﻿using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Snitz.Events.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
@@ -114,20 +115,22 @@ namespace Snitz.Events.ViewComponents
 
             try
             {
-                ServicePointManager.Expect100Continue = true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                Uri myUri = new Uri("https://kayaposoft.com/enrico/json/v1.0?action=getSupportedCountries", UriKind.Absolute);
-                WebClient client = new WebClient();
+                using var client = new HttpClient();
+                using var httpClient = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Get,"https://kayaposoft.com/enrico/json/v1.0?action=getSupportedCountries");
+                var response = httpClient.Send(request);
+                using var reader = new StreamReader(response.Content.ReadAsStream());
+                var responseBody = reader.ReadToEnd();
 
-                var json = client.DownloadString(myUri); // new WebClient().DownloadString("https://kayaposoft.com/enrico/json/v1.0?action=getSupportedCountries");
-                var countries = JsonConvert.DeserializeObject<List<EnricoCountry>>(json);
-                return countries;
+                var result = JsonSerializer.Deserialize<EnricoCountry[]>(responseBody);
+                return result.ToList();
+
             }
             catch (Exception ex)
             {
                 EnricoCountry ec = new EnricoCountry();
-                ec.CountryCode = "eng";
-                ec.Name = "Error: " + ex.InnerException.Message;
+                ec.countryCode = "eng";
+                ec.fullName = "Error: " + ex.InnerException.Message;
                 return new List<EnricoCountry>() { ec };
 
             }

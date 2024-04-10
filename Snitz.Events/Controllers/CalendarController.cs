@@ -1,9 +1,10 @@
 ﻿using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using BbCodeFormatter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Snitz.Events.Models;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
@@ -131,8 +132,8 @@ public class CalendarController : Controller
             var eventList = from item in holidays
                 select new
                 {
-                    title = " " + item.Localname,
-                    start = new DateTime(item.Date.Year, item.Date.Month, item.Date.Day, 12, 0, 0).ToString("s"),
+                    title = " " + item.localName,
+                    start = new DateTime(item.date.year, item.date.month, item.date.day, 12, 0, 0).ToString("s"),
                     allDay = true,
                     editable = false,
                     url = "",
@@ -154,12 +155,12 @@ public class CalendarController : Controller
         var ctry = id.Split('|')[0];
         try
         {
-            var country = GetCountries().SingleOrDefault(c => c.CountryCode == ctry);
+            var country = GetCountries().SingleOrDefault(c => c.countryCode == ctry);
             if (country == null)
             {
                 throw new Exception("Invalid country code");
             }
-            return Json(country.Regions);
+            return Json(country.regions);
         }
         catch (Exception ex)
         {
@@ -225,14 +226,18 @@ public class CalendarController : Controller
         {
             var s = DateTime.Parse(start).ToString("dd-MM-yyyy");
             var e = DateTime.Parse(end).ToString("dd-MM-yyyy");
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            var json =
-                new WebClient().DownloadString(
-                    String.Format(
-                        "https://kayaposoft.com/enrico/json/v1.0/index.php?action=getPublicHolidaysForDateRange&fromDate={0}&toDate={1}&country={2}&region={3}",
-                        s, e, cReg[0], (cReg.Length > 1 ? cReg[1] : "")));
-            return JsonConvert.DeserializeObject<List<PublicHoliday>>(json);
+
+            using var httpClient = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get,string.Format(
+                "https://kayaposoft.com/enrico/json/v1.0/index.php?action=getPublicHolidaysForDateRange&fromDate={0}&toDate={1}&country={2}&region={3}",
+                s, e, cReg[0], (cReg.Length > 1 ? cReg[1] : "")));
+            var response = httpClient.Send(request);
+            using var reader = new StreamReader(response.Content.ReadAsStream());
+            var responseBody = reader.ReadToEnd();
+
+            var result =  JsonSerializer.Deserialize<PublicHoliday[]>(responseBody);
+            return result.ToList();
+
         }
         catch (Exception)
         {
@@ -245,20 +250,28 @@ public class CalendarController : Controller
     {
         try
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            Uri myUri = new Uri("https://kayaposoft.com/enrico/json/v1.0?action=getSupportedCountries", UriKind.Absolute);
-            WebClient client = new WebClient();
-
-            var json = client.DownloadString(myUri); // new WebClient().DownloadString("https://kayaposoft.com/enrico/json/v1.0?action=getSupportedCountries");
-            var countries = JsonConvert.DeserializeObject<List<EnricoCountry>>(json);
+            using var httpClient = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://kayaposoft.com/enrico/json/v1.0?action=getSupportedCountries");
+            var response = httpClient.Send(request);
+            using var reader = new StreamReader(response.Content.ReadAsStream());
+            var responseBody = reader.ReadToEnd();
+            var countries = JsonSerializer.Deserialize<List<EnricoCountry>>(responseBody);
             return countries;
+
+            //ServicePointManager.Expect100Continue = true;
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            //Uri myUri = new Uri("https://kayaposoft.com/enrico/json/v1.0?action=getSupportedCountries", UriKind.Absolute);
+            //WebClient client = new WebClient();
+
+            //var json = client.DownloadString(myUri); // new WebClient().DownloadString("https://kayaposoft.com/enrico/json/v1.0?action=getSupportedCountries");
+            //var countries = JsonSerializer.Deserialize<List<EnricoCountry>>(json);
+            //return countries;
         }
         catch (Exception ex)
         {
             EnricoCountry ec = new EnricoCountry();
-            ec.CountryCode = "eng";
-            ec.Name = "Error: " + ex.InnerException.Message;
+            ec.countryCode = "eng";
+            ec.fullName = "Error: " + ex.InnerException.Message;
             return new List<EnricoCountry>() { ec };
 
         }

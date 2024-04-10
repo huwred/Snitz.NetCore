@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Snitz.Events.Models;
 using SnitzCore.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using SnitzCore.Data.Models;
 
 namespace Snitz.Events.Controllers;
 
@@ -16,14 +18,16 @@ public class EventsController : Controller
     private readonly EventContext _context;
     private readonly ICodeProcessor _bbCodeProcessor;
     private readonly IMember _memberService;
+    private readonly string _tableprefix;
 
     public EventsController(ISnitzConfig config,EventContext dbContext,ICodeProcessor BbCodeProcessor,
-        IMember memberService)
+        IMember memberService,IOptions<SnitzForums> options)
     {
         _config = config;
         _context = dbContext;
         _bbCodeProcessor = BbCodeProcessor;
         _memberService = memberService;
+        _tableprefix = options.Value.forumTablePrefix;
     }
 
     [HttpPost]
@@ -55,7 +59,7 @@ public class EventsController : Controller
     {
         try
         {
-            _context.Database.ExecuteSql($"UPDATE FORUM_FORUM SET F_ALLOWEVENTS = {Convert.ToInt32(form["Allowed"])} WHERE FORUM_ID={Convert.ToInt32(form["ForumId"])}");
+            _context.Database.ExecuteSql($"UPDATE {_tableprefix}FORUM SET F_ALLOWEVENTS = {Convert.ToInt32(form["Allowed"])} WHERE FORUM_ID={Convert.ToInt32(form["ForumId"])}");
             return Content("Config updated.");
         }
         catch (Exception e)

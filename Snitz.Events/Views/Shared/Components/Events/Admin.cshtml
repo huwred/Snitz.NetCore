@@ -51,7 +51,7 @@
                         <div class="row mb-3">
                             <div class="col-3">
                                 @Html.DropDownList("STRCALCOUNTRY",
-                                         new SelectList(Model.Countries, "CountryCode", "Name", Model.CountryCode),
+                                         new SelectList(Model.Countries, "countryCode", "fullName", Model.CountryCode),
                                          "Select Country",
                                          new { @class = "form-select" })
                             </div>
