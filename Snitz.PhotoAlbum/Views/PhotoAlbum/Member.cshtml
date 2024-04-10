@@ -1,4 +1,5 @@
 ﻿@using SnitzCore.Data.Extensions
+@using SnitzCore.Service.Extensions
 @model List<Snitz.PhotoAlbum.Models.AlbumImage>
 
 @section MetaData
@@ -101,7 +102,7 @@
                     <figure class="figure">
                         <album-image data-id="@image.Id" org-width="@image.Width" org-height="@image.Height" width="300" height="225" src="@($"{image.Timestamp}_{image.Location}")" class="figure-img" description="@image.Description"></album-image>
                         <div class="overlay">
-                            <div class="text">@image.CommonName<br />@image.ScientificName<br />Posted on: @image.Timestamp.FromForumDateStr().ToLocalTime().ToShortDateString() <br />@image.Width x @image.Height</div>
+                            <div class="text">@image.CommonName<br />@image.ScientificName<br />Posted on: @image.Timestamp.FromForumDateStr().ToForumDateDisplay() <br />@image.Width x @image.Height</div>
                         </div>
                         <figcaption class="figure-caption form-text">@image.Description&nbsp;</figcaption>
                     </figure>
