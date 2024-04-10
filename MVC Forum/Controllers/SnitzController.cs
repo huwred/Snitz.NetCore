@@ -31,7 +31,7 @@ namespace MVCForum.Controllers
 
         public JsonResult AutoCompleteUsername(string term)
         {
-            IEnumerable<string> result = _memberService.GetAll().Where(m=>m.Status == 1).Where(r => r!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
+            IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(m=>m.Status == 1).Where(r => r!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
 
             return Json(result);
         }

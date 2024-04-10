@@ -72,8 +72,10 @@ namespace MVCForum.Controllers
                     pagesize = _pageSize;
                 }
             }
-            var totalCount = _memberService.GetAll().Count();
-            IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(pagesize, page);
+
+            var admin = User.IsInRole("Administrator");
+            var totalCount = _memberService.GetAll(admin).Count();
+            IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(admin, pagesize, page);
             var pageCount = (int)Math.Ceiling((double)totalCount / pagesize);
             
 

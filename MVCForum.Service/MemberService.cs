@@ -201,17 +201,14 @@ namespace SnitzCore.Service
             _dbContext.SaveChanges();
         }
 
-        public IEnumerable<Member> GetAll()
+        public IEnumerable<Member> GetAll(bool isadmin)
         {
-            return _dbContext.Members;
+            return isadmin ? _dbContext.Members : _dbContext.Members.Where(m => m.Status == 1);
         }
 
-        public IPagedList<Member> GetPagedMembers(int pagesize = 20, int page = 1)
+        public IPagedList<Member> GetPagedMembers(bool isadmin,int pagesize = 20, int page = 1)
         {
-            var members = _dbContext.Members.OrderByDescending(p => p.Posts);
-
-            return members.ToPagedList(page, pagesize);
-
+            return isadmin ? _dbContext.Members.OrderByDescending(p => p.Posts).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderByDescending(p => p.Posts).ToPagedList(page, pagesize);
         }
 
         public string? GetMemberName(int id)

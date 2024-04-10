@@ -242,7 +242,7 @@ namespace MVCForum.Controllers
         public JsonResult AutoCompleteUsername(string term)
         {
             _member = _memberService.GetMember(User);
-            IEnumerable<string> result = _memberService.GetAll().Where(r => r!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
+            IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(r => r!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
             var blocked = _pmService.GetBlocklist(_member!.Id).Select(l => l.BlockedName);
             result = result.Where(x => !blocked.Contains(x) && x != _member.Name);
             return Json(result);
