@@ -463,7 +463,7 @@ namespace Snitz.PhotoAlbum.Migrations
                     b.ToTable("FORUM_A_REPLY");
                 });
 
-            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedTopic", b =>
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1135,10 +1135,10 @@ namespace Snitz.PhotoAlbum.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasColumnName("M_LASTACTIVITY");
 
-                    b.Property<string>("Lastheredate")
+                    b.Property<string>("LastLogin")
                         .HasMaxLength(14)
                         .HasColumnType("nvarchar(14)")
-                        .HasColumnName("M_LASTHEREDATE");
+                        .HasColumnName("M_LastLogin");
 
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)
