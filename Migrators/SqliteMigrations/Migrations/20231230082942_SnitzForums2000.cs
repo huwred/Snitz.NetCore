@@ -173,7 +173,7 @@ namespace WebApplication1.Migrations
                     M_LEVEL = table.Column<short>(type: "INTEGER", nullable: false),
                     M_STATUS = table.Column<short>(type: "INTEGER", nullable: false),
                     M_POSTS = table.Column<int>(type: "INTEGER", nullable: false),
-                    M_LASTHEREDATE = table.Column<string>(type: "TEXT", maxLength: 14, nullable: true),
+                    M_LastLogin = table.Column<string>(type: "TEXT", maxLength: 14, nullable: true),
                     M_LASTPOSTDATE = table.Column<string>(type: "TEXT", maxLength: 14, nullable: true),
                     M_DATE = table.Column<string>(type: "TEXT", maxLength: 14, nullable: false),
                     M_FIRSTNAME = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
@@ -440,7 +440,7 @@ namespace WebApplication1.Migrations
 
             migrationBuilder.InsertData(
                 table: $"{_memberTablePrefix}MEMBERS",
-                columns: new[] { "MEMBER_ID", "M_AGE", "M_AIM", "M_ALLOWEMAIL", "M_BIO", "M_CITY", "M_COUNTRY", "M_DATE", "M_DEFAULT_VIEW", "M_DOB", "M_EMAIL", "M_FIRSTNAME", "M_HIDE_EMAIL", "M_HOBBIES", "M_HOMEPAGE", "M_ICQ", "M_IP", "M_KEY", "M_LAST_IP", "M_LASTHEREDATE", "M_LASTNAME", "M_LASTPOSTDATE", "M_LEVEL", "M_LINK1", "M_LINK2", "M_LNEWS", "M_MARSTATUS", "M_MSN", "M_NAME", "M_NEWEMAIL", "M_OCCUPATION", "M_PHOTO_URL", "M_POSTS", "M_PWKEY", "M_QUOTE", "M_RECEIVE_EMAIL", "M_SEX", "M_SHA256", "M_SIG_DEFAULT", "M_SIG", "M_STATE", "M_STATUS", "M_SUBSCRIPTION", "M_TITLE", "M_VIEW_SIG", "M_YAHOO" },
+                columns: new[] { "MEMBER_ID", "M_AGE", "M_AIM", "M_ALLOWEMAIL", "M_BIO", "M_CITY", "M_COUNTRY", "M_DATE", "M_DEFAULT_VIEW", "M_DOB", "M_EMAIL", "M_FIRSTNAME", "M_HIDE_EMAIL", "M_HOBBIES", "M_HOMEPAGE", "M_ICQ", "M_IP", "M_KEY", "M_LAST_IP", "M_LastLogin", "M_LASTNAME", "M_LASTPOSTDATE", "M_LEVEL", "M_LINK1", "M_LINK2", "M_LNEWS", "M_MARSTATUS", "M_MSN", "M_NAME", "M_NEWEMAIL", "M_OCCUPATION", "M_PHOTO_URL", "M_POSTS", "M_PWKEY", "M_QUOTE", "M_RECEIVE_EMAIL", "M_SEX", "M_SHA256", "M_SIG_DEFAULT", "M_SIG", "M_STATE", "M_STATUS", "M_SUBSCRIPTION", "M_TITLE", "M_VIEW_SIG", "M_YAHOO" },
                 values: new object[] { 1, null, null, (short)0, null, null, null, "20231230082941", 0, null, "xxxx@example.com", null, (short)0, null, null, null, null, null, null, null, null, null, (short)3, null, null, null, null, null, "Administrator", null, null, null, 0, null, null, (short)0, null, (short)0, (short)0, null, null, (short)1, (short)0, null, (short)0, null });
 
             migrationBuilder.InsertData(

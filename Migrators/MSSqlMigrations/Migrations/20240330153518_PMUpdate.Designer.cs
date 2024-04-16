@@ -610,7 +610,7 @@ namespace Migrations
                     b.ToTable("FORUM_A_REPLY");
                 });
 
-            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedTopic", b =>
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1247,10 +1247,10 @@ namespace Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasColumnName("M_LASTACTIVITY");
 
-                    b.Property<string>("Lastheredate")
+                    b.Property<string>("LastLogin")
                         .HasMaxLength(14)
                         .HasColumnType("nvarchar(14)")
-                        .HasColumnName("M_LASTHEREDATE");
+                        .HasColumnName("M_LastLogin");
 
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)
@@ -2164,7 +2164,7 @@ namespace Migrations
 
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedReply", b =>
                 {
-                    b.HasOne("SnitzCore.Data.Models.ArchivedTopic", null)
+                    b.HasOne("SnitzCore.Data.Models.ArchivedPost", null)
                         .WithMany("Replies")
                         .HasForeignKey("ArchivedTopicId");
 
@@ -2177,7 +2177,7 @@ namespace Migrations
                     b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedTopic", b =>
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
                 {
                     b.HasOne("SnitzCore.Data.Models.Category", "Category")
                         .WithMany()
@@ -2435,7 +2435,7 @@ namespace Migrations
                     b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedTopic", b =>
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
                 {
                     b.Navigation("Replies");
                 });

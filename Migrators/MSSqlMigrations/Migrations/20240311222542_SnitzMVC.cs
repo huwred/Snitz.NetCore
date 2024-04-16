@@ -271,7 +271,7 @@ namespace Migrations
                         M_BIO = table.Column<string>(type: "nvarchar(max)", nullable: true),
                         M_LINK1 = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                         M_LINK2 = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                        M_LASTHEREDATE = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
+                        M_LastLogin = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
                         M_LASTPOSTDATE = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
                         M_PRIVATEPROFILE = table.Column<short>(type: "smallint", nullable: false)
                     },

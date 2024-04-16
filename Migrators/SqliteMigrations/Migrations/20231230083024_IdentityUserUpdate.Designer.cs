@@ -292,7 +292,7 @@ namespace WebApplication1.Migrations
                     b.ToTable($"{_forumTablePrefix}A_REPLY");
                 });
 
-            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedTopic", b =>
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -840,10 +840,10 @@ namespace WebApplication1.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("M_LAST_IP");
 
-                    b.Property<string>("Lastheredate")
+                    b.Property<string>("LastLogin")
                         .HasMaxLength(14)
                         .HasColumnType("TEXT")
-                        .HasColumnName("M_LASTHEREDATE");
+                        .HasColumnName("M_LastLogin");
 
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)
