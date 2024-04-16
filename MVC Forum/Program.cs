@@ -73,9 +73,9 @@ builder.Services.AddDefaultIdentity<ForumUser>(options =>
     .AddDefaultTokenProviders()
     .AddTokenProvider<EmailConfirmationTokenProvider<ForumUser>>("emailconfirmation")
     .AddPasswordValidator<CustomPasswordValidator<ForumUser>>();
+
 builder.Services.AddScoped<IPasswordHasher<IdentityUser>, CustomPasswordHasher>();
 builder.Services.Configure<IdentityOptions>(builder.Configuration.GetSection(nameof(IdentityOptions)));
-
 builder.Services.ConfigureApplicationCookie(options =>
 {
     //Location for your Custom Access Denied Page
@@ -192,6 +192,12 @@ builder.Services.AddHangfire(configuration => configuration
     );
 builder.Services.AddHangfireServer();
 builder.Services.AddResponseCaching();
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.MaxAge = TimeSpan.FromDays(160);
+
+});
 
 var app = builder.Build();
 app.MigrateDatabase();
@@ -213,14 +219,15 @@ app.Use(async (ctx, next) =>
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseMigrationsEndPoint();
     app.UseDeveloperExceptionPage();
+    app.UseMigrationsEndPoint();
 
 }
 else
 {
     app.UseExceptionHandler("/error/handle-exception");
-    app.UseStatusCodePages(context => {
+    app.UseStatusCodePages(context =>
+    {
         var response = context.HttpContext.Response;
         if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
         {
@@ -229,7 +236,7 @@ else
         return Task.CompletedTask;
     });
     app.UseStatusCodePagesWithReExecute("/error/{0}");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    //The default HSTS value is 30 days.You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

@@ -27,6 +27,7 @@ namespace MVCForum.Controllers
             _snitzDbContext = dbContext;
             _httpContextAccessor = httpContextAccessor;
             _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
+
         }
 
         public JsonResult AutoCompleteUsername(string term)

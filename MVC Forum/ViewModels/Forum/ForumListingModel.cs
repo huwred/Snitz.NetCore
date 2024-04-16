@@ -32,6 +32,8 @@ namespace MVCForum.ViewModels.Forum
         public string? SortDir { get; set; }
         public int? LastPostReplyId { get; set; }
         public int Order { get; set; }
+
+        public int? ArchivedCount { get; set; }
     }
 
     public class ForumList{

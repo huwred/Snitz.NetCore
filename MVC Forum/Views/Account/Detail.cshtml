@@ -71,9 +71,9 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="Member!.Lastheredate" class="col-sm-3 col-form-label">@Localizer["ProfileLastVisit"]</label>
+                        <label asp-for="Member!.LastLogin" class="col-sm-3 col-form-label">@Localizer["ProfileLastVisit"]</label>
                         <div class="col-sm-9">
-                            <label class="form-label">@Model.Member?.Lastheredate.FromForumDateStr().ToForumDisplay()</label>
+                            <label class="form-label">@Model.Member?.LastLogin.FromForumDateStr().ToForumDisplay()</label>
                         </div>
                     </div>
                     <input asp-for="Member!.Id" type="hidden"/>

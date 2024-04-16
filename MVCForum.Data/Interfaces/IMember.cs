@@ -10,7 +10,7 @@ namespace SnitzCore.Data
     {
         Member? GetById(int? id);
         Task<Member?> GetById(ClaimsPrincipal user);
-        IPagedList<Member?> GetPagedMembers(bool isadmin,int pagesize, int page);
+        IPagedList<Member?> GetPagedMembers(bool isadmin,int pagesize, int page,string? sortcol,string? dir);
         string? GetMemberName(int id);
         IEnumerable<Member?> GetByEmail(string email);
         Member? GetByUsername(string username);
@@ -36,5 +36,6 @@ namespace SnitzCore.Data
         Task UpdatePostCount(int memberid);
         IEnumerable<int> ForumSubscriptions();
         IEnumerable<Member?> GetAll(bool isInRole);
+        IEnumerable<Member?>  GetRecent(int max);
     }
 }

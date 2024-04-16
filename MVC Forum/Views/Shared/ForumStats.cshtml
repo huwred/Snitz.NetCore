@@ -7,7 +7,7 @@
     ForumTotal Stats = SnitzService.Totals();
     var LastPost = SnitzService.LastPost();
     var lastpostdate = LastPost.LastPostDate?.FromForumDateStr();
-    var lastvisit = MemberService.Current()?.Lastheredate;
+    var lastvisit = MemberService.Current()?.LastLogin;
     var newestmember = SnitzService.NewestMember();
 }
 <div class="forum-info rounded mt-2">

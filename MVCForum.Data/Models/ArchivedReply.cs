@@ -17,7 +17,7 @@ public partial class ArchivedReply
     public int ForumId { get; set; }
 
     [Column("TOPIC_ID")]
-    public int PostId { get; set; }
+    public int ArchivedPostId { get; set; }
 
     [Column("R_MAIL")]
     public short Mail { get; set; }

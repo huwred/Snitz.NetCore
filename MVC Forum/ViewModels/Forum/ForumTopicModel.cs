@@ -16,6 +16,8 @@ namespace MVCForum.ViewModels.Forum
 
         public bool PasswordRequired { get; set; }
         public bool AccessDenied { get; set; }
+
+        public bool Archives {get; set; }
     }
 
     public class ActiveTopicModel

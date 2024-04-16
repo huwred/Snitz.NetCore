@@ -50,7 +50,7 @@
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
     <!--Topic Section-->
-    <topic-buttons text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" snitz-if="@SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 || @SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1 || @SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1" topic-print="@Model.Id" topic-email="@Model.Id" topic-share="@SnitzConfig.GetIntValue("STRSOCIALSHARE")"></topic-buttons>
+    <topic-buttons snitz-if="@(!Model.Archived)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" snitz-if="@SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 || @SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1 || @SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1" topic-print="@Model.Id" topic-email="@Model.Id" topic-share="@SnitzConfig.GetIntValue("STRSOCIALSHARE")"></topic-buttons>
     <div snitz-if="@SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (@SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && int.Parse(@pagenum) < 2)" class="card mb-2 topic-container bg-white">
         @{
             var answer = "";
@@ -88,7 +88,13 @@
         </div>
         <div snitz-if="@User.Identity.IsAuthenticated || @Model.Edited != null" class="card-footer text-dark">
             <span snitz-if="@SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && @Model.Edited != null" class="form-text">@Localizer["lblEditedBy", Model.EditedBy!, Model.Edited!]</span>
-            @await Component.InvokeAsync("PostControls", new { post = Model })
+                @if (!Model.Archived)
+                {
+                    @await Component.InvokeAsync("PostControls", new { post = Model })
+                    
+                }else{
+                    <span class="form-text">@Localizer["tipTopicArchived"]</span>
+                }
             <div snitz-if="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1" class="footer"><a href="" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a class="form-control-plaintext text-end" href="" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
         </div>
     </div>
@@ -100,8 +106,8 @@
         <div class="input-group">
             <span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span>
             <select class="form-control mb-2" id="sortdir" name="sortdir">
-                <option value="des" selected-val="@Model.SortDir">@Localizer["optNewest"]</option>
-                <option value="asc" selected-val="@Model.SortDir">@Localizer["optOldest"]</option>
+                <option value="des" selected-val="@Model.SortDir">@Localizer["optDesc"]</option>
+                <option value="asc" selected-val="@Model.SortDir">@Localizer["optAsc"]</option>
             </select>
             @if (SnitzConfig.GetValue("STRTOPICPAGESIZES", "") != "")
             {
@@ -168,7 +174,12 @@
                     </div>
                     <div snitz-if="@User.Identity.IsAuthenticated || @reply.Edited != null" class="card-footer text-dark">
                         <span snitz-if="@SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && @reply.Edited != null" class="form-text">@Localizer["lblEditedBy", reply.EditedBy!, reply.Edited!]</span>
-                            @await Component.InvokeAsync("PostControls", new { post = reply})
+                        @if(!Model.Archived)
+                        {
+                            @await Component.InvokeAsync("PostControls", new { post = reply})         
+                        }else{
+                            <span class="form-text">@Localizer["tipTopicArchived"]</span>
+                        }
                     </div>
                 </div>
             </div>
@@ -195,7 +206,7 @@ else
     <p snitz-if="!@User.Identity.IsAuthenticated && !Model.IsLocked" class="p-4">@Localizer["lblNoReplies"]</p>
 }
     <!--Reply Area-->
-    @if (SnitzConfig.GetIntValue("STRSHOWQUICKREPLY") == 1)
+    @if (SnitzConfig.GetIntValue("STRSHOWQUICKREPLY") == 1 && !Model.Archived)
     {
         <div snitz-if="!@Model.IsLocked" class="comment-area @replyClass mt-2" id="reply-area">
             <form asp-controller="Topic" asp-action="AddReply" class="needs-validation" id="QuickReply" novalidate>

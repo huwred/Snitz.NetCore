@@ -16,6 +16,7 @@
         clang = cultureInfo.TwoLetterISOLanguageName;
     }
     Context.Session.SetString("culture", clang);
+    MemberService.SetLastHere(User);
 }
 <!DOCTYPE html>
 <html lang="en">

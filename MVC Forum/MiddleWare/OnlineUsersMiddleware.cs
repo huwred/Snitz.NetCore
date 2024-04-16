@@ -10,7 +10,7 @@ namespace MVCForum.MiddleWare
 {
     public static class OnlineUsersMiddlewareExtensions
     {
-        public static void UseOnlineUsers(this IApplicationBuilder app, string cookieName = "UserGuid", int lastActivityMinutes = 20)
+        public static void UseOnlineUsers(this IApplicationBuilder app, string cookieName = "UserGuid", int lastActivityMinutes = 10)
         {
             app.UseMiddleware<OnlineUsersMiddleware>(cookieName, lastActivityMinutes);
         }

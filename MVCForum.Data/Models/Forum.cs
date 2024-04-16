@@ -113,5 +113,5 @@ public class Forum
     public virtual Category? Category { get; set; }
 
     public virtual IEnumerable<ForumModerator>? ForumModerators { get; set; }
-    //public virtual IEnumerable<ForumAllowedMember> ForumAllowedMembers { get; set; }
+    public virtual IEnumerable<ArchivedPost> ArchivedPosts { get; set; }
 }

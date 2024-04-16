@@ -29,7 +29,7 @@ namespace SnitzCore.Service
             return category;
         }
 
-        [OutputCache(Duration = 600)]
+        //[OutputCache(Duration = 600)]
         public IEnumerable<Category> GetAll()
         {
             var result = _dbContext.Categories.AsEnumerable();

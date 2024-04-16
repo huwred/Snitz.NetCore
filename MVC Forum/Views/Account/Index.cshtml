@@ -74,12 +74,12 @@
                 <thead>
                 <tr class="bg-dark">
                     <th>&nbsp;</th>
-                    <th>@Localizer["UserName"]</th>
+                    <th><a href="?sortCol=name">@Localizer["UserName"]</a></th>
                     <th>@Localizer["ProfileTitle"]</th>
                     <th>@Localizer["ProfilePosts"]</th>
                     <th>@Localizer["ProfileLastPost"]</th>
                     <th class="d-none d-md-table-cell">@Localizer["ProfileDate"]</th>
-                    <th class="d-none d-md-table-cell">@Localizer["ProfileLastVisit"]</th>
+                    <th class="d-none d-md-table-cell"><a href="?sortCol=lastvisit">@Localizer["ProfileLastVisit"]</a></th>
                     <th snitz-if="@userroles != null && @userroles.Contains("Administrator")" class="d-none d-md-table-cell">@Localizer["Email"]</th>
                     <th class="d-none d-md-table-cell">@Localizer["ProfileCountry"]</th>
                     <th snitz-if="@userroles != null && @userroles.Contains("Administrator")" class="d-none d-md-table-cell"></th>
@@ -91,7 +91,7 @@
                     var showlink = member.Member.Name != "n/a" && member.Member.Name != "zapped";
                     <tr>
                         <td class="user-icon">
-                            @if (member.LastHereDate != null && member.LastHereDate > DateTime.UtcNow.AddMinutes(-15))
+                            @if (member.LastLogin != null && member.LastLogin > DateTime.UtcNow.AddMinutes(-15))
                             {
                                 <div class="center text-success"><snitz-status-icon status="@member.Member.Status" title="@member.Title"></snitz-status-icon></div>
                             }
@@ -106,7 +106,7 @@
                         <td>@member.Member.Posts</td>
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>
                         <td class="d-none d-md-table-cell">@member.MemberSince?.Year</td>
-                            <td class="d-none d-md-table-cell">@member.LastHereDate?.ToForumDateDisplay()</td>
+                            <td class="d-none d-md-table-cell">@member.LastLogin?.ToForumDateDisplay()</td>
                         <td snitz-if="@userroles != null && @userroles.Contains("Administrator")" class="d-none d-md-table-cell">@member.Member.Email</td>
                         <td class="d-none d-md-table-cell">@member.Member.Country</td>
                         <td snitz-if="@userroles != null && @userroles.Contains("Administrator") "class="d-none d-md-table-cell user-icon">

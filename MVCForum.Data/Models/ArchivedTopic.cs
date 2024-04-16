@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SnitzCore.Data.Models;
 
 [SnitzTable("A_TOPICS", "FORUM")]
-public partial class ArchivedTopic
+public partial class ArchivedPost
 {
     [Column("TOPIC_ID")]
     public int Id { get; set; }
@@ -44,11 +44,11 @@ public partial class ArchivedTopic
 
     [Column("T_LAST_POST")]
     [StringLength(14)]
-    public string? LastPost { get; set; }
+    public string? LastPostDate { get; set; }
 
     [Column("T_DATE")]
     [StringLength(14)]
-    public string Date { get; set; } = null!;
+    public string Created { get; set; } = null!;
 
     //public int? LastPoster { get; set; }
 

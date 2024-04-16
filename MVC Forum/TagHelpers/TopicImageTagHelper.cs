@@ -88,7 +88,15 @@ namespace MVCForum.TagHelpers
             }
             else 
             {
-                output.Attributes.Add("title",$"No new posts{locked}{newposts}");
+                if (newclass)
+                {
+                    output.Attributes.Add("title",$"{locked}{newposts}");
+                }
+                else
+                {
+                    output.Attributes.Add("title",$"No new posts{locked}");
+                }
+                
                 output.AddClass("fa-folder-o",HtmlEncoder.Default);
             }
             if(newclass){output.AddClass("newposts",HtmlEncoder.Default);}

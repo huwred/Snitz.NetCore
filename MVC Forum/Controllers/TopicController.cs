@@ -65,11 +65,16 @@ namespace MVCForum.Controllers
             ViewBag.RequireAuth = false;
             if (User.Identity is { IsAuthenticated: true })
             {
-                _memberService.SetLastHere(User);
                 signedin = true;
             }
-            var haspoll = _postService.HasPoll(id);
             var post = _postService.GetTopic(id);
+            if(post == null)
+            {
+                ViewBag.Error = "No Topic Found with that ID";
+                return View("Error");
+            }            
+            var haspoll = _postService.HasPoll(id);
+
             bool passwordrequired = false;
             bool notallowed = false;
             bool ismoderator = User.IsInRole($"Forum_{post.ForumId}");
@@ -166,6 +171,120 @@ namespace MVCForum.Controllers
             };
 
             return View(model);
+        }
+        public IActionResult ARchived(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
+        {
+            bool signedin = false;
+            ViewBag.RequireAuth = false;
+            if (User.Identity is { IsAuthenticated: true })
+            {
+                signedin = true;
+            }
+            var post = _postService.GetArchivedTopic(id);
+            if(post == null)
+            {
+                ViewBag.Error = "No Topic Found with that ID";
+                return View("Error");
+            }            
+            var haspoll = false;
+
+            bool passwordrequired = false;
+            bool notallowed = false;
+            bool ismoderator = User.IsInRole($"Forum_{post.ForumId}");
+            bool isadministrator = User.IsInRole("Administrator");
+
+            notallowed = CheckAuthorisation(post.Forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
+            if (!isadministrator && passwordrequired)
+            {
+                var auth = _httpcontext.Session.GetString("Pforum_" + post.ForumId) == null ? "" : _httpcontext.Session.GetString("Pforum_" + post.ForumId);
+                if (auth != post.Forum.Password)
+                {
+                    ViewBag.RequireAuth = true;
+                }
+            }
+
+            if (post.ReplyCount > 0 || post.UnmoderatedReplies > 0)
+            {
+                post = _postService.GetArchivedTopicWithRelated(id);
+            }
+            if (!HttpContext.Session.Keys.Contains("TopicId_"+ id))
+            {
+                HttpContext.Session.SetInt32("TopicId_"+ id,1);
+                post.ViewCount += 1;
+                _postService.UpdateViewCount(post.Id);
+            }
+
+            if (HttpContext.Session.GetInt32("TopicPageSize") != null && pagesize == 0)
+            {
+                pagesize = HttpContext.Session.GetInt32("TopicPageSize").Value;
+            }
+            else if (pagesize == 0)
+            {
+                pagesize = 10;
+            }
+            HttpContext.Session.SetInt32("TopicPageSize",pagesize);
+
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
+            var catPage = new MvcBreadcrumbNode("", "Category", post.Category?.Name){ Parent = homePage,RouteValues = new{id=post.Category?.Id}};
+            var forumPage = new MvcBreadcrumbNode("Index", "Forum", post.Forum?.Title){ Parent = catPage,RouteValues = new{id=post.ForumId}};
+            var topicPage = new MvcBreadcrumbNode("Index", "Topic", post.Subject) { Parent = forumPage };
+            ViewData["BreadcrumbNode"] = topicPage;
+            
+            ViewData["Title"] = post.Subject;
+            var totalCount = post.Replies?.Count();
+            var pageCount = 1;
+            if (totalCount > 0)
+            {
+                pageCount = (int)Math.Ceiling((double)totalCount! / pagesize);
+            }
+
+            PagedList<ArchivedReply>? pagedReplies = PagedReplies(page, pagesize, sortdir, post);
+            //todo: if we have a replyid, is it in the current set, otherwise skip forwards
+            if (replyid.HasValue)
+            {
+                while (pagedReplies != null && pagedReplies.All(p => p.Id != replyid))
+                {
+                    page += 1;
+                    pagedReplies = PagedReplies(page, pagesize, sortdir, post);                    
+                }
+            }
+
+            IEnumerable<PostReplyModel>? replies = null;
+            if (pagedReplies != null)
+            {
+                replies = BuildPostReplies(pagedReplies);
+
+            }
+            var model = new PostIndexModel()
+            {
+                Id = post.Id,
+                Title = post.Subject,
+                Author = post.Member!,
+                AuthorId = post.Member!.Id,
+                ShowSig = post.Sig == 1,
+                Views = post.ViewCount,
+                Status = post.Status,
+                IsLocked = post.Status == 0 || post.Forum?.Status == 0,
+                IsSticky = post.IsSticky == 1,
+                HasPoll = haspoll,
+                Answered = false,
+                //AuthorRating = post.User?.Rating ?? 0,
+                AuthorName = post.Member?.Name ?? "Unknown",
+                Created = post.Created.FromForumDateStr(),
+                Content = post.Message,
+                Replies = replies,
+                ForumId = post.Forum!.Id,
+                ForumName = post.Forum.Title,
+                PageNum = page,
+                PageCount = pageCount,
+                PageSize = pagesize,
+                SortDir = sortdir,
+                Edited = post.LastEdit?.FromForumDateStr(),
+                EditedBy = post.LastEditby == null ? "" : _memberService.GetMemberName(post.LastEditby.Value),
+                Archived = true
+            };
+
+            return View("Index",model);
         }
 
         [Authorize]
@@ -773,7 +892,7 @@ namespace MVCForum.Controllers
                     HasPoll = _postService.HasPoll(topic.Id),
                     //AuthorRating = post.User?.Rating ?? 0,
                     AuthorName = topic.Member?.Name ?? "Unknown",
-                    Created = topic.Date.FromForumDateStr(),
+                    Created = topic.Created.FromForumDateStr(),
                     Content = topic.Message,
                     Replies = pagedReplies != null ? BuildPostReplies(pagedReplies) : null,
                     ForumId = topic.Forum!.Id,
@@ -1261,7 +1380,7 @@ namespace MVCForum.Controllers
                 : new PagedList<PostReply>(post?.Replies?.OrderByDescending(r => r.Created), page, pagesize);
             return pagedReplies;
         }
-        private PagedList<ArchivedReply>? PagedReplies(int page, int pagesize, string sortdir, ArchivedTopic post)
+        private PagedList<ArchivedReply>? PagedReplies(int page, int pagesize, string sortdir, ArchivedPost post)
         {
             if(post.ReplyCount < 1) return null;
             var pagedReplies = sortdir == "asc"

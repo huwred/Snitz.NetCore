@@ -41,11 +41,6 @@ namespace MVCForum.Controllers
         //[ResponseCache(VaryByHeader = "User-Agent", Duration = 30,VaryByQueryKeys = new []{"*"})]
         public IActionResult Index(int id)
         {
-            if (User.Identity is { IsAuthenticated: true })
-            {
-                _memberService.SetLastHere(User);
-            }
-
             var categories = _categoryService.GetAll().OrderBy(c=>c.Sort).ToList();
             var forums = _forumService.GetAll().Select(forum => new ForumListingModel()
             {
@@ -71,6 +66,7 @@ namespace MVCForum.Controllers
                 Order = forum.Order,
                 CategorySubscription = (CategorySubscription)forum.Category.Subscription,
                 ForumSubscription = (ForumSubscription)forum.Subscription,
+                ArchivedCount = forum.ArchivedTopics
                 //Polls = forum.Polls
                 
             });
@@ -236,7 +232,8 @@ namespace MVCForum.Controllers
                 CategoryId = forum.CategoryId,
                 Status = forum.Status,
                 ForumModeration = forum.Moderation,
-                Polls = forum.Polls
+                Polls = forum.Polls,
+                ArchivedCount = forum.ArchivedTopics
                 //ImageUrl = forum.ImageUrl
             };
         }

@@ -292,14 +292,14 @@ namespace SnitzCore.Service
                 .Include(p=>p.LastPostAuthor);
         }
 
-        public Post GetTopic(int id)
+        public Post? GetTopic(int id)
         {
             var post = _dbContext.Posts
                 .AsNoTracking()
                 .Include(p => p.Category)
                 .Include(p => p.Forum)
                 .Include(p => p.Member)
-                .Single(p => p.Id == id);
+                .SingleOrDefault(p => p.Id == id);
             return post;
         }
         public Post GetTopicForUpdate(int id)
@@ -309,7 +309,7 @@ namespace SnitzCore.Service
                 .Single(p => p.Id == id);
             return post; 
         }
-        public ArchivedTopic GetArchivedTopic(int id)
+        public ArchivedPost GetArchivedTopic(int id)
         {
             var post = _dbContext.ArchivedTopics
                 .AsNoTracking()
@@ -335,11 +335,11 @@ namespace SnitzCore.Service
 
             return post;
         }
-        public ArchivedTopic GetArchivedTopicWithRelated(int id)
+        public ArchivedPost GetArchivedTopicWithRelated(int id)
         {
 
             var post = _dbContext.ArchivedTopics.Where(p => p.Id == id)
-                .AsNoTrackingWithIdentityResolution()
+                .AsNoTracking()
                 .Include(p => p.Member).AsNoTracking()
                 .Include(p => p.LastPostAuthor).AsNoTracking()
                 .Include(p => p.Category).AsNoTracking()

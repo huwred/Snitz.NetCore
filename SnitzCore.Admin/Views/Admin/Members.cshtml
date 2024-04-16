@@ -231,16 +231,16 @@
             function (e) {
                 $('[id^=result]').html('');
                 if (e.target.id === "v-pills-ranking-tab") {
-                    $('#member-ranking').load('/SnitzConfig/RankingConfig/' + $(this).val(), function () {});
+                    $('#member-ranking').load(SnitzVars.baseUrl + '/SnitzConfig/RankingConfig/' + $(this).val(), function () {});
                 }
                 if (e.target.id === "v-pills-roles-tab") {
-                    $('#member-roles').load('/Admin/ManageRoles/?role=' + $(this).val(), function () {});
+                    $('#member-roles').load(SnitzVars.baseUrl + '/Admin/ManageRoles/?role=' + $(this).val(), function () { });
                 }
                 if (e.target.id === "v-pills-pending-tab") {
-                    $('#member-pending').load('/Admin/PendingMembers/', function () {});
+                    $('#member-pending').load(SnitzVars.baseUrl + '/Admin/PendingMembers/', function () { });
                 }
                 if (e.target.id === "v-pills-subscriptions-tab") {
-                    $('#member-subscriptions').load('/Admin/ManageSubscriptions/', function () { });
+                    $('#member-subscriptions').load(SnitzVars.baseUrl + '/Admin/ManageSubscriptions/', function () { });
                 }
             });
         $('#myModal').on('show',
@@ -249,7 +249,7 @@
                     removeBtn = $(this).find('.danger');
             });
         $(document).on("change", "#filter-subs", function() {
-            $('#member-subscriptions').load('/Admin/ManageSubscriptions/' + $(this).val(), function () { });
+            $('#member-subscriptions').load(SnitzVars.baseUrl + '/Admin/ManageSubscriptions/' + $(this).val(), function () { });
         });
         $(document).on('click','.confirm-delete', function(e) {
             e.preventDefault();

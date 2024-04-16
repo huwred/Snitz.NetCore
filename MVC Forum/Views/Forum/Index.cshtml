@@ -161,7 +161,7 @@
             <div class="table-head">
                 <div class="status rounded-2">
 
-                    @if (Model.Forum.ForumSubscription == ForumSubscription.ForumSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
+                    @if (!Model.Archives && Model.Forum.ForumSubscription == ForumSubscription.ForumSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
                     {
                         if (subscriptions != null && subscriptions.Where(s => s.ForumId == Model.Forum.Id && s.PostId == 0).Select(s => s.ForumId).Any())
                         {
@@ -180,6 +180,7 @@
             </div>
             @{
                 ViewData["ActiveTopics"] = false;
+                ViewData["Archives"] = Model.Archives;
             }
             <!--Sticky Topics-->
             @if (Model.StickyPosts!.Any())

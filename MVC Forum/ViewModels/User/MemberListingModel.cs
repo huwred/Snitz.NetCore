@@ -6,7 +6,7 @@ namespace MVCForum.ViewModels.User
     {
         public int Id { get; set; }
 
-        public DateTime? LastHereDate { get; set; }
+        public DateTime? LastLogin { get; set; }
 
         public string? Title { get; set; }
         public DateTime? LastPost { get; set; }

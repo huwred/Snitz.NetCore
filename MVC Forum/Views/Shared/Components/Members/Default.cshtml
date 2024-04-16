@@ -1,0 +1,12 @@
+﻿@model List<Member>
+@using Microsoft.AspNetCore.Identity
+@using SnitzCore.Data.Extensions;
+@inject UserManager<ForumUser> userManager
+
+<ul class="list-unstyled">
+@foreach(var member in Model)
+{
+
+        <li><a href="~/Account/Detail/@member.Name" title="@Localizer["tipViewProfile"]">@member.Name</a> (<snitz-datetime datetime="@member.LastLogin?.FromForumDateStr()"></snitz-datetime>) - <snitz-datetime datetime="@member.Lastactivity.FromForumDateStr()"></snitz-datetime></li>
+}
+</ul>

@@ -8,7 +8,7 @@
     var lastvisit = DateTime.UtcNow;
     if (User.Identity!.IsAuthenticated)
     {
-        lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.Lastheredate.FromForumDateStr();
+        lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.LastLogin.FromForumDateStr();
     }
 }
 

@@ -6,7 +6,6 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
@@ -14,9 +13,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.OutputCaching;
 using X.PagedList;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using Microsoft.Extensions.Options;
 
 namespace SnitzCore.Service
@@ -184,22 +181,25 @@ namespace SnitzCore.Service
 
         public void SetLastHere(ClaimsPrincipal user)
         {
-            if (user.Identity is { IsAuthenticated: true })
+            if (user.Identity == null || !user.Identity.IsAuthenticated)
             {
-                var member = _dbContext.Members.SingleOrDefault(m=>m.Name == user.Identity.Name);
-                if (member != null)
-                {
-                    var checkdate = member.Lastactivity != null ? DateTime.ParseExact(member.Lastactivity,"yyyyMMddHHmmss",CultureInfo.CurrentCulture) : DateTime.MinValue;
-                    if (checkdate < DateTime.UtcNow.AddMinutes(-10))
-                    {
-                        member.Lastheredate = member.Lastactivity;
-                        if (member.Lastheredate != null) _cookie.SetLastVisitCookie(member.Lastheredate);
-                    }
-                    member.Lastactivity = DateTime.UtcNow.ToForumDateStr();
-                    member.LastIp = _contextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
-                    _dbContext.SaveChanges();
-                }
+                return;
             }
+            var member = _dbContext.Members.SingleOrDefault(m=>m.Name == user.Identity.Name);
+            if (member == null)
+            {
+                return;
+            }
+            //if there has been no activity for 10 minutes, reset the last login (LastLogin) date
+            if (member.Lastactivity.FromForumDateStr().AddMinutes(20) < DateTime.UtcNow)
+            {
+                member.LastLogin = member.Lastactivity;
+                if (member.LastLogin != null) _cookie.SetLastVisitCookie(member.LastLogin);
+                member.LastIp = _contextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            }            
+            member.Lastactivity = DateTime.UtcNow.ToForumDateStr();
+            _dbContext.Members.Update(member);
+            _dbContext.SaveChanges();
         }
 
         public void Delete(Member newmember)
@@ -213,8 +213,32 @@ namespace SnitzCore.Service
             return isadmin ? _dbContext.Members : _dbContext.Members.Where(m => m.Status == 1);
         }
 
-        public IPagedList<Member> GetPagedMembers(bool isadmin,int pagesize = 20, int page = 1)
+        public IPagedList<Member> GetPagedMembers(bool isadmin,int pagesize = 20, int page = 1,string? sortcol = null,string? dir = "asc")
         {
+            if (sortcol != null)
+            {
+                switch (sortcol)
+                {
+                    case "name" :
+                        switch (dir)
+                        {
+                            case "asc" :
+                                return isadmin ? _dbContext.Members.OrderBy(p => p.Name).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderBy(p => p.Name).ToPagedList(page, pagesize);
+                            default :
+                                return isadmin ? _dbContext.Members.OrderByDescending(p => p.Name).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderByDescending(p => p.Name).ToPagedList(page, pagesize);
+                        }
+                    case "lastvisit" :
+                        switch (dir)
+                        {
+                            case "asc" :
+                                return isadmin ? _dbContext.Members.OrderBy(p => p.LastLogin).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderBy(p => p.LastLogin).ToPagedList(page, pagesize);
+                            default :
+                                return isadmin ? _dbContext.Members.OrderByDescending(p => p.LastLogin).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderByDescending(p => p.LastLogin).ToPagedList(page, pagesize);
+                        }
+
+
+                }
+            }
             return isadmin ? _dbContext.Members.OrderByDescending(p => p.Posts).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderByDescending(p => p.Posts).ToPagedList(page, pagesize);
         }
 
@@ -370,6 +394,11 @@ namespace SnitzCore.Service
             }
 
             return new List<int>();
+        }
+
+        public IEnumerable<Member?> GetRecent(int max)
+        {
+            return _dbContext.Members.OrderByDescending(m=>m.Lastactivity).Take(max);
         }
     }
 }

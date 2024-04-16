@@ -9,5 +9,6 @@ namespace MVCForum.ViewModels.Forum
         public IEnumerable<ForumListingModel>? ForumList { get; set; }
         public IEnumerable<PostListingModel>? LatestPosts { get; set; }
         public IEnumerable<SnitzCore.Data.Models.Category> Categories { get; internal set; }
+
     }
 }

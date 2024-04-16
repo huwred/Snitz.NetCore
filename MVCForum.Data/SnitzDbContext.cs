@@ -66,7 +66,7 @@ namespace SnitzCore.Data
             modelBuilder.Entity<Post>();
             modelBuilder.Entity<PostReply>();
             modelBuilder.Entity<MemberSubscription>();
-            modelBuilder.Entity<ArchivedTopic>();
+            modelBuilder.Entity<ArchivedPost>();
             modelBuilder.Entity<ArchivedReply>();
 
             modelBuilder.Entity<Member>();
@@ -108,7 +108,7 @@ namespace SnitzCore.Data
         public DbSet<PostReply> Replies { get; set; }
 
         public DbSet<ArchivedReply> ArchivedPosts { get; set; }
-        public DbSet<ArchivedTopic> ArchivedTopics { get; set; }
+        public DbSet<ArchivedPost> ArchivedTopics { get; set; }
         public DbSet<Badword> Badwords { get; set; }
         public DbSet<ForumAllowedMember> ForumAllowedMembers { get; set; }
         public DbSet<ForumModerator> ForumModerator { get; set; }

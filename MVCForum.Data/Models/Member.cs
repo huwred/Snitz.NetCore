@@ -41,7 +41,7 @@ public partial class Member
     [Column("M_LASTHEREDATE")]
     [StringLength(14)]
     [ProfileDisplay("Last logged in",SystemField = true)]
-    public string? Lastheredate { get; set; }
+    public string? LastLogin { get; set; }
 
     [Column("M_LASTPOSTDATE")]
     [StringLength(14)]

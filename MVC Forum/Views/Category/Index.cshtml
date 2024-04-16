@@ -83,13 +83,14 @@
                                     weblinkclass = "subforum-weblink";
                                 }
                                 <div class="subforum-row @weblinkclass ">
-                                    <div class="subforum-icon subforum-column center">
+                                    <div class="subforum-icon subforum-column text-center">
                                         <snitz-forum-icon is-administrator="@User.IsInRole("Administrator")" forum-id="@forum.Id" status="@forum.Status" forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
                                         @if (User.IsInRole("Administrator") && forum.ForumType is ForumType.WebLink)
                                         {
                                             <br />
                                             <i class="fa fa-trash weblink-del" data-id="@forum.Id"></i>
                                         }
+
                                     </div>
                                     <div class="subforum-description subforum-column">
                                         @if (forum.ForumType == ForumType.WebLink)
@@ -98,7 +99,12 @@
                                         }
                                         else
                                         {
-                                            <h4><a href="~/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
+                                            <h4><a href="~/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a>
+                                            @if (forum.ArchivedCount > 0)
+                                            {
+                                                    <a href="~/Forum/Archived/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="@Localizer["tipViewArchive"]"><i class="fa fa-archive text-secondary"></i></a>
+                                                
+                                            }</h4>
                                         }
                                         <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
                                         @if (forum.ForumModeration != Moderation.UnModerated )
@@ -109,6 +115,7 @@
                                         {
                                             <p class="form-text mt-2 fst-italic">@Localizer[$"Subscription_{forum.ForumSubscription}"]</p>
                                         }
+
                                     </div>
                                     @if (forum.ForumType != ForumType.WebLink)
                                     {

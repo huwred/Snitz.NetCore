@@ -61,45 +61,21 @@
                 <div class="mb-3">
                     <label asp-for="Terms" class="form-label">@Localizer["lblKeywords"]</label>
                     <input asp-for="Terms" placeholder="@Localizer["plhSearchTerm"]" type="text" class="form-control" aria-describedby="textHelpBlock">
-                    @if (SnitzConfig.GetIntValue("INTFULLTEXT") == 1)
+@*                     @if (SnitzConfig.GetIntValue("INTFULLTEXT") == 1)
                     {
                         <span id="textHelpBlock" class="form-text text-muted">@Localizer["fulltextSearch",allterms,anyterms]</span>
-                    }
+                    } *@
                     <div class="invalid-feedback">@Localizer["PropertyRequired",""]</div>
                 </div>
                 <div class="mb-3">
                     @foreach (SearchFor c in Enum.GetValues(typeof(SearchFor)).OfType<SearchFor>())
-                        {
-                            var displayName = c.GetAttribute<DisplayAttribute>()!.Name;
-                            <div class="form-check">
-                                <input asp-for="SearchFor" type="radio" class="form-check-input" value="@((int)c)" checked="@(c == Model.SearchFor)">
-                                <label asp-for="SearchFor" class="form-check-label">@Localizer[displayName]</label>
-                            </div>
-                        }
-                </div>
-                <div class="mb-3">
-                    <label for="UserName" class="form-label">@Localizer["Search_Member"]</label>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1"><i class="fa fa-address-book-o"></i></span>
-                        <input id="UserName" name="UserName" placeholder="@Localizer["plhUsername"]" type="text" aria-describedby="text1HelpBlock" class="form-control">
-                    </div>
-                    <span id="text1HelpBlock" class="form-text text-muted">@Localizer["usernameSearch"]</span>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-12 col-md-6">
-                        <label for="ddlSearchCategory" class="form-label">@Localizer["Search_Category"]</label>
-                        <select id="ddlSearchCategory" name="SearchCategory" asp-items="Model.Categories" aria-describedby="selectHelpBlock" class="form-select">
-                            <option value="0">Please select</option>
-                        </select>
-                        <span id="selectHelpBlock" class="form-text text-muted">@Localizer["Search_CatDesc"]</span>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label for="SearchForums" class="form-label">@Localizer["Search_Forum"]</label>
-                        <select multiple="multiple" id="SearchForums" name="SearchForums" asp-items="Model.Forums" aria-describedby="select1HelpBlock" class="form-select">
-                            <option value="">@Localizer["mnuForumAll"]</option>
-                        </select>
-                        <span id="select1HelpBlock" class="form-text text-muted">@Localizer["Search_ForumDesc"]</span>
-                    </div>
+                    {
+                        var displayName = c.GetAttribute<DisplayAttribute>()!.Name;
+                        <div class="form-check">
+                            <input asp-for="SearchFor" type="radio" class="form-check-input" value="@((int)c)" checked="@(c == Model.SearchFor)">
+                            <label asp-for="SearchFor" class="form-check-label">@Localizer[displayName]</label>
+                        </div>
+                    }
                 </div>
                 <div class="row mb-3">
                     <div class="col-12 col-md-6">
@@ -115,9 +91,33 @@
                     </div>
                 </div>
                 <div class="mb-3">
+                    <label for="UserName" class="form-label">@Localizer["Search_Member"]</label>
+                    <div class="input-group">
+                        <span class="input-group-text" id="basic-addon1"><i class="fa fa-address-book-o"></i></span>
+                        <input id="UserName" name="UserName" placeholder="@Localizer["plhUsername"]" type="text" aria-describedby="text1HelpBlock" class="form-control">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6">
+                        <label for="ddlSearchCategory" class="form-label">@Localizer["Search_Category"]</label>
+                        <select id="ddlSearchCategory" name="SearchCategory" asp-items="Model.Categories" aria-describedby="selectHelpBlock" class="form-select">
+                            <option value="0">All</option>
+                        </select>
+                        <span id="selectHelpBlock" class="form-text text-muted">@Localizer["Search_CatDesc"]</span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="SearchForums" class="form-label">@Localizer["Search_Forum"]</label>
+                        <select multiple="multiple" id="SearchForums" name="SearchForums" asp-items="Model.Forums" aria-describedby="select1HelpBlock" class="form-select">
+                            <option value="" selected>@Localizer["mnuForumAll"]</option>
+                        </select>
+                        <span id="select1HelpBlock" class="form-text text-muted">@Localizer["Search_ForumDesc"]</span>
+                    </div>
+                </div>
+
+                <div class="mb-3" >
                     <label class="form-label">@Localizer["Search_Archive"]</label>
                     <div class="form-check">
-                        <input asp-for="SearchArchives" id="SearchArchivesOn" type="radio" class="form-check-input" value="true" aria-describedby="radio1HelpBlock">
+                        <input asp-for="SearchArchives" id="SearchArchivesOn" type="radio" class="form-check-input" value="true" aria-describedby="radio1HelpBlock" disabled>
                         <label for="SearchArchivesOn" class="form-check-label">@Localizer["lblYes"]</label>
                     </div>
                     <div class="form-check">

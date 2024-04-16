@@ -27,5 +27,6 @@ namespace MVCForum.ViewModels.Post
         public int Status { get; set; }
 
         public bool HasPoll { get; set; }
+        public bool Archived { get; internal set; }
     }
 }

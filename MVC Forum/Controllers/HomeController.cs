@@ -32,13 +32,10 @@ namespace MVCForum.Controllers
             _snitzcookie = snitzcookie;
         }
 
-        [ResponseCache(VaryByHeader = "User-Agent", Duration = 60)]
+        //[ResponseCache(VaryByHeader = "User-Agent", Duration = 60)]
         public IActionResult Index()
         {            
-            if (User.Identity is { IsAuthenticated: true })
-            {
-                _memberService.SetLastHere(User);
-            }
+
             try
             {
                 var model = BuildHomeIndexModel();
@@ -82,24 +79,6 @@ namespace MVCForum.Controllers
             };
         }
 
-        private ForumListingModel GetForumListingForPost(Post post)
-        {
-            var forum = post.Forum;
-
-            return new ForumListingModel
-            {
-                Id = forum!.Id,
-                Title = forum.Title,
-                AccessType = forum.Privateforums,
-                ForumType = (ForumType)forum.Type,
-                Url = forum.Url,
-                DefaultView = (DefaultDays)forum.Defaultdays,
-                ForumModeration = forum.Moderation,
-                Polls = forum.Polls
-                //ImageUrl = forum.ImageUrl
-            };
-        }
-
         public IActionResult Privacy()
         {
             return View();
@@ -108,7 +87,7 @@ namespace MVCForum.Controllers
         {
             return View();
         }
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

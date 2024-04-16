@@ -160,7 +160,7 @@ namespace SnitzCore.Service
         }
         public Forum Get(int id)
         {
-            return  _dbContext.Forums.AsNoTracking().First(f=>f.Id==id);
+            return  _dbContext.Forums.AsNoTracking().Include(f=>f.Category).First(f=>f.Id==id);
 
         }
         public Forum GetById(int id)
@@ -279,7 +279,6 @@ namespace SnitzCore.Service
             return _dbContext.Posts.Where(f => list.Contains(f.ForumId)).Select(p => p.Content);
 
         }
-        //[OutputCache(Duration = 3600)]
         public IEnumerable<MyViewTopic> FetchAllMyForumTopics(IEnumerable<int> forumids)
         {
             var result = _dbContext.Posts.AsNoTracking()
@@ -363,6 +362,11 @@ namespace SnitzCore.Service
                     _ = UpdateLastPost(forumId);
                 }
             }
+        }
+
+        public IEnumerable<ArchivedPost>? ArchivedPosts(int id)
+        {
+            return _dbContext.ArchivedTopics.AsNoTracking().Include(p=>p.Forum).Where(f=>f.ForumId == id).AsEnumerable();
         }
     }
 }

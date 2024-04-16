@@ -15,7 +15,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using MVCForum.Extensions;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Member;
 using MVCForum.ViewModels.User;
@@ -61,10 +63,7 @@ namespace MVCForum.Controllers
 
         public IActionResult Index(int pagesize,string? sortOrder,string? sortCol,string? initial, int page=1)
         {
-            if (User.Identity is { IsAuthenticated: true })
-            {
-                _memberService.SetLastHere(User);
-            }
+
             if (pagesize == 0)
             {
                 if (_pageSize > 0)
@@ -75,7 +74,7 @@ namespace MVCForum.Controllers
 
             var admin = User.IsInRole("Administrator");
             var totalCount = _memberService.GetAll(admin).Count();
-            IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(admin, pagesize, page);
+            IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(admin, pagesize, page,sortCol,"asc");
             var pageCount = (int)Math.Ceiling((double)totalCount / pagesize);
             
 
@@ -89,8 +88,8 @@ namespace MVCForum.Controllers
                     !string.IsNullOrEmpty(m.Lastpostdate)
                         ? m.Lastpostdate.FromForumDateStr()
                         : null,
-                LastHereDate = !string.IsNullOrEmpty(m.Lastheredate)
-                    ? m.Lastheredate.FromForumDateStr()
+                LastLogin = !string.IsNullOrEmpty(m.LastLogin)
+                    ? m.LastLogin.FromForumDateStr()
                     : null,
             });
             
@@ -310,14 +309,13 @@ namespace MVCForum.Controllers
             {
                 _logger.Warn($"Found {newIdentityUser.Email}");
                 await _signInManager.SignOutAsync();
-                
                 SignInResult result = await _signInManager.PasswordSignInAsync(newIdentityUser, login.Password, login.RememberMe, true);
                 if (result.Succeeded)
                 {
                     var currmember = _memberService.GetByUsername(login.Username);
                     if (currmember != null)
                     {
-                        currmember.Lastheredate = DateTime.UtcNow.ToForumDateStr();
+                        currmember.LastLogin = DateTime.UtcNow.ToForumDateStr();
                         currmember.LastIp = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
                         _memberService.Update(currmember);
                     }
@@ -562,8 +560,8 @@ namespace MVCForum.Controllers
                         !string.IsNullOrEmpty(m.Lastpostdate)
                             ? m.Lastpostdate.FromForumDateStr()
                             : null,
-                    LastHereDate = !string.IsNullOrEmpty(m.Lastheredate)
-                        ? m.Lastheredate.FromForumDateStr()
+                    LastLogin = !string.IsNullOrEmpty(m.LastLogin)
+                        ? m.LastLogin.FromForumDateStr()
                         : null,
                 });
                 var pageCount = (int)Math.Ceiling((double)totalCount / _pageSize);
@@ -592,7 +590,7 @@ namespace MVCForum.Controllers
                 var currmember = _memberService.GetByUsername(username);
                 if (currmember != null)
                 {
-                    currmember.Lastheredate = DateTime.UtcNow.ToForumDateStr();
+                    currmember.LastLogin = DateTime.UtcNow.ToForumDateStr();
                     currmember.Status = 1;
                     _memberService.Update(currmember);
                 }

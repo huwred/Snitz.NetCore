@@ -21,6 +21,8 @@
         answeredClass = "answered-overlay";
     }
     var subscriptions = MemberService.Current()?.Subscriptions;
+
+    bool archives = (bool)ViewData["Archives"];
 }
 <div class="table-row @answeredClass rounded-2 @moderatedClass">
 
@@ -32,6 +34,10 @@
         {
             <i class="fa fa-bar-chart"></i>
         }
+        else if (archives)
+        {
+            <i class="fa fa-archive"></i>
+        }
         else
         {
             <snitz-topic-icon answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
@@ -40,7 +46,8 @@
     <div class="subjects" style="z-index: 2">
         <div class="d-lg-flex flex-row bd-highlight mb-3">
             <div class="p-2 flex-grow-1 bd-highlight">
-                <a href="~/Topic/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a><br/>
+                <a snitz-if="@archives" href="~/Topic/Archived/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a>
+                <a snitz-if="@(!archives)" href="~/Topic/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a><br />
                 <span>
                     @Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model.AuthorId"></member-link>
                     @if ((bool)ViewData["ActiveTopics"])
@@ -65,7 +72,11 @@
                 }
             </div>
             <div class="d-md-flex  p-2 bd-highlight fs-6">
-                @await Component.InvokeAsync("PostControls", new { post = Model ,forlist = true})
+                @if (!archives)
+                {
+                    @await Component.InvokeAsync("PostControls", new { post = Model ,forlist = true})
+                    
+                }
             </div>
         </div>
     </div>

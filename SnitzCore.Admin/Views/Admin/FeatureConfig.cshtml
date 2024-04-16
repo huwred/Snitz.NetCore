@@ -377,7 +377,7 @@
         function populateRegions(country) {
             console.log(country);
             var subItems="";
-            $.getJSON("~/Calendar/GetRegions/", { id: country }, function (data) {
+            $.getJSON(SnitzVars.baseUrl + "/Calendar/GetRegions/", { id: country }, function (data) {
                 subItems = "";
                 $.each(data, function (index, item) {
                     if (item === '@SnitzConfig.GetValue("STRCALREGION")') {
