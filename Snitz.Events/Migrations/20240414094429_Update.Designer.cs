@@ -12,8 +12,8 @@ using Snitz.Events.Models;
 namespace Snitz.Events.Migrations
 {
     [DbContext(typeof(EventContext))]
-    [Migration("20240329093721_ForumUpdate")]
-    partial class ForumUpdate
+    [Migration("20240414094429_Update")]
+    partial class Update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,6 +95,8 @@ namespace Snitz.Events.Migrations
                     b.HasIndex("ClubId");
 
                     b.HasIndex("LocId");
+
+                    b.HasIndex("TopicId");
 
                     b.ToTable("CAL_EVENTS");
                 });
@@ -202,6 +204,209 @@ namespace Snitz.Events.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EVENT_SUBSCRIPTIONS");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("TOPIC_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AllowRating")
+                        .HasColumnType("int")
+                        .HasColumnName("T_ALLOW_RATING");
+
+                    b.Property<int?>("ArchiveFlag")
+                        .HasColumnType("int")
+                        .HasColumnName("T_ARCHIVE_FLAG");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int")
+                        .HasColumnName("CAT_ID");
+
+                    b.Property<string>("Created")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)")
+                        .HasColumnName("T_DATE");
+
+                    b.Property<int>("ForumId")
+                        .HasColumnType("int")
+                        .HasColumnName("FORUM_ID");
+
+                    b.Property<string>("Ip")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("T_IP");
+
+                    b.Property<short>("IsSticky")
+                        .HasColumnType("smallint")
+                        .HasColumnName("T_STICKY");
+
+                    b.Property<short>("Ispoll")
+                        .HasColumnType("smallint")
+                        .HasColumnName("T_ISPOLL");
+
+                    b.Property<string>("LastEdit")
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)")
+                        .HasColumnName("T_LAST_EDIT");
+
+                    b.Property<int?>("LastEditby")
+                        .HasColumnType("int")
+                        .HasColumnName("T_LAST_EDITBY");
+
+                    b.Property<int?>("LastPostAuthorId")
+                        .HasColumnType("int")
+                        .HasColumnName("T_LAST_POST_AUTHOR");
+
+                    b.Property<string>("LastPostDate")
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)")
+                        .HasColumnName("T_LAST_POST");
+
+                    b.Property<int?>("LastPostReplyId")
+                        .HasColumnType("int")
+                        .HasColumnName("T_LAST_POST_REPLY_ID");
+
+                    b.Property<short>("Mail")
+                        .HasColumnType("smallint")
+                        .HasColumnName("T_MAIL");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int")
+                        .HasColumnName("T_AUTHOR");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("T_MESSAGE");
+
+                    b.Property<short>("Pollstatus")
+                        .HasColumnType("smallint")
+                        .HasColumnName("T_POLLSTATUS");
+
+                    b.Property<int>("RatingTotal")
+                        .HasColumnType("int")
+                        .HasColumnName("T_RATING_TOTAL");
+
+                    b.Property<int>("RatingTotalCount")
+                        .HasColumnType("int")
+                        .HasColumnName("T_RATING_TOTAL_COUNT");
+
+                    b.Property<int>("ReplyCount")
+                        .HasColumnType("int")
+                        .HasColumnName("T_REPLIES");
+
+                    b.Property<short>("Sig")
+                        .HasColumnType("smallint")
+                        .HasColumnName("T_SIG");
+
+                    b.Property<short>("Status")
+                        .HasColumnType("smallint")
+                        .HasColumnName("T_STATUS");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("T_SUBJECT");
+
+                    b.Property<int>("UnmoderatedReplies")
+                        .HasColumnType("int")
+                        .HasColumnName("T_UREPLIES");
+
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("int")
+                        .HasColumnName("T_VIEW_COUNT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ForumId");
+
+                    b.HasIndex("LastPostAuthorId");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("FORUM_A_TOPICS");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedReply", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("REPLY_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int")
+                        .HasColumnName("CAT_ID");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("R_MESSAGE");
+
+                    b.Property<string>("Created")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)")
+                        .HasColumnName("R_DATE");
+
+                    b.Property<int>("ForumId")
+                        .HasColumnType("int")
+                        .HasColumnName("FORUM_ID");
+
+                    b.Property<string>("Ip")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("R_IP");
+
+                    b.Property<int?>("LastEditby")
+                        .HasColumnType("int")
+                        .HasColumnName("R_LAST_EDITBY");
+
+                    b.Property<string>("LastEdited")
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)")
+                        .HasColumnName("R_LAST_EDIT");
+
+                    b.Property<short>("Mail")
+                        .HasColumnType("smallint")
+                        .HasColumnName("R_MAIL");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int")
+                        .HasColumnName("R_AUTHOR");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int")
+                        .HasColumnName("TOPIC_ID");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int")
+                        .HasColumnName("R_RATING");
+
+                    b.Property<short>("Sig")
+                        .HasColumnType("smallint")
+                        .HasColumnName("R_SIG");
+
+                    b.Property<short>("Status")
+                        .HasColumnType("smallint")
+                        .HasColumnName("R_STATUS");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("FORUM_A_REPLY");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Category", b =>
@@ -508,15 +713,15 @@ namespace Snitz.Events.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_LAST_IP");
 
+                    b.Property<string>("LastLogin")
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)")
+                        .HasColumnName("M_LASTHEREDATE");
+
                     b.Property<string>("Lastactivity")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)")
                         .HasColumnName("M_LASTACTIVITY");
-
-                    b.Property<string>("LastLogin")
-                        .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
-                        .HasColumnName("M_LastLogin");
 
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)
@@ -928,6 +1133,12 @@ namespace Snitz.Events.Migrations
                         .WithMany()
                         .HasForeignKey("LocId");
 
+                    b.HasOne("SnitzCore.Data.Models.Post", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Author");
 
                     b.Navigation("Cat");
@@ -935,6 +1146,53 @@ namespace Snitz.Events.Migrations
                     b.Navigation("Club");
 
                     b.Navigation("Loc");
+
+                    b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Forum", "Forum")
+                        .WithMany("ArchivedPosts")
+                        .HasForeignKey("ForumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Member", "LastPostAuthor")
+                        .WithMany()
+                        .HasForeignKey("LastPostAuthorId");
+
+                    b.HasOne("SnitzCore.Data.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Forum");
+
+                    b.Navigation("LastPostAuthor");
+
+                    b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedReply", b =>
+                {
+
+                    b.HasOne("SnitzCore.Data.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Forum", b =>
@@ -1052,6 +1310,11 @@ namespace Snitz.Events.Migrations
                     b.Navigation("Topic");
                 });
 
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
+                {
+                    b.Navigation("Replies");
+                });
+
             modelBuilder.Entity("SnitzCore.Data.Models.Category", b =>
                 {
                     b.Navigation("Forums");
@@ -1059,6 +1322,8 @@ namespace Snitz.Events.Migrations
 
             modelBuilder.Entity("SnitzCore.Data.Models.Forum", b =>
                 {
+                    b.Navigation("ArchivedPosts");
+
                     b.Navigation("ForumModerators");
 
                     b.Navigation("Posts");
