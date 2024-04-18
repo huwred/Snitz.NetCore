@@ -17,6 +17,8 @@ else
     <div class="container pt-0">
         <div class="center">
             <div class="col-8 col-md-4">
+                <div id="captchaimage-div">@await Component.InvokeAsync("Captcha")</div>
+                
                 <partial name="LoginForm" model="Model" />
             </div>
         </div>
@@ -25,7 +27,18 @@ else
 
 @section Scripts
 {
+    <script src="~/js/captcha.js" type="text/javascript" ></script>
     <script type="text/javascript">
+        $.fn.clearValidation = function () { 
+            var v = $(this).validate(); 
+            $('[name]', this).each(function () { 
+                v.successList.push(this); 
+                v.showErrors(); 
+            }); 
+            v.resetForm(); 
+            v.reset(); 
+        };
+
         (function () {
             'use strict';
             window.addEventListener('load', function () {

@@ -569,6 +569,12 @@ pre.language-markup{
     width: 100%;
     max-width: 100px;
 }
+img.avatarsmall {
+    margin: 2px;
+    width: auto;
+    max-width: 40px;
+    max-height: 40px;
+}
 
 /* The overlay effect (full height and width) - lays on top of the container and over the image */
 .overlay-delete {

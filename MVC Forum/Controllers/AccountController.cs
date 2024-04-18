@@ -28,6 +28,7 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service;
 using X.PagedList;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace MVCForum.Controllers
@@ -44,6 +45,7 @@ namespace MVCForum.Controllers
         private readonly int _pageSize;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IOptions<IdentityOptions> _configuration;
+        private readonly HttpContext _httpcontext;
 
         public AccountController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             UserManager<ForumUser> usrMgr, SignInManager<ForumUser> signinMgr,
@@ -59,8 +61,27 @@ namespace MVCForum.Controllers
             _env = env;
             _roleManager = roleManager;
             _configuration = configuration;
+            _httpcontext = httpContextAccessor.HttpContext;
         }
 
+        [Route("captchacheck/{id?}")]
+        public bool CaptchaCheck(int? id)
+        {
+            if (id != null)
+            {
+                var session = _httpContextAccessor.HttpContext.Session;
+
+                if (session.Keys.Contains("Captcha") && session.GetString("Captcha") != id.Value.ToString())
+                {
+                    return false;
+                }
+                //empty the captcha variable
+                session.Remove("Captcha");
+                return true;
+            }
+
+            return false;
+        }
         public IActionResult Index(int pagesize,string? sortOrder,string? sortCol,string? initial, int page=1)
         {
 
@@ -352,6 +373,7 @@ namespace MVCForum.Controllers
             {
                 _logger.Warn("Find Old member record");
                 validpwd = _memberService.ValidateMember(member!, login.Password);
+
             }
             catch (Exception e)
             { 
@@ -373,7 +395,7 @@ namespace MVCForum.Controllers
                 {
                     login.Password = GeneratePassword();
                 }
-                _logger.Warn($"Create new Identity user {member.Name}");
+                _logger.Warn($"Create new Identity user {member.Name} - {login.Password}");
                 IdentityResult result = await _userManager.CreateAsync(existingUser, login.Password);
                 if (result.Succeeded)
                 {
@@ -398,10 +420,14 @@ namespace MVCForum.Controllers
                     return LocalRedirect(returnUrl);
                 }
                 foreach (IdentityError error in result.Errors)
-                    ModelState.AddModelError(nameof(login.Username), error.Description);
+                    {
+                    _logger.Error($"{member.Name} : {error.Description}");
+                    ModelState.AddModelError(nameof(login.Username), error.Description); }
+                
             }
             else
             {
+                _logger.Error($"{login.Username} : Either the user was not found or the password does not match");
                 ModelState.AddModelError(nameof(login.Username), "Either the user was not found or the password does not match.<br/>Please try using the forgot password link to reset your password.");
             }
             #endregion

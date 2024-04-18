@@ -14,13 +14,11 @@ using SnitzCore.Data.Models;
 using SnitzCore.Service;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Hangfire;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -36,6 +34,7 @@ using Snitz.PhotoAlbum.Models;
 using SnitzCore.Service.Extensions;
 using SnitzCore.Service.Hangfire;
 using MVCForum.MiddleWare;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 
 
@@ -198,7 +197,16 @@ builder.Services.AddHsts(options =>
     options.MaxAge = TimeSpan.FromDays(160);
 
 });
+    builder.Services.Configure<KestrelServerOptions>(options =>
+    {
+        options.AllowSynchronousIO = true;
+    });
 
+    // If using IIS:
+    builder.Services.Configure<IISServerOptions>(options =>
+    {
+        options.AllowSynchronousIO = true;
+    });
 var app = builder.Build();
 app.MigrateDatabase();
 

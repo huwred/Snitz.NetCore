@@ -29,7 +29,10 @@ namespace MVCForum.Controllers
             _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
 
         }
-
+        public IActionResult RefreshCaptcha()
+        {
+            return ViewComponent("Captcha");
+        }
         public JsonResult AutoCompleteUsername(string term)
         {
             IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(m=>m.Status == 1).Where(r => r!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
