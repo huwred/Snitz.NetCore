@@ -508,7 +508,7 @@ namespace MVCForum.Controllers
                 
             }
             var posts = _postService.GetAllTopicsAndRelated()
-                .Where(f => f.IsSticky != 1 && f.LastPostDate?.FromForumDateStr() > lastvisit)
+                .Where(f => f.LastPostDate?.FromForumDateStr() > lastvisit)
                 .OrderByDescending(t=>t.LastPostDate).AsEnumerable();
             if (!User.IsInRole("Administrator")) //TODO: Is the member a moderator?
             {
