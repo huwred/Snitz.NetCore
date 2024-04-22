@@ -8,13 +8,25 @@ using SnitzCore.Data.Interfaces;
 
 namespace MVCForum.TagHelpers;
 
+/// <summary>
+/// TagHelper to display member avatar
+/// </summary>
 [HtmlTargetElement("snitz-avatar", TagStructure = TagStructure.NormalOrSelfClosing)]
 public class MemberImageTagHelper : TagHelper
 {
+    /// <summary>
+    /// Members avatar file
+    /// </summary>
     [HtmlAttributeName("src")]
     public string? SourceFile { get; set; }
+    /// <summary>
+    /// Path to a fallback image if member has no avatar
+    /// </summary>
     [HtmlAttributeName("def-src")]
     public string? Fallback { get; set; }
+    /// <summary>
+    /// Any extra css classes needed
+    /// </summary>
     [HtmlAttributeName("class")]
     public string? Classes { get; set; }
 
@@ -36,9 +48,9 @@ public class MemberImageTagHelper : TagHelper
         var urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccesor.ActionContext!);
         if (_config.ContentFolder != "Content")
         {
-            SourceFile = SourceFile.Replace("/Content/", "/" + _config.ContentFolder + "/");
+            SourceFile = SourceFile?.Replace("/Content/", "/" + _config.ContentFolder + "/");
         }
-        if(!File.Exists(_env.WebRootPath + SourceFile.Replace("/",@"\").Replace("~","")))
+        if(!File.Exists(_env.WebRootPath + SourceFile?.Replace("/",@"\").Replace("~","")))
         {
             SourceFile = null;
         }
@@ -49,6 +61,6 @@ public class MemberImageTagHelper : TagHelper
         output.Attributes.Add("src", urlHelper.Content(SourceFile)??Fallback);
 
         output.Attributes.Add("alt",urlHelper.Content(SourceFile));
-        //output.AddClass("center",HtmlEncoder.Default);
+
     }
 }

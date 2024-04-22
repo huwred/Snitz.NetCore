@@ -1,26 +1,44 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SnitzCore.Service.Extensions;
 
 namespace MVCForum.TagHelpers
 {
+    /// <summary>
+    /// TagHelper to innsert a link to the last post in a topic]]>
+    /// </summary>
     [HtmlTargetElement("lastpost-link", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class LastPostLinkTagHelper : TagHelper
     {
+        private string? webrootpath;
         public int TopicId { get; set; }
+        /// <summary>
+        /// ID of last post
+        /// </summary>
         public int? ReplyId { get; set; }
+        /// <summary>
+        /// Date of the last post
+        /// </summary>
         public DateTime? PostDate { get; set; }
+        /// <summary>
+        /// Delegate function for language translation, should be set as
+        /// delegate(string s) { return Localizer[s].Value; }
+        /// </summary>
         public Func<string, string>? TextLocalizerDelegate { get; set; }
 
-        public LastPostLinkTagHelper() {}
+        public LastPostLinkTagHelper(IHttpContextAccessor httpContextAccessor) {
+            webrootpath = httpContextAccessor.HttpContext?.Request.PathBase;
+        }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            if(webrootpath == null || webrootpath == "/") {webrootpath = "";}
             var link = new TagBuilder("a");
 
             link.Attributes.Add("rel","index,follow");
-            link.Attributes.Add("href", $"~/Topic/{TopicId}/?replyid={ReplyId}");
+            link.Attributes.Add("href", $"{webrootpath}/Topic/{TopicId}/?replyid={ReplyId}");
             if (TextLocalizerDelegate != null) link.Attributes.Add("title", TextLocalizerDelegate("tipLastPost"));
             link.InnerHtml.AppendHtml(@"<i class=""fa fa-arrow-right""></i>");
 

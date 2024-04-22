@@ -8,6 +8,9 @@ using SnitzCore.Service.Extensions;
 
 namespace MVCForum.TagHelpers
 {
+    /// <summary>
+    /// TagHelper to create an input select list from an enum
+    /// </summary>
     [HtmlTargetElement("enum-select")]
     public class SelectEnumTagHelper : TagHelper
     {

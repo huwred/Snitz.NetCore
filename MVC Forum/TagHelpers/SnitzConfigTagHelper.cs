@@ -11,6 +11,9 @@ using Microsoft.Extensions.Logging;
 
 namespace MVCForum.TagHelpers
 {
+    /// <summary>
+    /// TagHelper to render input fields for data in the FORUM_CONFIG_NEW table
+    /// </summary>
     [HtmlTargetElement("snitz-config", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class SnitzConfigTagHelper : TagHelper
     {
