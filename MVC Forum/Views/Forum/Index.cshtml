@@ -76,7 +76,7 @@
                     <input type="number" value="@pagenum" name="page" style="display: none;" />
                     <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
                     <div class="input-group forum ">
-                        <enum-select id="default-days" enum-type="typeof(DefaultDays)" selected-value="(int)Model.Forum.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                        <enum-select snitz-if="@(!Model.Archives)" id="default-days" enum-type="typeof(DefaultDays)" selected-value="(int)Model.Forum.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                         <select name="OrderBy" id="orderby" class="form-select mb-2" title="Order by" aria-invalid="false">
                             <option value="pd" selected-val="@Model.Forum?.OrderBy">@Localizer["optPostDate"]</option>
                             <option value="lpd" selected-val="@Model.Forum?.OrderBy">@Localizer["optLastPostDate"]</option>

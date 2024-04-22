@@ -307,7 +307,7 @@ namespace MVCForum.Controllers
             {
                 try
                 {
-                    _logger.Warn("Finding User by Email");
+                    _logger.Info("Finding User by Email");
                     newIdentityUser = await _userManager.FindByEmailAsync(login.Username);
                 }
                 catch (Exception e)
@@ -321,14 +321,14 @@ namespace MVCForum.Controllers
             }
             else
             {
-                _logger.Warn("Finding User by Name");
+                _logger.Info("Finding User by Name");
                 newIdentityUser = await _userManager.FindByNameAsync(login.Username);
             }
             
 
             if (newIdentityUser != null) //Already Migrated
             {
-                _logger.Warn($"Found {newIdentityUser.Email}");
+                _logger.Info($"Found {newIdentityUser.Email}");
                 await _signInManager.SignOutAsync();
                 SignInResult result = await _signInManager.PasswordSignInAsync(newIdentityUser, login.Password, login.RememberMe, true);
                 if (result.Succeeded)
@@ -345,7 +345,7 @@ namespace MVCForum.Controllers
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.Warn("User is Locked out");
+                    _logger.Info("User is Locked out");
                     var forgotPassLink = Url.Action(nameof(ForgotPassword),"Account", new { }, Request.Scheme);
                     var content =
                         $"Your account is locked out, to reset your password, please click this link: {forgotPassLink}";
@@ -371,18 +371,35 @@ namespace MVCForum.Controllers
             var validpwd = false;
             try
             {
-                _logger.Warn("Find Old member record");
+                _logger.Warn("Validate Old member record");
                 validpwd = _memberService.ValidateMember(member!, login.Password);
+                _logger.Warn("Password is correct.");
+                //Password is correct but will it validate, if not then force a reset
+                if(validpwd)
+                {
+                    foreach (var validator in _userManager.PasswordValidators)
+                    {
+                        var result = await validator.ValidateAsync(_userManager, null, login.Password);
+
+                        if (!result.Succeeded)
+                        {
+                            _logger.Warn("Password won't validate so forse a reset.");
+                            validpwd = false;
+                            break;
+                        }
+                    }
+                }
+
 
             }
             catch (Exception e)
             { 
-                _logger.Error("Find Old member record",e);
+                _logger.Error("Error finding member record",e);
                 //membership table may not exists
             }
             if (member != null)
             {
-                _logger.Warn($"Found Old member record {member.Name}");
+                _logger.Info($"Found Old member record {member.Name}");
                 ForumUser existingUser = new()
                 {
                     UserName = login.Username,

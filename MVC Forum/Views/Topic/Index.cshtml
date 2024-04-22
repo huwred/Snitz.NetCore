@@ -50,7 +50,7 @@
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
     <!--Topic Section-->
-    <topic-buttons snitz-if="@(!Model.Archived)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" snitz-if="@SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 || @SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1 || @SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1" topic-print="@Model.Id" topic-email="@Model.Id" topic-share="@SnitzConfig.GetIntValue("STRSOCIALSHARE")"></topic-buttons>
+    <vc:topic-buttons postid="@Model.Id"></vc:topic-buttons>
     <div snitz-if="@SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (@SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && int.Parse(@pagenum) < 2)" class="card mb-2 topic-container bg-white">
         @{
             var answer = "";
