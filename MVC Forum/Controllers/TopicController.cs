@@ -26,6 +26,7 @@ using Hangfire;
 using System.Net;
 using System.Runtime.InteropServices.JavaScript;
 using SnitzCore.Service;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MVCForum.Controllers
 {
@@ -55,12 +56,23 @@ namespace MVCForum.Controllers
             _httpcontext = httpContextAccessor.HttpContext;
         }
 
-        [Route("{id:int}")]
+        //[Route("{id:int}")]
         [Route("Topic/{id}")]
         [Route("Topic/Index/{id}")]
         [Route("Topic/Posts/{id}")]
         public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
         {
+            if(TempData["Error"] != null)
+            {
+                ViewBag.Error = TempData["Error"];
+                if((string)TempData["Error"] == "floodcheck")
+                {
+                    var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
+                    ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
+                }
+                TempData["Error"] = null;
+                return View("Error");
+            }
             bool signedin = false;
             ViewBag.RequireAuth = false;
             if (User.Identity is { IsAuthenticated: true })
@@ -172,7 +184,7 @@ namespace MVCForum.Controllers
 
             return View(model);
         }
-        public IActionResult ARchived(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
+        public IActionResult Archived(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
         {
             bool signedin = false;
             ViewBag.RequireAuth = false;
@@ -294,8 +306,9 @@ namespace MVCForum.Controllers
             if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
             {
                 var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
-                if (member.Lastpostdate.FromForumDateStr() < DateTime.UtcNow.AddSeconds(timeout))
+                if (member.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
                 {
+                    TempData["Error"] = "floodcheck";
                     ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
                     return View("Error");
                 }
@@ -331,8 +344,9 @@ namespace MVCForum.Controllers
             if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
             {
                 var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
-                if (member.Lastpostdate.FromForumDateStr() < DateTime.UtcNow.AddSeconds(timeout))
+                if (member.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
                 {
+                    TempData["Error"] = "floodcheck";
                     ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
                     return View("Error");
                 }
@@ -441,6 +455,16 @@ namespace MVCForum.Controllers
         {
 
             var member = await _memberService.GetById(User);
+            if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
+            {
+                var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
+                if (member.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
+                {
+                    TempData["Error"] = "floodcheck";
+                    ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
+                    return View("Error");
+                }
+            }
             var reply = _postService.GetReply(id);
             
             var topic = _postService.GetTopicWithRelated(reply.PostId);
@@ -652,6 +676,17 @@ namespace MVCForum.Controllers
         public async Task<IActionResult> AddReply(NewPostModel model)
         {
             var member = _memberService.GetByUsername(User.Identity.Name);
+            if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
+            {
+                var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
+                if (member.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
+                {
+                    
+                    TempData["Error"] = "floodcheck";
+
+                    return Json(new{url=Url.Action("Index", "Topic", new { id = model.TopicId }),id=model.TopicId});
+                }
+            }
             var reply = BuildReply(model, member.Id);
             if (model.Id != 0)
             {
@@ -850,6 +885,7 @@ namespace MVCForum.Controllers
             TempData["Success"] = "Email sent successfully";
             return RedirectToAction("Index", "Topic", new { id=model.ReturnUrl, pagenum = -1 });
         }
+
 
         public ActionResult Print(int id)
         {

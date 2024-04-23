@@ -58,7 +58,11 @@ namespace SnitzCore.Service
             {
                 await _memberService.UpdatePostCount(post.MemberId);
             }
-
+            else
+            {
+                _memberService.UpdateLastPost(post.MemberId);
+            }
+            
             var forumtotals = _dbContext.ForumTotal.First();
             forumtotals.TopicCount += 1;
             await _dbContext.SaveChangesAsync();
@@ -95,6 +99,9 @@ namespace SnitzCore.Service
             if (forum.CountMemberPosts == 1)
             {
                 await _memberService.UpdatePostCount(post.MemberId);
+            }else
+            {
+                _memberService.UpdateLastPost(post.MemberId);
             }
             var forumtotals = _dbContext.ForumTotal.First();
             forumtotals.PostCount += 1;

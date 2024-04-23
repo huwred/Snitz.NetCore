@@ -400,5 +400,18 @@ namespace SnitzCore.Service
         {
             return _dbContext.Members.OrderByDescending(m=>m.Lastactivity).Take(max);
         }
+
+        public async Task UpdateLastPost(int memberid)
+        {
+            var member = Get(memberid);
+            if (member != null)
+            {
+                member.Lastpostdate = DateTime.UtcNow.ToForumDateStr();
+                member.Lastactivity = DateTime.UtcNow.ToForumDateStr();
+                member.LastIp = _contextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+                _dbContext.Members.Update(member);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
     }
 }

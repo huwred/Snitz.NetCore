@@ -37,5 +37,6 @@ namespace SnitzCore.Data
         IEnumerable<int> ForumSubscriptions();
         IEnumerable<Member?> GetAll(bool isInRole);
         IEnumerable<Member?>  GetRecent(int max);
+        Task UpdateLastPost(int memberid);
     }
 }
