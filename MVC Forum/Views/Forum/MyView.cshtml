@@ -36,7 +36,7 @@
 
 @section Scripts
 {
-    <script type="text/javascript" src="~/js/star-rating.min.js"></script>
+    @* <script type="text/javascript" src="~/js/star-rating.min.js"></script> *@
     <script type="text/javascript">
         /*
                 This is not necessary, but gives the tag-cloud a nice fade-in effect.
@@ -72,7 +72,7 @@
         function GetMyTopics() {
             $.ajax({
                 type: 'GET',
-                url: '/Forum/MyViewNext/?nextpage=' + page + '&refresh=YES',
+                url: SnitzVars.baseUrl + '/Forum/MyViewNext/?nextpage=' + page + '&refresh=YES',
                 success: function (data) {
                     if (data != null) {
                         $("#docsContainer").append(data);

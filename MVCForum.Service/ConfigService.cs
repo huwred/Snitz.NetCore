@@ -216,7 +216,8 @@ namespace SnitzCore.Service
         {
             var currentTheme = _httpContextAccessor.HttpContext?.Request.Cookies["snitztheme"] ?? GetValue("STRDEFAULTTHEME", "SnitzTheme");
             //var currentTheme = GetValue("STRDEFAULTTHEME", "SnitzTheme");
-            return $"/css/themes/{currentTheme}/{cssfile}";
+            var root = _httpContextAccessor.HttpContext?.Request.PathBase;
+            return $"{root}/css/themes/{currentTheme}/{cssfile}";
         }
 
         public void SetValue(string key, string value)

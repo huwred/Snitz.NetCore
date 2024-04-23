@@ -7,11 +7,11 @@
 <div>
     @if (SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1)
     {
-        <a href="~/Topic/Print/@Model.Id" id="print-topic" class="btn btn-outline-primary" title="@Localizer["tipPrintTopic"] @Model.Title" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa fa-print p-2"></i></a>
+        <a href="~/Topic/Print/@Model.Id" id="print-topic" class="btn btn-outline-primary" title="@Localizer["tipPrintTopic"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa fa-print p-2"></i></a>
     }
     @if (SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1)
     {
-        <button id="SendTopic" class="btn btn-outline-primary sendto-link" type="button" data-id="@Model.Id" data-href="~/Topic/SendTo" title="@Localizer["tipSendTopic"] @Model.Title"><i class="fa fa-envelope p-2"></i></button>
+        <button id="SendTopic" class="btn btn-outline-primary sendto-link" type="button" data-id="@Model.Id" data-href="~/Topic/SendTo" title="@Localizer["tipSendTopic"] "><i class="fa fa-envelope p-2"></i></button>
     }
     @if (SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1)
     {
