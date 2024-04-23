@@ -189,7 +189,7 @@
         $(document).on("click", "#photo-upload",
             function(e) {
                 e.preventDefault();
-                $('#upload-content').load("/PhotoAlbum/UploadForm/?showall=true",
+                $('#upload-content').load(SnitzVars.baseUrl + "/PhotoAlbum/UploadForm/?showall=true",
                     function() {
                         $('#uploadModal').modal('show');
                     });
