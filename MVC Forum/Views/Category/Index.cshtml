@@ -102,7 +102,7 @@
                                             <h4><a href="~/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a>
                                             @if (forum.ArchivedCount > 0)
                                             {
-                                                    <a href="~/Forum/Archived/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="@Localizer["tipViewArchive"]"><i class="fa fa-archive text-secondary"></i></a>
+                                                    <a href="~/Forum/Archived/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="@Localizer["tipViewArchive"] (@forum.ArchivedCount)"><i class="fa fa-archive text-secondary"></i></a>
                                                 
                                             }</h4>
                                         }
@@ -159,7 +159,7 @@
             }
         </div>
         <div class="d-none d-lg-block col-3">
-            
+            @await Component.InvokeAsync("Members", 10)
             @* <partial name="LoginForm" model="new UserSignInModel()" /> *@
             <partial name="FeaturedPoll" />
             <partial name="LatestPosts" model="@Model.LatestPosts"/>
