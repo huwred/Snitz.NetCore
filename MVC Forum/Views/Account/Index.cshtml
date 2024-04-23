@@ -149,7 +149,7 @@
 {
     var confModel = new ConfirmDialogViewModel()
     {
-        Title = "Manage Member",
+        Title = Localizer["popManageMemberTitle"].Value , //"Manage Member",
         Message = @"<p></p>"
     };
     <partial name="ConfirmDialog" model="@confModel"/>

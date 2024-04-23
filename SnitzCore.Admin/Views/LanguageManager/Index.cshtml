@@ -142,7 +142,7 @@
             });
 
         $(document).ready(function() {
-            $('#resource-card').load("~/LanguageManager/ResourceSet/Admin/?filter=" + $('#filter').val());
+            $('#resource-card').load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/Admin/?filter=" + $('#filter').val());
         });
         $(document).on("click", ".resource-set",
             function() {
@@ -151,7 +151,7 @@
                 $(this).addClass("active");
 
                 $('#resource-card')
-                    .load("~/LanguageManager/ResourceSet/" + $(this).data('id') + "/?filter=" + $('#filter').val());
+                    .load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/" + $(this).data('id') + "/?filter=" + $('#filter').val());
                 $('html, body').scrollTop($("#select-lang").offset().top);
             });
         $(document).on("change",
@@ -185,7 +185,7 @@
             $.get(url, function(result) {
                 $('#rsModal').modal('hide');
                 $('#resource-card')
-                    .load("~/LanguageManager/ResourceSet/?id=" + $('#ResourceSet').val());
+                    .load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/?id=" + $('#ResourceSet').val());
             });
         });
         $(document).on('click','#btnYes',function(e) {
@@ -196,7 +196,7 @@
             $.get(url, function(result) {
                 $('#myModal').modal('hide');
                 $('#resource-card')
-                    .load("~/LanguageManager/ResourceSet/" + $('#ResourceSet').val() + "/?filter=" + $('#filter').val());
+                    .load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/" + $('#ResourceSet').val() + "/?filter=" + $('#filter').val());
             });
         });
         $("#admin-nav li a.nav-link.active").removeClass("active");

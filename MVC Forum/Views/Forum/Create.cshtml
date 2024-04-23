@@ -83,10 +83,13 @@
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label asp-for="Status" class="form-label col-2">@Localizer["catStatus"]</label>
+                    <label  class="form-label col-2">&nbsp;</label>
                     <div class="col-10 col-lg-4">
-                        <select class="form-select" name="Status" asp-for="Status" asp-items="@(Html.GetEnumSelectList<Status>().Where(s=>s.Value == "0" || s.Value == "1"))">
-                        </select>
+                        <div class="form-check form-switch mb-3">
+                            <input type="checkbox" role="switch" name="Status" id="Status" value="1" class="form-check-input" checked="" style="transform: scale(1.4);">
+                            <input type="checkbox" name="Status" value="0" checked="" style="display:none">
+                            <label class="form-check-label" asp-for="Status"> <span snitz-if="@(Model.Status == 1)">@Localizer["Active"]</span><span snitz-if="@(Model.Status != 1)">@Localizer["Locked"]</span></label>
+                        </div>
                     </div>
                 </div>
                 <div class="mb-3 form-check">
@@ -167,9 +170,8 @@
 @{
     var confModel = new ConfirmDialogViewModel()
     {
-        Title = "Empty Forum",
-        Message = @"<p>You are about to Empty this Forum.</p>
-                <p>Do you wish to proceed?</p>"
+        Title = Localizer["popEmptyForumTitle"].Value, // "Empty Forum",
+        Message = Localizer["popEmptyForumMessage"].Value /* @"<p>You are about to Empty this Forum.</p>   <p>Do you wish to proceed?</p>" */
     };
 }
 <partial name="ConfirmDialog" model="@confModel" />

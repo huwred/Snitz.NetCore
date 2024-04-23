@@ -133,7 +133,11 @@ namespace SnitzCore.Data.Models
         [Display(Name = "SearchWordMatch_Any")] 
         AnyTerms
     }
-
+    public enum ActiveStatus
+    {
+        Locked,
+        Active
+    }
     public enum SearchDate
     {
         [Display(Name="SearchDays_Any")]

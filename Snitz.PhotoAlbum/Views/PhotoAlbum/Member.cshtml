@@ -134,10 +134,10 @@
 @if (User.IsInRole("Administrator"))
 {
     var confModel = new ConfirmDialogViewModel()
-                {
-                    Title = "Manage Image",
-                    Message = @"<p></p>"
-                };
+    {
+        Title = Localizer["popManageImageTitle"].Value,
+        Message = @"<p></p>"
+    };
     <partial name="ConfirmDialog" model="@confModel" />
 
 }

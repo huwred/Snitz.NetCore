@@ -169,8 +169,9 @@
 </div>
 @{
     var confModel = new ConfirmDialogViewModel() { 
-        Title = "Delete Category", 
-        Message = @"<p>You are about to delete this Category.</p><p>Do you wish to proceed?</p>" };
+        Title = Localizer["popDelCatTitle"].Value, // "Delete Category", 
+        Message = Localizer["popDelCatMessage"].Value /* @"<p>You are about to delete this Category.</p><p>Do you wish to proceed?</p>" */
+    };
 }
 <partial name="ConfirmDialog" model="@confModel" />
 

@@ -278,7 +278,7 @@ else
 @{
     var confModel = new ConfirmDialogViewModel()
     {
-        Title = "Manage Topic",
+        Title = Localizer["popManageTopicTitle"].Value, // "Manage Topic",
         Message = @"<p></p>"
     };
     <partial name="ConfirmDialog" model="@confModel" />
@@ -325,7 +325,7 @@ else
 }
 <input type="text" style="display: none;" id="req-auth" value="@ViewBag.RequireAuth.ToString()" />
 <input type="text" style="display: none;" id="req-forumid" value="@Model.ForumId" />
-<partial name="PasswordDlg" model='new ConfirmDialogViewModel(){Title="Password Required",Message ="You need a password to View this Forum "}' />
+<partial name="PasswordDlg" model='new ConfirmDialogViewModel(){Title=Localizer["popPasswordRqdTitle"].Value,Message = Localizer["popPasswordRqdMessage"].Value}' />
 
 @section Scripts
 {

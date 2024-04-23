@@ -226,15 +226,14 @@
 @{
     var confModel = new ConfirmDialogViewModel()
     {
-        Title = "Delete Forum",
-        Message = $@"<p>You are about to delete the Forum {Model.Forum!.Title}</p>
-        <p>Do you wish to proceed?</p>"
+        Title = Localizer["popDelForumTitle"].Value, //"Delete Forum",
+        Message = Localizer["popDelForumMessage"].Value /* $@"<p>You are about to delete the Forum {Model.Forum!.Title}</p>        <p>Do you wish to proceed?</p>" */
     };
 }
 <partial name="ConfirmDialog" model="@confModel" />
 <input type="text" style="display: none;" id="req-auth" value="@ViewBag.RequireAuth.ToString()" />
 <input type="text" style="display: none;" id="req-forumid" value="@Model.Forum.Id" />
-<partial name="PasswordDlg" model='new ConfirmDialogViewModel(){Title="Password Required",Message ="You need a password to View this Forum "}' />
+<partial name="PasswordDlg" model='new ConfirmDialogViewModel(){Title=Localizer["popPasswordRqdTitle"].Value,Message = Localizer["popPasswordRqdMessage"].Value}' />
 @section Scripts {
     <script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
     <script type="text/javascript" src="~/js/postcontroller.js"></script>
