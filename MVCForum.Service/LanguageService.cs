@@ -65,7 +65,9 @@ namespace SnitzCore.Service
 
         public LocalizedString GetString(string name, params object[] arguments)
         {
-            throw new NotImplementedException();
+                var format = GetString(name);
+                var value = string.Format(format ?? name, arguments);
+                return new LocalizedString(name, value);
         }
 
         public IEnumerable<LocalizedString> GetAllStrings(bool includeAncestorCultures)
