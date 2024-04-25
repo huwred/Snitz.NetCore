@@ -1388,6 +1388,7 @@ namespace MVCForum.Controllers
                 AuthorRole = reply.Member.Level,
                 Edited = reply.LastEdited?.FromForumDateStr(),
                 Status = reply.Status,
+                ShowSig = reply.Sig == 1,
                 EditedBy = reply.LastEditby == null ? "" : _memberService.GetMemberName(reply.LastEditby.Value)
             });
         }
@@ -1405,6 +1406,7 @@ namespace MVCForum.Controllers
                 AuthorPosts = reply.Member.Posts,
                 AuthorRole = reply.Member.Level,
                 Edited = reply.LastEdited?.FromForumDateStr(),
+                ShowSig = reply.Sig == 1,
                 EditedBy = reply.LastEditby == null ? "" : _memberService.GetMemberName(reply.LastEditby.Value)
             });
         }

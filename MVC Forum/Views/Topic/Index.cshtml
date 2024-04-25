@@ -80,7 +80,7 @@
                     @Html.Raw(BbCodeProcessor.Format(Model.Content))
                     @if (Model.ShowSig)
                     {
-                        <div class="author-sig">@Html.Raw(@Model.Author.Signature)</div>
+                        <div class="author-sig">@Html.Raw(BbCodeProcessor.Format(Model.Author.Signature))</div>
                     }
                 </div>
 
@@ -169,6 +169,10 @@
                             <partial name="PostAuthor" model="reply.Author"/>
                             <div class="content">
                                 @Html.Raw(BbCodeProcessor.Format(reply.Content))
+                                @if (reply.ShowSig)
+                                {
+                                    <div class="author-sig">@Html.Raw(BbCodeProcessor.Format(reply.Author.Signature))</div>
+                                }
                             </div>
                         </div>
                     </div>

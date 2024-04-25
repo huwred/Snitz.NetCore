@@ -10,5 +10,7 @@
         public bool Answer { get; internal set; }
 
         public short Status { get; set; }
+
+        public bool ShowSig { get; set; }
     }
 }
