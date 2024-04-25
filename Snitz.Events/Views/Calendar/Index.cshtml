@@ -2,15 +2,26 @@
 @using System.Resources
 @using Microsoft.AspNetCore.Http
 @model dynamic
-
+@inject ISnitzCookie SnitzCookie
 @{
     Layout = "Layout";
     ViewBag.Title = SnitzConfig.ForumTitle + " | " + @Localizer["calTitle"];
     string[] rtlLangs = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur", "yi", "he" };
-    string[] arabic = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur" }; //Cairo
-    string[] aramaic = new string[] { "yi", "he" }; //Tinos
-    string clang = Context.Session.GetString("culture");
-    bool isRighToLeft = (rtlLangs.Contains(clang));
+
+    //check the culture so we can set the page direction and language
+    var cookielang = SnitzCookie.GetCookieValue("CookieLang");
+    CultureInfo ci = CultureInfo.CurrentUICulture;
+    string clang = ci.TwoLetterISOLanguageName;
+
+    if (cookielang != null)
+    {
+        var cultureInfo = new CultureInfo(cookielang);
+        CultureInfo.CurrentUICulture = cultureInfo;
+        clang = cultureInfo.TwoLetterISOLanguageName;
+    }
+    Context.Session.SetString("culture", clang);
+    bool isRighToLeft = rtlLangs.Contains(clang);
+
 
     clang = clang + ".js";
 }
@@ -37,7 +48,7 @@
     </script>
     <script src="~/_content/Snitz.Events/js/moment.min.js"></script>
 
-    @if (clang == "fa.js")
+    @if (isRighToLeft)
     {
         <script src="~/_content/Snitz.Events/js/moment-jalaali.min.js"></script>
     }

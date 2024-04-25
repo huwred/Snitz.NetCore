@@ -100,6 +100,8 @@ UpComingCalendar = function(url, divid) {
 };
 
 FullCalendar = function(url, divid, firstday, country) {
+    console.log("SnitzVars.forumlang");
+    console.log(SnitzVars.forumlang);
     var view = $('#' + divid).fullCalendar('getView');
     if (country.length > 1) {
         $('#' + divid).fullCalendar('destroy');
@@ -116,9 +118,9 @@ FullCalendar = function(url, divid, firstday, country) {
                 right: 'prev,next,today'
             },
             defaultView: 'month',
-            lang: "en", //SnitzVars.forumlang,
-            isJalaali: false, //SnitzVars.forumlang === 'fa',
-            isRTL: false, //SnitzVars.forumlang === 'fa',
+            lang: SnitzVars.forumlang,
+            isJalaali: SnitzVars.forumlang === 'fa',
+            isRTL: SnitzVars.forumlang === 'fa',
             firstDay: parseInt(firstday),
             dateFormat: 'dd/MM/yy',
             timeFormat: 'HH:mm',
