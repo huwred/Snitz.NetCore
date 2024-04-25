@@ -17,8 +17,15 @@ else
     {
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
     }
+    <div class="container pt-0">
+        <div class="center">
+            <div class="col-8 col-md-4">
+                <div id="captchaimage-div">@await Component.InvokeAsync("Captcha")</div>
+            </div>
+        </div>
+    </div>
 
-    <form asp-controller="Account" asp-action="Register" class="needs-validation p-2" novalidate>
+    <form asp-controller="Account" asp-action="Register" class="needs-validation p-2" novalidate id="login-form" style="display:none">
         <div class="row pt-0">
             <div class="center m-2 ">
                 <div class="subforum col-6 bg-form border border-dark rounded">
@@ -78,6 +85,7 @@ else
     @section Scripts
     {
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+        <script src="~/js/captcha.js" type="text/javascript" ></script>
     <script type="text/javascript">
             // Disable form submissions if there are invalid fields
             (function() {

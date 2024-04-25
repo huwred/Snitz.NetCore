@@ -1,5 +1,5 @@
 ﻿html, body {
-    font-size: 14px;
+    font-size: 14px /* rtl:16px */;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-color: #f4f6e7 !important;
     color: #888 !important;

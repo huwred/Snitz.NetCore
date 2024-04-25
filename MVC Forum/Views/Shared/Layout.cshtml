@@ -4,11 +4,13 @@
 @using MVCForum.MiddleWare
 @using SnitzCore.Service.TagHelpers
 @{
+    string[] rtlLangs = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur", "yi", "he" };
+
     //check the culture so we can set the page direction and language
     var cookielang = SnitzCookie.GetCookieValue("CookieLang");
     CultureInfo ci = CultureInfo.CurrentUICulture;
     string clang = ci.TwoLetterISOLanguageName;
-    bool isRighToLeft = false;
+
     if (cookielang != null)
     {
         var cultureInfo = new CultureInfo(cookielang);
@@ -16,16 +18,25 @@
         clang = cultureInfo.TwoLetterISOLanguageName;
     }
     Context.Session.SetString("culture", clang);
+    bool isRighToLeft = rtlLangs.Contains(clang);
     MemberService.SetLastHere(User);
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@clang" dir="@(isRighToLeft ?  "rtl" : "ltr" )">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum</title>
     @await RenderSectionAsync("MetaData", required: false)
-    <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+    @if (isRighToLeft)
+    {
+        <link rel="stylesheet" href="~/css/bootstrap.rtl.min.css">
+
+    }else{
+        <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+
+    }
+
     <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/css/site.min.css">
     @await Component.InvokeAsync("SnitzThemeCss")
