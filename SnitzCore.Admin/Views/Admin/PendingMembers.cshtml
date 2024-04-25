@@ -1,12 +1,147 @@
 ﻿@using SnitzCore.Data.Extensions
+@using SnitzCore.Service.Extensions
 @model IEnumerable<SnitzCore.Data.Models.ForumUser>
-<h1>Pending Members</h1>
-    @foreach (var user in Model)
+
+@* <div class="content">
+    @using (Ajax.BeginForm("SavePendingConfig", "Admin", null,
+    new AjaxOptions
     {
-    <div class="row">
-        <div class="col">@user.UserName</div>
-        <div class="col-2">@user.Email </div>
-        <div class="col-2">@user.Member?.Ip </div>
-        <div class="col-2">@user.Member?.Created.FromForumDateStr().ToLocalTime() </div>
+        OnSuccess = "OnSuccess",
+        OnFailure = "OnFailure",
+        UpdateTargetId = "FeatureConfig",
+        HttpMethod = "POST",
+        LoadingElementId = "loading"
+    }, new { @class = "form-horizontal" }))
+    {
+        <div class="form-group">
+            @Html.ConfigToggle("Hide Notification", "INTHIDEPENDING", "", "control-label col-xs-3")
+            <div>
+                <button type="submit" value="Save" class="btn btn-success btn-sm">Save</button>
+            </div>
+        </div>
+
+    }
+
+</div> *@
+<div class="content">
+    <table class="table">
+        <tr class="bg-primary">
+            <th class="col-1">
+                UserName
+            </th>
+            <th class="col-3">
+                Email
+            </th>
+            @if (SnitzConfig.GetValue("STRIPLOGGING") == "1")
+            {
+                <th class="col-2">
+                    IpAddress
+                </th>
+            }
+            <th class="col-2">
+                Registered
+            </th>
+            <th class="col-2">
+                Lockout
+            </th>
+            <th class="col-2 fs-4">
+                @* <input type="checkbox" id="checkAll" title="@Localizer["tipCheckAll"]" />
+                <a href="#" id="delete-selected" title="Delete Selected" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                <a href="#" title="Approve Selected" data-toggle="tooltip" id="approve-selected"><i class="fa fa-check-square"></i></a> *@
+            </th>
+        </tr>
+        @if (Model.Count() == 0)
+        {
+            <tr><td colspan="6" class="text-center">No registrations currently pending</td></tr>
+        }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td colspan="6">
+                    <form asp-action="SavePendingMember" asp-controller="Admin" id="form_@item.MemberId">
+                        <table class="table">
+                            <tr>
+                                <td class="col-1">
+                                    <input asp-for="@item.Id" type="hidden" name="Id"/>
+                                    <input asp-for="@item.MemberId" type="hidden" name="MemberId" />
+                                    @Html.DisplayFor(modelItem => item.UserName)
+                                </td>
+                                <td class="col-3">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text p-3">
+                                                @Html.CheckBoxFor(modelItem => item.EmailConfirmed)
+                                            </div>
+                                        </div>
+                                        <input asp-for="@item.Email" type="email" name="Email" class="form-control" />
+                                    </div>
+                                </td>
+                                @if (SnitzConfig.GetValue("STRIPLOGGING") == "1")
+                                {
+                                    <td class="col-2" style="word-wrap: break-word; max-width: 120px;">
+                                        @item.Member?.Ip
+                                    </td>
+                                }
+                                <td class="col-2">
+                                    @item.Member?.Created.FromForumDateStr().ToLocalTime().ToForumDateTimeDisplay()
+                                </td>
+                                <td class="col-2">
+                                    @Html.DisplayFor(modelItem => item.LockoutEnabled)
+                                    @Html.DisplayFor(modelItem => item.LockoutEnd)
+                                </td>
+                                <td class="col-2 fs-4">
+                                    <a href="#" data-id="@item.UserName" data-ip="@item.Member?.Ip" data-email="@item.Email" class="stopForumSpam text-primary" title="StopForumSpam Check"><i class="fa fa-search"></i></a>
+                                    @if (SnitzConfig.GetValue("STRIPLOGGING") == "1")
+                                    {
+                                        <a href="#" class="showIPAddress text-primary " data-toggle="tooltip" title="Lookup IP address" data-id="@item.Member?.Ip"><i class="fa fa fa-sitemap"></i></a>
+                                    }
+                                    <a href="@Url.Action("ViewProfile", "Account", new { id = item.MemberId })" class="modal-link text-primary " title="View profile"><i class="fa fa-user"></i></a>
+                                    <a href="@Url.Action("ApproveMember", new { id = item.Id })" class="text-primary" title="Approve Registration"><i class="fa fa-check-square"></i></a>
+                                    <a href="@Url.Action("DeletePendingMember", new { id = item.Id })" class="lnkDelete text-primary" title="Delete Registration"><i class="fa fa-trash"></i></a>
+                                    <a href="#" title="@Localizer["tipAuthorEmail"]" data-toggle="tooltip" class="send-email text-primary" data-url="@item.MemberId" data-id="@item.MemberId"><i class="fa fa-envelope"></i></a>
+                                    <button type="submit" asp-action="SavePendingMember" class="btn fa fa-save text-primary p-0" data-toggle="tooltip" title="Save Email change"></button>
+                                    @* <input type="checkbox" class="selector" value="@item.Id" name="memberSelect" /> *@
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
+
+<div id='emailModal' class='modal fade in' data-url='@Url.Action("EmailMember", "Account")' aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">@Localizer["dlgEmailMemberTitle"]</h4>
+                <button type="button" class="close btn btn-outline-danger" data-bs-dismiss="modal" aria-hidden="true">&times; </button>
+            </div>
+            <div id='emailContainer' class="modal-body">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
     </div>
-}
+</div>
+<div id='popModal' class='modal fade in' data-url='' aria-labelledby="popModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="popModalLabel"></h4>
+                <button type="button" class="close btn btn-outline-danger" data-bs-dismiss="modal" aria-hidden="true">&times; </button>
+            </div>
+            <div id='popContainer' class="modal-body">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

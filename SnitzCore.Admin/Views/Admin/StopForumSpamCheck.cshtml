@@ -1,0 +1,15 @@
+﻿@using CreativeMinds.StopForumSpam.Responses
+@model ResponsePart[]
+
+@ViewBag.Text
+
+@foreach (ResponsePart part in Model)
+{
+    <dl class="dl-horizontal"><dt>Check: </dt><dd>@part.Type</dd><dt>Appears: </dt><dd>@part.Appears</dd><dt>Frequency: </dt><dd>@part.Frequency</dd>@if (part.LastSeen > DateTime.MinValue)
+        {
+            <dt>LastSeen: </dt>
+
+            <dd>@part.LastSeen</dd>
+        }</dl>
+}
+

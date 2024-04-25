@@ -71,6 +71,9 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\popArchiveForum.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="StopForumSpam.Net" Version="0.5.0" />
+  </ItemGroup>
 
 
 </Project>

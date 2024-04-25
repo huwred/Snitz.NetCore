@@ -14,14 +14,13 @@ namespace SnitzCore.Data
         private readonly Random random;
         private readonly SkiaBitmapExportContext bmp;
 
-        ///<summary>Init the captcha class
+        ///<summary>Initialise the captcha class
         ///<example>For example, we can instantiate this class like this:
         ///<code>
-        ///Captcha cptch = new CaptchaNoJS.Captcha(350, 50, 15);
+        ///Captcha cptch = new Captcha(50, 15);
         ///</code>
         ///</example>
         ///</summary>
-
         public Captcha(int pWidth, int pHeight)
         {
             bmp = new(pWidth, pHeight, 1.0f);
@@ -72,6 +71,14 @@ namespace SnitzCore.Data
             return Convert.ToBase64String(result.ToArray());
         }
 
+        /// <summary>  
+        /// return the correct answer
+        /// </summary>
+        public string GetAnswer()
+        {
+            return answer;
+        }
+
         private void AddLines(int nb)
         {
             for (int i = 0; i < nb; i++)
@@ -90,16 +97,6 @@ namespace SnitzCore.Data
                 canvas.DrawCircle(new PointF(random.Next(bmp.Width), random.Next(bmp.Height)), random.Next(2, 20));
             }
         }
-
-        /// <summary>  
-        /// return the correct answer
-        /// </summary>
-
-        public string GetAnswer()
-        {
-            return answer;
-        }
-
         private ICanvas AddStringToImg(ICanvas pCanvas)
         {
             //            gfx.DrawString(captcha, new Font("Tahoma", 28), Brushes.OrangeRed, 10, 10);
@@ -145,7 +142,6 @@ namespace SnitzCore.Data
 
             return new string(captcha);
         }
-
         private Color GetRandomColor()
         {
             return new Color(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255),random.Next(0, 255));

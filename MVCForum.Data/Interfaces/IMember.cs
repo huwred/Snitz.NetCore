@@ -23,7 +23,7 @@ namespace SnitzCore.Data
         Member Create(Member member);
         Member Create(Member member, List<KeyValuePair<string, object>> additional);
         Dictionary<int, MemberRanking>? GetRankings();
-        void SetLastHere(ClaimsPrincipal user);
+        void SetLastHere(ClaimsPrincipal? user);
         void Delete(Member newmember);
 
         string SHA256Hash(string password);
@@ -38,5 +38,6 @@ namespace SnitzCore.Data
         IEnumerable<Member?> GetAll(bool isInRole);
         IEnumerable<Member?>  GetRecent(int max);
         Task UpdateLastPost(int memberid);
+        bool ZapMember(int memberid);
     }
 }

@@ -1,4 +1,8 @@
 ﻿using System.Data;
+using Azure;
+using CreativeMinds.StopForumSpam;
+using CreativeMinds.StopForumSpam.Responses;
+
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -701,9 +705,63 @@ namespace SnitzCore.BackOffice.Controllers
 
         public IActionResult PendingMembers()
         {
-            var test = _userManager.Users.Include(u=>u.Member).Where(u => !u.EmailConfirmed && u.LockoutEnabled);
+            var pending = _userManager.Users.Include(u=>u.Member).Where(u => !u.EmailConfirmed || (u.LockoutEnabled && u.LockoutEnd != null));
 
-            return PartialView(test);
+            return PartialView(pending);
+        }
+        [Authorize(Roles = "Administrator")]
+        public IActionResult ApproveMember(string id)
+        {
+            var user = _userManager.FindByIdAsync(id).Result;
+            if (user != null)
+            {
+                user.EmailConfirmed = true;
+                var upd = _userManager.UpdateAsync(user).Result;
+                upd = _userManager.SetLockoutEndDateAsync(user,null).Result;
+            }
+
+            var pending = _userManager.Users.Include(u=>u.Member).Where(u => !u.EmailConfirmed || (u.LockoutEnabled && u.LockoutEnd != null));
+            return PartialView("PendingMembers",pending);
+        }
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public IActionResult SavePendingMember(ForumUser user)
+        {
+            //var user = _userManager.FindByIdAsync(form["Id"].ToString()).Result;
+            if (user != null)
+            {
+                user.EmailConfirmed = true;
+                
+                var upd = _userManager.UpdateAsync(user).Result;
+                upd = _userManager.SetLockoutEndDateAsync(user,null).Result;
+            }
+
+            var pending = _userManager.Users.Include(u=>u.Member).Where(u => !u.EmailConfirmed || (u.LockoutEnabled && u.LockoutEnd != null));
+            return PartialView("PendingMembers",pending);
+        }
+        [Authorize(Roles = "Administrator")]
+        public IActionResult DeletePendingMember(string id)
+        {
+            var user = _userManager.FindByIdAsync(id).Result;
+            if (user != null)
+            {
+                foreach (var r in _roleManager.Roles) { 
+                    if (_userManager.IsInRoleAsync(user, r.Name).Result)
+                    {
+                        var res = _userManager.RemoveFromRoleAsync(user,r.Name).Result;
+                    }
+                } 
+                _userManager.DeleteAsync(user);                
+                var member = _memberService.GetById(user.MemberId);
+                if (member != null)
+                {
+                    _memberService.Delete(member);
+                }
+
+            }
+
+            var pending = _userManager.Users.Include(u=>u.Member).Where(u => !u.EmailConfirmed || (u.LockoutEnabled && u.LockoutEnd != null));
+            return PartialView("PendingMembers", pending);
         }
         public IActionResult SaveSpamDomain(IFormCollection form)
         {
@@ -743,7 +801,39 @@ namespace SnitzCore.BackOffice.Controllers
                 return PartialView("SaveResult",e.Message);
             }
         }
+        public ActionResult StopForumSpamCheck(string id, string email, string userip)
+        {
+            Client client = new Client(); //(apiKeyTextBox.Text)
+            CreativeMinds.StopForumSpam.Responses.Response response;
+            if (!String.IsNullOrWhiteSpace(id) && String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
+            {
+                response = client.CheckUsername(id);
+            }
+            else if (String.IsNullOrWhiteSpace(id) && !String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
+            {
+                response = client.CheckEmailAddress(email);
+            }
+            else if (String.IsNullOrWhiteSpace(id) && String.IsNullOrWhiteSpace(email) && !String.IsNullOrWhiteSpace(userip))
+            {
+                response = client.CheckIPAddress(userip);
+            }
+            else
+            {
+                response = client.Check(id, email, userip);
+            }
 
+            if (response.Success)
+            {
+                ViewBag.Text = "Success:" + Environment.NewLine;
+
+            }
+            else
+            {
+                ViewBag.Text = String.Format("Error: {0}", ((FailResponse)response).Error);
+            }
+
+            return PartialView(response.ResponseParts);
+        }
         public IActionResult ListViews()
         {
             return View();
