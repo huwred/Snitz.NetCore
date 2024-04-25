@@ -1,0 +1,13 @@
+﻿
+@{
+    string hostname = ViewBag.HostName;
+    string ip = ViewBag.IPAddress;
+}
+<div class="controls">
+    IP Address: @ip<br />
+    Host: @hostname
+</div>
+@if (!String.IsNullOrWhiteSpace(SnitzConfig.GetValue("STRIPLOOKUP")))
+{
+    <a href="@SnitzConfig.GetValue("STRIPLOOKUP").Replace("[IP]", ip)" target="_new">Third party lookup</a>
+}

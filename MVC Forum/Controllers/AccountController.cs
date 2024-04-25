@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MVCForum.Extensions;
 using MVCForum.ViewModels;
@@ -27,8 +26,8 @@ using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service;
+using SnitzCore.Service.Extensions;
 using X.PagedList;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace MVCForum.Controllers
@@ -47,7 +46,7 @@ namespace MVCForum.Controllers
         private readonly IOptions<IdentityOptions> _configuration;
         private readonly HttpContext _httpcontext;
 
-        public AccountController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
+        public AccountController(SnitzCore.Data.IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             UserManager<ForumUser> usrMgr, SignInManager<ForumUser> signinMgr,
             ISnitzCookie snitzcookie,IWebHostEnvironment env,IEmailSender mailSender,
             RoleManager<IdentityRole> roleManager,IOptions<IdentityOptions> configuration) : base(memberService, config, localizerFactory, dbContext,httpContextAccessor)
@@ -123,7 +122,23 @@ namespace MVCForum.Controllers
             };
             return View(model);
         }
+        public IActionResult ZapMember(int id)
+        {
+            bool result = _memberService.ZapMember(id);
+            
+            return Json(new { result = result, data = id });
+        }
+        public IActionResult Delete(int id)
+        {
+            var todelete = _memberService.GetById(id);
+            if ((todelete != null))
+            {
+                _memberService.Delete(todelete);
+                return Json(new { result = true, data = id });;  
+            }
 
+            return Json(new { result = false, data = id });;
+        }
         public async Task<IActionResult> Detail(string? id)
         {
             ForumUser? currUser =  null;
@@ -168,7 +183,7 @@ namespace MVCForum.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Update(Member model)
+        public IActionResult Update(Member model)
         {
             if (model.Dob != null)
             {
@@ -180,13 +195,13 @@ namespace MVCForum.Controllers
             if (ModelState.IsValid)
             {
                 _memberService.Update(model);
-                
-                return RedirectToAction("Detail","Account");
+
+                return RedirectToAction("Detail", "Account");
             }
             var mdmodel = new MemberDetailModel
             {
                 Id = model.Id,
-                UserModel = _userManager.FindByNameAsync(model.Name).Result!, 
+                UserModel = _userManager.FindByNameAsync(model.Name).Result!,
                 Name = model.Name,
                 Firstname = model.Firstname,
                 Lastname = model.Lastname,
@@ -194,8 +209,8 @@ namespace MVCForum.Controllers
                 Email = model.Email,
                 Newemail = model.Email,
                 Member = model,
-            };            
-            return View("Detail",mdmodel);
+            };
+            return View("Detail", mdmodel);
         }
 
         [AllowAnonymous]
@@ -248,7 +263,9 @@ namespace MVCForum.Controllers
                 Email = user.Email,
                 MemberId = newmember.Id,
                 MemberSince = DateTime.UtcNow,
-
+                LockoutEnabled = true,
+                LockoutEnd = DateTime.UtcNow.AddMonths(2),
+                EmailConfirmed = false
             };
             IdentityResult result = await _userManager.CreateAsync(appUser, user.Password);
             if (!result.Succeeded)
@@ -389,8 +406,6 @@ namespace MVCForum.Controllers
                         }
                     }
                 }
-
-
             }
             catch (Exception e)
             { 
@@ -474,9 +489,7 @@ namespace MVCForum.Controllers
             var user = await _userManager.FindByNameAsync(forgotPasswordModel.Username!);
             if (user == null)
             {
-
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
-
             }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { token, email = user.UserName }, Request.Scheme);
@@ -591,7 +604,7 @@ namespace MVCForum.Controllers
             var memberListingModel = _memberService.GetFilteredMembers(form["SearchFor"]!,form["SearchIn"]!);
             if (memberListingModel != null)
             {
-                IEnumerable<Member> listingModel = memberListingModel.ToList()!;
+                IEnumerable<SnitzCore.Data.Models.Member> listingModel = memberListingModel.ToList()!;
                 var totalCount = listingModel.Count();
                 var members = listingModel.Select(m => new MemberListingModel
                 {
@@ -630,6 +643,12 @@ namespace MVCForum.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (result.Succeeded)
             {
+                // Remove the lockout date if registration is not restricted 
+                if(_config.GetIntValue("STRRESTRICTREG",1) != 1)
+                {
+                    await _userManager.SetLockoutEndDateAsync(user,null);
+                }
+                
                 var currmember = _memberService.GetByUsername(username);
                 if (currmember != null)
                 {
@@ -752,18 +771,28 @@ namespace MVCForum.Controllers
             var member = _memberService.GetById(id);
             if (member != null)
             {
+                member.Status = (short)(member.Status == 1 ? 0 : 1);
+                _memberService.Update(member);                
                 var user = await _userManager.FindByNameAsync(member.Name);
                 if (user != null && _userManager.IsInRoleAsync(user, "ForumMember").Result)
                 {
+                    var res = await _userManager.SetLockoutEnabledAsync(user, true);
+                    if (res.Succeeded)
+                    {
+                        if(member.Status == 1)
+                        {
+                            await _userManager.SetLockoutEndDateAsync(user,DateTime.MinValue);
+                        }
+                        else
+                        {
+                            await _userManager.SetLockoutEndDateAsync(user,DateTime.UtcNow.AddYears(1));
+                            await _userManager.UpdateSecurityStampAsync(user);
+                        }
+                    }
                     return Json(new { result = true, data = id });
                 }
-                member.Status = (short)(member.Status == 1 ? 0 : 1);
-                _memberService.Update(member);
             }
-
-
             return Json(new { result = true, data = id });
-
         }
 
         [HttpGet]
@@ -866,6 +895,13 @@ namespace MVCForum.Controllers
             return PartialView("popUploadAvatar",new AlbumUploadViewModel());;
         }
 
+        [Authorize(Roles = "Administrator,Moderator")]
+        public PartialViewResult ResolveIP(string ip)
+        {
+            ViewBag.IPAddress = ip;
+            ViewBag.HostName = StringExtensions.GetReverseDNS(ip, 5); //Dns.GetHostEntry(Model.IpAddress).HostName;
+            return PartialView("popUserIP");
+        }
         public IActionResult UploadAvatar(AlbumUploadViewModel model)
         {
             var uploadFolder = Combine(_config.ContentFolder, "Avatar");
@@ -911,7 +947,7 @@ namespace MVCForum.Controllers
                 return false;
             }
         }
-        private string? MemberRankTitle(Member author)
+        private string? MemberRankTitle(SnitzCore.Data.Models.Member author)
         {
             var mTitle = author.Title;
             if (author.Status == 0 || author.Name == "n/a")

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -48,7 +49,24 @@ namespace SnitzCore.Service.Extensions
             }
             return i.ToString();
         }
-
+        public static string GetReverseDNS(string ip, int timeout)
+        {
+            try
+            {
+                GetHostEntryHandler callback = new GetHostEntryHandler(Dns.GetHostEntry);
+                IAsyncResult result = callback.BeginInvoke(ip, null, null);
+                if (result.AsyncWaitHandle.WaitOne(timeout * 1000, false))
+                {
+                    return callback.EndInvoke(result).HostName;
+                }
+                return ip;
+            }
+            catch (Exception)
+            {
+                return ip;
+            }
+        }
+        private delegate IPHostEntry GetHostEntryHandler(string ip);
         private static string ConvertDigitChar(this int digit, CultureInfo destination)
         {
             string res = digit.ToString();

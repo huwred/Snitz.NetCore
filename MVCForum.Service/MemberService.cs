@@ -179,9 +179,9 @@ namespace SnitzCore.Service
             return _dbContext.MemberNamefilter;
         }
 
-        public void SetLastHere(ClaimsPrincipal user)
+        public void SetLastHere(ClaimsPrincipal? user)
         {
-            if (user.Identity == null || !user.Identity.IsAuthenticated)
+            if (user == null || user.Identity == null || !user.Identity.IsAuthenticated)
             {
                 return;
             }
@@ -412,6 +412,42 @@ namespace SnitzCore.Service
                 _dbContext.Members.Update(member);
                 await _dbContext.SaveChangesAsync();
             }
+        }
+
+        public bool ZapMember(int memberid)
+        {
+            var member = _dbContext.Members.AsNoTracking().FirstOrDefault(m=>m.Id == memberid);
+            _dbContext.SaveChanges();
+            
+            if (member != null)
+            {
+                var user = _userManager.FindByNameAsync(member.Name).Result;
+                if (user != null)
+                {
+                    user.Email = "zapped@dummy.com";
+                    _userManager.UpdateAsync(user);
+                    var lockout = _userManager.SetLockoutEnabledAsync(user,true).Result;
+                    if (lockout.Succeeded)
+                    {
+                        _userManager.SetLockoutEndDateAsync(user,DateTime.UtcNow.AddYears(10));
+                    }
+                    _userManager.UpdateSecurityStampAsync(user);
+                }
+                Member zappedMember = new()
+                {
+                    Id = memberid,
+                    Name = "zapped",
+                    Email = "zapped@dummy.com",
+                    Posts = member.Posts,
+                    Status = 0,
+                    Title = "Zapped Member",
+                    Created = member.Created
+                };
+                _dbContext.Update(zappedMember);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            return false;
         }
     }
 }
