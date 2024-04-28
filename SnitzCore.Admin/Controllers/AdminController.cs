@@ -751,11 +751,15 @@ namespace SnitzCore.BackOffice.Controllers
                         var res = _userManager.RemoveFromRoleAsync(user,r.Name).Result;
                     }
                 } 
-                _userManager.DeleteAsync(user);                
-                var member = _memberService.GetById(user.MemberId);
-                if (member != null)
+                
+                var result = _userManager.DeleteAsync(user).Result;
+                if (result.Succeeded)
                 {
-                    _memberService.Delete(member);
+                    var member = _memberService.GetById(user.MemberId);
+                    if (member != null)
+                    {
+                        _memberService.Delete(member);
+                    }
                 }
 
             }
