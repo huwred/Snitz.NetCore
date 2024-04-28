@@ -5,17 +5,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using MVCForum.ViewModels;
-using SnitzCore.Data.Models;
 using TagCloud;
-using BbCodeFormatter.Processors;
 using BbCodeFormatter;
 using Microsoft.AspNetCore.Hosting;
-using System.Text.RegularExpressions;
 
 namespace MVCForum.View_Components
 {
@@ -55,23 +51,22 @@ namespace MVCForum.View_Components
                     newphrase = _bbCodeProcessor.StripCodeContents(newphrase);
                     newphrase = _bbCodeProcessor.StripTags(newphrase);
                     newphrase = _bbCodeProcessor.RemoveHtmlTags(newphrase);
-                                          
+                    newphrase = singleletters.Replace(newphrase, " ");                     
                     if (stopwords.Any())
                     {
                         foreach (string word in stopwords )
                         {
 
-                            Regex rgx = new Regex(@$"(?: |^|\(|\.)[{word}](?:$| |\.|,|\))",RegexOptions.IgnoreCase| RegexOptions.Multiline);
-                            newphrase = rgx.Replace(newphrase, "");
+                            Regex rgx = new Regex(@$"(?: |^|\(|\.)({word})(?:$| |\.|,|\))",RegexOptions.IgnoreCase| RegexOptions.Multiline);
+                            newphrase = rgx.Replace(newphrase, " ");
                         }
                     }
 
-                    tagfree.Add(singleletters.Replace(newphrase, ""));
+                    tagfree.Add(newphrase);
                     
 
                 }
                 var vm = new TagCloudAnalyzer(setting)
-                    
                     .ComputeTagCloud(tagfree)
                     .Shuffle();
                 return await Task.FromResult((IViewComponentResult)View(template,vm));

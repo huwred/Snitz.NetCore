@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net.Mail;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -27,6 +17,16 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service;
 using SnitzCore.Service.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web;
 using X.PagedList;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
@@ -81,6 +81,7 @@ namespace MVCForum.Controllers
 
             return false;
         }
+
         public IActionResult Index(int pagesize,string? sortOrder,string? sortCol,string? initial, int page=1)
         {
 
@@ -131,13 +132,13 @@ namespace MVCForum.Controllers
         public IActionResult Delete(int id)
         {
             var todelete = _memberService.GetById(id);
-            if ((todelete != null))
+            if(todelete == null)
             {
-                _memberService.Delete(todelete);
-                return Json(new { result = true, data = id });;  
+                return Json(new { result = false, data = id });
             }
-
-            return Json(new { result = false, data = id });;
+            _memberService.Delete(todelete);
+            return Json(new { result = true, data = id });
+            
         }
         public async Task<IActionResult> Detail(string? id)
         {
@@ -320,7 +321,12 @@ namespace MVCForum.Controllers
 
             ForumUser? newIdentityUser;
             _logger.Warn($"Finding User {login.Username}");
-            if (IsValidEmail(login.Username))
+            if (!IsValidEmail(login.Username))
+            {
+                _logger.Info("Finding User by Name");
+                newIdentityUser = await _userManager.FindByNameAsync(login.Username);
+            }
+            else
             {
                 try
                 {
@@ -329,19 +335,14 @@ namespace MVCForum.Controllers
                 }
                 catch (Exception e)
                 {
-                    _logger.Error($"Multiple accounts with that email {login.Username}",e);
+                    _logger.Error($"Multiple accounts with that email {login.Username}", e);
                     //we will get an error if multiple accounds have the same email;
                     ModelState.AddModelError(nameof(login.Username), "Multiple accounts with that email, please login with your username");
                     return View(login);
                 }
-                
+
             }
-            else
-            {
-                _logger.Info("Finding User by Name");
-                newIdentityUser = await _userManager.FindByNameAsync(login.Username);
-            }
-            
+
 
             if (newIdentityUser != null) //Already Migrated
             {
@@ -362,8 +363,8 @@ namespace MVCForum.Controllers
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.Info("User is Locked out");
-                    var forgotPassLink = Url.Action(nameof(ForgotPassword),"Account", new { }, Request.Scheme);
+                    _logger.Warn("User is Locked out");
+                    var forgotPassLink = Url.Action(nameof(ForgotPassword), "Account", new { }, Request.Scheme);
                     var content =
                         $"Your account is locked out, to reset your password, please click this link: {forgotPassLink}";
                     var message = new EmailMessage(new[] { newIdentityUser.Email! }, "Locked out account information", content);
@@ -373,26 +374,34 @@ namespace MVCForum.Controllers
                     return View(login);
                 }
                 ModelState.AddModelError(nameof(login.Username), "Invalid Login Attempt");
-                return View();                       
+                return View();
             }
             _logger.Warn("No IdentityUser user, checking Member table");
-            #region Migrate Member
-            //check if they are an existing member
             var member = _memberService.GetByUsername(login.Username);
             if (member == null)
             {
                 //not a member so redirect to the register page
+                _logger.Warn("Not a member so redirect to the register page");
                 return RedirectToActionPermanent("Register");
             }
+
+            _logger.Warn("Member found, migrate account");
+            return await MigrateMember(login,member, returnUrl);
+            
+        }
+
+        private async Task<IActionResult> MigrateMember(UserSignInModel login, Member member, string returnUrl)
+        {
+            #region Migrate Member
 
             var validpwd = false;
             try
             {
                 _logger.Warn("Validate Old member record");
                 validpwd = _memberService.ValidateMember(member!, login.Password);
-                _logger.Warn("Password is correct.");
+                _logger.Info("Password is correct.");
                 //Password is correct but will it validate, if not then force a reset
-                if(validpwd)
+                if (validpwd)
                 {
                     foreach (var validator in _userManager.PasswordValidators)
                     {
@@ -408,8 +417,8 @@ namespace MVCForum.Controllers
                 }
             }
             catch (Exception e)
-            { 
-                _logger.Error("Error finding member record",e);
+            {
+                _logger.Error("Error finding member record", e);
                 //membership table may not exists
             }
             if (member != null)
@@ -437,7 +446,7 @@ namespace MVCForum.Controllers
                         .Where(r => r.UserId == member.Id);
                     foreach (var userInRole in currroles)
                     {
-                        var exists = _roleManager.Roles.OrderBy(r=>r.Name).FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
+                        var exists = _roleManager.Roles.OrderBy(r => r.Name).FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
                         if (exists == null)
                         {
                             await _roleManager.CreateAsync(new IdentityRole(userInRole.Role.RoleName));
@@ -452,10 +461,11 @@ namespace MVCForum.Controllers
                     return LocalRedirect(returnUrl);
                 }
                 foreach (IdentityError error in result.Errors)
-                    {
+                {
                     _logger.Error($"{member.Name} : {error.Description}");
-                    ModelState.AddModelError(nameof(login.Username), error.Description); }
-                
+                    ModelState.AddModelError(nameof(login.Username), error.Description);
+                }
+
             }
             else
             {
@@ -463,7 +473,8 @@ namespace MVCForum.Controllers
                 ModelState.AddModelError(nameof(login.Username), "Either the user was not found or the password does not match.<br/>Please try using the forgot password link to reset your password.");
             }
             #endregion
-            return View(login);
+
+            return View("Login", login);
         }
 
         public async Task<IActionResult> Logout()
@@ -935,6 +946,7 @@ namespace MVCForum.Controllers
 
             return PartialView("popUploadAvatar",model);
         }
+
         private bool IsValidEmail(string emailaddress)
         {
             try

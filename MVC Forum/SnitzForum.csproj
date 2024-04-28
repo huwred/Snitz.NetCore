@@ -53,6 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\TagCloudController.cs" />
     <Compile Remove="Startup.cs" />
     <Compile Remove="TagHelpers\ButtonConfirmTagHelper.cs" />
   </ItemGroup>
@@ -276,6 +277,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="App_Data\emoticons.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="App_Data\stopwords-en.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

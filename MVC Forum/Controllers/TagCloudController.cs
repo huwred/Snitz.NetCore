@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting.Internal;
-using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using System.Globalization;
 using System;
@@ -27,8 +25,7 @@ namespace MVCForum.Controllers
             _bbcodeProcessor = bbcodeprocessor;
             _environment = environment;
         }
-        //[OutputCache(Location = OutputCacheLocation.Server,Duration = 60,VaryByParam = "id")]
-        public ActionResult Index(int id)
+        public IActionResult Index(int id)
         {
             TagCloudSetting setting = new TagCloudSetting
             {
@@ -63,7 +60,7 @@ namespace MVCForum.Controllers
                 culture = "no";
             }
 
-            var path = Path.Combine(_environment.WebRootPath, "App_Data/stopwords-" + culture + ".txt");
+            var path = Path.Combine(_environment.ContentRootPath, "App_Data/stopwords-" + culture + ".txt");
 
             string logFile = "";
             if (System.IO.File.Exists(path))
