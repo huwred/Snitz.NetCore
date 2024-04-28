@@ -47,6 +47,7 @@ namespace SnitzCore.BackOffice.Controllers
             }
             return PartialView("SaveResult",SaveForm(form));
         }
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult SaveFeatures(IFormCollection form)
@@ -85,6 +86,7 @@ namespace SnitzCore.BackOffice.Controllers
             }
 
         }
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateBadwords(AdminModeratorsViewModel model)
@@ -120,35 +122,7 @@ namespace SnitzCore.BackOffice.Controllers
             }
 
         }
-        public IActionResult SaveUsername(IFormCollection form)
-        {
-            try
-            {
-                if (form["Username"][0] != null)
-                {
-                    var name = form["Username"][0];
-                    if (name != null)
-                    {
-                        var newusername = new MemberNamefilter
-                        {
-                            Name = name
-                        };
-
-                        _context.MemberNamefilter.Add(newusername);
-                        _context.SaveChanges();
-                    }
-
-                }
-                return Content("<script>location.reload();</script>");
-            }
-            catch (Exception e)
-            {
-                return PartialView("SaveResult", e.Message);
-            }
-
-        }
-
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateUsernameFilter(AdminModeratorsViewModel model)
@@ -182,17 +156,48 @@ namespace SnitzCore.BackOffice.Controllers
                 return PartialView("SaveResult",e.Message);
             }
         }
-        public IActionResult RankingConfig()
-        {
-            var vm = new RankingViewModel(_context,_config);
-            return PartialView("ManageRanking",vm);
-        }
+        
         [HttpPost]
         public IActionResult RankingConfig(RankingViewModel model)
         {
             
             return PartialView("SaveResult", "Ranking saved");
         }
+
+        public IActionResult SaveUsername(IFormCollection form)
+        {
+            try
+            {
+                if (form["Username"][0] != null)
+                {
+                    var name = form["Username"][0];
+                    if (name != null)
+                    {
+                        var newusername = new MemberNamefilter
+                        {
+                            Name = name
+                        };
+
+                        _context.MemberNamefilter.Add(newusername);
+                        _context.SaveChanges();
+                    }
+
+                }
+                return Content("<script>location.reload();</script>");
+            }
+            catch (Exception e)
+            {
+                return PartialView("SaveResult", e.Message);
+            }
+
+        }
+
+        public IActionResult RankingConfig()
+        {
+            var vm = new RankingViewModel(_context,_config);
+            return PartialView("ManageRanking",vm);
+        }
+        
         public IActionResult SaveMemberSettings(IFormCollection form)
         {
             return PartialView("SaveResult",SaveForm(form));

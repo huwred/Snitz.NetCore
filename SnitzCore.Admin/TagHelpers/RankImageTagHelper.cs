@@ -28,7 +28,7 @@ namespace SnitzCore.BackOffice.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             //var physicalPath = _contextAccessor.Current.Server.MapPath("~/Content/rankimages");
-            var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, $"{_config.RootFolder}/Content/rankimages/"), "*.gif");
+            var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, "Content\\rankimages\\"), "*.gif");
             
             output.TagName = "div";
             output.TagMode = TagMode.StartTagAndEndTag;
@@ -38,7 +38,7 @@ namespace SnitzCore.BackOffice.TagHelpers
                 
                 var imagefile = Path.GetFileName(file);
                 string selected = Value != null && imagefile.Contains(Value) ? "selected" : "";
-                output.Content.AppendHtml($@"<img data-id=""rankImage_{Key}"" data-val=""{imagefile}"" src=""{ "~/Content/rankimages/" + imagefile}"" title=""{imagefile}"" class=""rank {selected} rank-image rankImage_{Key}"" />");
+                output.Content.AppendHtml($@"<img data-id=""rankImage_{Key}"" data-val=""{imagefile}"" src=""/Content/rankimages/{imagefile}"" title=""{imagefile}"" class=""rank {selected} rank-image rankImage_{Key}"" />");
 
             }
 
