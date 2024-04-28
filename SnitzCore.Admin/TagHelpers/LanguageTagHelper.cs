@@ -32,7 +32,8 @@ namespace SnitzCore.BackOffice.TagHelpers
             output.Attributes.Add("name","Value");
             output.Attributes.Add("data-lang",Lang);
             output.AddClass("form-control",HtmlEncoder.Default);
-            
+            output.AddClass("lang-control",HtmlEncoder.Default);
+            // lang
             if (test.Any())
             {
                 foreach (var resource in test)

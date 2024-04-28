@@ -26,6 +26,7 @@
     <_ContentIncludedByDefault Remove="Views\Admin\Setup.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Admin\_RoleView.cshtml" />
     <_ContentIncludedByDefault Remove="Views\LanguageManager\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\LanguageManager\popExportCsv.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\popArchiveForum.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_FormButtons.cshtml" />
   </ItemGroup>
@@ -60,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views/_ViewImports.cshtml" />
+    <Content Remove="Views\LanguageManager\popExportCsv.cshtml" />
     <Content Include="Views/_ViewImports.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
@@ -73,6 +75,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="StopForumSpam.Net" Version="0.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\LanguageManager\popExportCsv.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Views\Shared\popExportCsv.cshtml" />
   </ItemGroup>
 
 

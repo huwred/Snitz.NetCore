@@ -116,5 +116,7 @@ namespace SnitzCore.Service
                 .FirstOrDefault(r => r.Name == name && r.Culture == culture)?.Value;
             return new LocalizedString(name,result ?? name);
         }
+
+
     }
 }

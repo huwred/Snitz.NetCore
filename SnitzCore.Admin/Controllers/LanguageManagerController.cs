@@ -1,10 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
+using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service;
+using SnitzCore.Service.Extensions;
+using System.Net.Mime;
+using System.Text;
 
 namespace SnitzCore.BackOffice.Controllers;
 
@@ -12,10 +19,15 @@ namespace SnitzCore.BackOffice.Controllers;
 public class LanguageManagerController : Controller
 {
     private readonly SnitzDbContext _dbcontext;
-
-    public LanguageManagerController(SnitzDbContext dbcontext)
+    private readonly ISnitzConfig _snitzConfig;
+    private readonly IWebHostEnvironment _env;
+    private readonly LanguageService  _languageResource;
+    public LanguageManagerController(SnitzDbContext dbcontext,ISnitzConfig snitzConfig,IWebHostEnvironment hostEnvironment,IHtmlLocalizerFactory localizerFactory)
     {
         _dbcontext = dbcontext;
+        _snitzConfig = snitzConfig;
+        _env = hostEnvironment;
+        _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
     }
 
     // GET
@@ -181,5 +193,107 @@ public class LanguageManagerController : Controller
         }
 
         return Content("Error saving resource");
+    }
+
+    [HttpPost]
+    public FileResult Export(IFormCollection form)
+    {
+        string culture = form["culture"];
+        string resourceset = form["resource-set"];
+        List<LanguageResource> res;
+
+        if (!String.IsNullOrWhiteSpace(resourceset))
+        {
+            res = _dbcontext.LanguageResources.Where(l=>l.ResourceSet == resourceset).ToList();
+            resourceset = "_" + resourceset;
+        }
+        else
+        {
+            res = _dbcontext.LanguageResources.Where(l=>l.Culture == culture).ToList();
+            resourceset = "";
+        }
+
+
+        var byteArray = Encoding.UTF8.GetBytes(res.ToCSV("path", "", "Id"));
+        var stream = new MemoryStream(byteArray);
+
+
+        var cd = new System.Net.Mime.ContentDisposition
+        {
+            FileName = "export_" + culture + resourceset + ".csv",
+            Inline = false,
+        };
+        Response.Headers.Add("Content-Disposition", cd.ToString());
+        return File(stream, "txt/plain");
+
+    }
+
+    public PartialViewResult Export()
+    {
+        var resorcesets = _dbcontext.LanguageResources.Select(l=>l.ResourceSet).Distinct();
+        return PartialView("popExportCsv", resorcesets.ToList());
+    }
+
+    [Authorize(Roles = "Administrator")]
+    public PartialViewResult Import()
+    {
+        ViewBag.Title = _languageResource.GetString("resImport", "ResEditor");
+        ViewBag.Hint = "";
+        return PartialView("popImportCsv");
+    }
+    [HttpPost]
+    [Authorize(Roles = "Administrator")]
+    public async Task<JsonResult> UploadCSV()
+    {
+        if (!Directory.Exists(_env.ContentRootPath + "\\App_Data\\"))
+        {
+            return Json("error|App_Data folder is missing");
+        }
+
+        for (int i = 0; i < Request.Form.Files.Count; i++)
+        {
+            IFormFile file = Request.Form.Files[i]; //Uploaded file                                       
+            if (file != null &&
+                file.Length > Convert.ToInt32(_snitzConfig.GetIntValue("INTMAXFILESIZE",5))*1024*1024)
+            {
+                return Json("error|File too large");
+            }
+            if (file != null)
+            {
+                ContentDisposition contentDisposition = new ContentDisposition(file.ContentDisposition);
+                string filename = contentDisposition.FileName;
+
+                filename = this.EnsureCorrectFilename(filename);
+
+                var extension = Path.GetExtension(filename);
+                if (extension != null)
+                {
+                    string fileExt = extension.ToLower();
+                    if (!fileExt.Contains("csv"))
+                    {
+                        return Json("error|Invalid File type");
+                    }
+                }
+                using (FileStream output = System.IO.File.Create(this.GetPathAndFilename(filename)))
+                    await file.CopyToAsync(output);
+
+                _dbcontext.ImportLangResCSV(this.GetPathAndFilename(filename), Convert.ToBoolean(Request.Form["UpdateExisting"]));
+                }
+
+        }
+        return new JsonResult("error|Problem uploading data");
+    }
+
+    private string GetPathAndFilename(string filename)
+    {
+        return _env.ContentRootPath + "\\App_Data\\" + filename;
+    }
+
+    private string EnsureCorrectFilename(string filename)
+    {
+        if (filename.Contains("\\"))
+        filename = filename.Substring(filename.LastIndexOf("\\") + 1);
+
+        return filename;
     }
 }

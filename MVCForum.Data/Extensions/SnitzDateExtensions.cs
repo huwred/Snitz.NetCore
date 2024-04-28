@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Security.Principal;
 
 namespace SnitzCore.Data.Extensions
 {
@@ -45,5 +46,27 @@ namespace SnitzCore.Data.Extensions
             }
             return date.ToString(DateTimeFormat);
         }
+
+        public static bool IsModerator(this IPrincipal user)
+        {
+            if (!user.Identity.IsAuthenticated)
+            {
+                return false;
+            }
+            return user.IsInRole("Moderator");
+        }
+        /// <summary>
+        /// Check if currentuser is a forum moderator
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public static bool IsAdministrator(this IPrincipal user)
+        {
+            if (!user.Identity.IsAuthenticated)
+            {
+                return false;
+            }
+            return user.IsInRole("Administrator");
+        }  
     }
 }

@@ -37,17 +37,17 @@
                 </select>
             </div>
             <div class="col-2">
-                <button id="del-resourceset" href="~/LanguageManager/DeleteResourceSet/" data-id="@Model.DefaultStrings.First().ResourceSet" class="btn btn-outline-danger" title="Delete this Resource Set"><i class="fa fa-trash-o"></i></button>
+                <button snitz-if="@(User.IsInRole("Administrator"))" id="del-resourceset" href="~/LanguageManager/DeleteResourceSet/" data-id="@Model.DefaultStrings.First().ResourceSet" class="btn btn-outline-danger" title="Delete this Resource Set"><i class="fa fa-trash-o"></i></button>
             </div>
         </div>
     </li>
     @foreach (var res in Model.DefaultStrings)
     {
-        <li class="list-unstyled">
+        <li class="list-unstyled resource-item">
             <div class="mb-3 row">
                 <label for="@res.Name" class="col-2 col-form-label">@res.Name</label>
                 <div class="col-4">
-                    <input type="text" class="form-control bg-warning" id="@res.Name" value="@res.Value" disabled aria-disabled="True">
+                    <input type="text" class="form-control bg-default" id="@res.Name" value="@res.Value" disabled aria-disabled="True">
                 </div>
                 <div class="col-6 p-0">
                     <form asp-action="UpdateResource" data-ajax="true" data-ajax-update="#result_@res.Name" class="row">

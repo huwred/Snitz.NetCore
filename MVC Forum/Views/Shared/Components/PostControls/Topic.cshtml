@@ -3,6 +3,7 @@
 @inject IMember MemberService
 @{
     bool isadmin = User.IsInRole("Administrator");
+    bool ismoderator = User.IsInRole("Moderator");
     bool islocked = Model.Status == 0;
     bool isauthor = User.Identity.Name == Model.Member.Name;
     var subscriptions = MemberService.Current()?.Subscriptions;
@@ -26,8 +27,8 @@
         }
         else
         {
-            <i snitz-if="@(!islocked || isadmin)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" data-id="@Model.Id"></i>
-            <i snitz-if="@(!islocked || isadmin)" class="fa fa-commenting m-1 post-quote" title="@Localizer["tipQuoteTopic"]" data-id="@Model.Id"></i>
+            <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" data-id="@Model.Id"></i>
+            <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-commenting m-1 post-quote" title="@Localizer["tipQuoteTopic"]" data-id="@Model.Id"></i>
         }
         @if (SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1)
         {

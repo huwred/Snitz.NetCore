@@ -95,6 +95,8 @@ namespace SnitzCore.Data
             modelBuilder.Entity<OldUserInRole>().HasNoKey();
         }
 
+
+
         public DbSet<ForumUser> ApplicationUser { get; set; }
 
         public DbSet<OldMembership> OldMemberships { get; set; }

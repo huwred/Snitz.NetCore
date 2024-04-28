@@ -14,7 +14,8 @@ public class SnitzRequestLocalizationOptions : IConfigureOptions<RequestLocaliza
         var supportedCultures = new List<CultureInfo>
         {
             new CultureInfo("en"),
-            new CultureInfo("no")
+            new CultureInfo("no"),
+            new CultureInfo("fa")
         };
 
         options.DefaultRequestCulture = new RequestCulture(culture: "en-GB", uiCulture: "en-GB");

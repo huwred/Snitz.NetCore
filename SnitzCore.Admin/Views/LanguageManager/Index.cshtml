@@ -59,16 +59,16 @@
                 }
             </select>
         </div>
-        <div class="col-1 mb-3">
+        <div class="col-2 mb-3">
             <label for="del-resource" class="form-label d-block" tabindex="-1">&nbsp;</label>
             <button id="del-resource" type="submit" class="btn btn-success" title="Add Resource"><i class="fa fa-save"></i></button>
         </div>
-        <div class="col-1 mb-3">
-            <label class="form-label d-block" tabindex="-1">&nbsp;</label>
-            <a href="~/LanguageManager/Search" class="btn btn-primary text-white" title="Find a Resource"><i class="fa fa-search"></i></a>
-        </div>
     </form>
     <div id="result-resource"></div>
+    <button snitz-if="@(User.IsInRole("Administrator"))" data-bs-href="@Url.Action("Import", "LanguageManager")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Import Data</button>
+    <button data-bs-href="@Url.Action("Export", "LanguageManager")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Export Data</button>
+    <a href="~/LanguageManager/Search" class="btn btn-primary text-white" title="Find a Resource"><i class="fa fa-search"></i></a>
+
     <hr/>
     <div class="row">
         <ul class="list-group list-unstyled col-2 p-2">
@@ -79,7 +79,7 @@
                 {
                     <li data-id="@lang.Key" class="resource-set list-group-item active" style="cursor: pointer">@lang.Key</li>
                 }
-                else
+                else 
                 {
                     <li data-id="@lang.Key" class="resource-set list-group-item" style="cursor: pointer">@lang.Key</li>
                 }
@@ -91,6 +91,7 @@
         </div>
     </div>
 </div>
+
 <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -128,6 +129,12 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modal-container" tabindex="-1" role="dialog" aria-labelledby="modal-container" aria-hidden="true">
+    <div id="upload-container" class="modal-dialog" role="document">
+
+    </div>
+</div>
 @section Scripts
 {
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
@@ -151,7 +158,13 @@
                 $(this).addClass("active");
 
                 $('#resource-card')
-                    .load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/" + $(this).data('id') + "/?filter=" + $('#filter').val());
+                    .load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/" + $(this).data('id') + "/?filter=" + $('#filter').val(), function (e) {
+                        $('.lang-control').each(function () {
+                            var val = $(this).val();
+                            $(this).toggleClass("bg-warning", val.length == 0)
+                        })
+                    });
+
                 $('html, body').scrollTop($("#select-lang").offset().top);
             });
         $(document).on("change",
@@ -202,5 +215,25 @@
         $("#admin-nav li a.nav-link.active").removeClass("active");
         $("#lang-settings").addClass("active");
 
+        var exampleModal = document.getElementById('modal-container')
+        exampleModal.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            var button = event.relatedTarget
+            // Extract info from data-bs-* attributes
+            var action = button.getAttribute('data-bs-href');
+
+            // If necessary, you could initiate an AJAX request here
+            // and then do the updating in a callback.
+            $.get(action,
+                function (data) {
+                    $("#upload-container").html(data);
+
+                    $("#frmExportCSV").submit(function (e) {
+                        $('input[type="submit"]').attr('disabled', 'disabled');
+                        $('#modal-container').modal('hide');
+                    });
+                });
+
+        })
     </script>
 }

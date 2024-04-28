@@ -1,0 +1,78 @@
+﻿@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.BackOffice.TagHelpers
+@using System.Globalization
+@model List<string>
+@inject IOptions<RequestLocalizationOptions> LocOptions
+
+@{
+    Layout = null;
+
+    var supportedCultures = new List<CultureInfo>
+    {
+        new CultureInfo("en"),
+        new CultureInfo("no"),
+        new CultureInfo("fa")
+    };
+
+    var requestCulture = CultureInfo.CurrentUICulture;
+    var cultureItems = supportedCultures
+        .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
+        .ToList();
+    var returnUrl = $"{Context.Request.PathBase}{Context.Request.Path.Value}";
+    string clang = requestCulture?.TwoLetterISOLanguageName;
+}
+@{
+
+
+}
+
+<div id="uploadFileForm" class="modal-content">
+
+    <div class="modal-header bg-primary">
+        <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline-danger">X</a>
+        <h4 class="modal-title" id="myModalLabel">@Localizer["resExport"]</h4>
+    </div>
+    <div class="modal-body clearfix">
+        <form asp-action="Export" asp-controller="LanguageManager" id="frmExportCSV" role="form">
+            <div class="mb-3">
+                <label class="col-xs-3">@Localizer["resCulture"]</label>
+                <div class="col-xs-3">
+                    <select class="form-control" name="culture" id="culture">
+                        @foreach (var culture in cultureItems)
+                        {
+                            if (culture.Value == "en")
+                            {
+                                <option value="@culture.Value" selected>@culture.Text</option>
+                            }
+                            else
+                            {
+                                <option value="@culture.Value">@culture.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="col-xs-3">ResourceSet</label>
+                <div class="col-xs-6">
+                    <select class="form-control" id="resource-set" name="resource-set">
+                        <option value="">@Localizer["resExportAll"]</option>
+                        @foreach (var res in Model)
+                        {
+                            <option value="@res">@res</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">@Localizer["btnCancel"]</button>
+                <button name="submitUpload" type="submit" id="submitUpload" class="btn btn-primary">@Localizer["btnExport"]</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
