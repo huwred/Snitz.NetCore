@@ -1,13 +1,16 @@
 ﻿            $(document).on("click", '[class^="pmread_"]',
             function(e) {
                 e.preventDefault();
-                $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Read/" + $(this).data("id"));
+                $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Read/" + $(this).data("id"), function () {
+                    $("#msg-list").hide();
+                });
             });
         $(".pm-settings").on("click",
             function(e) {
                 e.preventDefault();
                 $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Settings/",function() {
                         $('.btn-success').focus();
+                        $("#msg-list").hide();
                 });
 
                     
@@ -19,6 +22,7 @@
                     ValidateForms();
                     revalidate();
                     $('#To').focus();
+                    $("#msg-list").hide();
                 });
             });
         $('#select_all').on("change",function() {
@@ -57,6 +61,7 @@
             var $form = $(this).closest('form');
                 $.post(SnitzVars.baseUrl + "/PrivateMessage/Search", $(this).closest('form').serialize(), function (data) {
                 if (data) {
+                    $("#msg-list").show();
                     $('#msg-list').html(data);
                 } else {
                     alert(data);
@@ -67,6 +72,7 @@
             $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Reply/" + $(this).data("id"),function() {
                 ValidateForms();
                 revalidate();
+                $("#msg-list").hide();
             });
             e.stopPropagation();
             return false;
@@ -75,7 +81,7 @@
             $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Forward/" + $(this).data("id"), function () {
                 ValidateForms();
                 revalidate();
-                
+                $("#msg-list").hide();
             });
             e.stopPropagation();
             return false;
@@ -84,7 +90,8 @@
                 $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/SearchMessages/" + $(this).data("id"), function () {
                 ValidateForms();
                 revalidate();
-                    $('#Term').focus();
+                $('#Term').focus();
+
             });
             e.stopPropagation();
             return false;

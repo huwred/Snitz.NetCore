@@ -2,9 +2,9 @@
 @inject IBookmark Bookmarks;
 @{
     bool isadmin = User.IsInRole("Administrator");
-    bool islocked = Model.Topic.Status == 0;
-    bool isTopicAuthor = User.Identity.Name == Model.Topic.Member.Name;
-    bool isauthor = User.Identity.Name == Model.Member.Name;
+    bool islocked = Model.Topic?.Status == 0;
+    bool isTopicAuthor = User.Identity?.Name == Model.Topic?.Member?.Name;
+    bool isauthor = User.Identity?.Name == Model?.Member?.Name;
 }
 @if (User.Identity.IsAuthenticated)
 {
