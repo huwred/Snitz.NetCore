@@ -25,7 +25,8 @@ else
         </div>
     </div>
 
-    <form asp-controller="Account" asp-action="Register" class="needs-validation p-2" novalidate id="login-form" style="display:none">
+    <form asp-controller="Account" asp-action="Register" method="post" class="needs-validation p-2" novalidate id="login-form" style="display:none">
+        @Html.AntiForgeryToken()
         <div class="row pt-0">
             <div class="center m-2 ">
                 <div class="subforum col-6 bg-form border border-dark rounded">

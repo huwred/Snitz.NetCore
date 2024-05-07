@@ -24,6 +24,7 @@
         <div class="subforum">
             <h1 class="bg-dark text-white p-2">@Localizer["SignIn"]</h1>
             <form method="post" asp-controller="Account" asp-action="Login" class="needs-validation p-2" novalidate>
+                @Html.AntiForgeryToken()
                 <div class="form-group">
                     <label asp-for="Username">@Localizer["Username"]</label>
                     <input asp-for="Username" class="form-control" />
