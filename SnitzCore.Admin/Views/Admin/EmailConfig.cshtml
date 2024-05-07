@@ -143,7 +143,7 @@
                 <div id="result-spamfilter" class="mb-3"></div>
                 <hr/>
                 <div class="mb-3">
-                    <button type="button" href="@Url.Action("Import", "Admin")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Import Domain Data</button>
+                    <button type="button" disabled href="@Url.Action("Import", "Admin")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Import Domain Data</button>
                 </div>
             </div>
         </div>
@@ -173,29 +173,28 @@
         failed = function (xhr) {
             alert('Status: {xhr.status}, Status text: {xhr.statusText}');
         }
-        $(".delete-dom").on("click", function (e) {
+        $(document).on("click", ".delete-dom", function (e) {
             e.preventDefault();
             var id = $(this).data("id");
-            $("#form-banned_" + id).attr("data-ajax-url", "~/Admin/DeleteSpamDomain");
+            $("#form-banned_" + id).attr("data-ajax-url", SnitzVars.baseUrl + "/Admin/DeleteSpamDomain");
             $("#form-banned_" + id).submit();
         });
-        $("#button-addon2").on("click", function (e) {
+        $(document).on("click", "#button-addon2", function (e) {
             e.preventDefault();
             var id = $(this).data("id");
-            $("#form-adddom").attr("data-ajax-url", "~/Admin/AddSpamDomain");
+            $("#form-adddom").attr("data-ajax-url", SnitzVars.baseUrl + "/Admin/AddSpamDomain");
             $("#form-adddom").submit();
         });
-        $("#STRFILTEREMAILADDRESSES").on("change", function (e) {
+        $(document).on("change", "#STRFILTEREMAILADDRESSES", function (e) {
             e.preventDefault();
-            alert("change");
             var id = $(this).data("id");
-            $("#form-adddom").attr("data-ajax-url", "~/Admin/AddSpamDomain");
+            $("#form-adddom").attr("data-ajax-url", SnitzVars.baseUrl + "/Admin/AddSpamDomain");
             $("#form-adddom").submit();
         });
-        $(".save-dom").on("click", function (e) {
+        $(document).on("click", ".save-dom", function (e) {
             e.preventDefault();
             var id = $(this).data("id");
-            $("#form-banned_" + id).attr("data-ajax-url", "~/Admin/SaveSpamDomain");
+            $("#form-banned_" + id).attr("data-ajax-url", SnitzVars.baseUrl + "/Admin/SaveSpamDomain");
             $("#form-banned_" + id).submit();
 
         });

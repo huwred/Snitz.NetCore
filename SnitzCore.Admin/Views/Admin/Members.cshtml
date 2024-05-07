@@ -257,7 +257,22 @@
             var href = $(this).attr('href');
             $('#myModal').data('id', id).data('url', href).modal('show');
         });
+        $(document).on('click', '.lnkDelete', function (e) {
+            e.preventDefault();
+            
+            var href = $(this).attr('href');
+            $.get(href, function (result) {
+                location.reload();
+            });
+        });
+        $(document).on('click', '.lnkApprove', function (e) {
+            e.preventDefault();
 
+            var href = $(this).attr('href');
+            $.get(href, function (result) {
+                location.reload();
+            });
+        });
         $(document).on('click','#btnYes',function(e) {
             // handle deletion here
             e.preventDefault();

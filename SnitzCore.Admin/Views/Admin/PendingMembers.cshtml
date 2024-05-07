@@ -96,7 +96,7 @@
                                         <a href="#" class="showIPAddress text-primary " data-toggle="tooltip" title="Lookup IP address" data-id="@item.Member?.Ip"><i class="fa fa fa-sitemap"></i></a>
                                     }
                                     <a href="@Url.Action("ViewProfile", "Account", new { id = item.MemberId })" class="modal-link text-primary " title="View profile"><i class="fa fa-user"></i></a>
-                                    <a href="@Url.Action("ApproveMember", new { id = item.Id })" class="text-primary" title="Approve Registration"><i class="fa fa-check-square"></i></a>
+                                    <a href="@Url.Action("ApproveMember", new { id = item.Id })" class="lnkApprove text-primary" title="Approve Registration"><i class="fa fa-check-square"></i></a>
                                     <a href="@Url.Action("DeletePendingMember", new { id = item.Id })" class="lnkDelete text-primary" title="Delete Registration"><i class="fa fa-trash"></i></a>
                                     <a href="#" title="@Localizer["tipAuthorEmail"]" data-toggle="tooltip" class="send-email text-primary" data-url="@item.MemberId" data-id="@item.MemberId"><i class="fa fa-envelope"></i></a>
                                     <button type="submit" asp-action="SavePendingMember" class="btn fa fa-save text-primary p-0" data-toggle="tooltip" title="Save Email change"></button>

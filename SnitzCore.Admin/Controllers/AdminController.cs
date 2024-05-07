@@ -662,8 +662,17 @@ namespace SnitzCore.BackOffice.Controllers
                     service.Remove("cfg_" + spamfilter);
 
                 }
+                else
+                {
+                    conf = new SnitzConfig
+                    {
+                        Value = form[spamfilter][0],
+                        Key = spamfilter
+                    };
+                    _dbcontext.SnitzConfig.Add(conf);
+                    _dbcontext.SaveChanges();
+                }
                 return PartialView("SaveResult","Filter address flag changed");
-                
             }
             
             if (string.IsNullOrWhiteSpace(form["EmailDomain"][0]))
@@ -765,7 +774,7 @@ namespace SnitzCore.BackOffice.Controllers
             }
 
             var pending = _userManager.Users.Include(u=>u.Member).Where(u => !u.EmailConfirmed || (u.LockoutEnabled && u.LockoutEnd != null));
-            return PartialView("PendingMembers", pending);
+            return Content("OK");
         }
         public IActionResult SaveSpamDomain(IFormCollection form)
         {
