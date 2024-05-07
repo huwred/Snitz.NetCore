@@ -135,11 +135,11 @@ namespace SnitzCore.Service
                 if (additionalField.Key.ToUpper() == "DOB")
                 {
                     var date = DateTime.Parse(additionalField.Value.ToString()!);
-                    _dbContext.Database.ExecuteSqlRaw($"UPDATE {_memberprefix}MEMBERS SET M_{additionalField.Key.ToUpper()}='{date:yyyyMMdd}'");
+                    _dbContext.Database.ExecuteSqlRaw($"UPDATE {_memberprefix}MEMBERS SET M_{additionalField.Key.ToUpper()}='{date:yyyyMMdd}' WHERE MEMBER_ID={member.Id}");
                 }
                 else
                 {
-                    _dbContext.Database.ExecuteSqlRaw($"UPDATE {_memberprefix}MEMBERS SET M_{additionalField.Key.ToUpper()}='{additionalField.Value}'");
+                    _dbContext.Database.ExecuteSqlRaw($"UPDATE {_memberprefix}MEMBERS SET M_{additionalField.Key.ToUpper()}='{additionalField.Value}' WHERE MEMBER_ID={member.Id} ");
                 }
             }
 
