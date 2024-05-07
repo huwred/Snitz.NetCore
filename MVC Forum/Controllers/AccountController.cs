@@ -228,11 +228,17 @@ namespace MVCForum.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         [CustomAuthorize(RegCheck = "STRPROHIBITNEWMEMBERS")]
         public async Task<IActionResult> Register(UserCreateModel user)
         {
             if (!ModelState.IsValid)
             {
+                return View(user);
+            }
+            if (!IsValidEmail(user.Email))
+            {
+                ModelState.AddModelError("Email","Email not allowed");
                 return View(user);
             }
             Member forumMember = new()
@@ -949,6 +955,19 @@ namespace MVCForum.Controllers
 
         private bool IsValidEmail(string emailaddress)
         {
+            //check spam filter
+            if(_config.GetIntValue("STRFILTEREMAILADDRESSES") == 1)
+            {
+                var spamfilters = _snitzDbContext.SpamFilter.ToList();
+                foreach (var spamfilter in spamfilters)
+                {
+                    if (emailaddress.EndsWith(spamfilter.Server))
+                    {
+                        Response.Redirect("http://127.0.0.1");
+                        return false;
+                    }
+                }
+            }
             try
             {
                 MailAddress m = new(emailaddress);
