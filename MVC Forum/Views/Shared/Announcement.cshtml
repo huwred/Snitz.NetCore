@@ -1,0 +1,14 @@
+﻿@using BbCodeFormatter
+@inject ICodeProcessor BbCodeProcessor
+@{
+    var title = SnitzConfig.GetValue("STRANNOUNCETITLE");
+    var message = SnitzConfig.GetValue("STRANNOUNCE");
+}
+<!-- Hero -->
+<div class="p-4 shadow-4 rounded-3 mt-3" style="background-color: hsl(0, 0%, 94%);">
+    <h2>@title</h2>
+    <p>
+        @Html.Raw(BbCodeProcessor.Format(message))
+    </p>
+</div>
+<!-- Hero -->

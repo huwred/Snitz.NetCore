@@ -48,6 +48,10 @@
     <div class="d-flex flex-column" style="min-height: 100vh;">
         <partial name="MainNav"/>
         <div class="container flex-grow-1">
+            @if (SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)
+            {
+                <partial name="Announcement" />
+            }
             <partial name="CookieConsentPartial" />
             <main role="main" class="pb-3 mt-4">
                 @RenderBody()
