@@ -6,3 +6,6 @@ The software was originally written in ASP (Active Server Pages) and relied on a
 
 
 This version brings the Snitz™ Forums software right up to date using the latest Microsoft .NET Core technologies, allowing it to run natively on various operating systems, including Windows, Linux, and macOS. It now uses EF Core enabling the Forum to work with SQL Server/Azure SQL Database, SQLite, MySQL, PostgreSQL, and many more databases.
+
+
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
