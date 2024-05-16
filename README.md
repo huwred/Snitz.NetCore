@@ -13,6 +13,7 @@ A guide to installing and/or upgrading from a previous version will be available
 
 ## Contributing to the project
 
-Pease read our code of conduct
+During this initial development phase, please report any bugs or ideas on our development website at https://www.reddick.co.uk/mvc
+
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
