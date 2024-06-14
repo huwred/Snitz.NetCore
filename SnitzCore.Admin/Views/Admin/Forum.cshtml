@@ -87,17 +87,17 @@
                 </form>
                 <form asp-action="UpdateBadwords" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-badwords">
                     @{
-                        @for (int i = 0; i < Model.Badwords?.Count; i++)
+                            @for (int i = 0; i < Model.Badwords?.Count; i++)
                         {
-                            <div class="mb-3" id="badword_@i">
-                                <div class="row">
-                                    <input type="hidden" asp-for="@Model.Badwords[i].Id"/>
-                                    <input type="hidden" asp-for="@Model.Badwords[i].IsDeleted"/>
-                                    <div class="col-5"><input type="text" class="form-control" asp-for="@Model.Badwords[i].Word"/></div>
-                                    <div class="col-5"><input type="text" class="form-control" asp-for="@Model.Badwords[i].ReplaceWith"/></div>
-                                    <div class="col-1"><i class="fa fa-trash del-badword" data-id="@i" title="Flag for deletion"></i></div>
+                                <div class="mb-3" id="badword_@i">
+                                    <div class="row">
+                                        <input type="hidden" asp-for="@Model.Badwords[i].Id"/>
+                                        <input type="hidden" asp-for="@Model.Badwords[i].IsDeleted"/>
+                                        <div class="col-5"><input type="text" class="form-control" asp-for="@Model.Badwords[i].Word"/></div>
+                                        <div class="col-5"><input type="text" class="form-control" asp-for="@Model.Badwords[i].ReplaceWith"/></div>
+                                        <div class="col-1"><i class="fa fa-trash del-badword" data-id="@i" title="Flag for deletion"></i></div>
+                                    </div>
                                 </div>
-                            </div>
                         }
                     }
                     <div class="mb-3"><partial name="_FormButtons"/></div>
@@ -136,6 +136,26 @@
                 $("#v-pills-tab #" + activeTab).addClass("active");
                 $("#v-pills-tabContent #" + activeTab.replace("-tab","")).addClass("active").addClass("show");
                 
+                switch (activeTab) {
+                    case "v-pills-archive-tab" :
+                        $('#forum-archives').load(SnitzVars.baseUrl + '/Admin/ArchiveSettings/' + $(this).val(), function () {
+                            $(document).on('click', '#btnYes', function (e) {
+                                // handle deletion here
+                                e.preventDefault();
+                                var url = $('#myModal').data('url');
+                                var id = $('#myModal').data('id')
+                                $.get(url + id, function (result) {
+                                    debugger;
+                                    $('#myModal .modal-content').html(result);
+                                });
+
+                            });
+                        });
+                    break;
+                    case "v-pills-group-tab" :
+                        $('#forum-groups').load(SnitzVars.baseUrl + '/Admin/ManageGroups/' + $(this).val(), function () { });
+                    break;
+                }
             }
         });
         $(document).on('shown.bs.tab',

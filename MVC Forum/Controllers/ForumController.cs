@@ -719,16 +719,7 @@ namespace MVCForum.Controllers
                 if (pagesizeCookie != null)
                     pagesize = Convert.ToInt32(pagesizeCookie);
             }
-            if (searchFor == null)
-            {
-                var prev = HttpContext.Session.GetString("searchFor");
-                if (prev != null)
-                {
-                    searchFor = prev;
-                    ViewData["Title"] = "SearchFor : " + searchFor;
-                }
-            }
-            else
+            if (searchFor != null)
             {
                 HttpContext.Session.SetString("searchFor",searchFor);
                 ViewData["Title"] = "SearchFor : " + searchFor;

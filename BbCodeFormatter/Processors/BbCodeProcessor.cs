@@ -333,10 +333,20 @@ public class BbCodeProcessor : ICodeProcessor
 
         if (_config.GetIntValue("STRPHOTOALBUM") == 1 || _config.TableExists("FORUM_IMAGES"))
         {
-            data = _useFullUrl ? Regex.Replace(data, @"\[image=(?<id>\d+)]", "<a href=\"" + _config.ForumUrl + "PhotoAlbum/GetPhoto/${id}\" class=\"view-image\" target=\"_blank\"><img loading=\"lazy\" src=\"" + _config.ForumUrl + "PhotoAlbum/Thumbnail/${id}\" border=\"0\" title=\"${id}\" /></a>", RegexOptions.IgnoreCase) : Regex.Replace(data, @"\[image=(?<id>\d+)]", "<a href=\"" + _config.RootFolder + "/PhotoAlbum/GetPhoto/${id}\" class=\"view-image\" target=\"_blank\"><img loading=\"lazy\" src=\"" + _config.RootFolder + "/PhotoAlbum/Thumbnail/${id}\" border=\"0\" /></a>", RegexOptions.IgnoreCase);
+                if (Regex.Match(data, @"image=(?<id>\d+)]").Success)
+                {
+                    if (Regex.Match(data, @"\[image=(?<id>\d+)]").Success)
+                    {
+                        data = _useFullUrl ? Regex.Replace(data, @"\[image=(?<id>\d+)]", "<a href=\"" + _config.ForumUrl + "PhotoAlbum/GetPhoto/${id}\" class=\"view-image\" target=\"_blank\"><img loading=\"lazy\" src=\"" + _config.ForumUrl + "PhotoAlbum/Thumbnail/${id}\" border=\"0\" title=\"${id}\" /></a>", RegexOptions.IgnoreCase) : Regex.Replace(data, @"\[image=(?<id>\d+)]", "<a href=\"" + _config.RootFolder + "/PhotoAlbum/GetPhoto/${id}\" class=\"view-image\" target=\"_blank\"><img loading=\"lazy\" src=\"" + _config.RootFolder + "/PhotoAlbum/Thumbnail/${id}\" border=\"0\" /></a>", RegexOptions.IgnoreCase);
+                    }
+                    if (Regex.Match(data, @"\[cimage=(?<id>\d+)]").Success)
+                    {
+                        var imgf = new AlbumImageFormatter(_config,@"\[cimage=(?<id>\d+)]");
+                        data = imgf.Format(data);
+                    }
 
-            var imgf = new AlbumImageFormatter(_config,@"\[cimage=(?<id>\d+)]");
-            data = imgf.Format(data);
+                }
+
         }
 
         if (_config.TableExists("FORUM_BBCODE"))
@@ -349,16 +359,26 @@ public class BbCodeProcessor : ICodeProcessor
 
         if (_config.ContentFolder != "Content")
         {
-            data = Regex.Replace(data,"/Content/Members", "/ProtectedContent/Members",RegexOptions.IgnoreCase);
-            data = Regex.Replace(data, "/Content/Avatar", "/ProtectedContent/Avatar", RegexOptions.IgnoreCase);
-            if (_config.GetIntValue("INTPROTECTPHOTO") == 1)
+            if (Regex.Match(data, "/Content/Members").Success)
+            {
+                data = Regex.Replace(data,"/Content/Members", "/ProtectedContent/Members",RegexOptions.IgnoreCase);
+            }
+            if (Regex.Match(data, "/Content/Avatar").Success)
+            {
+                data = Regex.Replace(data, "/Content/Avatar", "/ProtectedContent/Avatar", RegexOptions.IgnoreCase);
+            }
+            
+            if (_config.GetIntValue("INTPROTECTPHOTO") == 1 && Regex.Match(data,"/Content/PhotoAlbum").Success)
             {
                 data = Regex.Replace(data, "/Content/PhotoAlbum", "/ProtectedContent/PhotoAlbum", RegexOptions.IgnoreCase);
             }
         }
 
-
-        return data.Replace("'", "&#39;");
+        if (Regex.Match(data, "'").Success)
+        {
+            data = data.Replace("'", "&#39;");
+        }
+        return data;
     }
 
     /// <summary>

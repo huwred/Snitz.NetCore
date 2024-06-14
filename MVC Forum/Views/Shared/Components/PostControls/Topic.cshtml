@@ -33,7 +33,7 @@
         @if (SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1)
         {
             <i snitz-if="@Bookmarks.IsBookmarked(Model.Id)" class="fa fa-bookmark m-1 bookmark-del" title="@Localizer["tipRemoveBookmark"]" data-id="@Model.Id"></i>
-            <i snitz-if="!@Bookmarks.IsBookmarked(Model.Id)" class="fa fa-bookmark-o m-1 bookmark-add" title="@Localizer["tipBookmarkPost"]" data-id="@Model.Id"></i>
+            <i snitz-if="@(@Bookmarks.IsBookmarked(Model.Id))" class="fa fa-bookmark-o m-1 bookmark-add" title="@Localizer["tipBookmarkPost"]" data-id="@Model.Id"></i>
         }
         @if (isadmin || isauthor)
         {

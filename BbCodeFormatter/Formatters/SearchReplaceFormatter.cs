@@ -1,4 +1,6 @@
 ﻿
+using System.Text.RegularExpressions;
+
 namespace BbCodeFormatter.Formatters
 {
   internal class SearchReplaceFormatter : IHtmlFormatter
@@ -26,7 +28,19 @@ namespace BbCodeFormatter.Formatters
     {
         if (String.IsNullOrWhiteSpace(data))
             return data;
-        return data.Replace(_pattern, _replace);
+        try
+        {
+            if (Regex.Match(data, _pattern).Success)
+            {
+                return data.Replace(_pattern, _replace);
+            }
+        }
+        catch (Exception)
+        {
+
+        }
+
+        return data;
     }
 
 		#endregion  Public Methods  

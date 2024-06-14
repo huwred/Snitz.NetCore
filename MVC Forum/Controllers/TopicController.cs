@@ -1444,8 +1444,9 @@ namespace MVCForum.Controllers
             {
                 return View("Error");
             }
-            
             var path = $"{uploadFolder}".Replace("/","\\");
+            uploadFolder = _config.RootFolder + "/" + uploadFolder;
+
             if (ModelState.IsValid)
             {
                 var uniqueFileName = GetUniqueFileName(model.AlbumImage.FileName, out string timestamp);

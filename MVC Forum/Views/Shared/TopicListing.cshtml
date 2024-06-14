@@ -22,7 +22,7 @@
     }
     var subscriptions = MemberService.Current()?.Subscriptions;
 
-    bool archives = (bool)ViewData["Archives"];
+    bool archives = ViewData["Archives"] != null ? (bool)ViewData["Archives"] : false;
 }
 <div class="table-row @answeredClass rounded-2 @moderatedClass">
 
@@ -91,6 +91,6 @@
         }
     </div>
     <div class="subscribe d-none d-sm-inline-flex">
-        <input snitz-if="@(User.IsInRole("Administrator"))" type="checkbox" class="form-check-input topic-select" value="@Model.Id" name="topicselected" />
+        <input snitz-if="@(User?.IsInRole("Administrator"))" type="checkbox" class="form-check-input topic-select" value="@Model.Id" name="topicselected" />
     </div>
 </div>

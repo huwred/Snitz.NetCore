@@ -61,6 +61,7 @@
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
     <Content Remove="log4net.config" />
+    <Content Remove="Views\Account\Detail.cshtml" />
     <Content Remove="Views\Shared\_BookmarkLink.cshtml" />
     <Content Remove="wwwroot\js\tinymce\icons\default\icons.min.js" />
     <Content Remove="wwwroot\js\tinymce\jquery.tinymce.min.js" />
@@ -227,10 +228,10 @@
 
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier2022" Version="2.9.9" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.12" />
-    <PackageReference Include="Hangfire.Core" Version="1.8.12" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.8.12" />
-    <PackageReference Include="log4net" Version="2.0.15" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.14" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.14" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.14" />
+    <PackageReference Include="log4net" Version="2.0.17" />
     <PackageReference Include="log4net.Ext.Json" Version="2.0.10.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.7" />
@@ -256,7 +257,7 @@
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.2" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
     <PackageReference Include="Snitz.Events" Version="1.0.0-rc151" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.0-rc96" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.0-rc100" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
@@ -267,6 +268,7 @@
     <Folder Include="Models\" />
     <Folder Include="Views\Polls\" />
     <Folder Include="wwwroot\Content\Avatar\" />
+    <Folder Include="wwwroot\ProtectedContent\PhotoAlbum\" />
     <Folder Include="wwwroot\Templates\images\" />
   </ItemGroup>
   <ItemGroup>

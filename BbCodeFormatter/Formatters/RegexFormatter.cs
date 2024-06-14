@@ -8,6 +8,7 @@ namespace BbCodeFormatter.Formatters
 
     private readonly Regex _regex;
     private readonly string _replace;
+    private readonly string _pattern;
 
 		#endregion  Private Member Declarations  
 
@@ -21,6 +22,7 @@ namespace BbCodeFormatter.Formatters
             options |= RegexOptions.IgnoreCase;
 
         _replace = replace;
+        _pattern = pattern;
         _regex = new Regex(pattern, options);
     }
 
@@ -30,6 +32,10 @@ namespace BbCodeFormatter.Formatters
 
     public string Format(string data)
     {
+        if (!Regex.Match(data, _pattern).Success)
+        {
+            return data;
+        }
       return _regex.Replace(data, _replace);
     }
 

@@ -74,7 +74,7 @@ $(document).ready(function() {
                 var form = $("#upload-form");
                 var formData = new FormData(form[0]);
                 $.ajax({
-                    url: $("#upload-form").attr("action"),
+                    url: SnitzVars.baseUrl + $("#upload-form").attr("action"),
                     type: "POST",
                     data: formData,
                     contentType: false,
