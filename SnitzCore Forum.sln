@@ -17,11 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteMigrations", "Migrato
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSSqlMigrations", "Migrators\MSSqlMigrations\MSSqlMigrations.csproj", "{5A7246E2-95CD-48C5-B49B-74402BEA5E71}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wwwTest", "wwwTest\wwwTest.csproj", "{24DCD324-BE35-45C3-868A-8A99DA7D84E4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snitz.PhotoAlbum", "Snitz.PhotoAlbum\Snitz.PhotoAlbum.csproj", "{DBD29AE7-EA32-4B4D-912B-28F5DCF4FCE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snitz.Events", "Snitz.Events\Snitz.Events.csproj", "{CCA44329-4952-4E0C-BD73-291DB209A560}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snitz.Events", "Snitz.Events\Snitz.Events.csproj", "{CCA44329-4952-4E0C-BD73-291DB209A560}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wwwTest", "wwwTest\wwwTest.csproj", "{04450F09-682F-4A64-8518-1A40D753EC81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,10 +57,6 @@ Global
 		{5A7246E2-95CD-48C5-B49B-74402BEA5E71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A7246E2-95CD-48C5-B49B-74402BEA5E71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A7246E2-95CD-48C5-B49B-74402BEA5E71}.Release|Any CPU.Build.0 = Release|Any CPU
-		{24DCD324-BE35-45C3-868A-8A99DA7D84E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24DCD324-BE35-45C3-868A-8A99DA7D84E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24DCD324-BE35-45C3-868A-8A99DA7D84E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24DCD324-BE35-45C3-868A-8A99DA7D84E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DBD29AE7-EA32-4B4D-912B-28F5DCF4FCE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DBD29AE7-EA32-4B4D-912B-28F5DCF4FCE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBD29AE7-EA32-4B4D-912B-28F5DCF4FCE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -69,6 +65,10 @@ Global
 		{CCA44329-4952-4E0C-BD73-291DB209A560}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCA44329-4952-4E0C-BD73-291DB209A560}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCA44329-4952-4E0C-BD73-291DB209A560}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04450F09-682F-4A64-8518-1A40D753EC81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04450F09-682F-4A64-8518-1A40D753EC81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04450F09-682F-4A64-8518-1A40D753EC81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04450F09-682F-4A64-8518-1A40D753EC81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

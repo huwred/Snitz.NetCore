@@ -6,7 +6,6 @@
 @using SnitzCore.Data
 @using SnitzCore.Service
 @using SnitzCore.Service.Extensions
-@using SnitzCore.Service.TagHelpers
 
 @{
     var _ranking = MemberService.GetRankings();
@@ -36,7 +35,7 @@
                         <label asp-for="Name" class="form-label">@Localizer["Username"]</label>
                         <input asp-for="Name" class="form-control" disabled="disabled"/>
                     </div>
-                    <div snitz-if="@canedit || (@Model.Member?.HideEmail != 1 && @Model.Member?.Privateprofile != 1 && @User.Identity!.IsAuthenticated)" class="mb-3">
+                    <div snitz-if="@(canedit || (Model.Member?.HideEmail != 1 && Model.Member?.Privateprofile != 1 && User.Identity!.IsAuthenticated))" class="mb-3">
                         <label asp-for="Email" class="form-label">@Localizer["Email"]</label>
                         <input asp-for="Email" type="hidden"  />
                         <input asp-for="Newemail" class="form-control" value="@Model.Member?.Email" disabled="disabled" />
@@ -80,7 +79,7 @@
                 </div>
             </div>
             <input name="PhotoUrl" type="hidden" value="@Model.Member?.PhotoUrl" />
-            <div snitz-if="@(Model.Member?.Privateprofile != 1 || canedit) && @User.Identity!.IsAuthenticated">
+            <div snitz-if="@((Model.Member?.Privateprofile != 1 || canedit) && User.Identity!.IsAuthenticated)">
                 <div class="row  bg-form p-2 rounded mb-2">
                     <legend>@Localizer["Profile"]</legend>
                     <hr />

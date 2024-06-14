@@ -61,7 +61,6 @@
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
     <Content Remove="log4net.config" />
-    <Content Remove="Views\Account\Detail.cshtml" />
     <Content Remove="Views\Shared\_BookmarkLink.cshtml" />
     <Content Remove="wwwroot\js\tinymce\icons\default\icons.min.js" />
     <Content Remove="wwwroot\js\tinymce\jquery.tinymce.min.js" />
