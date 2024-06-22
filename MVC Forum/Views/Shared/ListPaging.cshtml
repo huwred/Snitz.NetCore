@@ -52,6 +52,15 @@
 
         searchfor = $"&searchFor={sfor}";
     }
+    var username = "";
+    if (Context.Request.Query.Keys.Contains("UserName"))
+    {
+        username = "&UserName=" + Context.Request.Query["UserName"];
+        if (Context.Request.Query.Keys.Contains("SearchMessage"))
+        {
+            username += "&SearchMessage=true";
+        }
+    }
     var pagesize = $"&pagesize={Model.PageSize}";
 }
 <nav aria-label="Page navigation" class="mb-1">
@@ -74,13 +83,13 @@
         else
         {
             <li class="page-item">
-                <a class="page-link" title="@Localizer["tipFirstPage"]" href="?page=1@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)" aria-label="First" tabindex="-1">
+                <a class="page-link" title="@Localizer["tipFirstPage"]" href="?page=1@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)" aria-label="First" tabindex="-1">
                     <span aria-hidden="true">&laquo;</span>
                     <span class="sr-only">@Localizer["tipFirstPage"]</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" title="@Localizer["tipPreviousPage"]" href="?page=@(page-1)@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)" aria-label="Previous">
+                <a class="page-link" title="@Localizer["tipPreviousPage"]" href="?page=@(page-1)@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)" aria-label="Previous">
                     <span aria-hidden="true">&lsaquo;</span>
                     <span class="sr-only">@Localizer["tipPreviousPage"]</span>
                 </a>
@@ -90,11 +99,11 @@
         {
             if (i == page)
             {
-                <li class="page-item active"><a class="page-link" title="@Localizer["tipGotoPage",i]" href="?page=@i@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)">@i<span class="sr-only">(current)</span></a></li>
+                <li class="page-item active"><a class="page-link" title="@Localizer["tipGotoPage",i]" href="?page=@i@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)">@i<span class="sr-only">(current)</span></a></li>
             }
             else
             {
-                <li class="page-item"><a class="page-link" title="@Localizer["tipGotoPage",i]" href="?page=@i@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)">@i</a></li>
+                <li class="page-item"><a class="page-link" title="@Localizer["tipGotoPage",i]" href="?page=@i@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)">@i</a></li>
             }
             
         }
@@ -116,13 +125,13 @@
         else
         {
             <li class="page-item">
-                <a class="page-link" title="@Localizer["tipNextPage"]" href="?page=@(page+1)@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)" aria-label="Next">
+                <a class="page-link" title="@Localizer["tipNextPage"]" href="?page=@(page+1)@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)" aria-label="Next">
                     <span aria-hidden="true">&rsaquo;</span>
                     <span class="sr-only">@Localizer["tipNextPage"]</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" title="@Localizer["tipLastPage"]" href="?page=@pagecount@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)" aria-label="Last">
+                <a class="page-link" title="@Localizer["tipLastPage"]" href="?page=@pagecount@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)" aria-label="Last">
                     <span aria-hidden="true">&raquo;</span>
                     <span class="sr-only">@Localizer["tipLastPage"]</span>
                 </a>

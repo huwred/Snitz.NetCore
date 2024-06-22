@@ -235,8 +235,22 @@ namespace SnitzCore.Service
                             default :
                                 return isadmin ? _dbContext.Members.OrderByDescending(p => p.LastLogin).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderByDescending(p => p.LastLogin).ToPagedList(page, pagesize);
                         }
-
-
+                    case "membersince" :
+                        switch (dir)
+                        {
+                            case "asc" :
+                                return isadmin ? _dbContext.Members.OrderBy(p => p.Created).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderBy(p => p.Created).ToPagedList(page, pagesize);
+                            default :
+                                return isadmin ? _dbContext.Members.OrderByDescending(p => p.Created).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderByDescending(p => p.Created).ToPagedList(page, pagesize);
+                        }
+                    case "posts" :
+                        switch (dir)
+                        {
+                            case "asc" :
+                                return isadmin ? _dbContext.Members.OrderBy(p => p.Posts).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderBy(p => p.Posts).ToPagedList(page, pagesize);
+                            default :
+                                return isadmin ? _dbContext.Members.OrderByDescending(p => p.Posts).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderByDescending(p => p.Posts).ToPagedList(page, pagesize);
+                        }
                 }
             }
             return isadmin ? _dbContext.Members.OrderByDescending(p => p.Posts).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderByDescending(p => p.Posts).ToPagedList(page, pagesize);

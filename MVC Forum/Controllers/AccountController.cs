@@ -92,10 +92,13 @@ namespace MVCForum.Controllers
                     pagesize = _pageSize;
                 }
             }
-
+            if(sortOrder == null)
+            {
+                sortOrder = "asc";
+            }
             var admin = User.IsInRole("Administrator");
             var totalCount = _memberService.GetAll(admin).Count();
-            IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(admin, pagesize, page,sortCol,"asc");
+            IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(admin, pagesize, page,sortCol,sortOrder);
             var pageCount = (int)Math.Ceiling((double)totalCount / pagesize);
             
 

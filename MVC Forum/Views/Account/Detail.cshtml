@@ -22,7 +22,7 @@
         <form asp-action="Update" method="post" class="needs-validation" novalidate>
             <div class="row">
                 <div class="col-6 col-md-2 avatar-container">
-                    <snitz-avatar src="~/Content/Avatar/@Model.Member!.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="img-fluid"/>
+                    <snitz-avatar src="~/Content/Avatar/@Model.Member!.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid"/>
                     <div class="overlay-delete" snitz-if="@canedit">
                         <a href="#" class="icon" title="Delete Avatar" data-url="~/Account/DeleteAvatar/" data-id="@Model.Member.Id">
                             <i class="fa fa-trash"></i>
@@ -50,7 +50,7 @@
                         <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
                     </div>
                 </div>
-                <div class="col col-md-6">
+                <div class="col col-md-3">
                     <div class="mb-3">
                         <label asp-for="Member!.Created" class="col-sm-3 form-label">@Localizer["ProfileDate"]</label>
                         <div class="col-sm-9">
@@ -76,6 +76,13 @@
                         </div>
                     </div>
                     <input asp-for="Member!.Id" type="hidden"/>
+                </div>
+                <div class="col col-md-3">
+                    <div class="card panel-primary card-body p-3">
+                        <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SearchMessage=true" id="member_posts">All non-archived posts by @Model.Member?.Name</a>
+                        <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SinceDate=14&SearchMessage=true" id="member_recent_posts">@Model.Member?.Name's recent posts</a>
+                        <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SearchIn=Subject" id="member_my_posts">Topics started by @Model.Member?.Name</a>
+                    </div>
                 </div>
             </div>
             <input name="PhotoUrl" type="hidden" value="@Model.Member?.PhotoUrl" />

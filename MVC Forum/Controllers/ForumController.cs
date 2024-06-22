@@ -765,7 +765,7 @@ namespace MVCForum.Controllers
             return View("../Search/Index",model);
         }
 
-        [HttpPost]
+        //[HttpPost]
         public IActionResult SearchResult(ForumSearchModel model,int pagesize=10,int page=1)
         {
             var homePage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
@@ -775,7 +775,7 @@ namespace MVCForum.Controllers
             ViewData["Title"] = "Search Results";
             var searchmodel = new ForumSearch()
             {
-                SinceDate = model.SinceDate,
+                SinceDate = (SearchDate)model.SinceDate,
                 SearchArchives = model.SearchArchives,
                 SearchMessage = model.SearchMessage,
                 SearchCategory = model.SearchCategory,
@@ -785,6 +785,18 @@ namespace MVCForum.Controllers
                 Terms = model.Terms,
 
             };
+            if(searchmodel.UserName != null)
+            {
+                ViewData["Title"] = $"{searchmodel.UserName}'s Posts";
+                if (searchmodel.SearchMessage)
+                {
+                    ViewData["Title"] = $"{searchmodel.UserName}'s Topics";
+                }
+                if (searchmodel.SinceDate == SearchDate.Since14Days)
+                {
+                    ViewData["Title"] = $"{searchmodel.UserName}'s Recent Posts";
+                }
+            }
             var posts = _postService.Find(searchmodel,out int totalcount,pagesize,page).Select(p => new PostListingModel()
             {
                 Id = p.Id,
@@ -805,7 +817,7 @@ namespace MVCForum.Controllers
                 Forum = BuildForumListing(p),
                 Answered = p.Answered,
                 HasPoll = _postService.HasPoll(p.Id),
-            }).OrderBy(p=>p.LastPostDate);
+            }).OrderByDescending(p=>p.LastPostDate);
 
             var pageCount = (int)Math.Ceiling((double)totalcount / pagesize);
             var topicModel = new ForumTopicModel()

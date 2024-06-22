@@ -404,8 +404,23 @@ namespace SnitzCore.Service
         public IPagedList<Post> Find(ForumSearch searchQuery, out int totalcount, int pagesize, int page)
         {
 
-            var posts = _dbContext.Posts.Include(p=>p.Forum).AsQueryable();
+            var posts = _dbContext.Posts                
+                .AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Forum)
+                .Include(p => p.Member)
+                .Include(p=>p.LastPostAuthor)
+                .Include(p=>p.Replies).ThenInclude(r=>r.Member)
+                .AsQueryable();
 
+            if (searchQuery.SinceDate != SearchDate.AnyDate)
+            {
+                var lastvisit = DateTime.UtcNow.AddDays(-(int)searchQuery.SinceDate);
+                posts = posts
+                    
+                .Where(f => f.LastPostDate.FromForumDateStr() > lastvisit)
+                .OrderByDescending(t=>t.LastPostDate).AsQueryable();
+            }
             if (searchQuery.SearchCategory is > 0)
             {
                 posts = posts.Where(p => p.CategoryId == searchQuery.SearchCategory);
@@ -414,14 +429,19 @@ namespace SnitzCore.Service
             {
                 posts = posts.Where(p => searchQuery.SearchForums.Contains(p.ForumId));
             }
-            if (!string.IsNullOrWhiteSpace(searchQuery.UserName))
+            if (!string.IsNullOrWhiteSpace(searchQuery.UserName) && searchQuery.SearchMessage)
             {
-                posts = posts.Where(p => p.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower()))
-                    .Include(p => p.Member)
-                    .Include(p => p.Forum);
+                var p1 = posts.Where(p=> p.Replies.Any(r=>r.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower()))).ToList();
+
+                var p2 = posts.Where(p => p.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower())).ToList();
+
+                posts = p1.UnionBy(p2, x => x.Id).AsQueryable();
+            }
+            if (!string.IsNullOrWhiteSpace(searchQuery.UserName) && !searchQuery.SearchMessage)
+            {
+                posts = posts.Where(p => p.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower()));
 
             }
-
             if (searchQuery.Terms != null)
             {
                 var terms = searchQuery.Terms.Split(' ');
@@ -441,13 +461,9 @@ namespace SnitzCore.Service
                 }
             }
 
-            if (searchQuery.SinceDate != SearchDate.AnyDate)
-            {
-                posts = posts.Where(p =>
-                    p.Created.FromForumDateStr() > DateTime.UtcNow.AddDays(-(int)searchQuery.SinceDate));
-            }
+
             totalcount = posts.Count();
-            return posts.OrderBy(p=>p.LastPostDate).ToPagedList(page, pagesize);
+            return posts.OrderByDescending(p=>p.LastPostDate).ToPagedList(page, pagesize);
         }
 
         public Post GetLatestReply(int id)

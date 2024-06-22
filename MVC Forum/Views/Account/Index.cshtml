@@ -24,7 +24,15 @@
         colspan = 10;
     }
     var initials = Localizer["memberSearchInitials"].Value.ToCharArray();
-
+    var sortorder = "asc";
+    if (Context.Request.Query.ContainsKey("sortOrder"))
+    {
+        var qval = Context.Request.Query["sortOrder"];
+        if (qval == "asc")
+        {
+            sortorder = "desc";
+        }
+    }
 }
 <div class="container pt-0">
     <div class="row">
@@ -74,12 +82,12 @@
                 <thead>
                 <tr class="bg-dark">
                     <th>&nbsp;</th>
-                    <th><a href="?sortCol=name">@Localizer["UserName"]</a></th>
+                        <th><a href="?sortCol=name&sortOrder=@sortorder">@Localizer["UserName"]</a></th>
                     <th>@Localizer["ProfileTitle"]</th>
-                    <th>@Localizer["ProfilePosts"]</th>
+                        <th><a href="?sortCol=posts&sortOrder=@sortorder">@Localizer["ProfilePosts"]</a></th>
                     <th>@Localizer["ProfileLastPost"]</th>
-                    <th class="d-none d-md-table-cell">@Localizer["ProfileDate"]</th>
-                    <th class="d-none d-md-table-cell"><a href="?sortCol=lastvisit">@Localizer["ProfileLastVisit"]</a></th>
+                    <th class="d-none d-md-table-cell"><a href="?sortCol=membersince&sortOrder=@sortorder">@Localizer["ProfileDate"]</a></th>
+                    <th class="d-none d-md-table-cell"><a href="?sortCol=lastvisit&sortOrder=@sortorder">@Localizer["ProfileLastVisit"]</a></th>
                     <th snitz-if="@(userroles != null && userroles.Contains("Administrator"))" class="d-none d-md-table-cell">@Localizer["Email"]</th>
                     <th class="d-none d-md-table-cell">@Localizer["ProfileCountry"]</th>
                     <th snitz-if="@(userroles != null && userroles.Contains("Administrator"))" class="d-none d-md-table-cell"></th>

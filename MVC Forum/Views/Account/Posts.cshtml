@@ -1,0 +1,38 @@
+﻿@model MVCForum.ViewModels.Member.MemberDetailModel
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.TagHelpers
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Data
+@using SnitzCore.Service
+@using SnitzCore.Service.Extensions
+<div class="card panel-primary panel-body padding-md">
+    <form action="/forum/Forum/Search" id="SearchAll" method="post">
+        <input type="hidden" name="SortDir" value="desc">
+        <input type="hidden" name="SearchModel.ForumId" value="0">
+        <input type="hidden" name="SearchModel.Term" value="">
+        <input type="hidden" name="SearchModel.PhraseType" value="ExactPhrase">
+        <input type="hidden" name="SearchModel.SearchByDays" value="Any">
+        <input type="hidden" name="SearchModel.SearchIn" value="Message">
+        <input type="hidden" name="SearchModel.MemberName" value="ruirib">
+        <a href="#" id="member_posts">All non-archived posts by ruirib</a>
+    </form><form action="/forum/Forum/Search" id="SearchRecent" method="post">
+        <input type="hidden" name="SortDir" value="desc">
+        <input type="hidden" name="SearchModel.ForumId" value="0">
+        <input type="hidden" name="SearchModel.Term" value="">
+        <input type="hidden" name="SearchModel.PhraseType" value="ExactPhrase">
+        <input type="hidden" name="SearchModel.SearchByDays" value="Since14Days">
+        <input type="hidden" name="SearchModel.SearchIn" value="Message">
+        <input type="hidden" name="SearchModel.MemberName" value="ruirib">
+        <a href="#" id="member_recent_posts">ruirib's recent posts</a>
+    </form><form action="/forum/Forum/Search" id="SearchMine" method="post">
+        <input type="hidden" name="SortDir" value="desc">
+        <input type="hidden" name="SearchModel.ForumId" value="0">
+        <input type="hidden" name="SearchModel.Term" value="">
+        <input type="hidden" name="SearchModel.PhraseType" value="ExactPhrase">
+        <input type="hidden" name="SearchModel.SearchByDays" value="Any">
+        <input type="hidden" name="SearchModel.SearchIn" value="Subject">
+        <input type="hidden" name="SearchModel.MemberName" value="ruirib">
+        <a href="#" id="member_my_posts">Topics started by ruirib</a>
+    </form>
+</div>
