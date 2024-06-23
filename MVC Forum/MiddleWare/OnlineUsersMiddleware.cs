@@ -79,7 +79,7 @@ namespace MVCForum.MiddleWare
 
         public static int GetOnlineUsersCount()
         {
-            return _allKeys.Count;
+            return _allKeys?.Count ?? 0;
         }
     }
 }
