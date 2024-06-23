@@ -75,8 +75,8 @@
 
 @if (!clang.Contains("en"))
 {
-        var src = $"/js/timeago/timeago.{clang}.js";
-    <script type="text/javascript" src="@src"></script>
+        var src = $"timeago.{clang}.js";
+        <script type="text/javascript" src="~/js/timeago/@src"></script>
 }
 
 @await RenderSectionAsync("Scripts", required: false)
