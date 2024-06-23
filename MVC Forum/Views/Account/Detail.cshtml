@@ -50,7 +50,7 @@
                         <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
                     </div>
                 </div>
-                <div class="col col-md-3">
+                <div class="col col-md-4">
                     <div class="mb-3">
                         <label asp-for="Member!.Created" class="col-sm-3 form-label">@Localizer["ProfileDate"]</label>
                         <div class="col-sm-9">
@@ -79,9 +79,9 @@
                 </div>
                 <div class="col col-md-3">
                     <div class="card panel-primary card-body p-3">
-                        <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SearchMessage=true" id="member_posts">All non-archived posts by @Model.Member?.Name</a>
-                        <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SinceDate=14&SearchMessage=true" id="member_recent_posts">@Model.Member?.Name's recent posts</a>
-                        <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SearchIn=Subject" id="member_my_posts">Topics started by @Model.Member?.Name</a>
+                        <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SearchMessage=true" id="member_posts">@Localizer["lblProfileAllPosts", Model.Member?.Name]</a>
+                        <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SinceDate=14&SearchMessage=true" id="member_recent_posts">@Localizer["lblProfileRecentPosts", Model.Member?.Name]</a>
+                        <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name" id="member_my_posts">@Localizer["lblProfileMyPosts", Model.Member?.Name]</a>
                     </div>
                 </div>
             </div>

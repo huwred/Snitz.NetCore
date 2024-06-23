@@ -82,9 +82,9 @@
                 <thead>
                 <tr class="bg-dark">
                     <th>&nbsp;</th>
-                        <th><a href="?sortCol=name&sortOrder=@sortorder">@Localizer["UserName"]</a></th>
+                    <th><a href="?sortCol=name&sortOrder=@sortorder">@Localizer["UserName"]</a></th>
                     <th>@Localizer["ProfileTitle"]</th>
-                        <th><a href="?sortCol=posts&sortOrder=@sortorder">@Localizer["ProfilePosts"]</a></th>
+                    <th><a href="?sortCol=posts&sortOrder=@sortorder">@Localizer["ProfilePosts"]</a></th>
                     <th>@Localizer["ProfileLastPost"]</th>
                     <th class="d-none d-md-table-cell"><a href="?sortCol=membersince&sortOrder=@sortorder">@Localizer["ProfileDate"]</a></th>
                     <th class="d-none d-md-table-cell"><a href="?sortCol=lastvisit&sortOrder=@sortorder">@Localizer["ProfileLastVisit"]</a></th>
@@ -113,7 +113,7 @@
                         <td>@member.Title<br />@Html.MemberRankStars(member, ranking, Localizer)</td>
                         <td>@member.Member.Posts</td>
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>
-                        <td class="d-none d-md-table-cell">@member.MemberSince?.Year</td>
+                        <td class="d-none d-md-table-cell">@member.MemberSince?.ToForumDateDisplay()</td>
                         <td class="d-none d-md-table-cell">@member.LastLogin?.ToForumDateDisplay()</td>
                         <td snitz-if="@(userroles != null && userroles.Contains("Administrator"))" class="d-none d-md-table-cell">@member.Member.Email</td>
                         <td class="d-none d-md-table-cell">@member.Member.Country</td>
