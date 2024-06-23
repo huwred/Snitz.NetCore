@@ -131,7 +131,7 @@ namespace SnitzCore.Service
                              + template;
             if (!File.Exists(pathToFile)) //fallback to english
             {
-                template = "en-GB" + Path.DirectorySeparatorChar + template;
+                template = "en-GB" + Path.DirectorySeparatorChar + template.Replace("en\\","");
                 pathToFile = _env.WebRootPath  
                              + Path.DirectorySeparatorChar  
                              + "Templates"  
