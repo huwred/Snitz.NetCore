@@ -35,12 +35,12 @@
             <i snitz-if="@Bookmarks.IsBookmarked(Model.Id)" class="fa fa-bookmark m-1 bookmark-del" title="@Localizer["tipRemoveBookmark"]" data-id="@Model.Id"></i>
             <i snitz-if="@(@Bookmarks.IsBookmarked(Model.Id))" class="fa fa-bookmark-o m-1 bookmark-add" title="@Localizer["tipBookmarkPost"]" data-id="@Model.Id"></i>
         }
-        @if (isadmin || isauthor)
+        @if (isadmin || isauthor || ismoderator)
         {
-            <i snitz-if="@(!islocked || isadmin)" class="fa fa-pencil m-1 post-edit" title="@Localizer["tipEditTopic"]" data-id="@Model.Id"></i>
+            <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-pencil m-1 post-edit" title="@Localizer["tipEditTopic"]" data-id="@Model.Id"></i>
             <i class="fa fa-trash m-1 post-del" title="@Localizer["tipTopicDel"]" data-id="@Model.Id"></i>
-            <i snitz-if="@(islocked && isadmin)" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.Id" data-status="1"></i>
-            <i snitz-if="@(isadmin && !islocked)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.Id" data-status="0"></i>
+            <i snitz-if="@(islocked && (isadmin || ismoderator))" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.Id" data-status="1"></i>
+            <i snitz-if="@((isadmin || ismoderator) && !islocked)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.Id" data-status="0"></i>
         }
     </div>
 }
