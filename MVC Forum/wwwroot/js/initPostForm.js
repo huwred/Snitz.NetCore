@@ -13,7 +13,6 @@ if ($.cookie("CookieLang")) {
     if (storedCulture !== '') {
         curLang = storedCulture;
     }
-    console.log(curLang);
     if (curLang === "fa") {
         langDirection = "rtl";
     }
@@ -42,9 +41,11 @@ tinymce.init({
     remove_script_host : true,
     document_base_url : SnitzVars.forumUrl,
     convert_urls: true,
-        toolbar: 'code undo redo | styleselect | bold italic | alignleft aligncenter alignright | ' +
-            'bullist numlist | link emoticons | fileButton imageButton media codesample',
-    //toolbar: 'code undo redo | removeformat | styleselect | bullist numlist table | blockquote  | link codesample emoticons | fileButton imageButton media',
+    formats: {
+        blockquote: { block: 'blockquote', classes: 'newquote' }
+    },
+    toolbar: 'code undo redo | styleselect | bold italic | alignleft aligncenter alignright | ' +
+        'bullist numlist | link emoticons | fileButton imageButton media codesample',
     images_upload_url: SnitzVars.baseUrl + "/forumupload",
     images_upload_base_path: window.ContentFolder,
     images_reuse_filename: true,
