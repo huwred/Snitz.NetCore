@@ -16,7 +16,7 @@ public partial class LanguageResource
     [Required]
     public string Name { get; set; } = null!;
 
-    public string Value { get; set; } = null!;
+    public string? Value { get; set; } = null!;
 
     [StringLength(6)]
     [Required]

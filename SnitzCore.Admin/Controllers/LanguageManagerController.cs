@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
@@ -22,12 +23,15 @@ public class LanguageManagerController : Controller
     private readonly ISnitzConfig _snitzConfig;
     private readonly IWebHostEnvironment _env;
     private readonly LanguageService  _languageResource;
-    public LanguageManagerController(SnitzDbContext dbcontext,ISnitzConfig snitzConfig,IWebHostEnvironment hostEnvironment,IHtmlLocalizerFactory localizerFactory)
+    private readonly ILogger<LanguageManagerController> _logger;
+    public LanguageManagerController(SnitzDbContext dbcontext,ISnitzConfig snitzConfig,IWebHostEnvironment hostEnvironment,
+        IHtmlLocalizerFactory localizerFactory,ILogger<LanguageManagerController> logger)
     {
         _dbcontext = dbcontext;
         _snitzConfig = snitzConfig;
         _env = hostEnvironment;
         _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
+        _logger = logger;
     }
 
     // GET
@@ -102,6 +106,7 @@ public class LanguageManagerController : Controller
             LanguageStrings = new List<KeyValuePair<string, List<LanguageResource>>>(),
             ResourceSet = id
         };
+        _logger.LogWarning($"id:{id} culture:{culture} filter:{filter}");
         if (filter != "")
         {
             model.DefaultStrings =
@@ -113,10 +118,20 @@ public class LanguageManagerController : Controller
         }
         else
         {
+            _logger.LogWarning($"DefaultStrings");
             model.DefaultStrings = GetStrings().Where(l => l.ResourceSet == id).ToList();
             foreach (var language in model.Languages)
             {
-                model.LanguageStrings.Add(new KeyValuePair<string, List<LanguageResource>>(language,GetStrings(language).Where(l=>l.ResourceSet == id).ToList()));
+                try
+                {
+                    model.LanguageStrings.Add(new KeyValuePair<string, List<LanguageResource>>(language,GetStrings(language).Where(l=>l.ResourceSet == id).ToList()));
+
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"language:{language} {e.Message}");
+                    //throw;
+                }
             }
         }
 
