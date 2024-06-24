@@ -7,8 +7,8 @@ namespace SnitzCore.Data.Interfaces;
 public interface IBookmark
 {
     int MemberId { get; }
-    BookmarkEntry? GetEntryById(int id);
-    List<BookmarkEntry>? GetAllEntries();
+    BookmarkEntry? Get(int id);
+    List<BookmarkEntry>? GetAll();
 
     List<BookmarkEntry> GetPaged(int pagenum, ActiveSince activesince, string lastVisitCookie,
         string memberSince);

@@ -43,7 +43,7 @@
                     <admin-config config-key="STRPAGESIZE" config-label="Default page size" config-val="@SnitzConfig.GetValue("STRPAGESIZE")"></admin-config>
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRACCOUNTPAGESIZES" config-label="Members Page size" config-val="@SnitzConfig.GetValue("STRACCOUNTPAGESIZES", "20")"></admin-config>
+                    <admin-config config-key="STRACCOUNTPAGESIZES" config-label="Members Page size" config-val="@SnitzConfig.GetIntValue("STRACCOUNTPAGESIZES", 20)"></admin-config>
                 </div>
             </div>
             <partial name="_FormButtons"/>
@@ -85,14 +85,14 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <admin-config config-key="STRFORUMPAGESIZES" config-label="Page sizes" config-val="@SnitzConfig.GetValue("STRFORUMPAGESIZES", "10,25,50,100")"></admin-config>
+                            <admin-config config-key="STRFORUMPAGESIZES" config-label="Page sizes" config-val="@SnitzConfig.GetValueWithDefault("STRFORUMPAGESIZES", "10,25,50,100")"></admin-config>
                         </div>
                         <div class="col">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <admin-config config-key="STRSEARCHPAGESIZES" config-label="Search results page size" config-val="@SnitzConfig.GetValue("STRSEARCHPAGESIZES", "10")"></admin-config>
+                            <admin-config config-key="STRSEARCHPAGESIZES" config-label="Search results page size" config-val="@SnitzConfig.GetValueWithDefault("STRSEARCHPAGESIZES", "10")"></admin-config>
                         </div>
                         <div class="col">
                         </div>
@@ -115,7 +115,7 @@
                 <fieldset @(SnitzConfig.GetIntValue("STRHOTTOPIC") == 0 ? "disabled" : "") id="HOTTOPICSENABLED">
                     <div class="row">
                         <div class="col">
-                            <admin-config config-key="INTHOTTOPICNUM" config-label="Hot Topic Count" config-val="@SnitzConfig.GetValue("INTHOTTOPICNUM")"></admin-config>
+                            <admin-config config-key="INTHOTTOPICNUM" config-label="Hot Topic Count" config-val="@SnitzConfig.GetIntValue("INTHOTTOPICNUM")"></admin-config>
                         </div>
                         <div class="col">
                         </div>
@@ -129,16 +129,16 @@
                 <admin-config config-key="INTTOPICDISPLAY" config-label="Show Topic on all pages" config-val="@SnitzConfig.GetIntValue("INTTOPICDISPLAY")"></admin-config>
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="STRTOPICPAGESIZES" config-label="Topic Replies Page size" config-val="@SnitzConfig.GetValue("STRTOPICPAGESIZES", "10,25,50,100")"></admin-config>
+                        <admin-config config-key="STRTOPICPAGESIZES" config-label="Topic Replies Page size" config-val="@SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "10,25,50,100")"></admin-config>
                     </div>
                     <div class="col">
-                        <admin-config config-key="STRACTIVEPAGESIZES" config-label="Active Topics page size" config-val="@SnitzConfig.GetValue("STRACTIVEPAGESIZES", "10,20,50")"></admin-config>
+                        <admin-config config-key="STRACTIVEPAGESIZES" config-label="Active Topics page size" config-val="@SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "10,20,50")"></admin-config>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="INTRECENTCOUNT" config-label="Recent Topics list" config-val="@SnitzConfig.GetValue("INTRECENTCOUNT", "5")"></admin-config>
+                        <admin-config config-key="INTRECENTCOUNT" config-label="Recent Topics list" config-val="@SnitzConfig.GetIntValue("INTRECENTCOUNT", 5)"></admin-config>
                     </div>
                     <div class="col">
                     </div>
@@ -161,7 +161,7 @@
                     </div>
                     <div class="col">
                         <fieldset @(SnitzConfig.GetIntValue("STRFLOODCHECK") == 0 ? "disabled" : "") id="FLOODCHECKENABLED">
-                            <admin-config config-key="STRFLOODCHECKTIME" config-label="Flood lockout (seconds)" config-val="@SnitzConfig.GetValue("STRFLOODCHECKTIME", "30")"></admin-config>
+                            <admin-config config-key="STRFLOODCHECKTIME" config-label="Flood lockout (seconds)" config-val="@SnitzConfig.GetIntValue("STRFLOODCHECKTIME", 30)"></admin-config>
                         </fieldset>
                     </div>
                 </div>
@@ -173,10 +173,10 @@
                 <fieldset @(SnitzConfig.GetIntValue("STRALLOWUPLOADS") == 0 ? "disabled" : "") id="UPLOADSENABLED">
                     <div class="row">
                         <div class="col">
-                            <admin-config config-key="INTMAXFILESIZE" config-label="Max File size (Mb)" config-val="@SnitzConfig.GetValue("INTMAXFILESIZE", "10")"></admin-config>
+                            <admin-config config-key="INTMAXFILESIZE" config-label="Max File size (Mb)" config-val="@SnitzConfig.GetIntValue("INTMAXFILESIZE", 10)"></admin-config>
                         </div>
                         <div class="col">
-                            <admin-config config-key="STRFILETYPES" config-label="Allowed Extensions" config-val="@SnitzConfig.GetValue("STRFILETYPES", ".txt,.pdf,.zip,.png,.jpg")"></admin-config>
+                            <admin-config config-key="STRFILETYPES" config-label="Allowed Extensions" config-val="@SnitzConfig.GetValueWithDefault("STRFILETYPES", ".txt,.pdf,.zip,.png,.jpg")"></admin-config>
                         </div>
                     </div>
                 </fieldset>
@@ -239,10 +239,10 @@
                 <admin-config config-key="STRPMSIG" config-label="Allow signatures" config-val="@SnitzConfig.GetIntValue("STRPMSIG")"></admin-config>
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="INTMAXPMRECIPIENTS" config-label="Max PM recipients" config-val="@SnitzConfig.GetValue("INTMAXPMRECIPIENTS", "50")"></admin-config>
+                        <admin-config config-key="INTMAXPMRECIPIENTS" config-label="Max PM recipients" config-val="@SnitzConfig.GetIntValue("INTMAXPMRECIPIENTS", 50)"></admin-config>
                     </div>
                     <div class="col">
-                        <admin-config config-key="STRPMLIMIT" config-label="Message Limit" config-val="@SnitzConfig.GetValue("STRPMLIMIT", "500")"></admin-config>
+                        <admin-config config-key="STRPMLIMIT" config-label="Message Limit" config-val="@SnitzConfig.GetIntValue("STRPMLIMIT", 500)"></admin-config>
                     </div>
                 </div>
             </fieldset>

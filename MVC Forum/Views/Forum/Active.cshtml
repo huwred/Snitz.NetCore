@@ -40,13 +40,13 @@
                                 <enum-select name="Since" id="default-days" last-visit="@lastvisit" enum-type="typeof(ActiveSince)" selected-value="(int)Model.Since" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                                 <enum-select name="Refresh" id="active-refresh" enum-type="typeof(ActiveRefresh)" selected-value="(int)Model.Refresh" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
 
-                                @if (SnitzConfig.GetValue("STRACTIVEPAGESIZES", "") != "")
+                                @if (SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "") != "")
                                 {
                                     var ischecked = Model.PageSize;
                                     <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
 
                                     <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
-                                        @foreach (var size in SnitzConfig.GetValue("STRACTIVEPAGESIZES", "").Split(","))
+                                        @foreach (var size in SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "").Split(","))
                                         {
                                             <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (ischecked == Convert.ToInt32(size))
                                             {

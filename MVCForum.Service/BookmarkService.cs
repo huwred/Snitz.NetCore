@@ -28,12 +28,12 @@ namespace SnitzCore.Service
             
 
         }
-        public BookmarkEntry? GetEntryById(int id)
+        public BookmarkEntry? Get(int id)
         {
             return _dbContext.Bookmarks.Include(b=>b.Member).Include(b=>b.Topic).AsNoTrackingWithIdentityResolution().First(b=>b.Id == id && b.MemberId == MemberId);
         }
 
-        public List<BookmarkEntry>? GetAllEntries()
+        public List<BookmarkEntry>? GetAll()
         {
             return _dbContext.Bookmarks.Include(b=>b.Member).Include(b=>b.Topic).ThenInclude(t=>t.Forum).AsNoTrackingWithIdentityResolution().Where(b=>b.MemberId == MemberId).ToList();
         }

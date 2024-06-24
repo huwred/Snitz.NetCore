@@ -65,7 +65,7 @@ namespace MVCForum.Controllers
             {
                 var reply = _postService.GetReply(vm.Id);
                 var author = _memberService.GetById(reply.MemberId);
-                var forum = _forumService.GetById(reply.ForumId);
+                var forum = _forumService.GetWithPosts(reply.ForumId);
                 var subject = "";
                 var message = "";
                 

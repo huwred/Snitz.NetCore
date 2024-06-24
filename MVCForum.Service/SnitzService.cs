@@ -16,6 +16,7 @@ namespace SnitzCore.Service
         {
             _dbContext = dbContext;
         }
+
         public ForumTotal Totals()
         {
             var result = _dbContext.ForumTotal.AsNoTracking().First();
@@ -55,10 +56,12 @@ namespace SnitzCore.Service
                 LastReply = latest.Id
             };
         }
+
         public int ForumCount()
         {
             return _dbContext.Forums.Count(f=>f.Status == 1);
         }
+
         public IEnumerable<SnitzConfig> GetConfig()
         {
             return _dbContext.SnitzConfig.AsNoTracking().AsQueryable();
@@ -71,6 +74,7 @@ namespace SnitzCore.Service
 
         public int ActiveSince(string lastvisit)
         {
+            //use string.compare because raw dates are stored as strings
             return _dbContext.Posts.AsNoTracking().Where(t=> string.Compare(t.LastPostDate, lastvisit) > 0).Count();
         }
     }

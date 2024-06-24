@@ -274,7 +274,7 @@ public class BbCodeProcessor : ICodeProcessor
             return data;
         }
         _useFullUrl = newsfeed;
-        if (_config.GetValue("STRALLOWFORUMCODE") != "1")
+        if (_config.GetIntValue("STRALLOWFORUMCODE") != 1)
             return data;
 
         if (String.IsNullOrWhiteSpace(data))

@@ -57,7 +57,7 @@ namespace MVCForum.Controllers
                 pagesize = 10;
             }
             _httpcontext.Session.SetInt32("ForumPageSize",pagesize);
-            var forum = _forumService.GetById(id);
+            var forum = _forumService.GetWithPosts(id);
 
             bool signedin = false;
             if (User.Identity is { IsAuthenticated: true })
@@ -638,7 +638,7 @@ namespace MVCForum.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var forum = _forumService.GetById(id);
+            var forum = _forumService.GetWithPosts(id);
             var catlist = _forumService.CategoryList();
             var category = catlist.FirstOrDefault(f=>f.Key == forum.CategoryId);
             var allforumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
@@ -663,7 +663,8 @@ namespace MVCForum.Controllers
                 Moderation = forum.Moderation,
                 Subscription = (ForumSubscription)forum.Subscription,
                 ForumId = id,
-                NewPassword = forum.Password
+                NewPassword = forum.Password,
+                AllowedMembers = _forumService.AllowedUsers(id)
             };
             return View("Create",model);
         }
@@ -673,7 +674,7 @@ namespace MVCForum.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var catid = _forumService.GetById(id).CategoryId;
+            var catid = _forumService.GetWithPosts(id).CategoryId;
             await _forumService.Delete(id);
             return Json(new { redirectToUrl = Url.Action("Index", "Category",new{id = catid}) });
         }
@@ -683,7 +684,7 @@ namespace MVCForum.Controllers
         [Route("Forum/Subscribe/")]
         public IActionResult Subscribe(int id)
         {
-            var forum = _forumService.GetById(id);
+            var forum = _forumService.GetWithPosts(id);
             var member = _memberService.Current();
             _snitzDbContext.MemberSubscription.Add(new MemberSubscription()
             {
@@ -713,7 +714,7 @@ namespace MVCForum.Controllers
             var topicPage = new MvcBreadcrumbNode("Search", "Forum", "ViewData.Title") { Parent = homePage };
             ViewData["BreadcrumbNode"] = topicPage;
             ViewData["Title"] = "Search";
-            if (HttpContext.Request.Cookies.ContainsKey("search-pagesize") && _config.GetValue("STRFORUMPAGESIZES", _config.DefaultPageSize.ToString())!.Split(',').Count() > 1)
+            if (HttpContext.Request.Cookies.ContainsKey("search-pagesize") && _config.GetValueWithDefault("STRFORUMPAGESIZES", _config.DefaultPageSize.ToString())!.Split(',').Count() > 1)
             {
                 var pagesizeCookie = HttpContext.Request.Cookies["search-pagesize"];
                 if (pagesizeCookie != null)
@@ -832,7 +833,7 @@ namespace MVCForum.Controllers
         public IActionResult MyView(int pagenum=1, MyTopicsSince activesince = MyTopicsSince.Last12Months)
         {
             var forumsubs = _memberService.ForumSubscriptions().ToList();
-            var result = _forumService.FetchMyForumTopics(5, pagenum, forumsubs);
+            var result = _forumService.FetchMyForumTopicsPaged(5, pagenum, forumsubs);
 
             MyTopicsViewModel vm = new MyTopicsViewModel
             {
@@ -847,7 +848,7 @@ namespace MVCForum.Controllers
         public IActionResult MyViewNext(int nextpage, string refresh = "NO" )
         {
             var forumsubs = _memberService.ForumSubscriptions().ToList();
-            var result = _forumService.FetchMyForumTopics(5, nextpage, forumsubs);
+            var result = _forumService.FetchMyForumTopicsPaged(5, nextpage, forumsubs);
             MyTopicsViewModel vm = new MyTopicsViewModel
             {
                 Topics = result,
@@ -858,7 +859,7 @@ namespace MVCForum.Controllers
 
         public IActionResult PasswordCheck(string pwd,string forumid,string? topicid)
         {
-            var forum = _forumService.GetById(Convert.ToInt32(forumid));
+            var forum = _forumService.GetWithPosts(Convert.ToInt32(forumid));
             if (forum != null && forum.Password == pwd)
             {
                 _httpcontext.Session.SetString("Pforum_" + forumid, pwd);
@@ -871,7 +872,7 @@ namespace MVCForum.Controllers
         public async Task<IActionResult> EmptyForum(int id )
         {
             await _forumService.EmptyForum(id);
-            var forum = _forumService.GetById(id);
+            var forum = _forumService.GetWithPosts(id);
             return Json(new { redirectToUrl = Url.Action("Index", "Category",new{id=forum.CategoryId}) });
 
         }

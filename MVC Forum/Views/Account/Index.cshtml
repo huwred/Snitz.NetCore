@@ -56,9 +56,9 @@
             </form>
             <div class="invalid-feedback ml-2">No values entered for search.</div>
             
-            @if (SnitzConfig.GetValue("STRACCOUNTPAGESIZES", "") != "")
+            @if (SnitzConfig.GetValueWithDefault("STRACCOUNTPAGESIZES", "") != "")
             {
-                var sizes = SnitzConfig.GetValue("STRACCOUNTPAGESIZES", "").Split(",");
+                var sizes = SnitzConfig.GetValueWithDefault("STRACCOUNTPAGESIZES", "").Split(",");
                 if (sizes.Length > 1)
                 {
                     <form asp-action="Index" id="pagesize-form">

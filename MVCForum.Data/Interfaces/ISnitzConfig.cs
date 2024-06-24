@@ -20,7 +20,7 @@ namespace SnitzCore.Data.Interfaces
         IEnumerable<string> GetRequiredMemberFields();
         int GetIntValue(string? key, int defaultvalue = 0);
         string GetValue(string key);
-        string? GetValue(string key,string? defVal = null);
+        string? GetValueWithDefault(string key,string? defVal = null);
         bool TableExists(string tablename);
         void RemoveFromCache(string key);
         IEnumerable<Badword> GetBadwords();

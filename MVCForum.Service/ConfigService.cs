@@ -55,9 +55,9 @@ namespace SnitzCore.Service
             get
             {
                 List<CaptchaOperator> operators = new List<CaptchaOperator>();
-                if (GetValue("STRCAPTCHAOPERATORS","") != "")
+                if (GetValueWithDefault("STRCAPTCHAOPERATORS","") != "")
                 {
-                    var stringCaptcha = GetValue("STRCAPTCHAOPERATORS","").Split(new[] { ';' },
+                    var stringCaptcha = GetValueWithDefault("STRCAPTCHAOPERATORS","").Split(new[] { ';' },
                         StringSplitOptions.RemoveEmptyEntries);
                     foreach (string s in stringCaptcha)
                     {
@@ -159,7 +159,7 @@ namespace SnitzCore.Service
         {
             return _dbContext.SnitzConfig.SingleOrDefault(c=>c.Key == key)?.Value ?? "";
         }
-        public string GetValue(string key, string? defVal = null)
+        public string GetValueWithDefault(string key, string? defVal = null)
         {
             var service = new InMemoryCache() { DoNotExpire = true };
             return service.GetOrSet("cfg_" + key, () => CachedStringValue(key,defVal))!;
@@ -214,7 +214,7 @@ namespace SnitzCore.Service
 
         public string ThemeCss(string cssfile)
         {
-            var currentTheme = _httpContextAccessor.HttpContext?.Request.Cookies["snitztheme"] ?? GetValue("STRDEFAULTTHEME", "SnitzTheme");
+            var currentTheme = _httpContextAccessor.HttpContext?.Request.Cookies["snitztheme"] ?? GetValueWithDefault("STRDEFAULTTHEME", "SnitzTheme");
             //var currentTheme = GetValue("STRDEFAULTTHEME", "SnitzTheme");
             var root = _httpContextAccessor.HttpContext?.Request.PathBase;
             return $"{root}/css/themes/{currentTheme}/{cssfile}";

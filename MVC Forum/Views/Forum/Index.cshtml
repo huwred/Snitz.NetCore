@@ -91,12 +91,12 @@
                         </select>
                         <span class="form-text mb-2 d-none d-sm-block">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
                         <div class="input-group-addon">
-                            @if (SnitzConfig.GetValue("STRFORUMPAGESIZES", "") != "")
+                            @if (SnitzConfig.GetValueWithDefault("STRFORUMPAGESIZES", "") != "")
                             {
                                 var ischecked = Model.PageSize;
 
                                 <div class="radioBtn btn-group d-none d-sm-block" role="group" aria-label="Select page size" title="Select page size">
-                                    @foreach (var size in SnitzConfig.GetValue("STRFORUMPAGESIZES", "").Split(","))
+                                    @foreach (var size in SnitzConfig.GetValueWithDefault("STRFORUMPAGESIZES", "").Split(","))
                                     {
                                         <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size"
                                                @if (ischecked == Convert.ToInt32(size))

@@ -6,7 +6,7 @@
 @inject SignInManager<ForumUser> SignInManager
 @inject ISnitzCookie SnitzCookie
 @{
-    var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? SnitzConfig.GetValue("STRDEFAULTTHEME", "SnitzTheme");
+    var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? SnitzConfig.GetValueWithDefault("STRDEFAULTTHEME", "SnitzTheme");
     var currForumUser = UserManager.GetUserAsync(User).Result;
 }
 <nav class="navbar navbar-expand-md bg-dark @* navbar-custom  *@fixed-top">

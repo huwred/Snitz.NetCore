@@ -13,14 +13,14 @@
                 <admin-config config-key="INTFEATUREDPOLL" config-label="Show featured Poll" config-val="@SnitzConfig.GetIntValue("INTFEATUREDPOLL", 0)"></admin-config>
                 <div class="mb-3">
                     <label for="INTFEATUREDPOLLID" class="form-label">Featured Poll ID:</label>
-                    <input class="form-control" id="INTFEATUREDPOLLID" type="number" name="INTFEATUREDPOLLID" value="@SnitzConfig.GetValue("INTFEATUREDPOLLID")" />
+                    <input class="form-control" id="INTFEATUREDPOLLID" type="number" name="INTFEATUREDPOLLID" value="@SnitzConfig.GetIntValue("INTFEATUREDPOLLID")" />
                 </div>
                 <div class="mb-3">
                     <admin-config config-key="INTHIDEPOLL" config-label="Hide featured Poll after voting" config-val="@SnitzConfig.GetIntValue("INTHIDEPOLL", 0)"></admin-config>
                 </div>
                 <div class="mb-3">
                     <label for="intmaxvotes" class="form-label">Max. No of Poll answers:</label>
-                    <input class="form-control" id="intmaxvotes" type="number" name="INTMAXVOTES" value="@(SnitzConfig.GetValue("INTMAXVOTES"))" />
+                    <input class="form-control" id="intmaxvotes" type="number" name="INTMAXVOTES" value="@(SnitzConfig.GetIntValue("INTMAXVOTES"))" />
                 </div>
                 <div class="mb-3">
                     <button id="btnSubmit" type="submit" class="btn btn-success">Save Changes</button>

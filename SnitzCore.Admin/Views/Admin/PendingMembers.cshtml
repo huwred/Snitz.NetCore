@@ -32,7 +32,7 @@
             <th class="col-3">
                 Email
             </th>
-            @if (SnitzConfig.GetValue("STRIPLOGGING") == "1")
+            @if (SnitzConfig.GetIntValue("STRIPLOGGING") == 1)
             {
                 <th class="col-2">
                     IpAddress
@@ -76,7 +76,7 @@
                                         <input asp-for="@item.Email" type="email" name="Email" class="form-control" />
                                     </div>
                                 </td>
-                                @if (SnitzConfig.GetValue("STRIPLOGGING") == "1")
+                                @if (SnitzConfig.GetIntValue("STRIPLOGGING") == 1)
                                 {
                                     <td class="col-2" style="word-wrap: break-word; max-width: 120px;">
                                         @item.Member?.Ip
@@ -91,7 +91,7 @@
                                 </td>
                                 <td class="col-2 fs-4">
                                     <a href="#" data-id="@item.UserName" data-ip="@item.Member?.Ip" data-email="@item.Email" class="stopForumSpam text-primary" title="StopForumSpam Check"><i class="fa fa-search"></i></a>
-                                    @if (SnitzConfig.GetValue("STRIPLOGGING") == "1")
+                                    @if (SnitzConfig.GetIntValue("STRIPLOGGING") == 1)
                                     {
                                         <a href="#" class="showIPAddress text-primary " data-toggle="tooltip" title="Lookup IP address" data-id="@item.Member?.Ip"><i class="fa fa fa-sitemap"></i></a>
                                     }

@@ -313,7 +313,7 @@ namespace MVCForum.Controllers
                     return View("Error");
                 }
             }
-            var forum = _forumService.GetById(id);
+            var forum = _forumService.GetWithPosts(id);
             var model = new NewPostModel()
             {
                 Id = 0,
@@ -353,7 +353,7 @@ namespace MVCForum.Controllers
             }
             var topic = _postService.GetTopicWithRelated(id);
             
-            var forum = _forumService.GetById(topic.ForumId);
+            var forum = _forumService.GetWithPosts(topic.ForumId);
             var model = new NewPostModel()
             {
                 TopicId = id,
@@ -384,7 +384,7 @@ namespace MVCForum.Controllers
             var member = await _memberService.GetById(User);
             var topic = _postService.GetTopicWithRelated(id);
             
-            var forum = _forumService.GetById(topic.ForumId);
+            var forum = _forumService.GetWithPosts(topic.ForumId);
             var model = new NewPostModel()
             {
                 TopicId = id,
@@ -416,7 +416,7 @@ namespace MVCForum.Controllers
             var member = await _memberService.GetById(User);
             var topic = _postService.GetTopicWithRelated(id);
             var haspoll = _postService.HasPoll(id);
-            var forum = _forumService.GetById(topic.ForumId);
+            var forum = _forumService.GetWithPosts(topic.ForumId);
             var model = new NewPostModel()
             {
                 Id = id,
@@ -581,7 +581,7 @@ namespace MVCForum.Controllers
                     var sub = _config.GetIntValue("STRSUBSCRIPTION");
                     if (!(sub == 0 || sub == 4))
                     {
-                        var forum = _forumService.GetById(post.ForumId);
+                        var forum = _forumService.GetWithPosts(post.ForumId);
                         switch (forum.Category.Subscription)
                         {
                             case 1 :
@@ -701,7 +701,7 @@ namespace MVCForum.Controllers
                 var replyid = await _postService.Create(reply);
                 if (reply.Status < 2) //not waiting to be moderated
                 {
-                    var forum = _forumService.GetById(reply.ForumId);
+                    var forum = _forumService.GetWithPosts(reply.ForumId);
                     var sub = _config.GetIntValue("STRSUBSCRIPTION");
                     if (sub != 0)
                     {
@@ -798,7 +798,7 @@ namespace MVCForum.Controllers
         }
         public IActionResult PasswordCheck(string pwd,string forumid,string? topicid)
         {
-            var forum = _forumService.GetById(Convert.ToInt32(forumid));
+            var forum = _forumService.GetWithPosts(Convert.ToInt32(forumid));
             if (forum != null && forum.Password == pwd)
             {
                 _httpcontext.Session.SetString("Pforum_" + forumid, pwd);
@@ -1016,7 +1016,7 @@ namespace MVCForum.Controllers
             {
                 var topic = _postService.GetTopicForUpdate(vm.Id);
                 var author = _memberService.GetById(topic.MemberId);
-                var forum = _forumService.GetById(topic.ForumId);
+                var forum = _forumService.GetWithPosts(topic.ForumId);
                 var subject = "";
                 var message = "";
                 
@@ -1326,7 +1326,7 @@ namespace MVCForum.Controllers
             }
 
             var donotModerate = User.IsInRole("Administrator") || User.IsInRole("Forum_" + model.ForumId);
-            var forum = _forumService.GetById(model.ForumId);
+            var forum = _forumService.GetWithPosts(model.ForumId);
             return new Post()
             {
                 Id = model.TopicId,
@@ -1354,7 +1354,7 @@ namespace MVCForum.Controllers
             }
 
             var donotModerate = User.IsInRole("Administrator") || User.IsInRole("Forum_" + model.ForumId);
-            var forum = _forumService.GetById(model.ForumId);
+            var forum = _forumService.GetWithPosts(model.ForumId);
             return new PostReply()
             {
                 Id = model.Id,

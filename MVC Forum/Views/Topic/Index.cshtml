@@ -109,13 +109,13 @@
                 <option value="des" selected-val="@Model.SortDir">@Localizer["optDesc"]</option>
                 <option value="asc" selected-val="@Model.SortDir">@Localizer["optAsc"]</option>
             </select>
-            @if (SnitzConfig.GetValue("STRTOPICPAGESIZES", "") != "")
+            @if (SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "") != "")
             {
                 var ischecked = Model.PageSize;
                     <span class="form-text">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
 
                 <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
-                    @foreach (var size in SnitzConfig.GetValue("STRTOPICPAGESIZES", "").Split(","))
+                    @foreach (var size in SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "").Split(","))
                     {
                         <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size"
                                @if (ischecked == Convert.ToInt32(size))

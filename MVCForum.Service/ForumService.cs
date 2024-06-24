@@ -163,7 +163,7 @@ namespace SnitzCore.Service
             return  _dbContext.Forums.AsNoTracking().Include(f=>f.Category).First(f=>f.Id==id);
 
         }
-        public Forum GetById(int id)
+        public Forum GetWithPosts(int id)
         {
             return _dbContext.Forums.AsNoTracking().Where(f => f.Id == id)
                 .Include(f=>f.Category)
@@ -262,7 +262,7 @@ namespace SnitzCore.Service
             //cacheService.Remove("category.forums");           
         }
 
-        public PagedList<Post> FetchMyForumTopics(int pagesize, int pagenum, IEnumerable<int> forumids)
+        public PagedList<Post> FetchMyForumTopicsPaged(int pagesize, int pagenum, IEnumerable<int> forumids)
         {
             var result = _dbContext.Posts.AsNoTracking()
                 .Include(p => p.Category)
@@ -312,7 +312,7 @@ namespace SnitzCore.Service
 
         }
 
-        public Dictionary<int, string> GetAllowedUsers(int id)
+        public Dictionary<int, string> AllowedUsers(int id)
         {
             return _dbContext.ForumAllowedMembers.Include(am => am.Member).Where(am => am.ForumId == id)
                 .ToDictionary(u => u.MemberId, u => u.Member.Name);

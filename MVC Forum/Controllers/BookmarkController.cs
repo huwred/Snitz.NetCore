@@ -23,7 +23,7 @@ namespace MVCForum.Controllers
         {
             var vm = new BookmarkViewModel
             {
-                Bookmarks = _bookmarks.GetAllEntries(),
+                Bookmarks = _bookmarks.GetAll(),
                 ActiveSince = ActiveSince.LastVisit,
                 Refresh = ActiveRefresh.None
             };

@@ -8,7 +8,7 @@
     @Localizer["lblUpload"]
 </p>
 <p class="mb-3">
-    @Localizer["maxFileSize", SnitzConfig.GetValue("INTMAXIMAGESIZE", "5")]<br />
+    @Localizer["maxFileSize", SnitzConfig.GetIntValue("INTMAXIMAGESIZE", 5)]<br />
     @Localizer["allowedFiles", allowedTypes]
 </p>
 <form action="/PhotoAlbumUpload/" method="post" enctype="multipart/form-data" role="form" id="upload-form">

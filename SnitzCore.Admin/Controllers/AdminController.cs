@@ -205,7 +205,7 @@ namespace SnitzCore.BackOffice.Controllers
         }
         public ActionResult GetForumModerators(int id)
         {
-            Forum forum = _forumservice.GetById(id);
+            Forum forum = _forumservice.GetWithPosts(id);
             AdminModeratorsViewModel vm = new(_forumservice) {ForumId = id};
             Dictionary<int, string?>? modList = forum.ForumModerators?.ToDictionary(o => o.MemberId, o => o.Member?.Name);
 
@@ -225,7 +225,7 @@ namespace SnitzCore.BackOffice.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult UpdateForumModerators(AdminModeratorsViewModel model)
         {
-            Forum forum = _forumservice.GetById(model.ForumId);
+            Forum forum = _forumservice.GetWithPosts(model.ForumId);
             var forumModerators = model.ForumModerators;
             var currentForumModerators = forum.ForumModerators?.ToList();
 
@@ -640,7 +640,7 @@ namespace SnitzCore.BackOffice.Controllers
             
             vm.EmailMode = _snitzconfig.GetValue("STREMAIL");
             vm.UseSpamFilter = _snitzconfig.GetValue("STRFILTEREMAILADDRESSES");
-            vm.ContactEmail = _snitzconfig.GetValue("STRCONTACTEMAIL",null) ?? vm.From;
+            vm.ContactEmail = _snitzconfig.GetValueWithDefault("STRCONTACTEMAIL",null) ?? vm.From;
             vm.BannedDomains = _dbcontext.SpamFilter.AsQueryable().OrderBy(s=>s.Server).ToArray();
             return View(vm);
         }

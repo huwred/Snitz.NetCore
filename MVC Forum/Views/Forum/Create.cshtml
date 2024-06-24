@@ -5,11 +5,7 @@
 @using SnitzCore.Service.TagHelpers
 @using Microsoft.AspNetCore.Identity
 @model MVCForum.ViewModels.Forum.NewForumModel
-@inject IForum ForumService
-@{
-    var test = Model.Id;
-    var users = ForumService.GetAllowedUsers(Model.Id);
-}
+
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
     <div class="row bg-form p-4 rounded">
@@ -125,7 +121,7 @@
                             <div class="mb-3">
                                 <form asp-controller="Forum" asp-action="RemoveAllowed" method="post" id="rem-allowedform">
                                     <select class="form-control mb-3" id="AllowedMembers" multiple="multiple" name="AllowedMembers">
-                                        @foreach (var member in users)
+                                        @foreach (var member in Model.AllowedMembers)
                                         {
                                             <option value="@member.Key">@member.Value</option>
                                         }
