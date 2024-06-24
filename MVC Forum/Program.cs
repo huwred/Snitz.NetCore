@@ -35,6 +35,7 @@ using SnitzCore.Service.Extensions;
 using SnitzCore.Service.Hangfire;
 using MVCForum.MiddleWare;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 
@@ -72,7 +73,8 @@ builder.Services.AddDefaultIdentity<ForumUser>(options =>
     .AddDefaultTokenProviders()
     .AddTokenProvider<EmailConfirmationTokenProvider<ForumUser>>("emailconfirmation")
     .AddPasswordValidator<CustomPasswordValidator<ForumUser>>();
-
+//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+//    .AddCookie();
 builder.Services.AddScoped<IPasswordHasher<IdentityUser>, CustomPasswordHasher>();
 builder.Services.Configure<IdentityOptions>(builder.Configuration.GetSection(nameof(IdentityOptions)));
 builder.Services.ConfigureApplicationCookie(options =>
@@ -82,10 +84,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     //Location for your Custom Login Page
     options.LoginPath = "/Account/Login";
 
-    // Cookie settings
-    options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
     options.SlidingExpiration = true;
+    // Cookie settings
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.HttpOnly = true;
+
 
 });
 builder.Services.Configure<CookiePolicyOptions>(options =>
@@ -139,6 +143,7 @@ builder.Services.AddSession(options =>
     options.Cookie.Name = ".snitzCore.Session";
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
 });
 EmailConfiguration emailConfig = builder.Configuration
     .GetSection("MailSettings")
