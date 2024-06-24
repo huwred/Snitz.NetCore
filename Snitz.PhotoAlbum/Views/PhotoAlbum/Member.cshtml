@@ -244,12 +244,12 @@
             var postid = $(this).data('id');
             var href = $(this).attr('href');
             $('#confirmModal #confirm-body').html('<p>You are about to delete this image.</p><p>Do you wish to proceed?</p>');
-            $('#confirmModal').data('id', postid).data('url', href).modal('show');
+            $('#confirmModal').data('id', postid).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
 
             $('#confirmModal').on('click', '#btnYes', function (e) {
                 // handle deletion here
                 e.preventDefault();
-                $.post(href,
+                $.post(href.replace("~", SnitzVars.baseUrl),
                     function (data) {
                         $('#confirmModal').modal('hide');
                         if (!data) {

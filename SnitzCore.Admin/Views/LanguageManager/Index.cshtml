@@ -181,14 +181,14 @@
             e.preventDefault();
             var id = $(this).data('id');
             var href = $(this).attr('href');
-            $('#myModal').data('id', id).data('url', href).modal('show');
+            $('#myModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
         });
         $(document).on('click','#del-resourceset', function(e) {
 
             e.preventDefault();
             var id = $(this).data('id');
             var href = $(this).attr('href');
-            $('#rsModal').data('id', id).data('url', href).modal('show');
+            $('#rsModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
         });
         $(document).on('click','#rsbtnYes',function(e) {
             // handle deletion here

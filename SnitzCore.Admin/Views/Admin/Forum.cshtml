@@ -195,7 +195,7 @@
             e.preventDefault();
             var id = $(this).data('id');
             var href = $(this).attr('href');
-            $('#myModal').data('id', id).data('url', href).modal('show');
+            $('#myModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
         });
 
         $("#admin-nav li a.nav-link.active").removeClass("active");
