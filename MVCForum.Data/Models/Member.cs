@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using SnitzCore.Data.Extensions;
+﻿using SnitzCore.Data.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,6 +12,9 @@ public partial class Member
     [Column("MEMBER_ID")]
     [ProfileDisplay("Member Id",Order=9999,ReadOnly = true,SystemField = true)]
     public int Id { get; set; }
+    /// <summary>
+    /// Username for log in
+    /// </summary>
     [Column("M_NAME")]
     [StringLength(75)]
     [ProfileDisplay("Username",Order=9999,ReadOnly = true,SystemField = true)]
@@ -26,10 +28,18 @@ public partial class Member
     [ProfileDisplay("Title",ReadOnly = true, SystemField = true)]
     [StringLength(50)]
     public string? Title { get; set; }
-
+    /// <summary>
+    /// Old Member Level (Replaced with Roles)
+    /// 1: Member
+    /// 2: Moderator
+    /// 3: Administrator
+    /// </summary>
     [Column("M_LEVEL")]
     [ProfileDisplay("Member Level",Order=9999,SystemField = true)]
     public short Level { get; set; }
+    /// <summary>
+    /// Member Status 1 = Active
+    /// </summary>
     [Column("M_STATUS")]
     [ProfileDisplay("Status",Order=9999,SystemField = true)]
     public short Status { get; set; }
@@ -47,7 +57,9 @@ public partial class Member
     [StringLength(14)]
     [ProfileDisplay("Last post",SystemField = true)]
     public string? Lastpostdate { get; set; }
-
+    /// <summary>
+    /// Date Joined Forum
+    /// </summary>
     [Column("M_DATE")]
     [StringLength(14)]
     [ProfileDisplay("ProfileDate",SystemField = true)]
@@ -156,43 +168,43 @@ public partial class Member
 
     #region System
     [Column("M_LAST_IP")]
-        [StringLength(50)]
-        [ProfileDisplay("ProfileLastIP",SystemField = true)]
-        public string? LastIp { get; set; }
+    [StringLength(50)]
+    [ProfileDisplay("ProfileLastIP",SystemField = true)]
+    public string? LastIp { get; set; }
 
-        [Column("M_IP")]
-        [StringLength(50)]
-        [ProfileDisplay("ProfileIP",SystemField = true)]
-        public string? Ip { get; set; }
-        [Column("M_ALLOWEMAIL")]
-        [ProfileDisplay("Allow Emails",SystemField = true,Order=29)]
-        public short Allowemail { get; set; }
-        [Column("M_SUBSCRIPTION")]
-        [ProfileDisplay("Allow subsriptions",Order = 29,SystemField = true)]
-        public short Subscription { get; set; }
-        [Column("M_KEY")]
-        [ProfileDisplay("Key",SystemField = true,Order=9999)]
-        [StringLength(32)]
-        public string? Key { get; set; }
+    [Column("M_IP")]
+    [StringLength(50)]
+    [ProfileDisplay("ProfileIP",SystemField = true)]
+    public string? Ip { get; set; }
+    [Column("M_ALLOWEMAIL")]
+    [ProfileDisplay("Allow Emails",SystemField = true,Order=29)]
+    public short Allowemail { get; set; }
+    [Column("M_SUBSCRIPTION")]
+    [ProfileDisplay("Allow subsriptions",Order = 29,SystemField = true)]
+    public short Subscription { get; set; }
+    [Column("M_KEY")]
+    [ProfileDisplay("Key",SystemField = true,Order=9999)]
+    [StringLength(32)]
+    public string? Key { get; set; }
 
-        [Column("M_NEWEMAIL")]
-        [ProfileDisplay("Password Key",SystemField = true,Order=9999)]
-        [StringLength(50)]
-        public string? Newemail { get; set; }
+    [Column("M_NEWEMAIL")]
+    [ProfileDisplay("Password Key",SystemField = true,Order=9999)]
+    [StringLength(50)]
+    public string? Newemail { get; set; }
 
-        [Column("M_PWKEY")]
-        [ProfileDisplay("Password Key",SystemField = true,Order=9999)]
-        [StringLength(32)]
-        public string? Pwkey { get; set; }
+    [Column("M_PWKEY")]
+    [ProfileDisplay("Password Key",SystemField = true,Order=9999)]
+    [StringLength(32)]
+    public string? Pwkey { get; set; }
 
-        [Column("M_SHA256")]
-        [ProfileDisplay("Sha256",SystemField = true,Order=9999)]
-        public short? Sha256 { get; set; }
+    [Column("M_SHA256")]
+    [ProfileDisplay("Sha256",SystemField = true,Order=9999)]
+    public short? Sha256 { get; set; }
 
-        [Column("M_LASTACTIVITY")]
-        [StringLength(20)]
-        [ProfileDisplay("Last Activity",SystemField = true,Order=9999)]
-        public string? Lastactivity { get; set; }
+    [Column("M_LASTACTIVITY")]
+    [StringLength(20)]
+    [ProfileDisplay("Last Activity",SystemField = true,Order=9999)]
+    public string? Lastactivity { get; set; }
     #endregion
 
     #region SocialMedia

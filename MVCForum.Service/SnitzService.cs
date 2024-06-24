@@ -26,7 +26,7 @@ namespace SnitzCore.Service
 
         public string NewestMember()
         {
-            return _dbContext.Members.AsNoTracking().OrderByDescending(m => m.Created).First().Name;
+            return _dbContext.Members.AsNoTracking().OrderByDescending(m => m.Created).First(m=>m.Status == 1).Name;
         }
 
         public LastPostViewModel LastPost()
