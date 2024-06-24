@@ -3,7 +3,7 @@
     debugger;
     var id = $(this).data('id');
     var href = $(this).attr('href');
-    $('#confirmModal').data('id', id).data('url', href).modal('show');
+    $('#confirmModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
 });
 $(document).on('click','#btnYes',function(e) {
     // handle deletion here
