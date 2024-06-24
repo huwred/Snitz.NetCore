@@ -47,7 +47,7 @@ namespace MVCForum.MiddleWare
             if (context.Request.Cookies.TryGetValue(_cookieName, out var userGuid) == false)
             {
                 userGuid = Guid.NewGuid().ToString();
-                context.Response.Cookies.Append(_cookieName, userGuid, new CookieOptions { HttpOnly = true, MaxAge = TimeSpan.FromDays(30) });
+                context.Response.Cookies.Append(_cookieName, userGuid, new CookieOptions { HttpOnly = true, MaxAge = TimeSpan.FromDays(30),Secure = true,SameSite = SameSiteMode.Strict });
             }
 
             memoryCache.GetOrCreate(userGuid, cacheEntry =>
