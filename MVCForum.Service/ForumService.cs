@@ -176,8 +176,13 @@ namespace SnitzCore.Service
                 .Single();
 
         }
-        public Dictionary<int, string> ForumList()
+        public Dictionary<int, string> ForumList(bool admin = true)
         {
+            if (admin)
+            {
+                return _dbContext.Forums.AsNoTracking().OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value);
+
+            }
             return _dbContext.Forums.AsNoTracking().Where(f=>f.Privateforums == ForumAuthType.All).OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value);
         }
 

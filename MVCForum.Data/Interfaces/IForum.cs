@@ -30,7 +30,7 @@ namespace SnitzCore.Data.Interfaces
         Task UpdatePostCount(int forumId, int topic = 0, int reply = 0);
         Task UpdateForumTitle(int forumId, string newTitle);
         Task UpdateForumDescription(int forumId, string newDescription);
-        Dictionary<int, string> ForumList();
+        Dictionary<int, string> ForumList(bool admin = true);
         string ForumName(string rolename);
         Task EmptyForum(int id);
         Task<Forum> UpdateLastPost(int forumid);

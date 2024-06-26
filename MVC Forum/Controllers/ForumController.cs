@@ -761,7 +761,7 @@ namespace MVCForum.Controllers
                 SearchArchives = false,
                 SearchMessage = false,
                 Categories = new SelectList(_forumService.CategoryList(), "Key", "Value"),
-                Forums = new SelectList(_forumService.ForumList(), "Key", "Value"),
+                Forums = new SelectList(_forumService.ForumList(false), "Key", "Value"),
             };
             return View("../Search/Index",model);
         }
