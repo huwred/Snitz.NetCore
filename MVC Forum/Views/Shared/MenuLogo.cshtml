@@ -1,0 +1,6 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.TagHelpers
+@using SnitzCore.Service.TagHelpers
+
+<a class="navbar-brand" asp-controller="Home" asp-action="Index" title="@Html.Raw(SnitzConfig.ForumTitle) Home page"><img src="@SnitzConfig.RootFolder/images/logo.png" width="141" height="50" alt="@SnitzConfig.GetValue("logoAltText")" loading="lazy" /></a>
+

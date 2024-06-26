@@ -1,8 +1,13 @@
 ﻿@using SnitzCore.Data.Extensions
 @model List<Snitz.PhotoAlbum.Models.AlbumImage>
 @{
+
     string sortIcon = ViewBag.SortDir == "asc" ? "<i class=\"fa fa-sort-desc\"></i>" : "<i class=\"fa fa-sort-asc\"></i>";
-    bool showprivate = false || ViewBag.IsOwner;
+    bool showprivate = false;
+    if(ViewBag.IsOwner != null)
+    {
+        showprivate = false || ViewBag.IsOwner;
+    }
 }
 
 <input type="checkbox" id="ShowThumb" checked /> @Localizer["lblShowThumbnails"]
@@ -35,7 +40,7 @@
             <th class="col-1 d-none d-sm-none d-md-none d-lg-inline">
                 <a href="&sortby=date">@Localizer["Size"]</a>
             </th>
-            @if (ViewBag.IsOwner)
+            @if (ViewBag.IsOwner != null && ViewBag.IsOwner)
             {
                 <th class="col-1 d-none d-sm-none d-md-none d-lg-inline col-ctrl"></th>
             }
@@ -60,7 +65,7 @@
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Views</td>
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Width x @photo.Height</td>
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Size</td>
-                        @if (ViewBag.IsOwner)
+                        @if (ViewBag.IsOwner != null && ViewBag.IsOwner)
                         {
                             <td class="col-1 d-none d-sm-none d-md-none d-lg-inline col-ctrl">
                                 <link-confirm snitz-if="@photo.IsPrivate" title="@Localizer["lblIsPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@photo.Id/?state=false&memberid=@photo.MemberId" config-class="fa fa-user-secret" config-key="@photo.Id"></link-confirm>
@@ -77,14 +82,14 @@
                 @if (!Model.Any())
                 {
                     var colspan = 8;
-                    if (ViewBag.ShowThumbs)
+                    if (ViewBag.ShowThumbs != null && ViewBag.ShowThumbs)
                     {
                         colspan = 9;
                     }
                     <tr class=""><td colspan="@colspan">@Localizer["lblNoImg"]</td></tr>
                 }
             </tbody>
-            if (User.Identity.IsAuthenticated && ViewBag.IsOwner)
+            if (User.Identity.IsAuthenticated && ViewBag.IsOwner != null && ViewBag.IsOwner)
             {
                 <tfoot>
                     <tr>

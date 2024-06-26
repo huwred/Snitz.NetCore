@@ -13,7 +13,7 @@
     <div class="post-control-btn">
         @if (TempData["List"] != null && (bool)TempData["List"])
         {
-            @if (Model.Forum.Subscription == (int)ForumSubscription.TopicSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
+            @if (Model.Forum.Subscription == (int)ForumSubscription.TopicSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0 && User.Identity.IsAuthenticated)
             {
                 if (subscriptions != null && subscriptions.Where(s => s.PostId == Model.Id).Select(s => s.PostId).Any())
                 {

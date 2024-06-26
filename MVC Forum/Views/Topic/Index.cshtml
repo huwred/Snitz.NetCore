@@ -50,7 +50,7 @@
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
     <!--Topic Section-->
-    <vc:topic-buttons postid="@Model.Id"></vc:topic-buttons>
+        <vc:topic-buttons postid="@Model.Id" topic-email="@(loggedin ? 1 : 0)"></vc:topic-buttons>
         <div snitz-if="@show1" class="card mb-2 topic-container bg-white">
         @{
             var answer = "";

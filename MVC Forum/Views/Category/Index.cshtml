@@ -60,7 +60,7 @@
                             <i class="fa fa-minus"></i>
                         </button>
                         <a snitz-if="@(SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)" style="display: inline;" href="~/Category/@ID">@category.Name</a>
-                        @if (category.Subscription == (int)CategorySubscription.CategorySubscription)
+                        @if (category.Subscription == (int)CategorySubscription.CategorySubscription && User.Identity.IsAuthenticated)
                         {
                             if (subscriptions.Where(s => s.CategoryId == category.Id && s.PostId == 0).Select(s => s.CategoryId).Any())
                             {

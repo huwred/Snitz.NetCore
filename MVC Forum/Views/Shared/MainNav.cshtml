@@ -10,7 +10,7 @@
     var currForumUser = UserManager.GetUserAsync(User).Result;
 }
 <nav class="navbar navbar-expand-md bg-dark @* navbar-custom  *@fixed-top">
-    <a class="navbar-brand" asp-controller="Home" asp-action="Index" title="@Html.Raw(SnitzConfig.ForumTitle) Home page"><img src="@SnitzConfig.RootFolder/images/logo.png" width="141" height="50" alt="Snitz Forums Logo" loading="lazy" /></a>
+    <partial name="MenuLogo" />
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -47,45 +47,17 @@
             @if (SignInManager.IsSignedIn(User))
             {
                 <partial name="MemberMenu"/>
-                var user = UserManager.GetUserAsync(User).Result;
-                if (user != null)
+                if (currForumUser != null)
                 {
-                    var userroles = UserManager.GetRolesAsync(user).Result.ToList();
+                    var userroles = UserManager.GetRolesAsync(currForumUser).Result.ToList();
                     if (userroles.Contains("Administrator"))
                     {
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" id="navbarDropdownAdminLink">
-                                @Localizer["mnuAdmin"]
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdminLink">
-                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">@Localizer["mnuAdminMainConfig"]</a></li>
-                                <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">@Localizer["tipNewCategory"]</a></li>
-                                <li><a href="~/LanguageManager/" class="dropdown-item">@Localizer["mnuAdminLangResources"]</a></li>
-                                <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search">Search Language</a></li>
-                                <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">@Localizer["tipNewForum"]</a></li>
-                                <li><hr/></li>
-                                <li>
-                                    <link-confirm title="Restart Application" jq-selector="confirm-restart" href="~/Admin/Restart" class="dropdown-item text-warning"></link-confirm>
-                                </li>
-                            </ul>
-                        </li>
+                        <partial name="AdminMenu" />
                     }
                 }
             }
         </ul>
-        @if (SnitzConfig.GetIntValue("INTTHEMECHANGE") == 1)
-        {
-            <div class="d-flex m-1">
-                <select id="theme-change" class="form-control" title="@Localizer["tipChangeTheme"]">
-                <option value="SnitzTheme" selected-val="@currentTheme">Snitz Theme</option>
-                <option value="DarkTheme" selected-val="@currentTheme">Dark Theme</option>
-                <option value="LightTheme" selected-val="@currentTheme">Light Theme</option>
-                <option value="OrangeTheme" selected-val="@currentTheme">Orange Theme</option>
-                    <option value="VellumTheme" selected-val="@currentTheme">Vellum Theme</option>
-                </select>
-            </div>
-        }
+        <partial name="SelectTheme" />
         <partial name="SelectLanguage" />
-
     </div>
 </nav>

@@ -42,7 +42,8 @@ tinymce.init({
     document_base_url : SnitzVars.forumUrl,
     convert_urls: true,
     formats: {
-        blockquote: { block: 'blockquote', classes: 'newquote' }
+        blockquote: { block: 'blockquote', classes: 'newquote' },
+        bold: { inline: 'span', classes: [ 'my-inline' ] }
     },
     toolbar: 'code undo redo | styleselect | bold italic | alignleft aligncenter alignright | ' +
         'bullist numlist | link emoticons | fileButton imageButton media codesample',

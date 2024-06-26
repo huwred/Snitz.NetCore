@@ -1,0 +1,16 @@
+﻿<li class="nav-item dropdown">
+    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" id="navbarDropdownAdminLink">
+        @Localizer["mnuAdmin"]
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdminLink">
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">@Localizer["mnuAdminMainConfig"]</a></li>
+        <li><a href="~/LanguageManager/" class="dropdown-item">@Localizer["mnuAdminLangResources"]</a></li>
+        <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search">Search Language</a></li>
+        <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">@Localizer["tipNewCategory"]</a></li>
+        <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">@Localizer["tipNewForum"]</a></li>
+        <li><hr /></li>
+        <li>
+            <link-confirm title="Restart Application" jq-selector="confirm-restart" href="~/Admin/Restart" class="dropdown-item text-warning"></link-confirm>
+        </li>
+    </ul>
+</li>

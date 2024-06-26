@@ -117,15 +117,15 @@
             <div class="flex-fill w-50">
                 <form asp-action="Index" class="form-inline" method="get">
                     <div class="input-group">
-                        <button snitz-if="@Model.Forum?.Status == 1" asp-controller="Topic" asp-action="Create" asp-route-id="@Model.Forum?.Id" class="btn btn-outline-primary"><i class="fa fa-commenting-o"></i><span class="d-none d-lg-inline"> @Localizer["btnNewTopic"]</span></button>
                         @if (User.Identity.IsAuthenticated)
                         {
+                            <button snitz-if="@Model.Forum?.Status == 1" asp-controller="Topic" asp-action="Create" asp-route-id="@Model.Forum?.Id" class="btn btn-outline-primary"><i class="fa fa-commenting-o"></i><span class="d-none d-lg-inline"> @Localizer["btnNewTopic"]</span></button>
                             if (SnitzConfig.GetIntValue("INTPOLLS") == 1 && Model.Forum.Polls != (int)PollAuth.Disallow)
                             {
                                 if ((Model.Forum.Polls == (int)PollAuth.Members) || (Model.Forum.Polls == (int)PollAuth.AdminModerators && User.IsInRole("Forum_" + Model.Forum.Id)) || User.IsInRole("Administrator"))
                                 {
                                     <a class="btn btn-outline-primary" title="@Localizer["tipAddPoll"]" data-toggle="tooltip" href="@Url.Action("Create", "Topic", new { id = Model.Forum.Id, ispoll = true })">
-                                        <i class="fa fa-bar-chart"></i>
+                                        <i class="fa fa-bar-chart"></i> <span class="d-none d-lg-inline"> @Localizer["btnAddPoll"]</span>
                                     </a>
                                 }
                             }
@@ -136,7 +136,7 @@
                                 if ((authlevel == 2 || authlevel == 3 && (User.IsInRole("Administrator") || User.IsInRole("Moderator"))) || authlevel == 4 && User.IsInRole("Administrator"))
                                 {
                                     <a class="btn btn-outline-primary" title="@Localizer["tipAddEvent"]" data-toggle="tooltip" href="@Url.Action("Create", "Topic", new { id = Model.Forum.Id, isevent = true })">
-                                        <i class="fa fa-calendar-plus-o"></i>
+                                        <i class="fa fa-calendar-plus-o"></i> <span class="d-none d-lg-inline"> @Localizer["btnAddEvent"]</span>
                                     </a>
                                 }
                             }
@@ -161,7 +161,7 @@
             <div class="table-head">
                 <div class="status rounded-2">
 
-                    @if (!Model.Archives && Model.Forum.ForumSubscription == ForumSubscription.ForumSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
+                    @if (!Model.Archives && User.Identity.IsAuthenticated && Model.Forum.ForumSubscription == ForumSubscription.ForumSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
                     {
                         if (subscriptions != null && subscriptions.Where(s => s.ForumId == Model.Forum.Id && s.PostId == 0).Select(s => s.ForumId).Any())
                         {

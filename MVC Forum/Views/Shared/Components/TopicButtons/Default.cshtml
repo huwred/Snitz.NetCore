@@ -9,7 +9,7 @@
     {
         <a href="~/Topic/Print/@Model.Id" id="print-topic" class="btn btn-outline-primary" title="@Localizer["tipPrintTopic"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa fa-print p-2"></i></a>
     }
-    @if (SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1)
+    @if (SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 && User.Identity.IsAuthenticated)
     {
         <button id="SendTopic" class="btn btn-outline-primary sendto-link" type="button" data-id="@Model.Id" data-href="~/Topic/SendTo" title="@Localizer["tipSendTopic"] "><i class="fa fa-envelope p-2"></i></button>
     }

@@ -153,6 +153,14 @@ namespace Snitz.PhotoAlbum.Controllers
         /// <returns></returns>
         public IActionResult Member(string id, int display = 0, int pagenum = 1, string sortby = "date",string sortorder = "desc")
         {
+            try
+            {
+                Convert.ToInt32(id);
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
             var albumPage = new MvcBreadcrumbNode("", "PhotoAlbum", _languageResource["mnuMemberAlbums"].Value);
 
             int pagesize = 50;

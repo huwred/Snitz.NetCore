@@ -38,7 +38,8 @@ namespace MVCForum.MiddleWare
                 || test.Contains("duckduck",StringComparison.OrdinalIgnoreCase)
                 || test.Contains("yahoo",StringComparison.OrdinalIgnoreCase)
                 || test.Contains("spider",StringComparison.OrdinalIgnoreCase)
-                || test.Contains("amazonbot",StringComparison.OrdinalIgnoreCase))
+                || test.Contains("amazonbot",StringComparison.OrdinalIgnoreCase)
+                || test.Contains("bot",StringComparison.OrdinalIgnoreCase))
             {
                 return _next(context);
             }
