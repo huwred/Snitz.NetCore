@@ -2,27 +2,13 @@
 @using SnitzCore.Service.Extensions
 @model IEnumerable<SnitzCore.Data.Models.ForumUser>
 
-@* <div class="content">
-    @using (Ajax.BeginForm("SavePendingConfig", "Admin", null,
-    new AjaxOptions
-    {
-        OnSuccess = "OnSuccess",
-        OnFailure = "OnFailure",
-        UpdateTargetId = "FeatureConfig",
-        HttpMethod = "POST",
-        LoadingElementId = "loading"
-    }, new { @class = "form-horizontal" }))
-    {
-        <div class="form-group">
-            @Html.ConfigToggle("Hide Notification", "INTHIDEPENDING", "", "control-label col-xs-3")
-            <div>
-                <button type="submit" value="Save" class="btn btn-success btn-sm">Save</button>
-            </div>
-        </div>
-
-    }
-
-</div> *@
+<div class="content mb-3">
+    <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
+        <admin-config config-key="INTHIDEPENDING" config-label="Hide Notification" config-val="@SnitzConfig.GetIntValue("INTHIDEPENDING")"></admin-config>
+        <partial name="_FormButtons" />
+    </form>
+    <div id="result"></div>
+</div>
 <div class="content">
     <table class="table">
         <tr class="bg-primary">

@@ -1,4 +1,14 @@
-﻿<script type="text/javascript">
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject UserManager<ForumUser> userManager
+@{
+    int pending = 0;
+    if (User.IsInRole("Administrator"))
+    {
+        pending = userManager.Users.Include(u => u.Member).Where(u => !u.EmailConfirmed || (u.LockoutEnabled && u.LockoutEnd != null)).Count();
+    }
+}
+<script type="text/javascript">
     var SnitzVars = SnitzVars ||
     {
         AdDuration: '@SnitzConfig.GetIntValue("INTADDURATION", 30)',
@@ -27,7 +37,7 @@
         defaultTheme: '@SnitzConfig.GetValue("STRDEFAULTTHEME")',
         useTimeago: '@SnitzConfig.GetValue("INTUSETIMEAGO")',
         erpop: '@(TempData["errorpopup"] != null)',
-        pending: "@ViewBag.PendingMembers",
+        pending: parseInt("@(pending)"),
         errMsg: '@ViewBag.Error',
         successMsg: '@ViewBag.Success',
         tempScrollTop: sessionStorage.getItem('scrollTop'),

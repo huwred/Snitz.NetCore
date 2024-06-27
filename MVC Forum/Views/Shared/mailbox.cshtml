@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MVCForum.TagHelpers
+@using SnitzCore.Service.TagHelpers
+
+@inject IPrivateMessage pmService
+@inject IMember memberService
+@{
+    var member = memberService.GetMember(User)!;
+    var pmcount = pmService.GetInbox(member.Id).Where(mbox=>mbox.Read == 0).Count();
+
+}
+@if (User.Identity.IsAuthenticated)
+{
+
+    if (pmcount > 0)
+    {
+        @* need to play sound? *@
+        if (SnitzConfig.GetIntValue("STRPMSOUND") == 1)
+        {
+            <audio autoplay>
+                <source src="~/content/pm.mp3" type="audio/mpeg">
+                <source src="~/content/pm.wav" type="audio/wav">
+                Your browser does not support the audio element
+            </audio>
+        }
+        <span class=" text-white m-2 center">
+            <a href="~/PrivateMessage/Inbox" class="text-white nav-link" title="Youv'e got Mail'"><i class="fa fa-envelope fs-3"></i></a>&nbsp;(@pmcount)
+        </span>
+    }
+@*     else
+    {
+        <span class=" text-white-50 m-2 center">
+            <a href="~/PrivateMessage/Inbox" class="text-white-50 nav-link" title="Open mailbox"><i class="fa fa-envelope-o fs-3"></i></a>
+        </span>
+    } *@
+
+}
+
+

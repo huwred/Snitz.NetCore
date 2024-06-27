@@ -101,6 +101,19 @@
             </div>
         </div>
     </div>
+    <div id="forumAlert" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-danger">X</a>
+                    <h4 class="text-bg-danger">Alert!</h4>
+                </div>
+                <div class="modal-body">
+                    <p>There are pending member registrations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <script type="text/javascript">
     $(document).on('click', '.confirm-restart', function (e) {
         e.preventDefault();
@@ -119,6 +132,14 @@
                     }
                 });
         });
+    });
+    $(document).ready(function () {
+        if (SnitzVars.pending > 0) {
+            $('#forumAlert').modal('show');
+            setTimeout(function () {
+                $('#forumAlert').modal('hide');
+            }, 3000);
+        }           
     });
 
 </script>
