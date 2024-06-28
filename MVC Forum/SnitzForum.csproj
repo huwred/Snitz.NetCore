@@ -18,7 +18,6 @@
     <Compile Remove="wwwroot\images\forum\**" />
     <Compile Remove="wwwroot\is-cache\**" />
     <Compile Remove="wwwroot\js\codemirror\**" />
-    <Compile Remove="wwwroot\ProtectedContent\Members\**" />
     <Content Remove="Views\Admin\**" />
     <Content Remove="Views\Shared\Components\Events\**" />
     <Content Remove="wwwroot\Content\Members\**" />
@@ -26,7 +25,6 @@
     <Content Remove="wwwroot\images\forum\**" />
     <Content Remove="wwwroot\is-cache\**" />
     <Content Remove="wwwroot\js\codemirror\**" />
-    <Content Remove="wwwroot\ProtectedContent\Members\**" />
     <EmbeddedResource Remove="Views\Admin\**" />
     <EmbeddedResource Remove="Views\Shared\Components\Events\**" />
     <EmbeddedResource Remove="wwwroot\Content\Members\**" />
@@ -34,7 +32,6 @@
     <EmbeddedResource Remove="wwwroot\images\forum\**" />
     <EmbeddedResource Remove="wwwroot\is-cache\**" />
     <EmbeddedResource Remove="wwwroot\js\codemirror\**" />
-    <EmbeddedResource Remove="wwwroot\ProtectedContent\Members\**" />
     <None Remove="Views\Admin\**" />
     <None Remove="Views\Shared\Components\Events\**" />
     <None Remove="wwwroot\Content\Members\**" />
@@ -42,14 +39,12 @@
     <None Remove="wwwroot\images\forum\**" />
     <None Remove="wwwroot\is-cache\**" />
     <None Remove="wwwroot\js\codemirror\**" />
-    <None Remove="wwwroot\ProtectedContent\Members\**" />
     <TypeScriptCompile Remove="Views\Admin\**" />
     <TypeScriptCompile Remove="Views\Shared\Components\Events\**" />
     <TypeScriptCompile Remove="wwwroot\Content\Members\**" />
     <TypeScriptCompile Remove="wwwroot\Content\PhotoAlbum\**" />
     <TypeScriptCompile Remove="wwwroot\is-cache\**" />
     <TypeScriptCompile Remove="wwwroot\js\codemirror\**" />
-    <TypeScriptCompile Remove="wwwroot\ProtectedContent\Members\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -211,6 +206,12 @@
     <None Include="wwwroot\js\tinymce\themes\mobile\theme.min.js" />
     <None Include="wwwroot\js\tinymce\themes\silver\theme.min.js" />
     <None Include="wwwroot\js\tinymce\tinymce.min.js" />
+    <None Include="wwwroot\ProtectedContent\Members\2\20240210144210_Umbraco_MVP_Logo _2022.pdf" />
+    <None Include="wwwroot\ProtectedContent\Members\2\20240210144541_Umbraco_MVP_Logo _2022.pdf" />
+    <None Include="wwwroot\ProtectedContent\Members\2\20240210145724_Umbraco_MVP_Logo _2022.pdf" />
+    <None Include="wwwroot\ProtectedContent\Members\2\20240210150505_Umbraco MVP Award Agreement.pdf" />
+    <None Include="wwwroot\ProtectedContent\Members\2\20240210151742_Umbraco_MVP_Logo _2022.pdf" />
+    <None Include="wwwroot\ProtectedContent\Members\2\20240210152249_Umbraco MVP Award Agreement.pdf" />
   </ItemGroup>
 
 
@@ -267,10 +268,13 @@
     <Folder Include="Models\" />
     <Folder Include="Views\Polls\" />
     <Folder Include="wwwroot\Content\Avatar\" />
-    <Folder Include="wwwroot\ProtectedContent\PhotoAlbum\" />
     <Folder Include="wwwroot\Templates\images\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Views\Shared\mailbox.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="wwwroot\js\timeago\timeago.fa.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
