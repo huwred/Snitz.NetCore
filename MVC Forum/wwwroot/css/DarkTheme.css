@@ -68,10 +68,45 @@ a {
     --bs-list-group-active-bg: #0d6efd;
     --bs-list-group-active-border-color: #0d6efd;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     padding-left: 0;
     margin-bottom: 0;
     border-radius: var(--bs-list-group-border-radius);
+}
+.latest-posts .list-group {
+    flex-direction: column;
+}
+.card {
+    --bs-card-spacer-y: 1rem;
+    --bs-card-spacer-x: 1rem;
+    --bs-card-title-spacer-y: .5rem;
+    --bs-card-title-color:;
+    --bs-card-subtitle-color:;
+    --bs-card-border-width: var(--bs-border-width);
+    --bs-card-border-color: #111;
+    --bs-card-border-radius: var(--bs-border-radius);
+    --bs-card-box-shadow:;
+    --bs-card-inner-border-radius: calc(var(--bs-border-radius) - (var(--bs-border-width)));
+    --bs-card-cap-padding-y: .5rem;
+    --bs-card-cap-padding-x: 1rem;
+    --bs-card-cap-bg: rgba(var(--bs-body-color-rgb),.03);
+    --bs-card-bg: var(--bs-body-bg);
+    --bs-card-img-overlay-padding: 1rem;
+    --bs-card-group-margin: .75rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: var(--bs-card-height);
+     color: white; 
+    word-wrap: break-word;
+     background-color: #343a40; 
+    background-clip: border-box;
+    border: var(--bs-card-border-width) solid var(--bs-card-border-color);
+    border-radius: var(--bs-card-border-radius);
+}
+.topic-contaner.bg-white {
+    background-color: #343a40 !important;
 }
 .navbar {
     background-color: #343a40 !important;
@@ -246,21 +281,46 @@ footer {
     background-color: #2C2C2C;
 }
 
-.body {
+/*.body {
     background-color: #131415;
 }
 .body.topic {
     background-color: gray;
-}
+}*/
 .body .content .comment button {
     box-shadow: 4px 6px #fff;
 }
-
+.text-dark {
+    --bs-text-opacity: 1;
+    color: rgba(var(--bs-light-rgb),var(--bs-text-opacity)) !important;
+}
+.table {
+    --bs-table-color-type: initial;
+    --bs-table-bg-type: initial;
+    --bs-table-color-state: initial;
+    --bs-table-bg-state: initial;
+    --bs-table-color: var(--bs-emphasis-color);
+     --bs-table-bg: revert; 
+     --bs-table-border-color: revert; 
+    --bs-table-accent-bg: transparent;
+    --bs-table-striped-color: var(--bs-emphasis-color);
+    --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb),.05);
+    --bs-table-active-color: var(--bs-emphasis-color);
+    --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb),.1);
+    --bs-table-hover-color: var(--bs-emphasis-color);
+    --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb),.075);
+    width: 100%;
+    margin-bottom: 1rem;
+    vertical-align: top;
+     border-color: revert; 
+}
 /* comment section */
 .comment-area input:hover {
     border: solid 1px #000000;
 }
-
+.bg-form {
+    background-color: #222;
+}
 .editor-buttons .dropdown-menu a, .editor-buttons .dropdown-menu a:visited {
     color: #000;
 }
@@ -297,8 +357,15 @@ footer {
 .modal-header > .modal-title, .modal-body > .body-desc, .modal-body > .photo-input, .modal-footer > .footer-title {
     text-align: center
 }
-
-#ForumLang.en, #ForumLang.en-GB {
+blockquote.newquote {
+    font: 14px/22px normal helvetica, sans-serif;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 30px;
+    padding-left: 15px;
+    border-left: 3px solid #ccc;
+}
+.en.flag, .en-GB.flag {
     background-image: url(images/flags/en.png);
     background-repeat: no-repeat;
     width: 24px; /*or your image's width*/
@@ -308,7 +375,7 @@ footer {
     background-size: contain;
 }
 
-#ForumLang.no {
+.no.flag {
     background-image: url(images/flags/no.png);
     background-repeat: no-repeat;
     width: 24px; /*or your image's width*/
@@ -318,7 +385,7 @@ footer {
     background-size: contain;
 }
 
-#ForumLang.ro {
+.ro.flag {
     background-image: url(images/flags/ro.png);
     background-repeat: no-repeat;
     width: 24px; /*or your image's width*/
@@ -328,7 +395,7 @@ footer {
     background-size: contain;
 }
 
-#ForumLang.fa {
+.fa.flag {
     background-image: url(images/flags/fa.png);
     background-repeat: no-repeat;
     width: 24px; /*or your image's width*/
@@ -336,4 +403,199 @@ footer {
     margin: 0;
     padding: 0;
     background-size: contain;
+}
+
+/* Image Galleries */
+.image-gallery figure {
+    display: inline-block;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.image-gallery > li {
+    flex-basis: 300px; /*width: 350px;*/
+    position: relative;
+    cursor: pointer;
+}
+
+.image-gallery::after {
+    content: "";
+    flex-basis: 300px;
+}
+
+.image-gallery li img {
+    object-fit: cover;
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+    border-radius: 5px;
+}
+
+.image-gallery .overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: .5s ease;
+    background-color: #008CBA;
+}
+
+.image-gallery .figure:hover .overlay {
+    display: block;
+    opacity: .6;
+}
+
+.image-gallery .text {
+    color: white;
+    font-size: 18px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+
+.height-100 {
+    height: 100vh
+}
+
+
+#loadFile {
+    display: none
+}
+
+.modal-header > .modal-title, .modal-body > .body-desc, .modal-body > .photo-input, .modal-footer > .footer-title {
+    text-align: center
+}
+.field-validation-error {
+    color: var(--bs-form-invalid-color);
+}
+.table-row.answered-overlay {
+    position: relative;
+    border: 2px dotted rgba(var(--bs-success-rgb));
+}
+.table-row .status .fa-folder, .note .fa-folder, .answered-overlay .status .fa-lock {
+    color: rgba(var(--bs-success-rgb)) !important;
+}
+
+a.latestpost-title {
+    display: block;
+    white-space: nowrap;
+    width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* Media Query for Mobile Devices */
+@media (max-width: 480px) {
+    body {
+        background-color: red;
+    }
+}
+
+/* Media Query for low resolution  Tablets, Ipads */
+@media (min-width: 481px) and (max-width: 767px) {
+    body {
+        background-color: yellow;
+    }
+}
+
+/* Media Query for Tablets Ipads portrait mode */
+@media (min-width: 768px) and (max-width: 1024px) {
+    body {
+        background-color: blue;
+    }
+    .subforum-row.subforum-weblink {
+        display: grid;
+        grid-template-columns: 100%;
+    }
+
+    .subforum-row {
+        display: grid;
+        grid-template-columns: 10% 60% 30%;
+
+        overflow: hidden;
+    }
+
+    .subforum-stats {
+        display: none;
+    }
+}
+
+/* Media Query for Laptops and Desktops */
+@media (min-width: 1025px) and (max-width: 1280px) {
+    body {
+        background-color: green;
+    }
+}
+
+/* Media Query for Large screens */
+@media (min-width: 1281px) {
+    body {
+        background-color: white;
+    }
+}
+
+.accordion-button:not(.collapsed) {
+    color: #F5FFFA !important;
+    background-color: #292b2e;
+    box-shadow: revert;
+}
+.accordion-button:focus {
+    z-index: 3;
+    border-color: revert;
+    outline: 0;
+    box-shadow: revert;
+}
+.accordion-button {
+    color: #F5FFFA !important;
+    background-color: #292b2e;
+    box-shadow: revert;
+}
+.accordion-item{
+    background-color:revert;
+    color:revert;
+}
+.newposts {
+    color: magenta !important;
+}
+
+.event-birthday div.fc-content span.fc-title:before, .event-birthday div.my-fc-time:before {
+    font-family: FontAwesome;
+    content: "\f1fd\00a0";
+    color: goldenrod !important
+}
+
+.event-birthday > div.fc-time:before {
+    font-family: FontAwesome;
+    content: "\f1fd\00a0";
+    color: goldenrod !important
+}
+
+.event-birthday div.fc-content span.fc-title {
+    color: goldenrod !important
+}
+
+#topic-panel a.btn{
+    border-radius:50% !important;
+    padding:.25rem !important;
+}
+#topic-panel button.btn {
+    border-radius: 50% !important;
+    padding: .25rem !important;
 }

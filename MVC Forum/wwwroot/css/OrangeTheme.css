@@ -209,7 +209,8 @@ div.btn-group.btn-dark {
 .breadcrumb {
     background-color: #780116;
 }
-#ForumLang.en, #ForumLang.en-GB {
+
+.en.flag, .en-GB.flag {
     background-image: url(images/flags/en.png);
     background-repeat: no-repeat;
     width: 24px; /*or your image's width*/
@@ -219,7 +220,7 @@ div.btn-group.btn-dark {
     background-size: contain;
 }
 
-#ForumLang.no {
+.no.flag {
     background-image: url(images/flags/no.png);
     background-repeat: no-repeat;
     width: 24px; /*or your image's width*/
@@ -229,7 +230,7 @@ div.btn-group.btn-dark {
     background-size: contain;
 }
 
-#ForumLang.ro {
+.ro.flag {
     background-image: url(images/flags/ro.png);
     background-repeat: no-repeat;
     width: 24px; /*or your image's width*/
@@ -239,7 +240,7 @@ div.btn-group.btn-dark {
     background-size: contain;
 }
 
-#ForumLang.fa {
+.fa.flag {
     background-image: url(images/flags/fa.png);
     background-repeat: no-repeat;
     width: 24px; /*or your image's width*/
