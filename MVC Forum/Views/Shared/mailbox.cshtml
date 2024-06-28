@@ -4,13 +4,11 @@
 
 @inject IPrivateMessage pmService
 @inject IMember memberService
-@{
-    var member = memberService.GetMember(User)!;
-    var pmcount = pmService.GetInbox(member.Id).Where(mbox=>mbox.Read == 0).Count();
 
-}
 @if (User.Identity.IsAuthenticated)
 {
+    var member = memberService.GetMember(User)!;
+    var pmcount = pmService.GetInbox(member.Id).Where(mbox=>mbox.Read == 0).Count();
 
     if (pmcount > 0)
     {
@@ -27,12 +25,6 @@
             <a href="~/PrivateMessage/Inbox" class="text-white nav-link" title="Youv'e got Mail'"><i class="fa fa-envelope fs-3"></i></a>&nbsp;(@pmcount)
         </span>
     }
-@*     else
-    {
-        <span class=" text-white-50 m-2 center">
-            <a href="~/PrivateMessage/Inbox" class="text-white-50 nav-link" title="Open mailbox"><i class="fa fa-envelope-o fs-3"></i></a>
-        </span>
-    } *@
 
 }
 

@@ -11,12 +11,12 @@
 <div class="user-poll-section">
     <div class="card col-12">
         <div class="card-header  @TempData["panel"] text-@TempData["panel"]">
-            @if ((bool)TempData["featured"])
+            @if ((bool)TempData["featured"]!)
             {
                 <h4>@Localizer["FeaturedPoll"]</h4>
             }
             <span>@Model.Poll.Question @if (!Model.Poll.Question.Contains("?")) { @Html.Raw("?"); }</span>
-            @if (!(bool)TempData["featured"] && User.IsInRole("Administrator") && Model.Poll.Topic.Status == 1)
+            @if (!(bool)TempData["featured"]! && User.IsInRole("Administrator") && Model.Poll.Topic != null && Model.Poll.Topic.Status == 1)
             {
                 <span class="pull-right flip">
                     @if (SnitzConfig.GetIntValue("INTFEATUREDPOLLID") != Model.Poll.Id)
@@ -50,10 +50,10 @@
             }
             <label>@Localizer["VotesCast"]:&nbsp;</label>@totalvotes.ToLangNum(culture) <br />
             <label snitz-if="@(Model.Poll.Lastvote != null)">@Localizer["LastVote"]:&nbsp;</label>
-            <snitz-datetime snitz-if="@(Model.Poll.Lastvote != null)" datetime="@Model.Poll.Lastvote.FromForumDateStr()"></snitz-datetime>
+            <snitz-datetime snitz-if="@(Model.Poll.Lastvote != null)" datetime="@Model.Poll.Lastvote?.FromForumDateStr()"></snitz-datetime>
 
         </div>
-        <div class="card-footer">@Html.ActionLink(Localizer["ViewComments"].Value, "Index", "Topic", new { id = Model.TopicId }, null) @Localizer["CommentCount", Model.Poll.Topic.ReplyCount.ToLangNum(culture)] </div>
+        <div class="card-footer">@Html.ActionLink(Localizer["ViewComments"].Value, "Index", "Topic", new { id = Model.TopicId }, null) @Localizer["CommentCount", Model.Poll.Topic!.ReplyCount.ToLangNum(culture)] </div>
 
     </div>
 </div>
