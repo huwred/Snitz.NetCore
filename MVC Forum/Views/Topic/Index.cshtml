@@ -51,7 +51,7 @@
     <snitz-breadcrumb></snitz-breadcrumb>
     <!--Topic Section-->
         <vc:topic-buttons postid="@Model.Id" topic-email="@(loggedin ? 1 : 0)"></vc:topic-buttons>
-        <div snitz-if="@show1" class="card mb-2 topic-container bg-white">
+        <div snitz-if="@show1" class="card mb-2 topic-container">
         @{
             var answer = "";
             if (Model.Answered)
@@ -105,7 +105,7 @@
     <form id="defaultdays-form" asp-action="Index" class="form-inline">
         <div class="input-group">
             <span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span>
-            <select class="form-control mb-2" id="sortdir" name="sortdir">
+            <select class="form-select mb-2" id="sortdir" name="sortdir">
                 <option value="des" selected-val="@Model.SortDir">@Localizer["optDesc"]</option>
                 <option value="asc" selected-val="@Model.SortDir">@Localizer["optAsc"]</option>
             </select>
