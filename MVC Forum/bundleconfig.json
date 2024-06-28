@@ -94,5 +94,23 @@
     "inputFiles": [
       "wwwroot/css/prism.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/LightTheme.min.css",
+    "inputFiles": [
+      "wwwroot/css/LightTheme.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/DarkTheme/star-rating.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/DarkTheme/star-rating.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/SnitzTheme/star-rating.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/SnitzTheme/star-rating.css"
+    ]
   }
 ]

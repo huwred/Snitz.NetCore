@@ -147,22 +147,6 @@ public partial class Member
     [Column("M_RECEIVE_EMAIL")]
     [ProfileDisplay("ReceiveEmail", Order = 24, FieldType = "checkbox")]
     public short ReceiveEmail { get; set; }
-    [Column("M_PMEMAIL")]
-    [ProfileDisplay("ProfilePMNotify", Order = 25, FieldType = "checkbox")]
-    public int Pmemail { get; set; }
-
-    [Column("M_PMRECEIVE")]
-    [ProfileDisplay("ProfilePMReceive", Order = 26, FieldType = "checkbox")]
-    public int Pmreceive { get; set; }
-
-    [Column("M_PMSAVESENT")]
-    [ProfileDisplay("ProfilePMSentItems", Order = 27, FieldType = "checkbox")]
-    public short Pmsavesent { get; set; }
-
-    [Column("M_PRIVATEPROFILE")]
-    [ProfileDisplay("ProfilePrivate", Order = 28, FieldType = "checkbox")]
-    public short Privateprofile { get; set; }
-
 
     #endregion
 
@@ -201,10 +185,7 @@ public partial class Member
     [ProfileDisplay("Sha256",SystemField = true,Order=9999)]
     public short? Sha256 { get; set; }
 
-    [Column("M_LASTACTIVITY")]
-    [StringLength(20)]
-    [ProfileDisplay("Last Activity",SystemField = true,Order=9999)]
-    public string? Lastactivity { get; set; }
+
     #endregion
 
     #region SocialMedia
@@ -257,6 +238,28 @@ public partial class Member
     [StringLength(255)]
     public string? Link2 { get; set; }
     #endregion
+
+    [Column("M_PMEMAIL")]
+    [ProfileDisplay("ProfilePMNotify", Order = 25, FieldType = "checkbox")]
+    public int Pmemail { get; set; }
+
+    [Column("M_PMRECEIVE")]
+    [ProfileDisplay("ProfilePMReceive", Order = 26, FieldType = "checkbox")]
+    public int Pmreceive { get; set; }
+
+    [Column("M_PMSAVESENT")]
+    [ProfileDisplay("ProfilePMSentItems", Order = 27, FieldType = "checkbox")]
+    public short Pmsavesent { get; set; }
+
+    [Column("M_PRIVATEPROFILE")]
+    [ProfileDisplay("ProfilePrivate", Order = 28, FieldType = "checkbox")]
+    public short Privateprofile { get; set; }
+
+    [Column("M_LASTACTIVITY")]
+    [StringLength(20)]
+    [ProfileDisplay("Last Activity",SystemField = true,Order=9999)]
+    public string? Lastactivity { get; set; }
+
     
     [NotMapped]
     [ProfileDisplay("Roles",Order=9999,ReadOnly = true,SystemField = true,LayoutSection = MemberLayout.Extra)]

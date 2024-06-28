@@ -130,6 +130,7 @@
     <_ContentIncludedByDefault Remove="Views\Shared\FormButtons.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_BookmarkLink.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_PageNotFound.cshtml" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\LightTheme.min.css" />
     <_ContentIncludedByDefault Remove="wwwroot\css\SnitzTheme.min.css" />
   </ItemGroup>
 
