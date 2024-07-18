@@ -27,6 +27,8 @@ using System.Net;
 using System.Runtime.InteropServices.JavaScript;
 using SnitzCore.Service;
 using static System.Net.Mime.MediaTypeNames;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using System.Text.RegularExpressions;
 
 namespace MVCForum.Controllers
 {
@@ -41,10 +43,11 @@ namespace MVCForum.Controllers
         private readonly ISubscriptions _processSubscriptions;
         private readonly ICodeProcessor _bbcodeProcessor;
         private readonly HttpContext _httpcontext;
+        private readonly IPrivateMessage _pmService;
 
         public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             IPost postService, IForum forumService, UserManager<ForumUser> userManager,IWebHostEnvironment environment,
-            IEmailSender mailSender, ISubscriptions processSubscriptions, ICodeProcessor bbcodeProcessor) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
+            IEmailSender mailSender, ISubscriptions processSubscriptions, ICodeProcessor bbcodeProcessor,IPrivateMessage pmService) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
         {
             _postService = postService;
             _forumService = forumService;
@@ -54,6 +57,7 @@ namespace MVCForum.Controllers
             _processSubscriptions = processSubscriptions;
             _bbcodeProcessor = bbcodeProcessor;
             _httpcontext = httpContextAccessor.HttpContext;
+            _pmService = pmService;
         }
 
         //[Route("{id:int}")]
@@ -596,6 +600,28 @@ namespace MVCForum.Controllers
                                 break;
                         }
                     }
+                    if (_config.GetIntValue("STRPMSTATUS") == 1)
+                    {
+                        MatchCollection matches = Regex.Matches(post.Content, @"(?:@""(?:[^""]+))|(?:@(?:[^\s^<]+))",RegexOptions.IgnoreCase);
+                        foreach (Match match in matches)
+                        {
+                            var taggedmember = _memberService.GetByUsername(WebUtility.HtmlDecode(match.Value.Replace("@", "")));
+                            if (taggedmember != null && taggedmember.Id != post.MemberId)
+                            {
+                                //user mentioned in post, send them a PM
+                                PrivateMessage msg = new PrivateMessage
+                                {
+                                    To = taggedmember.Id,
+                                    From = post.MemberId,
+                                    Subject = _languageResource["MentionedInPostSubject"].Value,// "You were mentioned in a Post",
+                                    Message = _languageResource["MentionedMessage",taggedmember.Name, _config.ForumUrl?.Trim() ?? "", post.Id,""].Value,                                    SentDate = DateTime.UtcNow.ToForumDateStr(),
+                                    Read = 0,
+                                    SaveSentMessage = 0
+                                };
+                                _pmService.Create(msg);
+                            }
+                        }
+                    }
                 }
 
             }
@@ -717,6 +743,30 @@ namespace MVCForum.Controllers
                             case 2:
                                 BackgroundJob.Enqueue(() => _processSubscriptions.Reply(replyid));
                                 break;
+                        }
+                    }
+                    if (_config.GetIntValue("STRPMSTATUS") == 1)
+                    {
+                        //MatchCollection matches = Regex.Matches(reply.Content, @"(?:(?<=\s|^)@""(?:[^""]+))|(?:(?<=\s|^)@(?:[^\s]+))");
+                        MatchCollection matches = Regex.Matches(reply.Content, @"(?:@""(?:[^""]+))|(?:@(?:[^\s^<]+))",RegexOptions.IgnoreCase);
+                        foreach (Match match in matches)
+                        {
+                            var taggedmember = _memberService.GetByUsername(WebUtility.HtmlDecode(match.Value.Replace("@", "")));
+                            if (taggedmember != null && taggedmember.Id != reply.MemberId)
+                            {
+                                //user mentioned in post, send them a PM
+                                PrivateMessage msg = new PrivateMessage
+                                {
+                                    To = taggedmember.Id,
+                                    From = reply.MemberId,
+                                    Subject = _languageResource["MentionedInPostSubject"].Value,// "You were mentioned in a Post",
+                                    Message = _languageResource["MentionedMessage",member.Name, _config.ForumUrl?.Trim() ?? "",reply.PostId, reply.Id].Value,
+                                    SentDate = DateTime.UtcNow.ToForumDateStr(),
+                                    Read = 0,SaveSentMessage = 0
+                                };
+                                _pmService.Create(msg);
+
+                            }
                         }
                     }
                 }

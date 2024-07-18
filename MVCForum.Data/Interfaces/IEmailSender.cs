@@ -1,4 +1,5 @@
-﻿using SnitzCore.Data.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using SnitzCore.Data.Models;
 using System.Globalization;
 using System.Threading.Tasks;
 
@@ -18,5 +19,6 @@ namespace SnitzCore.Data.Interfaces
         string ParseSubscriptionTemplate(string template, string posttype, string postname, string authorname,string toname, string postUrl, string unsubUrl,
             string? lang);
         Task TopicMergeEmail(Post topic, Post mainTopic, Member author);
+        void SendPMNotification(Member taggedmember);
     }
 }

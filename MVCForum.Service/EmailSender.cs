@@ -11,9 +11,8 @@ using BbCodeFormatter;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Localization;
 using System.Threading;
-using BbCodeFormatter.Processors;
-using static Org.BouncyCastle.Math.EC.ECCurve;
-using System.Net.Mail;
+using Microsoft.AspNetCore.Mvc;
+
 
 namespace SnitzCore.Service
 {
@@ -201,6 +200,17 @@ namespace SnitzCore.Service
             var emailMessage = CreateEmailMessage(emessage);
             return Send(emailMessage);
 
+        }
+
+        public void SendPMNotification(Member taggedmember)
+        {
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;;
+            
+            EmailMessage emessage = new EmailMessage(new List<string>(){taggedmember.Email}, _languageResource.GetString("NewMessage"), 
+                ParseTemplate("pmnotify.html",_languageResource.GetString("NewMessage"),taggedmember.Email,taggedmember.Name, $"{_config.ForumUrl}PrivateMessage/Inbox" , cultureInfo.Name));
+
+            var emailMessage = CreateEmailMessage(emessage);
+            Send(emailMessage);
         }
     }
 }
