@@ -16,13 +16,13 @@
             <tbody>
             @foreach (var pm in Model.Inbox!)
             {
-                <tr class="pmread_@pm.Read" data-id="@pm.Id">
+                <tr data-id="@pm.Id">
                     <td><input type="checkbox" class="checkbox select-post" name="Delete" value="@pm.Id" /></td>
-                    <td>
+                        <td class="pmread_@pm.Read" data-id="@pm.Id">
                         <a asp-controller="PrivateMessage" asp-action="read" asp-route-id="@pm.Id" class="pmread_">@pm.Title</a>
                     </td>
-                    <td>@pm.FromMemberName</td>
-                    <td>@pm.Sent?.ToString("dd MMM, yyyy HH:mm", CultureInfo.CurrentCulture)</td>
+                    <td class="pmread_@pm.Read" data-id="@pm.Id">@pm.FromMemberName</td>
+                    <td class="pmread_@pm.Read" data-id="@pm.Id">@pm.Sent?.ToString("dd MMM, yyyy HH:mm", CultureInfo.CurrentCulture)</td>
                     <td><i class="fa fa-reply mr-2" aria-hidden="true" title="Reply to message" data-id="@pm.Id"></i><i class="fa fa-trash" data-id="@pm.Id" data-user="@pm.ToMemberId" title="Delete Message"></i> </td>
                 </tr>
             }

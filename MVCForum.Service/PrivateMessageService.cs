@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using SnitzCore.Data.Extensions;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 using static System.Net.Mime.MediaTypeNames;
+using Hangfire;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using BbCodeFormatter;
+using Microsoft.AspNetCore.Hosting;
 
 namespace SnitzCore.Service
 {
@@ -15,10 +19,14 @@ namespace SnitzCore.Service
     {
         private readonly SnitzDbContext _dbContext;
         private readonly IMember _memberService;
-        public PrivateMessageService(SnitzDbContext dbContext,IMember memberService)
+        private readonly IEmailSender _mailSender;
+        private readonly ISnitzConfig _config;
+        public PrivateMessageService(SnitzDbContext dbContext,IMember memberService,IEmailSender mailSender,ISnitzConfig config)
         {
             _dbContext = dbContext;
             _memberService = memberService;
+            _mailSender = mailSender;
+            _config = config;
         }
         public PrivateMessage GetById(int id)
         {
@@ -94,26 +102,28 @@ namespace SnitzCore.Service
                 {
                     if (privatemsg.HideFrom == 1)
                     {
-                        _dbContext.Remove(privatemsg);
+                        _dbContext.PrivateMessages.Remove(privatemsg);
                     }
                     else
                     {
                         privatemsg.HideTo = 1;
+                        _dbContext.PrivateMessages.Update(privatemsg);
                     }
                 }
                 else if (privatemsg.From == memberid)
                 {
                     if (privatemsg.HideTo == 1)
                     {
-                        _dbContext.Remove(privatemsg);
+                        _dbContext.PrivateMessages.Remove(privatemsg);
                     }
                     else
                     {
                         privatemsg.HideFrom = 1;
+                        _dbContext.PrivateMessages.Update(privatemsg);
                     }
                 }
-            }
             await _dbContext.SaveChangesAsync();
+            }
         }
 
         public Task Update(PrivateMessage pm)
@@ -178,6 +188,12 @@ namespace SnitzCore.Service
         {
             _dbContext.PrivateMessages.Add(postmodel);
             _dbContext.SaveChanges();
+            var tomember = _memberService.GetById(postmodel.To);
+
+            if (tomember?.Pmemail == 1  && (_config.GetIntValue("STREMAIL",0) == 1))
+            {
+                BackgroundJob.Enqueue(() => _mailSender.SendPMNotification(tomember));
+            }
         }
 
 

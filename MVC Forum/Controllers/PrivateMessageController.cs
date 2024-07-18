@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using SnitzCore.Service.Extensions;
 using Microsoft.AspNetCore.Http;
 using MVCForum.ViewModels.PrivateMessage;
+using Hangfire;
 
 namespace MVCForum.Controllers
 {
@@ -260,15 +261,19 @@ namespace MVCForum.Controllers
                 }
 
                 if (_member != null)
+                {
+                    var tomember = _memberService.GetByUsername(postmodel.To);
                     _pmService.Create(new PrivateMessage()
                     {
                         From = _member.Id,
-                        To = _memberService.GetByUsername(postmodel.To)!.Id,
+                        To = tomember!.Id,
                         Message = postmodel.Message,
                         Subject = postmodel.Subject,
                         SentDate = DateTime.UtcNow.ToForumDateStr(),
                         SaveSentMessage = (short)(postmodel.SaveToSent ? 1 : 0),
                     });
+
+                }
                 if (postmodel.IsPopUp)
                 {
                     return Json(new { result = true });
