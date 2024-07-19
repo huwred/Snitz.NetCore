@@ -74,13 +74,13 @@
     <UpToDateCheckInput Remove="Views\Shared\popArchiveForum.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="StopForumSpam.Net" Version="0.5.0" />
-  </ItemGroup>
-  <ItemGroup>
     <UpToDateCheckInput Remove="Views\LanguageManager\popExportCsv.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Views\Shared\popExportCsv.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CreativeMinds.StopForumSpam" Version="1.0.0-rc151" />
   </ItemGroup>
 
 
