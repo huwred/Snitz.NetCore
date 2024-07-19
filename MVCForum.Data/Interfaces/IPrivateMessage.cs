@@ -23,4 +23,5 @@ public interface IPrivateMessage
     bool BlockListAdd(int memberid, string toblock);
     void Create(PrivateMessage postmodel);
     IEnumerable<PrivateMessageListingModel> Find(int? curruser, string term, SearchIn searchIn, SearchFor phraseType, SearchDate searchByDays, int? memberId);
+    void MarkRead(int id, int val);
 }

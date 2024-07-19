@@ -16,11 +16,11 @@
         <a class="btn pm-delete" title="" data-toggle="tooltip" href="#" title="@Localizer["DeleteMessage"]"><i class="fa fa-trash"></i><span class="d-none d-md-inline"> Delete</span></a>
         <a style="display:none;" href="~/Home/FileUpload" class="btn pm-attach modal-link" title="" data-original-title="Upload"><span class="fa fa-paperclip"></span></a>
         <a class="btn pm-settings" data-target="Settings" data-val="1" title="@Localizer["Settings"]" data-toggle="tooltip" href="#"><i class="fa fa-cog"></i><span class="d-none d-md-inline"> Settings</span></a>
-        <a class="btn pm-button" data-target="SearchMessages" data-val="1" title="@Localizer["Search"]" data-toggle="tooltip" href="#" data-original-title="Search"><i class="fa fa-search"></i><span class="d-none d-md-inline"> Search messages</span></a>
+        <a class="btn pm-search" data-target="SearchMessages" data-val="1" title="@Localizer["Search"]" data-toggle="tooltip" href="#" data-original-title="Search"><i class="fa fa-search"></i><span class="d-none d-md-inline"> Search messages</span></a>
     </div>
 </div>
     <div class="row">
-        <div class="col-12 col-lg-6" id="msg-list">
+        <div class="col-12 col-lg-7" id="msg-list">
             @if (Model.Inbox != null)
             {
                 @await Html.PartialAsync("inbox",Model)
@@ -30,7 +30,7 @@
                 @await Html.PartialAsync("outbox",Model)
             }
         </div>
-        <div class="col-12 col-lg-6" id="pm-message">
+        <div class="col-12 col-lg-7" id="pm-message">
             @if (Model.Settings != null)
             {
                 <partial name="Settings" model="@Model.Settings"/>

@@ -5,13 +5,13 @@
     <div class="tableFixHead">
         <table class="table table-hover" id="forumIndexTable">
             <thead>
-            <tr class="bg-dark">
-                <th><input type="checkbox" class="checkbox" title="Select All" id="select_all"/></th>
-                <th>Subject</th>
-                <th>To</th>
-                <th>Sent</th>
-                <th></th>
-            </tr>
+                <tr class="bg-dark">
+                    <th><input type="checkbox" class="checkbox" title="@Localizer["tipCheckAll"]" id="select_all" /></th>
+                    <th>@Localizer["Subject"]</th>
+                    <th>@Localizer["To"]</th>
+                    <th>@Localizer["lblSent"]</th>
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
             @foreach (var pm in Model.Outbox!)

@@ -3,8 +3,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MVCForum.ViewModels.PMSearchViewModel
 <div class="card mt-2">
-    <div class="card-header bg-dark ">PM Search</div>
-
+    <div class="card-header bg-dark ">@Localizer["Search"]</div>
     <form asp-action="Search" asp-controller="PrivateMessage" class="p-3">
         <div class="mb-1">
 
@@ -64,5 +63,4 @@
             <input type="button" value="@Localizer["btnFind"]" id="pm-find" class="btn btn-sm btn-success" />
         </div>
     </form>
-
 </div>

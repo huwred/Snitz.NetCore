@@ -128,7 +128,9 @@ namespace SnitzCore.Service
 
         public Task Update(PrivateMessage pm)
         {
-            throw new NotImplementedException();
+            _dbContext.PrivateMessages.Update(pm);
+            _dbContext.SaveChanges();
+            return Task.CompletedTask;
         }
 
         public Task UpdateContent(int pmid, string content)
@@ -261,6 +263,15 @@ namespace SnitzCore.Service
                             return messages.Where(pm=>pm.Title.Contains(term));
                     }
             }
+        }
+
+        public void MarkRead(int id, int val)
+        {
+            var pm = GetById(id);
+            pm.Read = val;
+            _dbContext.PrivateMessages.Update(pm);
+            _dbContext.SaveChanges();
+
         }
     }
 }

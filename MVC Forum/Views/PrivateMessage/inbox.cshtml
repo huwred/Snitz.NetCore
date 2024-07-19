@@ -7,9 +7,9 @@
             <thead>
             <tr class="bg-dark">
                 <th><input type="checkbox" class="checkbox" title="Select All" id="select_all" /></th>
-                <th>Subject</th>
-                <th>From</th>
-                <th>Received</th>
+                <th>@Localizer["Subject"]</th>
+                <th>@Localizer["From"]</th>
+                <th>@Localizer["lblReceived"]</th>
                 <th></th>
             </tr>
             </thead>
@@ -18,18 +18,27 @@
             {
                 <tr data-id="@pm.Id">
                     <td><input type="checkbox" class="checkbox select-post" name="Delete" value="@pm.Id" /></td>
-                        <td class="pmread_@pm.Read" data-id="@pm.Id">
-                        <a asp-controller="PrivateMessage" asp-action="read" asp-route-id="@pm.Id" class="pmread_">@pm.Title</a>
+                    <td class="pmread_@pm.Read" data-id="@pm.Id">
+                        <a asp-controller="PrivateMessage" asp-action="read" asp-route-id="@pm.Id" class="pmread_@pm.Read">@pm.Title</a>
                     </td>
                     <td class="pmread_@pm.Read" data-id="@pm.Id">@pm.FromMemberName</td>
                     <td class="pmread_@pm.Read" data-id="@pm.Id">@pm.Sent?.ToString("dd MMM, yyyy HH:mm", CultureInfo.CurrentCulture)</td>
-                    <td><i class="fa fa-reply mr-2" aria-hidden="true" title="Reply to message" data-id="@pm.Id"></i><i class="fa fa-trash" data-id="@pm.Id" data-user="@pm.ToMemberId" title="Delete Message"></i> </td>
+                    <td>
+                        <i class="fa fa-reply mr-2" aria-hidden="true" title="@Localizer["tipPMReply"]" data-id="@pm.Id"></i>
+                        @if (pm.Read)
+                        {
+                            <i class="fa fa-envelope-open mr-2" data-id="@pm.Id" title="Mark Unread"></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-envelope mr-2" data-id="@pm.Id" title="Mark Read"></i>
+                        }
+                        <i class="fa fa-trash mr-2" data-id="@pm.Id" data-user="@pm.ToMemberId" title="@Localizer["DeleteMessage"]"></i>
+                    </td>
                 </tr>
             }
             </tbody>
             <input type="text" name="MemberId" value="@Model.MemberId" style="display:none" />
-
         </table>
     </div>
-
 </form>

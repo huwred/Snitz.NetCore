@@ -122,6 +122,11 @@ namespace MVCForum.Controllers
             }
 
         }
+        public IActionResult MarkRead(int id, int val)
+        {
+            _pmService.MarkRead(id, val);
+            return Json(new { success = true, responseText= "Your messages were deleted!"});
+        }
         public IActionResult Read(int id)
         {
             var message = _pmService.GetById(id);
@@ -136,6 +141,8 @@ namespace MVCForum.Controllers
                 FromMemberId = message.From,
                 FromMemberName = _memberService.GetMemberName(message.From) ?? message.From.ToString()
             };
+            message.Read = 1;
+            _pmService.Update(message);
 
             return PartialView(pm);
         }

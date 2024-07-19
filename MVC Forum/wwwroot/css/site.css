@@ -685,3 +685,7 @@ i.modstatus-2, i.modstatus-3 {
 .dl-horizontal dd {
     margin-left: 180px;
 }
+
+.pmread_False{
+    font-weight:800 !important;
+}

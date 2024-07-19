@@ -1,4 +1,4 @@
-﻿            $(document).on("click", '[class^="pmread_"]',
+﻿        $(document).on("click", '[class^="pmread_"]',
             function(e) {
                 e.preventDefault();
                 $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Read/" + $(this).data("id"), function () {
@@ -36,7 +36,7 @@
 
                         $.post(SnitzVars.baseUrl + "/PrivateMessage/Delete", { pmid: $(this).data("id"), userid: $(this).data("user") }, function (data) {
                             if (data.success) {
-                                alert(data.responseText);
+                                //alert(data.responseText);
                                 location.reload();
                             } else {
                                 alert(data.responseText);
@@ -47,7 +47,7 @@
                         if (confirm("delete selected messages")) {
                         $.post(SnitzVars.baseUrl + "/PrivateMessage/DeleteMany", $("#pm-form").closest('form').serialize(), function (data) {
                             if (data.success) {
-                                alert(data.responseText);
+                                //alert(data.responseText);
                                 location.reload();
                             } else {
                                 alert(data.responseText);
@@ -85,11 +85,11 @@
             });
         $(document).on('click', '#pm-find', function () {
             $(".pm-button").removeClass("active");
-            var $form = $(this).closest('form');
                 $.post(SnitzVars.baseUrl + "/PrivateMessage/Search", $(this).closest('form').serialize(), function (data) {
                 if (data) {
                     $("#msg-list").show();
                     $('#msg-list').html(data);
+                    $('#pm-message').hide();
                 } else {
                     alert(data);
                 }
@@ -113,10 +113,36 @@
             e.stopPropagation();
             return false;
         });
+        $(document).on("click", ".fa-envelope", function (e) {
+            $.get(SnitzVars.baseUrl + "/PrivateMessage/MarkRead/?id=" + $(this).data("id") + "&val=1", function () {
+                location.reload();
+                });
+            e.stopPropagation();
+            return false;
+        });
+        $(document).on("click", ".fa-envelope-open", function (e) {
+            $.get(SnitzVars.baseUrl + "/PrivateMessage/MarkRead/?id=" + $(this).data("id") + "&val=0", function () {
+                location.reload();
+                });
+            e.stopPropagation();
+            return false;
+        });
         $(document).on("click", ".fa-search", function (e) {
                 $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/SearchMessages/" + $(this).data("id"), function () {
                 ValidateForms();
                 revalidate();
+                $("#msg-list").hide();
+                $('#Term').focus();
+
+            });
+            e.stopPropagation();
+            return false;
+        });
+        $(document).on("click", ".pm-search", function (e) {
+                $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/SearchMessages/" + $(this).data("id"), function () {
+                ValidateForms();
+                revalidate();
+                $("#msg-list").hide();
                 $('#Term').focus();
 
             });

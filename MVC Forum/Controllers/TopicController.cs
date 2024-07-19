@@ -731,7 +731,7 @@ namespace MVCForum.Controllers
                     var sub = _config.GetIntValue("STRSUBSCRIPTION");
                     if (sub != 0)
                     {
-                        switch (forum.Category.Subscription)
+                        switch (forum.Category?.Subscription)
                         {
                             case 1 :
                                 BackgroundJob.Enqueue(() => _processSubscriptions.Reply(replyid));
@@ -747,7 +747,6 @@ namespace MVCForum.Controllers
                     }
                     if (_config.GetIntValue("STRPMSTATUS") == 1)
                     {
-                        //MatchCollection matches = Regex.Matches(reply.Content, @"(?:(?<=\s|^)@""(?:[^""]+))|(?:(?<=\s|^)@(?:[^\s]+))");
                         MatchCollection matches = Regex.Matches(reply.Content, @"(?:@""(?:[^""]+))|(?:@(?:[^\s^<]+))",RegexOptions.IgnoreCase);
                         foreach (Match match in matches)
                         {
