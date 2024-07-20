@@ -59,6 +59,36 @@ public class LanguageManagerController : Controller
         }
         return View("Search",vm);
     }    
+
+    public IActionResult Templates(string id)
+    {
+        DirectoryInfo d = new DirectoryInfo(Path.Combine(_env.WebRootPath, "Templates\\en-GB\\"));
+        FileInfo[] Files = d.GetFiles("*.html"); // Get html files
+
+
+        var templates = Files.Select(f=>f.Name.Replace(".html",""));
+        var model = new TemplateViewModel(){TemplateLang = "en-GB",TemplateFile = "approvePost",TemplateHtml = ""};
+        model.Templates = templates.ToList();
+        return View(model);
+    }
+    [HttpPost]
+    public IActionResult SaveTemplate(TemplateViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            if (!Directory.Exists(Path.Combine(_env.WebRootPath, $"Templates\\{model.TemplateLang}\\")))
+            {
+                Directory.CreateDirectory(Path.Combine(_env.WebRootPath, $"Templates\\{model.TemplateLang}\\"));
+            }
+            var filename = Path.Combine(_env.WebRootPath, $"Templates\\{model.TemplateLang}\\{model.TemplateFile}.html");
+            System.IO.File.WriteAllText(filename, model.TemplateHtml);
+        }
+        DirectoryInfo d = new DirectoryInfo(Path.Combine(_env.WebRootPath, "Templates\\en-GB\\"));
+        FileInfo[] Files = d.GetFiles("*.html"); // Get html files
+
+        model.Templates = Files.Select(f=>f.Name.Replace(".html","")).ToList();
+        return View("Templates",model);
+    }
     [HttpPost]
     public IActionResult SearchUpdate(TranslationViewModel vm)
     {
