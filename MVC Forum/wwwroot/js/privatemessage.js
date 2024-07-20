@@ -8,6 +8,9 @@
         $(".pm-settings").on("click",
             function(e) {
                 e.preventDefault();
+                $('.btn').removeClass('active');
+                $(this).addClass('active');
+                $('.pm-delete').attr('disabled', true);
                 $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Settings/",function() {
                         $('.btn-success').focus();
                         $("#msg-list").hide();
@@ -18,6 +21,9 @@
         $(".pm-message").on("click",
             function (e) {
                 e.preventDefault();
+                $('.btn').removeClass('active');
+                $(this).addClass('active');
+                $('.pm-delete').attr('disabled', true);
                 $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Create/",function() {
                     ValidateForms();
                     revalidate();
@@ -30,7 +36,12 @@
             checkboxes.prop('checked', $(this).is(':checked'));
         });
         $(".pm-delete").on("click",
-            function() {
+            function(e) {
+                if ($(this).attr('disabled')) {
+                    console.log("disabled");
+                    e.preventDefault();
+                    return false;
+                }
                 if ($(this).data("id")) {
                     if(confirm("delete this Message? ")) {
 
@@ -84,12 +95,15 @@
                 }
             });
         $(document).on('click', '#pm-find', function () {
-            $(".pm-button").removeClass("active");
+                $('.btn').removeClass('active');
+                $(this).addClass('active');
+                $('.pm-delete').attr('disabled', true);
                 $.post(SnitzVars.baseUrl + "/PrivateMessage/Search", $(this).closest('form').serialize(), function (data) {
                 if (data) {
                     $("#msg-list").show();
                     $('#msg-list').html(data);
                     $('#pm-message').hide();
+                    $('.pm-delete').attr('disabled', false);
                 } else {
                     alert(data);
                 }
@@ -127,25 +141,17 @@
             e.stopPropagation();
             return false;
         });
-        $(document).on("click", ".fa-search", function (e) {
-                $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/SearchMessages/" + $(this).data("id"), function () {
-                ValidateForms();
-                revalidate();
-                $("#msg-list").hide();
-                $('#Term').focus();
-
-            });
-            e.stopPropagation();
-            return false;
-        });
         $(document).on("click", ".pm-search", function (e) {
-                $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/SearchMessages/" + $(this).data("id"), function () {
-                ValidateForms();
-                revalidate();
-                $("#msg-list").hide();
-                $('#Term').focus();
+            $('.btn').removeClass('active');
+            $(this).addClass('active');
+            $('.pm-delete').attr('disabled', true);
+            $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/SearchMessages/" + $(this).data("id"), function () {
+            ValidateForms();
+            revalidate();
+            $("#msg-list").hide();
+            $('#Term').focus();
 
-            });
+        });
             e.stopPropagation();
             return false;
         });

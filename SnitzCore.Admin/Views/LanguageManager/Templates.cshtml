@@ -147,20 +147,20 @@
         }
         function loadTemplateHtml(template, lang) {
             // using fetch api to load a sample html document
-            console.log("loadTemplateHtml");
-            console.log(lang);
-            fetch(SnitzVars.baseUrl + '/Templates/' + lang + '/' + template + '.html')
+
+            fetch(SnitzVars.baseUrl + '/Templates/' + lang + '/' + template + '.html', {
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                }
+            })
                 .then(response => {
                     // status 404 or 500 will set ok to false
                     if (response.ok) {
                         // Success: convert data received & populate textarea
                         response.text().then(html => {
-                            if (lang !== 'en-GB') {
-                                myCodeMirror.setValue(html.trim().replace('lang="en"', 'lang="' + lang + '"'));
-                            } else {
-                                myCodeMirror.setValue(html.trim());
-                            }
-                            
+                            myCodeMirror.setValue(html.trim());
                             myCodeMirror.setSize("99%", 400);
                         });
                     }

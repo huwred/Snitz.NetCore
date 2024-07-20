@@ -9,22 +9,22 @@
                     <th><input type="checkbox" class="checkbox" title="@Localizer["tipCheckAll"]" id="select_all" /></th>
                     <th>@Localizer["Subject"]</th>
                     <th>@Localizer["To"]</th>
-                    <th>@Localizer["lblSent"]</th>
+                    <th>@Localizer["Sent"]</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
             @foreach (var pm in Model.Outbox!)
             {
-                <tr class="pmread_@pm.Read" data-id="@pm.Id">
+                <tr  data-id="@pm.Id">
                     <td><input type="checkbox" class="checkbox select-post" name="Delete" value="@pm.Id"/></td>
-                    <td>
+                    <td class="pmread_@pm.Read" data-id="@pm.Id">
                         <a asp-controller="PrivateMessage" asp-action="PM" asp-route-id="@pm.Id">
                             @pm.Title
                         </a>
                     </td>
-                    <td>@pm.ToMemberName</td>
-                    <td class="text-nowrap">@pm.Sent?.ToString("dd MMM, yyyy HH:mm", CultureInfo.CurrentCulture)</td>
+                    <td class="pmread_@pm.Read" data-id="@pm.Id">@pm.ToMemberName</td>
+                    <td class="text-nowrap pmread_@pm.Read" data-id="@pm.Id">@pm.Sent?.ToString("dd MMM, yyyy HH:mm", CultureInfo.CurrentCulture)</td>
                     <td><i class="fa fa-trash" data-id="@pm.Id" data-user="@pm.FromMemberId" title="Delete message"></i></td>
                 </tr>
             }

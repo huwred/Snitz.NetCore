@@ -263,7 +263,7 @@
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.2" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
     <PackageReference Include="Snitz.Events" Version="1.0.0-rc151" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.0-rc100" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.0-rc102" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
