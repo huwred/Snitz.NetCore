@@ -18,6 +18,7 @@
     <Compile Remove="wwwroot\images\forum\**" />
     <Compile Remove="wwwroot\is-cache\**" />
     <Compile Remove="wwwroot\js\codemirror\**" />
+    <Compile Remove="wwwroot\Templates\no\**" />
     <Content Remove="Views\Admin\**" />
     <Content Remove="Views\Shared\Components\Events\**" />
     <Content Remove="wwwroot\Content\Members\**" />
@@ -25,6 +26,7 @@
     <Content Remove="wwwroot\images\forum\**" />
     <Content Remove="wwwroot\is-cache\**" />
     <Content Remove="wwwroot\js\codemirror\**" />
+    <Content Remove="wwwroot\Templates\no\**" />
     <EmbeddedResource Remove="Views\Admin\**" />
     <EmbeddedResource Remove="Views\Shared\Components\Events\**" />
     <EmbeddedResource Remove="wwwroot\Content\Members\**" />
@@ -32,6 +34,7 @@
     <EmbeddedResource Remove="wwwroot\images\forum\**" />
     <EmbeddedResource Remove="wwwroot\is-cache\**" />
     <EmbeddedResource Remove="wwwroot\js\codemirror\**" />
+    <EmbeddedResource Remove="wwwroot\Templates\no\**" />
     <None Remove="Views\Admin\**" />
     <None Remove="Views\Shared\Components\Events\**" />
     <None Remove="wwwroot\Content\Members\**" />
@@ -39,12 +42,14 @@
     <None Remove="wwwroot\images\forum\**" />
     <None Remove="wwwroot\is-cache\**" />
     <None Remove="wwwroot\js\codemirror\**" />
+    <None Remove="wwwroot\Templates\no\**" />
     <TypeScriptCompile Remove="Views\Admin\**" />
     <TypeScriptCompile Remove="Views\Shared\Components\Events\**" />
     <TypeScriptCompile Remove="wwwroot\Content\Members\**" />
     <TypeScriptCompile Remove="wwwroot\Content\PhotoAlbum\**" />
     <TypeScriptCompile Remove="wwwroot\is-cache\**" />
     <TypeScriptCompile Remove="wwwroot\js\codemirror\**" />
+    <TypeScriptCompile Remove="wwwroot\Templates\no\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -140,8 +145,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="wwwroot\codemirror\lib\codemirror.js" />
+    <None Include="wwwroot\codemirror\mode\bbcodemixed\bbcodemixed.js" />
+    <None Include="wwwroot\codemirror\mode\bbcode\bbcode.js" />
     <None Include="wwwroot\codemirror\mode\clike\clike.js" />
-    <None Include="wwwroot\codemirror\mode\clike\test.js" />
     <None Include="wwwroot\codemirror\mode\css\css.js" />
     <None Include="wwwroot\codemirror\mode\css\gss_test.js" />
     <None Include="wwwroot\codemirror\mode\css\less_test.js" />
@@ -150,7 +156,6 @@
     <None Include="wwwroot\codemirror\mode\htmlembedded\htmlembedded.js" />
     <None Include="wwwroot\codemirror\mode\htmlmixed\htmlmixed.js" />
     <None Include="wwwroot\codemirror\mode\javascript\javascript.js" />
-    <None Include="wwwroot\codemirror\mode\javascript\test.js" />
     <None Include="wwwroot\codemirror\mode\meta.js" />
     <None Include="wwwroot\js\tinymce\CHANGELOG.md" />
     <None Include="wwwroot\js\tinymce\icons\default\icons.min.js" />

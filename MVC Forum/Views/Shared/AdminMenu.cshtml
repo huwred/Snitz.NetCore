@@ -4,11 +4,14 @@
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdminLink">
         <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">@Localizer["mnuAdminMainConfig"]</a></li>
-        <li><a href="~/LanguageManager/" class="dropdown-item">@Localizer["mnuAdminLangResources"]</a></li>
-        <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search">Search Language</a></li>
         <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">@Localizer["tipNewCategory"]</a></li>
         <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">@Localizer["tipNewForum"]</a></li>
-        <li><hr /></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" href="~/LanguageManager/">@Localizer["mnuAdminLangResources"]</a></li>
+        <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search">Search Dictionary</a></li>
+        <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Templates">Email Templates</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="ListViews">View Templates</a></li>
         <li>
             <link-confirm title="Restart Application" jq-selector="confirm-restart" href="~/Admin/Restart" class="dropdown-item text-warning"></link-confirm>
         </li>
