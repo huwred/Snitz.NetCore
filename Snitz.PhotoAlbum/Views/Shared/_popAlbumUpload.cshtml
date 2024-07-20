@@ -2,14 +2,13 @@
 @model Snitz.PhotoAlbum.ViewModels.AlbumUploadViewModel
 @{
     Layout = null;
-    var allowedTypes = SnitzConfig.GetValue("STRIMAGETYPES");
 }
 <p class="form-text">
     @Localizer["lblUpload"]
 </p>
 <p class="mb-3">
-    @Localizer["maxFileSize", SnitzConfig.GetIntValue("INTMAXIMAGESIZE", 5)]<br />
-    @Localizer["allowedFiles", allowedTypes]
+    @Localizer["maxFileSize", Model.MaxSize]<br />
+    @Localizer["allowedFiles", Model.AllowedTypes]
 </p>
 <form action="/PhotoAlbumUpload/" method="post" enctype="multipart/form-data" role="form" id="upload-form">
     <div class="mb-3">
@@ -69,7 +68,7 @@
         </label>
     </div>
     <div class="photo-input mb-3">
-        <input asp-for="AlbumImage" class="form-control" accept="@allowedTypes" />
+        <input asp-for="AlbumImage" class="form-control" accept="@Model.AllowedTypes" />
         <span asp-validation-for="AlbumImage"></span>
     </div>
     <div class="mb-3">

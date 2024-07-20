@@ -324,7 +324,9 @@ namespace Snitz.PhotoAlbum.Controllers
             var model = new AlbumUploadViewModel
             {
                 Group = -1, NotFeatured = false,
-                GroupList = new SelectList(_dbContext.Set<AlbumGroup>().AsQueryable(), "Id", "Description")
+                GroupList = new SelectList(_dbContext.Set<AlbumGroup>().AsQueryable(), "Id", "Description"),
+                AllowedTypes = _config.GetValue("STRIMAGETYPES"),
+                MaxSize = _config.GetIntValue("INTMAXIMAGESIZE", 5)
             };
 
             foreach (var item in model.GroupList)
