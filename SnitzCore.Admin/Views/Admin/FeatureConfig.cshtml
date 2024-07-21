@@ -18,7 +18,7 @@
 </div>
 <div class="tab-content bg-white p-4" id="v-pills-tabContent">
     <div class="tab-pane fade show active w-100" id="v-pills-general" role="tabpanel" aria-labelledby="feature-tab">
-        <legend>General</legend>
+        <h4>General</h4>
         <hr/>
         <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
             <admin-config config-key="STRIPLOGGING" config-label="IP Logging" config-val="@SnitzConfig.GetIntValue("STRIPLOGGING")"></admin-config>
@@ -33,8 +33,7 @@
             </fieldset>
             <admin-config config-key="INTFULLTEXT" config-label="Use Fulltext search" config-val="@SnitzConfig.GetIntValue("INTFULLTEXT")"></admin-config>
             <admin-config config-key="STRGROUPCATEGORIES" config-label="Group Categories" config-val="@SnitzConfig.GetIntValue("STRGROUPCATEGORIES")"></admin-config>
-
-                <admin-config name="STRSUBSCRIPTION" config-type="select-subs" config-key="STRSUBSCRIPTION" config-label="Highest level of Subscription" config-val="@SnitzConfig.GetIntValue("STRSUBSCRIPTION")" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></admin-config>
+            <admin-config name="STRSUBSCRIPTION" config-type="select-subs" config-key="STRSUBSCRIPTION" config-label="Highest level of Subscription" config-val="@SnitzConfig.GetIntValue("STRSUBSCRIPTION")" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></admin-config>
             <admin-config config-key="INTPROTECTCONTENT" config-label="Protected Content" config-val="@SnitzConfig.GetIntValue("INTPROTECTCONTENT")"></admin-config>
             <admin-config config-key="INTALLOWHIDEONLINE" config-label="Allow members to hide from Online" config-val="@SnitzConfig.GetIntValue("INTALLOWHIDEONLINE")"></admin-config>
             <hr class="title"/>
@@ -50,7 +49,7 @@
         </form>
     </div>
     <div class="tab-pane fade w-100" id="v-pills-moderation" role="tabpanel" aria-labelledby="moderation-tab">
-        <legend>Moderation</legend>
+        <h4>Moderation</h4>
         <hr/>
         <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-moderation">
             <div class="mb-3">
@@ -64,7 +63,7 @@
             <div id="result-moderation"></div>
     </div>
     <div class="tab-pane fade w-100" id="v-pills-forum" role="tabpanel" aria-labelledby="forum-tab">
-        <legend>Forum Settings</legend>
+        <h4>Forum Settings</h4>
         <hr/>
         <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-forum">
             <div class="mb-3">
@@ -104,7 +103,7 @@
             <div id="result-forum"></div>
     </div>
     <div class="tab-pane fade w-100" id="v-pills-topic" role="tabpanel" aria-labelledby="topic-tab">
-        <legend>Topic settings</legend>
+        <h4>Topic settings</h4>
         <hr/>
         <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-topic">
             <div class="mb-3">
@@ -150,7 +149,7 @@
             <div id="result-topic"></div>
     </div>
     <div class="tab-pane fade w-100" id="v-pills-posting" role="tabpanel" aria-labelledby="posting-tab">
-        <legend>Posting Options</legend>
+        <h4>Posting Options</h4>
         <hr/>
         <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-posts">
             <div class="mb-3">
@@ -197,7 +196,7 @@
             <div id="result-posts"></div>
     </div>
     <div class="tab-pane fade w-100" id="v-pills-spam" role="tabpanel" aria-labelledby="spam-tab">
-        <legend>Anti-Spam Settings</legend>
+        <h4>Anti-Spam Settings</h4>
         <hr/>
         <form asp-action="SaveCaptcha" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-spam">
             <admin-config config-key="STRUSECAPTCHA" config-label="Use Captcha for Registration" config-val="@SnitzConfig.GetIntValue("STRUSECAPTCHA")"></admin-config>
@@ -229,7 +228,7 @@
             <div id="result-spam"></div>
     </div>
     <div class="tab-pane fade w-100" id="v-pills-messages" role="tabpanel" aria-labelledby="messages-tab">
-        <legend>Private messaging</legend>
+        <h4>Private messaging</h4>
         <hr/>
         <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-msg">
             <admin-config config-key="STRPMSTATUS" config-label="Enable Private Messages" config-val="@SnitzConfig.GetIntValue("STRPMSTATUS")"></admin-config>
@@ -251,7 +250,7 @@
             <div id="result-msg"></div>
     </div>
     <div class="tab-pane fade w-100" id="v-pills-announce" role="tabpanel" aria-labelledby="announce-tab">
-        <legend>Forum Announcement</legend>
+        <h4>Forum Announcement</h4>
         <hr/>
         <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-announce">
             <admin-config config-key="STRSHOWANNOUNCE" config-label="Show Announcement" config-val="@SnitzConfig.GetIntValue("STRSHOWANNOUNCE")"></admin-config>

@@ -689,3 +689,7 @@ i.modstatus-2, i.modstatus-3 {
 .pmread_False{
     font-weight:800 !important;
 }
+
+.resource-item:hover{
+    background-color:azure;
+}

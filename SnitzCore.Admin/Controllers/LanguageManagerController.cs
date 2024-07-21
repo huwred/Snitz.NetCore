@@ -128,7 +128,7 @@ public class LanguageManagerController : Controller
         }
         return View("Search",vm);
     } 
-    public IActionResult ResourceSet(string id,string culture = "en",string filter = "")
+    public IActionResult ResourceSet(string id,string culture = "en")
     {
         var model = new LanguageViewModel
         {
@@ -136,20 +136,35 @@ public class LanguageManagerController : Controller
             LanguageStrings = new List<KeyValuePair<string, List<LanguageResource>>>(),
             ResourceSet = id
         };
-        _logger.LogWarning($"id:{id} culture:{culture} filter:{filter}");
-        if (filter != "")
+        _logger.LogWarning($"id:{id} culture:{culture}");
+        model.DefaultStrings = GetStrings().Where(l => l.ResourceSet == id).ToList();
+        foreach (var language in model.Languages)
         {
-            model.DefaultStrings =
-                model.DefaultStrings!.Where(s => s.Value.ToLower().Contains(filter.ToLower())).ToList();
-            foreach (var language in model.Languages)
+            try
             {
-                model.LanguageStrings.Add(new KeyValuePair<string, List<LanguageResource>>(language,GetStrings(language).Where(l=>l.ResourceSet == id && l.Value.ToLower().Contains(filter.ToLower())).ToList()));
+                model.LanguageStrings.Add(new KeyValuePair<string, List<LanguageResource>>(language,GetStrings(language).Where(l=>l.ResourceSet == id).ToList()));
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"language:{language} {e.Message}");
+                //throw;
             }
         }
-        else
+
+        ViewBag.Current = id;
+        return PartialView(model);
+    }
+    public IActionResult Resource(string id)
+    {
+        var model = new LanguageViewModel
         {
-            _logger.LogWarning($"DefaultStrings");
-            model.DefaultStrings = GetStrings().Where(l => l.ResourceSet == id).ToList();
+            Languages = _dbcontext.LanguageResources.Select(l => l.Culture).Distinct().OrderBy(o=>o).ToList(),
+            LanguageStrings = new List<KeyValuePair<string, List<LanguageResource>>>(),
+            ResourceSet = id
+        };
+
+            model.DefaultStrings = GetStrings().Where(l => l.Name == id).ToList();
             foreach (var language in model.Languages)
             {
                 try
@@ -163,10 +178,9 @@ public class LanguageManagerController : Controller
                     //throw;
                 }
             }
-        }
 
         ViewBag.Current = id;
-        return PartialView(model);
+        return PartialView("Resource",model);
     }
     private IQueryable<LanguageResource> GetStrings(string culture = "en")
     {
@@ -224,7 +238,15 @@ public class LanguageManagerController : Controller
     [HttpGet]
     public IActionResult DeleteResourceSet(string id)
     {
-        _dbcontext.LanguageResources.Where(l => l.ResourceSet == id).ExecuteDeleteAsync();
+        try
+        {
+            _dbcontext.LanguageResources.Where(l => l.Name == id).ExecuteDeleteAsync();
+        }
+        catch (Exception e)
+        {
+            return Content(e.Message);
+        }
+        
         return Content("");
     }
     public IActionResult AddResource(LanguageResource res)

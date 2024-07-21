@@ -1,0 +1,48 @@
+﻿@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.BackOffice.TagHelpers
+@model SnitzCore.BackOffice.ViewModels.LanguageViewModel
+@inject IOptions<RequestLocalizationOptions> LocOptions
+
+@{
+    Layout = null;
+    var cultureItems = LocOptions.Value.SupportedUICultures!
+        .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
+        .ToList();
+
+}
+<ul class="p-1">
+
+    <li class="list-unstyled">
+        <h4 class="mb-3">@Model.ResourceSet
+        <button snitz-if="@(User.IsInRole("Administrator"))" id="del-resourceset" href="~/LanguageManager/DeleteResourceSet/" data-id="@Model.ResourceSet" class="btn btn-outline-danger align-right" title="Delete this Resource Set"><i class="fa fa-trash-o"></i></button>
+        </h4>
+    </li>
+    @foreach (var res in Model.DefaultStrings)
+    {
+        <li class="list-unstyled">
+            @foreach (var culture in cultureItems)
+            {
+                <form asp-action="UpdateResource" data-ajax="true" data-ajax-update="#result_@res.Name" class="row">
+                    <div class="mb-3 row">
+                        <label for="@res.Name" class="col-sm-3 col-form-label">@culture.Text</label>
+                        <div class="lang_@culture.Value col-6">
+                            <input type="hidden" value="@res.ResourceSet" name="ResourceSet" />
+                            <input type="hidden" value="@culture.Value" name="Culture" />
+                            <input type="hidden" value="@res.Id" name="Id" />
+                            <input type="hidden" value="@res.Name" name="Name" />
+                            <lang-res culture="@culture.Value" resource="@res.Name"></lang-res>
+                        </div>   
+                        <div class="col-2">
+                            <button class="btn btn-sm btn-outline-success" type="submit" title="Save Changes" data-id="@res.Id" name="subBut" value="update"><i class="fa fa-save"></i></button>
+                            <button-confirm snitz-if="@(User.IsInRole("Administrator") && culture.Value != "en")" size="btn-sm" selector="confirm-delete" config-class="fa fa-trash-o" config-key="@res.Name" href="~/LanguageManager/DeleteResource/?id="></button-confirm>
+                            <span id="result_@res.Name"></span>
+                        </div>
+                    </div>
+                </form>
+            }
+        </li>
+    }
+</ul>

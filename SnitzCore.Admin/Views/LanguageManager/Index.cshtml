@@ -14,13 +14,12 @@
     string clang = requestCulture?.RequestCulture.Culture.Name!;
 }
 <div class="m-3">
+    <h3>@ViewBag.Title</h3>
 
-    <form asp-action="Search" asp-controller="LanguageManager" method="POST" class="mt-3" style="display: none;">
-        <div class="input-group mb-3">
-            <input name="filter" class="form-control" id="filter" />
-            <button type="submit" class="btn btn-primary">Find</button>
-        </div>
-    </form>
+    <button snitz-if="@(User.IsInRole("Administrator"))" data-bs-href="@Url.Action("Import", "LanguageManager")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Import Data</button>
+    <button data-bs-href="@Url.Action("Export", "LanguageManager")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Export Data</button>
+    <a href="~/LanguageManager/Search" class="btn btn-primary text-white" title="Find a Resource"><i class="fa fa-search"></i> Find</a>
+    <a href="~/LanguageManager/Templates" class="btn btn-primary text-white" title="Edit Templates"><i class="fa fa-file-text-o"></i> Email Templates</a>
     <form asp-action="AddResource" data-ajax="true" data-ajax-update="#result-resource" class="row mt-3">
         <legend>Add new Resource Key</legend>
         <div class="col-2 mb-3">
@@ -65,29 +64,32 @@
         </div>
     </form>
     <div id="result-resource"></div>
-    <button snitz-if="@(User.IsInRole("Administrator"))" data-bs-href="@Url.Action("Import", "LanguageManager")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Import Data</button>
-    <button data-bs-href="@Url.Action("Export", "LanguageManager")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Export Data</button>
-    <a href="~/LanguageManager/Search" class="btn btn-primary text-white" title="Find a Resource"><i class="fa fa-search"></i></a>
-    <a href="~/LanguageManager/Templates" class="btn btn-primary text-white" title="Templates"><i class="fa fa-file-text-o"></i></a>
-    <hr/>
+    <hr id="dictionary-start"/>
+    <h4>Dictionary</h4>
     <div class="row">
-        <ul class="list-group list-unstyled col-2 p-2">
-            <li class="fw-bold list-group-item">Resource Sets</li>
-            @foreach (var lang in Model.Resources.GroupBy(l => l.ResourceSet).OrderBy(o=>o.Key))
+        <div class="accordion accordion-flush col-4" id="accordionFlushExample">
+            @foreach (var lang in Model.Resources.GroupBy(l => l.ResourceSet).OrderBy(o => o.Key))
             {
-                if (lang.Key == "Admin")
-                {
-                    <li data-id="@lang.Key" class="resource-set list-group-item active" style="cursor: pointer">@lang.Key</li>
-                }
-                else 
-                {
-                    <li data-id="@lang.Key" class="resource-set list-group-item" style="cursor: pointer">@lang.Key</li>
-                }
+                var flushcollapse = "flush-collapse" + lang.Key;
+                var flushheading = "flush-heading" + lang.Key;
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="@flushheading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@flushcollapse" aria-expanded="false" aria-controls="@flushcollapse">
+                            @lang.Key
+                        </button>
+
+                    </h2>
+                    <div id="@flushcollapse" data-id="@lang.Key" class="accordion-collapse collapse" aria-labelledby="@flushheading" data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body resource-card" id="@lang.Key" style="cursor:pointer;">Placeholder.</div>
+                    </div>
+                </div>                
             }
-        </ul>
+
+        </div>
+
         <div class="col p-2">
             <div id="loader"></div>
-            <div class="card " id="resource-card"></div>
+            <div class="card p-3" id="resource-card" ></div>
         </div>
     </div>
 </div>
@@ -147,75 +149,71 @@
             .ajaxStop(function () {
                 $loading.hide();
             });
-
+        $(document).on('show.bs.collapse', '.collapse', function (e) {
+            e.stopImmediatePropagation();
+            var clicked = $(e.target).attr('id');
+            var id = $(e.target).data('id');
+            $('#' + id)
+                .load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/" + $(this).data('id'), function (e) {
+                    $('.lang-control').each(function () {
+                        var val = $(this).val();
+                        $(this).toggleClass("bg-warning", val.length == 0)
+                    })
+                });
+        });
         $(document).ready(function() {
-            $('#resource-card').load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/Admin/?filter=" + $('#filter').val());
+            $('#Admin').load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/Admin" );
+            $("#admin-nav li a.nav-link.active").removeClass("active");
+            $("#lang-settings").addClass("active");
+        });
+
+        $(document).on('click', '.confirm-delete', function (e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            var href = $(this).attr('href');
+            $('#myModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
         });
         $(document).on("click", ".resource-set",
-            function() {
-                $('#ResourceSet option[value="' + $(this).data('id') + '"]').prop('selected', true);
-                $(".list-group-item").removeClass("active");
-                $(this).addClass("active");
+            function () {
 
                 $('#resource-card')
-                    .load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/" + $(this).data('id') + "/?filter=" + $('#filter').val(), function (e) {
+                    .load(SnitzVars.baseUrl + "/LanguageManager/Resource/" + $(this).data('id') + "/?filter=" + $('#filter').val(), function (e) {
+                        scrollToElement($('#dictionary-start'));
                         $('.lang-control').each(function () {
                             var val = $(this).val();
                             $(this).toggleClass("bg-warning", val.length == 0)
                         })
                     });
 
-                $('html, body').scrollTop($("#select-lang").offset().top);
             });
-        $(document).on("change",
-            "#select-lang",
-            function(e) {
-                var lang = $(this).val();
-                $("div[class^='lang_']").hide();
-                $("." + lang).show();
-                $(".btn-outline-success").show();
-                $('[data-lang="fa"]').prop("dir","rtl");
-            });
-        $(document).on('click','.confirm-delete', function(e) {
-
+        $(document).on('click', '#rsbtnYes', function (e) {
+            // handle deletion here
             e.preventDefault();
-            var id = $(this).data('id');
-            var href = $(this).attr('href');
-            $('#myModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
+            var url = $('#rsModal').data('url') + $('#rsModal').data('id');
+
+            $.get(url, function (result) {
+                $('#rsModal').modal('hide');
+                location.reload();
+            });
         });
-        $(document).on('click','#del-resourceset', function(e) {
+        $(document).on('click', '#btnYes', function (e) {
+            // handle deletion here
+            e.preventDefault();
+            var url = $('#myModal').data('url');
+
+            $.get(url, function (result) {
+                $('#myModal').modal('hide');
+                location.reload();
+            });
+        });
+        $(document).on('click', '#del-resourceset', function (e) {
 
             e.preventDefault();
             var id = $(this).data('id');
             var href = $(this).attr('href');
             $('#rsModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
         });
-        $(document).on('click','#rsbtnYes',function(e) {
-            // handle deletion here
-            e.preventDefault();
-            var url = $('#rsModal').data('url') + $('#rsModal').data('id');
-
-            $.get(url, function(result) {
-                $('#rsModal').modal('hide');
-                $('#resource-card')
-                    .load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/?id=" + $('#ResourceSet').val());
-            });
-        });
-        $(document).on('click','#btnYes',function(e) {
-            // handle deletion here
-            e.preventDefault();
-            var url = $('#myModal').data('url');
-
-            $.get(url, function(result) {
-                $('#myModal').modal('hide');
-                $('#resource-card')
-                    .load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/" + $('#ResourceSet').val() + "/?filter=" + $('#filter').val());
-            });
-        });
-        $("#admin-nav li a.nav-link.active").removeClass("active");
-        $("#lang-settings").addClass("active");
-
-        var exampleModal = document.getElementById('modal-container')
+        var exampleModal = document.getElementById('modal-container');
         exampleModal.addEventListener('show.bs.modal', function (event) {
             // Button that triggered the modal
             var button = event.relatedTarget
@@ -235,5 +233,11 @@
                 });
 
         })
+        function scrollToElement(ele) {
+            console.log("scrollToElement");
+            window.setTimeout(function () {
+                $(window).scrollTop(ele.offset().top);
+            }, 10);
+        }
     </script>
 }

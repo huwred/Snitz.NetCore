@@ -25,7 +25,6 @@
     <_ContentIncludedByDefault Remove="Views\Admin\ManageSubscriptions.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Admin\Setup.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Admin\_RoleView.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\LanguageManager\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\LanguageManager\popExportCsv.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\popArchiveForum.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_FormButtons.cshtml" />
@@ -55,10 +54,6 @@
   <ItemGroup>
     <Folder Include="Views\Shared\DisplayTemplates\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\LanguageManager\Index.cshtml" />
-  </ItemGroup>
   <ItemGroup>
     <Content Remove="Views/_ViewImports.cshtml" />
     <Content Remove="Views\LanguageManager\popExportCsv.cshtml" />
@@ -81,6 +76,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CreativeMinds.StopForumSpam" Version="1.0.0-rc151" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Views\LanguageManager\Index.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 

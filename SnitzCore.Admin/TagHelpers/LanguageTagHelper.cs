@@ -26,11 +26,15 @@ namespace SnitzCore.BackOffice.TagHelpers
         {
             var test = _dbContext.LanguageResources.Where(r => r.Name == Resource && r.Culture == Lang);
             var tagid = Guid.NewGuid().ToString();
-            output.TagName = "input";
-            output.TagMode = TagMode.SelfClosing;
+            output.TagName = "textarea";
+            output.TagMode = TagMode.StartTagAndEndTag;
             output.Attributes.Add("id",tagid);
             output.Attributes.Add("name","Value");
             output.Attributes.Add("data-lang",Lang);
+            if(Lang == "fa")
+            {
+                output.Attributes.Add("dir","rtl");
+            }
             output.AddClass("form-control",HtmlEncoder.Default);
             output.AddClass("lang-control",HtmlEncoder.Default);
             // lang
@@ -38,8 +42,8 @@ namespace SnitzCore.BackOffice.TagHelpers
             {
                 foreach (var resource in test)
                 {
-                    output.Attributes.SetAttribute("value", resource.Value);
-                    output.Content.AppendHtml(resource.Culture);
+                    //output.Attributes.SetAttribute("value", resource.Value);
+                    output.Content.AppendHtml(resource.Value);
                 }
             }
 
