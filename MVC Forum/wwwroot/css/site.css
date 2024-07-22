@@ -217,7 +217,7 @@ footer{
     }
     .table-row .status {
         flex: 5%;
-        font-size: 30px;
+        font-size: 1.5em;
         text-align: center;
     }
 
@@ -256,7 +256,7 @@ footer{
 
     .table-row .status {
         flex: 5%;
-        font-size: 20px;
+        font-size: 18px;
         text-align: center;
     }
     .table-row .subjects {
