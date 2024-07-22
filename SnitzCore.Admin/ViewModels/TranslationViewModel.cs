@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using SnitzCore.Data.Models;
 
 namespace SnitzCore.BackOffice.ViewModels
@@ -14,5 +10,7 @@ namespace SnitzCore.BackOffice.ViewModels
         public List<LanguageResource> Resources { get; set; } = null!;
 
         public List<string?> ResourceSets { get; set; }
+
+        public List<KeyValuePair<string, List<LanguageResource>>> Translations{get;set;}
     }
 }

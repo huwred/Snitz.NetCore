@@ -14,12 +14,12 @@
     string clang = requestCulture?.RequestCulture.Culture.Name!;
 }
 <div class="m-3">
-    <h3>@ViewBag.Title</h3>
-
+    <h3>@ViewBag.Title
     <button snitz-if="@(User.IsInRole("Administrator"))" data-bs-href="@Url.Action("Import", "LanguageManager")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Import Data</button>
     <button data-bs-href="@Url.Action("Export", "LanguageManager")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Export Data</button>
     <a href="~/LanguageManager/Search" class="btn btn-primary text-white" title="Find a Resource"><i class="fa fa-search"></i> Find</a>
     <a href="~/LanguageManager/Templates" class="btn btn-primary text-white" title="Edit Templates"><i class="fa fa-file-text-o"></i> Email Templates</a>
+    </h3>
     <form asp-action="AddResource" data-ajax="true" data-ajax-update="#result-resource" class="row mt-3">
         <legend>Add new Resource Key</legend>
         <div class="col-2 mb-3">
@@ -64,7 +64,9 @@
         </div>
     </form>
     <div id="result-resource"></div>
+
     <hr id="dictionary-start"/>
+
     <h4>Dictionary</h4>
     <div class="row">
         <div class="accordion accordion-flush col-4" id="accordionFlushExample">
@@ -75,18 +77,15 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="@flushheading">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@flushcollapse" aria-expanded="false" aria-controls="@flushcollapse">
-                            @lang.Key
+                            <i snitz-if="@(User.IsInRole("Administrator"))" class="fa fa-trash fs-4" title="Delete Resource Set" data-id="@lang.Key" data-url="~/LanguageManager/DeleteResourceSet/"></i> &nbsp; @lang.Key
                         </button>
-
                     </h2>
                     <div id="@flushcollapse" data-id="@lang.Key" class="accordion-collapse collapse" aria-labelledby="@flushheading" data-bs-parent="#accordionFlushExample">
                         <div class="accordion-body resource-card" id="@lang.Key" style="cursor:pointer;">Placeholder.</div>
                     </div>
                 </div>                
             }
-
         </div>
-
         <div class="col p-2">
             <div id="loader"></div>
             <div class="card p-3" id="resource-card" ></div>
@@ -94,7 +93,7 @@
     </div>
 </div>
 
-<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-primary">
@@ -131,11 +130,8 @@
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="modal-container" tabindex="-1" role="dialog" aria-labelledby="modal-container" aria-hidden="true">
-    <div id="upload-container" class="modal-dialog" role="document">
-
-    </div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-container" aria-hidden="true">
+    <div id="upload-container" class="modal-dialog" role="document"></div>
 </div>
 @section Scripts
 {
@@ -149,6 +145,20 @@
             .ajaxStop(function () {
                 $loading.hide();
             });
+
+        $(document).ready(function () {
+            $('#Admin').load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/Admin");
+            $("#admin-nav li a.nav-link.active").removeClass("active");
+            $("#lang-settings").addClass("active");
+        });
+        $(document).on("click", ".accordion-button .fa-trash", function (e) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            var id = $(this).data('id');
+            var href = $(this).data('url');
+
+            $('#rsModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
+        })
         $(document).on('show.bs.collapse', '.collapse', function (e) {
             e.stopImmediatePropagation();
             var clicked = $(e.target).attr('id');
@@ -161,12 +171,6 @@
                     })
                 });
         });
-        $(document).ready(function() {
-            $('#Admin').load(SnitzVars.baseUrl + "/LanguageManager/ResourceSet/Admin" );
-            $("#admin-nav li a.nav-link.active").removeClass("active");
-            $("#lang-settings").addClass("active");
-        });
-
         $(document).on('click', '.confirm-delete', function (e) {
             e.preventDefault();
             var id = $(this).data('id');
@@ -175,7 +179,6 @@
         });
         $(document).on("click", ".resource-set",
             function () {
-
                 $('#resource-card')
                     .load(SnitzVars.baseUrl + "/LanguageManager/Resource/" + $(this).data('id') + "/?filter=" + $('#filter').val(), function (e) {
                         scrollToElement($('#dictionary-start'));
@@ -184,7 +187,6 @@
                             $(this).toggleClass("bg-warning", val.length == 0)
                         })
                     });
-
             });
         $(document).on('click', '#rsbtnYes', function (e) {
             // handle deletion here
@@ -207,32 +209,29 @@
             });
         });
         $(document).on('click', '#del-resourceset', function (e) {
-
             e.preventDefault();
             var id = $(this).data('id');
             var href = $(this).attr('href');
             $('#rsModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
         });
-        var exampleModal = document.getElementById('modal-container');
-        exampleModal.addEventListener('show.bs.modal', function (event) {
+
+        document.getElementById('modal-container')
+        .addEventListener('show.bs.modal', function (event) {
             // Button that triggered the modal
             var button = event.relatedTarget
             // Extract info from data-bs-* attributes
             var action = button.getAttribute('data-bs-href');
-
             // If necessary, you could initiate an AJAX request here
             // and then do the updating in a callback.
             $.get(action,
                 function (data) {
                     $("#upload-container").html(data);
-
                     $("#frmExportCSV").submit(function (e) {
                         $('input[type="submit"]').attr('disabled', 'disabled');
                         $('#modal-container').modal('hide');
                     });
                 });
-
-        })
+        });
         function scrollToElement(ele) {
             console.log("scrollToElement");
             window.setTimeout(function () {

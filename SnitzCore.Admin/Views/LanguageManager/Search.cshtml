@@ -11,7 +11,7 @@
         .ToList();
 }
 <div class="mt-3">
-    <legend>@ViewBag.Title</legend>
+    <h4>@ViewBag.Title</h4>
     <form asp-action="Search" asp-controller="LanguageManager" method="POST" class="mt-3 mb-3">
         <div class="row  mb-3">
             <div class="col-2">
@@ -51,37 +51,54 @@
 
     </form>
     <hr />
-        <ul class="list-unstyled">
-            @{
-                int counter = 0;
-                foreach (var lang in Model.Resources)
-                {
-                <form asp-action="SearchUpdate" asp-controller="LanguageManager" method="POST" class="mt-3 mb-3">
-                    <input asp-for="filter" type="hidden"/>
-                    <li class="row mb-3 ">
-                        <label class="form-text col-4">@lang.Name</label>
-                        <div class="input-group col">
-                            @if (lang.Value.Length > 60)
+    <ul class="list-unstyled">
+        @foreach (var res in Model.Translations)
+        {
+            <li>
+                <div class="card p-3 m-3">
+                    <ul class="list-unstyled">
+                        <li class="list-unstyled">
+                            <h4 class="mb-3">
+                                @res.Key
+                                <button snitz-if="@(User.IsInRole("Administrator"))" id="del-resourceset" href="~/LanguageManager/DeleteResource/" data-id="@res.Key" class="btn btn-outline-danger align-right" title="Delete Resource values"><i class="fa fa-trash-o"></i></button>
+                            </h4>
+                        </li>
+                        <li class="list-unstyled">
+                            @foreach (var culture in cultureItems)
                             {
-                            <textarea name="Resources[0].Value" asp-for="Resources[counter].Value" rows="2" class="form-control" placeholder="" aria-label="@lang.Value"></textarea>
+                                var langres = res.Value.SingleOrDefault(v => v.Culture == culture.Value);
+                                if(langres == null)
+                                {
+                                    langres = new SnitzCore.Data.Models.LanguageResource();
+                                    langres.Culture = culture.Value;
+                                    langres.Name = res.Key;
+                                    langres.ResourceSet = res.Value.First().ResourceSet;
+                                }
+
+                                <form asp-action="UpdateResource" data-ajax="true" data-ajax-update="#result_@langres.Name" class="row">
+                                    <div class="mb-3 row">
+                                        <label for="@langres.Name" class="col-sm-3 col-form-label">@culture.Text</label>
+                                        <div class="lang_@culture.Value col-6">
+                                            <input type="hidden" value="@langres.ResourceSet" name="ResourceSet" />
+                                            <input type="hidden" value="@culture.Value" name="Culture" />
+                                            <input type="hidden" value="@langres.Id" name="Id" />
+                                            <input type="hidden" value="@langres.Name" name="Name" />
+                                            <lang-res culture="@culture.Value" resource="@langres.Name"></lang-res>
+                                        </div>
+                                        <div class="col-2">
+                                            <button class="btn btn-sm btn-outline-success" type="submit" title="Save Changes" data-id="@langres.Id" name="subBut" value="update"><i class="fa fa-save"></i></button>
+                                            <button-confirm snitz-if="@(User.IsInRole("Administrator") && culture.Value != "en")" size="btn-sm" selector="confirm-delete" config-class="fa fa-trash-o" config-key="@langres.Name" href="~/LanguageManager/DeleteResource/?id="></button-confirm>
+                                            <span id="result_@langres.Name"></span>
+                                        </div>
+                                    </div>
+                                </form>
                             }
-                            else
-                            {
-                            <input name="Resources[0].Value" asp-for="Resources[counter].Value" type="text" class="form-control" placeholder="" aria-label="@lang.Value" />
-                            }
-                        <button class="btn btn-outline-success" type="submit" asp-action="SearchUpdate" asp-controller="LanguageManager"><i class="fa fa-save"></i></button>
-                        <button class="btn btn-outline-danger" type="submit" asp-action="SearchDelete" asp-controller="LanguageManager"><i class="fa fa-trash"></i></button>
-                        </div>
-                        <input name="Resources[0].Id" asp-for="Resources[counter].Id" type="hidden" />
-                        <input name="Resources[0].Culture" asp-for="Resources[counter].Culture" type="hidden" />
-                        <input name="Resources[0].Name" asp-for="Resources[counter].Name" type="hidden" />
-                        <input name="Resources[0].ResourceSet" asp-for="Resources[counter].ResourceSet" type="hidden" />
-                    </li>
-                </form>
-                counter++;
-                }
-            }
-        </ul>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        }
+    </ul>
 </div>
 @section Scripts
 {

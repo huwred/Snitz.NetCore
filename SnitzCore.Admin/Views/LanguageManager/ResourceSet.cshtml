@@ -4,17 +4,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using SnitzCore.BackOffice.TagHelpers
 @model SnitzCore.BackOffice.ViewModels.LanguageViewModel
-@inject IOptions<RequestLocalizationOptions> LocOptions
 
-@{
-    Layout = null;
-    var cultureItems = LocOptions.Value.SupportedUICultures!
-        .Where(c=>c.TwoLetterISOLanguageName != "en")
-        .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
-        .ToList();
-    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
-    string clang = requestCulture?.RequestCulture.Culture.Name!;
-}
 @foreach (var res in Model.DefaultStrings)
 {
     <li class="list-group-item resource-item">

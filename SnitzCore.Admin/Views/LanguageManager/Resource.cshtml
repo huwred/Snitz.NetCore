@@ -17,7 +17,7 @@
 
     <li class="list-unstyled">
         <h4 class="mb-3">@Model.ResourceSet
-        <button snitz-if="@(User.IsInRole("Administrator"))" id="del-resourceset" href="~/LanguageManager/DeleteResourceSet/" data-id="@Model.ResourceSet" class="btn btn-outline-danger align-right" title="Delete this Resource Set"><i class="fa fa-trash-o"></i></button>
+        <button snitz-if="@(User.IsInRole("Administrator"))" id="del-resourceset" href="~/LanguageManager/DeleteResource/" data-id="@Model.ResourceSet" class="btn btn-outline-danger align-right" title="Delete Resource values"><i class="fa fa-trash-o"></i></button>
         </h4>
     </li>
     @foreach (var res in Model.DefaultStrings)

@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CreativeMinds.StopForumSpam" Version="1.0.0-rc151" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.16" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Views\LanguageManager\Index.cshtml">
