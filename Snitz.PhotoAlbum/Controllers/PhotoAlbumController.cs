@@ -27,6 +27,7 @@ namespace Snitz.PhotoAlbum.Controllers
         private readonly LanguageService  _languageResource;
         private readonly ISnitzConfig _config;
         private readonly IFileProvider _fileProvider;
+        protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
         public PhotoAlbumController(IWebHostEnvironment hostingEnvironment, PhotoContext dbContext,IMember memberservice,IHtmlLocalizerFactory localizerFactory,ISnitzConfig config)
         {
@@ -340,38 +341,47 @@ namespace Snitz.PhotoAlbum.Controllers
 
         public IActionResult Thumbnail(int id)
         {
-            var orgimage = _dbContext.Set<AlbumImage>().Find(id);
             var uploadFolder = Combine(_config.ContentFolder, "PhotoAlbum");
-
-            var resizedPath = Combine(uploadFolder,"thumbs");
-
-            var fileInfo = _fileProvider.GetFileInfo(Combine(uploadFolder,$"{orgimage.Timestamp}_{orgimage.Location}"));
-            if (!fileInfo.Exists)
+            var orgimage = _dbContext.Set<AlbumImage>().Find(id);
+            try
             {
+
+                var resizedPath = Combine(uploadFolder,"thumbs");
+
+                var fileInfo = _fileProvider.GetFileInfo(Combine(uploadFolder,$"{orgimage.Timestamp}_{orgimage.Location}"));
+                if (!fileInfo.Exists)
+                {
+                    return File("~/images/notfound.jpg", "image/jpeg");
+                }
+
+                // Create the destination folder tree if it doesn't already exist
+                if (!Directory.Exists(Path.Combine(_environment.WebRootPath, resizedPath.Replace("/","\\"))))
+                {
+                    resizedPath = Path.Combine(_environment.WebRootPath, resizedPath.Replace("/","\\"));
+                    Directory.CreateDirectory(resizedPath);
+                }
+                var uploads = Path.Combine(_environment.WebRootPath, resizedPath.Replace("/","\\"));
+                var filePath = Path.Combine(uploads, $"{orgimage.Timestamp}_{orgimage.Location}");
+
+                var resizedInfo = _fileProvider.GetFileInfo(Combine(resizedPath,$"{orgimage.Timestamp}_{orgimage.Location}"));
+                if (!resizedInfo.Exists)
+                {
+                    using var inputStream = fileInfo.CreateReadStream();
+                    using var image = Image.Load(inputStream);
+                    using Image destRound = image.Clone(x => ConvertToThumb(x,new Size(_config.GetIntValue("INTMAXTHUMBSIZE",200), _config.GetIntValue("INTMAXTHUMBSIZE",200))));
+                    destRound.SaveAsJpeg(filePath);
+                }
+
+                // resize the image and save it to the output stream
+
+                return File(Combine(Combine(uploadFolder,"thumbs"),$"{orgimage.Timestamp}_{orgimage.Location}"), "image/jpeg");
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Thumbnail Error : {uploadFolder} {orgimage.ImageName}");
                 return File("~/images/notfound.jpg", "image/jpeg");
             }
 
-            // Create the destination folder tree if it doesn't already exist
-            if (!Directory.Exists(Path.Combine(_environment.WebRootPath, resizedPath.Replace("/","\\"))))
-            {
-                resizedPath = Path.Combine(_environment.WebRootPath, resizedPath.Replace("/","\\"));
-                Directory.CreateDirectory(resizedPath);
-            }
-            var uploads = Path.Combine(_environment.WebRootPath, resizedPath.Replace("/","\\"));
-            var filePath = Path.Combine(uploads, $"{orgimage.Timestamp}_{orgimage.Location}");
-
-            var resizedInfo = _fileProvider.GetFileInfo(Combine(resizedPath,$"{orgimage.Timestamp}_{orgimage.Location}"));
-            if (!resizedInfo.Exists)
-            {
-                using var inputStream = fileInfo.CreateReadStream();
-                using var image = Image.Load(inputStream);
-                using Image destRound = image.Clone(x => ConvertToThumb(x,new Size(_config.GetIntValue("INTMAXTHUMBSIZE",200), _config.GetIntValue("INTMAXTHUMBSIZE",200))));
-                destRound.SaveAsJpeg(filePath);
-            }
-
-            // resize the image and save it to the output stream
-
-            return File(Combine(Combine(uploadFolder,"thumbs"),$"{orgimage.Timestamp}_{orgimage.Location}"), "image/jpeg");
         }
         public JsonResult GetCaption(int id)
         {
