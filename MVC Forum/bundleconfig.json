@@ -112,5 +112,11 @@
     "inputFiles": [
       "wwwroot/css/Themes/SnitzTheme/star-rating.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/prism.min.js",
+    "inputFiles": [
+      "wwwroot/js/prism.js"
+    ]
   }
 ]

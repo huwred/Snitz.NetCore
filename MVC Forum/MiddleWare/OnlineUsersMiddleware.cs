@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Concurrent;
-using System.Linq;
 using SnitzCore.Data.Interfaces;
 
 namespace MVCForum.MiddleWare
@@ -33,7 +32,7 @@ namespace MVCForum.MiddleWare
 
         public Task InvokeAsync(HttpContext context, IMemoryCache memoryCache, ISnitzConfig snitzConfig)
         {
-            var prevTotal = snitzConfig.GetIntValue("INTMAXONLINE", 0);
+            //var prevTotal = snitzConfig.GetIntValue("INTMAXONLINE", 0);
             var test = context.Request.Headers.UserAgent.ToString();
             if (test.Contains("googlebot",StringComparison.OrdinalIgnoreCase) 
                 || test.Contains("bing",StringComparison.OrdinalIgnoreCase)
@@ -65,10 +64,11 @@ namespace MVCForum.MiddleWare
                     cacheEntry.SlidingExpiration = TimeSpan.FromMinutes(_lastActivityMinutes);
                     cacheEntry.RegisterPostEvictionCallback(RemoveKeyWhenExpired);
                 }
-                if(prevTotal < _allKeys.Count)
-                {
-                    snitzConfig.SetValue("INTMAXONLINE",_allKeys.Count.ToString());
-                }
+                //if(prevTotal < _allKeys.Count)
+                //{
+                //    _logger.Warn($"Setting Max OnlineCount {_allKeys.Count}");
+                //    snitzConfig.SetValue("INTMAXONLINE",_allKeys.Count.ToString());
+                //}
                 return string.Empty;
             });
 

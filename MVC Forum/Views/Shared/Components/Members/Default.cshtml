@@ -8,9 +8,11 @@
     var activecount = 0;
     var activemembers = new List<Member>();
     var maxonline = SnitzConfig.GetIntValue("INTMAXONLINE", 0);
+    var _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
     if(onlinecount > maxonline)
     {
         maxonline = onlinecount;
+        _logger.Warn($"Setting Max OnlineCount {onlinecount}");
         SnitzConfig.SetValue("INTMAXONLINE", onlinecount.ToString());
     }
     foreach (var member in Model)

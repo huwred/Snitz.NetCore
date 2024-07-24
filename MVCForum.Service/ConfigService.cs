@@ -234,9 +234,11 @@ namespace SnitzCore.Service
             else
             {
                 configval.Value = value;
+                _dbContext.SnitzConfig.Update(configval);
             }
 
             _dbContext.SaveChanges();
+            RemoveFromCache(key);
         }
     }
 }

@@ -48,11 +48,8 @@
     <div class="d-flex flex-column" style="min-height: 100vh;">
         <partial name="MainNav"/>
         <div class="container flex-grow-1">
-            @if (SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)
-            {
-                <partial name="Announcement" />
-            }
-            <partial name="CookieConsentPartial" />
+            <partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
+            <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
             <main role="main" class="pb-3 mt-4">
                 @RenderBody()
             </main>
@@ -70,8 +67,6 @@
     <partial name="ValidationScriptsPartial" />
     <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
     <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
-    @* <script snitz-if="@(clang == "fa")" type="text/javascript" src="~/bundles/Persian"></script> *@
-
 
 @if (!clang.Contains("en"))
 {

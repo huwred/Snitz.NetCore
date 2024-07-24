@@ -54,6 +54,8 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\TagCloudController.cs" />
+    <Compile Remove="MiddleWare\RequestSetOptionsMiddleware.cs" />
+    <Compile Remove="MiddleWare\RequestSetOptionsStartupFilter.cs" />
     <Compile Remove="Startup.cs" />
     <Compile Remove="TagHelpers\ButtonConfirmTagHelper.cs" />
   </ItemGroup>
@@ -62,6 +64,17 @@
     <Content Remove="bundleconfig.json" />
     <Content Remove="log4net.config" />
     <Content Remove="Views\Shared\_BookmarkLink.cshtml" />
+    <Content Remove="wwwroot\css\bootstrap.css" />
+    <Content Remove="wwwroot\css\DarkTheme.css" />
+    <Content Remove="wwwroot\css\LightTheme.css" />
+    <Content Remove="wwwroot\css\OrangeTheme.css" />
+    <Content Remove="wwwroot\css\site.css" />
+    <Content Remove="wwwroot\css\SnitzTheme.css" />
+    <Content Remove="wwwroot\css\VellumTheme.css" />
+    <Content Remove="wwwroot\js\jquery.unobtrusive-ajax.js" />
+    <Content Remove="wwwroot\js\postcontroller.js" />
+    <Content Remove="wwwroot\js\privatemessage.js" />
+    <Content Remove="wwwroot\js\site.js" />
     <Content Remove="wwwroot\js\tinymce\icons\default\icons.min.js" />
     <Content Remove="wwwroot\js\tinymce\jquery.tinymce.min.js" />
     <Content Remove="wwwroot\js\tinymce\langs\README.md" />
@@ -116,6 +129,7 @@
     <Content Remove="wwwroot\js\tinymce\themes\mobile\theme.min.js" />
     <Content Remove="wwwroot\js\tinymce\themes\silver\theme.min.js" />
     <Content Remove="wwwroot\js\tinymce\tinymce.min.js" />
+    <Content Remove="wwwroot\js\topic.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -157,6 +171,16 @@
     <None Include="wwwroot\codemirror\mode\htmlmixed\htmlmixed.js" />
     <None Include="wwwroot\codemirror\mode\javascript\javascript.js" />
     <None Include="wwwroot\codemirror\mode\meta.js" />
+    <None Include="wwwroot\css\bootstrap.css" />
+    <None Include="wwwroot\css\DarkTheme.css" />
+    <None Include="wwwroot\css\LightTheme.css" />
+    <None Include="wwwroot\css\OrangeTheme.css" />
+    <None Include="wwwroot\css\site.css" />
+    <None Include="wwwroot\css\VellumTheme.css" />
+    <None Include="wwwroot\js\jquery.unobtrusive-ajax.js" />
+    <None Include="wwwroot\js\postcontroller.js" />
+    <None Include="wwwroot\js\privatemessage.js" />
+    <None Include="wwwroot\js\site.js" />
     <None Include="wwwroot\js\tinymce\CHANGELOG.md" />
     <None Include="wwwroot\js\tinymce\icons\default\icons.min.js" />
     <None Include="wwwroot\js\tinymce\jquery.tinymce.min.js" />
@@ -212,6 +236,7 @@
     <None Include="wwwroot\js\tinymce\themes\mobile\theme.min.js" />
     <None Include="wwwroot\js\tinymce\themes\silver\theme.min.js" />
     <None Include="wwwroot\js\tinymce\tinymce.min.js" />
+    <None Include="wwwroot\js\topic.js" />
     <None Include="wwwroot\ProtectedContent\Members\2\20240210144210_Umbraco_MVP_Logo _2022.pdf" />
     <None Include="wwwroot\ProtectedContent\Members\2\20240210144541_Umbraco_MVP_Logo _2022.pdf" />
     <None Include="wwwroot\ProtectedContent\Members\2\20240210145724_Umbraco_MVP_Logo _2022.pdf" />
@@ -241,7 +266,7 @@
     <PackageReference Include="log4net.Ext.Json" Version="2.0.10.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.7" />
@@ -259,11 +284,11 @@
     <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
     <PackageReference Include="NuGet.Common" Version="6.9.1" />
     <PackageReference Include="NuGet.Protocol" Version="6.9.1" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.2" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
     <PackageReference Include="Snitz.Events" Version="1.0.0-rc151" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.0-rc102" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.0-rc103" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
@@ -339,5 +364,8 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\_PageNotFound.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\css\SnitzTheme.css" />
   </ItemGroup>
 </Project>
