@@ -140,7 +140,11 @@ namespace Snitz.PhotoAlbum.Controllers
         {
             var orgimage = _dbContext.Set<AlbumImage>().Find(id);
             var folder = Combine(_config.ContentFolder, "PhotoAlbum");
-            return File(Combine(folder,$"{orgimage.Timestamp}_{orgimage.Location}"),"image/jpeg");
+            if(orgimage != null)
+            {
+                return File(Combine(folder,$"{orgimage.Timestamp}_{orgimage.Location}"),"image/jpeg");
+            }
+            return File(Combine(_config.ContentFolder, "notfound.jpg") ,"image/jpeg");
         }
 
         /// <summary>
@@ -343,6 +347,10 @@ namespace Snitz.PhotoAlbum.Controllers
         {
             var uploadFolder = Combine(_config.ContentFolder, "PhotoAlbum");
             var orgimage = _dbContext.Set<AlbumImage>().Find(id);
+            if(orgimage == null)
+            {
+                return File("~/images/notfound.jpg", "image/jpeg");
+            }
             try
             {
 
@@ -506,8 +514,13 @@ namespace Snitz.PhotoAlbum.Controllers
             return RedirectToAction("Member", new {id=img.MemberId,display=1 });
         }
         [HttpGet]
+        [Authorize]
         public IActionResult Edit(int? id)
         {
+            if(id == null)
+            {
+                return View("Error");
+            }
             var origimage = _dbContext.Set<AlbumImage>().Include(a=>a.Member).SingleOrDefault(a=>a.Id==id);
 
             return View(origimage);
