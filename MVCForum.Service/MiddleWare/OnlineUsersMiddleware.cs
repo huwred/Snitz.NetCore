@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Concurrent;
 using SnitzCore.Data.Interfaces;
+using System.Linq;
 
-namespace MVCForum.MiddleWare
+namespace SnitzCore.Service.MiddleWare
 {
     public static class OnlineUsersMiddlewareExtensions
     {
@@ -32,24 +33,21 @@ namespace MVCForum.MiddleWare
 
         public Task InvokeAsync(HttpContext context, IMemoryCache memoryCache, ISnitzConfig snitzConfig)
         {
-            //var prevTotal = snitzConfig.GetIntValue("INTMAXONLINE", 0);
-            var test = context.Request.Headers.UserAgent.ToString();
-            if (test.Contains("googlebot",StringComparison.OrdinalIgnoreCase) 
-                || test.Contains("bing",StringComparison.OrdinalIgnoreCase)
-                || test.Contains("duckduck",StringComparison.OrdinalIgnoreCase)
-                || test.Contains("yahoo",StringComparison.OrdinalIgnoreCase)
-                || test.Contains("spider",StringComparison.OrdinalIgnoreCase)
-                || test.Contains("amazonbot",StringComparison.OrdinalIgnoreCase)
-                || test.Contains("bot",StringComparison.OrdinalIgnoreCase))
+            var exclude = new[] { "googlebot", "bing", "duckduck", "yahoo", "spider", "amazonbot", "bot", "facebook" };
+            var agent = context.Request.Headers.UserAgent.ToString();
+            if (exclude.Any(s => agent.Contains(s, StringComparison.OrdinalIgnoreCase)))
             {
                 return _next(context);
             }
-            //_logger.Warn(test);
+            if (!agent.Contains("mozilla", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.Warn(agent);
+            }
 
             if (context.Request.Cookies.TryGetValue(_cookieName, out var userGuid) == false)
             {
                 userGuid = Guid.NewGuid().ToString();
-                context.Response.Cookies.Append(_cookieName, userGuid, new CookieOptions { HttpOnly = true, MaxAge = TimeSpan.FromDays(30),Secure = true,SameSite = SameSiteMode.Strict });
+                context.Response.Cookies.Append(_cookieName, userGuid, new CookieOptions { HttpOnly = true, MaxAge = TimeSpan.FromDays(30), Secure = true, SameSite = SameSiteMode.Strict });
             }
 
             memoryCache.GetOrCreate(userGuid, cacheEntry =>

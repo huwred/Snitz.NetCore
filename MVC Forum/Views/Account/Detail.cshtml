@@ -164,6 +164,23 @@
                             </div>
                         }
                     }
+                    @if (SnitzConfig.GetIntValue("INTALLOWHIDEONLINE",0) == 1)
+                    {
+                        <div class="col-6 form-label">
+                            <div class="form-check form-switch mb-3">
+                                @if(Model.Member.HideOnline == 1)
+                                {
+                                    <input type="checkbox" role="switch" name="HideOnline" id="HideOnline" value="1" class="form-check-input" checked style="transform: scale(1.4);">
+                                    <input type="checkbox" name="HideOnline" value="0" style="display:none">
+                                }else{
+                                    <input type="checkbox" role="switch" name="HideOnline" id="HideOnline" value="1" class="form-check-input" style="transform: scale(1.4);">
+                                    <input type="checkbox" name="HideOnline" value="0" checked style="display:none">
+                                }
+                                <label class="form-check-label" for="HideOnline">@Localizer["AnonymousUser"]</label>
+                            </div>
+                            
+                        </div>
+                    }
                     <div class="mb-3" snitz-if="@canedit">
                         <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
                         <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>

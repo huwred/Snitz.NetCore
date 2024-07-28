@@ -1,10 +1,11 @@
 ﻿@model List<Member>
-@using MVCForum.MiddleWare
+@using SnitzCore.Service.MiddleWare
 @using Microsoft.AspNetCore.Identity
 @using SnitzCore.Data.Extensions;
 @inject UserManager<ForumUser> userManager
 @{
     var onlinecount = OnlineUsersMiddleware.GetOnlineUsersCount();
+    var hiddencount = 0;
     var activecount = 0;
     var activemembers = new List<Member>();
     var maxonline = SnitzConfig.GetIntValue("INTMAXONLINE", 0);
@@ -19,14 +20,26 @@
     {
         if(member.Lastactivity.FromForumDateStr() > DateTime.UtcNow.AddMinutes(-5))
         {
-            activecount += 1;
-            activemembers.Add(member);
+            var user = userManager.FindByNameAsync(member.Name).Result;
+            if(user != null)
+            {
+                if (userManager.IsInRoleAsync(user, "HiddenMembers").Result)
+                {
+                    hiddencount += 1;
+                }
+                else
+                {
+                    activecount += 1;
+                    activemembers.Add(member);
+                }
+            }
+            
         }
     }
 }
 <ul class="list-unstyled">
     <li>
-        @Localizer["lblOnlineUsersDesc", new object[] { onlinecount, activecount, 0, onlinecount - activecount, maxonline, "" }]
+        @Localizer["lblOnlineUsersDesc", new object[] { onlinecount, activecount, hiddencount, onlinecount - activecount, maxonline, "" }]
     </li>
     <li>
         @foreach (var activemember in activemembers)
