@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CreativeMinds.StopForumSpam.Responses;
+using CreativeMinds.StopForumSpam;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -163,8 +165,9 @@ namespace MVCForum.Controllers
                 var memberid = _userManager.GetUserId(User);
                 user = await _userManager.FindByIdAsync(memberid!);
                 member = _memberService.GetByUsername(user?.UserName!);
+                member.HideOnline = User.IsInRole("HiddenMembers") ? 1 : 0;
             }
-
+            
             var model = new MemberDetailModel
             {
                 Id = member!.Id,
@@ -199,7 +202,18 @@ namespace MVCForum.Controllers
             if (ModelState.IsValid)
             {
                 _memberService.Update(model);
-
+                //TODO: process anonymous user role.
+                var user = _userManager.FindByNameAsync(model.Name).Result;
+                if(user != null)
+                {
+                    if(model.HideOnline == 1)
+                    { _userManager.AddToRoleAsync(user, "HiddenMembers"); }
+                    else
+                    {
+                        _userManager.RemoveFromRoleAsync(user,"HiddenMembers");
+                    }
+                }
+                 
                 return RedirectToAction("Detail", "Account");
             }
             var mdmodel = new MemberDetailModel
@@ -244,6 +258,11 @@ namespace MVCForum.Controllers
                 ModelState.AddModelError("Email","Email not allowed");
                 return View(user);
             }
+            var ipaddress = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            if (!StopForumSpamCheck(user.Email,user.Name,ipaddress))
+            {
+                return Redirect("https://www.stopforumspam.com/");
+            }
             Member forumMember = new()
             {
                 Email = user.Email, 
@@ -251,7 +270,7 @@ namespace MVCForum.Controllers
                 Level = 1, 
                 Status = 0,
                 Created = DateTime.UtcNow.ToForumDateStr(),
-                Ip = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString(),
+                Ip = ipaddress,
             };
             var required = new List<KeyValuePair<string, object>>();
 
@@ -264,7 +283,6 @@ namespace MVCForum.Controllers
                             user.RequiredFields[i]));
                 }
             }
-
 
             var newmember = _memberService.Create(forumMember, required);
             ForumUser appUser = new()
@@ -295,7 +313,6 @@ namespace MVCForum.Controllers
             
             await _emailSender.SendEmailAsync(message);
             await _userManager.AddToRoleAsync(appUser, "Visitor");
-
 
             return RedirectToAction(nameof(SuccessRegistration));
         }
@@ -329,7 +346,7 @@ namespace MVCForum.Controllers
             var returnUrl = login.ReturnUrl ?? Url.Content($"~/");
 
             ForumUser? newIdentityUser;
-            _logger.Warn($"Finding User {login.Username}");
+            _logger.Info($"Finding User {login.Username}");
             if (!IsValidEmail(login.Username))
             {
                 _logger.Info("Finding User by Name");
@@ -385,105 +402,18 @@ namespace MVCForum.Controllers
                 ModelState.AddModelError(nameof(login.Username), "Invalid Login Attempt");
                 return View();
             }
-            _logger.Warn("No IdentityUser user, checking Member table");
+            _logger.Info("No IdentityUser user, checking Member table");
             var member = _memberService.GetByUsername(login.Username);
             if (member == null)
             {
                 //not a member so redirect to the register page
-                _logger.Warn("Not a member so redirect to the register page");
+                _logger.Info("Not a member so redirect to the register page");
                 return RedirectToActionPermanent("Register");
             }
 
-            _logger.Warn("Member found, migrate account");
+            _logger.Info("Member found, migrate account");
             return await MigrateMember(login,member, returnUrl);
             
-        }
-
-        private async Task<IActionResult> MigrateMember(UserSignInModel login, Member member, string returnUrl)
-        {
-            #region Migrate Member
-
-            var validpwd = false;
-            try
-            {
-                _logger.Warn("Validate Old member record");
-                validpwd = _memberService.ValidateMember(member!, login.Password);
-                _logger.Info("Password is correct.");
-                //Password is correct but will it validate, if not then force a reset
-                if (validpwd)
-                {
-                    foreach (var validator in _userManager.PasswordValidators)
-                    {
-                        var result = await validator.ValidateAsync(_userManager, null, login.Password);
-
-                        if (!result.Succeeded)
-                        {
-                            _logger.Warn("Password won't validate so forse a reset.");
-                            validpwd = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Error("Error finding member record", e);
-                //membership table may not exists
-            }
-            if (member != null)
-            {
-                _logger.Info($"Found Old member record {member.Name}");
-                ForumUser existingUser = new()
-                {
-                    UserName = login.Username,
-                    Email = member.Email,
-                    MemberId = member.Id,
-                    MemberSince = member.Created.FromForumDateStr(),
-                    EmailConfirmed = true,
-                };
-                if (!validpwd)
-                {
-                    login.Password = GeneratePassword();
-                }
-                _logger.Warn($"Create new Identity user {member.Name} - {login.Password}");
-                IdentityResult result = await _userManager.CreateAsync(existingUser, login.Password);
-                if (result.Succeeded)
-                {
-                    var currroles = _snitzDbContext.Set<OldUserInRole>()
-                        .Include(u => u.Role).AsNoTracking()
-                        .Include(u => u.User).AsNoTracking()
-                        .Where(r => r.UserId == member.Id);
-                    foreach (var userInRole in currroles)
-                    {
-                        var exists = _roleManager.Roles.OrderBy(r => r.Name).FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
-                        if (exists == null)
-                        {
-                            await _roleManager.CreateAsync(new IdentityRole(userInRole.Role.RoleName));
-                        }
-                        await _userManager.AddToRoleAsync(existingUser, userInRole.Role.RoleName);
-                    }
-                    if (!validpwd)
-                    {
-                        return LocalRedirect("~/Account/ForgotPassword");
-                    }
-                    await _signInManager.SignInAsync(existingUser, login.RememberMe);
-                    return LocalRedirect(returnUrl);
-                }
-                foreach (IdentityError error in result.Errors)
-                {
-                    _logger.Error($"{member.Name} : {error.Description}");
-                    ModelState.AddModelError(nameof(login.Username), error.Description);
-                }
-
-            }
-            else
-            {
-                _logger.Error($"{login.Username} : Either the user was not found or the password does not match");
-                ModelState.AddModelError(nameof(login.Username), "Either the user was not found or the password does not match.<br/>Please try using the forgot password link to reset your password.");
-            }
-            #endregion
-
-            return View("Login", login);
         }
 
         public async Task<IActionResult> Logout()
@@ -709,6 +639,7 @@ namespace MVCForum.Controllers
             };
             return View(model);
         }
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -743,6 +674,7 @@ namespace MVCForum.Controllers
             ViewBag.Message = _languageResource.GetString("EmailConfirm");
             return View(model);
         }
+
         [HttpGet]
         public async Task<IActionResult> ChangeEmail(string? token, string? user)
         {
@@ -848,6 +780,7 @@ namespace MVCForum.Controllers
             return PartialView(model);
 
         }
+
         [HttpGet]
         [Authorize]
         public IActionResult ChangeUsername(int? id)
@@ -857,6 +790,7 @@ namespace MVCForum.Controllers
 
             return View(new ChangeUsernameModel{CurrentUserId = _memberService.Current().Id});
         }
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -1045,6 +979,120 @@ namespace MVCForum.Controllers
             }
 
             return new string(chars.ToArray());
+        }
+        private async Task<IActionResult> MigrateMember(UserSignInModel login, Member member, string returnUrl)
+        {
+            #region Migrate Member
+
+            var validpwd = false;
+            try
+            {
+                _logger.Warn("Validate Old member record");
+                validpwd = _memberService.ValidateMember(member!, login.Password);
+                _logger.Info("Password is correct.");
+                //Password is correct but will it validate, if not then force a reset
+                if (validpwd)
+                {
+                    foreach (var validator in _userManager.PasswordValidators)
+                    {
+                        var result = await validator.ValidateAsync(_userManager, null, login.Password);
+
+                        if (!result.Succeeded)
+                        {
+                            _logger.Warn("Password won't validate so forse a reset.");
+                            validpwd = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Error finding member record", e);
+                //membership table may not exists
+            }
+            if (member != null)
+            {
+                _logger.Info($"Found Old member record {member.Name}");
+                ForumUser existingUser = new()
+                {
+                    UserName = login.Username,
+                    Email = member.Email,
+                    MemberId = member.Id,
+                    MemberSince = member.Created.FromForumDateStr(),
+                    EmailConfirmed = true,
+                };
+                if (!validpwd)
+                {
+                    login.Password = GeneratePassword();
+                }
+                _logger.Warn($"Create new Identity user {member.Name} - {login.Password}");
+                IdentityResult result = await _userManager.CreateAsync(existingUser, login.Password);
+                if (result.Succeeded)
+                {
+                    var currroles = _snitzDbContext.Set<OldUserInRole>()
+                        .Include(u => u.Role).AsNoTracking()
+                        .Include(u => u.User).AsNoTracking()
+                        .Where(r => r.UserId == member.Id);
+                    foreach (var userInRole in currroles)
+                    {
+                        var exists = _roleManager.Roles.OrderBy(r => r.Name).FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
+                        if (exists == null)
+                        {
+                            await _roleManager.CreateAsync(new IdentityRole(userInRole.Role.RoleName));
+                        }
+                        await _userManager.AddToRoleAsync(existingUser, userInRole.Role.RoleName);
+                    }
+                    if (!validpwd)
+                    {
+                        return LocalRedirect("~/Account/ForgotPassword");
+                    }
+                    await _signInManager.SignInAsync(existingUser, login.RememberMe);
+                    return LocalRedirect(returnUrl);
+                }
+                foreach (IdentityError error in result.Errors)
+                {
+                    _logger.Error($"{member.Name} : {error.Description}");
+                    ModelState.AddModelError(nameof(login.Username), error.Description);
+                }
+
+            }
+            else
+            {
+                _logger.Error($"{login.Username} : Either the user was not found or the password does not match");
+                ModelState.AddModelError(nameof(login.Username), "Either the user was not found or the password does not match.<br/>Please try using the forgot password link to reset your password.");
+            }
+            #endregion
+
+            return View("Login", login);
+        }
+        private bool StopForumSpamCheck(string email, string name, string? userip)
+        {
+            Client client = new Client(); //(apiKeyTextBox.Text)
+            CreativeMinds.StopForumSpam.Responses.Response response;
+            if (!String.IsNullOrWhiteSpace(name) && String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
+            {
+                response = client.CheckUsername(name);
+            }
+            else if (String.IsNullOrWhiteSpace(name) && !String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
+            {
+                response = client.CheckEmailAddress(email);
+            }
+            else if (String.IsNullOrWhiteSpace(name) && String.IsNullOrWhiteSpace(email) && !String.IsNullOrWhiteSpace(userip))
+            {
+                response = client.CheckIPAddress(userip);
+            }
+            else
+            {
+                response = client.Check(name, email, userip);
+            }
+            int freq = 0;
+     
+            foreach (ResponsePart part in response.ResponseParts)
+            {
+                freq += part.Frequency;
+            }
+            return freq < 10;
         }
 
     }

@@ -266,4 +266,7 @@ public partial class Member
     public List<string> Roles { get; set; } = new List<string>();
 
     public virtual List<MemberSubscription>? Subscriptions { get; set; } = new List<MemberSubscription>();
+
+    [NotMapped]
+    public int HideOnline {get;set;}
 }

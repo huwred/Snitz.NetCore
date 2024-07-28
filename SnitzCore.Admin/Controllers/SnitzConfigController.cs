@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
@@ -14,10 +15,12 @@ namespace SnitzCore.BackOffice.Controllers
     {
         private readonly ISnitzConfig _config;
         private readonly SnitzDbContext _context;
-        public SnitzConfigController(ISnitzConfig config,SnitzDbContext dbContext)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public SnitzConfigController(ISnitzConfig config,SnitzDbContext dbContext,RoleManager<IdentityRole> roleManager)
         {
             _config = config;
             _context = dbContext;
+            _roleManager = roleManager;
         }
         public IActionResult Index()
         {
@@ -224,6 +227,14 @@ namespace SnitzCore.BackOffice.Controllers
                     else
                     {
                         _context.SnitzConfig.Add(new SnitzConfig() { Id = 0, Key = formKey, Value = val });
+                    }
+                    if(formKey == "INTALLOWHIDEONLINE")
+                    {
+                        //Set-Up Role
+                        if(val == "1" && !_roleManager.Roles.Any(r=>r.Name == "HiddenMembers"))
+                        {
+                            _roleManager.CreateAsync(new IdentityRole("HiddenMembers"));
+                        }
                     }
                 }
                 _context.SaveChanges(true);

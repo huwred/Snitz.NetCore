@@ -33,7 +33,7 @@ using Snitz.Events.Models;
 using Snitz.PhotoAlbum.Models;
 using SnitzCore.Service.Extensions;
 using SnitzCore.Service.Hangfire;
-using MVCForum.MiddleWare;
+using SnitzCore.Service.MiddleWare;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
