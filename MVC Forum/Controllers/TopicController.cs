@@ -83,7 +83,7 @@ namespace MVCForum.Controllers
             {
                 signedin = true;
             }
-            var post = _postService.GetTopic(id);
+            var post = _postService.GetTopicAsync(id).Result;
             if(post == null)
             {
                 ViewBag.Error = "No Topic Found with that ID";
@@ -806,7 +806,7 @@ namespace MVCForum.Controllers
         public async Task<IActionResult> DeleteTopic(int id)
         {
             var member = _memberService.GetById(User).Result;
-            var post = _postService.GetTopic(id);
+            var post = _postService.GetTopicAsync(id).Result;
             if (member != null && (member.Roles.Contains("Administrator") || post.MemberId == member.Id))
             {
                 await _postService.DeleteTopic(id);
@@ -894,7 +894,7 @@ namespace MVCForum.Controllers
             }
             else
             {
-                var topic = _postService.GetTopic(id);
+                var topic = _postService.GetTopicAsync(id).Result;
                 Member from = _memberService.Current();
                 
                 if (from != null)
@@ -992,7 +992,7 @@ namespace MVCForum.Controllers
             }
             else
             {
-                var topic = _postService.GetTopic(id);
+                var topic = _postService.GetTopicAsync(id).Result;
                 if (topic != null)
                 {
                     moderator = User.IsInRole("Forum_" + topic.ForumId);
@@ -1145,7 +1145,7 @@ namespace MVCForum.Controllers
         [Route("Topic/Subscribe/")]
         public IActionResult Subscribe(int id)
         {
-            var topic = _postService.GetTopic(id);
+            var topic = _postService.GetTopicAsync(id).Result;
             var member = _memberService.Current();
             _snitzDbContext.MemberSubscription.Add(new MemberSubscription()
             {
@@ -1195,7 +1195,7 @@ namespace MVCForum.Controllers
 
 
                     var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
-                    var topic = _postService.GetTopic(maintopicid);
+                    var topic = _postService.GetTopicAsync(maintopicid).Result;
                     if (topic != null)
                     {
                         if (sub == SubscriptionLevel.Topic || sub == SubscriptionLevel.Forum || sub == SubscriptionLevel.Category)

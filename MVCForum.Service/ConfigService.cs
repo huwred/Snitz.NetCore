@@ -131,9 +131,8 @@ namespace SnitzCore.Service
             var service = new InMemoryCache();
             service.Remove("cfg_" + key);
         }
-        public int GetIntValue(string? key, int defaultvalue = 0)
+        public int GetIntValue(string key, int defaultvalue = 0)
         {
-            if(string.IsNullOrWhiteSpace(key)) return defaultvalue;
             var service = new InMemoryCache() { DoNotExpire = true };
             var result = service.GetOrSet("cfg_" + key, () => CachedIntValue(key, defaultvalue));
             return result != null ? int.Parse(result) : defaultvalue;

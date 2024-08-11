@@ -7,7 +7,7 @@ namespace SnitzCore.Data.Interfaces
 {
     public interface IPost
     {
-        Post? GetTopic(int id);
+        Task<Post?> GetTopicAsync(int id);
         Post GetTopicForUpdate(int id);
         Post? GetTopicWithRelated(int id);
         PostReply? GetReply(int id);
@@ -33,8 +33,8 @@ namespace SnitzCore.Data.Interfaces
 
         Task UpdateLastPost(int topicid, int? moderatedcount);
         Task<bool> Answer(int id);
-        ArchivedPost GetArchivedTopic(int id);
-        ArchivedPost GetArchivedTopicWithRelated(int id);
+        ArchivedPost? GetArchivedTopic(int id);
+        ArchivedPost? GetArchivedTopicWithRelated(int id);
         Task SetStatus(int id, Status status);
         Task SetReplyStatus(int id, Status status);
 

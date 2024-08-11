@@ -23,7 +23,7 @@ namespace MVCForum.View_Components
             }
             else
             {
-                var topic = _postService.GetTopic(post.Id);
+                var topic = await _postService.GetTopicAsync(post.Id);
                 return await Task.FromResult((IViewComponentResult)View("Topic",topic));
             }
         }

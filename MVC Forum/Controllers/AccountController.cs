@@ -168,22 +168,26 @@ namespace MVCForum.Controllers
                 member.HideOnline = User.IsInRole("HiddenMembers") ? 1 : 0;
             }
             
-            var model = new MemberDetailModel
-            {
-                Id = member!.Id,
-                UserModel = user!, 
-                Name = id ?? member.Name,
-                Firstname = member.Firstname,
-                Lastname = member.Lastname,
-                Title = member.Title,
-                Email = user?.Email ?? member.Email,
-                Newemail = user?.Email ?? member.Email,
-                Member = member,
-                CanEdit = currUser?.UserName == member.Name 
-            };
 
-            if (member != null )
+
+            if (member != null)
+            {
+                var model = new MemberDetailModel
+                {
+                    Id = member.Id,
+                    UserModel = user!, 
+                    Name = id ?? member.Name,
+                    Firstname = member.Firstname,
+                    Lastname = member.Lastname,
+                    Title = member.Title,
+                    Email = user?.Email ?? member?.Email ?? "",
+                    Newemail = user?.Email ?? member?.Email ?? "",
+                    Member = member,
+                    CanEdit = currUser?.UserName == member?.Name 
+                };
                 return View(model);
+
+            }
 
             return View("Error");
         }

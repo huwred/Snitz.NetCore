@@ -18,7 +18,7 @@ namespace SnitzCore.Data.Interfaces
         int DefaultPageSize { get; set; }
         IEnumerable<CaptchaOperator> CaptchaOperators { get; set; }
         IEnumerable<string> GetRequiredMemberFields();
-        int GetIntValue(string? key, int defaultvalue = 0);
+        int GetIntValue(string key, int defaultvalue = 0);
         string GetValue(string key);
         string? GetValueWithDefault(string key,string? defVal = null);
         bool TableExists(string tablename);

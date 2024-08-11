@@ -27,6 +27,7 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.35.0" />
     <PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="7.0.3" />
+    <PackageReference Include="System.ServiceModel.Syndication" Version="8.0.0" />
     <PackageReference Include="X.PagedList" Version="9.1.2" />
   </ItemGroup>
   <ItemGroup>

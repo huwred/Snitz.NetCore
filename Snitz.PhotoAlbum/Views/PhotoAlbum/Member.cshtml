@@ -1,7 +1,19 @@
 ﻿@using SnitzCore.Data.Extensions
 @using SnitzCore.Service.Extensions
 @model List<Snitz.PhotoAlbum.Models.AlbumImage>
-
+@{
+    Layout = "Layout";
+    var currentmember = 0;
+    bool showprivate = false;
+    if (ViewBag.CurrentMemberId != null)
+    {
+        currentmember = ViewBag.CurrentMemberId;
+    }
+    if (currentmember == ViewBag.MemberId)
+    {
+        showprivate = true;
+    }
+}
 @section MetaData
 {
     <meta name="title" content="@Model.First().Member?.Name @Localizer["lblPhotoAlbum"]" />
@@ -22,19 +34,7 @@
 
     </style>
 }
-@{
-    Layout = "Layout";
-    var currentmember = 0;
-    bool showprivate = false;
-    if (ViewBag.CurrentMemberId != null)
-    {
-        currentmember = ViewBag.CurrentMemberId;
-    }
-    if (currentmember == ViewBag.MemberId)
-    {
-        showprivate = true;
-    }
-}
+
 
 
 <div class="container pt-0">

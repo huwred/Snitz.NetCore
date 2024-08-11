@@ -299,14 +299,14 @@ namespace SnitzCore.Service
                 .Include(p=>p.LastPostAuthor);
         }
 
-        public Post? GetTopic(int id)
+        public async Task<Post?> GetTopicAsync(int id)
         {
-            var post = _dbContext.Posts
+            var post = await _dbContext.Posts
                 .AsNoTracking()
                 .Include(p => p.Category)
                 .Include(p => p.Forum)
                 .Include(p => p.Member)
-                .SingleOrDefault(p => p.Id == id);
+                .SingleOrDefaultAsync(p => p.Id == id);
             return post;
         }
         public Post GetTopicForUpdate(int id)
@@ -316,14 +316,14 @@ namespace SnitzCore.Service
                 .Single(p => p.Id == id);
             return post; 
         }
-        public ArchivedPost GetArchivedTopic(int id)
+        public ArchivedPost? GetArchivedTopic(int id)
         {
             var post = _dbContext.ArchivedTopics
                 .AsNoTracking()
                 .Include(p => p.Category).AsNoTracking()
                 .Include(p => p.Forum).AsNoTracking()
                 .Include(p => p.Member).AsNoTracking()
-                .Single(p => p.Id == id);
+                .SingleOrDefault(p => p.Id == id);
             return post;
         }
         public Post? GetTopicWithRelated(int id)
@@ -342,7 +342,7 @@ namespace SnitzCore.Service
 
             return post;
         }
-        public ArchivedPost GetArchivedTopicWithRelated(int id)
+        public ArchivedPost? GetArchivedTopicWithRelated(int id)
         {
 
             var post = _dbContext.ArchivedTopics.Where(p => p.Id == id)
@@ -415,10 +415,10 @@ namespace SnitzCore.Service
 
             if (searchQuery.SinceDate != SearchDate.AnyDate)
             {
-                var lastvisit = DateTime.UtcNow.AddDays(-(int)searchQuery.SinceDate);
+                var lastvisit = DateTime.UtcNow.AddDays(-(int)searchQuery.SinceDate).ToForumDateStr();
                 posts = posts
                     
-                .Where(f => f.LastPostDate.FromForumDateStr() > lastvisit)
+                .Where(f => string.Compare( f.LastPostDate , lastvisit) > 0)
                 .OrderByDescending(t=>t.LastPostDate).AsQueryable();
             }
             if (searchQuery.SearchCategory is > 0)
@@ -649,5 +649,7 @@ namespace SnitzCore.Service
             }
             return topic;
         }
+
+
     }
 }

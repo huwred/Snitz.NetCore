@@ -13,7 +13,7 @@ namespace MVCForum.View_Components
         }
         public async Task<IViewComponentResult> InvokeAsync(int postid)
         {
-            var post = _postService.GetTopic(postid);
+            var post = await _postService.GetTopicAsync(postid);
 
             return await Task.FromResult((IViewComponentResult)View(post));
         }

@@ -1,8 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Http.Extensions
 @model Post
+@inject IViewLocalizer Localizer
 @{
 
-    string pageUrl = Context.Request.GetEncodedUrl(); ;
+    string pageUrl = Context.Request.GetEncodedUrl();
 }
 <div>
     @if (SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1)
@@ -15,8 +16,8 @@
     }
     @if (SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1)
     {
-        <a href="https://www.facebook.com/share.php?u=@pageUrl&title=@SnitzConfig.ForumTitle" id="ShareFacebook" class="btn btn-outline-primary" title="@Localizer["FacebookShare"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa fa-facebook-square p-2"></i></a>
-@*         <a href="https://twitter.com/home?status=@SnitzConfig.ForumTitle+@pageUrl" id="ShareTwitter" class="btn btn-outline-primary" title="@Localizer["TwitterShare"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa  fa-twitter-square p-2"></i></a>
+@*        <a href="https://www.facebook.com/share.php?u=@pageUrl&title=@SnitzConfig.ForumTitle" id="ShareFacebook" class="btn btn-outline-primary" title="@Localizer["FacebookShare"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa fa-facebook-square p-2"></i></a>
+         <a href="https://twitter.com/home?status=@SnitzConfig.ForumTitle+@pageUrl" id="ShareTwitter" class="btn btn-outline-primary" title="@Localizer["TwitterShare"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa  fa-twitter-square p-2"></i></a>
  *@    }
 
 </div>

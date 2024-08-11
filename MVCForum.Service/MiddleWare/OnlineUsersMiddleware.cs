@@ -6,6 +6,8 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Concurrent;
 using SnitzCore.Data.Interfaces;
 using System.Linq;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using Microsoft.Extensions.Configuration;
 
 namespace SnitzCore.Service.MiddleWare
 {
@@ -31,18 +33,15 @@ namespace SnitzCore.Service.MiddleWare
             _lastActivityMinutes = lastActivityMinutes;
         }
 
-        public Task InvokeAsync(HttpContext context, IMemoryCache memoryCache, ISnitzConfig snitzConfig)
+        public Task InvokeAsync(HttpContext context, IMemoryCache memoryCache, ISnitzConfig snitzConfig,IConfiguration config)
         {
-            var exclude = new[] { "googlebot", "bing", "duckduck", "yahoo", "spider", "amazonbot", "bot", "facebook" };
+            var exclude = config.GetSection("SnitzForums").GetSection("excludeBots").Value?.Split(",");
             var agent = context.Request.Headers.UserAgent.ToString();
             if (exclude.Any(s => agent.Contains(s, StringComparison.OrdinalIgnoreCase)))
             {
                 return _next(context);
             }
-            if (!agent.Contains("mozilla", StringComparison.OrdinalIgnoreCase))
-            {
-                _logger.Warn(agent);
-            }
+            _logger.Warn(agent);
 
             if (context.Request.Cookies.TryGetValue(_cookieName, out var userGuid) == false)
             {

@@ -35,7 +35,6 @@ using SnitzCore.Service.Extensions;
 using SnitzCore.Service.Hangfire;
 using SnitzCore.Service.MiddleWare;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 
@@ -73,8 +72,7 @@ builder.Services.AddDefaultIdentity<ForumUser>(options =>
     .AddDefaultTokenProviders()
     .AddTokenProvider<EmailConfirmationTokenProvider<ForumUser>>("emailconfirmation")
     .AddPasswordValidator<CustomPasswordValidator<ForumUser>>();
-//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//    .AddCookie();
+
 builder.Services.AddScoped<IPasswordHasher<IdentityUser>, CustomPasswordHasher>();
 builder.Services.Configure<IdentityOptions>(builder.Configuration.GetSection(nameof(IdentityOptions)));
 builder.Services.ConfigureApplicationCookie(options =>
@@ -186,6 +184,7 @@ builder.Services.AddImageSharp(
             return Task.CompletedTask;
         };
     });
+builder.Services.AddTransient<ISyndicationXmlService, SyndicationXmlService>();
 builder.Services.AddEventsServices(builder.Configuration);
 builder.Services.AddAlbumServices(builder.Configuration);
 builder.Services.AddHangfire(configuration => configuration
@@ -195,7 +194,6 @@ builder.Services.AddHangfire(configuration => configuration
     .SetStorage(builder.Configuration.GetConnectionString("HangfireConnection"),builder.Configuration.GetConnectionString("DBProvider"))
     );
 builder.Services.AddHangfireServer();
-builder.Services.AddResponseCaching();
 builder.Services.AddHsts(options =>
 {
     options.Preload = true;
