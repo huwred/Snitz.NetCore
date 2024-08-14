@@ -13,10 +13,15 @@
     {
         showprivate = true;
     }
+    var member = "";
+    if (Model.Any())
+    {
+        member = Model.First().Member?.Name;
+    }
 }
 @section MetaData
 {
-    <meta name="title" content="@Model.First().Member?.Name @Localizer["lblPhotoAlbum"]" />
+    <meta name="title" content="@member @Localizer["lblPhotoAlbum"]" />
     <meta name="description" content="Photo Album" />
     <meta name="robots" content="noindex,nofollow" />
 }

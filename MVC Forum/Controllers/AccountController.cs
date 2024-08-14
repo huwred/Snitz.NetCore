@@ -170,7 +170,7 @@ namespace MVCForum.Controllers
             
 
 
-            if (member != null)
+            if (member != null && user != null)
             {
                 var model = new MemberDetailModel
                 {

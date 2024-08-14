@@ -75,7 +75,7 @@ namespace MVCForum.Controllers
                 categories = categories.Where(f => f.Id == id).ToList();
                 forums = forums.Where(f => f.CategoryId == id).ToList();
                 var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
-                var topicPage = new MvcBreadcrumbNode("", "Category", categories.First().Name) { Parent = forumPage,RouteValues = new{id=categories.First().Id}};
+                var topicPage = new MvcBreadcrumbNode("", "Category", categories?.First().Name) { Parent = forumPage,RouteValues = new{id=categories.First().Id}};
                 ViewData["BreadcrumbNode"] = topicPage; 
             }
             else
