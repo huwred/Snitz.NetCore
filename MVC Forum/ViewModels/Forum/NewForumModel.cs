@@ -37,6 +37,6 @@ namespace MVCForum.ViewModels.Forum
         public Dictionary<int, string>? CategoryList { get; set; }
         public int ForumId { get; set; }
 
-        public Dictionary<int, string> AllowedMembers { get; set; }
+        public Dictionary<int, string>? AllowedMembers { get; set; }
     }
 }

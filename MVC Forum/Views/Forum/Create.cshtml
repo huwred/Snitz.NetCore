@@ -82,8 +82,8 @@
                     <label  class="form-label col-2">&nbsp;</label>
                     <div class="col-10 col-lg-4">
                         <div class="form-check form-switch mb-3">
-                            <input type="checkbox" role="switch" name="Status" id="Status" value="1" class="form-check-input" checked="" style="transform: scale(1.4);">
-                            <input type="checkbox" name="Status" value="0" checked="" style="display:none">
+                            <input type="checkbox" role="switch" name="Status" id="Status" value="1" class="form-check-input" checked="@(Model.Status == 1)" style="transform: scale(1.4);">
+                            <input type="checkbox" name="Status" value="0" checked="@(Model.Status != 1)" style="display:none">
                             <label class="form-check-label" asp-for="Status"> <span snitz-if="@(Model.Status == 1)">@Localizer["Active"]</span><span snitz-if="@(Model.Status != 1)">@Localizer["Locked"]</span></label>
                         </div>
                     </div>

@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MVCForum.ViewModels;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace MVCForum.Controllers
 {
@@ -616,22 +617,30 @@ namespace MVCForum.Controllers
                     {
                         newForum.Id = model.Id;
                         await _forumService.Update(newForum);
+                        return RedirectToAction("Index","Category",new{id = model.Category});
                     }
                     else
                     {
                         await _forumService.Create(newForum);
+                        return RedirectToAction("Index","Category",new{id = model.Category});
                     }
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    throw;
+                    ModelState.AddModelError("Save Forum Error",e.Message);
                 }
 
-                
-                
+
+
             }
-            return RedirectToAction("Index","Category",new{id = model.Category});
+            else
+            {
+                IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+            }
+            return View(model);
+
+            
         }
 
         [Authorize(Roles="Administrator")]
