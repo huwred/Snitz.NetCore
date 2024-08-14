@@ -19,6 +19,8 @@
     <Compile Remove="wwwroot\images\forum\**" />
     <Compile Remove="wwwroot\is-cache\**" />
     <Compile Remove="wwwroot\js\codemirror\**" />
+    <Compile Remove="wwwroot\ProtectedContent\Members\**" />
+    <Compile Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
     <Compile Remove="wwwroot\Templates\no\**" />
     <Content Remove="Views\Admin\**" />
     <Content Remove="Views\Shared\Components\Events\**" />
@@ -27,6 +29,8 @@
     <Content Remove="wwwroot\images\forum\**" />
     <Content Remove="wwwroot\is-cache\**" />
     <Content Remove="wwwroot\js\codemirror\**" />
+    <Content Remove="wwwroot\ProtectedContent\Members\**" />
+    <Content Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
     <Content Remove="wwwroot\Templates\no\**" />
     <EmbeddedResource Remove="Views\Admin\**" />
     <EmbeddedResource Remove="Views\Shared\Components\Events\**" />
@@ -35,6 +39,8 @@
     <EmbeddedResource Remove="wwwroot\images\forum\**" />
     <EmbeddedResource Remove="wwwroot\is-cache\**" />
     <EmbeddedResource Remove="wwwroot\js\codemirror\**" />
+    <EmbeddedResource Remove="wwwroot\ProtectedContent\Members\**" />
+    <EmbeddedResource Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
     <EmbeddedResource Remove="wwwroot\Templates\no\**" />
     <None Remove="Views\Admin\**" />
     <None Remove="Views\Shared\Components\Events\**" />
@@ -43,6 +49,8 @@
     <None Remove="wwwroot\images\forum\**" />
     <None Remove="wwwroot\is-cache\**" />
     <None Remove="wwwroot\js\codemirror\**" />
+    <None Remove="wwwroot\ProtectedContent\Members\**" />
+    <None Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
     <None Remove="wwwroot\Templates\no\**" />
     <TypeScriptCompile Remove="Views\Admin\**" />
     <TypeScriptCompile Remove="Views\Shared\Components\Events\**" />
@@ -50,6 +58,8 @@
     <TypeScriptCompile Remove="wwwroot\Content\PhotoAlbum\**" />
     <TypeScriptCompile Remove="wwwroot\is-cache\**" />
     <TypeScriptCompile Remove="wwwroot\js\codemirror\**" />
+    <TypeScriptCompile Remove="wwwroot\ProtectedContent\Members\**" />
+    <TypeScriptCompile Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
     <TypeScriptCompile Remove="wwwroot\Templates\no\**" />
   </ItemGroup>
 
@@ -63,15 +73,21 @@
     <Content Remove="bundleconfig.json" />
     <Content Remove="log4net.config" />
     <Content Remove="Views\Shared\_BookmarkLink.cshtml" />
+    <Content Remove="wwwroot\Content\Avatar\HuwR132430879466080654.jpg" />
+    <Content Remove="wwwroot\Content\Avatar\Torborg.gif" />
+    <Content Remove="wwwroot\Content\Avatar\untitled.png" />
     <Content Remove="wwwroot\css\bootstrap.css" />
     <Content Remove="wwwroot\css\DarkTheme.css" />
     <Content Remove="wwwroot\css\LightTheme.css" />
     <Content Remove="wwwroot\css\OrangeTheme.css" />
+    <Content Remove="wwwroot\css\print.css" />
+    <Content Remove="wwwroot\css\prism.css" />
     <Content Remove="wwwroot\css\site.css" />
     <Content Remove="wwwroot\css\SnitzTheme.css" />
     <Content Remove="wwwroot\css\VellumTheme.css" />
     <Content Remove="wwwroot\js\jquery.unobtrusive-ajax.js" />
     <Content Remove="wwwroot\js\postcontroller.js" />
+    <Content Remove="wwwroot\js\prism.js" />
     <Content Remove="wwwroot\js\privatemessage.js" />
     <Content Remove="wwwroot\js\site.js" />
     <Content Remove="wwwroot\js\tinymce\icons\default\icons.min.js" />
@@ -129,6 +145,9 @@
     <Content Remove="wwwroot\js\tinymce\themes\silver\theme.min.js" />
     <Content Remove="wwwroot\js\tinymce\tinymce.min.js" />
     <Content Remove="wwwroot\js\topic.js" />
+    <Content Remove="wwwroot\ProtectedContent\Avatar\HuwR132430879466080654.jpg" />
+    <Content Remove="wwwroot\ProtectedContent\Avatar\Torborg.gif" />
+    <Content Remove="wwwroot\ProtectedContent\Avatar\untitled.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -170,14 +189,20 @@
     <None Include="wwwroot\codemirror\mode\htmlmixed\htmlmixed.js" />
     <None Include="wwwroot\codemirror\mode\javascript\javascript.js" />
     <None Include="wwwroot\codemirror\mode\meta.js" />
+    <None Include="wwwroot\Content\Avatar\HuwR132430879466080654.jpg" />
+    <None Include="wwwroot\Content\Avatar\Torborg.gif" />
+    <None Include="wwwroot\Content\Avatar\untitled.png" />
     <None Include="wwwroot\css\bootstrap.css" />
     <None Include="wwwroot\css\DarkTheme.css" />
     <None Include="wwwroot\css\LightTheme.css" />
     <None Include="wwwroot\css\OrangeTheme.css" />
+    <None Include="wwwroot\css\print.css" />
+    <None Include="wwwroot\css\prism.css" />
     <None Include="wwwroot\css\site.css" />
     <None Include="wwwroot\css\VellumTheme.css" />
     <None Include="wwwroot\js\jquery.unobtrusive-ajax.js" />
     <None Include="wwwroot\js\postcontroller.js" />
+    <None Include="wwwroot\js\prism.js" />
     <None Include="wwwroot\js\privatemessage.js" />
     <None Include="wwwroot\js\site.js" />
     <None Include="wwwroot\js\tinymce\CHANGELOG.md" />
@@ -236,12 +261,9 @@
     <None Include="wwwroot\js\tinymce\themes\silver\theme.min.js" />
     <None Include="wwwroot\js\tinymce\tinymce.min.js" />
     <None Include="wwwroot\js\topic.js" />
-    <None Include="wwwroot\ProtectedContent\Members\2\20240210144210_Umbraco_MVP_Logo _2022.pdf" />
-    <None Include="wwwroot\ProtectedContent\Members\2\20240210144541_Umbraco_MVP_Logo _2022.pdf" />
-    <None Include="wwwroot\ProtectedContent\Members\2\20240210145724_Umbraco_MVP_Logo _2022.pdf" />
-    <None Include="wwwroot\ProtectedContent\Members\2\20240210150505_Umbraco MVP Award Agreement.pdf" />
-    <None Include="wwwroot\ProtectedContent\Members\2\20240210151742_Umbraco_MVP_Logo _2022.pdf" />
-    <None Include="wwwroot\ProtectedContent\Members\2\20240210152249_Umbraco MVP Award Agreement.pdf" />
+    <None Include="wwwroot\ProtectedContent\Avatar\HuwR132430879466080654.jpg" />
+    <None Include="wwwroot\ProtectedContent\Avatar\Torborg.gif" />
+    <None Include="wwwroot\ProtectedContent\Avatar\untitled.png" />
   </ItemGroup>
 
 
@@ -298,7 +320,6 @@
   <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="Views\Polls\" />
-    <Folder Include="wwwroot\Content\Avatar\" />
     <Folder Include="wwwroot\Templates\images\" />
   </ItemGroup>
   <ItemGroup>

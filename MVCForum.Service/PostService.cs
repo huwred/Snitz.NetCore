@@ -286,6 +286,7 @@ namespace SnitzCore.Service
             var replies = _dbContext.Replies.Where(p => p.PostId == topicid)
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Member).AsNoTracking()
+                .OrderByDescending(post => post.Created)
                 .Skip((pagenumber-1) * pagesize).Take(pagesize);
             return replies.ToPagedList(pagenumber, pagesize);
         }
