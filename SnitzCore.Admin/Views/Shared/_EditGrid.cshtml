@@ -1,0 +1,56 @@
+﻿@using MVCForum.ViewModels
+@model LangUpdateViewModel
+
+<div id="resourceEditor">
+    <form id="frmResEditor" asp-action="Update" asp-controller="LanguageManager" method="POST" data-ajax="true" data-ajax-method="post"
+          data-ajax-complete="completed"
+          data-ajax-url="/LanguageManager/Update" class="form-horizontal">
+        <div class="container-fluid">
+            <div class="form-group">
+                <label class="col-xs-3">Resource Set</label>
+                <div class="col-xs-5"><input asp-for="@Model.ResourceSet" dir="ltr" class="form-control-plaintext" readonly></div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-3">Resource Id</label>
+                <div class="col-xs-8"><input asp-for="@Model.ResourceId" dir="ltr" class="form-control-plaintext" readonly></div>
+            </div>
+            @{
+                int x = 0;
+            }
+            @foreach (var resource in Model.ResourceTranslations)
+            {
+                var directionstring = "ltr";
+                if (resource.Key == "fa")
+                {
+                    directionstring = "rtl";
+                }
+                <input asp-for="@resource.Key" type="hidden" name="@String.Format("ResourceTranslations[{0}].Key", x)" id="resourcekey_@x" />
+                if (resource.Key == "en")
+                {
+                    <div class="form-group">
+                        <label class="col-xs-3">@Localizer["lang_" + resource.Key, "SupportedCultures"] </label>
+                        <div class="col-xs-8">
+                            <textarea asp-for="@resource.Value" name="@String.Format("ResourceTranslations[{0}].Value", x)" id="resourcevalue_@x" dir="@directionstring" class="form-control bg-light" readonly></textarea>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group">
+                        <label class="col-xs-3">@Localizer["lang_" + resource.Key, "SupportedCultures"] </label>
+                        <div class="col-xs-8">
+                            <textarea asp-for="@resource.Value" name="@String.Format("ResourceTranslations[{0}].Value", x)" id="resourcevalue_@x" dir="@directionstring" class="form-control"></textarea>
+                        </div>
+                    </div>
+                }
+                x++;
+            }
+            <input type="hidden" name="rownum" value="@Model.rownum" />
+            <p>&nbsp;</p>
+            <p class="pull-right flip">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="fa fa-times"></i> @Localizer["btnCancel"]</button>
+                <button type="submit" class="btn btn-success" id="submitResUpdate"><i class="fa fa-check"></i> @Localizer["btnSave"]</button>
+            </p>
+        </div>
+    </form>
+</div>

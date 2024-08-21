@@ -1,0 +1,145 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using SnitzCore.Data.Models
+@model IQueryable<IGrouping<string, LanguageResource>>
+@inject IOptions<RequestLocalizationOptions> LocOptions
+@{
+    ViewBag.Title = "Translation Manager";
+    Layout = "_MasterLayout";
+    var cultureItems = LocOptions.Value.SupportedUICultures!
+        .Select(c => new SelectListItem { Value = c.TwoLetterISOLanguageName, Text = c.DisplayName })
+        .ToList();
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    string clang = requestCulture?.RequestCulture.Culture.Name!;
+    string[] cultures = LocOptions.Value.SupportedUICultures!.Select(r => r.TwoLetterISOLanguageName).ToArray();
+    var rowcount = 0;
+}
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css">
+}
+<div class="p-3">
+<div class="container-fluid resource-grid bg-white rounded-3">
+    <a href="#" class="pull-right flip" style="padding: 5px" id="close-grid" title="Close" data-toggle="tooltip"><i class="fa fa-close fa-2x"></i></a>
+
+    <table class="table table-bordered table-striped" id="ResourceTable">
+        <thead>
+            <tr>
+                <th>Resource Id</th>
+                    <th></th>
+                    <th></th>
+                @foreach (var culture in cultureItems)
+                {
+                    <th>
+                        @culture.Value
+                    </th>
+                }
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in Model)
+            {
+                <tr data-row="@rowcount">
+
+                    <td>@group.Key</td>
+                    <td>@String.Join(",", cultures)</td>
+                    <td>@group.First().ResourceSet</td>
+                    @foreach (var culture in cultureItems)
+                    {
+                        LanguageResource res = group.SingleOrDefault(c => c.Culture == culture.Value);
+
+                        <td>
+                            @if (group.Select(c => c.Culture == culture.Value).Any())
+                            {
+
+                                if (res != null)
+                                {
+                                    @res.Value
+                                }
+                            }
+                        </td>
+
+                    }
+
+                    <td><button class="btn btn-primary"><i class="fa fa-edit"></i></button></td>
+                </tr>
+                rowcount += 1;
+            }
+        </tbody>
+    </table>
+    </div>
+</div>
+<div id='modal-resedit' class='modal fade in' aria-labelledby="resLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title" id="pmLabel">Edit Resource</h4>
+            </div>
+            <div id='resContainer' class="modal-body">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script src="https://cdn.datatables.net/2.1.4/js/dataTables.js"></script>
+    <script>
+        var table;
+        Object.assign(DataTable.defaults, {
+            pageLength: 50
+        });
+        table = new DataTable('#ResourceTable');
+        $('#ResourceTable tbody').on('click', 'button', function (evt) {
+
+            evt.preventDefault();
+            var data = table.row($(this).parents('tr')).data();
+            var rownum = $(this).parents('tr').data("row");
+            console.log(JSON.stringify({ id: rownum, rowData: data }));
+            var jsondata = JSON.stringify(data);
+            //$('#ResourceTable tbody').off('click', 'button');
+            let formData = {
+                id: rownum,
+                rowData: data
+            }
+            $.ajax
+                ({
+                    type: "POST",
+                    url: SnitzVars.baseUrl + "/LanguageManager/EditRow/",
+                    data: formData,
+                    success: function (data) {
+                        $("#resContainer").html(data);
+                        $('#modal-resedit').modal('show');
+                        return false;
+                    },
+                    error: function (x, e) {
+                        console.log(x.ResponseText);
+                        console.log(e);
+                        alert('Failed');
+                    }
+                });
+            return false;
+        });
+        window.onload = function () {
+            //keep the language tab active
+            $("#admin-nav li a.nav-link.active").removeClass("active");
+            $("#lang-settings").addClass("active");
+        }
+
+        completed = function (xhr) {
+            $('#modal-resedit').modal('hide');
+            location.reload();
+            console.log(xhr.responseText);
+        };
+        succeed = function (xhr) {
+           alert.text(JSON.stringify(xhr.data));
+        };
+    </script>
+}

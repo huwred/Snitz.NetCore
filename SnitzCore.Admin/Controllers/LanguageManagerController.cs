@@ -5,14 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MVCForum.ViewModels;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service;
 using SnitzCore.Service.Extensions;
+using System.Net;
 using System.Net.Mime;
 using System.Text;
+
 
 namespace SnitzCore.BackOffice.Controllers;
 
@@ -44,7 +47,11 @@ public class LanguageManagerController : Controller
         };
         return View(vm);
     }
-
+    public IActionResult Grid()
+    {
+        IQueryable<IGrouping<string, LanguageResource>> vm =  _dbcontext.LanguageResources.GroupBy(c => c.Name);
+        return View(vm);
+    }
     public IActionResult Search(string filter = "", string filterby = "value", string Culture = "")
     {
         TranslationViewModel vm = new TranslationViewModel
@@ -162,8 +169,61 @@ public class LanguageManagerController : Controller
             : _dbcontext.LanguageResources.Where(r => r.Culture == culture);
         return results;
     }
+    [HttpPost]
+    public IActionResult EditRow(RowDataClass data)
+    {
+
+        if (data != null)
+        {
+            LangUpdateViewModel vm = new LangUpdateViewModel();
 
 
+            var cultures = data.rowData[1].Split(',');
+            vm.ResourceId = data.rowData[0];
+            vm.ResourceSet = data.rowData[2];
+            vm.ResourceTranslations = new Dictionary<string, string>();
+            for (int i = 0; i < cultures.Length; i++)
+            {
+                vm.ResourceTranslations.Add(cultures[i], WebUtility.HtmlDecode(data.rowData[3 + i]));
+            }
+            vm.rownum = data.id.ToString();
+            return PartialView("_EditGrid", vm);
+        }
+        else
+        {
+            return Json("An Error Has occoured");
+        }
+    }
+        [HttpPost]
+    public IActionResult Update(LangUpdateViewModel data)
+    {
+        try
+        {
+            foreach (var item in data.ResourceTranslations)
+            {
+                var itemToUpdate = _dbcontext.LanguageResources.SingleOrDefault(l =>
+                l.Culture == item.Key && l.Name == data.ResourceId && l.ResourceSet == data.ResourceSet);
+                if (itemToUpdate != null)
+                {
+                    if(itemToUpdate.Value != item.Value)
+                    {
+                        itemToUpdate.Value = item.Value;
+                        _dbcontext.LanguageResources.Update(itemToUpdate);
+                    }
+
+                }
+            }
+            _dbcontext.SaveChanges();
+            return Json("Changes Saved");
+        }
+        catch (Exception)
+        {
+            return Json("An Error Has occoured");
+        }
+
+
+        return Json("An Error Has occoured");
+    }
     [HttpPost]
     public IActionResult UpdateResource(LanguageResource langres,string? subBut)
     {

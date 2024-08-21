@@ -21,6 +21,7 @@
     <_ContentIncludedByDefault Remove="Views\Admin\ManageSubscriptions.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Admin\Setup.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Admin\_RoleView.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\LanguageManager\Grid.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\popArchiveForum.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_FormButtons.cshtml" />
   </ItemGroup>
@@ -72,6 +73,9 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\LanguageManager\Grid.cshtml" />
   </ItemGroup>
 
 
