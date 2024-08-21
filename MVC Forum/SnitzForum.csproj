@@ -323,6 +323,10 @@
     <Folder Include="wwwroot\Templates\images\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Views\Shared\Components\Members\wide.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="Views\Shared\mailbox.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

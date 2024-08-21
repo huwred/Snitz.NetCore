@@ -1,0 +1,63 @@
+﻿@model List<Member>
+@using SnitzCore.Service.MiddleWare
+@using Microsoft.AspNetCore.Identity
+@using SnitzCore.Data.Extensions;
+@inject UserManager<ForumUser> userManager
+@{
+    var onlinecount = OnlineUsersMiddleware.GetOnlineUsersCount();
+    var hiddencount = 0;
+    var activecount = 0;
+    var activemembers = new List<Member>();
+    var maxonline = SnitzConfig.GetIntValue("INTMAXONLINE", 0);
+    var _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
+    if(onlinecount > maxonline)
+    {
+        maxonline = onlinecount;
+        _logger.Warn($"Setting Max OnlineCount {onlinecount}");
+        SnitzConfig.SetValue("INTMAXONLINE", onlinecount.ToString());
+    }
+    foreach (var member in Model)
+    {
+        if(member.Lastactivity.FromForumDateStr() > DateTime.UtcNow.AddMinutes(-5))
+        {
+            var user = userManager.FindByNameAsync(member.Name).Result;
+            if(user != null)
+            {
+                if (userManager.IsInRoleAsync(user, "HiddenMembers").Result)
+                {
+                    hiddencount += 1;
+                }
+                else
+                {
+                    activecount += 1;
+                    activemembers.Add(member);
+                }
+            }
+            
+        }
+    }
+}
+<ul class="list-unstyled list-inline">
+    <li>
+        @Localizer["lblOnlineUsersDesc", new object[] { onlinecount, activecount, hiddencount, onlinecount - activecount, maxonline, "" }]
+    </li>
+    <li>
+        @foreach (var activemember in activemembers)
+        {
+            <snitz-avatar src="~/Content/Avatar/@activemember!.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle" />
+        }
+    </li>
+    <li><hr /></li>
+
+    <li >
+        <ul class="list-inline">
+            <li class="list-inline-item">@Localizer["lblRecent"]:</li>
+            @foreach (var member in Model)
+{
+        if (!activemembers.Contains(member))
+        {
+            <li class="list-inline-item"><a href="~/Account/Detail/@member.Name" title="@Localizer["tipViewProfile"]">@member.Name</a> (<snitz-datetime datetime="@member.Lastactivity.FromForumDateStr()"></snitz-datetime>), </li>
+            }
+        }</ul>
+    </li>
+</ul>

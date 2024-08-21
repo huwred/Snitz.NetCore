@@ -25,6 +25,6 @@ namespace MVCForum.ViewModels.Post
         public bool DoNotArchive { get; set; }
         public bool Answer { get; internal set; }
 
-        public Dictionary<int, string> Forums { get; set; }
+        public Dictionary<int, string>? Forums { get; set; }
     }
 }

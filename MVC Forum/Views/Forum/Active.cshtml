@@ -95,7 +95,7 @@
 
         <div class="d-none d-xxl-block col-3">
             <partial name="QuickSearch" />
-            @await Component.InvokeAsync("Members", 10)
+            @await Component.InvokeAsync("Members", new{max=10})
             <partial name="FeaturedPoll" />
         </div>
     </div>

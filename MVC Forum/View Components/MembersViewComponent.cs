@@ -15,9 +15,13 @@ namespace MVCForum.View_Components
             _memberService = memberService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int max)
+        public async Task<IViewComponentResult> InvokeAsync(int max,string? template)
         {
             var recentMembers = _memberService.GetRecent(max).ToList();
+            if(template != null) {
+                return await Task.FromResult((IViewComponentResult)View(template,recentMembers));
+                }
+
             return await Task.FromResult((IViewComponentResult)View(recentMembers));
         }
     }

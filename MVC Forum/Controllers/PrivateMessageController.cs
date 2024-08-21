@@ -247,12 +247,19 @@ namespace MVCForum.Controllers
             return PartialView("Create",model);
         }
 
-        public JsonResult AutoCompleteUsername(string term)
+        public new JsonResult AutoCompleteUsername(string term)
         {
             _member = _memberService.GetMember(User);
+            if(_member == null)
+            {
+                return Json("");
+            }
             IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(r => r!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
-            var blocked = _pmService.GetBlocklist(_member!.Id).Select(l => l.BlockedName);
-            result = result.Where(x => !blocked.Contains(x) && x != _member.Name);
+            var blocked = _pmService?.GetBlocklist(_member!.Id).Select(l => l.BlockedName);
+            if(blocked != null && blocked.Any()) {
+                result = result.Where(x => !blocked.Contains(x) && x != _member.Name);
+            }
+            
             return Json(result);
         }
 

@@ -1,14 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Principal;
 using System;
-using System.Linq;
-using SnitzCore.Data;
 using SnitzCore.Data.Models;
-using log4net.Layout.Members;
-using SnitzCore.Data.Interfaces;
-using SnitzCore.Service;
-using SnitzCore.Data.Interfaces;
+
 
 namespace MVCForum.ViewModels
 {

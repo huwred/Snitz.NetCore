@@ -221,7 +221,7 @@ else
                 <div class="mb-3 p-3 row">
                     @if (SnitzConfig.GetIntValue("STRSIGNATURES") == 1 && currmember != null)
                     {
-                        <div class="col-6 form-check">
+                        <div class="col-12 col-md-6 form-check">
                             <input class="form-check-input" id="show-sig" name="UseSignature" tabindex="5" type="checkbox" value="true" checked="@(currmember.SigDefault == 1)">
                             <input name="UseSignature" type="hidden" value="false">
                             <label class="form-check-label mt-1" for="show-sig">&nbsp;@Localizer["cbxShowSig"]</label>
@@ -229,19 +229,19 @@ else
                     }
                     @if (User.IsInRole("Administrator"))
                     {
-                        <div class="col-6 form-check">
+                            <div class="col-12 col-md-6 form-check">
                             <input class="form-check-input" asp-for="IsLocked" tabindex="5" type="checkbox" checked="@Model.IsLocked">
                             <label class="form-check-label mt-1" for="IsLocked">&nbsp;@Localizer["cbxLockTopic"]</label>
                         </div>
                         @if (SnitzConfig.GetIntValue("STRSTICKYTOPIC") == 1)
                         {
-                            <div class="col-6 form-check">
+                                <div class="col-12 col-md-6 form-check">
                                 <input class="form-check-input" asp-for="IsSticky" tabindex="5" type="checkbox" checked="@Model.IsSticky">
                                 <label class="form-check-label mt-1" for="IsSticky">&nbsp;@Localizer["cbxMakeSticky"]</label>
                             </div>
                         }
                     }
-                    <div class="col-6 form-check" style="display: none;">
+                        <div class="col-12 col-md-6 form-check" style="display: none;">
                         <input class="form-check-input" id="SaveDraft" name="SaveDraft" tabindex="5" type="checkbox" value="true"><input name="SaveDraft" type="hidden" value="false">
                         <label class="form-check-label mt-1">@Localizer["cbxDraft"]</label>
                     </div>

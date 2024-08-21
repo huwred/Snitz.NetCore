@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Compile Remove="BaseResourceProvider.cs" />
+    <Compile Remove="Interfaces\ILanguageResource.cs" />
   </ItemGroup>
 
   <ItemGroup>

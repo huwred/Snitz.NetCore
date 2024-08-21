@@ -9,7 +9,7 @@ namespace MVCForum.ViewModels.Post
     {
         public string? ApprovalMessage { get; set; }
         [Required(ErrorMessage = "Please select an Action")]
-        public string PostStatus { get; set; }
+        public string? PostStatus { get; set; }
         public int Id { get; set; }
 
         public bool EmailAuthor { get; set; }

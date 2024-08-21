@@ -104,11 +104,14 @@ a.btn:hover {
 
 @media (min-width: 481px) and (max-width: 1024px) {
 
-    .subforum-row{
-        display: grid;
-        grid-template-columns: 10% 60% 10% 20%;
-    }
 
+    @media (min-width: 481px) and (max-width: 1024px) {
+        .subforum-row {
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 10% 60% 30% 0%;
+        }
+    }
     .subforum-icon i{
         font-size: 35px;
     }
@@ -386,7 +389,7 @@ footer{
         max-width: 400px !important;
     }
 
-i.fa-reply, i.fa-trash, i.fa-share, i.fa-close, i.fa-pencil, i.fa-comment-o, i.fa-commenting, i.fa-share-square, i.fa-share-square-o {
+i.fa-reply, i.fa-trash, i.fa-share, i.fa-close, i.fa-pencil, i.fa-comment-o, i.fa-commenting, i.fa-share-square, i.fa-share-square-o, i.fa-flag-checkered {
     cursor: pointer;
 }
 i.fa-share-square.category, i.fa-share-square-o.category {
