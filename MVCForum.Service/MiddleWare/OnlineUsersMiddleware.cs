@@ -6,7 +6,6 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Concurrent;
 using SnitzCore.Data.Interfaces;
 using System.Linq;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using Microsoft.Extensions.Configuration;
 
 namespace SnitzCore.Service.MiddleWare
@@ -35,13 +34,20 @@ namespace SnitzCore.Service.MiddleWare
 
         public Task InvokeAsync(HttpContext context, IMemoryCache memoryCache, ISnitzConfig snitzConfig,IConfiguration config)
         {
-            var exclude = config.GetSection("SnitzForums").GetSection("excludeBots").Value?.Split(",");
             var agent = context.Request.Headers.UserAgent.ToString();
-            if (exclude.Any(s => agent.Contains(s, StringComparison.OrdinalIgnoreCase)))
-            {
+            var arr = config.GetSection("SnitzForums").GetSection("excludeBots").Value?.Split(",").ToArray();
+            var extras = snitzConfig.GetValue("STREXCLUDEBOTS");
+            if (extras != null) {
+                if(extras.Split(",").Any()) {
+                    arr = arr?.Union(extras.Split(",")).ToArray();
+                }            
+            }
+
+            if(arr != null && arr.Any(s => agent.Contains(s, StringComparison.OrdinalIgnoreCase))) {
                 return _next(context);
             }
             _logger.Warn(agent);
+
 
             if (context.Request.Cookies.TryGetValue(_cookieName, out var userGuid) == false)
             {
@@ -53,26 +59,22 @@ namespace SnitzCore.Service.MiddleWare
             {
                 if (_allKeys.TryAdd(userGuid, true) == false)
                 {
-                    //if add key faild, setting expiration to the past cause dose not cache
+                    //if add key failed, setting expiration to the past cprevents caching
                     cacheEntry.AbsoluteExpiration = DateTimeOffset.MinValue;
                 }
                 else
                 {
                     cacheEntry.SlidingExpiration = TimeSpan.FromMinutes(_lastActivityMinutes);
-                    cacheEntry.RegisterPostEvictionCallback(RemoveKeyWhenExpired);
+                    cacheEntry.RegisterPostEvictionCallback(callback: RemoveKeyWhenExpired);
                 }
-                //if(prevTotal < _allKeys.Count)
-                //{
-                //    _logger.Warn($"Setting Max OnlineCount {_allKeys.Count}");
-                //    snitzConfig.SetValue("INTMAXONLINE",_allKeys.Count.ToString());
-                //}
+
                 return string.Empty;
             });
 
             return _next(context);
         }
 
-        private void RemoveKeyWhenExpired(object key, object value, EvictionReason reason, object state)
+        protected virtual void RemoveKeyWhenExpired(object key, object value, EvictionReason reason, object state)
         {
             var strKey = (string)key;
             //try to remove key from dictionary
