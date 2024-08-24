@@ -36,7 +36,8 @@
             <admin-config name="STRSUBSCRIPTION" config-type="select-subs" config-key="STRSUBSCRIPTION" config-label="Highest level of Subscription" config-val="@SnitzConfig.GetIntValue("STRSUBSCRIPTION")" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></admin-config>
             <admin-config config-key="INTPROTECTCONTENT" config-label="Protected Content" config-val="@SnitzConfig.GetIntValue("INTPROTECTCONTENT")"></admin-config>
             <admin-config config-key="INTALLOWHIDEONLINE" config-label="Allow members to hide from Online" config-val="@SnitzConfig.GetIntValue("INTALLOWHIDEONLINE")"></admin-config>
-            <hr class="title"/>
+            <admin-config config-key="STREXCLUDEBOTS" config-label="Bots to exclude from counnter" config-val="@SnitzConfig.GetValue("STREXCLUDEBOTS")"></admin-config>
+            <hr class="title" />
             <div class="row mb-3">
                 <div class="col">
                     <admin-config config-key="STRPAGESIZE" config-label="Default page size" config-val="@SnitzConfig.GetValue("STRPAGESIZE")"></admin-config>

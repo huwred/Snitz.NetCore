@@ -22,18 +22,15 @@
 <div class="p-3">
 <div class="container-fluid resource-grid bg-white rounded-3">
     <a href="#" class="pull-right flip" style="padding: 5px" id="close-grid" title="Close" data-toggle="tooltip"><i class="fa fa-close fa-2x"></i></a>
-
     <table class="table table-bordered table-striped" id="ResourceTable">
         <thead>
             <tr>
                 <th>Resource Id</th>
-                    <th></th>
-                    <th></th>
+                <th></th>
+                <th></th>
                 @foreach (var culture in cultureItems)
                 {
-                    <th>
-                        @culture.Value
-                    </th>
+                    <th>@culture.Value</th>
                 }
                 <th></th>
             </tr>
@@ -42,27 +39,22 @@
             @foreach (var group in Model)
             {
                 <tr data-row="@rowcount">
-
                     <td>@group.Key</td>
                     <td>@String.Join(",", cultures)</td>
                     <td>@group.First().ResourceSet</td>
                     @foreach (var culture in cultureItems)
                     {
-                        LanguageResource res = group.SingleOrDefault(c => c.Culture == culture.Value);
-
+                        LanguageResource? res = group.SingleOrDefault(c => c.Culture == culture.Value);
                         <td>
                             @if (group.Select(c => c.Culture == culture.Value).Any())
                             {
-
                                 if (res != null)
                                 {
                                     @res.Value
                                 }
                             }
                         </td>
-
                     }
-
                     <td><button class="btn btn-primary"><i class="fa fa-edit"></i></button></td>
                 </tr>
                 rowcount += 1;
@@ -89,7 +81,6 @@
 </div>
 @section Scripts{
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
-
     <script src="https://cdn.datatables.net/2.1.4/js/dataTables.js"></script>
     <script>
         var table;
@@ -137,9 +128,6 @@
             $('#modal-resedit').modal('hide');
             location.reload();
             console.log(xhr.responseText);
-        };
-        succeed = function (xhr) {
-           alert.text(JSON.stringify(xhr.data));
         };
     </script>
 }

@@ -1,4 +1,7 @@
 ﻿@using SnitzCore.BackOffice.TagHelpers
+@using SnitzCore.Data.Models
+@model List<MemberNamefilter>
+
 @{
     Layout = "_MasterLayout";
  
@@ -6,11 +9,13 @@
 
 <div class="m-3">
     <div class="nav nav-tabs me-3" id="v-pills-tab" role="tablist">
-        <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Profile Config</button>
-        <button class="nav-link" id="v-pills-roles-tab" data-bs-toggle="pill" data-bs-target="#v-pills-roles" type="button" role="tab" aria-controls="v-pills-roles" aria-selected="false">Role Manager</button>
+        <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Profile</button>
+        <button class="nav-link" id="v-pills-roles-tab" data-bs-toggle="pill" data-bs-target="#v-pills-roles" type="button" role="tab" aria-controls="v-pills-roles" aria-selected="false">Roles</button>
         <button class="nav-link" id="v-pills-ranking-tab" data-bs-toggle="pill" data-bs-target="#v-pills-ranking" type="button" role="tab" aria-controls="v-pills-ranking" aria-selected="false">Ranking</button>
-        <button class="nav-link" id="v-pills-pending-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pending" type="button" role="tab" aria-controls="v-pills-pending" aria-selected="false">Pending Members</button>
         <button class="nav-link" id="v-pills-subscriptions-tab" data-bs-toggle="pill" data-bs-target="#v-pills-subscriptions" type="button" role="tab" aria-controls="v-pills-subscriptions" aria-selected="false">Subscriptions</button>
+        <button class="nav-link" id="v-pills-usernames-tab" data-bs-toggle="pill" data-bs-target="#v-pills-usernames" type="button" role="tab" aria-controls="v-pills-usernames" aria-selected="false">Username Filters</button>
+        <button class="nav-link" id="v-pills-pending-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pending" type="button" role="tab" aria-controls="v-pills-pending" aria-selected="false">Pending Members</button>
+
     </div>
     <div class="tab-content bg-white p-4" id="v-pills-tabContent">
         <div class="tab-pane fade show active w-100" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
@@ -201,7 +206,37 @@
             </div>
             </form>
         </div>
+        <div class="tab-pane fade" id="v-pills-usernames" role="tabpanel" aria-labelledby="v-pills-usernames-tab">
+            <legend>Username Filter</legend>
+            <hr />
+            <form asp-action="SaveUsername" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-namefilters">
 
+                <div class="mb-3">
+                    <label class="form-label">Add name to disallow</label>
+                    <div class="input-group mb-3">
+                        <input type="text" name="Username" class="form-control" placeholder="Name to disallow" aria-label="Name to disallow" aria-describedby="button-addon2">
+                        <button class="btn btn-outline-warning" type="reset">Cancel</button>
+                        <button class="btn btn-outline-success" type="submit">Add</button>
+                    </div>
+                </div>
+            </form>
+            <form asp-action="UpdateUsernameFilter" asp-controller="SnitzConfig" id="userfilterForm" method="POST" data-ajax="true" data-ajax-update="#result-namefilters">
+                <ul class="list-group mb-3">
+                    @for (int i = 0; i < Model?.Count; i++)
+                    {
+                        <li class="list-group-item filter_@i">
+                            <div class="input-group">
+                                <input type="hidden" asp-for="@Model[i].Id" />
+                                <input type="hidden" asp-for="@Model[i].IsDeleted" />
+                                <input type="text" class="form-control" asp-for="@Model[i].Name" />
+                                <button class="btn btn-outline-success ButtonType" type="submit" data-filter="@i"><i class="fa fa-trash"></i></button>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <div id="result-namefilters"></div>
+            </form>
+        </div>
         <div class="tab-pane fade" id="v-pills-roles" role="tabpanel" aria-labelledby="v-pills-roles-tab">
             <div id="member-roles"></div>
         </div>

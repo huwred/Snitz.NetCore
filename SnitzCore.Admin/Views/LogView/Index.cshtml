@@ -1,0 +1,211 @@
+﻿@using SnitzCore.BackOffice.Controllers
+@model LogViewModel
+@{
+    Layout = "_MasterLayout";
+    var rowcount = 0;
+}
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css">
+    <style>
+        div.dt-container select.dt-input {
+            margin-right: 4px;
+        }
+
+        .more-button {
+            background: none !important;
+            border: none;
+            padding: 0 !important;
+            color: #069;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .modal{
+
+            --bs-modal-width: 1024px;
+        }
+
+        ul.log-files li:nth-of-type(2) .fa-trash {
+            display:none;
+        }
+
+       .fa-trash {
+            color: red;
+            cursor:pointer;
+        }
+    </style>
+}
+<div class="container row">
+    <div class="col-2 p-0 mt-2">
+        <ul class="list-group log-files">
+            <li class="list-group-item list-group-item-primary">Log Files</li>
+            @foreach (var log in Model.Logs)
+            {
+                <li class="list-group-item"><a href="~/LogView/?id=@log.Name">@log.Name.Replace(".json","")</a> <i class="fa fa-trash" data-file="@log.Name" title="Delete log file"></i></li>
+            }
+        </ul>
+    </div>
+    <div class="col-10">
+        <table class="table" id="log-table">
+            <thead>
+                <tr>
+                    <th>date</th>
+                    <th>level</th>
+                    <th>instance</th>
+                    <th></th>
+                    <th>description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.CurrentLog != null)
+            {
+                @foreach (var item in Model.CurrentLog)
+                {
+                    <tr data-row="@rowcount">
+                        <td class="text-nowrap">@item.date.ToLongTimeString()</td>
+                        <td>@item.level</td>
+                        <td>@item.logger</td>
+                        <td>@item.logger</td>
+                        <td>@item.message
+
+                            </td>
+                            <td>@item.exception</td>
+                    </tr>
+                    rowcount += 1;
+                }
+
+            }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th>level</th>
+                    <th>logger</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<div id='modal-exception' class='modal fade in' aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-hidden="true">&times; </button>
+                <h4 class="modal-title" id="pmLabel">Edit Resource</h4>
+            </div>
+            <div class="modal-body">
+                <pre id='resContainer'>
+
+                </pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/2.1.4/js/dataTables.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/dataTables.fixedColumns.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/fixedColumns.dataTables.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/2.1.4/dataRender/ellipsis.js"></script>
+    <script type="text/javascript">
+        var table;
+        Object.assign(DataTable.defaults, {
+            pageLength: 10,
+            fixedColumns: true,
+        });
+        table = new DataTable('#log-table',{
+            order: [[0, 'desc']],
+            columnDefs: [
+                {
+                    width: '140px',
+                    targets: [2],
+                    render: $.fn.dataTable.render.ellipsis(40)
+                },
+                {
+                    targets: [3,5],
+                    visible: false
+                },
+                {
+                    targets: [4],
+                    render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            if (row[5] || data.length > 128) {
+                                return data +
+                                    '<button class="more-button" onclick="showMore(this, ' + meta.row + ')">view exception</button>';
+                            } else {
+                                return data;
+                            }
+                        } else {
+                            return data;
+                        }
+                    }
+                }
+            ],
+            initComplete: function () {
+                this.api()
+                    .columns([1, 2])
+                    .every(function () {
+                        let column = this;
+
+                        // Create select element
+                        let select = document.createElement('select');
+                        select.add(new Option(''));
+                        column.footer().replaceChildren(select);
+
+                        // Apply listener for user change in value
+                        select.addEventListener('change', function () {
+                            column
+                                .search(select.value, { exact: true })
+                                .draw();
+                        });
+                        console.log(column[0][0]);
+                        var id = column[0];
+                        // Add list of options
+                        column
+                            .data()
+                            .unique()
+                            .sort()
+                            .each(function (d, j) {
+                                select.add(new Option(d.substring(0, 39),d));
+                            });
+                    });
+            }
+        });
+
+        function showMore(node, rowId) {
+            var rowData = $('#log-table').DataTable().rows(rowId).data().toArray()[0];
+            var fullText = rowData[5];
+            $("#resContainer").html(fullText);
+            $('#modal-exception').modal('show');
+            debugger;
+            console.log(fullText);
+        }
+        window.onload = function () {
+            //keep the language tab active
+            $("#admin-nav li a.nav-link.active").removeClass("active");
+            $("#log-viewer").addClass("active");
+
+        };
+        $(".fa-trash").on("click", function (e) {
+            //alert("delete: " + $(this).data("file"));
+            $.ajax
+                ({
+                    type: "GET",
+                    url: SnitzVars.baseUrl + "/LogView/DeleteLog/?file=" + $(this).data("file"),
+                    success: function (data) {
+                        location.reload();
+                        return false;
+                    },
+                    error: function (x, e) {
+                        console.log(x.ResponseText);
+                        console.log(e);
+                        alert('Failed');
+                    }
+                });
+        });
+    </script>
+}

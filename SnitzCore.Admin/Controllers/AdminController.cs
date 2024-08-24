@@ -78,7 +78,8 @@ namespace SnitzCore.BackOffice.Controllers
         }
         public IActionResult Members()
         {
-            return View();
+            var vm = _memberService.UserNameFilter().ToList();
+            return View(vm);
         }
         [HttpGet]
         public IActionResult ManageSubscriptions(int id)
