@@ -36,7 +36,12 @@
     --bs-btn-disabled-border-color: #191970;
     --bs-gradient: none;
 }
-h4,.h4 {
+.nav-tabs .nav-link {
+    color: black !important;
+}
+
+
+h4, .h4 {
     font-size: 1.3em;
 }
 .subforum-title, .subforum-column {

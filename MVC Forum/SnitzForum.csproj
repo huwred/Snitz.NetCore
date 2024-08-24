@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="logs\**" />
     <Compile Remove="Views\Admin\**" />
     <Compile Remove="Views\Shared\Components\Events\**" />
     <Compile Remove="wwwroot\Content\Members\**" />
@@ -22,6 +23,7 @@
     <Compile Remove="wwwroot\ProtectedContent\Members\**" />
     <Compile Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
     <Compile Remove="wwwroot\Templates\no\**" />
+    <Content Remove="logs\**" />
     <Content Remove="Views\Admin\**" />
     <Content Remove="Views\Shared\Components\Events\**" />
     <Content Remove="wwwroot\Content\Members\**" />
@@ -32,6 +34,7 @@
     <Content Remove="wwwroot\ProtectedContent\Members\**" />
     <Content Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
     <Content Remove="wwwroot\Templates\no\**" />
+    <EmbeddedResource Remove="logs\**" />
     <EmbeddedResource Remove="Views\Admin\**" />
     <EmbeddedResource Remove="Views\Shared\Components\Events\**" />
     <EmbeddedResource Remove="wwwroot\Content\Members\**" />
@@ -42,6 +45,7 @@
     <EmbeddedResource Remove="wwwroot\ProtectedContent\Members\**" />
     <EmbeddedResource Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
     <EmbeddedResource Remove="wwwroot\Templates\no\**" />
+    <None Remove="logs\**" />
     <None Remove="Views\Admin\**" />
     <None Remove="Views\Shared\Components\Events\**" />
     <None Remove="wwwroot\Content\Members\**" />
@@ -52,6 +56,7 @@
     <None Remove="wwwroot\ProtectedContent\Members\**" />
     <None Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
     <None Remove="wwwroot\Templates\no\**" />
+    <TypeScriptCompile Remove="logs\**" />
     <TypeScriptCompile Remove="Views\Admin\**" />
     <TypeScriptCompile Remove="Views\Shared\Components\Events\**" />
     <TypeScriptCompile Remove="wwwroot\Content\Members\**" />
@@ -309,7 +314,7 @@
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.2" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
     <PackageReference Include="Snitz.Events" Version="1.0.0-rc151" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.0-rc105" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.0-rc106" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
@@ -389,6 +394,10 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\_PageNotFound.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="logs\SnitzLog2024-08-22.json" />
+    <Content Include="logs\SnitzLog2024-08-23.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="wwwroot\css\SnitzTheme.css" />

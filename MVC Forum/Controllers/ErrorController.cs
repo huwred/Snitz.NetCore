@@ -31,7 +31,7 @@ namespace MVCForum.Controllers
             var feature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
             if (feature != null)
             {
-                _logger.Error($"{feature.Error}, {HttpContext.Request.Path}");
+                _logger.Error(feature.Error.Message,feature.Error.InnerException);
             }
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
