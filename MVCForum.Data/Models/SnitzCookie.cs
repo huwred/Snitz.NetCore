@@ -73,19 +73,15 @@ namespace SnitzCore.Data.Models
 
         public  void SetLastVisitCookie(string? value)
         {
-            if (value == null)
-                return;
-            CookieOptions options = new()
+            if (value != null)
             {
-                HttpOnly = false,
-                Secure = true,
-                Path = _snitzConfig.CookiePath,
-                Expires = DateTime.UtcNow.AddMonths(2),
-                Domain = _httpContextAccessor.HttpContext?.Request.Host.Host
-            };
-            
+                SetCookie("LastVisit",value,DateTime.UtcNow.AddMonths(2));
+            }
+            else
+            {
+                ExpireCookie("LastVisit");
+            }
 
-            _httpContextAccessor.HttpContext?.Response.Cookies.Append("LastVisit", value, options);
         }
         #endregion
 
@@ -150,8 +146,11 @@ namespace SnitzCore.Data.Models
 
         public  string? GetCookieValue(string cookieKey)
         {
-            var cookie = _httpContextAccessor.HttpContext?.Request.Cookies[cookieKey];
-            return cookie;
+            if (_httpContextAccessor.HttpContext?.Request.Cookies.TryGetValue(cookieKey, out var cookie) == true)
+            {
+                return cookie;
+            }
+            return null;
         }
 
 
@@ -166,11 +165,14 @@ namespace SnitzCore.Data.Models
             {
                 HttpOnly = false,
                 Secure = true,
+                IsEssential = true,
+                SameSite = SameSiteMode.Strict,
                 Path = _snitzConfig.CookiePath,
                 Expires = expires ?? DateTime.UtcNow,
                 Domain = _httpContextAccessor.HttpContext?.Request.Host.Host
             };
             _httpContextAccessor.HttpContext?.Response.Cookies.Append(name, value, options);
+            var test = GetCookieValue(name);
         }
 
         private  void ExpireCookie(string? name)
