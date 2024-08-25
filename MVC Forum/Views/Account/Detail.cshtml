@@ -1,11 +1,10 @@
 ﻿@model MVCForum.ViewModels.Member.MemberDetailModel
-@    using System.Reflection
-@    using Microsoft.AspNetCore.Mvc.TagHelpers
-@    using MVCForum.TagHelpers
-@    using SnitzCore.Data.Extensions
-@    using SnitzCore.Data
-@    using SnitzCore.Service
-@    using SnitzCore.Service.Extensions
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Data
+@using SnitzCore.Service
+@using SnitzCore.Service.Extensions
 
 @{
     var _ranking = MemberService.GetRankings();

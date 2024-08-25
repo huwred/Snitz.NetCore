@@ -1,10 +1,10 @@
 @model MVCForum.ViewModels.Forum.ForumTopicModel
-@    using Microsoft.AspNetCore.Mvc.TagHelpers
-@    using MVCForum.TagHelpers
-@    using Microsoft.AspNetCore.Identity
-@    using SnitzCore.Service.TagHelpers
-@    using Microsoft.AspNetCore.Http
-@    using Snitz.Events.Helpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Identity
+@using SnitzCore.Service.TagHelpers
+@using Microsoft.AspNetCore.Http
+@using Snitz.Events.Helpers
 @inject SignInManager<ForumUser> SignInManager
 @inject IEnumerable<ISnitzStartupService> pluginservices
 @section MetaData

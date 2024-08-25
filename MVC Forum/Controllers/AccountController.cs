@@ -393,7 +393,7 @@ namespace MVCForum.Controllers
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.Warn("User is Locked out");
+                    _logger.Info("User is Locked out");
                     var forgotPassLink = Url.Action(nameof(ForgotPassword), "Account", new { }, Request.Scheme);
                     var content =
                         $"Your account is locked out, to reset your password, please click this link: {forgotPassLink}";
@@ -494,22 +494,22 @@ namespace MVCForum.Controllers
                 ModelState.AddModelError("Password", "Password is not valid");
                 return View(resetPasswordModel);
             }
-            _logger.Warn($"Reset password for {resetPasswordModel.Username}");
+            _logger.Info($"Reset password for {resetPasswordModel.Username}");
             var user = await _userManager.FindByNameAsync(resetPasswordModel.Username!);
-            _logger.Warn($"User found={user?.Member?.Name}");
+            _logger.Info($"User found={user?.Member?.Name}");
 
             if (user == null)
                 RedirectToAction(nameof(Error));
 
-            _logger.Warn($"Reset request {resetPasswordModel.Password} {resetPasswordModel.Token}");
+            _logger.Info($"Reset request {resetPasswordModel.Password} {resetPasswordModel.Token}");
             var resetPassResult = await _userManager.ResetPasswordAsync(user!, resetPasswordModel.Token!, resetPasswordModel.Password!);
-            _logger.Warn($"Reset result: {resetPassResult.Succeeded}");
+            _logger.Info($"Reset result: {resetPassResult.Succeeded}");
             if(!resetPassResult.Succeeded)
             {
                 foreach (var error in resetPassResult.Errors)
                 {
                     ModelState.TryAddModelError(error.Code, error.Description);
-                    _logger.Warn($"{error.Code}:{error.Description}");
+                    _logger.Error($"{error.Code}:{error.Description}");
                 }
                 _logger.Warn("Reset errors:");
 
@@ -991,7 +991,7 @@ namespace MVCForum.Controllers
             var validpwd = false;
             try
             {
-                _logger.Warn("Validate Old member record");
+                _logger.Info("Validate Old member record");
                 validpwd = _memberService.ValidateMember(member!, login.Password);
                 _logger.Info("Password is correct.");
                 //Password is correct but will it validate, if not then force a reset
@@ -1030,7 +1030,7 @@ namespace MVCForum.Controllers
                 {
                     login.Password = GeneratePassword();
                 }
-                _logger.Warn($"Create new Identity user {member.Name} - {login.Password}");
+                _logger.Info($"Create new Identity user {member.Name} - {login.Password}");
                 IdentityResult result = await _userManager.CreateAsync(existingUser, login.Password);
                 if (result.Succeeded)
                 {

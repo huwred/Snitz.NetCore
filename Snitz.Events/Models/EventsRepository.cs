@@ -92,7 +92,7 @@ namespace Snitz.Events.Models
             List<BirthdayEventItem> eventDetails = new List<BirthdayEventItem>();
             if (_config.GetIntValue("INTCALSHOWBDAYS") == 1 && user.Identity.IsAuthenticated)
             {
-                _logger.Warn($"GetBirthDays {start}:{end}");
+                _logger.Info($"GetBirthDays {start}:{end}");
                 try
                 {
                     eventDetails = MemberBirthdays(start, end).ToList();
@@ -102,7 +102,7 @@ namespace Snitz.Events.Models
                     _logger.Error("GetBirthDays", ex);
                     eventDetails = new List<BirthdayEventItem>();
                 }
-                _logger.Warn($"eventDetails {eventDetails.Count}");
+                _logger.Info($"eventDetails {eventDetails.Count}");
             }
 
             try
@@ -120,7 +120,7 @@ namespace Snitz.Events.Models
                                     url = "/Account/Detail/" + item.Title,
                                     className = "event-birthday"
                                 };
-                _logger.Warn($"returnArray {eventList.Count()}");
+                _logger.Info($"returnArray {eventList.Count()}");
                 var returnArray = eventList.ToArray();
 
                 return new JsonResult(returnArray);
@@ -294,14 +294,14 @@ namespace Snitz.Events.Models
     }
     private IEnumerable<BirthdayEventItem> MemberBirthdays(string start, string end)
     {
-        _logger.Warn($"MemberBirthdays {start}:{end}");
+        _logger.Info($"MemberBirthdays {start}:{end}");
         try
         {
             var sdate = DateTime.Parse(start.ToEnglishNumber());
             var edate = DateTime.Parse(end.ToEnglishNumber());
             if (edate - sdate > new TimeSpan(365, 0, 0, 0)) //don't show on year view
             {
-                _logger.Warn($"return yearview");
+                _logger.Info($"return yearview");
                 return new List<BirthdayEventItem>();
             }
 
@@ -310,13 +310,13 @@ namespace Snitz.Events.Models
 
             var thisyear = DateTime.UtcNow.Year;
 
-            _logger.Warn($"MemberBirthdays {s}:{e} - {thisyear}");
+            _logger.Info($"MemberBirthdays {s}:{e} - {thisyear}");
             var results = _snitzContext.Members.Where(m=>m.Status == 1 
                         && !string.IsNullOrWhiteSpace(m.Dob) 
                         && string.Compare(m.Dob.Replace(m.Dob.Substring(0,4),thisyear.ToString()),s) >= 0
                         && string.Compare(m.Dob.Replace(m.Dob.Substring(0,4),thisyear.ToString()),e) <= 0);
-            _logger.Warn("query: ");
-            _logger.Warn(results.ToQueryString());
+            _logger.Info("query: ");
+            _logger.Info(results.ToQueryString());
             return results.Select(m => new BirthdayEventItem()
                 {
                     MemberId = m.Id,
