@@ -17,7 +17,7 @@ namespace Snitz.PhotoAlbum.ViewModels
         public SelectList? GroupList { get; set; }
         public string? ScientificName { get; set; }
         public string? CommonName { get; set; }
-        public string AllowedTypes { get; internal set; }
+        public string? AllowedTypes { get; internal set; }
         public int MaxSize { get; internal set; }
     }
 }
