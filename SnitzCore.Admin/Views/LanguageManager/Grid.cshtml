@@ -18,34 +18,56 @@
 }
 @section Styles {
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css">
+    <style>
+        div.dt-container {
+            width: 99%;
+            margin: 0 auto;
+        }
+        div.dt-container select.dt-input {
+            margin-right: 4px;
+        }
+    </style>
 }
 <div class="p-3">
-<div class="container-fluid resource-grid bg-white rounded-3">
-    <a href="#" class="pull-right flip" style="padding: 5px" id="close-grid" title="Close" data-toggle="tooltip"><i class="fa fa-close fa-2x"></i></a>
-    <table class="table table-bordered table-striped" id="ResourceTable">
+<div class="container-fluid resource-grid p-3 rounded-3">
+        <table class="table table-bordered table-striped nowrap" id="ResourceTable" style="width:100%">
         <thead>
             <tr>
-                <th>Resource Id</th>
+                <th>Set</th>
                 <th></th>
-                <th></th>
+                <th>Resource Name</th>
                 @foreach (var culture in cultureItems)
                 {
-                    <th>@culture.Value</th>
+                    <th>@culture.Text</th>
                 }
                 <th></th>
             </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    @foreach (var culture in cultureItems)
+                    {
+                        <td></td>
+                    }
+                    <td></td>
+                </tr>
         </thead>
         <tbody>
             @foreach (var group in Model)
             {
                 <tr data-row="@rowcount">
-                    <td>@group.Key</td>
-                    <td>@String.Join(",", cultures)</td>
-                    <td>@group.First().ResourceSet</td>
-                    @foreach (var culture in cultureItems)
+                        <td>@group.First().ResourceSet</td>
+                        <td>@String.Join(",", cultures)</td>
+                        <td>@group.Key</td>
+                        @foreach (var culture in cultureItems)
                     {
                         LanguageResource? res = group.SingleOrDefault(c => c.Culture == culture.Value);
-                        <td>
+                        var nowrap = "no-sort";
+                        @if (culture.Value == "en"){
+                           nowrap = "text-nowrap";
+                        }
+                        <td dir="auto" class="@nowrap">
                             @if (group.Select(c => c.Culture == culture.Value).Any())
                             {
                                 if (res != null)
@@ -60,6 +82,18 @@
                 rowcount += 1;
             }
         </tbody>
+        <tfoot>
+            <tr>
+                <th>Resource Id</th>
+                <th></th>
+                <th>ResourceSet</th>
+                    @foreach (var culture in cultureItems)
+                    {
+                        <th>@culture.Text</th>
+                    }
+                <th></th>
+            </tr>
+        </tfoot>
     </table>
     </div>
 </div>
@@ -81,13 +115,49 @@
 </div>
 @section Scripts{
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
-    <script src="https://cdn.datatables.net/2.1.4/js/dataTables.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/2.1.4/js/dataTables.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/dataTables.fixedColumns.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/fixedColumns.dataTables.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/2.1.4/dataRender/ellipsis.js"></script>
     <script>
         var table;
         Object.assign(DataTable.defaults, {
-            pageLength: 50
+            pageLength: 10,
+            scrollX:true,
+            //fixedColumns: true,
         });
-        table = new DataTable('#ResourceTable');
+        table = new DataTable('#ResourceTable',{
+            orderCellsTop: true,
+            initComplete: function () {
+                this.api()
+                    .columns([0])
+                    .every(function () {
+                        let column = this;
+                        var select = $('<select><option value=""></option></select>')
+                            .appendTo($("thead tr:eq(1) td").eq(this.index()))
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+                    });
+            },
+            columnDefs: [
+                {
+                    targets: [1],
+                    visible: false
+                }
+            ],
+
+        });
         $('#ResourceTable tbody').on('click', 'button', function (evt) {
 
             evt.preventDefault();
@@ -122,6 +192,7 @@
             //keep the language tab active
             $("#admin-nav li a.nav-link.active").removeClass("active");
             $("#lang-settings").addClass("active");
+            table.reload();
         }
 
         completed = function (xhr) {

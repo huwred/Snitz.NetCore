@@ -3,6 +3,7 @@
 @{
     Layout = "_MasterLayout";
     var rowcount = 0;
+
 }
 @section Styles {
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css">
@@ -55,6 +56,14 @@
                     <th>description</th>
                     <th></th>
                 </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
             </thead>
             <tbody>
             @if (Model.CurrentLog != null)
@@ -62,27 +71,24 @@
                 @foreach (var item in Model.CurrentLog)
                 {
                     <tr data-row="@rowcount">
-                        <td class="text-nowrap">@item.date.ToLongTimeString()</td>
+                        <td class="text-nowrap">@item.date.ToString("HH:mm:ss")</td>
                         <td>@item.level</td>
                         <td>@item.logger</td>
                         <td>@item.logger</td>
-                        <td>@item.message
-
-                            </td>
-                            <td>@item.exception</td>
+                        <td>@item.message</td>
+                        <td>@item.exception</td>
                     </tr>
                     rowcount += 1;
                 }
-
             }
             </tbody>
             <tfoot>
                 <tr>
-                    <th></th>
+                    <th>time</th>
                     <th>level</th>
-                    <th>logger</th>
+                    <th>instance</th>
                     <th></th>
-                    <th></th>
+                    <th>description</th>
                     <th></th>
                 </tr>
             </tfoot>
@@ -108,6 +114,9 @@
 @section Scripts{
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/2.1.4/js/dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.25/sorting/datetime-moment.js"></script>
+
     <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/dataTables.fixedColumns.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/fixedColumns.dataTables.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/2.1.4/dataRender/ellipsis.js"></script>
@@ -116,10 +125,32 @@
         Object.assign(DataTable.defaults, {
             pageLength: 10,
             fixedColumns: true,
+            scrollX: true,
+            scrollY: true
         });
+
+        $.fn.dataTable.moment('"HH:mm:ss"');
         table = new DataTable('#log-table',{
+            // "proccessing": true,
+            // "serverSide": true,
+            // "ajax": {
+            //     url: "@Url.Action("CustomServerSideSearchAction", "LogView")",
+            //     type: 'POST'
+            // },
+            orderCellsTop: true,
             order: [[0, 'desc']],
+            layout: {
+                topStart: {
+                    pageLength: {
+                        menu: [5, 10, 25, 50]
+                    }
+                }
+            },            
             columnDefs: [
+                {
+                    width: '100px',
+                    targets: [0]
+                },
                 {
                     width: '140px',
                     targets: [2],
@@ -147,31 +178,24 @@
             ],
             initComplete: function () {
                 this.api()
-                    .columns([1, 2])
+                    .columns([1,2])
                     .every(function () {
                         let column = this;
+                        var select = $('<select><option value=""></option></select>')
+                            .appendTo($("thead tr:eq(1) td").eq(this.index()))
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
 
-                        // Create select element
-                        let select = document.createElement('select');
-                        select.add(new Option(''));
-                        column.footer().replaceChildren(select);
-
-                        // Apply listener for user change in value
-                        select.addEventListener('change', function () {
-                            column
-                                .search(select.value, { exact: true })
-                                .draw();
-                        });
-                        console.log(column[0][0]);
-                        var id = column[0];
-                        // Add list of options
-                        column
-                            .data()
-                            .unique()
-                            .sort()
-                            .each(function (d, j) {
-                                select.add(new Option(d.substring(0, 39),d));
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
                             });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d.substring(0, 39) + '</option>')
+                        });
                     });
             }
         });
@@ -181,11 +205,9 @@
             var fullText = rowData[5];
             $("#resContainer").html(fullText);
             $('#modal-exception').modal('show');
-            debugger;
-            console.log(fullText);
         }
         window.onload = function () {
-            //keep the language tab active
+            //keep the viewer tab active
             $("#admin-nav li a.nav-link.active").removeClass("active");
             $("#log-viewer").addClass("active");
 
