@@ -397,7 +397,6 @@
     <UpToDateCheckInput Remove="Views\Shared\_PageNotFound.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="logs\SnitzLog2024-08-22.json" />
     <Content Include="logs\SnitzLog2024-08-23.json" />
   </ItemGroup>
   <ItemGroup>
