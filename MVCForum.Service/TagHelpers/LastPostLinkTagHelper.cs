@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SnitzCore.Service.Extensions;
 
-namespace MVCForum.TagHelpers
+namespace SnitzCore.Service.TagHelpers
 {
     /// <summary>
     /// TagHelper to innsert a link to the last post in a topic]]>
@@ -28,16 +28,17 @@ namespace MVCForum.TagHelpers
         /// </summary>
         public Func<string, string>? TextLocalizerDelegate { get; set; }
 
-        public LastPostLinkTagHelper(IHttpContextAccessor httpContextAccessor) {
+        public LastPostLinkTagHelper(IHttpContextAccessor httpContextAccessor)
+        {
             webrootpath = httpContextAccessor.HttpContext?.Request.PathBase;
         }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if(webrootpath == null || webrootpath == "/") {webrootpath = "";}
+            if (webrootpath == null || webrootpath == "/") { webrootpath = ""; }
             var link = new TagBuilder("a");
 
-            link.Attributes.Add("rel","index,follow");
+            link.Attributes.Add("rel", "index,follow");
             link.Attributes.Add("href", $"{webrootpath}/Topic/{TopicId}/?replyid={ReplyId}");
             if (TextLocalizerDelegate != null) link.Attributes.Add("title", TextLocalizerDelegate("tipLastPost"));
             link.InnerHtml.AppendHtml(@"<i class=""fa fa-arrow-right""></i>");

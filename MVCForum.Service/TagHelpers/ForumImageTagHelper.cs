@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Text.Encodings.Web;
 
-namespace MVCForum.TagHelpers
+namespace SnitzCore.Service.TagHelpers
 {
     [HtmlTargetElement("snitz-forum-icon", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class ForumImageTagHelper : TagHelper
@@ -24,34 +24,34 @@ namespace MVCForum.TagHelpers
             output.TagMode = TagMode.StartTagAndEndTag;
             output.TagName = "i";
 
-            output.AddClass("fa",HtmlEncoder.Default);
+            output.AddClass("fa", HtmlEncoder.Default);
             if (Status == 0)
             {
-                output.AddClass("fa-lock",HtmlEncoder.Default);
+                output.AddClass("fa-lock", HtmlEncoder.Default);
             }
             else if (Type == "1")
             {
-                output.AddClass("fa-link",HtmlEncoder.Default);
+                output.AddClass("fa-link", HtmlEncoder.Default);
             }
             else if (Access != "0")
             {
-                output.AddClass("fa-ban",HtmlEncoder.Default);
+                output.AddClass("fa-ban", HtmlEncoder.Default);
             }
             else
             {
-                output.AddClass("fa-folder",HtmlEncoder.Default);
+                output.AddClass("fa-folder", HtmlEncoder.Default);
             }
 
             if (ForumId != null)
             {
                 if (IsAdministrator)
                 {
-                    output.AddClass("weblink-edit",HtmlEncoder.Default);
-                    output.Attributes.Add("title","Edit Weblink");
+                    output.AddClass("weblink-edit", HtmlEncoder.Default);
+                    output.Attributes.Add("title", "Edit Weblink");
                     output.Attributes.Add("data-id", ForumId);
                 }
             }
-            output.AddClass("center",HtmlEncoder.Default);
+            output.AddClass("center", HtmlEncoder.Default);
         }
     }
 }

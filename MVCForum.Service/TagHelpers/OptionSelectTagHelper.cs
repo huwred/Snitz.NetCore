@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace MVCForum.TagHelpers
+namespace SnitzCore.Service.TagHelpers
 {
     [HtmlTargetElement("option", Attributes = "selected-val")]
     public class OptionSelectTagHelper : TagHelper
@@ -12,7 +12,7 @@ namespace MVCForum.TagHelpers
             var tag = output.Attributes["value"];
             if (Selected != null && Selected == (string)tag.Value)
             {
-                output.Attributes.Add("selected","selected");
+                output.Attributes.Add("selected", "selected");
             }
 
         }

@@ -71,7 +71,6 @@
   <ItemGroup>
     <Compile Remove="Controllers\TagCloudController.cs" />
     <Compile Remove="Startup.cs" />
-    <Compile Remove="TagHelpers\ButtonConfirmTagHelper.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -324,7 +323,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <Folder Include="logs\" />
     <Folder Include="Views\Polls\" />
     <Folder Include="wwwroot\Templates\images\" />
   </ItemGroup>
@@ -395,9 +394,6 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\_PageNotFound.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="logs\SnitzLog2024-08-23.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="wwwroot\css\SnitzTheme.css" />

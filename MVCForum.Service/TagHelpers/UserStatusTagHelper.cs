@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Text.Encodings.Web;
 
-namespace MVCForum.TagHelpers
+namespace SnitzCore.Service.TagHelpers
 {
     [HtmlTargetElement("snitz-status-icon", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class UserStatusTagHelper : TagHelper
@@ -17,15 +17,15 @@ namespace MVCForum.TagHelpers
             output.TagMode = TagMode.StartTagAndEndTag;
             output.TagName = "i";
 
-            output.AddClass("fa",HtmlEncoder.Default);
+            output.AddClass("fa", HtmlEncoder.Default);
             output.AddClass(Status == "1" ? "fa-user" : "fa-lock", HtmlEncoder.Default);
             if (Title != null && Title.StartsWith("Zapped"))
             {
-                output.AddClass("fa-bolt",HtmlEncoder.Default);
-                
+                output.AddClass("fa-bolt", HtmlEncoder.Default);
+
             }
-            output.Attributes.Add("title",Title);
-            output.AddClass("center",HtmlEncoder.Default);
+            output.Attributes.Add("title", Title);
+            output.AddClass("center", HtmlEncoder.Default);
         }
     }
 }

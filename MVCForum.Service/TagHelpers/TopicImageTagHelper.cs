@@ -7,7 +7,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 
-namespace MVCForum.TagHelpers
+namespace SnitzCore.Service.TagHelpers
 {
     [HtmlTargetElement("snitz-topic-icon", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class TopicImageTagHelper : TagHelper
@@ -15,7 +15,7 @@ namespace MVCForum.TagHelpers
         private readonly ISnitzConfig _config;
         private readonly ISnitzCookie _cookie;
 
-        public TopicImageTagHelper(ISnitzConfig snitzConfig,ISnitzCookie snitzCookie)
+        public TopicImageTagHelper(ISnitzConfig snitzConfig, ISnitzCookie snitzCookie)
         {
             _config = snitzConfig;
             _cookie = snitzCookie;
@@ -51,12 +51,12 @@ namespace MVCForum.TagHelpers
             base.Process(context, output);
             output.TagMode = TagMode.StartTagAndEndTag;
             output.TagName = "span";
-            output.AddClass("fa-stack",HtmlEncoder.Default);
-            output.AddClass("fa-1x",HtmlEncoder.Default);
+            output.AddClass("fa-stack", HtmlEncoder.Default);
+            output.AddClass("fa-1x", HtmlEncoder.Default);
 
             TagHelperOutput mainTag = new TagHelperOutput(
                 tagName: "i",
-        
+
                 attributes: new TagHelperAttributeList(),
                 getChildContentAsync: (s, t) =>
                 {
@@ -64,17 +64,17 @@ namespace MVCForum.TagHelpers
                 }
             );
             mainTag.TagMode = TagMode.StartTagAndEndTag;
-            
+
             TagHelperOutput overlayTag = new TagHelperOutput(
                 tagName: "i",
-        
+
                 attributes: new TagHelperAttributeList(),
                 getChildContentAsync: (s, t) =>
                 {
                     return Task.Factory.StartNew<TagHelperContent>(() => new DefaultTagHelperContent());
                 }
             );
-            overlayTag.TagMode= TagMode.StartTagAndEndTag;
+            overlayTag.TagMode = TagMode.StartTagAndEndTag;
 
             if (LastPost.HasValue)
             {
@@ -91,64 +91,64 @@ namespace MVCForum.TagHelpers
 
             if (newclass)
             {
-                output.Attributes.Add("title",$"{locked}{newposts}");
-                mainTag.AddClass("fa",HtmlEncoder.Default);
-                mainTag.AddClass("fa-folder-o",HtmlEncoder.Default);
-                mainTag.AddClass("fa-stack-2x",HtmlEncoder.Default);
+                output.Attributes.Add("title", $"{locked}{newposts}");
+                mainTag.AddClass("fa", HtmlEncoder.Default);
+                mainTag.AddClass("fa-folder-o", HtmlEncoder.Default);
+                mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
             }
             else if (Answered)
             {
-                output.Attributes.Add("title",$"Topic answered{locked}{newposts}");
-                mainTag.AddClass("fa",HtmlEncoder.Default);
-                mainTag.AddClass("fa-folder",HtmlEncoder.Default);
-                mainTag.AddClass("fa-stack-2x",HtmlEncoder.Default);
+                output.Attributes.Add("title", $"Topic answered{locked}{newposts}");
+                mainTag.AddClass("fa", HtmlEncoder.Default);
+                mainTag.AddClass("fa-folder", HtmlEncoder.Default);
+                mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
             }
             else
             {
-                mainTag.AddClass("fa",HtmlEncoder.Default);
-                mainTag.AddClass("fa-folder-o",HtmlEncoder.Default);
-                mainTag.AddClass("fa-stack-2x",HtmlEncoder.Default);
-                output.Attributes.Add("title",$"No new posts{locked}");
+                mainTag.AddClass("fa", HtmlEncoder.Default);
+                mainTag.AddClass("fa-folder-o", HtmlEncoder.Default);
+                mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+                output.Attributes.Add("title", $"No new posts{locked}");
             }
             if (Sticky && _config.GetIntValue("STRSTICKYTOPIC") == 1)
             {
-                output.Attributes.Add("title",$"Sticky Topic{locked}{newposts}");
-                overlayTag.AddClass("fa",HtmlEncoder.Default);
-                overlayTag.AddClass("fa-thumb-tack",HtmlEncoder.Default);
-                overlayTag.AddClass("fa-stack-1x",HtmlEncoder.Default);
+                output.Attributes.Add("title", $"Sticky Topic{locked}{newposts}");
+                overlayTag.AddClass("fa", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-thumb-tack", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-stack-1x", HtmlEncoder.Default);
             }
             else if (Replies == 0)
             {
-                output.Attributes.Add("title",$"No replies{locked}{newposts}");
-                overlayTag.AddClass("fa",HtmlEncoder.Default);
-                overlayTag.AddClass("fa-frown-o",HtmlEncoder.Default);
-                overlayTag.AddClass("fa-stack-1x",HtmlEncoder.Default);
+                output.Attributes.Add("title", $"No replies{locked}{newposts}");
+                overlayTag.AddClass("fa", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-frown-o", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-stack-1x", HtmlEncoder.Default);
             }
             else if (Replies > 100)
             {
-                output.Attributes.Add("title",$"Super charged Topic{locked}{newposts}");
-                overlayTag.AddClass("fa",HtmlEncoder.Default);
-                overlayTag.AddClass("fa-rocket",HtmlEncoder.Default);
-                overlayTag.AddClass("fa-stack-1x",HtmlEncoder.Default);
+                output.Attributes.Add("title", $"Super charged Topic{locked}{newposts}");
+                overlayTag.AddClass("fa", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-rocket", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-stack-1x", HtmlEncoder.Default);
             }
-            else if (Replies > _config.GetIntValue("INTHOTTOPICNUM",25))
+            else if (Replies > _config.GetIntValue("INTHOTTOPICNUM", 25))
             {
-                output.Attributes.Add("title",$"Hot Topic{locked}{newposts}");
-                overlayTag.AddClass("fa",HtmlEncoder.Default);
-                overlayTag.AddClass("fa-fire",HtmlEncoder.Default);
-                overlayTag.AddClass("fa-stack-1x",HtmlEncoder.Default);
+                output.Attributes.Add("title", $"Hot Topic{locked}{newposts}");
+                overlayTag.AddClass("fa", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-fire", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-stack-1x", HtmlEncoder.Default);
             }
-            else if(Status == "0")
+            else if (Status == "0")
             {
-                overlayTag.AddClass("fa",HtmlEncoder.Default);
-                overlayTag.AddClass("fa-lock",HtmlEncoder.Default);
-                overlayTag.AddClass("fa-stack-1x",HtmlEncoder.Default);
+                overlayTag.AddClass("fa", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-lock", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-stack-1x", HtmlEncoder.Default);
             }
 
-            if(newclass){output.AddClass("newposts",HtmlEncoder.Default);}
+            if (newclass) { output.AddClass("newposts", HtmlEncoder.Default); }
 
-            output.Content.AppendHtml(mainTag );
-            output.Content.AppendHtml(overlayTag );
+            output.Content.AppendHtml(mainTag);
+            output.Content.AppendHtml(overlayTag);
         }
     }
 }

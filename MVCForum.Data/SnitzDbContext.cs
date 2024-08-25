@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using SnitzCore.Data.Models;
 using System;
 using System.Reflection;
@@ -19,6 +20,7 @@ namespace SnitzCore.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.EnableSensitiveDataLogging();
+            optionsBuilder.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

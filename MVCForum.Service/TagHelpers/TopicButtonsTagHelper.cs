@@ -9,7 +9,7 @@ using SnitzCore.Data.Interfaces;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace MVCForum.TagHelpers
+namespace SnitzCore.Service.TagHelpers
 {
     [HtmlTargetElement("topic-buttons", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class TopicButtonsTagHelper : TagHelper
@@ -17,7 +17,7 @@ namespace MVCForum.TagHelpers
         private readonly ISnitzConfig _config;
         private readonly IUrlHelperFactory _urlHelper;
 
-        public TopicButtonsTagHelper(ISnitzConfig config,IUrlHelperFactory urlHelper)
+        public TopicButtonsTagHelper(ISnitzConfig config, IUrlHelperFactory urlHelper)
         {
             _config = config;
             _urlHelper = urlHelper;
@@ -50,8 +50,8 @@ namespace MVCForum.TagHelpers
                 tagButton.Attributes.Add("type", "button");
                 tagButton.Attributes.Add("data-id", PrintTopic.ToString());
                 tagButton.Attributes.Add("href", "~/Topic/Print/" + PrintTopic.ToString());
-                tagButton.Attributes.Add("rel","noopener nofollow");
-                tagButton.Attributes.Add("target","_blank");
+                tagButton.Attributes.Add("rel", "noopener nofollow");
+                tagButton.Attributes.Add("target", "_blank");
                 if (TextLocalizerDelegate != null) tagButton.Attributes.Add("title", TextLocalizerDelegate("tipPrintTopic"));
                 tagButton.InnerHtml.AppendHtml("<i class=\"fa fa-print p-2\"></i>");
                 output.Content.AppendHtml(tagButton);
@@ -78,8 +78,8 @@ namespace MVCForum.TagHelpers
                 fbButton.Attributes.Add("class", Class ?? "btn btn-outline-primary ");
                 fbButton.Attributes.Add("data-id", SocialMedia.ToString());
                 fbButton.Attributes.Add("href", $"https://www.facebook.com/share.php?u={pageUrl}&title={forumTitle}");
-                fbButton.Attributes.Add("rel","noopener nofollow");
-                fbButton.Attributes.Add("target","_blank");
+                fbButton.Attributes.Add("rel", "noopener nofollow");
+                fbButton.Attributes.Add("target", "_blank");
                 if (TextLocalizerDelegate != null) fbButton.Attributes.Add("title", TextLocalizerDelegate("FacebookShare"));
                 fbButton.InnerHtml.AppendHtml("<i class=\"fa fa-facebook-square p-2\"></i>");
                 output.Content.AppendHtml(fbButton);
@@ -90,8 +90,8 @@ namespace MVCForum.TagHelpers
                 //twButton.Attributes.Add("type", "button");
                 twButton.Attributes.Add("data-id", SocialMedia.ToString());
                 twButton.Attributes.Add("href", $"https://twitter.com/home?status={forumTitle}+{pageUrl}");
-                twButton.Attributes.Add("rel","noopener nofollow");
-                twButton.Attributes.Add("target","_blank");
+                twButton.Attributes.Add("rel", "noopener nofollow");
+                twButton.Attributes.Add("target", "_blank");
                 if (TextLocalizerDelegate != null) twButton.Attributes.Add("title", TextLocalizerDelegate("TwitterShare"));
                 twButton.InnerHtml.AppendHtml("<i class=\"fa fa-twitter-square p-2\"></i>");
                 output.Content.AppendHtml(twButton);
@@ -107,7 +107,7 @@ namespace MVCForum.TagHelpers
                 //output.Content.AppendHtml(disButton);
             }
 
-            output.AddClass("btn-group",HtmlEncoder.Default);
+            output.AddClass("btn-group", HtmlEncoder.Default);
 
         }
     }

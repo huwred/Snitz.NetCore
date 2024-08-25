@@ -39,7 +39,7 @@
 }
 <ul class="list-unstyled">
     <li>
-        @Localizer["lblOnlineUsersDesc", new object[] { onlinecount, activecount, hiddencount, onlinecount - activecount, maxonline, "" }]
+        @Localizer["lblOnlineUsersDesc", new object[] { onlinecount, activecount, hiddencount, Math.Max(onlinecount - activecount,0), maxonline, "" }]
     </li>
     <li>
         @foreach (var activemember in activemembers)

@@ -1,9 +1,9 @@
 @model MVCForum.ViewModels.Forum.ForumSearchModel
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-@using MVCForum.TagHelpers
-@using SmartBreadcrumbs
-@using SnitzCore.Data.Extensions
-@using System.ComponentModel.DataAnnotations
+@    using Microsoft.AspNetCore.Mvc.TagHelpers
+@    using MVCForum.TagHelpers
+@    using SmartBreadcrumbs
+@    using SnitzCore.Data.Extensions
+@    using System.ComponentModel.DataAnnotations
 @{
     ViewBag.PageCount = Model.Results?.PageCount!;
     string pagenum = (Model.Results?.PageNum?.ToString() ?? Context.Request.Query["page"])!;

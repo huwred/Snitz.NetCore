@@ -1,9 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SnitzCore.Data;
-using SnitzCore.Data.Extensions;
+﻿using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
-using SnitzCore.Data.Models;
-using SnitzCore.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;

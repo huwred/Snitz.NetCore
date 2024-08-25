@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SnitzCore.Data.Interfaces;
 
-namespace MVCForum.TagHelpers;
+namespace SnitzCore.Service.TagHelpers;
 
 /// <summary>
 /// TagHelper to display member avatar
@@ -33,7 +33,7 @@ public class MemberImageTagHelper : TagHelper
     private readonly ISnitzConfig _config;
     public MemberImageTagHelper(
         IUrlHelperFactory urlHelperFactory,
-        IActionContextAccessor actionContextAccesor,IWebHostEnvironment environment,ISnitzConfig config)
+        IActionContextAccessor actionContextAccesor, IWebHostEnvironment environment, ISnitzConfig config)
     {
         this.urlHelperFactory = urlHelperFactory;
         this.actionContextAccesor = actionContextAccesor;
@@ -50,7 +50,7 @@ public class MemberImageTagHelper : TagHelper
         {
             SourceFile = SourceFile?.Replace("/Content/", "/" + _config.ContentFolder + "/");
         }
-        if(!File.Exists(_env.WebRootPath + SourceFile?.Replace("/",@"\").Replace("~","")))
+        if (!File.Exists(_env.WebRootPath + SourceFile?.Replace("/", @"\").Replace("~", "")))
         {
             SourceFile = null;
         }
@@ -58,9 +58,9 @@ public class MemberImageTagHelper : TagHelper
         output.TagMode = TagMode.StartTagAndEndTag;
         output.TagName = "img";
         output.Attributes.Add("class", Classes);
-        output.Attributes.Add("src", urlHelper.Content(SourceFile)?? urlHelper.Content(Fallback));
+        output.Attributes.Add("src", urlHelper.Content(SourceFile) ?? urlHelper.Content(Fallback));
 
-        output.Attributes.Add("alt",urlHelper.Content(SourceFile));
+        output.Attributes.Add("alt", urlHelper.Content(SourceFile));
 
     }
 }

@@ -17,14 +17,14 @@ namespace MVCForum.Extensions
         /// <param name="author"></param>
         /// <param name="ranking"></param>
         /// <returns></returns>
-        public static  HtmlString MemberRankTitle(this IHtmlHelper htmlhelper, Member author,
-            Dictionary<int, MemberRanking>? ranking,IViewLocalizer language)
+        public static HtmlString MemberRankTitle(this IHtmlHelper htmlhelper, Member author,
+            Dictionary<int, MemberRanking>? ranking, IViewLocalizer language)
         {
 
             string? mTitle = author.Title;
             if (author.Status == 0 || author.Name == "n/a")
             {
-                mTitle =  language.GetString("tipMemberLocked");
+                mTitle = language.GetString("tipMemberLocked");
             }
             if (author.Name == "zapped")
             {
@@ -37,14 +37,14 @@ namespace MVCForum.Extensions
 
             return new HtmlString(title.GetString());
         }
-        public static  HtmlString MemberRankStars(this IHtmlHelper htmlhelper, Member author,
-            Dictionary<int, MemberRanking>? ranking,IViewLocalizer language)
+        public static HtmlString MemberRankStars(this IHtmlHelper htmlhelper, Member author,
+            Dictionary<int, MemberRanking>? ranking, IViewLocalizer language)
         {
 
             string? mTitle = author.Title;
             if (author.Status == 0 || author.Name == "n/a")
             {
-                mTitle =  language.GetString("tipMemberLocked");
+                mTitle = language.GetString("tipMemberLocked");
             }
             if (author.Name == "zapped")
             {
@@ -58,12 +58,12 @@ namespace MVCForum.Extensions
             return new HtmlString(stars.GetString());
         }
 
-        public static object MemberRankStars(this IHtmlHelper htmlhelper, MemberListingModel author, Dictionary<int, MemberRanking>? ranking,IViewLocalizer language)
+        public static object MemberRankStars(this IHtmlHelper htmlhelper, MemberListingModel author, Dictionary<int, MemberRanking>? ranking, IViewLocalizer language)
         {
             string? mTitle = author.Title;
             if (author.Member.Status == 0 || author.Member.Name == "n/a")
             {
-                mTitle =  language.GetString("tipMemberLocked");
+                mTitle = language.GetString("tipMemberLocked");
             }
             if (author.Member.Name == "zapped")
             {

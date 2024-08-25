@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Linq;
 using SnitzCore.Service.Extensions;
 
-namespace MVCForum.TagHelpers
+namespace SnitzCore.Service.TagHelpers
 {
     /// <summary>
     /// TagHelper to create an input select list from an enum
@@ -39,7 +39,7 @@ namespace MVCForum.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = "select";
-            output.Attributes.Add("class","form-select mb-2");
+            output.Attributes.Add("class", "form-select mb-2");
 
             foreach (int e in Enum.GetValues(EnumType))
             {
@@ -74,7 +74,7 @@ namespace MVCForum.TagHelpers
                 return displayName ?? fieldName;
             }
 
-            return fieldName ??  "";
+            return fieldName ?? "";
         }
 
         private string GetEnumFieldLocalizedDisplayName(int value)
