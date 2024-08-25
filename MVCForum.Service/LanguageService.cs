@@ -113,6 +113,7 @@ namespace SnitzCore.Service
             using var scope = _serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetService<SnitzDbContext>();
             var result = context!.LanguageResources
+                .OrderBy(r => r.Name)
                 .FirstOrDefault(r => r.Name == name && r.Culture == culture)?.Value;
             return new LocalizedString(name,result ?? name);
         }

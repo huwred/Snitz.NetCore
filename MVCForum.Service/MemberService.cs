@@ -42,7 +42,7 @@ namespace SnitzCore.Service
         {
             if (id == null)
                 return null;
-            var member =  _dbContext.Members.AsNoTracking().First(m => m.Id == id);
+            var member =  _dbContext.Members.AsNoTracking().OrderBy(m=>m.Id).First(m => m.Id == id);
             if(member == null) return null;
 
             var curruser = _userManager.FindByNameAsync(member.Name).Result;
@@ -56,7 +56,7 @@ namespace SnitzCore.Service
         }
         public Member? Get(int id)
         {
-            return  _dbContext.Members.AsNoTracking().First(m => m.Id == id);
+            return  _dbContext.Members.AsNoTracking().OrderBy(m=>m.Id).First(m => m.Id == id);
         }
         public async Task<Member?> GetById(ClaimsPrincipal user)
         {
@@ -92,7 +92,7 @@ namespace SnitzCore.Service
         //[Obsolete("Obsolete")]
         public bool ValidateMember(Member member, string password)
         {
-            OldMembership? result = _dbContext.OldMemberships.FirstOrDefault(m => m.Id == member.Id);
+            OldMembership? result = _dbContext.OldMemberships.OrderBy(m=>m.Id).FirstOrDefault(m => m.Id == member.Id);
             return result != null && VerifyHashedPassword(result.Password,password);
         }
 
@@ -259,6 +259,7 @@ namespace SnitzCore.Service
         public string? GetMemberName(int id)
         {
             return _dbContext.Members
+                .OrderBy(m=>m.Id)
                 .FirstOrDefault(m => m.Id == id)?.Name;
         }
 
@@ -430,7 +431,7 @@ namespace SnitzCore.Service
 
         public bool ZapMember(int memberid)
         {
-            var member = _dbContext.Members.AsNoTracking().FirstOrDefault(m=>m.Id == memberid);
+            var member = _dbContext.Members.AsNoTracking().OrderBy(m=>m.Id).FirstOrDefault(m=>m.Id == memberid);
             _dbContext.SaveChanges();
             
             if (member != null)

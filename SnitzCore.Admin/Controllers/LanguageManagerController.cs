@@ -112,7 +112,7 @@ public class LanguageManagerController : Controller
             LanguageStrings = new List<KeyValuePair<string, List<LanguageResource>>>(),
             ResourceSet = id
         };
-        _logger.LogWarning($"id:{id} culture:{culture}");
+
         model.DefaultStrings = GetStrings("en").Where(l => l.ResourceSet == id).ToList();
         foreach (var language in model.Languages)
         {
@@ -124,7 +124,6 @@ public class LanguageManagerController : Controller
             catch (Exception e)
             {
                 _logger.LogError($"language:{language} {e.Message}");
-                //throw;
             }
         }
 

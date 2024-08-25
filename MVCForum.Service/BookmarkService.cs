@@ -30,7 +30,7 @@ namespace SnitzCore.Service
         }
         public BookmarkEntry? Get(int id)
         {
-            return _dbContext.Bookmarks.Include(b=>b.Member).Include(b=>b.Topic).AsNoTrackingWithIdentityResolution().First(b=>b.Id == id && b.MemberId == MemberId);
+            return _dbContext.Bookmarks.Include(b=>b.Member).Include(b=>b.Topic).AsNoTrackingWithIdentityResolution().OrderBy(b=>b.Id).First(b=>b.Id == id && b.MemberId == MemberId);
         }
 
         public List<BookmarkEntry>? GetAll()
@@ -57,7 +57,7 @@ namespace SnitzCore.Service
 
         public void DeleteBookMark(int id)
         {
-            var bookmark = _dbContext.Bookmarks.FirstOrDefault(b=>b.TopicId==id && b.MemberId == MemberId);
+            var bookmark = _dbContext.Bookmarks.OrderBy(b=>b.TopicId).FirstOrDefault(b=>b.TopicId==id && b.MemberId == MemberId);
             if (bookmark != null)
             {
                 _dbContext.Bookmarks.Remove(bookmark);
@@ -82,7 +82,7 @@ namespace SnitzCore.Service
 
         public bool IsBookmarked(int topicid)
         {
-            var res = _dbContext.Bookmarks.FirstOrDefault(b=>b.TopicId == topicid && b.MemberId == MemberId);
+            var res = _dbContext.Bookmarks.OrderBy(b=>b.TopicId).FirstOrDefault(b=>b.TopicId == topicid && b.MemberId == MemberId);
             return res != null;
         }
     }

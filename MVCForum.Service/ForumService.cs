@@ -147,7 +147,7 @@ namespace SnitzCore.Service
         }
         public Dictionary<int, string?> CategoryList()
         {
-            return _dbContext.Categories.AsNoTracking().Select(c=> new {c.Id, value = c.Name}).ToDictionary(k=>k.Id,k=>k.value);
+            return _dbContext.Categories.AsNoTracking().OrderBy(c=>c.Sort).Select(c=> new {c.Id, value = c.Name}).ToDictionary(k=>k.Id,k=>k.value);
         }
         public Post? GetLatestPost(int forumId)
         {
@@ -160,7 +160,7 @@ namespace SnitzCore.Service
         }
         public Forum Get(int id)
         {
-            return  _dbContext.Forums.AsNoTracking().Include(f=>f.Category).First(f=>f.Id==id);
+            return  _dbContext.Forums.AsNoTracking().Include(f=>f.Category).OrderBy(f=>f.Id).First(f=>f.Id==id);
 
         }
         public Forum GetWithPosts(int id)
@@ -190,7 +190,7 @@ namespace SnitzCore.Service
         {
             var id = rolename.ToUpperInvariant().Replace("FORUM_","");
             var result = 
-                _dbContext.Forums.FirstOrDefault(f => f.Id == Convert.ToInt32(id));
+                _dbContext.Forums.OrderBy(f=>f.Id).FirstOrDefault(f => f.Id == Convert.ToInt32(id));
 
             if (result != null) return result.Title;
             return String.Empty;

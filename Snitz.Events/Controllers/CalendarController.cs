@@ -112,7 +112,7 @@ public class CalendarController : Controller
             foreach (var formKey in form.Keys.Where(k => !k.StartsWith("_")))
             {
                 var val = form[formKey][0];
-                var conf = _snitzContext.SnitzConfig.FirstOrDefault(f => f.Key == formKey);
+                var conf = _snitzContext.SnitzConfig.OrderBy(m=>m.Key).FirstOrDefault(f => f.Key == formKey);
                 if (conf != null)
                 {
                     if (conf.Value != val)

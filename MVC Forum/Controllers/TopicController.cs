@@ -553,7 +553,7 @@ namespace MVCForum.Controllers
                 post.LastEditby = user.MemberId;
                 if (post.ForumId != model.ForumId)
                 {
-                    var forum = _snitzDbContext.Forums.AsNoTracking().First(f => f.Id == model.ForumId);
+                    var forum = _snitzDbContext.Forums.AsNoTracking().OrderBy(f=>f.Id).First(f => f.Id == model.ForumId);
                     var author = _memberService.GetById(post.MemberId);
                     post.ForumId = model.ForumId;
                     post.CategoryId = forum.CategoryId;

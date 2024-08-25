@@ -253,7 +253,7 @@ namespace SnitzCore.Service
         }
         public async Task UpdateViewCount(int id)
         {
-            var topic = _dbContext.Posts.First(x=>x.Id == id);
+            var topic = _dbContext.Posts.OrderBy(m=>m.Id).First(x=>x.Id == id);
             topic.ViewCount += 1;
             _dbContext.Update(topic);
             await _dbContext.SaveChangesAsync();
@@ -267,7 +267,7 @@ namespace SnitzCore.Service
         }
         public async Task UpdateReplyContent(int id, string content)
         {
-            var reply = _dbContext.Replies.First(x=>x.Id == id);
+            var reply = _dbContext.Replies.OrderBy(m=>m.Id).First(x=>x.Id == id);
             reply.Content = content;
             _dbContext.Update(reply);
             await _dbContext.SaveChangesAsync();
@@ -506,10 +506,10 @@ namespace SnitzCore.Service
 
         public async Task<bool> Answer(int id)
         {
-            var reply = _dbContext.Replies.Where(r => r.Id == id).FirstOrDefault();
+            var reply = _dbContext.Replies.OrderBy(m=>m.Id).FirstOrDefault(r => r.Id == id);
             if (reply != null)
             {
-                var topic = _dbContext.Posts.Where(t => t.Id == reply.PostId).FirstOrDefault();
+                var topic = _dbContext.Posts.OrderBy(m=>m.Id).FirstOrDefault(t => t.Id == reply.PostId);
                 reply.Answer = true;
                 topic.Answered = true;
                 _dbContext.Update(reply);
@@ -639,7 +639,7 @@ namespace SnitzCore.Service
             {
                 _dbContext.Database.CommitTransaction();
             }
-            Post originaltopic = (from t in _dbContext.Posts select t).FirstOrDefault(t=>t.Id == originaltopicid);
+            Post originaltopic = (from t in _dbContext.Posts select t).OrderBy(m=>m.Id).FirstOrDefault(t=>t.Id == originaltopicid);
             if (originaltopic != null)
             {
                 originaltopic.ReplyCount -= replycount + 1;
