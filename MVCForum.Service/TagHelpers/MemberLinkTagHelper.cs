@@ -45,7 +45,7 @@ namespace SnitzCore.Service.TagHelpers
                 var member = _member.GetById(MemberId);
                 if (member != null)
                 {
-                    output.Attributes.Add("href", $"{webrootpath}/Account/Detail/{Url.Encode(MemberName)}");
+                    output.Attributes.Add("href", $"{webrootpath}/Account/Detail/{Url.Encode(member.Name)}");
                     output.Content.AppendHtml($"{member.Name}");
                 }
             }

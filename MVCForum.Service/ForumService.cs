@@ -172,7 +172,7 @@ namespace SnitzCore.Service
                 .ThenInclude(p => p.Member)
                 .Include(f=>f.ForumModerators)!
                 .ThenInclude(p => p.Member)
-                
+                .AsSplitQuery()
                 .Single();
 
         }

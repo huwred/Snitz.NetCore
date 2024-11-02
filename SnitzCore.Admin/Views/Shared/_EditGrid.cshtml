@@ -1,10 +1,12 @@
 ﻿@using MVCForum.ViewModels
 @model LangUpdateViewModel
-
+@{
+    string ajaxUrl = Context.Request.PathBase + "/LanguageManager/Update";
+}
 <div id="resourceEditor">
     <form id="frmResEditor" asp-action="Update" asp-controller="LanguageManager" method="POST" data-ajax="true" data-ajax-method="post"
           data-ajax-complete="completed"
-          data-ajax-url="/LanguageManager/Update" class="form-horizontal">
+          data-ajax-url="@ajaxUrl" class="form-horizontal">
         <div class="container-fluid">
             <div class="form-group">
                 <label class="col-xs-3">Resource Set</label>

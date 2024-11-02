@@ -9,7 +9,7 @@ using SnitzCore.Service;
 
 namespace MVCForum.Controllers
 {
-    public class SnitzController : Controller
+    public class SnitzBaseController : Controller
     {
         protected ISnitzConfig _config;
         protected IMember _memberService;
@@ -17,7 +17,7 @@ namespace MVCForum.Controllers
         protected SnitzDbContext _snitzDbContext;
         protected IHttpContextAccessor _httpContextAccessor;
         protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
-        public SnitzController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor)
+        public SnitzBaseController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor)
         {
 
             _config = config;
@@ -33,7 +33,7 @@ namespace MVCForum.Controllers
         }
         public JsonResult AutoCompleteUsername(string term)
         {
-            IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(m=>m.Status == 1).Where(r => r!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
+            IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(m=>m?.Status == 1 && m!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
 
             return Json(result);
         }

@@ -119,11 +119,16 @@
             e.preventDefault();
             $.post(href,'',
                 function(data, status){
-                
-                    if (!data.result) {
-                        alert(data.error);
+                    if (!data) {
+                        alert("There was a problem!");
                     } else {
-                        location.href = data.url;
+                        $('#confirmRestart .modal-body').html("<p>Application is restarting, please wait ...</p>");
+                        $('#btnRestartYes').hide();
+                        setTimeout(function () {
+                            $('#confirmRestart').modal('hide');
+                            location.reload(true);
+                        }, 25000);
+                        
                     }
                 });
         });

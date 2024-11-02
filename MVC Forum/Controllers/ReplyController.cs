@@ -18,7 +18,7 @@ using Hangfire;
 
 namespace MVCForum.Controllers
 {
-    public class ReplyController : SnitzController
+    public class ReplyController : SnitzBaseController
     {
         private readonly IPost _postService;
         private readonly IForum _forumService;

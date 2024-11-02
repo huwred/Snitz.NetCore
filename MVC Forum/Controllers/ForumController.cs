@@ -26,7 +26,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace MVCForum.Controllers
 {
     [CustomAuthorize]
-    public class ForumController : SnitzController
+    public class ForumController : SnitzBaseController
     {
         private readonly IForum _forumService;
         private readonly IPost _postService;

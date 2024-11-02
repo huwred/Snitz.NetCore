@@ -33,7 +33,7 @@ using System.Text.RegularExpressions;
 namespace MVCForum.Controllers
 {
     [CustomAuthorize]
-    public class TopicController : SnitzController
+    public class TopicController : SnitzBaseController
     {
         private readonly IPost _postService;
         private readonly IForum _forumService;
@@ -64,7 +64,7 @@ namespace MVCForum.Controllers
         [Route("Topic/{id}")]
         [Route("Topic/Index/{id}")]
         [Route("Topic/Posts/{id}")]
-        public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
+        public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="asc", int? replyid = null)
         {
             if(TempData["Error"] != null)
             {
@@ -985,7 +985,7 @@ namespace MVCForum.Controllers
                     PageNum = 1,
                     PageCount = 10,
                     PageSize = 100,
-                    SortDir = "desc",
+                    SortDir = "asc",
                     Edited = topic.LastEdit?.FromForumDateStr(),
                     EditedBy = topic.LastEditby == null ? "" : _memberService.GetMemberName(topic.LastEditby.Value)
                 };
@@ -1008,7 +1008,7 @@ namespace MVCForum.Controllers
                 {
                     topic = _postService.GetTopicWithRelated(id);
                 }
-                PagedList<PostReply>? pagedReplies = PagedReplies(1, 100, "desc", topic);
+                PagedList<PostReply>? pagedReplies = PagedReplies(1, 100, "asc", topic);
                 model = new PostIndexModel()
                 {
                     Id = topic.Id,

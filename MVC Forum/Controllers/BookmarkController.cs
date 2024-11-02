@@ -9,7 +9,7 @@ using SnitzCore.Data.Models;
 
 namespace MVCForum.Controllers
 {
-    public class BookmarkController : SnitzController
+    public class BookmarkController : SnitzBaseController
     {
         private readonly IBookmark _bookmarks;
         public BookmarkController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,

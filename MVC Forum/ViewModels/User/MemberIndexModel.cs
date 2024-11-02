@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SnitzCore.Data.ViewModels;
+using System.Collections.Generic;
 
 namespace MVCForum.ViewModels.User
 {

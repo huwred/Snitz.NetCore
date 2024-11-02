@@ -37,7 +37,7 @@ namespace SnitzCore.Service.MiddleWare
             var agent = context.Request.Headers.UserAgent.ToString();
             var arr = config.GetSection("SnitzForums").GetSection("excludeBots").Value?.Split(",").ToArray();
             var extras = snitzConfig.GetValue("STREXCLUDEBOTS");
-            if (extras != null) {
+            if (!string.IsNullOrWhiteSpace(extras)) {
                 if(extras.Split(",").Any()) {
                     arr = arr?.Union(extras.Split(",")).ToArray();
                 }            

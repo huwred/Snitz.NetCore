@@ -26,11 +26,21 @@
         div.dt-container select.dt-input {
             margin-right: 4px;
         }
+
+        td {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .table {
+            table-layout: fixed;
+        }
     </style>
 }
 <div class="p-3">
 <div class="container-fluid resource-grid p-3 rounded-3">
-        <table class="table table-bordered table-striped nowrap" id="ResourceTable" style="width:100%">
+        <table class="table table-bordered table-striped" id="ResourceTable" width="100%">
         <thead>
             <tr>
                 <th>Set</th>
@@ -61,22 +71,22 @@
                         <td>@String.Join(",", cultures)</td>
                         <td>@group.Key</td>
                         @foreach (var culture in cultureItems)
-                    {
-                        LanguageResource? res = group.SingleOrDefault(c => c.Culture == culture.Value);
-                        var nowrap = "no-sort";
-                        @if (culture.Value == "en"){
-                           nowrap = "text-nowrap";
-                        }
-                        <td dir="auto" class="@nowrap">
-                            @if (group.Select(c => c.Culture == culture.Value).Any())
-                            {
-                                if (res != null)
-                                {
-                                    @res.Value
-                                }
+                        {
+                            LanguageResource? res = group.SingleOrDefault(c => c.Culture == culture.Value);
+                            var nowrap = "no-sort";
+                            @if (culture.Value == "en"){
+                               nowrap = "";
                             }
-                        </td>
-                    }
+                            <td dir="auto" class="@nowrap" title="@res?.Value">
+                                @if (group.Select(c => c.Culture == culture.Value).Any())
+                                {
+                                    if (res != null)
+                                    {
+                                        @Html.Raw(res.Value)
+                                    }
+                                }
+                            </td>
+                        }
                     <td><button class="btn btn-primary"><i class="fa fa-edit"></i></button></td>
                 </tr>
                 rowcount += 1;
@@ -123,10 +133,11 @@
         var table;
         Object.assign(DataTable.defaults, {
             pageLength: 10,
-            scrollX:true,
+            //scrollX:true,
             //fixedColumns: true,
         });
         table = new DataTable('#ResourceTable',{
+            autoWidth: true,
             orderCellsTop: true,
             initComplete: function () {
                 this.api()
@@ -192,7 +203,7 @@
             //keep the language tab active
             $("#admin-nav li a.nav-link.active").removeClass("active");
             $("#lang-settings").addClass("active");
-            table.reload();
+            //table.reload();
         }
 
         completed = function (xhr) {

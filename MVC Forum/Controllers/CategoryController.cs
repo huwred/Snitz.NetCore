@@ -19,7 +19,7 @@ using MVCForum.ViewModels.Post;
 namespace MVCForum.Controllers
 {
     [CustomAuthorize]
-    public class CategoryController : SnitzController
+    public class CategoryController : SnitzBaseController
     {
         private readonly IForum _forumService;
         private readonly IPost _postService;
@@ -38,7 +38,6 @@ namespace MVCForum.Controllers
         [Route("AllForums")]
         [Route("Category/{id?}")]
         [Route("Category/Index/{id}")]
-        //[ResponseCache(VaryByHeader = "User-Agent", Duration = 30,VaryByQueryKeys = new []{"*"})]
         public IActionResult Index(int id)
         {
             var categories = _categoryService.GetAll().OrderBy(c=>c.Sort).ToList();
@@ -56,18 +55,15 @@ namespace MVCForum.Controllers
                 LastPostAuthorId = forum.LastPostAuthorId,
                 LastPostTopicId = forum.LatestTopicId,
                 LastPostReplyId = forum.LatestReplyId,
-                //LastPostAuthor = forum.LastPostAuthorId != null && forum.LastPostAuthorId != 0 ? _memberService.GetById(forum.LastPostAuthorId) : null,
                 AccessType = forum.Privateforums,
                 ForumModeration = forum.Moderation,
                 ForumType = (ForumType)forum.Type,
-                
                 Url = forum.Url,
                 Status = forum.Status,
                 Order = forum.Order,
-                CategorySubscription = (CategorySubscription)forum.Category.Subscription,
+                CategorySubscription = (CategorySubscription)forum.Category?.Subscription,
                 ForumSubscription = (ForumSubscription)forum.Subscription,
                 ArchivedCount = forum.ArchivedTopics
-                //Polls = forum.Polls
                 
             });
             if (id > 0)
@@ -75,7 +71,7 @@ namespace MVCForum.Controllers
                 categories = categories.Where(f => f.Id == id).ToList();
                 forums = forums.Where(f => f.CategoryId == id).ToList();
                 var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
-                var topicPage = new MvcBreadcrumbNode("", "Category", categories?.OrderBy(c=>c.Name).First().Name) { Parent = forumPage,RouteValues = new{id=categories.First().Id}};
+                var topicPage = new MvcBreadcrumbNode("", "Category", categories?.OrderBy(c=>c.Name).First().Name) { Parent = forumPage,RouteValues = new{id=categories?.First().Id}};
                 ViewData["BreadcrumbNode"] = topicPage; 
             }
             else
@@ -92,10 +88,8 @@ namespace MVCForum.Controllers
                 Message = post.Content,
                 AuthorName = post.Member?.Name ?? "Unknown",
                 AuthorId = post.Member!.Id,
-                //AuthorRating = post.User?.Rating ?? 0,
                 Created = post.Created.FromForumDateStr(),
                 LastPostDate = !post.LastPostDate.IsNullOrEmpty() ? post.LastPostDate.FromForumDateStr() : null,
-                //LastPostAuthorName = post.LastPostAuthorId != null ? _memberService.GetById(post.LastPostAuthorId!.Value)?.Name : "",
                 LatestReply = post.LastPostReplyId,
                 Forum = id > 0 ? GetForumListingForPost(post) : null,
                 RepliesCount = post.ReplyCount,
@@ -103,7 +97,6 @@ namespace MVCForum.Controllers
                 UnmoderatedReplies = post.UnmoderatedReplies,
                 IsSticky = post.IsSticky == 1,
                 Status = post.Status,
-                //HasPoll = _postService.HasPoll(post.Id),
                 Answered = post.Answered
             });
             var model = new ForumIndexModel()
@@ -145,10 +138,9 @@ namespace MVCForum.Controllers
         {
             var forumPage = new MvcBreadcrumbNode("", "Category", _languageResource.GetString("lblCategories"));
             var topicPage = new MvcBreadcrumbNode("", "Category", _languageResource.GetString("tipNewCategory")) { Parent = forumPage};
-            CategoryViewModel vm = new CategoryViewModel();
 
             ViewData["BreadcrumbNode"] = topicPage;
-            return View("CreateEdit",vm);
+            return View("CreateEdit",new CategoryViewModel());
         }
         [HttpPost]
         [Authorize(Roles = "Administrator")]
@@ -197,6 +189,10 @@ namespace MVCForum.Controllers
         {
             var category = _categoryService.GetById(id);
             var member = _memberService.Current();
+            if(member == null)
+            {
+                return Content("Error");
+            }
             _snitzDbContext.MemberSubscription.Add(new MemberSubscription()
             {
                 MemberId = member.Id,
@@ -213,6 +209,10 @@ namespace MVCForum.Controllers
         public IActionResult UnSubscribe(int id)
         {
             var member = _memberService.Current();
+            if(member == null)
+            {
+                return Content("Error");
+            }
             _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member.Id && s.CategoryId == id && s.ForumId == 0)
                 .ExecuteDelete();
             return Content("OK");
@@ -234,7 +234,6 @@ namespace MVCForum.Controllers
                 ForumModeration = forum.Moderation,
                 Polls = forum.Polls,
                 ArchivedCount = forum.ArchivedTopics
-                //ImageUrl = forum.ImageUrl
             };
         }
 

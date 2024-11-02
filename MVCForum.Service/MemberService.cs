@@ -404,7 +404,7 @@ namespace SnitzCore.Service
             var memberid = Current()?.Id;
             if (memberid.HasValue)
             {
-                return _dbContext.MemberSubscription.Where(s => s.MemberId == memberid).Select(s => s.ForumId).Distinct();
+                return _dbContext.MemberSubscription.Where(s => s.MemberId == memberid).Select(s => s.ForumId).Distinct().OrderBy(o=>o);
 
             }
 

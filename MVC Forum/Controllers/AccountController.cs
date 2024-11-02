@@ -31,11 +31,12 @@ using System.Threading.Tasks;
 using System.Web;
 using X.PagedList;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+using SnitzCore.Data.ViewModels;
 
 namespace MVCForum.Controllers
 {
 
-    public class AccountController : SnitzController
+    public class AccountController : SnitzBaseController
     {
         private readonly UserManager<ForumUser> _userManager;
         private readonly SignInManager<ForumUser> _signInManager;

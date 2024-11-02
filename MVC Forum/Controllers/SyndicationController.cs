@@ -9,7 +9,7 @@ using System.Xml;
 
 namespace MVCForum.Controllers
 {
-    public class SyndicationController : SnitzController
+    public class SyndicationController : SnitzBaseController
     {
     private readonly ISyndicationXmlService _syndicationXmlService;
     private readonly XmlWriterSettings _xmlWriterSettings = new()

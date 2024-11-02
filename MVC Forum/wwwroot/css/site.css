@@ -697,3 +697,7 @@ i.modstatus-2, i.modstatus-3 {
     background-color:azure;
 }
 
+.content img {
+    max-width: 100%;
+    height: auto;
+}

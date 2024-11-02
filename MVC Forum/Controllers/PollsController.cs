@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MVCForum.Controllers
 {
-    public class PollsController : SnitzController
+    public class PollsController : SnitzBaseController
     {
         private readonly ISnitzCookie _snitzCookie;
         public PollsController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory, SnitzDbContext dbContext, IHttpContextAccessor httpContextAccessor,

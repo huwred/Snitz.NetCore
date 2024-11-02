@@ -797,7 +797,7 @@ namespace SnitzCore.BackOffice.Controllers
         public IActionResult Restart()
         {
             _appLifetime.StopApplication();
-            return RedirectToAction("Index");
+            return Ok(true);
         }
         public IActionResult DeleteSpamDomain(IFormCollection form)
         {

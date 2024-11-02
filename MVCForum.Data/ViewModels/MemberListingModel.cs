@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MVCForum.ViewModels.User
+namespace SnitzCore.Data.ViewModels
 {
     public class MemberListingModel
     {
@@ -12,7 +12,7 @@ namespace MVCForum.ViewModels.User
         public DateTime? LastPost { get; set; }
         public DateTime? MemberSince { get; set; }
 
-        public SnitzCore.Data.Models.Member Member { get; set; } = null!;
+        public Models.Member Member { get; set; } = null!;
         public bool IsActive { get; set; }
     }
 }

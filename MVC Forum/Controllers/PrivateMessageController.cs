@@ -17,7 +17,7 @@ using Hangfire;
 namespace MVCForum.Controllers
 {
     [Authorize]
-    public class PrivateMessageController : SnitzController
+    public class PrivateMessageController : SnitzBaseController
     {
         private Member? _member;
         private readonly IPrivateMessage _pmService;

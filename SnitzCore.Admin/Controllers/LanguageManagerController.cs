@@ -43,7 +43,7 @@ public class LanguageManagerController : Controller
         TranslationViewModel vm = new TranslationViewModel
         {
             Resources = GetStrings("en").ToList(),
-            ResourceSets = _dbcontext.LanguageResources.Select(l=>l.ResourceSet).Distinct().ToList()
+            ResourceSets = _dbcontext.LanguageResources.Select(l=>l.ResourceSet).Distinct().OrderBy(o=>o).ToList()
         };
         return View(vm);
     }
@@ -64,7 +64,7 @@ public class LanguageManagerController : Controller
         if (filter != "")
         {
             vm.Resources = filterby == "id" ? GetStrings(Culture).Where(s => s.Name.ToLower().Contains(filter.ToLower())).ToList() : GetStrings(Culture).Where(s => s.Value.ToLower().Contains(filter.ToLower())).ToList();
-            vm.ResourceSets = vm.Resources.Select(l=>l.Name).Distinct().ToList();
+            vm.ResourceSets = vm.Resources.Select(l=>l.Name).Distinct().OrderBy(o=>o).ToList();
 
             foreach (var item in vm.ResourceSets)
             {
@@ -201,7 +201,7 @@ public class LanguageManagerController : Controller
             foreach (var item in data.ResourceTranslations)
             {
                 var itemToUpdate = _dbcontext.LanguageResources.SingleOrDefault(l =>
-                l.Culture == item.Key && l.Name == data.ResourceId && l.ResourceSet == data.ResourceSet);
+                l.Culture == item.Key && l.Name == data.ResourceSet && l.ResourceSet == data.ResourceId);
                 if (itemToUpdate != null)
                 {
                     if(itemToUpdate.Value != item.Value)
@@ -210,6 +210,17 @@ public class LanguageManagerController : Controller
                         _dbcontext.LanguageResources.Update(itemToUpdate);
                     }
 
+                }
+                else
+                {
+                    itemToUpdate = new LanguageResource
+                    {
+                        Value = item.Value,
+                        ResourceSet = data.ResourceId,
+                        Name = data.ResourceSet,
+                        Culture = item.Key
+                    };
+                    _dbcontext.LanguageResources.Add(itemToUpdate);
                 }
             }
             _dbcontext.SaveChanges();
@@ -325,7 +336,7 @@ public class LanguageManagerController : Controller
 
     public PartialViewResult Export()
     {
-        var resorcesets = _dbcontext.LanguageResources.Select(l=>l.ResourceSet).Distinct();
+        var resorcesets = _dbcontext.LanguageResources.Select(l=>l.ResourceSet).Distinct().OrderBy(o=>o);
         return PartialView("popExportCsv", resorcesets.ToList());
     }
 

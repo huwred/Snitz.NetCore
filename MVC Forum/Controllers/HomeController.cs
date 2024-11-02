@@ -21,7 +21,7 @@ using System.Threading;
 namespace MVCForum.Controllers
 {
     [DefaultBreadcrumb("mnuHome")]
-    public class HomeController : SnitzController
+    public class HomeController : SnitzBaseController
     {
         private readonly IPost _postService;
         private readonly ISnitzCookie _snitzcookie;
