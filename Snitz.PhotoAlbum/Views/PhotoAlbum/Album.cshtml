@@ -1,4 +1,5 @@
 ﻿@using SnitzCore.Data.Extensions
+@using SnitzCore.Service.TagHelpers
 @model Snitz.PhotoAlbum.ViewModels.SpeciesAlbum
 
 @section MetaData
@@ -180,7 +181,8 @@
                 {
                     <tr class="row">
                         <td class="col-1 d-none d-sm-inline">
-                            <a data-toggle="tooltip" href="~/PhotoAlbum/Member/@image.MemberId" title="" data-original-title="View members photo album">@image.Member?.Name</a>
+                            <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@image.Member?.Name"></member-link>
+                            @* <a data-toggle="tooltip" href="~/PhotoAlbum/Member/@image.MemberId" title="" data-original-title="View members photo album">@image.Member?.Name</a> *@
                         </td>
                         <td class="col-2 col-md-1 col-thumb">
                             <a class="view-gallery" target="_blank" href="~/PhotoAlbum/Gallery/0/?photoid=@image.Id&speciesOnly=true" title="Image @image.Id">

@@ -81,7 +81,7 @@
                     <li class="list-inline-item"><input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs"/></li><li>|</li>
                     } *@
                         <li class="list-inline-item hidden-xs">
-                            <vc:topic-buttons postid="@topic.Id"></vc:topic-buttons>
+                            <vc:topic-buttons postid="@topic.Id" thispost="@topic"></vc:topic-buttons>
                             @* <partial name="_SocialMedia" /> *@
                         </li>
                     </ul>

@@ -11,11 +11,16 @@ namespace MVCForum.View_Components
         public TopicButtonsViewComponent(IPost postService) { 
             _postService = postService;
         }
-        public async Task<IViewComponentResult> InvokeAsync(int postid)
+        public async Task<IViewComponentResult> InvokeAsync(int postid, Post? thispost = null)
         {
-            var post = await _postService.GetTopicAsync(postid);
+            if(thispost == null) {
+                return await Task.FromResult((IViewComponentResult)View(thispost));
+            }else {
+                var post = await _postService.GetTopicAsync(postid);
 
-            return await Task.FromResult((IViewComponentResult)View(post));
+                return await Task.FromResult((IViewComponentResult)View(post));
+            }
+
         }
     }
 }
