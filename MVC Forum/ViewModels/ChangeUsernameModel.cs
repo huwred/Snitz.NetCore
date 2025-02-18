@@ -1,4 +1,5 @@
-﻿using Microsoft.Build.Framework;
+﻿
+using System.ComponentModel.DataAnnotations;
 
 namespace MVCForum.ViewModels
 {

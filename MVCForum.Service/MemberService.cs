@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using X.PagedList;
 using Microsoft.Extensions.Options;
+using X.PagedList.Extensions;
 
 namespace SnitzCore.Service
 {

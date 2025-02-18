@@ -15,6 +15,7 @@ using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using X.PagedList;
+using X.PagedList.Extensions;
 
 namespace SnitzCore.Service
 {

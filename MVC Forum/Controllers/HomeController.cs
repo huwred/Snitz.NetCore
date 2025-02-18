@@ -60,7 +60,7 @@ namespace MVCForum.Controllers
                 AuthorId = post.Member!.Id,
                 //AuthorRating = post.User?.Rating ?? 0,
                 Created = post.Created.FromForumDateStr(),
-                LastPostDate = !post.LastPostDate.IsNullOrEmpty() ? post.LastPostDate.FromForumDateStr() : null,
+                LastPostDate = !string.IsNullOrEmpty(post.LastPostDate) ? post.LastPostDate.FromForumDateStr() : null,
                 //LastPostAuthorName = post.LastPostAuthorId != null ? _memberService.GetById(post.LastPostAuthorId!.Value)?.Name : "",
                 //Forum = GetForumListingForPost(post),
                 RepliesCount = post.ReplyCount,
