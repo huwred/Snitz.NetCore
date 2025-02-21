@@ -14,5 +14,5 @@ public partial class ForumAllowedMember
     public int ForumId { get; set; }
 
     public virtual Forum? Forum { get; set; }
-    public virtual Member Member { get; set; }
+    public virtual Member? Member { get; set; }
 }

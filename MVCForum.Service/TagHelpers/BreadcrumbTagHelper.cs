@@ -24,7 +24,7 @@ namespace SmartBreadcrumbs
 
         private readonly BreadcrumbManager _breadcrumbManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IUrlHelper _urlHelper;
+        private readonly IUrlHelper? _urlHelper;
         private readonly IHtmlLocalizer? _localizer;
 
         #endregion
@@ -46,14 +46,15 @@ namespace SmartBreadcrumbs
             {
                 _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
 
-                IHtmlLocalizerFactory factory =
-                    (IHtmlLocalizerFactory)actionContextAccessor.ActionContext.HttpContext.RequestServices.GetService(
+                var factory =
+                    actionContextAccessor.ActionContext.HttpContext.RequestServices.GetService(
                         typeof(IHtmlLocalizerFactory));
+
                 if (factory != null && BreadcrumbManager.Options.ResourceType != null)
                 {
                     var type = BreadcrumbManager.Options.ResourceType;
-                    var assemblyName = new AssemblyName(type.GetTypeInfo().Assembly.FullName);
-                    _localizer = factory.Create(BreadcrumbManager.Options.ResourceType.Name, assemblyName.Name);
+                    var assemblyName = new AssemblyName(type.GetTypeInfo().Assembly.FullName!);
+                    _localizer = ((IHtmlLocalizerFactory)factory).Create(BreadcrumbManager.Options.ResourceType.Name, assemblyName.Name!);
                 }
             }
         }
@@ -141,7 +142,15 @@ namespace SmartBreadcrumbs
             }
 
             string key = title.Substring(9);
-            title = ViewContext != null && ViewContext.ViewData.ContainsKey(key) ? ViewContext.ViewData[key].ToString() : $"{key} Not Found";
+                if (ViewContext != null && ViewContext.ViewData.ContainsKey(key) && ViewContext.ViewData[key] != null)
+                {
+                    title = ViewContext.ViewData[key]!.ToString()!;
+                }
+                else
+                {
+                    title = $"{key} Not Found";
+                }
+            
             return encode ? _htmlEncoder.Encode(title) : title;
         }
 

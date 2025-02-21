@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using SnitzCore.Data.Interfaces;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace SnitzCore.Service.MiddleWare
 {
@@ -23,7 +24,7 @@ namespace SnitzCore.Service.MiddleWare
         private readonly string _cookieName;
         private readonly int _lastActivityMinutes;
         private static readonly ConcurrentDictionary<string, bool> _allKeys = new ConcurrentDictionary<string, bool>();
-        protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
+        protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
 
         public OnlineUsersMiddleware(RequestDelegate next, string cookieName = "UserGuid", int lastActivityMinutes = 10)
         {
@@ -65,7 +66,7 @@ namespace SnitzCore.Service.MiddleWare
                 else
                 {
                     cacheEntry.SlidingExpiration = TimeSpan.FromMinutes(_lastActivityMinutes);
-                    cacheEntry.RegisterPostEvictionCallback(callback: RemoveKeyWhenExpired);
+                    cacheEntry.RegisterPostEvictionCallback(RemoveKeyWhenExpired);
                 }
 
                 return string.Empty;
@@ -74,7 +75,7 @@ namespace SnitzCore.Service.MiddleWare
             return _next(context);
         }
 
-        protected virtual void RemoveKeyWhenExpired(object key, object value, EvictionReason reason, object state)
+        private void RemoveKeyWhenExpired(object key, object? value, EvictionReason reason, object? state)
         {
             var strKey = (string)key;
             //try to remove key from dictionary

@@ -18,33 +18,33 @@ public class SnitzCultureProvider : RequestCultureProvider
 
     } 
 
-    public override Task<ProviderCultureResult> DetermineProviderCultureResult(HttpContext httpContext)
+    public override async Task<ProviderCultureResult?> DetermineProviderCultureResult(HttpContext httpContext)
     {
         // TODO: Implement GetCulture() to get a culture for the current request
-        CultureInfo culture = GetCulture(); 
+        CultureInfo? culture = GetCulture(); 
 
         if (culture is null)
         {
-            return NullProviderCultureResult;
+            return await NullProviderCultureResult;
         }
 
         lock (_locker)
         {
             // check if this culture is already supported
-            var cultureExists = _localizationOptions.SupportedCultures.Contains(culture);
+            bool cultureExists = _localizationOptions.SupportedCultures?.Contains(culture) ?? false;
 
             if (!cultureExists)
             {
                 // If not, add this as a supporting culture
-                _localizationOptions.SupportedCultures.Add(culture);
-                _localizationOptions.SupportedUICultures.Add(culture);
+                _localizationOptions.SupportedCultures?.Add(culture);
+                _localizationOptions.SupportedUICultures?.Add(culture);
             } 
         }
-
-        return Task.FromResult(new ProviderCultureResult(culture.Name));
+        var providerResultCulture = new ProviderCultureResult(culture.Name);
+        return await Task.FromResult(providerResultCulture);
     }
 
-    private CultureInfo GetCulture()
+    private CultureInfo? GetCulture()
     {
         var cookielang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         if (cookielang != null)

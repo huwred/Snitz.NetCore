@@ -6,12 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SnitzCore.Data.Extensions;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
-using static System.Net.Mime.MediaTypeNames;
 using Hangfire;
-using static Org.BouncyCastle.Math.EC.ECCurve;
-using BbCodeFormatter;
-using Microsoft.AspNetCore.Hosting;
 
 namespace SnitzCore.Service
 {
@@ -149,7 +144,7 @@ namespace SnitzCore.Service
             {
                 return _dbContext.PrivateMessagesBlocklist.Where(pm=>pm.MemberId == memberid);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
@@ -242,7 +237,7 @@ namespace SnitzCore.Service
                     switch (searchIn)
                     {
                         case SearchIn.Message:
-                            return messages.AsEnumerable().Where(pm=> terms.All(kw => pm.Description.ToUpper().Contains(kw)));
+                            return messages.AsEnumerable().Where(pm=> terms.All(kw => pm.Description != null && pm.Description.ToUpper().Contains(kw)));
                         default:
                             return messages.AsEnumerable().Where(pm=> terms.All(kw => pm.Title.ToUpper().Contains(kw)));
                     }
@@ -250,7 +245,7 @@ namespace SnitzCore.Service
                     switch (searchIn)
                     {
                         case SearchIn.Message:
-                            return messages.AsEnumerable().Where(pm=> terms.Any(kw => pm.Description.ToUpper().Contains(kw)));
+                            return messages.AsEnumerable().Where(pm=> terms.Any(kw => pm.Description != null && pm.Description.ToUpper().Contains(kw)));
                         default:
                             return messages.AsEnumerable().Where(pm=> terms.Any(kw => pm.Title.ToUpper().Contains(kw)));
                     }
@@ -258,7 +253,7 @@ namespace SnitzCore.Service
                     switch (searchIn)
                     {
                         case SearchIn.Message:
-                            return messages.Where(pm=>pm.Description.Contains(term));
+                            return messages.Where(pm=>pm.Description != null && pm.Description.Contains(term));
                         default:
                             return messages.Where(pm=>pm.Title.Contains(term));
                     }

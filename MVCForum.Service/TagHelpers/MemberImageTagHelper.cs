@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Numerics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;

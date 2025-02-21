@@ -1,8 +1,4 @@
-﻿
-
-using SnitzCore.Data.Interfaces;
-
-namespace SnitzCore.Data.Models
+﻿namespace SnitzCore.Data.Models
 {
     public class EmailConfiguration 
     {

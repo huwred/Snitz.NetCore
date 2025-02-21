@@ -51,11 +51,11 @@ namespace SnitzCore.Service
 
                 email.Unsubscribe = string.Format("{0}Topic/UnSubscribe/{1}?forumid={2}&catid={3}&userid={4}", _config.ForumUrl, a.PostId, a.ForumId, a.CategoryId, a.MemberId);
                 email.Topiclink = string.Format("{0}Topic/Index/{1}?pagenum=-1", _config.ForumUrl, topic.Id);
-                email.Author = topic.Member.Name;
+                email.Author = topic.Member!.Name;
 
                 try
                 {
-                    if (a.ForumId == topic.ForumId && a.MemberId != topic.MemberId && a.Forum.Subscription == (int)ForumSubscription.ForumSubscription)
+                    if (a.ForumId == topic.ForumId && a.MemberId != topic.MemberId && a.Forum!.Subscription == (int)ForumSubscription.ForumSubscription)
                     {
                         email.PostedIn = "Forum";
                         email.PostedInName = a.Forum.Title;
@@ -66,7 +66,7 @@ namespace SnitzCore.Service
                         _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To }, email.Subject,
                             message));
                     }
-                    else if (a.CategoryId == topic.CategoryId && a.MemberId != topic.MemberId && a.Category.Subscription == (int)CategorySubscription.CategorySubscription)
+                    else if (a.CategoryId == topic.CategoryId && a.MemberId != topic.MemberId && a.Category!.Subscription == (int)CategorySubscription.CategorySubscription)
                     {
                         email.PostedIn = "Category";
                         email.PostedInName = a.Category.Name;
@@ -109,28 +109,30 @@ namespace SnitzCore.Service
             {
                 try
                 {
-                    var email = new SubscriptionEmail();
-                    email.To = a.Member.Email;
-                    email.UserName = a.Member.Name;
-                    email.Subject = _config.ForumTitle ;
-                    email.Unsubscribe = string.Format("{0}Topic/UnSubscribe/{1}?forumid={2}&catid={3}&userid={4}", _config.ForumUrl, a.PostId, a.ForumId, a.CategoryId, a.MemberId);
-                    email.Topiclink = string.Format("{0}Topic/Index/{1}?pagenum=-1#{2}", _config.ForumUrl, reply.PostId, reply.Id);
+                    var email = new SubscriptionEmail
+                    {
+                        To = a.Member!.Email!,
+                        UserName = a.Member.Name,
+                        Subject = _config.ForumTitle!,
+                        Unsubscribe = string.Format("{0}Topic/UnSubscribe/{1}?forumid={2}&catid={3}&userid={4}", _config.ForumUrl, a.PostId, a.ForumId, a.CategoryId, a.MemberId),
+                        Topiclink = string.Format("{0}Topic/Index/{1}?pagenum=-1#{2}", _config.ForumUrl, reply.PostId, reply.Id),
 
-                    email.Author = reply.Member.Name;
+                        Author = reply.Member!.Name
+                    };
 
                     if (a.PostId == reply.PostId && a.MemberId != reply.MemberId)
                     {
                         email.PostedIn = "Topic";
-                        email.PostedInName = a.Post.Title;
+                        email.PostedInName = a.Post!.Title;
                         var message = _emailsender.ParseSubscriptionTemplate("replysubscription.html"
                             , email.PostedIn, email.PostedInName, email.Author, email.UserName, email.Topiclink,
                             email.Unsubscribe, CultureInfo.CurrentUICulture.Name);
 
-                        _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To }, email.Subject,
+                        _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To! }, email.Subject!,
                             message));
 
                     }
-                    else if (a.ForumId == reply.ForumId && a.MemberId != reply.MemberId && a.Forum.Subscription == (int)ForumSubscription.ForumSubscription)
+                    else if (a.ForumId == reply.ForumId && a.MemberId != reply.MemberId && a.Forum!.Subscription == (int)ForumSubscription.ForumSubscription)
                     {
                         email.PostedIn = "Forum";
                         email.PostedInName = a.Forum.Title;
@@ -138,20 +140,23 @@ namespace SnitzCore.Service
                             , email.PostedIn, email.PostedInName, email.Author, email.UserName, email.Topiclink,
                             email.Unsubscribe, CultureInfo.CurrentUICulture.Name);
 
-                        _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To }, email.Subject,
+                        _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To! }, email.Subject!,
                             message));
 
                     }
-                    else if (a.CategoryId == reply.CategoryId && a.MemberId != reply.MemberId && a.Category.Subscription == (int)CategorySubscription.CategorySubscription)
+                    else if (a.CategoryId == reply.CategoryId && a.MemberId != reply.MemberId && a.Category!.Subscription == (int)CategorySubscription.CategorySubscription)
                     {
                         email.PostedIn = "Category";
                         email.PostedInName = a.Category.Name;
                         var message = _emailsender.ParseSubscriptionTemplate("replysubscription.html"
-                            , email.PostedIn, email.PostedInName, email.Author, email.UserName, email.Topiclink,
+                            , email.PostedIn, email.PostedInName!, email.Author, email.UserName, email.Topiclink,
                             email.Unsubscribe, CultureInfo.CurrentUICulture.Name);
+                        if(email != null)
+                        {
+                            _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To! }, email.Subject!,
+                                message));
+                        }
 
-                        _emailsender.SendEmailAsync(new EmailMessage(new List<string>() { email.To }, email.Subject,
-                            message));
 
                     }
 

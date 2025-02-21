@@ -11,7 +11,6 @@ using BbCodeFormatter;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Localization;
 using System.Threading;
-using Microsoft.AspNetCore.Mvc;
 
 
 namespace SnitzCore.Service
@@ -34,7 +33,7 @@ namespace SnitzCore.Service
 
         public void ModerationEmail(Member? author, string subject, string message, Forum forum, dynamic post)
         {
-            EmailMessage emessage = new EmailMessage(new List<string>(){author.Email}, subject, message);
+            EmailMessage emessage = new EmailMessage(new List<string>(){author?.Email!}, subject, message);
 
             var emailMessage = CreateEmailMessage(emessage);
             Send(emailMessage);
@@ -59,10 +58,13 @@ namespace SnitzCore.Service
 
         public Task MoveNotify(Member author, Post topic)
         {
+            if(author.Email == null){
+                return Task.CompletedTask;
+            }
             CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;;
             
-            EmailMessage emessage = new EmailMessage(new List<string>(){author.Email}, _languageResource.GetString("MoveNotify"), 
-                ParseTemplate("movenotify.html",_languageResource.GetString("MoveNotify"),author.Email,author.Name, $"{_config.ForumUrl}Topic/Index/{topic.Id}" , cultureInfo.Name));
+            EmailMessage emessage = new EmailMessage(new List<string>(){author.Email!}, _languageResource.GetString("MoveNotify"), 
+                ParseTemplate("movenotify.html",_languageResource.GetString("MoveNotify"),author.Email!,author.Name, $"{_config.ForumUrl}Topic/Index/{topic.Id}" , cultureInfo.Name));
 
             var emailMessage = CreateEmailMessage(emessage);
             return Send(emailMessage);
@@ -192,10 +194,13 @@ namespace SnitzCore.Service
         {
             if (_config.GetIntValue("STREMAIL",0) != 1)
                 return Task.CompletedTask;
+            if(author.Email == null){
+                return Task.CompletedTask;
+            }
             CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;;
             
-            EmailMessage emessage = new EmailMessage(new List<string>(){author.Email}, _languageResource.GetString("MoveNotify"), 
-                ParseTemplate("mergetopic.html",_languageResource.GetString("tipMergeTopic"),author.Email,author.Name, $"{_config.ForumUrl}Topic/Index/{mainTopic.Id}" , cultureInfo.Name));
+            EmailMessage emessage = new EmailMessage(new List<string>(){author.Email!}, _languageResource.GetString("MoveNotify"), 
+                ParseTemplate("mergetopic.html",_languageResource.GetString("tipMergeTopic"),author.Email!,author.Name, $"{_config.ForumUrl}Topic/Index/{mainTopic.Id}" , cultureInfo.Name));
 
             var emailMessage = CreateEmailMessage(emessage);
             return Send(emailMessage);
@@ -204,6 +209,9 @@ namespace SnitzCore.Service
 
         public void SendPMNotification(Member taggedmember)
         {
+            if(taggedmember.Email == null){
+                return;
+            }
             CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;;
             
             EmailMessage emessage = new EmailMessage(new List<string>(){taggedmember.Email}, _languageResource.GetString("NewMessage"), 

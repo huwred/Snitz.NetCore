@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SnitzCore.Service.Extensions
 {
@@ -82,14 +81,14 @@ namespace SnitzCore.Service.Extensions
         /// OR If <paramref name="exclude"/> is non empty, all properties except those defined will be included
         /// </remarks>
         /// <returns>CSV formatted string</returns>
-        public static string ToCSV<T>(this IList<T> list, string path = "", string include = "", string exclude = "")
+        public static string? ToCSV<T>(this IList<T> list, string path = "", string include = "", string exclude = "")
         {
             return CreateCsvFile(list, path, include, exclude);
         }
 
 
 
-        private static string CreateCsvFile<T>(IList<T> list, string path, string include, string exclude)
+        private static string? CreateCsvFile<T>(IList<T> list, string path, string include, string exclude)
         {
             //Variables for build CSV string
             StringBuilder sb = new StringBuilder();
@@ -101,7 +100,7 @@ namespace SnitzCore.Service.Extensions
             //Iterate through data list collection
             foreach (var item in list)
             {
-                List<string> propValues = new List<string>();
+                List<string?> propValues = new List<string?>();
 
                 //Iterate through property collection
                 foreach (var prop in propList)

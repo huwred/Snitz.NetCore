@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SnitzCore.Data;
@@ -7,11 +6,8 @@ using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing.Printing;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using X.PagedList;
@@ -23,7 +19,7 @@ namespace SnitzCore.Service
     {
         private readonly SnitzDbContext _dbContext;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly string _tableprefix;
+        private readonly string? _tableprefix;
         
         public ForumService(SnitzDbContext dbContext,RoleManager<IdentityRole> roleManager,IOptions<SnitzForums> config)
         {
@@ -255,7 +251,7 @@ namespace SnitzCore.Service
             try
             {
                 _dbContext.Forums.Update(forum);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
             }
             catch (Exception e)
             {
@@ -310,7 +306,7 @@ namespace SnitzCore.Service
                     $"SELECT F_ALLOWEVENTS AS Value FROM FORUM_FORUM WHERE FORUM_ID={id}").Single();
                 return auth;
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
                 return 0;
@@ -321,7 +317,7 @@ namespace SnitzCore.Service
         public Dictionary<int, string> AllowedUsers(int id)
         {
             return _dbContext.ForumAllowedMembers.Include(am => am.Member).Where(am => am.ForumId == id)
-                .ToDictionary(u => u.MemberId, u => u.Member.Name);
+                .ToDictionary(u => u.MemberId, u => u.Member?.Name!);
 
         }
 
@@ -358,7 +354,7 @@ namespace SnitzCore.Service
                     _dbContext.Database.ExecuteSql(fs);
 
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     _dbContext.Database.RollbackTransaction();
                 }
@@ -367,6 +363,19 @@ namespace SnitzCore.Service
                     _dbContext.Database.CommitTransaction();
                     _ = UpdateLastPost(forumId);
                 }
+            }
+        }
+
+        public async Task DeleteArchivedTopics(int id)
+        {
+            await _dbContext.ArchivedTopics.Where(p => p.ForumId == id).Include(t => t.Replies).ExecuteDeleteAsync();
+            var forum = await _dbContext.Forums.FindAsync(id);
+            if (forum != null)
+            {
+                forum.ArchivedTopics = 0;
+                forum.ArchivedCount = 0;
+                _dbContext.Forums.Update(forum);
+                await _dbContext.SaveChangesAsync();
             }
         }
 

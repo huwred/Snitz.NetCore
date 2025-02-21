@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -18,17 +16,17 @@ namespace SnitzCore.Service.TagHelpers
 
         [HtmlAttributeNotBound]
         [ViewContext]
-        public ViewContext ViewContext { get; set; }
+        public ViewContext? ViewContext { get; set; }
 
         [HtmlAttributeName(KeyAttributeName)]
-        public string Key { get; set; }
+        public required string Key { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = String.Empty;
 
-            var storageProvider = ViewContext.TempData;
-            Dictionary<string, List<HtmlString>> storage;
+            var storageProvider = ViewContext!.TempData;
+            Dictionary<string, List<HtmlString>>? storage;
 
             if (!storageProvider.ContainsKey(_storageKey) || !(storageProvider[_storageKey] is Dictionary<string, List<HtmlString>>))
             {
@@ -40,11 +38,11 @@ namespace SnitzCore.Service.TagHelpers
 
             if (String.IsNullOrEmpty(Key))
             {
-                html = String.Join("", storage.Values.SelectMany(x => x).ToList());
+                html = String.Join("", storage!.Values.SelectMany(x => x).ToList());
             }
             else
             {
-                if (!storage.ContainsKey(Key)) return;
+                if (!storage!.ContainsKey(Key)) return;
                 html = String.Join("", storage[Key]);
             }
 

@@ -26,8 +26,8 @@ namespace SnitzCore.Service
         private readonly ISnitzCookie _cookie;
         private readonly UserManager<ForumUser> _userManager;
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly string _tableprefix;
-        private readonly string _memberprefix;
+        private readonly string? _tableprefix;
+        private readonly string? _memberprefix;
 
         public MemberService(SnitzDbContext dbContext,ISnitzCookie snitzcookie,UserManager<ForumUser> userManager,IHttpContextAccessor contextAccessor,IOptions<SnitzForums> config)
         {
@@ -90,11 +90,11 @@ namespace SnitzCore.Service
             return curruser != null ? _userManager.GetRolesAsync(curruser).Result : new List<string>();
         }
 
-        //[Obsolete("Obsolete")]
+        [Obsolete("Obsolete")]
         public bool ValidateMember(Member member, string password)
         {
             OldMembership? result = _dbContext.OldMemberships.OrderBy(m=>m.Id).FirstOrDefault(m => m.Id == member.Id);
-            return result != null && VerifyHashedPassword(result.Password,password);
+            return result != null && CustomPasswordHasher.VerifyHashedPassword(result.Password,password);
         }
 
         public Member? Current()
@@ -135,16 +135,16 @@ namespace SnitzCore.Service
             {
                 if (additionalField.Key.ToUpper() == "DOB")
                 {
-                    var date = DateTime.Parse(additionalField.Value.ToString()!);
-                    _dbContext.Database.ExecuteSqlRaw($"UPDATE {_memberprefix}MEMBERS SET M_{additionalField.Key.ToUpper()}='{date:yyyyMMdd}' WHERE MEMBER_ID={member.Id}");
+                    var date = DateTime.Parse(additionalField.Value.ToString()!).ToString("yyyyMMdd");
+                    _dbContext.Database.ExecuteSqlRaw("UPDATE " + _memberprefix + "MEMBERS SET M_"+additionalField.Key.ToUpper()+"=@0 WHERE MEMBER_ID=@1",date,member.Id);
                 }
                 else
                 {
-                    _dbContext.Database.ExecuteSqlRaw($"UPDATE {_memberprefix}MEMBERS SET M_{additionalField.Key.ToUpper()}='{additionalField.Value}' WHERE MEMBER_ID={member.Id} ");
+                    _dbContext.Database.ExecuteSqlRaw("UPDATE " + _memberprefix + "MEMBERS SET M_"+additionalField.Key.ToUpper()+"=@0 WHERE MEMBER_ID=@1 ",additionalField.Value,member.Id);
                 }
             }
 
-            _dbContext.Database.ExecuteSqlRaw($"UPDATE {_tableprefix}TOTALS SET U_COUNT = U_COUNT + 1;");
+            _dbContext.Database.ExecuteSqlRaw($"UPDATE "+_tableprefix+"TOTALS SET U_COUNT = U_COUNT + 1;");
             _dbContext.Database.CommitTransaction();
 
             return result.Entity;
@@ -299,7 +299,7 @@ namespace SnitzCore.Service
                     var result = _dbContext.Members.AsEnumerable();
                     return result.Where(m => MemberRankTitle(m).ToLower().Contains(searchQuery.ToLower()));
                 case "5" :
-                    return _dbContext.Members.Where(m=>m.Email.ToLower().Contains(searchQuery.ToLower()));
+                    return _dbContext.Members.Where(m=> m.Email != null && m.Email.ToLower().Contains(searchQuery.ToLower()));
                 default:
                     return null;
             }

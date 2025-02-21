@@ -16,18 +16,18 @@ namespace SnitzCore.Service.TagHelpers;
 
         [HtmlAttributeNotBound]
         [ViewContext]
-        public ViewContext ViewContext { get; set; }
+        public ViewContext? ViewContext { get; set; }
 
         [HtmlAttributeName(KeyAttributeName)]
-        public string Key { get; set; }
+        public required string Key { get; set; }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             output.SuppressOutput();
             TagHelperContent childContent = await output.GetChildContentAsync();
 
-            var storageProvider = ViewContext.TempData;
-            Dictionary<string, List<HtmlString>> storage;
+            var storageProvider = ViewContext!.TempData;
+            Dictionary<string, List<HtmlString>>? storage;
             List<HtmlString> defaultList;
 
             if (!storageProvider.ContainsKey(_storageKey) || !(storageProvider[_storageKey] is Dictionary<string,List<HtmlString>>))
@@ -40,7 +40,7 @@ namespace SnitzCore.Service.TagHelpers;
             else
             {
                 storage = ViewContext.TempData[_storageKey] as Dictionary<string, List<HtmlString>>;
-                if (storage.ContainsKey(_defaultListKey))
+                if (storage!.ContainsKey(_defaultListKey))
                 {
                     defaultList = storage[_defaultListKey];
 

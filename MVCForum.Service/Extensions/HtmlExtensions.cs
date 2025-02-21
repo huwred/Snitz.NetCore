@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SnitzCore.Data.Models;
 using SnitzCore.Data.ViewModels;
-using SnitzCore.Service;
 using System.Collections.Generic;
 
 namespace SnitzCore.Service.Extensions

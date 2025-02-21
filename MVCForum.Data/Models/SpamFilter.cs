@@ -1,7 +1,6 @@
 ﻿using SnitzCore.Data.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.Net.Http.Headers;
 
 namespace SnitzCore.Data.Models;
 

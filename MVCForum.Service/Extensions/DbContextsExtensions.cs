@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 using Hangfire.SqlServer;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols;
 using Hangfire.SQLite;
-using System.IO;
 using SnitzCore.Data.Models;
 using SnitzCore.Data;
 
@@ -17,10 +14,10 @@ namespace SnitzCore.Service.Extensions
 {
     public static class DbContextsExtensions
     {
-        public static IQueryable<TSource> DistinctBy<TSource, TKey>  (this IQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector)
-        {
-            return source.GroupBy(keySelector).Select(x => x.FirstOrDefault());
-        }
+        //public static IQueryable<TSource> DistinctBy<TSource, TKey>  (this IQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector)
+        //{
+        //    return source.GroupBy(keySelector).Select(x => x.FirstOrDefault());
+        //}
         public static IGlobalConfiguration SetStorage(
             this IGlobalConfiguration configuration,
             string nameOrConnectionString, string dbProvider)
@@ -90,10 +87,10 @@ namespace SnitzCore.Service.Extensions
                         continue;
                     LanguageResource res = new LanguageResource
                     {
-                        Name = row.Field<string>("ResourceId"),
+                        Name = row.Field<string>("ResourceId")!,
                         ResourceSet = row.Field<string>("ResourceSet"),
                         Value = row.Field<string>("Value"),
-                        Culture = row.Field<string>("Culture")
+                        Culture = row.Field<string>("Culture")!
                     };
 
                     var existing = context.LanguageResources.SingleOrDefault(l=>l.Culture == res.Culture && l.Name == res.Name);

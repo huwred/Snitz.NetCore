@@ -1,17 +1,10 @@
 ﻿using System;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Models;
-using System.Formats.Asn1;
-using System.Reflection;
-using System.Resources;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Org.BouncyCastle.Asn1.X509.Qualified;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -102,7 +95,7 @@ namespace SnitzCore.Services.TagHelpers
                     output.TagName = "div";
                     output.AddClass("mb-3",HtmlEncoder.Default);
 
-                    var items = GetEnumSelectList(Value);
+                    var items = GetEnumSelectList(Value!);
                     StringBuilder options = new StringBuilder();
                     foreach (var item in items)
                     {

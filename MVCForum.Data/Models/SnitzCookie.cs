@@ -2,8 +2,6 @@
 using SnitzCore.Data.Interfaces;
 using System;
 using System.Collections.Generic;
-using static Org.BouncyCastle.Math.EC.ECCurve;
-using System.Collections.Specialized;
 using SnitzCore.Data.Extensions;
 using System.Linq;
 
@@ -109,7 +107,7 @@ namespace SnitzCore.Data.Models
                 return true;
             }
 
-            if (_dbContext.PollVotes.SingleOrDefault(v=>v.PollId == pollid && v.MemberId != null && v.MemberId == memberid) != null)
+            if (_dbContext.PollVotes.SingleOrDefault(v=>v.PollId == pollid && v.MemberId == memberid) != null)
             {
                 return true;
             }
@@ -195,8 +193,10 @@ namespace SnitzCore.Data.Models
             //Check whether the cookie available or not.
             if (_httpContextAccessor.HttpContext?.Request.Cookies[cookieName] != null)
             {
+                var test = _httpContextAccessor.HttpContext?.Request.Cookies[cookieName];
                 //Creating a cookie.
-                return _httpContextAccessor.HttpContext?.Request.Cookies[cookieName].FromLegacyCookieString();
+                if(test != null)
+                    return test.FromLegacyCookieString();
 
             }
             return dicVal;

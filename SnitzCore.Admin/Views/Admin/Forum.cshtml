@@ -145,7 +145,13 @@
                                 var id = $('#myModal').data('id')
                                 $.get(url + id, function (result) {
                                     debugger;
-                                    $('#myModal .modal-content').html(result);
+                                    if(result.redirectToUrl){
+                                        $('#myModal').modal('hide');
+                                        window.location.replace(result.redirectToUrl);
+                                    }else{
+                                        $('#myModal .modal-content').html(result);
+                                    }
+                                    
                                 });
 
                             });

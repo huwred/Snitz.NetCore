@@ -24,5 +24,5 @@ public partial class PollAnswer
     [Column("POLLANSWER_COUNT")]
     public int Count { get; set; }
 
-    public virtual Poll Poll { get; set; }
+    public virtual Poll? Poll { get; set; }
 }

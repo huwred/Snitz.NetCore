@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.ComponentModel.DataAnnotations;
 using System;
-using System.Globalization;
 using System.Linq;
 using SnitzCore.Service.Extensions;
 

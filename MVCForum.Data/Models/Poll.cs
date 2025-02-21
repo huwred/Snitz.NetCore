@@ -34,6 +34,6 @@ public partial class Poll
     public string Question { get; set; } = null!;
 
     public virtual Post? Topic { get; set; }
-    public virtual IEnumerable<PollAnswer> PollAnswers { get; set; }
+    public virtual IEnumerable<PollAnswer>? PollAnswers { get; set; }
     public virtual IEnumerable<PollVote>? PollVotes { get; set; }
 }

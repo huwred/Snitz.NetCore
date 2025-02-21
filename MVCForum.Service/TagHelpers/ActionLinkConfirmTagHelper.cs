@@ -17,7 +17,7 @@ namespace SnitzCore.Service.TagHelpers
         public string? Selector { get; set; }
         public string? Title { get; set; }
         public string? Class { get; set; }
-        public string Href { get; set; }
+        public string? Href { get; set; }
         private readonly ISnitzConfig _snitzConfig;
 
         public ActionLinkConfirmTagHelper(ISnitzConfig snitzconfig)
@@ -33,7 +33,7 @@ namespace SnitzCore.Service.TagHelpers
             output.Attributes.Add("id",tagid);
             output.Attributes.Add("title",Title);
             output.Attributes.Add("rel","nofollow");
-            output.Attributes.Add("href",Href.Replace("~",_snitzConfig.RootFolder));
+            output.Attributes.Add("href",Href!.Replace("~",_snitzConfig.RootFolder));
             //output.Attributes.Add("title","Delete Item");
             output.Attributes.Add("data-bs-toggle","modal");
             if (Key != null)

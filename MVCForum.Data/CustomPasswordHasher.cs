@@ -1,15 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SnitzCore.Data
 {
-public class CustomPasswordHasher : PasswordHasher<IdentityUser>
+    public class CustomPasswordHasher : PasswordHasher<IdentityUser>
 {
     public override PasswordVerificationResult VerifyHashedPassword(IdentityUser user, string hashedPassword,
         string providedPassword)
@@ -37,7 +33,7 @@ public class CustomPasswordHasher : PasswordHasher<IdentityUser>
         var storedSubkey = new byte[_pbkdf2SubkeyLength];
         Buffer.BlockCopy(hashedPasswordBytes, 1 + _saltSize, storedSubkey, 0, _pbkdf2SubkeyLength);
         byte[] generatedSubkey;
-        using (var deriveBytes = new Rfc2898DeriveBytes(password, salt, _pbkdf2IterCount))
+        using (var deriveBytes = new Rfc2898DeriveBytes(password, salt, _pbkdf2IterCount,HashAlgorithmName.SHA1))
         {
             generatedSubkey = deriveBytes.GetBytes(_pbkdf2SubkeyLength);
         }

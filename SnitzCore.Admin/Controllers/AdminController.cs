@@ -22,7 +22,7 @@ using static SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel;
 
 namespace SnitzCore.BackOffice.Controllers
 {
-    [Authorize(Roles="Administrator")]
+    [Authorize(Roles="SuperAdmin,Administrator")]
     public class AdminController : Controller
     {
         private readonly ISnitz _config;
@@ -53,6 +53,7 @@ namespace SnitzCore.BackOffice.Controllers
             _appLifetime = appLifetime;
             _env = env;
         }
+
         public IActionResult Index()
         {
             return View();
@@ -312,10 +313,10 @@ namespace SnitzCore.BackOffice.Controllers
                             names.Add(user.UserName!);
                     }
                 }
+                var test = _memberService.GetAll(false).Where(m=> names.IndexOf(m.Name) >= 0);
 
-                vm.Members = (from s in _dbcontext.Members
-                    where names.Contains(s.Name)
-                    select s).ToList();
+                
+                vm.Members = test.ToList();
             }
             return PartialView("ManageRoles",vm);
         }
@@ -871,7 +872,19 @@ namespace SnitzCore.BackOffice.Controllers
             ArchiveViewModel vm = new ArchiveViewModel {ForumId = id};
             return PartialView("popArchiveForum", vm);
         }
+        [HttpGet]
+        public IActionResult DeleteArchiveForum(int id)
+        {
+            //if (_snitzconfig.GetIntValue("STRARCHIVESTATE") != 1)
+            //{
+            //    ViewBag.Error = "Archiving not enabled";
+            //    return View("Error");
+            //}
 
+            BackgroundJob.Enqueue(() => _forumservice.DeleteArchivedTopics(id));
+
+            return Json(new { redirectToUrl = Url.Action("Forum", "Admin") });
+        }
         [HttpPost]
         public IActionResult ArchiveForum(ArchiveViewModel vm)
         {

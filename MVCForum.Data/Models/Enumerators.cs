@@ -1,5 +1,4 @@
-﻿using SnitzCore.Data.Extensions;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SnitzCore.Data.Models
 {

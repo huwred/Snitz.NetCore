@@ -878,6 +878,7 @@ namespace MVCForum.Controllers
             return Json(false);
         }
 
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> EmptyForum(int id )
         {
             await _forumService.EmptyForum(id);

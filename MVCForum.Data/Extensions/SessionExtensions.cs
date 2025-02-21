@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace SnitzCore.Data.Extensions
@@ -15,10 +10,10 @@ namespace SnitzCore.Data.Extensions
             session.SetString(key, JsonSerializer.Serialize(value));
         }
 
-        public static T GetObject<T>(this ISession session, string key)
+        public static T? GetObject<T>(this ISession session, string key)
         {
             var value = session.GetString(key);
-            return value == null ? default(T) : JsonSerializer.Deserialize<T>(value);
+            return value == null ? default : JsonSerializer.Deserialize<T>(value);
         } 
   
     }

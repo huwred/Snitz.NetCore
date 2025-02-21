@@ -3,16 +3,23 @@
         @Localizer["mnuAdmin"]
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdminLink">
-        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">@Localizer["mnuAdminMainConfig"]</a></li>
-        <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">@Localizer["tipNewCategory"]</a></li>
-        <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">@Localizer["tipNewForum"]</a></li>
+        <li snitz-if="@User.IsInRole("SuperAdmin")"><a class="dropdown-item" asp-controller="Admin" asp-action="Index">@Localizer["mnuAdminMainConfig"]</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="EmailConfig" >Email Setup</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Forum" >Forum Options</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Features" >Features</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Members" >Membership Settings</a></li>
         <li><hr class="dropdown-divider" /></li>
         <li><a class="dropdown-item" href="~/LanguageManager/">@Localizer["mnuAdminLangResources"]</a></li>
         <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search">Search Dictionary</a></li>
         <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Templates">Email Templates</a></li>
         <li><hr class="dropdown-divider" /></li>
-        <li><a class="dropdown-item" asp-controller="Admin" asp-action="ListViews">View Templates</a></li>
-        <li><a class="dropdown-item" asp-controller="LogView" asp-action="Index">View Logs</a></li>
+        <li snitz-if="@User.IsInRole("SuperAdmin")"><a class="dropdown-item" asp-controller="Admin" asp-action="ListViews">Page Templates</a></li>
+        <li><a class="dropdown-item" asp-controller="LogView" asp-action="Index">Logs</a></li>
+
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">@Localizer["tipNewCategory"]</a></li>
+        <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">@Localizer["tipNewForum"]</a></li>
+        <li><hr class="dropdown-divider" /></li>
         <li>
             <link-confirm title="Restart Application" jq-selector="confirm-restart" href="~/Admin/Restart" class="dropdown-item text-warning"></link-confirm>
         </li>

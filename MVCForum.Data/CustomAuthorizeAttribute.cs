@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SnitzCore.Data.Interfaces;
-using SnitzCore.Data.Models;
 
 namespace SnitzCore.Data
 {

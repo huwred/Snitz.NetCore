@@ -20,7 +20,7 @@ namespace SnitzCore.Service
         private readonly IForum _forumservice;
         private readonly ISnitzConfig _config;
         private readonly IEmailSender _mailSender;
-        private readonly string _tableprefix;
+        private readonly string? _tableprefix;
         public PostService(SnitzDbContext dbContext, IMember memberService,IForum forumservice,ISnitzConfig config,IEmailSender mailSender,IOptions<SnitzForums> options)
         {
             _dbContext = dbContext;
@@ -61,7 +61,7 @@ namespace SnitzCore.Service
             }
             else
             {
-                _memberService.UpdateLastPost(post.MemberId);
+                await _memberService.UpdateLastPost(post.MemberId);
             }
             
             var forumtotals = _dbContext.ForumTotal.First();
@@ -102,7 +102,7 @@ namespace SnitzCore.Service
                 await _memberService.UpdatePostCount(post.MemberId);
             }else
             {
-                _memberService.UpdateLastPost(post.MemberId);
+                await _memberService.UpdateLastPost(post.MemberId);
             }
             var forumtotals = _dbContext.ForumTotal.First();
             forumtotals.PostCount += 1;
@@ -116,14 +116,14 @@ namespace SnitzCore.Service
         /// <returns></returns>
         public int CreateForMerge(int[]? selected)
         {
-            var topics = _dbContext.Posts.AsNoTracking().Where(p => selected.Contains(p.Id)).OrderBy(t => t.Created).ToList();
+            var topics = _dbContext.Posts.AsNoTracking().Where(p => selected != null && selected.Contains(p.Id)).OrderBy(t => t.Created).ToList();
             int unmoderatedposts = 0;
             int replycounter = 0;
             Post mainTopic = topics.First();
             int maintopicid = mainTopic.Id;
             unmoderatedposts += mainTopic.UnmoderatedReplies;
-            Forum forum = _dbContext.Forums.Find(mainTopic.ForumId);
-            Forum oldforum = null;
+            Forum? forum = _dbContext.Forums.Find(mainTopic.ForumId);
+            Forum? oldforum = null;
             foreach (Post topic in topics)
             {
                 if (topic.Id != mainTopic.Id)
@@ -166,7 +166,7 @@ namespace SnitzCore.Service
                     }
 
                     if (_config.GetIntValue("STRMOVENOTIFY") == 1)
-                        _mailSender.TopicMergeEmail(topic, mainTopic,topic.Member);
+                        _mailSender.TopicMergeEmail(topic, mainTopic,topic.Member!);
                 }
             }
 
@@ -174,8 +174,8 @@ namespace SnitzCore.Service
             _dbContext.Update(mainTopic);
             _dbContext.SaveChanges();
             //update counts
-            UpdateLastPost(mainTopic.Id,unmoderatedposts);
-            _forumservice.UpdateLastPost(forum.Id);
+            _ = UpdateLastPost(mainTopic.Id,unmoderatedposts);
+            _forumservice.UpdateLastPost(forum!.Id);
             return maintopicid;
         }
         public async Task<bool> LockTopic(int id, short status = 0)
@@ -206,6 +206,10 @@ namespace SnitzCore.Service
         public async Task DeleteReply(int id)
         {
             var post = _dbContext.Replies.SingleOrDefault(f => f.Id == id);
+            if(post == null)
+            {
+                return;
+            }
             int? moderated = null;
             if (post.Status == (short)Status.UnModerated || post.Status == (short)Status.OnHold)
             {
@@ -366,7 +370,7 @@ namespace SnitzCore.Service
             var post = _dbContext.Replies.Where(p => p.Id == id)
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Member).AsNoTrackingWithIdentityResolution()
-                .Include(r => r.Topic).ThenInclude(t=>t.Member).AsNoTracking()
+                .Include(r => r.Topic).ThenInclude(t=>t!.Member).AsNoTracking()
                 .Single();
 
             return post;
@@ -385,7 +389,7 @@ namespace SnitzCore.Service
             if (searchQuery == null)
             {
                 totalcount = 0;
-                return new PagedList<Post>(null,page,pagesize);
+                return new PagedList<Post>(Array.Empty<Post>(), 1, pagesize);
             }
             var posts = _dbContext.Posts.Where(p=>p.Title.Contains(searchQuery) || p.Content.Contains(searchQuery));
 
@@ -412,7 +416,7 @@ namespace SnitzCore.Service
                 .Include(p => p.Forum)
                 .Include(p => p.Member)
                 .Include(p=>p.LastPostAuthor)
-                .Include(p=>p.Replies).ThenInclude(r=>r.Member)
+                .Include(p=>p.Replies!).ThenInclude(r=>r.Member)
                 .AsQueryable();
 
             if (searchQuery.SinceDate != SearchDate.AnyDate)
@@ -433,7 +437,7 @@ namespace SnitzCore.Service
             }
             if (!string.IsNullOrWhiteSpace(searchQuery.UserName) && searchQuery.SearchMessage)
             {
-                var p1 = posts.Where(p=> p.Replies.Any(r=>r.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower()))).ToList();
+                var p1 = posts.Where(p=> p.Replies != null && p.Replies.Any(r=>r.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower()))).ToList();
 
                 var p2 = posts.Where(p => p.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower())).ToList();
 
@@ -510,7 +514,7 @@ namespace SnitzCore.Service
             var reply = _dbContext.Replies.OrderBy(m=>m.Id).FirstOrDefault(r => r.Id == id);
             if (reply != null)
             {
-                var topic = _dbContext.Posts.OrderBy(m=>m.Id).FirstOrDefault(t => t.Id == reply.PostId);
+                var topic = _dbContext.Posts.OrderBy(m=>m.Id).First(t => t.Id == reply.PostId);
                 reply.Answer = true;
                 topic.Answered = true;
                 _dbContext.Update(reply);
@@ -574,7 +578,7 @@ namespace SnitzCore.Service
         public Post? SplitTopic(string[] ids, int forumId, string subject)
         {
             var forum = (from forums in _dbContext.Forums
-                    select forums).SingleOrDefault(f => f.Id == forumId);
+                    select forums).First(f => f.Id == forumId);
             int replycount = 0;
             int originaltopicid = 0;
             Post? topic = null;
@@ -588,7 +592,7 @@ namespace SnitzCore.Service
                     var reply = (from replies in _dbContext.Replies
                         select replies).SingleOrDefault(r=>r.Id == Convert.ToInt32(id));
 
-                    if (first)
+                    if (first && reply != null)
                     {
                         originaltopicid = reply.PostId;
                         //first reply so create the Topic
@@ -613,7 +617,7 @@ namespace SnitzCore.Service
                         _dbContext.SaveChanges();
                         first = false;
                     }
-                    else
+                    else if (topic != null && reply != null)
                     {
                         replycount += 1;
 
@@ -626,12 +630,14 @@ namespace SnitzCore.Service
                         _dbContext.SaveChanges();
                     }
                 }
-
-                topic.ReplyCount = replycount;
-                _dbContext.Update(topic);
-                _dbContext.SaveChanges();
+                if(topic != null)
+                {
+                    topic.ReplyCount = replycount;
+                    _dbContext.Update(topic);
+                    _dbContext.SaveChanges();
+                }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 _dbContext.Database.RollbackTransaction();
                 throw;
@@ -640,13 +646,13 @@ namespace SnitzCore.Service
             {
                 _dbContext.Database.CommitTransaction();
             }
-            Post originaltopic = (from t in _dbContext.Posts select t).OrderBy(m=>m.Id).FirstOrDefault(t=>t.Id == originaltopicid);
+            Post? originaltopic = (from t in _dbContext.Posts select t).OrderBy(m=>m.Id).FirstOrDefault(t=>t.Id == originaltopicid);
             if (originaltopic != null)
             {
                 originaltopic.ReplyCount -= replycount + 1;
                 _dbContext.Update(originaltopic);
                 _dbContext.SaveChanges();
-                UpdateLastPost(originaltopicid,0);
+                _ = UpdateLastPost(originaltopicid, 0);
                 _forumservice.UpdateLastPost(originaltopic.ForumId);
             }
             return topic;

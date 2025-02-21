@@ -8,14 +8,14 @@ using System.Net.Mail;
 
 namespace SnitzCore.BackOffice.ViewModels
 {
-    public enum ForumType
-    {
-        Topics = 0,
-        WebLink = 1,
-        //[Description("Bug Forum")]
-        BugReports = 3,
-        BlogPosts = 4
-    }
+    //public enum ForumType
+    //{
+    //    Topics = 0,
+    //    WebLink = 1,
+    //    //[Description("Bug Forum")]
+    //    BugReports = 3,
+    //    BlogPosts = 4
+    //}
     public class AdminRolesViewModel
     {
         //[RequiredIf("IsUsernameRequired", "true", "PropertyRequired")]

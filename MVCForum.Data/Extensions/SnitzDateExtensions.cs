@@ -49,7 +49,7 @@ namespace SnitzCore.Data.Extensions
 
         public static bool IsModerator(this IPrincipal user)
         {
-            if (!user.Identity.IsAuthenticated)
+            if (user.Identity == null || !user.Identity.IsAuthenticated)
             {
                 return false;
             }
@@ -62,7 +62,7 @@ namespace SnitzCore.Data.Extensions
         /// <returns></returns>
         public static bool IsAdministrator(this IPrincipal user)
         {
-            if (!user.Identity.IsAuthenticated)
+            if (user.Identity == null || !user.Identity.IsAuthenticated)
             {
                 return false;
             }

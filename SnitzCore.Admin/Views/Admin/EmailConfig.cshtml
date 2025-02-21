@@ -2,6 +2,11 @@
 
 @{
     Layout = "_MasterLayout";
+    string disableme = "";
+    if (!User.IsInRole("SuperAdmin"))
+    {
+        disableme = "disabled";
+    }
 }
 
     <div class="m-3">
@@ -16,7 +21,7 @@
 
 
                     <div class="col-sm-5 text-left">
-                        <fieldset>
+                        <fieldset @disableme>
                             <legend>Email Server</legend>
                             <hr/>
                             <div class="mb-3">
@@ -69,7 +74,7 @@
                     </div>
                     <div class="col-sm-1"></div>
                     <div class="col-sm-5 flip text-left">
-                        <fieldset>
+                    <fieldset @disableme>
                             <legend>Forum email settings</legend>
                             <hr/>
                             <div class="mb-3">

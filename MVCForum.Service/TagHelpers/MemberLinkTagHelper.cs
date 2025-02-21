@@ -1,5 +1,4 @@
 ﻿using Flurl;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SnitzCore.Data;

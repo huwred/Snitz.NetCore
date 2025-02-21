@@ -52,5 +52,5 @@ public partial class ArchivedReply
     [Column("R_RATING")]
     public int Rating { get; set; }
 
-    public virtual Member Member { get; set; }
+    public virtual Member? Member { get; set; }
 }

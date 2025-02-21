@@ -227,7 +227,7 @@
     var confModel = new ConfirmDialogViewModel()
     {
         Title = Localizer["popDelForumTitle"].Value, //"Delete Forum",
-        Message = Localizer["popDelForumMessage"].Value /* $@"<p>You are about to delete the Forum {Model.Forum!.Title}</p>        <p>Do you wish to proceed?</p>" */
+        Message = Localizer["popDelForumMessage",Model.Forum!.Title!].Value /* $@"<p>You are about to delete the Forum {Model.Forum!.Title}</p>        <p>Do you wish to proceed?</p>" */
     };
 }
 <partial name="ConfirmDialog" model="@confModel" />

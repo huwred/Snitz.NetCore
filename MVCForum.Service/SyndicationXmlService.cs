@@ -31,7 +31,7 @@ public class SyndicationXmlService : ISyndicationXmlService
     {
         
         var feed = new SyndicationFeed(feedTitle, feedDescription,
-            new Uri(_config.ForumUrl),
+            new Uri(_config.ForumUrl!),
             null,DateTime.Now)
         {
             Copyright = new TextSyndicationContent($"{DateTime.Now.Year} Copyright Huw Reddick")

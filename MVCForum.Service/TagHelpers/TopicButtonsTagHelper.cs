@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
-using System.Net;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
@@ -24,7 +23,7 @@ namespace SnitzCore.Service.TagHelpers
         }
         [HtmlAttributeNotBound]
         [ViewContext]
-        public ViewContext ViewContext { get; set; }
+        public ViewContext? ViewContext { get; set; }
 
         [HtmlAttributeName("topic-print")]
         public int PrintTopic { get; set; }
@@ -71,7 +70,7 @@ namespace SnitzCore.Service.TagHelpers
             if (SocialMedia > 0)
             {
                 var forumTitle = _config.ForumTitle;
-                var pageUrl = ViewContext.HttpContext.Request.GetEncodedUrl();
+                var pageUrl = ViewContext?.HttpContext.Request.GetEncodedUrl();
 
                 var fbButton = new TagBuilder("a");
                 fbButton.Attributes.Add("id", "ShareFacebook");

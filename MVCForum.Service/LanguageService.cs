@@ -5,10 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using SnitzCore.Data;
@@ -28,7 +25,7 @@ namespace SnitzCore.Service
             _serviceProvider = serviceProvider;
             _cookie = cookie;
             var cookielang = cookie.GetCookieValue("CookieLang");
-            bool isRighToLeft = false;
+            //bool isRighToLeft = false;
             if (cookielang != null)
             {
                 var cultureInfo = new CultureInfo(cookielang);
@@ -86,7 +83,7 @@ namespace SnitzCore.Service
             var context = scope.ServiceProvider.GetService<SnitzDbContext>();
             var results = context!.LanguageResources
                 .Where(r => r.Culture == culture)
-                .Select(r => new LocalizedString(r.Name, r.Value));
+                .Select(r => new LocalizedString(r.Name, r.Value!));
             return results;
         }
 

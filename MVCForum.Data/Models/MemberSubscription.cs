@@ -23,8 +23,8 @@ public partial class MemberSubscription
     [Column("TOPIC_ID")]
     public int PostId { get; set; }
 
-    public virtual Member Member { get; set; }
-    public virtual Forum Forum { get; set; }
-    public virtual Post Post { get; set; }
-    public virtual Category Category { get; set; }
+    public virtual Member? Member { get; set; }
+    public virtual Forum? Forum { get; set; }
+    public virtual Post? Post { get; set; }
+    public virtual Category? Category { get; set; }
 }
