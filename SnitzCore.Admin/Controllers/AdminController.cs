@@ -94,10 +94,10 @@ namespace SnitzCore.BackOffice.Controllers
                         .Select(subscription => new SubscriptionItemViewModel
                         {
                             SubscriptionId = subscription.Id,
-                            MemberName = subscription.Member.Name,
-                            CategoryName = subscription.Category.Name ?? "",
-                            ForumName = subscription.Forum.Title ?? "",
-                            Topic = subscription.Post.Title ?? ""
+                            MemberName = subscription.Member!.Name,
+                            CategoryName = subscription.Category!.Name ?? "",
+                            ForumName = subscription.Forum!.Title ?? "",
+                            Topic = subscription.Post!.Title ?? ""
                         })
                         .ToList();
                     break;
@@ -108,7 +108,7 @@ namespace SnitzCore.BackOffice.Controllers
                             .Select(subscription => new SubscriptionItemViewModel
                             {
                                 SubscriptionId = subscription.Id,
-                                MemberName = subscription.Member.Name,
+                                MemberName = subscription.Member!.Name,
                             })
 
                         .ToList();
@@ -121,8 +121,8 @@ namespace SnitzCore.BackOffice.Controllers
                         .Select(subscription => new SubscriptionItemViewModel
                         {
                             SubscriptionId = subscription.Id,
-                            MemberName = subscription.Member.Name,
-                            CategoryName = subscription.Category.Name
+                            MemberName = subscription.Member!.Name,
+                            CategoryName = subscription.Category!.Name
                         })
                         .ToList();
                     break;
@@ -134,9 +134,9 @@ namespace SnitzCore.BackOffice.Controllers
                         .Select(subscription => new SubscriptionItemViewModel
                         {
                             SubscriptionId = subscription.Id,
-                            MemberName = subscription.Member.Name,
-                            CategoryName = subscription.Category.Name,
-                            ForumName = subscription.Forum.Title
+                            MemberName = subscription.Member!.Name,
+                            CategoryName = subscription.Category!.Name,
+                            ForumName = subscription.Forum!.Title
                         })
                         .ToList();
                     break;
@@ -148,10 +148,10 @@ namespace SnitzCore.BackOffice.Controllers
                         .Select(subscription => new SubscriptionItemViewModel
                         {
                             SubscriptionId = subscription.Id,
-                            MemberName = subscription.Member.Name,
-                            CategoryName = subscription.Category.Name,
-                            ForumName = subscription.Forum.Title,
-                            Topic = subscription.Post.Title
+                            MemberName = subscription.Member!.Name,
+                            CategoryName = subscription.Category!.Name,
+                            ForumName = subscription.Forum!.Title,
+                            Topic = subscription.Post!.Title
                         })
                         .ToList();
                     break;
@@ -313,10 +313,10 @@ namespace SnitzCore.BackOffice.Controllers
                             names.Add(user.UserName!);
                     }
                 }
-                var test = _memberService.GetAll(false).Where(m=> names.IndexOf(m.Name) >= 0);
+                var test = _memberService.GetAll(false).Where(m=> names.IndexOf(m!.Name) >= 0);
 
-                
-                vm.Members = test.ToList();
+                if(test != null)
+                    { vm.Members = [.. test]; }
             }
             return PartialView("ManageRoles",vm);
         }
@@ -441,7 +441,10 @@ namespace SnitzCore.BackOffice.Controllers
         public async Task<IActionResult> DelMemberFromRole(string username, string role)
         {
             var forumuser = await _userManager.FindByNameAsync(username);
-            await _userManager.RemoveFromRoleAsync(forumuser, role);
+            if(forumuser != null)
+            {
+                await _userManager.RemoveFromRoleAsync(forumuser, role);
+            }
             List<string> names = new List<string>();
             var vm = new AdminRolesViewModel
             {
@@ -757,9 +760,9 @@ namespace SnitzCore.BackOffice.Controllers
             if (user != null)
             {
                 foreach (var r in _roleManager.Roles) { 
-                    if (_userManager.IsInRoleAsync(user, r.Name).Result)
+                    if (_userManager.IsInRoleAsync(user, r.Name!).Result)
                     {
-                        var res = _userManager.RemoveFromRoleAsync(user,r.Name).Result;
+                        var res = _userManager.RemoveFromRoleAsync(user,r.Name!).Result;
                     }
                 } 
                 

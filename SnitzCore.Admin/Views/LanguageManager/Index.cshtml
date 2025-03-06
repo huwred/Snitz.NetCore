@@ -26,7 +26,7 @@
         <div class="col-2 mb-3">
             <label for="ResourceSet" class="form-label">Resource Set</label>
             <select id="ResourceSet" class="form-select" title="Select language to edit" name="ResourceSet" aria-required="true">
-                @foreach (var rs in Model.ResourceSets.OrderBy(r=>r))
+                @foreach (var rs in Model.ResourceSets!.OrderBy(r=>r))
                 {
                     <option value="@rs">@rs</option>
                 }

@@ -63,12 +63,12 @@ public class LanguageManagerController : Controller
         };
         if (filter != "")
         {
-            vm.Resources = filterby == "id" ? GetStrings(Culture).Where(s => s.Name.ToLower().Contains(filter.ToLower())).ToList() : GetStrings(Culture).Where(s => s.Value.ToLower().Contains(filter.ToLower())).ToList();
-            vm.ResourceSets = vm.Resources.Select(l=>l.Name).Distinct().OrderBy(o=>o).ToList();
+            vm.Resources = filterby == "id" ? GetStrings(Culture).Where(s => s.Name.ToLower().Contains(filter.ToLower())).ToList() : GetStrings(Culture).Where(s => s.Value!.ToLower().Contains(filter.ToLower())).ToList();
+            vm.ResourceSets = [.. vm.Resources.Select(l=>l.Name).Distinct().OrderBy(o=>o)];
 
             foreach (var item in vm.ResourceSets)
             {
-                vm.Translations.Add(new KeyValuePair<string, List<LanguageResource>>(item,_dbcontext.LanguageResources.AsNoTracking().Where(l=>l.Name == item).ToList()));
+                vm.Translations.Add(new KeyValuePair<string, List<LanguageResource>>(item!,_dbcontext.LanguageResources.AsNoTracking().Where(l=>l.Name == item).ToList()));
             }
         }
         return View("Search",vm);
@@ -174,13 +174,13 @@ public class LanguageManagerController : Controller
 
         if (data != null)
         {
-            LangUpdateViewModel vm = new LangUpdateViewModel();
-
-
-            var cultures = data.rowData[1].Split(',');
-            vm.ResourceId = data.rowData[0];
-            vm.ResourceSet = data.rowData[2];
-            vm.ResourceTranslations = new Dictionary<string, string>();
+            var cultures = data.rowData![1].Split(',');
+            LangUpdateViewModel vm = new LangUpdateViewModel
+            {
+                ResourceId = data.rowData[0],
+                ResourceSet = data.rowData[2],
+                ResourceTranslations = new Dictionary<string, string>()
+            };
             for (int i = 0; i < cultures.Length; i++)
             {
                 vm.ResourceTranslations.Add(cultures[i], WebUtility.HtmlDecode(data.rowData[3 + i]));
@@ -198,7 +198,7 @@ public class LanguageManagerController : Controller
     {
         try
         {
-            foreach (var item in data.ResourceTranslations)
+            foreach (var item in data.ResourceTranslations!)
             {
                 var itemToUpdate = _dbcontext.LanguageResources.SingleOrDefault(l =>
                 l.Culture == item.Key && l.Name == data.ResourceSet && l.ResourceSet == data.ResourceId);
@@ -217,7 +217,7 @@ public class LanguageManagerController : Controller
                     {
                         Value = item.Value,
                         ResourceSet = data.ResourceId,
-                        Name = data.ResourceSet,
+                        Name = data.ResourceSet!,
                         Culture = item.Key
                     };
                     _dbcontext.LanguageResources.Add(itemToUpdate);
@@ -230,9 +230,6 @@ public class LanguageManagerController : Controller
         {
             return Json("An Error Has occoured");
         }
-
-
-        return Json("An Error Has occoured");
     }
     [HttpPost]
     public IActionResult UpdateResource(LanguageResource langres,string? subBut)
@@ -304,8 +301,8 @@ public class LanguageManagerController : Controller
     [HttpPost]
     public FileResult Export(IFormCollection form)
     {
-        string culture = form["culture"];
-        string resourceset = form["resource-set"];
+        string culture = form["culture"]!;
+        string resourceset = form["resource-set"]!;
         List<LanguageResource> res;
 
         if (!String.IsNullOrWhiteSpace(resourceset))
@@ -320,7 +317,7 @@ public class LanguageManagerController : Controller
         }
 
 
-        var byteArray = Encoding.UTF8.GetBytes(res.ToCSV("path", "", "Id"));
+        var byteArray = Encoding.UTF8.GetBytes(res.ToCSV("path", "", "Id")!);
         var stream = new MemoryStream(byteArray);
 
 
@@ -329,7 +326,7 @@ public class LanguageManagerController : Controller
             FileName = "export_" + culture + resourceset + ".csv",
             Inline = false,
         };
-        Response.Headers.Add("Content-Disposition", cd.ToString());
+        Response.Headers.Append("Content-Disposition", cd.ToString());
         return File(stream, "txt/plain");
 
     }
@@ -367,7 +364,7 @@ public class LanguageManagerController : Controller
             if (file != null)
             {
                 ContentDisposition contentDisposition = new ContentDisposition(file.ContentDisposition);
-                string filename = contentDisposition.FileName;
+                string? filename = contentDisposition.FileName;
 
                 filename = this.EnsureCorrectFilename(filename);
 
@@ -395,11 +392,11 @@ public class LanguageManagerController : Controller
         return _env.ContentRootPath + "\\App_Data\\" + filename;
     }
 
-    private string EnsureCorrectFilename(string filename)
+    private string EnsureCorrectFilename(string? filename)
     {
-        if (filename.Contains("\\"))
+        if (filename != null &&  filename.Contains("\\"))
         filename = filename.Substring(filename.LastIndexOf("\\") + 1);
 
-        return filename;
+        return filename ?? String.Empty;
     }
 }

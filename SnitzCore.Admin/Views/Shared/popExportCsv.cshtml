@@ -22,7 +22,7 @@
         .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
         .ToList();
     var returnUrl = $"{Context.Request.PathBase}{Context.Request.Path.Value}";
-    string clang = requestCulture?.TwoLetterISOLanguageName;
+    string clang = requestCulture!.TwoLetterISOLanguageName;
 }
 @{
 

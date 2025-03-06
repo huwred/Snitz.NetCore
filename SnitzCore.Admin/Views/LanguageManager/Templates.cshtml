@@ -30,7 +30,7 @@
             <label class="col-1 col-form-label">Template</label>
             <div class="col-3">
                 <select id="selectTemplate" class="form-select" name="TemplateFile">
-                    @foreach (var template in Model.Templates)
+                    @foreach (var template in Model.Templates!)
                     {
                         if (Model.TemplateFile == template)
                         {

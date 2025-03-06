@@ -85,7 +85,7 @@ namespace SnitzCore.BackOffice.Controllers
 
         public IList<LogInfo> YourCustomSearchFunc(DataTableAjaxPostModel model, out int filteredResultsCount, out int totalResultsCount)
         {
-            var searchBy = (model.search != null) ? model.search.value : null;
+            var searchBy = model.search?.value;
             var take = model.length;
             var skip = model.start;
  
@@ -95,12 +95,12 @@ namespace SnitzCore.BackOffice.Controllers
             if (model.order != null)
             {
                 // in this example we just default sort on the 1st column
-                sortBy = model.columns[model.order[0].column].data;
-                sortDir = model.order[0].dir.ToLower() == "asc";
+                sortBy = model.columns![model.order![0].column!].data!;
+                sortDir = model.order![0].dir!.ToLower() == "asc";
             }
  
             // search the dbase taking into consideration table sorting and paging
-            var result = GetDataFromFile(searchBy, take, skip, sortBy, sortDir, out filteredResultsCount, out totalResultsCount);
+            var result = GetDataFromFile(searchBy!, take, skip, sortBy, sortDir, out filteredResultsCount, out totalResultsCount);
             if (result == null)
             {
                 // empty collection...
@@ -130,34 +130,40 @@ namespace SnitzCore.BackOffice.Controllers
                 sortBy = "date";
                 sortDir = true;
             }
+            if(_currentlog != null)
+            {
+                var result = _currentlog.AsEnumerable()
+                               //.Where(whereClause)
+                               .OrderByDescending(l=>l.date)
+                               //.OrderBy(sortBy, sortDir) // have to give a default order when skipping .. so use the PK
+                               .Skip(skip)
+                               .Take(take)
+                               .ToList();
  
-            var result = _currentlog.AsEnumerable()
-                           //.Where(whereClause)
-                           .OrderByDescending(l=>l.date)
-                           //.OrderBy(sortBy, sortDir) // have to give a default order when skipping .. so use the PK
-                           .Skip(skip)
-                           .Take(take)
-                           .ToList();
+                // now just get the count of items (without the skip and take) - eg how many could be returned with filtering
+                //filteredResultsCount = _currentlog.Where(whereClause).Count();
+                filteredResultsCount = _currentlog.Count();
+                totalResultsCount = _currentlog.Count();
  
-            // now just get the count of items (without the skip and take) - eg how many could be returned with filtering
-            //filteredResultsCount = _currentlog.Where(whereClause).Count();
-            filteredResultsCount = _currentlog.Count();
-            totalResultsCount = _currentlog.Count();
- 
-            return result;
+                return result;
+            }
+
+            filteredResultsCount = 0;
+            totalResultsCount = 0;
+            return new List<LogInfo>();
         }
     }
     public class LogViewModel
     {
-        public FileInfo[] Logs { get; set; }
+        public FileInfo[]? Logs { get; set; }
         public IList<LogInfo>? CurrentLog { get; set; }
     }
     public class LogInfo
     {
         public DateTime date { get; set; }
-        public string level { get; set; }
-        public string logger { get; set; }
-        public string message { get; set; }
+        public string? level { get; set; }
+        public string? logger { get; set; }
+        public string? message { get; set; }
 
         public string? exception { get; set; }
     }

@@ -20,7 +20,7 @@
         <button snitz-if="@(User.IsInRole("Administrator"))" id="del-resourceset" href="~/LanguageManager/DeleteResource/" data-id="@Model.ResourceSet" class="btn btn-outline-danger align-right" title="Delete Resource values"><i class="fa fa-trash-o"></i></button>
         </h4>
     </li>
-    @foreach (var res in Model.DefaultStrings)
+    @foreach (var res in Model.DefaultStrings!)
     {
         <li class="list-unstyled">
             @foreach (var culture in cultureItems)

@@ -3,7 +3,7 @@
 *@
 
 @{
-    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string? controllerName = this.ViewContext.RouteData?.Values["controller"]?.ToString();
 }
 <div id="uploadFileForm" class="modal-content">
 

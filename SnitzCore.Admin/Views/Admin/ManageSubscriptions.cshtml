@@ -19,7 +19,7 @@
         </select>
         <button class="btn btn-outline-danger" title="Delete All" type="submit"><i class="fa fa-trash fa-2x"></i></button>
     </div>
-@if (Model.Subscriptions.Any())
+    @if (Model.Subscriptions != null && Model.Subscriptions.Any())
 {
     <ul style="display: flex;flex-wrap: wrap;" class="list-unstyled bg-primary text-bg-dark rounded pb-3 pt-2">
             <li style="flex: 0 1 5%;display: flex;"><i class="fa fa-trash-o center px-2 pt-1" title="Delete Selected"></i></li>
@@ -28,7 +28,7 @@
         <li style="flex: 1 0 18%;display: flex;">Forum</li>
         <li style="flex: 1 0 25%;display: flex;">Topic</li>
     </ul>
-    @foreach (dynamic sub in Model.Subscriptions)
+    @foreach (dynamic sub in Model.Subscriptions!)
     {
         <ul style="display: flex;flex-wrap: wrap;" class="list-unstyled">
                 <li style="flex: 0 1 5%;display: flex;"><input name="SubscriptionId" type="checkbox" value="@sub.SubscriptionId" /></li>

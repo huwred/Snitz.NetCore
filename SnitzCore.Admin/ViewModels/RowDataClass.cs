@@ -12,7 +12,7 @@ namespace SnitzCore.BackOffice.ViewModels
         public int id { get; set; }
 
         [JsonPropertyName("rowData")]
-        public List<string> rowData { get; set; }
+        public List<string>? rowData { get; set; }
 
   }
 }

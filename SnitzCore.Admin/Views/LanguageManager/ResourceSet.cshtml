@@ -5,7 +5,7 @@
 @using SnitzCore.BackOffice.TagHelpers
 @model SnitzCore.BackOffice.ViewModels.LanguageViewModel
 
-@foreach (var res in Model.DefaultStrings)
+@foreach (var res in Model.DefaultStrings!)
 {
     <li class="list-group-item resource-item">
         <label for="@res.Name" class="col-form-label resource-set" data-id="@res.Name" style="cursor:pointer;">@res.Name</label>

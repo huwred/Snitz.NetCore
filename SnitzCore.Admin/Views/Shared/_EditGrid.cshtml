@@ -19,7 +19,7 @@
             @{
                 int x = 0;
             }
-            @foreach (var resource in Model.ResourceTranslations)
+            @foreach (var resource in Model.ResourceTranslations!)
             {
                 var directionstring = "ltr";
                 if (resource.Key == "fa")
