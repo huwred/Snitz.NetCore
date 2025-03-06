@@ -12,6 +12,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using X.PagedList;
 using X.PagedList.Extensions;
+using static Azure.Core.HttpHeader;
 
 namespace SnitzCore.Service
 {
@@ -270,7 +271,7 @@ namespace SnitzCore.Service
                 .Include(p => p.Category)
                 .Include(p => p.Forum)
                 .Include(p => p.Member).Include(p => p.LastPostAuthor)
-                .Where(p=> forumids.Contains(p.ForumId))
+                .Where(p=> EF.Constant(forumids).Contains(p.ForumId))
                 .Where(p=>p.Status < 2)
                 .OrderByDescending(p=>p.LastPostDate);
             return new PagedList<Post>(result, pagenum, pagesize);
@@ -278,14 +279,14 @@ namespace SnitzCore.Service
 
         public IEnumerable<string> GetTagStrings(List<int> list)
         {
-            return _dbContext.Posts.Where(f => list.Contains(f.ForumId)).Select(p => p.Content);
+            return _dbContext.Posts.Where(f => EF.Constant(list).Contains(f.ForumId)).Select(p => p.Content);
 
         }
         public IEnumerable<MyViewTopic> FetchAllMyForumTopics(IEnumerable<int> forumids)
         {
             var result = _dbContext.Posts.AsNoTracking()
                 .Include(p => p.Forum)
-                .Where(p=> forumids.Contains(p.ForumId))
+                .Where(p=> EF.Constant(forumids).Contains(p.ForumId))
                 .Where(p=>p.Status < 2)
                 .OrderByDescending(p=>p.LastPostDate)
                 .Select(post => new MyViewTopic

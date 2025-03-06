@@ -116,7 +116,7 @@ namespace SnitzCore.Service
         /// <returns></returns>
         public int CreateForMerge(int[]? selected)
         {
-            var topics = _dbContext.Posts.AsNoTracking().Where(p => selected != null && selected.Contains(p.Id)).OrderBy(t => t.Created).ToList();
+            var topics = _dbContext.Posts.AsNoTracking().Where(p => selected != null && EF.Constant(selected).Contains(p.Id)).OrderBy(t => t.Created).ToList();
             int unmoderatedposts = 0;
             int replycounter = 0;
             Post mainTopic = topics.First();
@@ -560,7 +560,7 @@ namespace SnitzCore.Service
 
         public List<Post> GetById(int[] ids)
         {
-            return _dbContext.Posts.AsNoTracking().Where(p => ids.Contains(p.Id)).OrderBy(t => t.Created).ToList();
+            return _dbContext.Posts.AsNoTracking().Where(p => EF.Constant(ids).Contains(p.Id)).OrderBy(t => t.Created).ToList();
         }
 
         public void MoveSubscriptions(int oldtopicid, int newtopicid, int newforumId, int newcatId)

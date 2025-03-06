@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SnitzCore.Data.Extensions;
 using Hangfire;
+using Microsoft.EntityFrameworkCore;
 
 namespace SnitzCore.Service
 {
@@ -42,7 +43,7 @@ namespace SnitzCore.Service
         {
             var blocked = GetBlockedMembers(memberid);
 
-            return _dbContext.PrivateMessages.Where(pm=>pm.To == memberid && pm.HideTo == 0 && !blocked.Contains(pm.To)).OrderByDescending(pm=>pm.SentDate);
+            return _dbContext.PrivateMessages.Where(pm=>pm.To == memberid && pm.HideTo == 0 && !EF.Constant(blocked).Contains(pm.To)).OrderByDescending(pm=>pm.SentDate);
         }
 
         public IEnumerable<PrivateMessage> GetOutbox(int memberid)
@@ -90,7 +91,7 @@ namespace SnitzCore.Service
 
         public async Task DeleteMany(IEnumerable<int> todelete, int memberid)
         {
-            var privatemsgs = _dbContext.PrivateMessages.Where(pm => todelete.Contains(pm.Id));
+            var privatemsgs = _dbContext.PrivateMessages.Where(pm => EF.Constant(todelete).Contains(pm.Id));
             foreach (var privatemsg in privatemsgs)
             {
                 if (privatemsg.To == memberid)
