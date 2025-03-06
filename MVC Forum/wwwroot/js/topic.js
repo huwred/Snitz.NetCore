@@ -14,7 +14,15 @@
     }
 });        
 $(document).ready(function() {
-    $(window).scroll(lazyload);
+    var replyid = $.getUrlParam('replyid');
+    if (replyid) {
+        $([document.documentElement, document.body]).animate({
+            scrollTop: $("#reply-" + replyid).offset().top
+        }, 300);
+    } else {
+        $(window).scroll(lazyload);
+
+    }
     $(".fig-caption").each(function() {
         var test = $(this);
         $.ajax({
@@ -221,8 +229,9 @@ $(document).ready(function() {
             $(".reply-card").each(function () {
                 var ot = $(this).offset().top;  //* top of object (i.e. advertising div)
                 var ob = ot + $(this).height(); //* bottom of object
+                console.log(ob);
                 if(!$(this).attr("loaded") && wt<=ob && wb >= ot && ot !=0) {
-                    $(this).children(":first").show();
+                    $(this).children().show();
                     $(this).attr("loaded",true);
                 }
             });

@@ -2,13 +2,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using MVCForum.ViewModels.Post;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
 using SnitzCore.Data.Extensions;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
@@ -136,7 +134,7 @@ namespace MVCForum.Controllers
         [Authorize(Roles = "Administrator")]
         public IActionResult MakeFeaturedPoll(int id)
         {
-            var routinfo = _httpContextAccessor.HttpContext.Request.Headers["Referer"].ToString();
+            var routinfo = _httpContextAccessor?.HttpContext!.Request.Headers["Referer"].ToString();
             _config.SetValue("INTFEATUREDPOLLID", id.ToString());
 
             return Redirect(Request.Headers["Referer"].ToString());            

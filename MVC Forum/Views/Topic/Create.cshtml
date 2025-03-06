@@ -34,7 +34,7 @@
                     <div class="mb-3">
                         <label asp-for="ForumId" class="form-label">@Localizer["lblForum"]</label>
                         <select asp-for="ForumId" class="form-select">
-                            @foreach (var forum in Model.Forums)
+                            @foreach (var forum in Model.Forums!)
                             {
                                 <option value="@forum.Key">@forum.Value</option>
                             }
@@ -46,7 +46,7 @@
                     <div class="mb-3">
                         <label asp-for="ForumId" class="form-label">@Localizer["lblForum"]</label>
                         <select asp-for="ForumId" class="form-select">
-                            @foreach (var forum in Model.Forums)
+                            @foreach (var forum in Model.Forums!)
                             {
                                 if (User.IsInRole("Forum_" + forum.Key))
                                 {
@@ -125,15 +125,15 @@
 
             <partial name="FormButtons"/>
         </form>
-        @if (addPoll.Count > 0 || (TempData["HasPoll"] != null && (bool)TempData["HasPoll"]))
+        @if (addPoll.Count > 0 || (TempData["HasPoll"] != null && (bool)TempData["HasPoll"]!))
         {
             @await Component.InvokeAsync("Polls", new { template = "AddPoll", catid = Model.CatId, forumid = Model.ForumId })
 
         }
-        @if (addEvent.Count > 0 || eventservice.EnabledForTopic(Model.Id))
+        @if (addEvent.Count > 0 || eventservice!.EnabledForTopic(Model.Id))
         {
             <div class="mt-3 mb-3 col col-md-8 offset-md-2 bg-form p-4 rounded" id="event-form">
-                @await Component.InvokeAsync("Events", new { template = "AddEvent", id = MemberService.Current().Id, topicid=Model.Id })
+                @await Component.InvokeAsync("Events", new { template = "AddEvent", id = MemberService.Current()!.Id, topicid=Model.Id })
             </div>
         }
     </div>

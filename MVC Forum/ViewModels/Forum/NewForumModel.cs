@@ -1,7 +1,6 @@
 ﻿using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SnitzCore.Data.Extensions;
 
 namespace MVCForum.ViewModels.Forum
 {
@@ -34,7 +33,7 @@ namespace MVCForum.ViewModels.Forum
 
         [Display(Name = "Increment post count")]
         public bool IncrementMemberPosts { get; set; } = true;
-        public Dictionary<int, string>? CategoryList { get; set; }
+        public Dictionary<int, string?>? CategoryList { get; set; }
         public int ForumId { get; set; }
 
         public Dictionary<int, string>? AllowedMembers { get; set; }

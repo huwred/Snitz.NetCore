@@ -121,7 +121,7 @@
                             <div class="mb-3">
                                 <form asp-controller="Forum" asp-action="RemoveAllowed" method="post" id="rem-allowedform">
                                     <select class="form-control mb-3" id="AllowedMembers" multiple="multiple" name="AllowedMembers">
-                                        @foreach (var member in Model.AllowedMembers)
+                                        @foreach (var member in Model.AllowedMembers!)
                                         {
                                             <option value="@member.Key">@member.Value</option>
                                         }

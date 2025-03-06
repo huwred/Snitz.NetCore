@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.IdentityModel.Tokens;
 using SmartBreadcrumbs.Attributes;
 using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
@@ -20,7 +19,6 @@ using MVCForum.ViewModels.Post;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MVCForum.ViewModels;
-using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace MVCForum.Controllers
@@ -32,7 +30,7 @@ namespace MVCForum.Controllers
         private readonly IPost _postService;
         private readonly ISnitzCookie _cookie;
         private readonly SignInManager<ForumUser> _signInManager;
-        private readonly HttpContext _httpcontext;
+        private readonly HttpContext? _httpcontext;
 
         public ForumController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             IForum forumService,IPost postService,ISnitzCookie snitzCookie,SignInManager<ForumUser> SignInManager) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
@@ -49,9 +47,9 @@ namespace MVCForum.Controllers
         public IActionResult Index(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 0)
         {
             ViewBag.RequireAuth = false;
-            if (_httpcontext.Session.GetInt32("ForumPageSize") != null && pagesize == 0)
+            if (_httpcontext!.Session.GetInt32("ForumPageSize") != null && pagesize == 0)
             {
-                pagesize = _httpcontext.Session.GetInt32("ForumPageSize").Value;
+                pagesize = _httpcontext!.Session.GetInt32("ForumPageSize")!.Value;
             }
             else if (pagesize == 0)
             {
@@ -87,7 +85,7 @@ namespace MVCForum.Controllers
             ViewData["Title"] = forum.Title;
             bool showsticky = _config.GetIntValue("STRSTICKYTOPIC") == 1;
             
-            List<PostListingModel> stickies = null;
+            List<PostListingModel>? stickies = null;
             IEnumerable<Post>? forumPosts = null;
 
             if (!showsticky)
@@ -96,7 +94,7 @@ namespace MVCForum.Controllers
             }
             else
             {
-                stickies = new PagedList<Post>(forum?.Posts?.Where(p=>p.IsSticky == 1).OrderByDescending(p=>p.LastPostDate), page, pagesize)
+                stickies = new PagedList<Post>(forum!.Posts!.Where(p=>p.IsSticky == 1).OrderByDescending(p=>p.LastPostDate), page, pagesize)
                 .Select(p => new PostListingModel()
                 {
                     Id = p.Id,
@@ -114,7 +112,7 @@ namespace MVCForum.Controllers
                     LastPostDate = !string.IsNullOrEmpty(p.LastPostDate) ? p.LastPostDate?.FromForumDateStr() : null,
                     LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
                     LatestReply = p.LastPostReplyId,
-                    Forum = BuildForumListing(p.ForumId,p.Forum),
+                    Forum = BuildForumListing(p.ForumId,p.Forum!),
                     Answered = p.Answered,
                     HasPoll = _postService.HasPoll(p.Id),
                 }).ToList();
@@ -123,15 +121,15 @@ namespace MVCForum.Controllers
             if (!(isadministrator || ismoderator))
             {
                 var curuser = _memberService.Current()?.Id;
-                forumPosts = forumPosts.Where(t => t.Status < 2 || t.MemberId == curuser);
+                forumPosts = forumPosts?.Where(t => t.Status < 2 || t.MemberId == curuser);
             }
             if (defaultdays != null)
             {
-                HttpContext.Session.SetInt32($"Forum_{forum.Id}", defaultdays.Value);
+                HttpContext.Session.SetInt32($"Forum_{forum!.Id}", defaultdays.Value);
             }
             else
             {
-                defaultdays = HttpContext.Session.GetInt32($"Forum_{forum.Id}");
+                defaultdays = HttpContext.Session.GetInt32($"Forum_{forum!.Id}");
             }
 
             if (defaultdays != null && defaultdays.Value > 0)
@@ -219,7 +217,7 @@ namespace MVCForum.Controllers
                         : forumPosts?.OrderBy(p => p.LastPostDate)
                 };
 
-                PagedList<Post> pagedTopics = new PagedList<Post>(forumPosts, page, pagesize);
+                PagedList<Post> pagedTopics = new PagedList<Post>(forumPosts!, page, pagesize);
 
                 var postlistings = pagedTopics.Select(p => new PostListingModel()
                 {
@@ -264,9 +262,9 @@ namespace MVCForum.Controllers
         public IActionResult Archived(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 0)
         {
             ViewBag.RequireAuth = false;
-            if (_httpcontext.Session.GetInt32("ForumPageSize") != null && pagesize == 0)
+            if (_httpcontext!.Session.GetInt32("ForumPageSize") != null && pagesize == 0)
             {
-                pagesize = _httpcontext.Session.GetInt32("ForumPageSize").Value;
+                pagesize = _httpcontext!.Session.GetInt32("ForumPageSize")!.Value;
             }
             else if (pagesize == 0)
             {
@@ -309,7 +307,7 @@ namespace MVCForum.Controllers
             if (!(isadministrator || ismoderator))
             {
                 var curuser = _memberService.Current()?.Id;
-                forumPosts = forumPosts.Where(t => t.Status < 2 || t.MemberId == curuser);
+                forumPosts = forumPosts!.Where(t => t.Status < 2 || t.MemberId == curuser);
             }
             if (defaultdays != null)
             {
@@ -405,7 +403,7 @@ namespace MVCForum.Controllers
                         : forumPosts?.OrderBy(p => p.LastPostDate)
                 };
 
-                PagedList<ArchivedPost> pagedTopics = new PagedList<ArchivedPost>(forumPosts, page, pagesize);
+                PagedList<ArchivedPost> pagedTopics = new PagedList<ArchivedPost>(forumPosts!, page, pagesize);
 
                 var postlistings = pagedTopics.Select(p => new PostListingModel()
                 {
@@ -454,7 +452,7 @@ namespace MVCForum.Controllers
         {
             if (HttpContext.Session.GetInt32("ActivePageSize") != null && pagesize == 0)
             {
-                pagesize = HttpContext.Session.GetInt32("ActivePageSize").Value;
+                pagesize = HttpContext!.Session.GetInt32("ActivePageSize")!.Value;
             }
             else if (pagesize == 0)
             {
@@ -532,7 +530,7 @@ namespace MVCForum.Controllers
                 Status = p.Status,
                 Message = p.Content,
                 LastPostDate = !string.IsNullOrEmpty(p.LastPostDate) ? p.LastPostDate?.FromForumDateStr() : null,
-                LastPostAuthorName = p.LastPostAuthorId != null ? p.LastPostAuthor.Name : "",
+                LastPostAuthorName = p.LastPostAuthorId != null ? p.LastPostAuthor!.Name : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p),
                 Answered = p.Answered,
@@ -697,7 +695,7 @@ namespace MVCForum.Controllers
             var member = _memberService.Current();
             _snitzDbContext.MemberSubscription.Add(new MemberSubscription()
             {
-                MemberId = member.Id,
+                MemberId = member!.Id,
                 CategoryId = forum.CategoryId,
                 ForumId = forum.Id,
                 PostId = 0
@@ -712,7 +710,7 @@ namespace MVCForum.Controllers
         public IActionResult UnSubscribe(int id)
         {
             var member = _memberService.Current();
-            _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member.Id && s.ForumId == id && s.PostId == 0)
+            _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member!.Id && s.ForumId == id && s.PostId == 0)
                 .ExecuteDelete();
             return Content("OK");
         }
@@ -871,7 +869,7 @@ namespace MVCForum.Controllers
             var forum = _forumService.GetWithPosts(Convert.ToInt32(forumid));
             if (forum != null && forum.Password == pwd)
             {
-                _httpcontext.Session.SetString("Pforum_" + forumid, pwd);
+                _httpcontext!.Session.SetString("Pforum_" + forumid, pwd);
                 return Json(true);
             }
 
@@ -912,7 +910,7 @@ namespace MVCForum.Controllers
         {
             try
             {
-                var member = _memberService.GetByUsername(form["NewMember"]);
+                var member = _memberService.GetByUsername(form["NewMember"]!);
                 if (member != null)
                 {
                     var allowed = new ForumAllowedMember()

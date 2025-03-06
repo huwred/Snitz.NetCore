@@ -1,6 +1,5 @@
 ﻿using MVCForum.ViewModels.Post;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MVCForum.ViewModels.Forum
 {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SnitzCore.Data.Extensions;
 using System.ComponentModel.DataAnnotations;
-using MVCForum.ViewModels.Forum;
 
 namespace MVCForum.ViewModels.Post
 {

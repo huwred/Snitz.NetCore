@@ -62,7 +62,13 @@ a.btn:hover {
 
 /* For the smartphones */
 @media (max-width: 480px) {
-
+    .subforum-column {
+        margin-bottom: 0px;
+    }
+    .subforum-info.subforum-column {
+        margin-top:0px;
+        margin-bottom: 3px;
+    }
     .subforum-row.subforum-weblink {
         display: grid;
         grid-template-columns: 100%;
@@ -311,28 +317,29 @@ footer{
         font-weight: bold;
         font-size: 15px;
     }
-.body {
-    display: flex;
-    padding: 10px;
-    overflow:hidden;
-    /*margin-top: 5px;*/
-}
+    .body {
+        display: flex;
+        padding: 10px;
+        overflow:hidden;
+        /*margin-top: 5px;*/
+    }
     .authors {
         flex: 15%;
     }
 
-.content {
-    flex: 80%;
-    max-width: 80%;
-    position: relative;
-}
-        .content .author-sig {
-            width:99%;
-            border-top:1px dashed black;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-        }
+    .content {
+        flex: 75%;
+        max-width: 75%;
+        position: relative;
+        padding:0.5em;
+    }
+    .content .author-sig {
+        width:99%;
+        border-top:1px dashed black;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
     .toolbar {
         flex: 5%;
     }

@@ -2,16 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using MVCForum.ViewModels.Post;
 using SnitzCore.Data.Models;
-using SnitzCore.Service;
 using System.Threading.Tasks;
-using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
-using NuGet.Common;
 using System.Globalization;
 using System.Threading;
 using Hangfire;

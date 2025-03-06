@@ -18,20 +18,23 @@
 }
 @section Styles
 {
-    <link rel="stylesheet" href="~/css/prism.min.css">
+        <link rel="stylesheet" href="~/css/prism.min.css">
 
-    @if (ViewBag.RequireAuth)
-    {
-        <style>
-            .modal-backdrop
-            {
+        @if (ViewBag.RequireAuth)
+        {
+            <style>
+                .modal-backdrop
+                {
                 opacity:1.0 !important;
-            }
-            .modal-backdrop.in {
+                }
+                .modal-backdrop.in {
                 opacity: 1.0 !important;
-            }
-        </style>
-    }
+                }
+            </style>
+        }
+}
+@{
+    var jumpToreply = Context.Request.Query.ContainsKey("replyid");
 }
 @if (!(bool)ViewBag.RequireAuth)
 {
@@ -47,93 +50,94 @@
     }
     var show1 = SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (@SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && int.Parse(@pagenum) < 2);
 
-<div class="container pt-0">
-    <snitz-breadcrumb></snitz-breadcrumb>
-    <!--Topic Section-->
+    <div class="container pt-0">
+        <snitz-breadcrumb></snitz-breadcrumb>
+        <!--Topic Section-->
 
         <vc:topic-buttons postid="@Model.Id" topic-email="@(loggedin ? 1 : 0)" snitz-if="@User.Identity!.IsAuthenticated"></vc:topic-buttons>
         <div snitz-if="@show1" class="card mb-2 topic-container">
-        @{
-            var answer = "";
-            if (Model.Answered)
-            {
-                answer = "bg-success";
+            @{
+                var answer = "";
+                if (Model.Answered)
+                {
+                    answer = "bg-success";
+                }
             }
-        }
-        <div class="card-header @answer modstatus-@Model.Status">
-            @Model.Title - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (@Model.Views @Localizer["Views"])</span>
-            <a asp-controller="Topic" asp-action="Moderate" asp-route-id="@Model.Id" title="Moderate" class="modal-link"><i class="modstatus-@Model.Status fa fa-hand-stop-o"></i></a>
-        </div>
-        <div class="card-body">
-            <div class="body topic">
-                <partial name="PostAuthor" model="Model.Author"/>
-                <div class="content flex-shrink-0 flex-grow-0">
-                    @if (eventservice != null && eventservice.EnabledForTopic(Model.Id))
-                    {
-                        @await Component.InvokeAsync("Events", new { template = "TopicSummary", id = Model.Id })
-                    }
-                    @if (Model.HasPoll)
-                    {
-                        <div id="PollPanel">
-                        @await Component.InvokeAsync("Polls", new { template = "DisplayPoll", catid = 0, forumid = 0, topicid = Model.Id })
-                        </div>
-                    }
-                    @Html.Raw(BbCodeProcessor.Format(Model.Content))
-                    @if (Model.ShowSig)
-                    {
-                        <div class="author-sig">@Html.Raw(BbCodeProcessor.Format(Model.Author.Signature))</div>
-                    }
-                </div>
-
+            <div class="card-header @answer modstatus-@Model.Status">
+                @Model.Title - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (@Model.Views @Localizer["Views"])</span>
+                <a asp-controller="Topic" asp-action="Moderate" asp-route-id="@Model.Id" title="Moderate" class="modal-link"><i class="modstatus-@Model.Status fa fa-hand-stop-o"></i></a>
             </div>
-        </div>
-        <div snitz-if="@(User.Identity.IsAuthenticated || Model.Edited != null)" class="card-footer text-dark">
-            <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && Model.Edited != null)" class="form-text">@Localizer["lblEditedBy", Model.EditedBy!, Model.Edited!]</span>
+            <div class="card-body">
+                <div class="body topic">
+                    <partial name="PostAuthor" model="Model.Author"/>
+                    <div class="content flex-shrink-0 flex-grow-0">
+                        @if (eventservice != null && eventservice.EnabledForTopic(Model.Id))
+                        {
+                            @await Component.InvokeAsync("Events", new { template = "TopicSummary", id = Model.Id })
+                        }
+                        @if (Model.HasPoll)
+                        {
+                            <div id="PollPanel">
+                                @await Component.InvokeAsync("Polls", new { template = "DisplayPoll", catid = 0, forumid = 0, topicid = Model.Id })
+                            </div>
+                        }
+                        @Html.Raw(BbCodeProcessor.Format(Model.Content))
+                        @if (Model.ShowSig)
+                        {
+                            <div class="author-sig">@Html.Raw(BbCodeProcessor.Format(Model.Author.Signature))</div>
+                        }
+                    </div>
+
+                </div>
+            </div>
+            <div snitz-if="@(User.Identity.IsAuthenticated || (Model.Edited != null && Model.EditedBy != null))" class="card-footer text-dark">
+                <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && Model.Edited != null)" class="form-text">@Localizer["lblEditedBy", Model.EditedBy!, Model.Edited!]</span>
                 @if (!Model.Archived)
                 {
                     @await Component.InvokeAsync("PostControls", new { post = Model })
-                    
+
                 }else{
                     <span class="form-text">@Localizer["tipTopicArchived"]</span>
                 }
-            <div snitz-if="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1" class="footer"><a href="" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a class="form-control-plaintext text-end" href="" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
+                <div snitz-if="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1" class="footer"><a href="" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a class="form-control-plaintext text-end" href="" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
+            </div>
         </div>
-    </div>
 
-<!--Replies Section-->
-@if (Model.Replies != null && Model.Replies!.Any())
-{
-    <form id="defaultdays-form" asp-action="Index" class="form-inline">
-        <div class="input-group">
-            <span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span>
-            <select class="form-select mb-2" id="sortdir" name="sortdir">
-                <option value="des" selected-val="@Model.SortDir">@Localizer["optDesc"]</option>
-                <option value="asc" selected-val="@Model.SortDir">@Localizer["optAsc"]</option>
-            </select>
-            @if (SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "") != "")
-            {
-                var ischecked = Model.PageSize;
-                    <span class="form-text">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
-
-                <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
-                    @foreach (var size in SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "").Split(","))
+        <!--Replies Section-->
+        @if (Model.Replies != null && Model.Replies!.Any())
+        {
+            <form id="defaultdays-form" asp-action="Index" class="form-inline">
+                <div class="input-group">
+                    <span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span>
+                    <select class="form-select mb-2" id="sortdir" name="sortdir">
+                        <option value="des" selected-val="@Model.SortDir">@Localizer["optDesc"]</option>
+                        <option value="asc" selected-val="@Model.SortDir">@Localizer["optAsc"]</option>
+                    </select>
+                    @if (SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "") != "")
                     {
-                        <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size"
-                               @if (ischecked == Convert.ToInt32(size))
-                               {
-                                   @Html.Raw("checked")
-                               }/>
-                        <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
+                        var ischecked = Model.PageSize;
+                        <span class="form-text">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
+
+                        <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
+                            @foreach (var size in SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "")!.Split(","))
+                            {
+                                <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size"
+                                @if (ischecked == Convert.ToInt32(size))
+                                {
+                                    @Html.Raw("checked")
+                                }/>
+                                <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
+                            }
+                        </div>
                     }
                 </div>
-            }
-        </div>
-        <input type="number" value="@pagenum" name="page" style="display: none;"/>
-    </form>
+                <input type="number" value="@pagenum" name="page" style="display: none;"/>
+            </form>
 
-    var rowclass = "alt";
-    var first = true;
-    <div class="reply-container">
+            var rowclass = "alt";
+            var first = true;
+            int replycounter = 1;
+            <div class="reply-container">
 
         @foreach (var reply in Model.Replies!)
         {
@@ -149,7 +153,8 @@
             {
                 hideme = "display:none;";
             }
-            first = false;
+            first = jumpToreply || (Model.PageSize > 5 && replycounter < 5) ;
+            replycounter += 1;
             @if ((User.IsInRole("Administrator") || User.IsInRole("Forum_" + Model.ForumId) || reply.AuthorName == User.Identity.Name))
             {
                 viewUnmoderated = true;
@@ -177,7 +182,7 @@
                             </div>
                         </div>
                     </div>
-                    <div snitz-if="@(User.Identity.IsAuthenticated || reply.Edited != null)" class="card-footer text-dark">
+                    <div snitz-if="@(User.Identity.IsAuthenticated || (reply.Edited != null && reply.EditedBy != null))" class="card-footer text-dark">
                         <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && reply.Edited != null)" class="form-text">@Localizer["lblEditedBy", reply.EditedBy!, reply.Edited!]</span>
                         @if(!Model.Archived)
                         {

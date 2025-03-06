@@ -82,7 +82,7 @@
                     <div class="card panel-primary card-body p-3">
                         <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SearchMessage=true" id="member_posts">@Localizer["lblProfileAllPosts", Model.Member?.Name]</a>
                         <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SinceDate=14&SearchMessage=true" id="member_recent_posts">@Localizer["lblProfileRecentPosts", Model.Member?.Name]</a>
-                        <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name" id="member_my_posts">@Localizer["lblProfileMyPosts", Model.Member?.Name]</a>
+                        <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name" id="member_my_posts">@Localizer["lblProfileMyPosts", Model.Member!.Name]</a>
 
                         <a href="~/PhotoAlbum/Member/@Model.Member?.Id?sortby=date&sortorder=desc" id="member_album" target="_blank">@Localizer["lblAlbum", _memberService.GetMemberName(Model.Member.Id)]</a>
                     </div>

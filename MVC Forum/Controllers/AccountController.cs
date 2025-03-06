@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using MVCForum.Extensions;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Member;
 using MVCForum.ViewModels.User;
@@ -63,7 +62,7 @@ namespace MVCForum.Controllers
             _env = env;
             _roleManager = roleManager;
             _configuration = configuration;
-            _httpcontext = httpContextAccessor.HttpContext;
+            _httpcontext = httpContextAccessor!.HttpContext!;
         }
 
         [Route("captchacheck/{id?}")]
@@ -71,7 +70,7 @@ namespace MVCForum.Controllers
         {
             if (id != null)
             {
-                var session = _httpContextAccessor.HttpContext.Session;
+                var session = _httpcontext.Session;
 
                 if (session.Keys.Contains("Captcha") && session.GetString("Captcha") != id.Value.ToString())
                 {
@@ -166,7 +165,7 @@ namespace MVCForum.Controllers
                 var memberid = _userManager.GetUserId(User);
                 user = await _userManager.FindByIdAsync(memberid!);
                 member = _memberService.GetByUsername(user?.UserName!);
-                member.HideOnline = User.IsInRole("HiddenMembers") ? 1 : 0;
+                member!.HideOnline = User.IsInRole("HiddenMembers") ? 1 : 0;
             }
             
 
@@ -229,7 +228,7 @@ namespace MVCForum.Controllers
                 Firstname = model.Firstname,
                 Lastname = model.Lastname,
                 Title = model.Title,
-                Email = model.Email,
+                Email = model!.Email!,
                 Newemail = model.Email,
                 Member = model,
             };
@@ -469,7 +468,7 @@ namespace MVCForum.Controllers
         {
             if (token == null)
             {
-                var forumuser = _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User).Result;
+                var forumuser = _userManager.GetUserAsync(_httpcontext.User).Result;
                 if (forumuser != null)
                 {
                     token = _userManager.GeneratePasswordResetTokenAsync(forumuser).Result;
@@ -477,7 +476,7 @@ namespace MVCForum.Controllers
                 }
             }
 
-            var model = new ResetPasswordModel { Token = token, Username = email };
+            var model = new ResetPasswordModel { Token = token, Username = email! };
             return View(model);
         }
         
@@ -489,7 +488,7 @@ namespace MVCForum.Controllers
             if (!ModelState.IsValid)
                 return View(resetPasswordModel);
             var passwordValidator = new PasswordValidator<ForumUser>();
-            var result = await passwordValidator.ValidateAsync(_userManager, null, resetPasswordModel.Password);
+            var result = await passwordValidator.ValidateAsync(_userManager, new ForumUser(), resetPasswordModel.Password);
             if (!result.Succeeded)
             {
                 ModelState.AddModelError("Password", "Password is not valid");
@@ -639,8 +638,8 @@ namespace MVCForum.Controllers
             var model = new ChangeEmailModel
             {
                 Email = "",
-                Username = member.Name,
-                CurrentEmail = member.Email
+                Username = member!.Name,
+                CurrentEmail = member!.Email!
             };
             return View(model);
         }
@@ -654,8 +653,9 @@ namespace MVCForum.Controllers
             if (user == null)
             {
                 ModelState.AddModelError("CustomError", _languageResource.GetString("UsernameNotFound"));
+                return View(model);
             }
-            if (!await _userManager.CheckPasswordAsync(user, model.Password))
+            if (!await _userManager.CheckPasswordAsync(user, model!.Password!))
             {
                 ModelState.AddModelError("CustomError", _languageResource.GetString("dlgPasswordErr"));                    
             }
@@ -664,16 +664,16 @@ namespace MVCForum.Controllers
                 return View(model);
             }
             var member = _memberService.Current();
-            member.Newemail = model.NewEmail;
+            member!.Newemail = model.NewEmail;
             _snitzDbContext.Update(member);
             await _snitzDbContext.SaveChangesAsync();
             CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
-            var token = await _userManager.GenerateChangeEmailTokenAsync(user,model.NewEmail);//.GenerateEmailConfirmationTokenAsync(user);
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user,model.NewEmail!);//.GenerateEmailConfirmationTokenAsync(user);
             token = HttpUtility.UrlEncode(token);
             var confirmationLink = Url.Action(nameof(ChangeEmail), "Account", new { token, username = member.Name }, Request.Scheme);
-            var message = new EmailMessage(new[] { model.NewEmail }, 
+            var message = new EmailMessage(new[] { model.NewEmail! }, 
                 _languageResource["Confirm"].Value, 
-                _emailSender.ParseTemplate("changeEmail.html",_languageResource["Confirm"].Value,model.NewEmail,member.Name, confirmationLink!, cultureInfo.Name));
+                _emailSender.ParseTemplate("changeEmail.html",_languageResource["Confirm"].Value,model.NewEmail!,member.Name, confirmationLink!, cultureInfo.Name));
             
             await _emailSender.SendEmailAsync(message);
             ViewBag.Message = _languageResource.GetString("EmailConfirm");
@@ -793,7 +793,7 @@ namespace MVCForum.Controllers
             if (_memberService.Current()?.Id != id || id == null)
                 return View("Error");
 
-            return View(new ChangeUsernameModel{CurrentUserId = _memberService.Current().Id});
+            return View(new ChangeUsernameModel{CurrentUserId = _memberService.Current()!.Id});
         }
 
         [HttpPost]
@@ -807,10 +807,11 @@ namespace MVCForum.Controllers
                 if (_memberService.GetByUsername(model.Username) != null)
                 {
                     ModelState.AddModelError("Username",_languageResource.GetString("UserNameExists"));
+                    return View(model);
                 }
                 else
                 {
-                    member.Name = model.Username;
+                    member!.Name = model.Username;
                     _memberService.Update(member);
                     _snitzDbContext.SaveChanges();
                     ViewBag.Message = "Username changed";
@@ -828,9 +829,9 @@ namespace MVCForum.Controllers
                 var avPath = Path.Combine(_env.WebRootPath, _config.ContentFolder,"Avatar");
                 try
                 {
-                    if (System.IO.File.Exists(Path.GetFullPath(avPath,currentMember.PhotoUrl)))
+                    if (System.IO.File.Exists(Path.GetFullPath(avPath,currentMember.PhotoUrl!)))
                     {
-                        System.IO.File.Delete(Path.GetFullPath(avPath, currentMember.PhotoUrl));
+                        System.IO.File.Delete(Path.GetFullPath(avPath, currentMember.PhotoUrl!));
                     }
                 }
                 catch (Exception e)
@@ -1000,7 +1001,7 @@ namespace MVCForum.Controllers
                 {
                     foreach (var validator in _userManager.PasswordValidators)
                     {
-                        var result = await validator.ValidateAsync(_userManager, null, login.Password);
+                        var result = await validator.ValidateAsync(_userManager, new ForumUser(), login.Password);
 
                         if (!result.Succeeded)
                         {
@@ -1089,7 +1090,7 @@ namespace MVCForum.Controllers
             }
             else
             {
-                response = client.Check(name, email, userip);
+                response = client.Check(name, email, userip!);
             }
             int freq = 0;
      

@@ -20,7 +20,7 @@
         {
             <div class="input-group">
                 <div class="radioBtn btn-group btn-group-sm" title="Page size" data-toggle="tooltip" data-original-title="Page size">
-                    @foreach (var size in SnitzConfig.GetValueWithDefault("STRSEARCHPAGESIZES", "").Split(","))
+                    @foreach (var size in SnitzConfig.GetValueWithDefault("STRSEARCHPAGESIZES", "")!.Split(","))
                     {
                         <a class="btn btn-outline-secondary btn-sm notActive" data-toggle="fun" data-title="@size">@size</a>
                     }
@@ -54,8 +54,8 @@
     }
     else
     {
-        var allterms = Localizer[SearchFor.AllTerms.GetAttribute<DisplayAttribute>()!.Name].Value;
-        var anyterms = Localizer[SearchFor.AnyTerms.GetAttribute<DisplayAttribute>()!.Name].Value;
+        var allterms = Localizer[SearchFor.AllTerms.GetAttribute<DisplayAttribute>()!.Name!].Value;
+        var anyterms = Localizer[SearchFor.AnyTerms.GetAttribute<DisplayAttribute>()!.Name!].Value;
         <div class="col col-md-8 offset-md-2 ">
             <form asp-controller="Forum" asp-action="SearchResult" class="needs-validation bg-form p-4 rounded" novalidate>
                 <div class="mb-3">
@@ -70,7 +70,7 @@
                 <div class="mb-3">
                     @foreach (SearchFor c in Enum.GetValues(typeof(SearchFor)).OfType<SearchFor>())
                     {
-                        var displayName = c.GetAttribute<DisplayAttribute>()!.Name;
+                        var displayName = c.GetAttribute<DisplayAttribute>()!.Name!;
                         <div class="form-check">
                             <input asp-for="SearchFor" type="radio" class="form-check-input" value="@((int)c)" checked="@(c == Model.SearchFor)">
                             <label asp-for="SearchFor" class="form-check-label">@Localizer[displayName]</label>

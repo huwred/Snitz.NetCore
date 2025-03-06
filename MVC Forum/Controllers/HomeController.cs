@@ -1,22 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using SmartBreadcrumbs.Attributes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
-using SnitzCore.Data.Models;
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Localization;
 using MVCForum.ViewModels;
-using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Home;
 using MVCForum.ViewModels.Post;
-using System.Threading;
 
 namespace MVCForum.Controllers
 {

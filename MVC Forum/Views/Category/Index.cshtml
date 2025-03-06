@@ -51,7 +51,7 @@
     </div>
     <div class="row">
         <div class="col accordion">
-            @foreach (var category in Model.Categories)
+            @foreach (var category in Model.Categories!)
             {
                 var ID = category.Id;
                 <div class="subforum border-0 border-primary accordion-item">
@@ -60,9 +60,9 @@
                             <i class="fa fa-minus"></i>
                         </button>
                         <a snitz-if="@(SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)" style="display: inline;" href="~/Category/@ID">@category.Name</a>
-                        @if (category.Subscription == (int)CategorySubscription.CategorySubscription && User.Identity.IsAuthenticated)
+                        @if (category.Subscription == (int)CategorySubscription.CategorySubscription && User.Identity!.IsAuthenticated)
                         {
-                            if (subscriptions.Where(s => s.CategoryId == category.Id && s.PostId == 0).Select(s => s.CategoryId).Any())
+                            if (subscriptions!.Where(s => s.CategoryId == category.Id && s.PostId == 0).Select(s => s.CategoryId).Any())
                             {
                                 <i class="fa fa-share-square category center m-2" title="@Localizer["btnUnsubscribe"]" data-id="@category.Id"></i>
                             }
@@ -73,7 +73,7 @@
                         }
                     </h5>
                     <div class="accordion-collapse collapse show" id="collapse_@ID" aria-labelledby="heading_@ID">
-                        @foreach (var forum in Model.ForumList.Where(f=>f.CategoryId == ID).OrderBy(f=>f.Order))
+                        @foreach (var forum in Model.ForumList!.Where(f=>f.CategoryId == ID).OrderBy(f=>f.Order))
                         {
                             @if (HasAccess(forum.AccessType, forum.Id))
                             {
@@ -128,17 +128,17 @@
                                             {
                                                 if (forum.LastPostTopicId.HasValue && forum.LastPostTopicId.Value > 0)
                                                 {
-                                                    <text>@Localizer["lblPostedBy"]</text>
+                                                    <text>@Localizer["lblLastPost"] @Localizer["lblPostedBy"]</text>
                                                     <member-link member-id="@forum.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link>
                                                     <br class="d-none d-sm-block"/>
                                                     <lastpost-link reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
                                                 }
                                             }
-                                            else if (User.Identity.IsAuthenticated && (forum.AccessType == ForumAuthType.Members ))
+                                            else if (User.Identity!.IsAuthenticated && (forum.AccessType == ForumAuthType.Members ))
                                             {
                                                 if (forum.LastPostTopicId.HasValue && forum.LastPostTopicId.Value > 0)
                                                 {
-                                                    <text>@Localizer["lblPostedBy"]</text>
+                                                    <text>@Localizer["lblLastPost"] @Localizer["lblPostedBy"]</text>
                                                     <member-link member-id="@forum.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link>
                                                     <br class="d-none d-sm-block" />
                                                     <lastpost-link reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>

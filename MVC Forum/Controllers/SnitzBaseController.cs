@@ -15,7 +15,7 @@ namespace MVCForum.Controllers
         protected IMember _memberService;
         protected LanguageService  _languageResource;
         protected SnitzDbContext _snitzDbContext;
-        protected IHttpContextAccessor _httpContextAccessor;
+        protected IHttpContextAccessor? _httpContextAccessor;
         protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
         public SnitzBaseController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor)
         {

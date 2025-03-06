@@ -24,10 +24,6 @@ using System.Threading;
 using BbCodeFormatter;
 using Hangfire;
 using System.Net;
-using System.Runtime.InteropServices.JavaScript;
-using SnitzCore.Service;
-using static System.Net.Mime.MediaTypeNames;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using System.Text.RegularExpressions;
 
 namespace MVCForum.Controllers
@@ -42,7 +38,7 @@ namespace MVCForum.Controllers
         private readonly IEmailSender _mailSender;
         private readonly ISubscriptions _processSubscriptions;
         private readonly ICodeProcessor _bbcodeProcessor;
-        private readonly HttpContext _httpcontext;
+        private readonly HttpContext? _httpcontext;
         private readonly IPrivateMessage _pmService;
 
         public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
@@ -66,10 +62,11 @@ namespace MVCForum.Controllers
         [Route("Topic/Posts/{id}")]
         public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="asc", int? replyid = null)
         {
+
             if(TempData["Error"] != null)
             {
                 ViewBag.Error = TempData["Error"];
-                if((string)TempData["Error"] == "floodcheck")
+                if((string)TempData["Error"]! == "floodcheck")
                 {
                     var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
                     ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
@@ -96,10 +93,10 @@ namespace MVCForum.Controllers
             bool ismoderator = User.IsInRole($"Forum_{post.ForumId}");
             bool isadministrator = User.IsInRole("Administrator");
 
-            notallowed = CheckAuthorisation(post.Forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
+            notallowed = CheckAuthorisation(post.Forum!.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
             if (!isadministrator && passwordrequired)
             {
-                var auth = _httpcontext.Session.GetString("Pforum_" + post.ForumId) == null ? "" : _httpcontext.Session.GetString("Pforum_" + post.ForumId);
+                var auth = _httpcontext!.Session.GetString("Pforum_" + post.ForumId) == null ? "" : _httpcontext.Session.GetString("Pforum_" + post.ForumId);
                 if (auth != post.Forum.Password)
                 {
                     ViewBag.RequireAuth = true;
@@ -113,13 +110,13 @@ namespace MVCForum.Controllers
             if (!HttpContext.Session.Keys.Contains("TopicId_"+ id))
             {
                 HttpContext.Session.SetInt32("TopicId_"+ id,1);
-                post.ViewCount += 1;
+                post!.ViewCount += 1;
                 _postService.UpdateViewCount(post.Id);
             }
 
             if (HttpContext.Session.GetInt32("TopicPageSize") != null && pagesize == 0)
             {
-                pagesize = HttpContext.Session.GetInt32("TopicPageSize").Value;
+                pagesize = HttpContext.Session.GetInt32("TopicPageSize")!.Value;
             }
             else if (pagesize == 0)
             {
@@ -128,7 +125,7 @@ namespace MVCForum.Controllers
             HttpContext.Session.SetInt32("TopicPageSize",pagesize);
 
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
-            var catPage = new MvcBreadcrumbNode("", "Category", post.Category?.Name){ Parent = homePage,RouteValues = new{id=post.Category?.Id}};
+            var catPage = new MvcBreadcrumbNode("", "Category", post!.Category?.Name){ Parent = homePage,RouteValues = new{id=post.Category?.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", post.Forum?.Title){ Parent = catPage,RouteValues = new{id=post.ForumId}};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", post.Title) { Parent = forumPage };
             ViewData["BreadcrumbNode"] = topicPage;
@@ -209,10 +206,10 @@ namespace MVCForum.Controllers
             bool ismoderator = User.IsInRole($"Forum_{post.ForumId}");
             bool isadministrator = User.IsInRole("Administrator");
 
-            notallowed = CheckAuthorisation(post.Forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
+            notallowed = CheckAuthorisation(post!.Forum!.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
             if (!isadministrator && passwordrequired)
             {
-                var auth = _httpcontext.Session.GetString("Pforum_" + post.ForumId) == null ? "" : _httpcontext.Session.GetString("Pforum_" + post.ForumId);
+                var auth = _httpcontext!.Session.GetString("Pforum_" + post.ForumId) == null ? "" : _httpcontext.Session.GetString("Pforum_" + post.ForumId);
                 if (auth != post.Forum.Password)
                 {
                     ViewBag.RequireAuth = true;
@@ -226,13 +223,13 @@ namespace MVCForum.Controllers
             if (!HttpContext.Session.Keys.Contains("TopicId_"+ id))
             {
                 HttpContext.Session.SetInt32("TopicId_"+ id,1);
-                post.ViewCount += 1;
+                post!.ViewCount += 1;
                 _postService.UpdateViewCount(post.Id);
             }
 
             if (HttpContext.Session.GetInt32("TopicPageSize") != null && pagesize == 0)
             {
-                pagesize = HttpContext.Session.GetInt32("TopicPageSize").Value;
+                pagesize = HttpContext.Session.GetInt32("TopicPageSize")!.Value;
             }
             else if (pagesize == 0)
             {
@@ -241,7 +238,7 @@ namespace MVCForum.Controllers
             HttpContext.Session.SetInt32("TopicPageSize",pagesize);
 
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
-            var catPage = new MvcBreadcrumbNode("", "Category", post.Category?.Name){ Parent = homePage,RouteValues = new{id=post.Category?.Id}};
+            var catPage = new MvcBreadcrumbNode("", "Category", post!.Category?.Name){ Parent = homePage,RouteValues = new{id=post.Category?.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", post.Forum?.Title){ Parent = catPage,RouteValues = new{id=post.ForumId}};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", post.Subject) { Parent = forumPage };
             ViewData["BreadcrumbNode"] = topicPage;
@@ -310,7 +307,7 @@ namespace MVCForum.Controllers
             if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
             {
                 var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
-                if (member.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
+                if (member!.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
                 {
                     TempData["Error"] = "floodcheck";
                     ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
@@ -348,7 +345,7 @@ namespace MVCForum.Controllers
             if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
             {
                 var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
-                if (member.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
+                if (member!.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
                 {
                     TempData["Error"] = "floodcheck";
                     ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
@@ -357,7 +354,7 @@ namespace MVCForum.Controllers
             }
             var topic = _postService.GetTopicWithRelated(id);
             
-            var forum = _forumService.GetWithPosts(topic.ForumId);
+            var forum = _forumService.GetWithPosts(topic!.ForumId);
             var model = new NewPostModel()
             {
                 TopicId = id,
@@ -388,7 +385,7 @@ namespace MVCForum.Controllers
             var member = await _memberService.GetById(User);
             var topic = _postService.GetTopicWithRelated(id);
             
-            var forum = _forumService.GetWithPosts(topic.ForumId);
+            var forum = _forumService.GetWithPosts(topic!.ForumId);
             var model = new NewPostModel()
             {
                 TopicId = id,
@@ -420,7 +417,7 @@ namespace MVCForum.Controllers
             var member = await _memberService.GetById(User);
             var topic = _postService.GetTopicWithRelated(id);
             var haspoll = _postService.HasPoll(id);
-            var forum = _forumService.GetWithPosts(topic.ForumId);
+            var forum = _forumService.GetWithPosts(topic!.ForumId);
             var model = new NewPostModel()
             {
                 Id = id,
@@ -462,7 +459,7 @@ namespace MVCForum.Controllers
             if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
             {
                 var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
-                if (member.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
+                if (member!.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
                 {
                     TempData["Error"] = "floodcheck";
                     ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
@@ -471,11 +468,11 @@ namespace MVCForum.Controllers
             }
             var reply = _postService.GetReply(id);
             
-            var topic = _postService.GetTopicWithRelated(reply.PostId);
+            var topic = _postService.GetTopicWithRelated(reply!.PostId);
             var model = new NewPostModel()
             {
                 Id = 0,
-                TopicId = topic.Id,
+                TopicId = topic!.Id,
                 ForumName = topic.Forum!.Title,
                 ForumId = topic.ForumId,
                 CatId = topic.CategoryId,
@@ -504,11 +501,11 @@ namespace MVCForum.Controllers
 
             var member = await _memberService.GetById(User);
             var reply = _postService.GetReply(id);
-            var topic = _postService.GetTopicWithRelated(reply.PostId);
+            var topic = _postService.GetTopicWithRelated(reply!.PostId);
             var model = new NewPostModel()
             {
                 Id = id,
-                TopicId = topic.Id,
+                TopicId = topic!.Id,
                 ForumName = topic.Forum!.Title,
                 ForumId = topic.ForumId,
                 CatId = topic.CategoryId,
@@ -567,7 +564,7 @@ namespace MVCForum.Controllers
                     await _forumService.UpdateLastPost(model.ForumId);
                     if (_config.GetIntValue("STRMOVENOTIFY") == 1)
                     {
-                        await _mailSender.MoveNotify(author,post);
+                        await _mailSender.MoveNotify(author!,post);
                     }
                 }
                 else
@@ -586,7 +583,7 @@ namespace MVCForum.Controllers
                     if (!(sub == 0 || sub == 4))
                     {
                         var forum = _forumService.GetWithPosts(post.ForumId);
-                        switch (forum.Category.Subscription)
+                        switch (forum.Category!.Subscription)
                         {
                             case 1 :
                                 BackgroundJob.Enqueue(() => _processSubscriptions.Topic(topicid));
@@ -659,7 +656,7 @@ namespace MVCForum.Controllers
                     _snitzDbContext.Polls.Update(existingpoll);
                 }
                 _snitzDbContext.SaveChanges();
-                foreach (PollAnswer pollAnswer in poll.PollAnswers)
+                foreach (PollAnswer pollAnswer in poll.PollAnswers!)
                 {
                     if (!string.IsNullOrWhiteSpace(pollAnswer.Label))
                     {
@@ -701,11 +698,11 @@ namespace MVCForum.Controllers
         [Route("AddReply/")]
         public async Task<IActionResult> AddReply(NewPostModel model)
         {
-            var member = _memberService.GetByUsername(User.Identity.Name);
+            var member = _memberService.GetByUsername(User.Identity!.Name!);
             if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
             {
                 var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
-                if (member.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
+                if (member!.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
                 {
                     
                     TempData["Error"] = "floodcheck";
@@ -713,10 +710,10 @@ namespace MVCForum.Controllers
                     return Json(new{url=Url.Action("Index", "Topic", new { id = model.TopicId }),id=model.TopicId});
                 }
             }
-            var reply = BuildReply(model, member.Id);
+            var reply = BuildReply(model, member!.Id);
             if (model.Id != 0)
             {
-                reply.Content = model.Content;
+                reply!.Content = model.Content;
                 reply.Sig = (short)(model.UseSignature ? 1 : 0);
                 reply.LastEdited = DateTime.UtcNow.ToForumDateStr();
                 reply.LastEditby = member.Id;
@@ -724,8 +721,8 @@ namespace MVCForum.Controllers
             }
             else
             {
-                var replyid = await _postService.Create(reply);
-                if (reply.Status < 2) //not waiting to be moderated
+                var replyid = await _postService.Create(reply!);
+                if (reply!.Status < 2) //not waiting to be moderated
                 {
                     var forum = _forumService.GetWithPosts(reply.ForumId);
                     var sub = _config.GetIntValue("STRSUBSCRIPTION");
@@ -790,7 +787,7 @@ namespace MVCForum.Controllers
             var member = _memberService.GetById(User).Result;
             var post = _postService.GetReply(id);
             //if this isn't the last post then can't delete it
-            if ((post.MemberId == member!.Id && post!.Topic!.LastPostReplyId != id) && !member.Roles.Contains("Administrator") && post.Status < 2)
+            if ((post!.MemberId == member!.Id && post!.Topic!.LastPostReplyId != id) && !member.Roles.Contains("Administrator") && post.Status < 2)
             {
                 ModelState.AddModelError("","Unable to delete this reply");
                 return Json(new { result = false, error = "Unable to delete this reply" });
@@ -807,10 +804,10 @@ namespace MVCForum.Controllers
         {
             var member = _memberService.GetById(User).Result;
             var post = _postService.GetTopicAsync(id).Result;
-            if (member != null && (member.Roles.Contains("Administrator") || post.MemberId == member.Id))
+            if (member != null && (member.Roles.Contains("Administrator") || post!.MemberId == member.Id))
             {
                 await _postService.DeleteTopic(id);
-                return Json(new { result = true, url = Url.Action("Index","Forum", new{id=post.ForumId}) });
+                return Json(new { result = true, url = Url.Action("Index","Forum", new{id=post!.ForumId}) });
 
             }
             
@@ -842,7 +839,7 @@ namespace MVCForum.Controllers
             }
 
             var result = await _postService.LockTopic(id, (short)status);
-            return result ? Json(new { result = result, data = id }) : Json(new { result = result, error = "Unable to toggle Status" });
+            return result ? Json(new { result, data = id }) : Json(new { result, error = "Unable to toggle Status" });
             
         }
         public IActionResult PasswordCheck(string pwd,string forumid,string? topicid)
@@ -850,7 +847,7 @@ namespace MVCForum.Controllers
             var forum = _forumService.GetWithPosts(Convert.ToInt32(forumid));
             if (forum != null && forum.Password == pwd)
             {
-                _httpcontext.Session.SetString("Pforum_" + forumid, pwd);
+                _httpcontext!.Session.SetString("Pforum_" + forumid, pwd);
                 return Json(true);
             }
 
@@ -865,11 +862,11 @@ namespace MVCForum.Controllers
             if (archived == 1)
             {
                 var topic = _postService.GetArchivedTopic(id);
-                Member from = _memberService.Current();
+                Member? from = _memberService.Current();
                 
                 if (from != null)
                 {
-                    em.FromEmail = from.Email;
+                    em.FromEmail = from.Email!;
                     em.FromName = from.Name;
                 }
                 else
@@ -878,7 +875,7 @@ namespace MVCForum.Controllers
                     ViewBag.Error = "Error loading data";
                     return View("Error");
                 }
-                em.ReturnUrl = topic.Id.ToString();
+                em.ReturnUrl = topic!.Id.ToString();
                 
                 em.Subject = _languageResource["sendtoSubject", from.Name].Value;
                 
@@ -895,11 +892,11 @@ namespace MVCForum.Controllers
             else
             {
                 var topic = _postService.GetTopicAsync(id).Result;
-                Member from = _memberService.Current();
+                Member? from = _memberService.Current();
                 
                 if (from != null)
                 {
-                    em.FromEmail = from.Email;
+                    em.FromEmail = from.Email!;
                     em.FromName = from.Name;
                 }
                 else
@@ -908,7 +905,7 @@ namespace MVCForum.Controllers
                     ViewBag.Error = "Error loading data";
                     return View("Error");
                 }
-                em.ReturnUrl = topic.Id.ToString();
+                em.ReturnUrl = topic!.Id.ToString();
                 
                 em.Subject = _languageResource["sendtoSubject", from.Name].Value;
                 
@@ -962,10 +959,10 @@ namespace MVCForum.Controllers
                 {
                     topic = _postService.GetArchivedTopicWithRelated(id);
                 }
-                PagedList<ArchivedReply>? pagedReplies = PagedReplies(1, 100, "desc", topic);
+                PagedList<ArchivedReply>? pagedReplies = PagedReplies(1, 100, "desc", topic!);
                 model = new PostIndexModel()
                 {
-                    Id = topic.Id,
+                    Id = topic!.Id,
                     Title = topic.Subject,
                     Author = topic.Member!,
                     AuthorId = topic.Member!.Id,
@@ -1008,10 +1005,10 @@ namespace MVCForum.Controllers
                 {
                     topic = _postService.GetTopicWithRelated(id);
                 }
-                PagedList<PostReply>? pagedReplies = PagedReplies(1, 100, "asc", topic);
+                PagedList<PostReply>? pagedReplies = PagedReplies(1, 100, "asc", topic!);
                 model = new PostIndexModel()
                 {
-                    Id = topic.Id,
+                    Id = topic!.Id,
                     Title = topic.Title,
                     Author = topic.Member!,
                     AuthorId = topic.Member!.Id,
@@ -1087,7 +1084,7 @@ namespace MVCForum.Controllers
                         //Send email
                         subject = _config.ForumTitle + ": Topic Approved";
                         message = 
-                            _mailSender.ParseTemplate("approvePost.html",_languageResource["tipApproveTopic"].Value,author.Email,author.Name, topicLink, cultureInfo.Name,vm.ApprovalMessage);
+                            _mailSender.ParseTemplate("approvePost.html",_languageResource["tipApproveTopic"].Value,author?.Email!,author?.Name!, topicLink!, cultureInfo.Name,vm.ApprovalMessage);
 
                         var sub = (SubscriptionLevel)_config.GetIntValue("STRSUBSCRIPTION");
                         if (!(sub == SubscriptionLevel.None || sub == SubscriptionLevel.Topic))
@@ -1106,7 +1103,7 @@ namespace MVCForum.Controllers
                         //Send email
                             subject = _config.ForumTitle + ": Topic rejected";
                             message = 
-                            _mailSender.ParseTemplate("rejectPost.html",_languageResource["tipRejectTopic"].Value,author.Email,author.Name, "", cultureInfo.Name,vm.ApprovalMessage);
+                            _mailSender.ParseTemplate("rejectPost.html",_languageResource["tipRejectTopic"].Value,author?.Email!,author?.Name!, "", cultureInfo.Name,vm.ApprovalMessage);
 
                         break;
                     case "Hold":
@@ -1114,7 +1111,7 @@ namespace MVCForum.Controllers
                         //Send email
                             subject = _config.ForumTitle + ": Topic placed on Hold";
                             message =                             
-                                _mailSender.ParseTemplate("onholdPost.html",_languageResource["tipOnholdTopic"].Value,author.Email,author.Name, topicLink, cultureInfo.Name,vm.ApprovalMessage);
+                                _mailSender.ParseTemplate("onholdPost.html",_languageResource["tipOnholdTopic"].Value,author?.Email!,author?.Name!, topicLink!, cultureInfo.Name,vm.ApprovalMessage);
 
                         break;
                 }
@@ -1149,8 +1146,8 @@ namespace MVCForum.Controllers
             var member = _memberService.Current();
             _snitzDbContext.MemberSubscription.Add(new MemberSubscription()
             {
-                MemberId = member.Id,
-                CategoryId = topic.CategoryId,
+                MemberId = member!.Id,
+                CategoryId = topic!.CategoryId,
                 ForumId = topic.ForumId,
                 PostId = id
             });
@@ -1163,7 +1160,7 @@ namespace MVCForum.Controllers
         public IActionResult UnSubscribe(int id)
         {
             var member = _memberService.Current();
-            _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member.Id && s.PostId == id).ExecuteDelete();
+            _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member!.Id && s.PostId == id).ExecuteDelete();
             return Content("OK");
         }
 
@@ -1200,7 +1197,7 @@ namespace MVCForum.Controllers
                     {
                         if (sub == SubscriptionLevel.Topic || sub == SubscriptionLevel.Forum || sub == SubscriptionLevel.Category)
                         {
-                            switch ((ForumSubscription)topic.Forum.Subscription)
+                            switch ((ForumSubscription)topic.Forum!.Subscription)
                             {
                                 case ForumSubscription.ForumSubscription:
                                 case ForumSubscription.TopicSubscription:
@@ -1210,7 +1207,7 @@ namespace MVCForum.Controllers
                         }                        
                     }
 
-                    string redirectUrl = Url.Action("Index","Topic", new { id = maintopicid, pagenum = 1 });
+                    string? redirectUrl = Url.Action("Index","Topic", new { id = maintopicid, pagenum = 1 });
 
                     return Json(new { data = redirectUrl });
 
@@ -1235,7 +1232,7 @@ namespace MVCForum.Controllers
             SplitTopicViewModel vm = new SplitTopicViewModel();
             foreach (KeyValuePair<int, string> forum in _forumService.ForumList())
             {
-                if(!vm.ForumList.ContainsKey(forum.Key))
+                if(!vm.ForumList!.ContainsKey(forum.Key))
                     vm.ForumList.Add(forum.Key, forum.Value);
             }
             var topic = _postService.GetTopicWithRelated(id);
@@ -1251,7 +1248,7 @@ namespace MVCForum.Controllers
                 return View("Error");
             }
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
-            var catPage = new MvcBreadcrumbNode("", "Category", topic.Category?.Name){ Parent = homePage,RouteValues = new{id=topic.Category?.Id}};
+            var catPage = new MvcBreadcrumbNode("", "Category", topic!.Category?.Name){ Parent = homePage,RouteValues = new{id=topic.Category?.Id}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", topic.Forum?.Title){ Parent = catPage,RouteValues = new{id=topic.ForumId}};
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage };
             ViewData["BreadcrumbNode"] = topicPage;
@@ -1269,7 +1266,7 @@ namespace MVCForum.Controllers
             {
                 foreach (KeyValuePair<int, string> vmforum in _forumService.ForumList())
                 {
-                    if(!vm.ForumList.ContainsKey(vmforum.Key))
+                    if(!vm.ForumList!.ContainsKey(vmforum.Key))
                         vm.ForumList.Add(vmforum.Key, vmforum.Value);
                 }
                 var vmtopic = _postService.GetTopicWithRelated(vm.Id);
@@ -1281,7 +1278,7 @@ namespace MVCForum.Controllers
 
                 return View(vm);
             }
-            string[] ids = Request.Form["check"];
+            string[] ids = Request.Form["check"]!;
             if (ids == null || !ids.Any())
             {
                 //ModelState.AddModelError("Reply", _languageResource.GetString("TopicController_select_at_least_one_reply"));
@@ -1294,7 +1291,7 @@ namespace MVCForum.Controllers
             {
                 topic = _postService.SplitTopic(ids, vm.ForumId, vm.Subject);
 
-                _postService.UpdateLastPost(topic.Id,0);
+                _postService.UpdateLastPost(topic!.Id,0);
                 _forumService.UpdateLastPost(topic.ForumId);
 
                 //        EmailController.TopicSplitEmail(ControllerContext, topic);
@@ -1317,16 +1314,20 @@ namespace MVCForum.Controllers
         {
             if (HttpContext.Session.GetObject<List<int>>("TopicList") != null)
             {
-                List<int> selectedtopics = HttpContext.Session.GetObject<List<int>>("TopicList");
-                if (!selectedtopics.Contains(topicid))
+                List<int>? selectedtopics = HttpContext!.Session.GetObject<List<int>>("TopicList");
+                if(selectedtopics != null)
                 {
-                    selectedtopics.Add(topicid);
+                    if (!selectedtopics.Contains(topicid))
+                    {
+                        selectedtopics.Add(topicid);
+                    }
+                    else
+                    {
+                        selectedtopics.Remove(topicid);
+                    }
+                    HttpContext.Session.SetObject("TopicList", selectedtopics);
                 }
-                else
-                {
-                    selectedtopics.Remove(topicid);
-                }
-                HttpContext.Session.SetObject("TopicList", selectedtopics);
+
             }
             else
             {
@@ -1348,16 +1349,20 @@ namespace MVCForum.Controllers
         {
             if (HttpContext.Session.GetObject<List<int>>("ReplyList") != null)
             {
-                List<int> selectedtopics = HttpContext.Session.GetObject<List<int>>("ReplyList");
-                if (!selectedtopics.Contains(replyid))
+                List<int>? selectedtopics = HttpContext.Session.GetObject<List<int>>("ReplyList");
+                if(selectedtopics != null)
                 {
-                    selectedtopics.Add(replyid);
+                    if (!selectedtopics.Contains(replyid))
+                    {
+                        selectedtopics.Add(replyid);
+                    }
+                    else
+                    {
+                        selectedtopics.Remove(replyid);
+                    }
+                    HttpContext.Session.SetObject("ReplyList", selectedtopics);
                 }
-                else
-                {
-                    selectedtopics.Remove(replyid);
-                }
-                HttpContext.Session.SetObject("ReplyList", selectedtopics);
+
             }
             else
             {
@@ -1395,7 +1400,7 @@ namespace MVCForum.Controllers
             };
 
         }
-        private PostReply BuildReply(NewPostModel model, int memberid)
+        private PostReply? BuildReply(NewPostModel model, int memberid)
         {
             if (model.Id != 0)
             {
@@ -1463,16 +1468,16 @@ namespace MVCForum.Controllers
         {
             if(post.ReplyCount < 1 && post.UnmoderatedReplies < 1) return null;
             var pagedReplies = sortdir == "asc"
-                ? new PagedList<PostReply>(post?.Replies?.OrderBy(r => r.Created), page, pagesize)
-                : new PagedList<PostReply>(post?.Replies?.OrderByDescending(r => r.Created), page, pagesize);
+                ? new PagedList<PostReply>(post.Replies!.OrderBy(r => r.Created), page, pagesize)
+                : new PagedList<PostReply>(post.Replies!.OrderByDescending(r => r.Created), page, pagesize);
             return pagedReplies;
         }
         private PagedList<ArchivedReply>? PagedReplies(int page, int pagesize, string sortdir, ArchivedPost post)
         {
             if(post.ReplyCount < 1) return null;
             var pagedReplies = sortdir == "asc"
-                ? new PagedList<ArchivedReply>(post?.Replies?.OrderBy(r => r.Created), page, pagesize)
-                : new PagedList<ArchivedReply>(post?.Replies?.OrderByDescending(r => r.Created), page, pagesize);
+                ? new PagedList<ArchivedReply>(post.Replies!.OrderBy(r => r.Created), page, pagesize)
+                : new PagedList<ArchivedReply>(post.Replies!.OrderByDescending(r => r.Created), page, pagesize);
             return pagedReplies;
         }
         /// <summary>

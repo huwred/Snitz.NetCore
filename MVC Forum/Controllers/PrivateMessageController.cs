@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using SnitzCore.Service.Extensions;
 using Microsoft.AspNetCore.Http;
 using MVCForum.ViewModels.PrivateMessage;
-using Hangfire;
 
 namespace MVCForum.Controllers
 {
@@ -255,7 +254,7 @@ namespace MVCForum.Controllers
                 return Json("");
             }
             IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(r => r!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
-            var blocked = _pmService?.GetBlocklist(_member!.Id).Select(l => l.BlockedName);
+            var blocked = _pmService?.GetBlocklist(_member!.Id)?.Select(l => l.BlockedName);
             if(blocked != null && blocked.Any()) {
                 result = result.Where(x => !blocked.Contains(x) && x != _member.Name);
             }
