@@ -185,7 +185,7 @@
                             @* <a data-toggle="tooltip" href="~/PhotoAlbum/Member/@image.MemberId" title="" data-original-title="View members photo album">@image.Member?.Name</a> *@
                         </td>
                         <td class="col-2 col-md-1 col-thumb">
-                            <a class="view-gallery" target="_blank" href="~/PhotoAlbum/Gallery/0/?photoid=@image.Id&speciesOnly=true" title="Image @image.Id">
+                            <a class="view-gallery" target="_blank" href="~/PhotoAlbum/Gallery/0/?photoid=@image.Id&speciesOnly=@Model.SpeciesOnly" title="Image @image.Id">
                                 <album-image class="img-thumbnail" src="thumbs/@image.ImageName" width="100" height="100" org-width="@image.Width" org-height="@image.Height"></album-image>
                             </a>
                         </td>

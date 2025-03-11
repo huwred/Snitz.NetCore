@@ -306,15 +306,17 @@ namespace Snitz.PhotoAlbum.Controllers
 
             ViewBag.Username = id;
             string rootFolder = "Content";
-            string imagename =  $"{Url.Content($"{_config.RootFolder}/")}{rootFolder}/PhotoAlbum/";
 
-            imageFiles.Images.AddRange(images.Select(f => new GalleryImage()
-            {
-                Id = f.Id,
-                Name = f.ScientificName ?? f.CommonName ?? f.ImageName,
-                Path = imagename + f.ImageName,
-                Description = f?.Description
-            }));
+            string imagename =  $"{Url.Content($"{_config.RootFolder}/")}{rootFolder}/PhotoAlbum/";
+                imageFiles.Images.AddRange(images.Select(f => new GalleryImage()
+                {
+                    Id = f.Id,
+                    Name = f.ScientificName ?? f.CommonName ?? f.ImageName,
+                    Path = imagename + f.ImageName,
+                    Description = f?.Description
+                }));
+
+
             ViewBag.footer = images[0].Member?.Name + " - " +
                              images[0].Timestamp.FromForumDateStr().ToLocalTime() + "<br/>" + images[0].Views +
                              " " + _languageResource.GetString("lblViews");

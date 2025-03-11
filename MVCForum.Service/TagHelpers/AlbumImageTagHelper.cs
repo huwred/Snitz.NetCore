@@ -27,6 +27,7 @@ namespace SnitzCore.Service.TagHelpers
         public int? OrgHeight { get; set; }
 
         private readonly ISnitzConfig _config;
+        private readonly string contentfolder;
         public AlbumImageTagHelper(
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccesor,IWebHostEnvironment environment,ISnitzConfig config)
@@ -35,6 +36,7 @@ namespace SnitzCore.Service.TagHelpers
             this.actionContextAccesor = actionContextAccesor;
             _env = environment;
             _config = config;
+            contentfolder = _config.ContentFolder;
         }
         private readonly IWebHostEnvironment _env;
         private readonly IUrlHelperFactory urlHelperFactory;
@@ -42,13 +44,13 @@ namespace SnitzCore.Service.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             var urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccesor.ActionContext!);
-            if(!File.Exists(_env.WebRootPath + $@"\Content\PhotoAlbum\{Src}"))
+            if(!File.Exists(_env.WebRootPath + $@"\{contentfolder}\PhotoAlbum\{Src}"))
             {
                 Src = null;
             }
 
             Fallback ??= urlHelper.Content("~/Content/notfound_lg.jpg");
-            var imagevirt = urlHelper.Content($"~/Content/PhotoAlbum/{Src}");
+            var imagevirt = urlHelper.Content($"~/{contentfolder}/PhotoAlbum/{Src}");
             base.Process(context, output);
             output.TagMode = TagMode.StartTagAndEndTag;
             output.TagName = "img";

@@ -1,6 +1,7 @@
 ﻿@using SnitzCore.Data.Extensions
 @using SnitzCore.Service.TagHelpers
 @model List<Snitz.PhotoAlbum.Models.AlbumImage>
+
 @{
     var currentmember = 0;
     bool showprivate = false;
@@ -21,7 +22,7 @@
         @{
             foreach (var image in Model)
             {
-                var path = $"{SnitzConfig.RootFolder}/Content/PhotoAlbum/{image.Timestamp}_{image.Location}?width=1024&height=768&format=jpg&rmode=crop";
+                var path = $"{SnitzConfig.RootFolder}/{SnitzConfig.ContentFolder}/PhotoAlbum/{image.Timestamp}_{image.Location}?width=1024&height=768&format=jpg&rmode=crop";
                 if (idx == 0)
                 {
                     <div class="carousel-item active">
