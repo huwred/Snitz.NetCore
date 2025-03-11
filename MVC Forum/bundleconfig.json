@@ -118,5 +118,11 @@
     "inputFiles": [
       "wwwroot/js/prism.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/busy.min.css",
+    "inputFiles": [
+      "wwwroot/css/busy.css"
+    ]
   }
 ]

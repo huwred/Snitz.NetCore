@@ -90,7 +90,10 @@ namespace MVCForum.Controllers
 
         public IActionResult SetLanguage(string lang, string returnUrl)
         {
-
+            if (string.IsNullOrWhiteSpace(returnUrl))
+            {
+                returnUrl = _config.ForumUrl!;
+            }
             _snitzcookie.SetCookie(
                 "CookieLang",
                 lang,

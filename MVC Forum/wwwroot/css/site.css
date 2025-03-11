@@ -202,7 +202,7 @@ footer{
     }
 
 .table-head .last-reply{
-    flex: 17%;
+    flex: 15%;
     flex-grow: 1;
 }
 .table-head .subscribe {
@@ -214,15 +214,12 @@ footer{
 
 .table-row{
     display: flex;
+    flex-wrap:wrap;
 }
-
-.table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply{
-    padding: 5px;
-    margin: 2px;
-
-}
-    .table-row .subscribe {
-        font-size: 20px;
+    .table-row > * {
+        padding: 5px;
+        margin: 2px;
+        flex: 1 1 160px;
     }
     .table-row .status {
         flex: 5%;
@@ -230,8 +227,13 @@ footer{
         text-align: center;
     }
 
+    .table-row .subscribe {
+        font-size: 20px;
+    }
+
+
 .table-row .subjects{
-    flex: 65%;
+    flex: 63%;
 }
 
 .table-row .replies{
@@ -240,7 +242,7 @@ footer{
 }
 
 .table-row .last-reply{
-    flex: 17%;
+    flex: 15%;
     flex-grow: 1;
 }
 .table-row .subscribe {
@@ -249,8 +251,11 @@ footer{
     font-size: 24px;
 }
 @media screen and (max-width: 460px) {
+    .col{
+        padding:0;
+    }
     .table-head .subjects {
-        flex: 60%;
+        flex: 85%;
     }
 
     .table-head .replies {
@@ -260,16 +265,18 @@ footer{
 
     .table-head .last-reply {
         flex: 20%;
-        
+        display: none;
     }
 
     .table-row .status {
-        flex: 5%;
-        font-size: 18px;
+        flex: 4%;
+        font-size: 14px;
+        flex-grow:0;
         text-align: center;
     }
     .table-row .subjects {
-        flex: 60%;
+        flex: 85%;
+        flex-grow: 0;
     }
 
     .table-row .replies {
@@ -278,7 +285,10 @@ footer{
     }
 
     .table-row .last-reply {
-        flex: 20%;
+        flex: 90%;
+    }
+    .subforum-info.subforum-column {
+        padding-bottom:0;
     }
 }
 

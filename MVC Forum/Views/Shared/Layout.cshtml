@@ -40,11 +40,12 @@
     <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/css/site.min.css">
     @await Component.InvokeAsync("SnitzThemeCss")
-
+    <link rel="stylesheet" href="~/css/busy.min.css">
     @await RenderSectionAsync("Styles", required: false)
 
 </head>
 <body>
+    <partial name="_BusyPartial" />
     <div class="d-flex flex-column" style="min-height: 100vh;">
         <partial name="MainNav"/>
         <div class="container flex-grow-1">
@@ -141,7 +142,15 @@
             }, 3000);
         }           
     });
-
+    $(window).on('beforeunload', function(){
+    displayBusyIndicator();
+});
+$(document).on('submit', 'form', function () {
+    displayBusyIndicator();
+});
+    function displayBusyIndicator() {
+    $('.loading').show();
+}
 </script>
 }
 </body>
