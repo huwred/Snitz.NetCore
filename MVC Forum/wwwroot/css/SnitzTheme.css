@@ -141,7 +141,7 @@ h1 {
 }
 
 .subforum-column {
-    background-color: #F5F5F5;
+    background-color: #FFF;
 }
 .subforum-icon {
     color: goldenrod;
@@ -225,7 +225,7 @@ footer {
 /* posts table's body  */
 
 .table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply {
-    background-color: #F5F5F5;
+    background-color: #FFF;
 }
 
     /* navigation path*/

@@ -2,7 +2,6 @@
 @using BbCodeFormatter
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-
 @using SmartBreadcrumbs
 @using Snitz.Events.Helpers
 @using SnitzCore.Data
@@ -48,14 +47,14 @@
     {
         replyClass = "";
     }
-    var show1 = SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (@SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && int.Parse(@pagenum) < 2);
+    var showtopic = SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (@SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && int.Parse(@pagenum) < 2);
 
-    <div class="container pt-0">
+    <div class="pt-0">
         <snitz-breadcrumb></snitz-breadcrumb>
         <!--Topic Section-->
 
         <vc:topic-buttons postid="@Model.Id" topic-email="@(loggedin ? 1 : 0)" snitz-if="@User.Identity!.IsAuthenticated"></vc:topic-buttons>
-        <div snitz-if="@show1" class="card mb-2 topic-container">
+        <div snitz-if="@showtopic" class="card mb-2 topic-container">
             @{
                 var answer = "";
                 if (Model.Answered)
@@ -138,63 +137,55 @@
             var first = true;
             int replycounter = 1;
             <div class="reply-container">
+                @foreach (var reply in Model.Replies!)
+                {
+                    rowclass = rowclass == "alt" ? "" : "alt";
+                    var hideme = first ? "" : "display:none;";
+                    var inneranswer = reply.Answer ? "bg-success" : "";
+                    var viewUnmoderated = reply.Status < 2;
 
-        @foreach (var reply in Model.Replies!)
-        {
-            rowclass = rowclass == "alt" ? "" : "alt";
-            var hideme = "";
-            var inneranswer = "";
-            var viewUnmoderated = reply.Status < 2;
-            if (reply.Answer)
-            {
-                        inneranswer = "bg-success";
-            }
-            if (!first)
-            {
-                hideme = "display:none;";
-            }
-            first = jumpToreply || (Model.PageSize > 5 && replycounter < 5) ;
-            replycounter += 1;
-            @if ((User.IsInRole("Administrator") || User.IsInRole("Forum_" + Model.ForumId) || reply.AuthorName == User.Identity.Name))
-            {
-                viewUnmoderated = true;
-            }
-            <div class="card mb-3 reply-card " snitz-if="@viewUnmoderated">
-                <div style="@hideme">
-                            <div class="card-header @inneranswer modstatus-@reply.Status">
-                        @Localizer["lblPosted"] <snitz-datetime datetime="@reply.Created"></snitz-datetime>
-                        <a snitz-if="@((User.IsInRole("Administrator") || User.IsInRole("Forum_" + Model.ForumId)) && reply.Status == 2)" asp-controller="Reply" asp-action="Moderate" asp-route-id="@reply.Id" title="Moderate" class="modal-link"><i class="modstatus-@reply.Status fa fa-hand-stop-o"></i></a>
-                        <a snitz-if="@((User.IsInRole("Administrator") || User.IsInRole("Forum_" + Model.ForumId)) && reply.Status == 3)" asp-controller="Reply" asp-action="Moderate" asp-route-id="@reply.Id" title="Moderate" class="modal-link"><i class="modstatus-@reply.Status fa fa-pause"></i></a>
-                        <span class="pull-right">
-                            <i class="fa fa-object-ungroup split-topic" data-id="@reply.Id" data-topic="@Model.Id" title="@Localizer["tipSplitTopic"]" style="display: none;"></i>
-                            <input type="checkbox" class="form-check-input reply-select" value="@reply.Id" name="replyselected" />
-                        </span>
-                    </div>
-                    <div class="card-body" id="reply-@reply.Id">
-                        <div class="body @rowclass">
-                            <partial name="PostAuthor" model="reply.Author"/>
-                            <div class="content">
-                                @Html.Raw(BbCodeProcessor.Format(reply.Content))
-                                @if (reply.ShowSig)
+                    first = jumpToreply || (Model.PageSize > 5 && replycounter < 5) ;
+                    replycounter += 1;
+                    @if ((User.IsInRole("Administrator") || User.IsInRole("Forum_" + Model.ForumId) || reply.AuthorName == User.Identity.Name))
+                    {
+                        viewUnmoderated = true;
+                    }
+                    <div class="card mb-3 reply-card " snitz-if="@viewUnmoderated">
+                        <div style="@hideme">
+                                <div class="card-header @inneranswer modstatus-@reply.Status">
+                                @Localizer["lblPosted"] <snitz-datetime datetime="@reply.Created"></snitz-datetime>
+                                <a snitz-if="@((User.IsInRole("Administrator") || User.IsInRole("Forum_" + Model.ForumId)) && reply.Status == 2)" asp-controller="Reply" asp-action="Moderate" asp-route-id="@reply.Id" title="Moderate" class="modal-link"><i class="modstatus-@reply.Status fa fa-hand-stop-o"></i></a>
+                                <a snitz-if="@((User.IsInRole("Administrator") || User.IsInRole("Forum_" + Model.ForumId)) && reply.Status == 3)" asp-controller="Reply" asp-action="Moderate" asp-route-id="@reply.Id" title="Moderate" class="modal-link"><i class="modstatus-@reply.Status fa fa-pause"></i></a>
+                                <span class="pull-right">
+                                    <i class="fa fa-object-ungroup split-topic" data-id="@reply.Id" data-topic="@Model.Id" title="@Localizer["tipSplitTopic"]" style="display: none;"></i>
+                                    <input type="checkbox" class="form-check-input reply-select" value="@reply.Id" name="replyselected" />
+                                </span>
+                            </div>
+                            <div class="card-body" id="reply-@reply.Id">
+                                <div class="body @rowclass">
+                                    <partial name="PostAuthor" model="reply.Author"/>
+                                    <div class="content">
+                                        @Html.Raw(BbCodeProcessor.Format(reply.Content))
+                                        @if (reply.ShowSig)
+                                        {
+                                            <div class="author-sig">@Html.Raw(BbCodeProcessor.Format(reply.Author.Signature))</div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div snitz-if="@(User.Identity.IsAuthenticated || (reply.Edited != null && reply.EditedBy != null))" class="card-footer text-dark">
+                                <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && reply.Edited != null)" class="form-text">@Localizer["lblEditedBy", reply.EditedBy!, reply.Edited!]</span>
+                                @if(!Model.Archived)
                                 {
-                                    <div class="author-sig">@Html.Raw(BbCodeProcessor.Format(reply.Author.Signature))</div>
+                                    @await Component.InvokeAsync("PostControls", new { post = reply})         
+                                }else{
+                                    <span class="form-text">@Localizer["tipTopicArchived"]</span>
                                 }
                             </div>
                         </div>
                     </div>
-                    <div snitz-if="@(User.Identity.IsAuthenticated || (reply.Edited != null && reply.EditedBy != null))" class="card-footer text-dark">
-                        <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && reply.Edited != null)" class="form-text">@Localizer["lblEditedBy", reply.EditedBy!, reply.Edited!]</span>
-                        @if(!Model.Archived)
-                        {
-                            @await Component.InvokeAsync("PostControls", new { post = reply})         
-                        }else{
-                            <span class="form-text">@Localizer["tipTopicArchived"]</span>
-                        }
-                    </div>
-                </div>
+                }
             </div>
-        }
-    </div>
     <!--Pagination starts-->
     @if (Model.PageCount > 1)
     {
@@ -293,24 +284,8 @@ else
     };
     <partial name="ConfirmDialog" model="@confModel" />
 }
-<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="uploadModalLabel">
-                    @Localizer["lblFileUpload"]
-                </h5> 
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="upload-content"></div>
-            </div>
-            <div class="modal-footer">
-                <p class="footer-title">If you're having problems uploading, try choosing a smaller image.</p>
-            </div>
-        </div>
-    </div>
-</div>
+<partial name="Modal\UploadModal" />
+
 <!-- Send Topic Popup -->
 @if (SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1)
 {

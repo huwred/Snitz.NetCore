@@ -76,7 +76,7 @@ a.btn:hover {
     .subforum-row{
         display: grid;
         grid-template-columns: 100%;
-        grid-template-rows: auto 5em;
+        /*grid-template-rows: auto 5em;*/
         overflow: hidden;
     }
     .subforum-icon  {
@@ -267,7 +267,10 @@ footer{
         flex: 20%;
         display: none;
     }
+    .table-row > * {
+        margin: 0px;
 
+    }
     .table-row .status {
         flex: 4%;
         font-size: 14px;
@@ -276,7 +279,7 @@ footer{
     }
     .table-row .subjects {
         flex: 85%;
-        flex-grow: 0;
+        flex-grow: 1;
     }
 
     .table-row .replies {
@@ -285,7 +288,9 @@ footer{
     }
 
     .table-row .last-reply {
+        padding-left:.5em;
         flex: 90%;
+        margin-bottom: 2px;
     }
     .subforum-info.subforum-column {
         padding-bottom:0;

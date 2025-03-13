@@ -138,27 +138,7 @@
         }
     </div>
 </div>
-<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="uploadModalLabel">
-                    @Localizer["lblFileUpload"]
-                </h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="upload-content">
-                    
-                </div>
-            </div>
-            <div class="modal-footer">
-                <p class="footer-title">
-                    If you're having problems uploading, try choosing a smaller image.
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
+<partial name="Modal\UploadModal" />
 @section Scripts
 {
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
