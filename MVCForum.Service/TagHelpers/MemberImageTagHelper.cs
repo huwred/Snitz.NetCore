@@ -13,6 +13,8 @@ namespace SnitzCore.Service.TagHelpers;
 [HtmlTargetElement("snitz-avatar", TagStructure = TagStructure.NormalOrSelfClosing)]
 public class MemberImageTagHelper : TagHelper
 {
+    [HtmlAttributeName("member")]
+    public string? MemberName {get;set;}
     /// <summary>
     /// Members avatar file
     /// </summary>
@@ -59,7 +61,7 @@ public class MemberImageTagHelper : TagHelper
         output.Attributes.Add("class", Classes);
         output.Attributes.Add("src", urlHelper.Content(SourceFile) ?? urlHelper.Content(Fallback));
 
-        output.Attributes.Add("alt", urlHelper.Content(SourceFile));
+        output.Attributes.Add("alt", urlHelper.Content(MemberName));
 
     }
 }

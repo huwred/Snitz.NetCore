@@ -49,7 +49,7 @@
     }
     var showtopic = SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (@SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && int.Parse(@pagenum) < 2);
 
-    <div class="pt-0">
+    <div class="pt-0" id="topic-index">
         <snitz-breadcrumb></snitz-breadcrumb>
         <!--Topic Section-->
 

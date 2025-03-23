@@ -15,9 +15,9 @@
     <link href="@SnitzConfig.ThemeCss("star-rating.min.css")" rel="stylesheet" />
     <link href="@SnitzConfig.ThemeCss("tag_cloud.css")" rel="stylesheet" />
 }
-<div class="container">
+<div id="my-view">
     <div class="row">
-        <div class="col-8 mt-3">
+        <div class="col-12 col-md-8 mt-3">
             <div id="topic-panel">
                 <div id="docsContainer">
                     @await Component.InvokeAsync("MyView", new { template = "Posts", model = Model })

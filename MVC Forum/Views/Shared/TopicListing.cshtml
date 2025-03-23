@@ -71,7 +71,7 @@
                     }
                 }
             </div>
-            <div class="d-md-flex  p-2 bd-highlight fs-6">
+            <div class="d-none d-md-flex  p-2 bd-highlight fs-6">
                 @if (!archives)
                 {
                     @await Component.InvokeAsync("PostControls", new { post = Model ,forlist = true})
@@ -83,12 +83,23 @@
     <div class="replies">
         @Model?.RepliesCount @Localizer["lblReplies"] <br/> @Model?.ViewCount @Localizer["lblViews"]
     </div>
-    <div class="last-reply" style="z-index:2">
+    <div class="last-reply d-flex" style="z-index:2">
         @if (SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1 && Model?.LastPostDate != null)
         {
-            <span class="d-sm-inline-flex d-md-none">@Localizer["lblLastPost"]</span> <lastpost-link post-date="@Model.LastPostDate" topic-id="@Model.Id" reply-id="@Model.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
-            <span><br class="d-none d-sm-inline-flex" />@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
+            <span class="d-flex-1">
+            <span class="d-sm-inline-flex d-md-none">@Localizer["lblLastPost"]</span> 
+            <lastpost-link post-date="@Model.LastPostDate" topic-id="@Model.Id" reply-id="@Model.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+            <br class="d-none d-sm-inline-flex" />
+            <span class="ms-2">@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
+            </span>
         }
+        <div class="d-sm-inline-flex d-md-none bd-highlight fs-6 ms-3 ">
+            @if (!archives)
+            {
+                @await Component.InvokeAsync("PostControls", new { post = Model, forlist = true })
+
+            }
+        </div>
     </div>
     <div class="subscribe d-none d-sm-inline-flex">
         <input snitz-if="@(User?.IsInRole("Administrator"))" type="checkbox" class="form-check-input topic-select" value="@Model?.Id" name="topicselected" />

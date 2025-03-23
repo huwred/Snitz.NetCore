@@ -224,7 +224,7 @@ footer {
 
 /* posts table's body  */
 
-.table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply {
+.table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply, .table-row .subscribe {
     background-color: #FFF;
 }
 
@@ -508,6 +508,12 @@ a.latestpost-title {
 @media (max-width: 480px) {
     body {
         background-color: red;
+    }
+    .table-head div {
+        margin:0;
+    }
+    .table-head .rounded-2 {
+        border-radius:0 !important;
     }
 }
 
