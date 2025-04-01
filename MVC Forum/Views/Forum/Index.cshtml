@@ -68,51 +68,59 @@
 @if (!auth)
 {
     <div class="pt-0" id="forum-index">
-        <snitz-breadcrumb></snitz-breadcrumb>
-        <div class="d-flex bd-highlight  m-1">
-            <div class="d-flex bd-highlight">
-                <form id="defaultdays-form" asp-action="Index" class="form-inline" method="get">
-                    <input type="number" value="@Model.Forum?.Id" name="id" style="display: none;" />
-                    <input type="number" value="@pagenum" name="page" style="display: none;" />
-                    <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
-                    <div class="input-group forum ">
-                        <enum-select snitz-if="@(!Model.Archives)" id="default-days" enum-type="typeof(DefaultDays)" selected-value="(int)Model.Forum.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
-                        <select name="OrderBy" id="orderby" class="form-select mb-2" title="Order by" aria-invalid="false">
-                            <option value="pd" selected-val="@Model.Forum?.OrderBy">@Localizer["optPostDate"]</option>
-                            <option value="lpd" selected-val="@Model.Forum?.OrderBy">@Localizer["optLastPostDate"]</option>
-                            <option value="a" selected-val="@Model.Forum?.OrderBy">@Localizer["optAuthor"]</option>
-                            <option value="lpa" selected-val="@Model.Forum?.OrderBy">@Localizer["optLastAuthor"]</option>
-                            <option value="v" selected-val="@Model.Forum?.OrderBy">@Localizer["optViews"]</option>
-                            <option value="r" selected-val="@Model.Forum?.OrderBy">@Localizer["optReplies"]</option>
-                        </select>
-                        <select name="sortdir" id="sortdir" class="form-select mb-2" title="Sort direction" aria-invalid="false">
-                            <option value="asc" selected-val="@Model.Forum?.SortDir">@Localizer["optAsc"]</option>
-                            <option value="des" selected-val="@Model.Forum?.SortDir">@Localizer["optDesc"]</option>
-                        </select>
-                        <span class="form-text mb-2 d-none d-sm-block">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
-                        <div class="input-group-addon">
-                            @if (SnitzConfig.GetValueWithDefault("STRFORUMPAGESIZES", "") != "")
-                            {
-                                var ischecked = Model.PageSize;
+        <snitz-breadcrumb show-filter="true"></snitz-breadcrumb>
+        <div class="collapse" id="showFilters">
+            <div class="d-flex bd-highlight  m-1">
+                <div class="d-flex bd-highlight">
+                    <form id="defaultdays-form" asp-action="Index" class="form-inline" method="get">
+                        <input type="number" value="@Model.Forum?.Id" name="id" style="display: none;" />
+                        <input type="number" value="@pagenum" name="page" style="display: none;" />
+                        <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
+                        <div class="input-group forum ">
+                            <enum-select snitz-if="@(!Model.Archives)" id="default-days" enum-type="typeof(DefaultDays)" selected-value="(int)Model.Forum.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                            <select name="OrderBy" id="orderby" class="form-select mb-2" title="Order by" aria-invalid="false">
+                                <option value="pd" selected-val="@Model.Forum?.OrderBy">@Localizer["optPostDate"]</option>
+                                <option value="lpd" selected-val="@Model.Forum?.OrderBy">@Localizer["optLastPostDate"]</option>
+                                <option value="a" selected-val="@Model.Forum?.OrderBy">@Localizer["optAuthor"]</option>
+                                <option value="lpa" selected-val="@Model.Forum?.OrderBy">@Localizer["optLastAuthor"]</option>
+                                <option value="v" selected-val="@Model.Forum?.OrderBy">@Localizer["optViews"]</option>
+                                <option value="r" selected-val="@Model.Forum?.OrderBy">@Localizer["optReplies"]</option>
+                            </select>
+                            <select name="sortdir" id="sortdir" class="form-select mb-2" title="Sort direction" aria-invalid="false">
+                                <option value="asc" selected-val="@Model.Forum?.SortDir">@Localizer["optAsc"]</option>
+                                <option value="des" selected-val="@Model.Forum?.SortDir">@Localizer["optDesc"]</option>
+                            </select>
+                            <span class="form-text mb-2 d-none d-sm-block">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
+                            <div class="input-group-addon">
+                                @if (SnitzConfig.GetValueWithDefault("STRFORUMPAGESIZES", "") != "")
+                                {
+                                    var ischecked = Model.PageSize;
 
-                                <div class="radioBtn btn-group d-none d-sm-block" role="group" aria-label="Select page size" title="Select page size">
-                                    @foreach (var size in SnitzConfig.GetValueWithDefault("STRFORUMPAGESIZES", "").Split(","))
-                                    {
-                                        <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size"
-                                               @if (ischecked == Convert.ToInt32(size))
-                                               {
-                                                   @Html.Raw("checked")
-                                               }/>
-                                        <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
+                                    <div class="radioBtn btn-group d-none d-sm-block" role="group" aria-label="Select page size" title="Select page size">
+                                        @foreach (var size in SnitzConfig.GetValueWithDefault("STRFORUMPAGESIZES", "").Split(","))
+                                        {
+                                            <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size"
+                                                   @if (ischecked == Convert.ToInt32(size))
+                                                   {
+                                                       @Html.Raw("checked")
+                                                   }/>
+                                            <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
 
-                                    }
-                                </div>
-                            }
+                                        }
+                                    </div>
+                                }
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
+            </div>
+            <div class="d-flex bd-highlight  m-1">
+                <div class="flex-fill">
+                    <partial name="QuickSearch" />
+                </div>
             </div>
         </div>
+
         <div class="d-flex bd-highlight  m-1">
             <div class="flex-fill w-50">
                 <form asp-action="Index" class="form-inline" method="get">
@@ -149,10 +157,6 @@
 
                     </div>
                 </form>
-            </div>
-            <div class="flex-fill">
-                <partial name="QuickSearch" />
-
             </div>
         </div>
 

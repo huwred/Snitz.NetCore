@@ -35,6 +35,8 @@ namespace SmartBreadcrumbs
         [HtmlAttributeNotBound]
         public ViewContext? ViewContext { get; set; }
 
+        public bool ShowFilter {get;set;}
+
         #endregion
 
         public BreadcrumbTagHelper(BreadcrumbManager breadcrumbManager, IUrlHelperFactory urlHelperFactory,
@@ -122,7 +124,13 @@ namespace SmartBreadcrumbs
 
             output.Content.AppendHtml(sb.ToString());
             output.Content.AppendHtml(child);
+                if (ShowFilter)
+                {
+                output.Content.AppendHtml("<li class=\"filter-btn\" role=\"button\" data-bs-toggle=\"collapse\" title=\"Show page filters\" data-bs-target=\"#showFilters\" aria-expanded=\"true\" aria-controls=\"showFilters\"><i class=\"fa fa-sliders fs-3\"></i></li>");
+
+                }
             output.Content.AppendHtml("</ol>");
+                
         }
 
         #endregion

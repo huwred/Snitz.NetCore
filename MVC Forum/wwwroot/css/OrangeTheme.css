@@ -39,12 +39,37 @@ h1 {
     background-color: yellow;
     border-color: yellow;
 }
+.accordion-button:not(.collapsed) {
+    color: #FFFF00 !important;
+    background-color: #cc5803;
+    box-shadow: revert;
+}
 
+.accordion-button:focus {
+    z-index: 3;
+    border-color: revert;
+    outline: 0;
+    box-shadow: revert;
+}
+
+.accordion-button {
+    color: #FFFF00 !important;
+    background-color: #cc5803;
+    box-shadow: revert;
+}
+
+.accordion-item {
+    background-color: revert;
+    color: revert;
+}
+.newposts {
+    color: yellow !important;
+}
 /* ########################################### */
 /*           Forums.html                       */
 /* ########################################### */
 
-.subforum-title {
+.subforum-title, .subforum-title a {
     background-color: #cc5803;
 }
 
@@ -206,9 +231,9 @@ div.btn-group.btn-dark {
     color: white !important;
 }
 
-.breadcrumb {
+/*.breadcrumb {
     background-color: #780116;
-}
+}*/
 
 .en.flag, .en-GB.flag {
     background-image: url(images/flags/en.png);

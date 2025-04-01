@@ -72,6 +72,46 @@ namespace SnitzCore.Service
                         }
                         else
                         {
+                            imageString.AppendFormat($"<i class='fa fa-star fs-5 {rankImage}' alt='star' ></i>");
+                        }
+                    }
+                }
+            }
+
+            return imageString.ToString();
+        }
+        private string GetStarsNew()
+        {
+            
+            StringBuilder imageString = new("");
+            int imageRepeat = _repeat;// _ranking[_Level + 1].Repeat;
+
+            if (_ranking != null)
+            {
+                string rankImage = _ranking[_level + 1].Image;
+                if (_isAdmin)
+                {
+                    //imageRepeat = _ranking[0].Repeat;
+                    rankImage = _ranking[0].Image; //Admin;
+                }
+                else if (_isModerator)
+                {
+                    //imageRepeat = _ranking[1].Repeat;
+                    rankImage = _ranking[1].Image;
+                }
+                if (_level == 0) return "";
+
+                if (rankImage != "")
+                {
+                    for (int ii = 1; ii <= imageRepeat; ii++)
+                    {
+                        string clientpath =  "/images/rankimages/";
+                        if (rankImage.Contains("."))
+                        {
+                            imageString.AppendFormat("<img src='{0}{1}' alt='star'/>", clientpath, rankImage);
+                        }
+                        else
+                        {
                             imageString.AppendFormat($"<i class='fa fa-star' alt='star' style='color:{rankImage}'></i>");
                         }
                     }
@@ -80,7 +120,6 @@ namespace SnitzCore.Service
 
             return imageString.ToString();
         }
-
         private void SetLevel()
         {
             _repeat = -1;

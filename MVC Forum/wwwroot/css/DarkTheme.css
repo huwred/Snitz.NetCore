@@ -1,8 +1,9 @@
 ﻿e html, body {
-    font-size: 14px;
+    font-size: 1rem;
     font-family: Verdana, Arial, helvetica;
-    background-color: rgb(90,90,90) !important;
+    background-color: rgb(34,34,34) !important;
     color: #FEFEFE !important;
+    font-weight: 400;
 }
 a {
     color: silver;
@@ -33,11 +34,11 @@ a {
 }
 
 .btn-outline-primary {
-    --bs-btn-color: #000000;
-    --bs-btn-border-color: #000000;
+/*    --bs-btn-color: #000000;
+    --bs-btn-border-color: #000000;*/
     --bs-btn-hover-color: #fff;
     --bs-btn-hover-bg: #000000;
-    --bs-btn-hover-border-color: #000000;
+    /*--bs-btn-hover-border-color: #000000;*/
     --bs-btn-focus-shadow-rgb: 13, 110, 253;
     --bs-btn-active-color: #fff;
     --bs-btn-active-bg: #000000;
@@ -50,7 +51,7 @@ a {
 }
 
 .list-group {
-    --bs-list-group-color: var(--bs-body-color);
+    --bs-list-group-color: #FEFEFE;
     --bs-list-group-bg: none;
     --bs-list-group-border-color: black;
     --bs-list-group-border-width: var(--bs-border-width);
@@ -76,6 +77,12 @@ a {
 .latest-posts .list-group {
     flex-direction: column;
 }
+.form-text{
+    color:revert;
+}
+.navbar-toggler{
+    color:white !important;
+}
 .card {
     --bs-card-spacer-y: 1rem;
     --bs-card-spacer-x: 1rem;
@@ -98,9 +105,9 @@ a {
     flex-direction: column;
     min-width: 0;
     height: var(--bs-card-height);
-     color: white; 
+    color: white;
     word-wrap: break-word;
-     background-color: #343a40; 
+    background-color: #343a40;
     background-clip: border-box;
     border: var(--bs-card-border-width) solid var(--bs-card-border-color);
     border-radius: var(--bs-card-border-radius);
@@ -127,11 +134,19 @@ a.latestpost-title {
     font-weight: bolder;
 
 }
+.breadcrumb {
+
+    --bs-breadcrumb-divider-color: white;
+
+    --bs-breadcrumb-item-active-color: silver;
+
+}
 .breadcrumb a:visited {
         color: #fff;
         font-weight: bolder;
         text-decoration: none;
     }
+
 .initial a:visited {
     color: silver;
 }
@@ -166,9 +181,6 @@ h1 {
     color: silver;
 }
 
-.table-row .status .fa, .note .fa {
-    color: goldenrod;
-}
 .fa-fire, .subforum-icon .fa-fire, .table-row .status .fa-fire,.note .fa-fire {
     color: orangered;
 }
@@ -294,16 +306,19 @@ footer {
     --bs-text-opacity: 1;
     color: rgba(var(--bs-light-rgb),var(--bs-text-opacity)) !important;
 }
+.btn {
+    --bs-btn-color: revert;
+}
 .table {
     --bs-table-color-type: initial;
     --bs-table-bg-type: initial;
     --bs-table-color-state: initial;
     --bs-table-bg-state: initial;
-    --bs-table-color: var(--bs-emphasis-color);
+    --bs-table-color: revert;
      --bs-table-bg: revert; 
      --bs-table-border-color: revert; 
     --bs-table-accent-bg: transparent;
-    --bs-table-striped-color: var(--bs-emphasis-color);
+    --bs-table-striped-color: revert;
     --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb),.05);
     --bs-table-active-color: var(--bs-emphasis-color);
     --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb),.1);
@@ -506,6 +521,8 @@ a.latestpost-title {
     body {
         background-color: red;
     }
+    .table-row.rounded-2 {border-radius:0 !important;}
+    .table-row{ border-bottom:1px solid white;}
 }
 
 /* Media Query for low resolution  Tablets, Ipads */

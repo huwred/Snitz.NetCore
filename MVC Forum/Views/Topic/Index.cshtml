@@ -50,11 +50,11 @@
     var showtopic = SnitzConfig.GetIntValue("INTTOPICDISPLAY") == 1 || (@SnitzConfig.GetIntValue("INTTOPICDISPLAY") != 1 && int.Parse(@pagenum) < 2);
 
     <div class="pt-0" id="topic-index">
-        <snitz-breadcrumb></snitz-breadcrumb>
+        <snitz-breadcrumb show-filter="true"></snitz-breadcrumb>
         <!--Topic Section-->
 
         <vc:topic-buttons postid="@Model.Id" topic-email="@(loggedin ? 1 : 0)" snitz-if="@User.Identity!.IsAuthenticated"></vc:topic-buttons>
-        <div snitz-if="@showtopic" class="card mb-2 topic-container">
+        <div snitz-if="@showtopic" class="card topic-container">
             @{
                 var answer = "";
                 if (Model.Answered)
@@ -105,13 +105,21 @@
         <!--Replies Section-->
         @if (Model.Replies != null && Model.Replies!.Any())
         {
+
+            <div class="collapse" id="showFilters">
             <form id="defaultdays-form" asp-action="Index" class="form-inline">
-                <div class="input-group">
-                    <span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span>
-                    <select class="form-select mb-2" id="sortdir" name="sortdir">
-                        <option value="des" selected-val="@Model.SortDir">@Localizer["optDesc"]</option>
-                        <option value="asc" selected-val="@Model.SortDir">@Localizer["optAsc"]</option>
-                    </select>
+                    <div class="row mt-2">
+                        <div class="col-md-3">
+                            <select class="form-select mb-2" id="sortdir" name="sortdir" title="Change sort direction">
+                                <option value="des" selected-val="@Model.SortDir">@Localizer["optDesc"]</option>
+                                <option value="asc" selected-val="@Model.SortDir">@Localizer["optAsc"]</option>
+                            </select>
+                        </div>
+                        <div class="col"><span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span></div>
+                        
+
+                    </div>
+
                     @if (SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "") != "")
                     {
                         var ischecked = Model.PageSize;
@@ -124,15 +132,14 @@
                                 @if (ischecked == Convert.ToInt32(size))
                                 {
                                     @Html.Raw("checked")
-                                }/>
+                                } />
                                 <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
                             }
                         </div>
                     }
-                </div>
                 <input type="number" value="@pagenum" name="page" style="display: none;"/>
             </form>
-
+            </div>
             var rowclass = "alt";
             var first = true;
             int replycounter = 1;
@@ -161,7 +168,7 @@
                                     <input type="checkbox" class="form-check-input reply-select" value="@reply.Id" name="replyselected" />
                                 </span>
                             </div>
-                            <div class="card-body" id="reply-@reply.Id">
+                            <div class="card-body p-1" id="reply-@reply.Id">
                                 <div class="body @rowclass">
                                     <partial name="PostAuthor" model="reply.Author"/>
                                     <div class="content">

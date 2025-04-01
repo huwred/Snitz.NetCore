@@ -115,7 +115,7 @@ footer{
 
 .table-head .status {
     flex: 5%;
-    font-size: 30px;
+    font-size: 1.3em;
     text-align: center;
 }
 
@@ -135,49 +135,54 @@ footer{
 .table-head .subscribe {
         flex: 3%;
         flex-shrink: 1;
-        font-size: 24px;
+        /*font-size: 24px;*/
     }
 /* posts table's body  */
 
 .table-row{
     display: flex;
     flex-wrap:wrap;
+    margin:1px;
 }
     .table-row > * {
-        padding: 5px;
-        margin: 2px;
+        padding: 3px;
+        margin: 1px;
         flex: 1 1 160px;
     }
     .table-row .status {
         flex: 5%;
-        font-size: 1.5em;
+        flex-grow:0;
+        font-size: 1.3em;
         text-align: center;
     }
-
+.table-row .subjects{
+    flex: 65%;
+    flex-grow:0;
+}
+    .table-row .replies {
+        flex: 10%;
+        flex-grow: 0;
+    }
     .table-row .subscribe {
-        font-size: 20px;
+        flex: 3%;
+        flex-shrink: 1;
+        /*font-size: 20px;*/
     }
 
 
-.table-row .subjects{
-    flex: 65%;
-}
 
-.table-row .replies{
-    flex: 10%;
 
-}
+
 
 .table-row .last-reply{
     flex: 15%;
     flex-grow: 1;
 }
-.table-row .subscribe {
-    flex: 3%;
-    flex-shrink: 1;
-    font-size: 24px;
-}
 
+.filter-btn, .post-buttons {
+    margin-left: auto;
+    order: 2;
+}
 @media screen and (max-width: 460px) {
     .col {
         padding: 0;
@@ -735,4 +740,29 @@ i.modstatus-2, i.modstatus-3 {
 .content img {
     max-width: 100%;
     height: auto;
+}
+/* Ranking stars */
+.fa-star.gold{
+    color:gold;
+}
+.fa-star.silver {
+    color: silver;
+}
+.fa-star.bronze {
+    color: #CD7F32;
+}
+.fa-star.purple {
+    color: mediumpurple;
+}
+.fa-star.brown {
+    color: saddlebrown;
+}
+.fa-star.blue {
+    color: dodgerblue;
+}
+.fa-star.cyan {
+    color: deepskyblue;
+}
+.fa-star.green {
+    color: green;
 }

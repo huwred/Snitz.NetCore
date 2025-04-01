@@ -14,8 +14,9 @@
     bool showprivate = false;
     var speciesonly = Model.SpeciesOnly ? 0 : 1;
 }
-<div class="container pt-0">
-    <snitz-breadcrumb></snitz-breadcrumb>
+<div class="pt-0">
+    <snitz-breadcrumb show-filter="true"></snitz-breadcrumb>
+    <div class="collapse" id="showFilters">
     <form asp-action="Search" asp-controller="PhotoAlbum" method="post" >
         <div class="row">
             <div class="col-12 col-lg-10">
@@ -142,6 +143,7 @@
             </div>
         </div>
     </form>
+    </div>
     <div class="container mt-3">
         <table class="table table-bordered table-striped table-responsive">
             <thead>

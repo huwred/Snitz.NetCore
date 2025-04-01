@@ -42,6 +42,7 @@
         {
             <snitz-topic-icon sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
         }
+        <span class="d-block d-md-none fs-4 bold" title="@Localizer["lblReplies"]">@Model?.RepliesCount</span>
     </div>
     <div class="subjects" style="z-index: 2">
         <div class="d-lg-flex flex-row bd-highlight mb-3">
@@ -71,7 +72,7 @@
                     }
                 }
             </div>
-            <div class="d-none d-md-flex  p-2 bd-highlight fs-6">
+            <div class="d-none d-md-flex  p-2 bd-highlight fs-6 post-buttons">
                 @if (!archives)
                 {
                     @await Component.InvokeAsync("PostControls", new { post = Model ,forlist = true})
@@ -93,7 +94,7 @@
             <span class="ms-2">@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
             </span>
         }
-        <div class="d-sm-inline-flex d-md-none bd-highlight fs-6 ms-3 ">
+        <div class="d-sm-inline-flex d-md-none bd-highlight fs-6 post-buttons">
             @if (!archives)
             {
                 @await Component.InvokeAsync("PostControls", new { post = Model, forlist = true })

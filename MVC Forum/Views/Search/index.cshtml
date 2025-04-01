@@ -58,9 +58,13 @@
         var anyterms = Localizer[SearchFor.AnyTerms.GetAttribute<DisplayAttribute>()!.Name!].Value;
         <div class="col col-md-8 offset-md-2 ">
             <form asp-controller="Forum" asp-action="SearchResult" class="needs-validation bg-form p-4 rounded" novalidate>
+
                 <div class="mb-3">
                     <label asp-for="Terms" class="form-label">@Localizer["lblKeywords"]</label>
-                    <input asp-for="Terms" placeholder="@Localizer["plhSearchTerm"]" type="text" class="form-control" aria-describedby="textHelpBlock">
+                    <div class="input-group">
+                        <input asp-for="Terms" type="text" class="form-control" placeholder="@Localizer["plhSearchTerm"]" aria-label="@Localizer["plhSearchTerm"]" aria-describedby="button-addon2">
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon2" title="Advanced search" data-bs-toggle="collapse" data-bs-target="#showFilters" aria-expanded="false"><i class="fa fa-sliders"></i></button>
+                    </div>
 @*                     @if (SnitzConfig.GetIntValue("INTFULLTEXT") == 1)
                     {
                         <span id="textHelpBlock" class="form-text text-muted">@Localizer["fulltextSearch",allterms,anyterms]</span>
@@ -77,6 +81,7 @@
                         </div>
                     }
                 </div>
+                <div class="collapse" id="showFilters">
                 <div class="row mb-3">
                     <div class="col-12 col-md-6">
                         <label for="SearchMessage" class="form-label">@Localizer["lblSearchin"]</label>
@@ -125,6 +130,7 @@
                         <label for="SearchArchivesOff" class="form-check-label">@Localizer["lblNo"]</label>
                     </div>
                     <span id="radio1HelpBlock" class="form-text text-muted">@Localizer["Search_ArchiveDesc"]</span>
+                </div>
                 </div>
                 <partial name="FormButtons"/>
             </form>

@@ -42,8 +42,9 @@
 
 
 
-<div class="container pt-0">
-    <snitz-breadcrumb></snitz-breadcrumb>
+<div class="pt-0">
+    <snitz-breadcrumb show-filter="true"></snitz-breadcrumb>
+    <div class="collapse" id="showFilters">
     <form asp-action="MemberImages" asp-controller="PhotoAlbum" data-ajax="true" data-ajax-update="#ImageContainer">
         <div class="row">
             <div class="col col-lg-6">
@@ -98,7 +99,8 @@
                 </div>
             </div>
         </div>
-    </form>
+        </form>
+    </div>
     <div class="container mt-3" id="ImageContainer">
         <ul class="image-gallery list-unstyled">
             @foreach (var image in Model)

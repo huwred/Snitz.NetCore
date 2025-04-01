@@ -35,50 +35,51 @@
         }
     }
 }
-<div class="container pt-0">
+<div class="pt-0">
     <div class="row">
         <div class="col">
-            <snitz-breadcrumb></snitz-breadcrumb>
-            <form asp-action="Search" method="post" class="needs-validation" novalidate id="member-search">
-                <div class="input-group mb-3">
-                    <select class="form-select" id="inputGroupSelect04" name="SearchIn" required="required">
-                        <option value="" selected>@Localizer["SearchIn"]...</option>
-                        <option value="1">@Localizer["UserName"]</option>
-                        <option value="2">@Localizer["ProfileFirstname"]</option>
-                        <option value="3">@Localizer["ProfileLastname"]</option>
-                        <option value="4">@Localizer["ProfileTitle"]</option>
-                        <option value="5">@Localizer["Email"]</option>
-                    </select>                        
-                    <input type="text" placeholder="@Localizer["Search_Term"] ..." class="form-control" name="SearchFor" required="required" />
-                    <button class="btn btn-secondary" type="submit">@Localizer["mnuForumSearch"]</button>
-                     
-                    <a snitz-if="@(userroles != null && @userroles.Contains("Administrator"))" asp-action="Register" class="btn btn-outline-secondary" title="@Localizer["createAccount"]">@Localizer["createAccount"]</a>
-                </div>
-            </form>
-            <div class="invalid-feedback ml-2">No values entered for search.</div>
-            
-            @if (SnitzConfig.GetValueWithDefault("STRACCOUNTPAGESIZES", "") != "")
-            {
-                var sizes = SnitzConfig.GetValueWithDefault("STRACCOUNTPAGESIZES", "").Split(",");
-                if (sizes.Length > 1)
-                {
-                    <form asp-action="Index" id="pagesize-form">
-
-                    <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
-                    <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
-                            @foreach (var size in sizes)
-                        {
-                                <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (Model.PageSize == Convert.ToInt32(size))
-                                {
-                                    @Html.Raw("checked")
-                                } />
-                            <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
-                        }
+            <snitz-breadcrumb show-filter="true"></snitz-breadcrumb>
+            <div class="collapse" id="showFilters">
+                <form asp-action="Search" method="post" class="needs-validation" novalidate id="member-search">
+                    <div class="input-group mb-3">
+                        <select class="form-select" id="inputGroupSelect04" name="SearchIn" required="required">
+                            <option value="" selected>@Localizer["SearchIn"]...</option>
+                            <option value="1">@Localizer["UserName"]</option>
+                            <option value="2">@Localizer["ProfileFirstname"]</option>
+                            <option value="3">@Localizer["ProfileLastname"]</option>
+                            <option value="4">@Localizer["ProfileTitle"]</option>
+                            <option value="5">@Localizer["Email"]</option>
+                        </select>
+                            <button class="btn btn-secondary input-group-addon" type="submit">@Localizer["mnuForumSearch"]</button>
                     </div>
-                    </form>
+                    <div class="input-group mb-3">
+                        <input type="text" placeholder="@Localizer["Search_Term"] ..." class="form-control input-group-append" name="SearchFor" required="required" />
+                        <a snitz-if="@(userroles != null && @userroles.Contains("Administrator"))" asp-action="Register" class="btn btn-outline-secondary input-group-addon" title="@Localizer["createAccount"]">@Localizer["createAccount"]</a>
+                    </div>
+                </form>
+                <div class="invalid-feedback ml-2">No values entered for search.</div>
+                @if (SnitzConfig.GetValueWithDefault("STRACCOUNTPAGESIZES", "") != "")
+                {
+                    var sizes = SnitzConfig.GetValueWithDefault("STRACCOUNTPAGESIZES", "")!.Split(",");
+                    if (sizes.Length > 1)
+                    {
+                        <form asp-action="Index" id="pagesize-form">
+                        <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
+                        <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
+                                @foreach (var size in sizes)
+                            {
+                                    <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (Model.PageSize == Convert.ToInt32(size))
+                                    {
+                                        @Html.Raw("checked")
+                                    } />
+                                <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
+                            }
+                        </div>
+                        </form>
+                    }
                 }
+            </div>
 
-            }
             <table class="table table-sm table-bordered table-hover table-striped">
                 <thead>
                 <tr class="bg-dark">

@@ -29,41 +29,45 @@
 
 
 <div class="pt-0">
-    <snitz-breadcrumb></snitz-breadcrumb>
+    <snitz-breadcrumb show-filter="true"></snitz-breadcrumb>
 
     <div class="row">
         <div class="col">
-                <form id="defaultdays-form" asp-action="Active" class="form-inline" method="get">
-                    <div class="row m-2">
-                        <div class="col">
-                            <div class="input-group mb-3">
-                                <enum-select name="Since" id="default-days" last-visit="@lastvisit" enum-type="typeof(ActiveSince)" selected-value="(int)Model.Since" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
-                                <enum-select name="Refresh" id="active-refresh" enum-type="typeof(ActiveRefresh)" selected-value="(int)Model.Refresh" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
 
-                                @if (SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "") != "")
+    <div class="collapse" id="showFilters">
+        <form id="defaultdays-form" asp-action="Active" class="form-inline" method="get">
+            <div class="row m-2">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <enum-select name="Since" id="default-days" last-visit="@lastvisit" enum-type="typeof(ActiveSince)" selected-value="(int)Model.Since" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                        <enum-select name="Refresh" id="active-refresh" enum-type="typeof(ActiveRefresh)" selected-value="(int)Model.Refresh" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+
+                        @if (SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "") != "")
+                        {
+                            var ischecked = Model.PageSize;
+                            @* <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span> *@
+
+                            <div class="radioBtn btn-group input-group-addon" role="group" aria-label="Select page size" title="Select page size">
+                                @foreach (var size in SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "")!.Split(","))
                                 {
-                                    var ischecked = Model.PageSize;
-                                    @* <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span> *@
+                                    <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (ischecked == Convert.ToInt32(size))
+                                    {
+                                        @Html.Raw("checked")
+                                    } />
+                                    <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
 
-                                    <div class="radioBtn btn-group input-group-addon" role="group" aria-label="Select page size" title="Select page size">
-                                        @foreach (var size in SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "")!.Split(","))
-                                        {
-                                            <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (ischecked == Convert.ToInt32(size))
-                                            {
-                                                @Html.Raw("checked")
-                                            } />
-                                            <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
-
-                                        }
-                                    </div>
                                 }
-                        </div>
-                    </div>
+                            </div>
+                        }
                 </div>
-                <input type="number" value="@pagenum" name="page" style="display: none;" />
-                <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
-                <input type="hidden" name="fun" id="fun">
-            </form>
+            </div>
+        </div>
+        <input type="number" value="@pagenum" name="page" style="display: none;" />
+        <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
+        <input type="hidden" name="fun" id="fun">
+    </form>
+    </div>
+
             @if (Model.Posts!.Any())
             {
                 <div class="posts-table">
