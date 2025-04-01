@@ -595,3 +595,12 @@ a.latestpost-title {
 .event-birthday div.fc-content span.fc-title {
     color: goldenrod !important
 }
+
+#topic-panel a.btn{
+    border-radius:50% !important;
+    padding:.25rem !important;
+}
+#topic-panel button.btn {
+    border-radius: 50% !important;
+    padding: .25rem !important;
+}

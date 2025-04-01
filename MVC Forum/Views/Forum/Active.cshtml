@@ -43,10 +43,10 @@
                                 @if (SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "") != "")
                                 {
                                     var ischecked = Model.PageSize;
-                                    <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
+                                    @* <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span> *@
 
-                                    <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
-                                        @foreach (var size in SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "").Split(","))
+                                    <div class="radioBtn btn-group input-group-addon" role="group" aria-label="Select page size" title="Select page size">
+                                        @foreach (var size in SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "")!.Split(","))
                                         {
                                             <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (ischecked == Convert.ToInt32(size))
                                             {

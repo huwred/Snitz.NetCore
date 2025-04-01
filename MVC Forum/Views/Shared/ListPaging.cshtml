@@ -48,7 +48,7 @@
     var searchfor = "";
     if (Context.Session.Keys.Contains("searchFor"))
     {
-        var sfor = @HttpContextAccessor.HttpContext.Session.GetString("searchFor");
+        var sfor = @HttpContextAccessor.HttpContext?.Session.GetString("searchFor");
 
         searchfor = $"&searchFor={sfor}";
     }
