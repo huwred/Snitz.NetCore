@@ -42,6 +42,7 @@ $(document).on("click",".post-del", function(e) {
     e.preventDefault();
     var postid = $(this).data("id");
     var href = $(this).attr('href');
+    $('#confirmModal h4.text-bg-warning').html('Delete Post');
     $('#confirmModal #confirm-body').html('<p>You are about to Delete this Topic.</p><p>Do you wish to proceed?</p>');
     $('#confirmModal').data('id', postid).data('url', href).modal('show');
 
@@ -98,6 +99,7 @@ $(document).on('click',
         var href = $(this).attr('href');
         var postid = $(this).data("id");
         //confirm-body
+        $('#confirmModal h4.text-bg-warning').html('Bookmark Post');
         $('#confirmModal #confirm-body').html('<p>You are about to Bookmark this Topic.</p><p>Do you wish to proceed?</p>');
         $('#confirmModal').data('id', postid).data('url', href).modal('show');
         $('#confirmModal').on('click','#btnYes',function(e) {
@@ -127,6 +129,7 @@ $(document).on('click',
             var href = $(this).attr('href');
             var postid = $(this).data("id");
             //confirm-body
+            $('#confirmModal h4.text-bg-warning').html('Delete Bookmark');
             $('#confirmModal #confirm-body').html('<p>You are about to delete this Bookmark.</p><p>Do you wish to proceed?</p>');
             $('#confirmModal').data('id', postid).data('url', href).modal('show');
             $('#confirmModal').on('click','#btnYes',function(e) {
@@ -155,6 +158,7 @@ $(document).on('click', '.post-lock', function (e) {
     var postid = $(this).data("id");
     var poststatus = $(this).data("status");
     //confirm-body
+    $('#confirmModal h4.text-bg-warning').html('Lock Post');
     $('#confirmModal #confirm-body').html('<p>You are about to Lock this Topic.</p><p>Do you wish to proceed?</p>');
     $('#confirmModal').data('id', postid).data('url', href).modal('show');
     $('#confirmModal').on('click','#btnYes',function(e) {
@@ -203,6 +207,7 @@ $(document).on('click', '.reply-answer', function (e) {
     var postid = $(this).data("id");
     var poststatus = $(this).data("status");
     //confirm-body
+    $('#confirmModal h4.text-bg-warning').html('Answer');
     $('#confirmModal #confirm-body').html('<p>Mark as Answer?</p><p>Do you wish to proceed?</p>');
     $('#confirmModal').data('id', postid).data('url', href).modal('show');
     $('#confirmModal').on('click','#btnYes',function(e) {

@@ -32,8 +32,11 @@
                 </div>
                 <div class="form-group mb-3">
                     <label asp-for="Password">@Localizer["Password"]</label>
-                    <div class="input-group" id="show_hide_password">
-                        @Html.PasswordFor(m => m.Password,new{@class="form-control"})
+                    <div class="input-group" >
+                        <input class="form-control password" id="password" type="password" asp-for="Password"  required />
+                        <span class="input-group-text togglePassword" id="">
+                            <i class="fa fa-eye" style="cursor: pointer"></i>
+                        </span>
                     </div>
                     <div class="invalid-feedback">@Localizer["PropertyRequired", Localizer["Password"].Value]</div>
                 </div>
@@ -52,3 +55,18 @@
     </div>
 }
 
+<storecontent asp-key="password-toggle">
+    <script>
+        $(".togglePassword").click(function (e) {
+            e.preventDefault();
+            var type = $(this).parent().parent().find(".password").attr("type");
+            if(type == "password"){
+                $(".togglePassword i").removeClass("fa-eye").addClass("fa-eye-slash");
+                $(this).parent().parent().find(".password").attr("type","text");
+            }else if(type == "text"){
+                $(".togglePassword i").removeClass("fa-eye-slash").addClass("fa-eye");
+                $(this).parent().parent().find(".password").attr("type","password");
+            }
+        });
+    </script>
+</storecontent>

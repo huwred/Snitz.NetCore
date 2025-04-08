@@ -158,20 +158,33 @@ namespace SnitzCore.Service
         }
         public Forum Get(int id)
         {
-            return  _dbContext.Forums.AsNoTracking().Include(f=>f.Category).OrderBy(f=>f.Id).First(f=>f.Id==id);
+            try
+            {
+                return  _dbContext.Forums.AsNoTracking().Include(f=>f.Category).Single(f=>f.Id==id);
+            }
+            catch (Exception)
+            {
+
+                throw new Exception($"Forum {id} not found");
+            }
+            
 
         }
         public Forum GetWithPosts(int id)
         {
-            return _dbContext.Forums.AsNoTracking().Where(f => f.Id == id)
-                .Include(f=>f.Category)
-                
-                .Include(f => f.Posts!.OrderByDescending(p => p.Created))
-                .ThenInclude(p => p.Member)
-                .Include(f=>f.ForumModerators)!
-                .ThenInclude(p => p.Member)
-                .AsSplitQuery()
-                .Single();
+            var f = _dbContext.Forums.AsNoTracking().Include(f=>f.Category).Include(f => f.Posts).Single(f => f.Id == id);
+            if (f.Posts != null)
+            {
+                return _dbContext.Forums.AsNoTracking().Where(f => f.Id == id)
+                    .Include(f=>f.Category)              
+                    .Include(f => f.Posts!)
+                    .ThenInclude(p => p.Member)
+                    .Include(f=>f.ForumModerators)!
+                    .ThenInclude(p => p.Member)
+                    .AsSplitQuery()
+                    .Single();
+            }
+            return f;
 
         }
         public Dictionary<int, string> ForumList(bool admin = true)

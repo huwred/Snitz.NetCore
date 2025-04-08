@@ -1,6 +1,9 @@
 /* ########################################### */
 /*                 Global                      */
 /* ########################################### */
+.mt-6{
+    margin-top:6rem !important;
+}
 .text-bg-dark {
     color: #fff !important;
     background-color: RGBA(var(--bs-dark-rgb),var(--bs-bg-opacity,1)) !important;
@@ -765,4 +768,33 @@ i.modstatus-2, i.modstatus-3 {
 }
 .fa-star.green {
     color: green;
+}
+
+
+@media (max-width: 768px) {
+    .navbar-collapse {
+        position: fixed;
+        top: 73px;
+        left: 0;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-bottom: 15px;
+        height: 100%;
+    }
+
+        .navbar-collapse.collapsing {
+            height: 100%;
+            left: -75%;
+            transition: height 0s ease;
+        }
+
+        .navbar-collapse.show {
+            height: 100%;
+            left: 0;
+            transition: left 400ms ease-in-out;
+        }
+
+    .navbar-toggler.collapsed ~ .navbar-collapse {
+        transition: left 400ms ease-in;
+    }
 }

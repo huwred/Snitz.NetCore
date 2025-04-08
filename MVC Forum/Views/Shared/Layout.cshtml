@@ -51,7 +51,7 @@
         <div class="container flex-grow-1">
             <partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
             <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
-            <main role="main" class="pb-3 mt-4">
+            <main role="main" class="pb-3 mt-6">
                 @RenderBody()
             </main>
         </div>
@@ -77,6 +77,8 @@
 
 @await RenderSectionAsync("Scripts", required: false)
 <renderstoredcontent asp-key="cookie-consent"></renderstoredcontent>
+<renderstoredcontent asp-key="password-toggle"></renderstoredcontent>
+
 @if (User.IsInRole("Administrator"))
 {
     <div id="confirmRestart" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -151,6 +153,7 @@ $(document).on('submit', 'form', function () {
     function displayBusyIndicator() {
     $('.loading').show();
 }
+
 </script>
 }
 </body>

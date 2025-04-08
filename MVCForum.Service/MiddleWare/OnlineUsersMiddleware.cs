@@ -47,7 +47,7 @@ namespace SnitzCore.Service.MiddleWare
             if(arr != null && arr.Any(s => agent.Contains(s, StringComparison.OrdinalIgnoreCase))) {
                 return _next(context);
             }
-            _logger.Warn(agent);
+            _logger.Info(agent);
 
 
             if (context.Request.Cookies.TryGetValue(_cookieName, out var userGuid) == false)

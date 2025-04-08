@@ -7,14 +7,14 @@
 @{
     var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? SnitzConfig.GetValueWithDefault("STRDEFAULTTHEME", "SnitzTheme");
     var currForumUser = UserManager.GetUserAsync(User).Result;
-    var navcss = currentTheme!.Contains("Dark") ? "navbar-dark" : "bg-dark";
+    var navcss = currentTheme!.Contains("Dark") ? "navbar-dark bg-dark" : "bg-dark";
 }
-<nav class="navbar navbar-expand-md @navcss navbar-custom">
+<nav class="navbar navbar-expand-md navbar-custom @navcss fixed-top">
     <partial name="MenuLogo" />
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div class="collapse navbar-collapse @navcss" id="navbarSupportedContent">
         <ul class="navbar-nav">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownForumLink">@Localizer["mnuForum"]</a>
