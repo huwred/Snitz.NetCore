@@ -22,7 +22,7 @@
             <div class="tab-pane fade" id="v-pills-moderators" role="tabpanel" aria-labelledby="v-pills-moderators-tab">
                 <legend>Manage Moderators</legend>
                 <hr/>
-                <form asp-action="UpdateForumModerators" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="#forum-moderators">
+                <form id="moderators-form" asp-action="UpdateForumModerators" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="#forum-moderators">
                     <div class="mb-3">
                         <label class="form-label">Choose forum to view list of moderators</label>
                         <select title="Select a Forum to manage Moderators" class="form-select getModerators" asp-for="ForumId" asp-items="forums">
@@ -121,7 +121,13 @@
             $('#forum-moderators').load(SnitzVars.baseUrl + '/Admin/GetForumModerators/' + $(this).val(), function () {
                 $(".multiselect").twosidedmultiselect();
             });
-
+            $("#forum-moderators").on("click", "#select_all", function () {
+                $('#ForumModeratorstsms option').prop('selected', this.checked);
+            });
+        });
+        $(document).on('click','#button_reset_dynamic_form', () => {
+            $("#moderators-form")[0].reset();
+            location.reload();
         });
         $(document).ready(function(){
             $('button[data-bs-toggle="pill"]').on('show.bs.tab', function (e) {

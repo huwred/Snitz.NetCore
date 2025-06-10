@@ -148,5 +148,11 @@
     "inputFiles": [
       "wwwroot/js/star-rating.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/addpostform.min.js",
+    "inputFiles": [
+      "wwwroot/js/addpostform.js"
+    ]
   }
 ]

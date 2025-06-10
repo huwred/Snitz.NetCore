@@ -9,7 +9,7 @@
     <div class="col-5"><label class="form-label">Available Moderators</label></div>
     <div class="col-2">&nbsp;</div>
     <div class="col-5"><label class="form-label">Forum Moderators</label></div>
-    @Html.ListBoxFor(x => Model.ForumModerators, new MultiSelectList(ViewBag.Moderators, "Key", "Value", Model.ForumModerators), new { @class = "form-select mod-select multiselect" ,size="10"})
+    @Html.ListBoxFor(x => Model.ForumModerators, new MultiSelectList(ViewBag.Moderators, "Key", "Value", Model.ForumModerators), new { @class = "form-select mod-select multiselect", size = "10" })
 </div>
 <div class="mb-3">
     <input type="checkbox" class="form-check-inline" id="select_all" /><label class="form-check-label">Select/Un-select All</label>

@@ -2,6 +2,7 @@
     --primary-header: #888;
     --font-size: 14px;
     --spacing: 1rem;
+    --bs-form-invalid-color: black;
 }
 html, body {
     font-size: var(--font-size);
