@@ -43,7 +43,7 @@ tinymce.init({
     convert_urls: true,
     formats: {
         blockquote: { block: 'blockquote', classes: 'newquote' },
-        bold: { inline: 'span', classes: [ 'my-inline' ] }
+        bold: { inline: 'span', classes: [ 'fw-bold' ] }
     },
     toolbar: 'code undo redo | styleselect | bold italic | alignleft aligncenter alignright | ' +
         'bullist numlist | link emoticons | fileButton imageButton media codesample',
@@ -83,3 +83,5 @@ tinymce.init({
         }
     }
 });
+
+

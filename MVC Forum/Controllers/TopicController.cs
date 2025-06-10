@@ -551,6 +551,14 @@ namespace MVCForum.Controllers
         [Route("AddPost/")]
         public async Task<IActionResult> AddPost(NewPostModel model)
         {
+            ModelState.Remove("ForumName");
+            ModelState.Remove("AuthorName");
+            ModelState.Remove("AuthorImageUrl");
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
             var userId = _userManager.GetUserId(User);
             var user = await _userManager.FindByIdAsync(userId!);
 
