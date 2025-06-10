@@ -426,7 +426,7 @@
                 }
                 $('.split-topic').on('click', function (e) {
                     e.preventDefault();
-                    location.href = "~/Topic/SplitTopic/?id=" + $(this).data("topic") + "&replyid=" + $(this).data("id");
+                    location.href = SnitzVars.baseUrl + "/Topic/SplitTopic/?id=" + $(this).data("topic") + "&replyid=" + $(this).data("id");
                 });
             });
 

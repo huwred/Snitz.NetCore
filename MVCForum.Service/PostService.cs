@@ -586,7 +586,7 @@ namespace SnitzCore.Service
             try
             {
                 _dbContext.Database.BeginTransaction();
-                foreach (string id in ids.OrderByDescending(s => s))
+                foreach (string id in ids.OrderBy(s => s))
                 {
                     //fetch the reply
                     var reply = (from replies in _dbContext.Replies
@@ -606,7 +606,7 @@ namespace SnitzCore.Service
                             MemberId = reply.MemberId,
                             Sig = reply.Sig,
                             LastPostAuthorId = reply.MemberId,
-                            LastPostReplyId = 0,
+                            LastPostReplyId = reply.Id,
                             Status =(short)Status.Open,
                             LastPostDate = reply.Created,
                             ReplyCount = 0
@@ -632,6 +632,7 @@ namespace SnitzCore.Service
                 }
                 if(topic != null)
                 {
+
                     topic.ReplyCount = replycount;
                     _dbContext.Update(topic);
                     _dbContext.SaveChanges();
@@ -646,12 +647,15 @@ namespace SnitzCore.Service
             {
                 _dbContext.Database.CommitTransaction();
             }
+            _ = UpdateLastPost(topic.Id, 0);
+            _forumservice.UpdateLastPost(topic.ForumId);
+
             Post? originaltopic = (from t in _dbContext.Posts select t).OrderBy(m=>m.Id).FirstOrDefault(t=>t.Id == originaltopicid);
             if (originaltopic != null)
             {
-                originaltopic.ReplyCount -= replycount + 1;
-                _dbContext.Update(originaltopic);
-                _dbContext.SaveChanges();
+                //originaltopic.ReplyCount -= replycount + 1;
+                //_dbContext.Update(originaltopic);
+                //_dbContext.SaveChanges();
                 _ = UpdateLastPost(originaltopicid, 0);
                 _forumservice.UpdateLastPost(originaltopic.ForumId);
             }

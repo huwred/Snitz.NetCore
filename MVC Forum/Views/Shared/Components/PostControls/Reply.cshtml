@@ -18,7 +18,7 @@
             <i snitz-if="@(Bookmarks.IsBookmarked(Model.PostId))" class="fa fa-bookmark m-1 bookmark-del" title="@Localizer["tipRemoveBookmark"]" data-id="@Model.PostId"></i>
             <i snitz-if="@(!Bookmarks.IsBookmarked(Model.PostId))" class="fa fa-bookmark-o m-1 bookmark-add" title="@Localizer["tipBookmarkPost"]" data-id="@Model.PostId"></i>
         }
-        <i snitz-if="@(!Model.Topic.Answered && isTopicAuthor)" class="fa fa-flag-checkered m-1 reply-answer" title="@Localizer["tipAnswer"]" data-id="@Model.Id"></i>
+        <i snitz-if="@(!Model.Topic.Answered && (isTopicAuthor || isadmin))" class="fa fa-flag-checkered m-1 reply-answer" title="@Localizer["tipAnswer"]" data-id="@Model.Id"></i>
         @if (isadmin || isauthor || ismoderator)
         {
             <i snitz-if="@(!islocked)" class="fa fa-pencil m-1 reply-edit" title="@Localizer["tipEditReply"]" data-id="@Model.Id"></i>

@@ -1318,8 +1318,8 @@ namespace MVCForum.Controllers
                 topic = _postService.SplitTopic(ids, vm.ForumId, vm.Subject);
 
                 _postService.UpdateLastPost(topic!.Id,0);
-                _postService.UpdateLastPost(originaltopic!.Id,0);
                 _forumService.UpdateLastPost(topic.ForumId);
+                _postService.UpdateLastPost(originaltopic!.Id,0);
                 //        EmailController.TopicSplitEmail(ControllerContext, topic);
             }
 

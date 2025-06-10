@@ -35,6 +35,7 @@ using SnitzCore.Service.Extensions;
 using SnitzCore.Service.Hangfire;
 using SnitzCore.Service.MiddleWare;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 
 
@@ -49,6 +50,7 @@ builder.Services.Configure<SnitzForums>(builder.Configuration.GetSection("SnitzF
 builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddDbContext<SnitzDbContext>(options =>
 {
+    options.ConfigureWarnings(w => w.Ignore(SqlServerEventId.SavepointsDisabledBecauseOfMARS));
     options.UseDatabase(builder.Configuration.GetConnectionString("DBProvider"), builder.Configuration, System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     options.EnableDetailedErrors();
