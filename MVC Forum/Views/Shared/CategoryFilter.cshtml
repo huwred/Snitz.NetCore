@@ -1,0 +1,21 @@
+﻿@inject IGroups _groupservice;
+
+@{
+    List<GroupName> groups = _groupservice.GetNames();
+
+
+    if (groups != null)
+    {
+        <div class="form-group clearfix">
+            <div class="col-xs-8 col-md-5 padding-sm">
+                @Localizer["CategoryGroups"]
+                <select class="form-select" name="GroupId" onchange="$(this).closest('form').submit();">
+                    @foreach (var group in groups)
+                    {
+                        <option value="@group.Id" selected-val="@ViewBag.GroupId">@group.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+    }
+}

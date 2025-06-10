@@ -12,6 +12,15 @@
         <div class="col-7">
             <form asp-action="Create" method="post" id="addForumForm" class="needs-validation " novalidate>
                 <div class="mb-3 row">
+                    <div class="col-10 col-lg-4">
+                        <div class="form-check form-switch mb-3">
+                            <input type="checkbox" role="switch" name="Status" id="Status" value="1" class="form-check-input" checked="@(Model.Status == 1)" style="transform: scale(1.4);">
+                            <input type="checkbox" name="Status" value="0" checked="@(Model.Status != 1)" style="display:none">
+                            <label class="form-check-label" asp-for="Status"> <span snitz-if="@(Model.Status == 1)">@Localizer["Active"]</span><span snitz-if="@(Model.Status != 1)">@Localizer["Locked"]</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 row">
                     <label asp-for="Category" class="form-label col-2">@Localizer["forumCategory"]</label>
                     <div class="col-10 col-lg-4">
                         @Html.DropDownListFor(m => m.Category, // Store selected value in Model.State
@@ -66,6 +75,16 @@
                         <input name="NewPassword" type="password" class="form-control" value="@Model.NewPassword" />
                     </div>
                 </div>
+
+                <div snitz-if="@(SnitzConfig.GetIntValue("INTTOPICRATING") == 1)" class="mb-3 row">
+                    <label asp-for="AllowTopicRating" class="form-label col-2">@Localizer["forumAllowRating"]</label>
+                    <div class="col-10 col-lg-5">
+                        <div class="form-check form-switch mb-3">
+                            <input type="checkbox" role="switch" name="AllowTopicRating" id="AllowTopicRating" value="1" class="form-check-input" checked="@(Model.AllowTopicRating == 1)" style="transform: scale(1.4);">
+                            <input type="checkbox" name="AllowTopicRating" value="0" checked="@(Model.AllowTopicRating != 1)" style="display:none">
+                        </div>
+                    </div>
+                </div>
                 <div snitz-if="@(SnitzConfig.GetIntValue("STRMODERATION") == 1)" class="mb-3 row">
                     <label asp-for="Moderation" class="form-label col-2">@Localizer["forumModeration"]</label>
                     <div class="col-10 col-lg-5">
@@ -78,16 +97,7 @@
                         <enum-select name="Subscription" enum-type="typeof(ForumSubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
                 </div>
-                <div class="mb-3 row">
-                    <label  class="form-label col-2">&nbsp;</label>
-                    <div class="col-10 col-lg-4">
-                        <div class="form-check form-switch mb-3">
-                            <input type="checkbox" role="switch" name="Status" id="Status" value="1" class="form-check-input" checked="@(Model.Status == 1)" style="transform: scale(1.4);">
-                            <input type="checkbox" name="Status" value="0" checked="@(Model.Status != 1)" style="display:none">
-                            <label class="form-check-label" asp-for="Status"> <span snitz-if="@(Model.Status == 1)">@Localizer["Active"]</span><span snitz-if="@(Model.Status != 1)">@Localizer["Locked"]</span></label>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="mb-3 form-check">
                     @Html.CheckBoxFor(m => m.IncrementMemberPosts, new { @class = "form-check-input" })
                     <label asp-for="IncrementMemberPosts" class="form-check-label">@Localizer["forumPostCount"]</label>
@@ -148,7 +158,7 @@
                 <legend>Plugins</legend>
                 @if (Model.ForumId == 0)
                 {
-                    <h5 class="text-warning text-center">Forum needs to be save before plugins can be configured</h5>
+                    <h5 class="text-warning text-center">Forum needs to be saved before plugins can be configured</h5>
                 }
                 else
                 {

@@ -16,15 +16,23 @@
 <ul class="image-gallery list-unstyled">
     @foreach (var image in Model)
     {
-        <li snitz-if="@(!image.IsPrivate || showprivate)" class="d-flex center">
+        <li snitz-if="@(!image.IsPrivate || showprivate)" class="d-flex center" id="img_@image.Id">
             <a class="view-gallery" target="_blank" href="~/PhotoAlbum/GetPhoto/@image.Id" title="Image @image.Id">
                 <figure class="figure">
                     <album-image data-id="@image.Id" org-width="@image.Width" org-height="@image.Height" width="300" height="225" src="@($"{image.Timestamp}_{image.Location}")" class="figure-img" description="@image.Description"></album-image>
-                <div class="overlay">
-                    <div class="text">@image.CommonName<br />@image.ScientificName<br />Posted on: @image.Timestamp.FromForumDateStr().ToLocalTime().ToShortDateString() <br />@image.Width x @image.Height</div>
-                </div>
-                <figcaption class="figure-caption form-text">@image.Description</figcaption>
-            </figure>
+                    <div class="overlay">
+                        <div class="text">@image.CommonName<br />@image.ScientificName<br />Posted on: @image.Timestamp.FromForumDateStr().ToLocalTime().ToShortDateString() <br />@image.Width x @image.Height</div>
+                        <div class="footer" snitz-if="@(User.IsAdministrator() || ViewBag.IsOwner)">
+                            <link-confirm snitz-if="@image.IsPrivate" title="@Localizer["lblIsPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@image.Id/?state=false&memberid=@image.MemberId" config-class="fa fa-user-secret p-1" config-key="@image.Id"></link-confirm>
+                            <link-confirm snitz-if="@(!image.IsPrivate)" title="@Localizer["lblPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@image.Id/?state=true&memberid=@image.MemberId" config-class="fa fa-user-o p-1" config-key="@image.Id"></link-confirm>
+                            <link-confirm snitz-if="@image.DoNotFeature" title="@Localizer["lblDoNotFeature"].Value" jq-selector="confirm-feature" href="~/PhotoAlbum/ToggleDoNotFeature/@image.Id/?state=false&memberid=@image.MemberId" config-class="fa fa-square-o p-1" config-key="@image.Id"></link-confirm>
+                            <link-confirm snitz-if="@(!image.DoNotFeature)" title="@Localizer["imgFeature"].Value" jq-selector="confirm-feature" href="~/PhotoAlbum/ToggleDoNotFeature/@image.Id/?state=true&memberid=@image.MemberId" config-class="fa fa-picture-o p-1" config-key="@image.Id"></link-confirm>
+                            <a href="@Url.Action("Edit", new { id = image.Id })" class="gallery-link" title="@Localizer["tipEditImage"].Value" data-toggle="tooltip"><i class="fa fa-pencil-square-o p-1"></i></a>
+                            <link-confirm title="@Localizer["tipDelImage"].Value" jq-selector="confirm-delete" href="~/PhotoAlbum/DeleteImage/@image.Id/?memberid=@image.MemberId" config-class="fa fa-trash-o p-1" config-key="@image.Id"></link-confirm>
+                        </div>
+                    </div>
+                    <figcaption class="figure-caption form-text">@image.Description</figcaption>
+                </figure>
             </a>
         </li>
     }

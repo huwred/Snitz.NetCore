@@ -23,7 +23,7 @@ tinymce.remove();
 tinymce.init({
     selector: 'textarea#msg-text',
     menu: {
-        favs: {title: 'My Favorites', items: 'code | searchreplace | emoticons'}
+        favs: {title: 'My Favourites', items: 'code | searchreplace | emoticons'}
     },
     menubar: 'favs edit insert format table help',
     language: curLang,
@@ -59,7 +59,7 @@ tinymce.init({
             editor.ui.registry.addButton('fileButton',
                 {
                     icon: 'new-document',
-                    tooltip: 'Attach file to post',
+                    tooltip: SnitzVars.toolTips.fileBtn + '\n(' + SnitzVars.allowedfiles + ')',
                     onAction: function(_) {
                         $('#upload-content').html('');
                         $('#upload-content').load(SnitzVars.baseUrl + "/Topic/UploadForm/",function() {
@@ -72,7 +72,7 @@ tinymce.init({
             editor.ui.registry.addButton('imageButton',
                 {
                     icon: 'gallery',
-                    tooltip: 'Upload image to your album',
+                    tooltip: SnitzVars.toolTips.albumBtn + '\n(' + SnitzVars.allowedimagetypes + ')',
                     onAction: function(_) {
                         $('#upload-content').html('');
                         $('#upload-content').load(SnitzVars.baseUrl + "/PhotoAlbum/UploadForm/?showall=false",function() {

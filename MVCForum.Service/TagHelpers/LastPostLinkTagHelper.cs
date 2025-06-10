@@ -18,6 +18,7 @@ namespace SnitzCore.Service.TagHelpers
         /// ID of last post
         /// </summary>
         public int? ReplyId { get; set; }
+        public bool? JumpTo { get; set; } = false;
         /// <summary>
         /// Date of the last post
         /// </summary>
@@ -45,7 +46,10 @@ namespace SnitzCore.Service.TagHelpers
 
             output.TagName = "span";
             output.Content.AppendHtml($@"<time datetime=""{PostDate?.ToTimeagoDate()}"" class=""timeago"" aria-label=""Posted on {PostDate?.ToLocalTime()}"">{PostDate?.ToLocalTime().ToForumDisplay()}</time>&nbsp;");
-            output.Content.AppendHtml(link);
+            if ((bool)JumpTo!)
+            {
+                output.Content.AppendHtml(link);
+            }
 
         }
 

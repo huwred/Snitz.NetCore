@@ -28,10 +28,11 @@ namespace MVCForum.Controllers
         public IActionResult HandleException()
         {
             // log error
-            var feature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+            IExceptionHandlerPathFeature? feature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
             if (feature != null)
             {
-                _logger.Error(feature.Error.Message,feature.Error.InnerException);
+                _logger.Error(feature.Error.Message,feature.Error);
+                return StatusCode(StatusCodes.Status500InternalServerError,feature?.Error);
             }
             return StatusCode(StatusCodes.Status500InternalServerError);
         }

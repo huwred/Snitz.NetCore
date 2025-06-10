@@ -18,8 +18,34 @@
 }
 @section Styles
 {
-        <link rel="stylesheet" href="~/css/prism.min.css">
+            <link href="~/css/star-rating.min.css" rel="stylesheet" />
+        <link href="~/css/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="~/css/prism.min.css">
+    <style>
+        .star-rating {
+            direction: rtl;
+            display: inline-block;
+            cursor: pointer;
+        }
 
+            .star-rating input {
+                display: none;
+            }
+
+            .star-rating label {
+                color: #ddd;
+                font-size: 20px;
+                padding: 0 2px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+                .star-rating label:hover,
+                .star-rating label:hover ~ label,
+                .star-rating input:checked ~ label {
+                    color: #ffc107;
+                }
+    </style>
         @if (ViewBag.RequireAuth)
         {
             <style>
@@ -38,6 +64,9 @@
     var isAdmin = User.IsInRole("Administrator");
     var hasForumRole = User.IsInRole("Forum_" + Model.ForumId);
     var isAuthenticated = User.Identity!.IsAuthenticated;
+    bool allowrating = Model.ForumId != 0 ? Model.AllowTopicRating : Model.AllowRating;
+    allowrating = allowrating && Model.AllowRating && SnitzConfig.GetIntValue("INTTOPICRATING", 0) == 1;
+    allowrating = true;
 }
 @if (!(bool)ViewBag.RequireAuth)
 {
@@ -69,6 +98,10 @@
             <div class="card-header @answer modstatus-@Model.Status">
                 @Model.Title - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (@Model.Views @Localizer["Views"])</span>
                 <a asp-controller="Topic" asp-action="Moderate" asp-route-id="@Model.Id" title="Moderate" class="modal-link"><i class="modstatus-@Model.Status fa fa-hand-stop-o"></i></a>
+                @if (allowrating)
+                {
+                    <input id="input-id-@Model.Id" name="input-name" type="number" class="rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="sm">
+                }
             </div>
             <div class="card-body">
                 <div class="body topic">
@@ -94,7 +127,7 @@
                 </div>
             </div>
             <div snitz-if="@(isAuthenticated || (Model.Edited != null && Model.EditedBy != null))" class="card-footer text-dark">
-                <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && Model.Edited != null)" class="form-text">@Localizer["lblEditedBy", Model.EditedBy!, Model.Edited!]</span>
+                    <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && Model.Edited != null)" class="form-text">@Localizer["lblEditedBy", Model.EditedBy!, Model.Edited?.ToLocalTime().ToForumDisplay()!]</span>
                 @if (!Model.Archived)
                 {
                     @await Component.InvokeAsync("PostControls", new { post = Model })
@@ -105,7 +138,21 @@
                 <div snitz-if="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1" class="footer"><a href="" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a class="form-control-plaintext text-end" href="" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
             </div>
         </div>
+        @if (Model.AllowRating && SnitzConfig.GetIntValue("INTTOPICRATING", 0) == 1 @* && !Model.HasVoted(User.Identity.Name) *@ && Model.AuthorName != User.Identity.Name)
+        {
+@*             <form asp-action="SaveRating" asp-controller="Topic" method="POST" data-ajax="true" data-ajax-update="#topic_rating">
+                <div class="padding-md" dir="ltr" id="topic_rating" style="margin-left: 40px;">
+                    @Html.Hidden("TopicId", Model.Id)
+                    @Html.Hidden("MemberId", currmember.Id)
+                    <span class="text-muted small">@Localizer["lblRateMe"]</span>
+                    <div class="input-group col-xs-3">
+                        <input id="PostRating" name="PostRating" value="0" type="number" class="rate-me" min=0 max=5 step=0.5 data-size="sm" title="@Localizer["lblStarRating"]" rel="tooltip" />
+                        <div class="input-group-addon topic_rating"><button type="submit" class="btn btn-link fa fa-check" title="@Localizer["lblRateMe"]" /></div>
+                    </div>
 
+                </div>
+            </form> *@
+        }
         <!--Replies Section-->
         @if (Model.Replies != null && Model.Replies!.Any())
         {
@@ -122,8 +169,6 @@
                             </select>
                         </div>
                         <div class="col"><span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span></div>
-                        
-
                     </div>
 
                     @if (SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "") != "")
@@ -196,12 +241,13 @@
     <!--Pagination starts-->
         @if (Model.PageCount > 1)
         {
-            <partial name="ListPaging" model="@(new PagingModel{
-                                                PageCount = Model.PageCount,
-                                                PageSize = Model.PageSize,
-                                                Page = Model.PageNum,
-                                                OrderBy = "lpd",
-                                                SortDir = Model.SortDir})" />
+            <partial name="ListPaging" 
+                model="@(new PagingModel{
+                        PageCount = Model.PageCount,
+                        PageSize = Model.PageSize,
+                        Page = Model.PageNum,
+                        OrderBy = "lpd",
+                        SortDir = Model.SortDir})" />
         }
         else
         {
@@ -332,7 +378,17 @@
     <script type="text/javascript" src="~/js/initPostForm.js"></script>
     <script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
     <script type="text/javascript" src="~/js/topic.min.js"></script>
+<script src="~/js/star-rating.min.js"></script>
+<script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
     <script type="text/javascript">
+        document.querySelectorAll('.star-rating:not(.readonly) label').forEach(star => {
+            star.addEventListener('click', function() {
+                this.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
         $(window).on("load",
             function (e) {
                 $("#passwordDlg").on('hide.bs.modal',

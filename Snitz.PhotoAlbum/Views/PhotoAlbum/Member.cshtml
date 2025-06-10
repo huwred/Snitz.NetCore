@@ -3,16 +3,6 @@
 @model List<Snitz.PhotoAlbum.Models.AlbumImage>
 @{
     Layout = "Layout";
-    var currentmember = 0;
-    bool showprivate = false;
-    if (ViewBag.CurrentMemberId != null)
-    {
-        currentmember = ViewBag.CurrentMemberId;
-    }
-    if (currentmember == ViewBag.MemberId)
-    {
-        showprivate = true;
-    }
     var member = "";
     if (Model.Any())
     {
@@ -38,6 +28,7 @@
         }
 
     </style>
+
 }
 
 
@@ -95,29 +86,15 @@
                        title="@Localizer["tipSlide"]">
                         <li class="fa fa-film"></li>
                     </a>
-                    <button snitz-if="@showprivate" class="btn btn-outline-primary" id="photo-upload" title="@Localizer["lblUpload"]"><i class="fa fa-upload"></i></button>
+                    <button snitz-if="@ViewBag.IsOwner" class="btn btn-outline-primary" id="photo-upload" title="@Localizer["lblUpload"]"><i class="fa fa-upload"></i></button>
                 </div>
             </div>
         </div>
         </form>
     </div>
     <div class="container mt-3" id="ImageContainer">
-        <ul class="image-gallery list-unstyled">
-            @foreach (var image in Model)
-            {
-                <li snitz-if="@(!image.IsPrivate || showprivate)" class="d-flex center">
-                    <a class="view-gallery" target="_blank" href="~/PhotoAlbum/GetPhoto/@image.Id" title="Image @image.Id">
-                        <figure class="figure">
-                            <album-image data-id="@image.Id" org-width="@image.Width" org-height="@image.Height" width="300" height="225" src="@($"{image.Timestamp}_{image.Location}")" class="figure-img" description="@image.Description"></album-image>
-                            <div class="overlay">
-                                <div class="text">@image.CommonName<br />@image.ScientificName<br />Posted on: @image.Timestamp.FromForumDateStr().ToLocalTime().ToShortDateString() <br />@image.Width x @image.Height</div>
-                            </div>
-                            <figcaption class="figure-caption form-text">@image.Description</figcaption>
-                        </figure>
-                    </a>
-                </li>
-            }
-        </ul>
+        <partial name="_MemberThumbs"/>
+
     </div>
 </div>
 <partial name="Modal\UploadModal" />
@@ -133,6 +110,7 @@
 }
 @section Scripts
 {
+
     <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script src="~/js/jquery.lazyload-any.min.js" type="text/javascript"></script>
    <script type="text/javascript">

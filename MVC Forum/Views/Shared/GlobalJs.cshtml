@@ -11,28 +11,32 @@
 <script type="text/javascript">
     var SnitzVars = SnitzVars ||
     {
+        toolTips: {
+            fileBtn: '@Localizer["tipAttach"]', //"Attach a file to the post" ,
+            albumBtn: '@Localizer["tipUpload"]', // "Upload an image to your album and display a thumbnail in the post"
+        },
         AdDuration: '@SnitzConfig.GetIntValue("INTADDURATION", 30)',
-        userName: '@User.Identity.Name',
+        userName: '@User.Identity?.Name',
         currentUserId: '@MemberService.Current()?.Id',
         currentlocation: '@Context.Request.Path',
         cookieDomain: '@Context.Request.Host',
         cookiePath: '@SnitzConfig.CookiePath',
         baseUrl: '@Context.Request.PathBase',
-        isUserAuthenticated: '@User.Identity.IsAuthenticated',
+        isUserAuthenticated: '@User.Identity?.IsAuthenticated',
         forumTitle: '@(Config.Value.strForumTitle ?? SnitzConfig.GetValue("STRFORUMTITLE"))',
         forumUrl: '@(Config.Value.strForumUrl ?? SnitzConfig.ForumUrl)',
         forumDesc: '@Config.Value.strForumDescription',
         MaxImageSize: parseInt('@SnitzConfig.GetIntValue("INTMAXIMAGESIZE")') * 1024 * 1024,
         MaxFileSize: parseInt('@SnitzConfig.GetIntValue("INTMAXFILESIZE")'),
         allowedimagetypes: '@SnitzConfig.GetValue("STRIMAGETYPES")',
-        allowedfiles: [@foreach (var allowedFile in SnitzConfig.GetValue("STRFILETYPES").Split(','))
-    {
-        @Html.Raw("'")
-
-        @allowedFile
-
-        @Html.Raw("',")
-    }],
+        allowedfiles: [
+            @foreach (var allowedFile in SnitzConfig.GetValue("STRFILETYPES").Split(','))
+            {
+                @Html.Raw("'")
+                @allowedFile
+                @Html.Raw("',")
+            }
+        ],
         forumlang: '@SnitzCookie.GetCookieValue("CookieLang")',
         defaultTheme: '@SnitzConfig.GetValue("STRDEFAULTTHEME")',
         useTimeago: '@SnitzConfig.GetValue("INTUSETIMEAGO")',
@@ -41,6 +45,11 @@
         errMsg: '@ViewBag.Error',
         successMsg: '@ViewBag.Success',
         tempScrollTop: sessionStorage.getItem('scrollTop'),
+        expandPageFilters: function(){
+            $('.filter_button').removeClass("collapsed");
+            $('.filter_button').attr("aria-expanded","true");
+            $('#showFilters').addClass("show");
+        },
         captchaCheck: function (answer, callback) {
             $.ajax({
                 url: SnitzVars.baseUrl + '/captchacheck/' + answer,

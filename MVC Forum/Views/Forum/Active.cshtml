@@ -38,6 +38,13 @@
         <form id="defaultdays-form" asp-action="Active" class="form-inline" method="get">
             <div class="row m-2">
                 <div class="col">
+                    <partial snitz-if="@(SnitzConfig.GetIntValue("STRGROUPCATEGORIES") == 1)" name="CategoryFilter" />
+
+                </div>
+            </div>
+
+            <div class="row m-2">
+                <div class="col">
                     <div class="input-group mb-3">
                         <enum-select name="Since" id="default-days" last-visit="@lastvisit" enum-type="typeof(ActiveSince)" selected-value="(int)Model.Since" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                         <enum-select name="Refresh" id="active-refresh" enum-type="typeof(ActiveRefresh)" selected-value="(int)Model.Refresh" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
@@ -136,6 +143,8 @@
         if (refresh.length && refresh > 0) {
             setInterval("window.location.reload();", refresh);
         }
+        //uncomment the line below to expand filters by default
+        //SnitzVars.expandPageFilters();
 
     </script>
     <renderstoredcontent asp-key="topic-post-controls"></renderstoredcontent>

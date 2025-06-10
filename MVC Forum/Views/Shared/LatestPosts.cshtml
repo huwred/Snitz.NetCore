@@ -43,9 +43,9 @@
                             break;
                     }
                     <span class="postUser">
-                        @if (SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1 && p.LastPostDate != null)
+                        @if (p.LastPostDate != null)
                         {
-                            @Localizer["lblLastPost"] <lastpost-link post-date="@p.LastPostDate" topic-id="@p.Id" reply-id="@p.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                            @Localizer["lblLastPost"] <lastpost-link jump-to="@(SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1)" post-date="@p.LastPostDate" topic-id="@p.Id" reply-id="@p.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
                         }
                     </span>
                 </div>

@@ -1,7 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using MVCForum.ViewModels;
+using MVCForum.ViewModels.Forum;
+using MVCForum.ViewModels.Post;
 using SmartBreadcrumbs.Attributes;
 using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
@@ -10,16 +18,11 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using X.PagedList;
-using Microsoft.AspNetCore.Mvc.Localization;
-using MVCForum.ViewModels.Forum;
-using MVCForum.ViewModels.Post;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using MVCForum.ViewModels;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace MVCForum.Controllers
 {
@@ -31,15 +34,17 @@ namespace MVCForum.Controllers
         private readonly ISnitzCookie _cookie;
         private readonly SignInManager<ForumUser> _signInManager;
         private readonly HttpContext? _httpcontext;
+        private readonly IGroups _groupservice;
 
         public ForumController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
-            IForum forumService,IPost postService,ISnitzCookie snitzCookie,SignInManager<ForumUser> SignInManager) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
+            IForum forumService,IPost postService,ISnitzCookie snitzCookie,SignInManager<ForumUser> SignInManager,IGroups groups) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _forumService = forumService;
             _postService = postService;
             _cookie = snitzCookie;
             _signInManager = SignInManager;
             _httpcontext = httpContextAccessor.HttpContext;
+            _groupservice = groups;
         }
         
         [Route("Forum/{id:int}")]
@@ -56,7 +61,16 @@ namespace MVCForum.Controllers
                 pagesize = 10;
             }
             _httpcontext.Session.SetInt32("ForumPageSize",pagesize);
-            var forum = _forumService.GetWithPosts(id);
+            Forum? forum = null;
+            try
+            {
+                forum = _forumService.GetWithPosts(id);
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+            
 
             bool signedin = false;
             if (User.Identity is { IsAuthenticated: true })
@@ -115,6 +129,9 @@ namespace MVCForum.Controllers
                     Forum = BuildForumListing(p.ForumId,p.Forum!),
                     Answered = p.Answered,
                     HasPoll = _postService.HasPoll(p.Id),
+                    AllowRating = p.AllowRating,
+                    ForumAllowRating = p.Forum.Rating,
+                    Rating = p.GetTopicRating()
                 }).ToList();
                 forumPosts = forum?.Posts?.Where(p => p.IsSticky != 1);
             }
@@ -239,6 +256,9 @@ namespace MVCForum.Controllers
                     Forum = BuildForumListing(p),
                     Answered = p.Answered,
                     HasPoll = _postService.HasPoll(p.Id),
+                    AllowRating = p.AllowRating,
+                    ForumAllowRating = p.Forum.Rating,
+                    Rating = p.GetTopicRating()
                 });
 
                 var model = new ForumTopicModel()
@@ -261,6 +281,15 @@ namespace MVCForum.Controllers
 
         public IActionResult Archived(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 0)
         {
+            Forum forum ;
+            try
+            {
+                forum = _forumService.Get(id);
+            }
+            catch (KeyNotFoundException)
+            {
+                return this.NotFound();
+            }
             ViewBag.RequireAuth = false;
             if (_httpcontext!.Session.GetInt32("ForumPageSize") != null && pagesize == 0)
             {
@@ -271,7 +300,7 @@ namespace MVCForum.Controllers
                 pagesize = 10;
             }
             _httpcontext.Session.SetInt32("ForumPageSize",pagesize);
-            var forum = _forumService.Get(id);
+            
 
             bool signedin = false;
             if (User.Identity is { IsAuthenticated: true })
@@ -425,6 +454,9 @@ namespace MVCForum.Controllers
                     Forum = BuildForumListing(p),
                     Answered = false,
                     HasPoll = _postService.HasPoll(p.Id),
+                    AllowRating = p.AllowRating,
+                    ForumAllowRating = p.Forum.Rating,
+
                 });
 
                 var model = new ForumTopicModel()
@@ -442,14 +474,29 @@ namespace MVCForum.Controllers
 
                 return View("Index",model);
             }
-            return View("Index");
+            return this.NotFound();
         }
 
 
 
         [Route("Topic/Active")]
-        public IActionResult Active(int page = 1, int pagesize = 0,ActiveRefresh? Refresh = null,ActiveSince? Since = null)
+        public IActionResult Active(int page = 1, int pagesize = 0,ActiveRefresh? Refresh = null,ActiveSince? Since = null, int groupId=0)
         {
+            if (_config.GetIntValue("STRGROUPCATEGORIES") ==1)
+            {
+                if (groupId == 0)
+                {
+                    var groupcookie = _cookie.GetCookieValue("GROUP");
+                    if (groupcookie != null)
+                    {
+                        groupId = Convert.ToInt32(groupcookie);
+                    }
+                }
+
+                _cookie.SetCookie("GROUP", groupId.ToString());                
+            }
+            ViewBag.GroupId = groupId;
+
             if (HttpContext.Session.GetInt32("ActivePageSize") != null && pagesize == 0)
             {
                 pagesize = HttpContext!.Session.GetInt32("ActivePageSize")!.Value;
@@ -506,9 +553,18 @@ namespace MVCForum.Controllers
                 };
                 
             }
+            //TODO: filter by group ??
+
             var posts = _postService.GetAllTopicsAndRelated()
                 .Where(f => f.LastPostDate?.FromForumDateStr() > lastvisit)
                 .OrderByDescending(t=>t.LastPostDate).AsEnumerable();
+            if(groupId > 1)
+            {
+                var catfilter = _groupservice.GetGroups(groupId).Select(g=>g.CategoryId).ToList();
+                posts = posts
+                .Where(f =>  catfilter.Contains(f.CategoryId))
+                .OrderByDescending(t=>t.LastPostDate).AsEnumerable();
+            }
             if (!User.IsInRole("Administrator")) //TODO: Is the member a moderator?
             {
                 posts = posts.Where(p => p.Status < 2 || p.MemberId == member?.Id);
@@ -534,6 +590,9 @@ namespace MVCForum.Controllers
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p),
                 Answered = p.Answered,
+                AllowRating = p.AllowRating,
+                ForumAllowRating = p.Forum.Rating,
+                Rating = p.GetTopicRating()
                 //HasPoll = _postService.HasPoll(p.Id),
             });
             if (Refresh == null)
@@ -568,7 +627,7 @@ namespace MVCForum.Controllers
              var catlist = _forumService.CategoryList();
             if (id > 0)
             {
-                var category = catlist.FirstOrDefault(f=>f.Key == id);
+                var category = catlist.OrderBy(f=>f.Key).FirstOrDefault(f=>f.Key == id);
                 var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
                 var catPage = new MvcBreadcrumbNode("", "Category", category.Value) { Parent = forumPage,RouteValues = new {id=id}};
                 ViewData["BreadcrumbNode"] = catPage;
@@ -609,7 +668,8 @@ namespace MVCForum.Controllers
                         CountMemberPosts = (short)(model.IncrementMemberPosts ? 1 : 0),
                         Moderation = model.Moderation,
                         Subscription = (int)model.Subscription,
-                        Password = model.NewPassword
+                        Password = model.NewPassword,
+                        Rating = (short) model.AllowTopicRating
                     };
                     if (model.ForumId != 0)
                     {
@@ -647,7 +707,7 @@ namespace MVCForum.Controllers
         {
             var forum = _forumService.GetWithPosts(id);
             var catlist = _forumService.CategoryList();
-            var category = catlist.FirstOrDefault(f=>f.Key == forum.CategoryId);
+            var category = catlist.OrderBy(f=>f.Key).FirstOrDefault(f=>f.Key == forum.CategoryId);
             var allforumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", category.Value) { Parent = allforumPage,RouteValues = new {id=forum.CategoryId}};
             var forumPage = new MvcBreadcrumbNode("Index", "Post", forum.Title) { Parent = catPage };
@@ -671,7 +731,8 @@ namespace MVCForum.Controllers
                 Subscription = (ForumSubscription)forum.Subscription,
                 ForumId = id,
                 NewPassword = forum.Password,
-                AllowedMembers = _forumService.AllowedUsers(id)
+                AllowedMembers = _forumService.AllowedUsers(id),
+                AllowTopicRating = forum.Rating
             };
             return View("Create",model);
         }
@@ -752,6 +813,9 @@ namespace MVCForum.Controllers
                 Forum = BuildForumListing(p),
                 Answered = p.Answered,
                 HasPoll = _postService.HasPoll(p.Id),
+                AllowRating = p.AllowRating,
+                ForumAllowRating = p.Forum.Rating,
+                Rating = p.GetTopicRating()
             });
 
             var pageCount = (int)Math.Ceiling((double)totalcount / pagesize);
@@ -825,6 +889,9 @@ namespace MVCForum.Controllers
                 Forum = BuildForumListing(p),
                 Answered = p.Answered,
                 HasPoll = _postService.HasPoll(p.Id),
+                AllowRating = p.AllowRating,
+                ForumAllowRating = p.Forum.Rating,
+                Rating = p.GetTopicRating()
             }).OrderByDescending(p=>p.LastPostDate);
 
             var pageCount = (int)Math.Ceiling((double)totalcount / pagesize);
@@ -968,7 +1035,8 @@ namespace MVCForum.Controllers
                 ForumModeration = forum.Moderation,
                 ForumSubscription = (ForumSubscription)forum.Subscription,
                 Polls = forum.Polls,
-                ArchivedCount = forum.ArchivedTopics
+                ArchivedCount = forum.ArchivedTopics,
+                AllowTopicRating = forum.Rating == 1
                 //ImageUrl = forum.ImageUrl
 
             };
@@ -998,7 +1066,8 @@ namespace MVCForum.Controllers
                 Status = forum.Status,
                 ForumModeration = forum.Moderation,
                 Polls = forum.Polls,
-                ArchivedCount = forum.ArchivedTopics
+                ArchivedCount = forum.ArchivedTopics,
+                AllowTopicRating = forum.Rating == 1
                 //ImageUrl = forum.ImageUrl
             };
         }

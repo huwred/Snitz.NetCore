@@ -1,8 +1,14 @@
-﻿html, body {
-    font-size: 14px;
+﻿:root {
+    --primary-header: #191970;
+    --font-size: 14px;
+    --spacing: 1rem;
+}
+
+html, body {
+    font-size: var(--font-size);
     font-family: Verdana, Arial, helvetica;
     background-color: whitesmoke !important;
-    color: #191970 !important;
+    color: var(--primary-header) !important;
 }
 .btn-primary {
     --bs-btn-color: #fff;
@@ -55,7 +61,7 @@ h4, .h4 {
 }
 
 .bg-dark {
-    background-color: #191970 !important;
+    background-color: var(--primary-header) !important;
 }
 .navbar-custom .navbar-brand {
     color: #fff;
@@ -217,11 +223,17 @@ footer {
 /* posts table's head  */
 
 .table-head div {
-    background-color: #191970;
+    background-color: var(--primary-header);
     font-weight: bold;
     color: #F5FFFA;
 }
+.table-head div {
+    margin: 0;
+}
 
+.table-head .rounded-2 {
+    border-radius: 0 !important;
+}
 /* posts table's body  */
 
 .table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply, .table-row .subscribe {
@@ -269,7 +281,7 @@ footer {
 /* ########################################### */
 
 .head {
-    background-color: #191970;
+    background-color: var(--primary-header);
     color: #fff;
 }
 
@@ -337,12 +349,12 @@ h1.text-white {
     color: #fff !important;
 }
 tr.bg-dark, .card-header.bg-dark {
-    background-color: #191970 !important;
+    background-color: var(--primary-header) !important;
     color: #fff;
 }
 
 #theme-change {
-    background-color: #191970;
+    background-color: var(--primary-header);
     color: #fff;
 }
 .btn-secondary {
@@ -441,18 +453,19 @@ blockquote.newquote {
     border-radius: 5px;
 }
 
-.image-gallery .overlay {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    width: 100%;
-    opacity: 0;
-    transition: .5s ease;
-    background-color: #008CBA;
-}
+    .image-gallery .overlay {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        opacity: 0;
+        transition: .5s ease;
+        background-color: #008CBA;
+        z-index: 1;
+    }
 
 .image-gallery .figure:hover .overlay {
     display: block;
@@ -470,11 +483,20 @@ blockquote.newquote {
     transform: translate(-50%, -50%);
     text-align: center;
 }
-
-
-.height-100 {
+    .image-gallery .footer {
+        color: white !important;
+        background-color: var(--primary-header);
+        font-size: 18px;
+        position: absolute;
+        top: 80%;
+        left: 0;
+    }
+    .image-gallery .footer a {
+        color: white !important;
+    }
+    .height-100 {
     height: 100vh
-}
+    }
 
 
 #loadFile {

@@ -85,7 +85,16 @@ namespace MVCForum.Controllers
             {
                 ViewBag.Error = "No Topic Found with that ID";
                 return View("Error");
-            }            
+            }    
+            //if we have a replyid, does it exist in ths topic?
+            if (replyid.HasValue && post.Replies != null)
+            {
+                //no reply in that topic, so reset the jumpto replyid
+                if (!post.Replies.Any(r => r.Id == replyid))
+                {
+                    replyid = null;
+                }
+            }
             var haspoll = _postService.HasPoll(id);
 
             bool passwordrequired = false;
@@ -139,8 +148,8 @@ namespace MVCForum.Controllers
             }
 
             PagedList<PostReply>? pagedReplies = PagedReplies(page, pagesize, sortdir, post);
-            //todo: if we have a replyid, is it in the current set, otherwise skip forwards
-            if (replyid.HasValue)
+            //we have a replyid, is it in the current set, otherwise skip forwards
+            if (replyid.HasValue && totalCount > 1)
             {
                 while (pagedReplies != null && pagedReplies.All(p => p.Id != replyid))
                 {
@@ -180,7 +189,10 @@ namespace MVCForum.Controllers
                 PageSize = pagesize,
                 SortDir = sortdir,
                 Edited = post.LastEdit?.FromForumDateStr(),
-                EditedBy = post.LastEditby == null ? "" : _memberService.GetMemberName(post.LastEditby.Value)
+                EditedBy = post.LastEditby == null ? "" : _memberService.GetMemberName(post.LastEditby.Value),
+                AllowTopicRating = post.Forum.Rating == 1 && _config.GetIntValue("INTTOPICRATING")==1,
+                AllowRating = post.AllowRating==1 && _config.GetIntValue("INTTOPICRATING")==1,
+                Rating = post.GetTopicRating()
             };
 
             return View(model);
@@ -325,6 +337,7 @@ namespace MVCForum.Controllers
                 IsPost = true,
                 AuthorName = User.Identity?.Name!,
                 UseSignature = member!.SigDefault == 1,
+                AllowRating = forum.Rating == 1,
                 Lock = false,
                 Sticky = false,
                 DoNotArchive = false,
@@ -433,9 +446,11 @@ namespace MVCForum.Controllers
                 UseSignature = member.SigDefault == 1,
                 Lock = topic.Status == 0,
                 Sticky = topic.IsSticky == 1,
+                AllowRating = topic.AllowRating == 1 || topic.Forum.Rating == 1,
+                AllowTopicRating = topic.AllowRating == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = topic.Created.FromForumDateStr(),
-                
+                IsAuthor = User.Identity?.Name == member!.Name
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
@@ -483,7 +498,8 @@ namespace MVCForum.Controllers
                 Lock = topic.Status == 0,
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
-                Created = DateTime.UtcNow
+                Created = DateTime.UtcNow,
+                IsAuthor = User.Identity?.Name == member!.Name
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", topic.Category!.Name){ Parent = homePage,RouteValues = new{id=topic.Category.Id}};
@@ -517,6 +533,7 @@ namespace MVCForum.Controllers
                 Sticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = reply.Created.FromForumDateStr(),
+                IsAuthor = User.Identity?.Name == member!.Name
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", topic.Category!.Name){ Parent = homePage,RouteValues = new{id=topic.Category.Id}};
@@ -542,6 +559,7 @@ namespace MVCForum.Controllers
             {
                 post.Title = model.Title;
                 post.IsSticky = (short)(model.Sticky ? 1 : 0);
+                post.AllowRating = (short)(model.AllowTopicRating ? 1 : 0);
                 post.Sig = (short)(model.UseSignature ? 1 : 0);
                 post.Status = (short)(model.Lock ? 0 : post.Status);
                 post.ArchiveFlag = model.DoNotArchive ? 1 : 0;
@@ -1262,6 +1280,7 @@ namespace MVCForum.Controllers
         [Route("Topic/SplitTopic/")]
         public IActionResult SplitTopic(SplitTopicViewModel vm)
         {
+            var originaltopic = _postService.GetTopicWithRelated(vm.Id);
             if (!ModelState.IsValid)
             {
                 foreach (KeyValuePair<int, string> vmforum in _forumService.ForumList())
@@ -1269,11 +1288,10 @@ namespace MVCForum.Controllers
                     if(!vm.ForumList!.ContainsKey(vmforum.Key))
                         vm.ForumList.Add(vmforum.Key, vmforum.Value);
                 }
-                var vmtopic = _postService.GetTopicWithRelated(vm.Id);
-                if (vmtopic != null)
+                if (originaltopic != null)
                 {
-                    vm.Topic = vmtopic;
-                    vm.Replies = vmtopic?.Replies;
+                    vm.Topic = originaltopic;
+                    vm.Replies = originaltopic?.Replies;
                 }
 
                 return View(vm);
@@ -1292,8 +1310,8 @@ namespace MVCForum.Controllers
                 topic = _postService.SplitTopic(ids, vm.ForumId, vm.Subject);
 
                 _postService.UpdateLastPost(topic!.Id,0);
+                _postService.UpdateLastPost(originaltopic!.Id,0);
                 _forumService.UpdateLastPost(topic.ForumId);
-
                 //        EmailController.TopicSplitEmail(ControllerContext, topic);
             }
 
@@ -1391,6 +1409,7 @@ namespace MVCForum.Controllers
                 //Member = user,
                 ForumId = model.ForumId,
                 CategoryId = model.CatId,
+                AllowRating= (short)(model.AllowRating ? 1 : 0),
                 IsSticky = (short)(model.Sticky ? 1 : 0),
                 ArchiveFlag = model.DoNotArchive ? 1 : 0,
                 Status = (forum.Moderation == Moderation.AllPosts || forum.Moderation == Moderation.Topics) && !(donotModerate)

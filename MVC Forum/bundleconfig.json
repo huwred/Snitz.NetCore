@@ -124,5 +124,29 @@
     "inputFiles": [
       "wwwroot/css/busy.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/star-rating.min.css",
+    "inputFiles": [
+      "wwwroot/css/star-rating.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/krajee-svg/theme.min.js",
+    "inputFiles": [
+      "wwwroot/js/krajee-svg/theme.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/krajee-svg/theme.min.css",
+    "inputFiles": [
+      "wwwroot/css/krajee-svg/theme.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/star-rating.min.js",
+    "inputFiles": [
+      "wwwroot/js/star-rating.js"
+    ]
   }
 ]

@@ -24,30 +24,33 @@
 }
 <div class="pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
-<div class="row">
-    @if (User.IsInRole("Administrator"))
-    {
-        if (!string.IsNullOrWhiteSpace(cat))
+    <div class="row">
+        <form id="goups-form" asp-action="Index" class="form-inline" method="get">
+            <partial snitz-if="@(SnitzConfig.GetIntValue("STRGROUPCATEGORIES") == 1)" name="CategoryFilter" />
+        </form>
+        @if (User.IsInRole("Administrator"))
         {
-            <form class="form-inline col-4 col-lg-6">
-                <div class="btn-group mb-2">
-                    <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" title=" @Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
-                    <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" title="@Localizer["tipEditCategory"]" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> @Localizer["tipEditCategory"]</span></button>
-                    <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@cat" href="~/Category/Delete/?id=" title="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
-                </div>
-            </form>
+            if (!string.IsNullOrWhiteSpace(cat))
+            {
+                <form class="form-inline col-4 col-lg-6">
+                    <div class="btn-group mb-2">
+                        <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" title=" @Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
+                        <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" title="@Localizer["tipEditCategory"]" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> @Localizer["tipEditCategory"]</span></button>
+                        <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@cat" href="~/Category/Delete/?id=" title="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <form class="form-inline col-4 col-lg-6">
+                    <div class="btn-group mb-2">
+                        <button asp-controller="Category" type="submit" asp-action="Create" title="@Localizer["tipNewCategory"]" class="btn btn-outline-primary"><i class="fa fa-folder-o"></i><span class="d-none d-lg-inline"> @Localizer["tipNewCategory"]</span></button>
+                        <button asp-controller="Forum" type="submit" asp-action="Create" title="@Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-lg-inline"> @Localizer["tipNewForum"]</span></button>
+                    </div>
+                </form>
+            }
         }
-        else
-        {
-            <form class="form-inline col-4 col-lg-6">
-                <div class="btn-group mb-2">
-                    <button asp-controller="Category" type="submit" asp-action="Create" title="@Localizer["tipNewCategory"]" class="btn btn-outline-primary"><i class="fa fa-folder-o"></i><span class="d-none d-lg-inline"> @Localizer["tipNewCategory"]</span></button>
-                    <button asp-controller="Forum" type="submit" asp-action="Create" title="@Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-lg-inline"> @Localizer["tipNewForum"]</span></button>
-                </div>
-            </form>
-        }
-    }
-    <div class="col-8 d-lg-none"><partial name="QuickSearch" /></div>
+        <div class="col-8 d-lg-none"><partial name="QuickSearch" /></div>
     </div>
     <div class="row">
         <div class="col accordion">

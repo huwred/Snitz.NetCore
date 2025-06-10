@@ -1,4 +1,5 @@
 ﻿using SnitzCore.Data.Extensions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -103,5 +104,18 @@ public partial class Post
     public virtual Forum? Forum { get; set; }
     public virtual Category? Category { get; set; }
     public virtual IEnumerable<PostReply>? Replies { get; set; }
+
+    public decimal GetTopicRating()
+        {
+            //var ratings = repo.First<Topic>("WHERE TOPIC_ID=@0", this.Id);
+            decimal rating = 0;
+            if (this.RatingTotal > 0)
+            {
+                decimal ratingSum = Decimal.Divide(this.RatingTotal,10);
+                var ratingCount = this.RatingTotalCount;
+                rating = (ratingSum / ratingCount);
+            }
+            return decimal.Parse(rating.ToString());
+        }
 
 }

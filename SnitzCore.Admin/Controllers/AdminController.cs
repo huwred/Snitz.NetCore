@@ -193,18 +193,7 @@ namespace SnitzCore.BackOffice.Controllers
             return RedirectToAction("ManageSubscriptions",new{id=filter});
 
         }
-        public ActionResult ManageGroups(int id = 0)
-        {
-            AdminGroupsViewModel vm = new AdminGroupsViewModel(id,_categoryservice)
-            {
-                Groups = _categoryservice.GetGroupNames().ToList(),
-            };
-            if (id > 0)
-            {
 
-            }
-            return View(vm);
-        }
         public ActionResult GetForumModerators(int id)
         {
             Forum forum = _forumservice.GetWithPosts(id);
@@ -463,12 +452,7 @@ namespace SnitzCore.BackOffice.Controllers
             return PartialView("ManageRoles",vm);
         }
 
-        public IActionResult ArchiveSettings()
-        {
-            var vm = new ArchivesViewModel() { Categories = _dbcontext.Categories.Include(c=>c.Forums).ToList() };
-            return PartialView("ManageArchives", vm);
 
-        }
 
         public IActionResult EmailConfigUpdate(AdminEmailServer model)
         {
@@ -864,38 +848,5 @@ namespace SnitzCore.BackOffice.Controllers
             return Content(contents);
         }
 
-        [HttpGet]
-        public IActionResult ArchiveForum(int id)
-        {
-            //if (_snitzconfig.GetIntValue("STRARCHIVESTATE") != 1)
-            //{
-            //    ViewBag.Error = "Archiving not enabled";
-            //    return View("Error");
-            //}
-            ArchiveViewModel vm = new ArchiveViewModel {ForumId = id};
-            return PartialView("popArchiveForum", vm);
-        }
-        [HttpGet]
-        public IActionResult DeleteArchiveForum(int id)
-        {
-            //if (_snitzconfig.GetIntValue("STRARCHIVESTATE") != 1)
-            //{
-            //    ViewBag.Error = "Archiving not enabled";
-            //    return View("Error");
-            //}
-
-            BackgroundJob.Enqueue(() => _forumservice.DeleteArchivedTopics(id));
-
-            return Json(new { redirectToUrl = Url.Action("Forum", "Admin") });
-        }
-        [HttpPost]
-        public IActionResult ArchiveForum(ArchiveViewModel vm)
-        {
-            var archiveDate = DateTime.UtcNow.AddMonths(-vm.MonthsOlder).ToForumDateStr();
-            BackgroundJob.Enqueue(() => _forumservice.ArchiveTopics(vm.ForumId, archiveDate));
-
-            var avm = new ArchivesViewModel() { Categories = _dbcontext.Categories.Include(c=>c.Forums).ToList() };
-            return View("ManageArchives", avm);
-        }
     }
 }

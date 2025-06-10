@@ -22,7 +22,7 @@
             <button class="btn btn-primary edit-group" id="edit-group" data-value="@Model.CurrentGroupId">Edit current Group</button>
         } *@
         <hr/>
-        <form asp-action="AddGroup" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="#result">
+        <form asp-action="AddGroup" asp-controller="Groups" method="POST" data-ajax="true" data-ajax-update="#group-result">
             <div class="mb-3">
                 <label class="form-label">New Group</label>
                 <div class="input-group mb-3">
@@ -32,25 +32,28 @@
             </div>
         </form>
 
-        <div id="result"></div>
     </div>
     <div class="col-7">
         <div id="current-group"></div>
-        @if (Model.CurrentGroupForums != null)
+        @if (Model.Categories != null)
         {
-            var groups = new SelectList(Model.CurrentGroupForums, "Key", "Value");
+            var groups = new SelectList(Model.Categories, "Key", "Value");
+            <form id="RemCatForm" asp-action="RemCatGroup" asp-controller="Groups" data-ajax="true" data-ajax-update="#group-result">
+                <div class="mb-3">
+                    <select size="4" title="Group Categories" class="form-select" asp-for="Categories" asp-items="groups">
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <input type="hidden" name="GroupNameId" value="@Model.GroupNameId" />
+                    <input type="hidden" name="GroupName" value="@Model.GroupName" />
+                    <button type="submit" id="rem-cat" class="btn btn-outline-danger" title="Remove Category">Remove Selected</button>
+                </div>
+            </form>
             <div class="mb-3">
-                <select size="4" title="Group Categories" class="form-select" asp-for="CurrentGroupId" asp-items="groups">
-                </select>
-            </div>
-            <div class="mb-3">
-                <button type="button" id="rem-cat" class="btn btn-outline-danger" title="Remove Category">Remove Selected</button>
-            </div>
-            <div class="mb-3">
-                <form id="AddCatForm">
+                <form id="AddCatForm" asp-action="AddCatGroup" asp-controller="Groups" data-ajax="true" data-ajax-update="#group-result">
                     <div class="mb-3">
                         <label class="form-label col-4">Add Categories to Group</label>
-                        <select class="form-select" id="new-cat" asp-for="@Model.CategoryList">
+                        <select class="form-select" id="Category" asp-for="@Model.Categories">
                             @foreach (Category cat in Model.CategoryList)
                             {
                                 <option value="@cat.Id">@cat.Name</option>
@@ -59,9 +62,11 @@
                     </div>
 
                     <button class="btn btn-outline-success" type="submit">Add selected Categories</button>
-                    <input type="hidden" name="CurrentGroupId" value="@Model.CurrentGroupId"/>
+                    <input type="hidden" name="GroupName" value="@Model.GroupName" />
+                    <input type="hidden" name="GroupNameId" value="@Model.GroupNameId" />
                 </form>
             </div>
         }
     </div>
 </div>
+<div class="row"><div id="group-result"></div></div>

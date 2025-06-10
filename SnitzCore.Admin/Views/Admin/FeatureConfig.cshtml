@@ -190,7 +190,12 @@
                         <admin-config config-key="STRDSIGNATURES" config-label="Dynamic Signatures" config-val="@SnitzConfig.GetIntValue("STRDSIGNATURES")"></admin-config>
                     </div>
                 </div>
-                <admin-config config-key="STRSHOWQUICKREPLY" config-label="Show Quick Reply" config-val="@SnitzConfig.GetIntValue("STRSHOWQUICKREPLY")"></admin-config>
+                <div class="row">
+                    <div class="col">
+                            <admin-config config-key="STRSHOWQUICKREPLY" config-label="Show Quick Reply" config-val="@SnitzConfig.GetIntValue("STRSHOWQUICKREPLY")"></admin-config>
+
+                    </div>
+                </div>
             </div>
             <partial name="_FormButtons"/>
         </form>
@@ -266,7 +271,6 @@
     <div class="tab-pane fade w-100" id="v-pills-plugin" role="tabpanel" aria-labelledby="plugin-tab">
         <div class="accordion accordion-flush" id="accordionFlushExample">
             @await Component.InvokeAsync("Polls", new { template ="Config" })
-            @await Component.InvokeAsync("ImageAlbum", "Config")
             <div class="accordion-item">
                 <h2 class="accordion-header" id="flush-headingTwo">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
@@ -284,7 +288,26 @@
                     </div>
                 </div>
             </div>
-            @await Component.InvokeAsync("Events", new { template = "Admin" })
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="flush-headingRating">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseRating" aria-expanded="false" aria-controls="flush-collapseRating">
+                            Topic Rating
+                        </button>
+                    </h2>
+                    <div id="flush-collapseRating" class="accordion-collapse collapse" aria-labelledby="flush-headingRating" data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body">
+                            @if (SnitzConfig.TableExists("TOPIC_RATINGS"))
+                            {
+                                <form id="rating-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
+                                    <admin-config config-key="INTTOPICRATING" config-label="Enable Rating" config-val="@SnitzConfig.GetIntValue("INTTOPICRATING", 0)"></admin-config>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+                @await Component.InvokeAsync("ImageAlbum", "Config")
+                @await Component.InvokeAsync("Events", new { template = "Admin" })
+
         </div>
     </div>
 
@@ -402,5 +425,7 @@
         $("#feature-config").addClass("active");
     </script>
     <renderstoredcontent asp-key="album-groups"></renderstoredcontent>
+    <renderstoredcontent asp-key="topic-poll-controls"></renderstoredcontent>
+        
 }
 

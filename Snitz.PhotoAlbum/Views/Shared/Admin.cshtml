@@ -25,6 +25,7 @@
 
 <div class="container-fluid form-horizontal">
 <h5>Album plugin Settings</h5>
+    <label class="form-text" snitz-if="@(SnitzConfig.GetIntValue("INTALLOWUPLOADS") == 0)">You must enable File Attachments in Posting section</label>
 <hr class="title"/>
 <div class="row-fluid">
     <div class="mb-3">
@@ -98,26 +99,24 @@
             <div class="mb-3">
                 <label for="STRTHUMBTYPE" class="form-label col-xs-4">Thumbnail type</label>
                 <div class="col-xs-2 col-lg-2">
-                    @{
-                        var scaleselected = "";
-                        var cropselected = "";
-                        if (SnitzConfig.GetValue("STRTHUMBTYPE") == "scaled")
+
+                    <select id="STRTHUMBTYPE" class="form-control" name="STRTHUMBTYPE">
+                        @if (SnitzConfig.GetValue("STRTHUMBTYPE") == "scaled")
                         {
-                            scaleselected = "selected";
+                            <option value="scaled" selected>Scaled</option>
+                            <option value="crop" >Cropped</option>
                         }
                         else
                         {
-                            cropselected = "selected";
+                            <option value="scaled">Scaled</option>
+                            <option value="crop" selected>Cropped</option>
                         }
-                    }
-                    <select id="STRTHUMBTYPE" class="form-control" name="STRTHUMBTYPE">
-                        <option value="scaled" selected="@scaleselected">Scaled</option>
-                        <option value="crop" selected="@cropselected">Cropped</option>
+
                     </select>
                 </div>
             </div>
             <div class="mb-3">
-                <label for="INTMAXTHUMBSIZE" class="form-label col-xs-4">Max thumbnail size</label>
+                <label for="INTMAXTHUMBSIZE" class="form-label col-xs-4">Max thumbnail size (width)</label>
                 <div class="col-xs-2 col-lg-1">
                     <input id="INTMAXTHUMBSIZE" type="number" class="form-control" name="INTMAXTHUMBSIZE" value="@SnitzConfig.GetIntValue("INTMAXTHUMBSIZE")"/>
                 </div>

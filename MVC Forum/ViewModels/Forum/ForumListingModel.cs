@@ -34,6 +34,7 @@ namespace MVCForum.ViewModels.Forum
         public int Order { get; set; }
 
         public int? ArchivedCount { get; set; }
+        public bool AllowTopicRating {get;set;}
     }
 
     public class ForumList{

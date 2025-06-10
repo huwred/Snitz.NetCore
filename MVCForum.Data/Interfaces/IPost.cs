@@ -31,6 +31,9 @@ namespace SnitzCore.Data.Interfaces
         int  CreateForMerge(int[]? selected);
         Task<bool> LockTopic(int id, short status);
 
+        decimal GetTopicRating(int topicid);
+        decimal GetReplyRating(int topicid);
+
         Task UpdateLastPost(int topicid, int? moderatedcount);
         Task<bool> Answer(int id);
         ArchivedPost? GetArchivedTopic(int id);

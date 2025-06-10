@@ -20,7 +20,6 @@ namespace SnitzCore.Service
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _env;
 
-
         string? ISnitzConfig.RootFolder
         {
             get => _httpContextAccessor.HttpContext?.Request.PathBase;
@@ -122,8 +121,6 @@ namespace SnitzCore.Service
             _config = config;
             _httpContextAccessor = httpContextAccessor;
             _env = env;
-
-
         }
 
         public void RemoveFromCache(string key)
@@ -136,7 +133,6 @@ namespace SnitzCore.Service
             var service = new InMemoryCache() { DoNotExpire = true };
             var result = service.GetOrSet("cfg_" + key, () => CachedIntValue(key, defaultvalue));
             return result != null ? int.Parse(result) : defaultvalue;
-
         }
 
         public IEnumerable<string> GetRequiredMemberFields()

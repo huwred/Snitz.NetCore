@@ -73,6 +73,7 @@ namespace SnitzCore.Service
                 updForum.Moderation = forum.Moderation;
                 updForum.Subscription = forum.Subscription;
                 updForum.Password = forum.Password;
+                updForum.Rating = forum.Rating;
                 _dbContext.Update(updForum);
             }
 
@@ -165,7 +166,7 @@ namespace SnitzCore.Service
             catch (Exception)
             {
 
-                throw new Exception($"Forum {id} not found");
+                throw new KeyNotFoundException($"Forum {id} not found");
             }
             
 

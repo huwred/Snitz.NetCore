@@ -23,6 +23,8 @@
     var subscriptions = MemberService.Current()?.Subscriptions;
 
     bool archives = ViewData["Archives"] != null ? (bool)ViewData["Archives"]! : false;
+    bool allowrating = Model.Forum != null ? Model.Forum.AllowTopicRating : Model.ForumAllowRating == 1;
+    allowrating = allowrating && Model.AllowRating == 1 && SnitzConfig.GetIntValue("INTTOPICRATING", 0) == 1;
 }
 <div class="table-row @answeredClass rounded-2 @moderatedClass">
 
@@ -45,7 +47,7 @@
         <span class="d-block d-md-none fs-4 bold" title="@Localizer["lblReplies"]">@Model?.RepliesCount</span>
     </div>
     <div class="subjects" style="z-index: 2">
-        <div class="d-lg-flex flex-row bd-highlight mb-3">
+        <div class="d-lg-flex flex-row bd-highlight mb-1">
             <div class="p-2 flex-grow-1 bd-highlight">
                 <a snitz-if="@archives" href="~/Topic/Archived/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a>
                 <a snitz-if="@(!archives)" href="~/Topic/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a><br />
@@ -71,6 +73,12 @@
                         <partial name="QuickPaging" model="paging"/>
                     }
                 }
+                @if (allowrating)
+                {
+                    @* <input value="@Model.Rating" type="text" class="rb-rating" /> *@
+                    <form><input id="input-id-@Model.Id" name="input-name" type="number" class="rb-rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs"></form>
+
+                }
             </div>
             <div class="d-none d-md-flex  p-2 bd-highlight fs-6 post-buttons">
                 @if (!archives)
@@ -78,20 +86,22 @@
                     @await Component.InvokeAsync("PostControls", new { post = Model ,forlist = true})
                     
                 }
+
             </div>
         </div>
     </div>
     <div class="replies">
         @Model?.RepliesCount @Localizer["lblReplies"] <br/> @Model?.ViewCount @Localizer["lblViews"]
+
     </div>
     <div class="last-reply d-flex" style="z-index:2">
-        @if (SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1 && Model?.LastPostDate != null)
+        @if (Model?.LastPostDate != null)
         {
             <span class="d-flex-1">
-            <span class="d-sm-inline-flex d-md-none">@Localizer["lblLastPost"]</span> 
-            <lastpost-link post-date="@Model.LastPostDate" topic-id="@Model.Id" reply-id="@Model.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
-            <br class="d-none d-sm-inline-flex" />
-            <span class="ms-2">@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
+                <span class="d-sm-inline-flex d-md-none">@Localizer["lblLastPost"]</span>
+                <lastpost-link jump-to="@(SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1)" post-date="@Model.LastPostDate" topic-id="@Model.Id" reply-id="@Model.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                <br class="d-none d-sm-inline-flex" />
+                <span class="ms-2">@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
             </span>
         }
         <div class="d-sm-inline-flex d-md-none bd-highlight fs-6 post-buttons">
@@ -103,6 +113,7 @@
         </div>
     </div>
     <div class="subscribe d-none d-sm-inline-flex">
+
         <input snitz-if="@(User?.IsInRole("Administrator"))" type="checkbox" class="form-check-input topic-select" value="@Model?.Id" name="topicselected" />
     </div>
 </div>

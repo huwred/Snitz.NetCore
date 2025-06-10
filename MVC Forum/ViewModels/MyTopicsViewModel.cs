@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SnitzCore.Data.Models;
 using X.PagedList;
 
@@ -14,6 +15,8 @@ namespace MVCForum.ViewModels
         public long TotalRecords { get; internal set; }
         public IEnumerable<MyViewTopic> AllTopics { get; set; }
         public DefaultDays DefaultDays { get; set; }
+
+
     }
 
 

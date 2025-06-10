@@ -14,6 +14,11 @@ using Microsoft.EntityFrameworkCore;
 using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Category;
 using MVCForum.ViewModels.Post;
+using System.Net;
+using System.Text.RegularExpressions;
+using System;
+using Microsoft.Extensions.Hosting;
+using SnitzCore.Service;
 
 namespace MVCForum.Controllers
 {
@@ -23,13 +28,17 @@ namespace MVCForum.Controllers
         private readonly IForum _forumService;
         private readonly IPost _postService;
         private readonly ICategory _categoryService;
+        private readonly ISnitzCookie _cookie;
+        private readonly IGroups _groupservice;
 
         public CategoryController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
-            IForum forumService, IPost postService, ICategory categoryService) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
+            IForum forumService, IPost postService,ISnitzCookie snitzCookie, ICategory categoryService,IGroups groups) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _forumService = forumService;
             _postService = postService;
             _categoryService = categoryService;
+            _cookie = snitzCookie;
+            _groupservice = groups;
         }
 
         
@@ -37,8 +46,22 @@ namespace MVCForum.Controllers
         [Route("AllForums")]
         [Route("Category/{id?}")]
         [Route("Category/Index/{id}")]
-        public IActionResult Index(int id)
+        public IActionResult Index(int id, int groupId = 0)
         {
+            if (_config.GetIntValue("STRGROUPCATEGORIES") ==1)
+            {
+                if (groupId == 0)
+                {
+                    var groupcookie = _cookie.GetCookieValue("GROUP");
+                    if (groupcookie != null)
+                    {
+                        groupId = Convert.ToInt32(groupcookie);
+                    }
+                }
+                _cookie.SetCookie("GROUP", groupId.ToString());                
+            }
+            ViewBag.GroupId = groupId;
+
             var categories = _categoryService.GetAll().OrderBy(c=>c.Sort).ToList();
             var forums = _forumService.GetAll().Select(forum => new ForumListingModel()
             {
@@ -64,7 +87,44 @@ namespace MVCForum.Controllers
                 ForumSubscription = (ForumSubscription)forum.Subscription,
                 ArchivedCount = forum.ArchivedTopics
                 
-            });
+            });            
+            
+            if(groupId > 1)
+            {
+                var catfilter = _groupservice.GetGroups(groupId).Select(g=>g.CategoryId).ToList();
+                categories = categories
+                .Where(f =>  catfilter.Contains(f.Id))
+                .OrderBy(c=>c.Sort).ToList();
+
+                forums = _forumService.GetAll().Where(f=>catfilter.Contains(f.CategoryId)).Select(forum => new ForumListingModel()
+                {
+                    Id = forum.Id,
+                    Title = forum.Title,
+                    Description = forum.Description,
+                    CategoryId = forum.CategoryId,
+                    CategoryName = forum.Category?.Name,
+                    Topics = forum.TopicCount,
+                    Posts = forum.ReplyCount,
+                    DefaultView = (DefaultDays)forum.Defaultdays,
+                    LastPostDateTime = !string.IsNullOrEmpty(forum.LastPost) ? forum.LastPost.FromForumDateStr() : null,
+                    LastPostAuthorId = forum.LastPostAuthorId,
+                    LastPostTopicId = forum.LatestTopicId,
+                    LastPostReplyId = forum.LatestReplyId,
+                    AccessType = forum.Privateforums,
+                    ForumModeration = forum.Moderation,
+                    ForumType = (ForumType)forum.Type,
+                    Url = forum.Url,
+                    Status = forum.Status,
+                    Order = forum.Order,
+                    CategorySubscription = (CategorySubscription)forum.Category?.Subscription,
+                    ForumSubscription = (ForumSubscription)forum.Subscription,
+                    ArchivedCount = forum.ArchivedTopics
+                
+                });
+
+            }
+
+
             if (id > 0)
             {
                 categories = categories.Where(f => f.Id == id).ToList();
@@ -96,7 +156,9 @@ namespace MVCForum.Controllers
                 UnmoderatedReplies = post.UnmoderatedReplies,
                 IsSticky = post.IsSticky == 1,
                 Status = post.Status,
-                Answered = post.Answered
+                Answered = post.Answered,
+                AllowRating = post.AllowRating,
+                ForumAllowRating = post.Forum.Rating
             });
             var model = new ForumIndexModel()
             {

@@ -17,7 +17,7 @@ namespace MVCForum.ViewModels.Forum
         
         public string? NewPassword { get; set; }
 
-
+        public int AllowTopicRating {get;set;}
         public ForumType Type { get; set; }
 
         public int Status { get; set; }

@@ -1,6 +1,11 @@
 /* ########################################### */
 /*                 Global                      */
 /* ########################################### */
+:root {
+    --primary-header: #3498db;
+    --font-size: 16px;
+    --spacing: 1rem;
+}
 .mt-6{
     margin-top:6rem !important;
 }
@@ -336,7 +341,7 @@ footer{
 }
 
 .note span {
-    font-size: 1.25em;
+    /*font-size: 1.25em;*/
     margin-block: 5px;
 }
 
@@ -541,6 +546,7 @@ img.flag {
     z-index: 2;
     cursor: pointer;
 }
+
 #loader {
     position: absolute;
     left: 50%;

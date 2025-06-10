@@ -132,7 +132,11 @@
                     <span id="radio1HelpBlock" class="form-text text-muted">@Localizer["Search_ArchiveDesc"]</span>
                 </div>
                 </div>
-                <partial name="FormButtons"/>
+                <div class="mb-3 p-2">
+                    <button type="button" class="btn btn-danger cancel" onclick="history.go(-1);">@Localizer["btnCancel"]</button>
+                    <button type="reset" class="btn btn-warning ">@Localizer["btnReset"]</button>
+                    <button type="submit" id="btn-submit" value="Search" class="btn btn-success">@Localizer["btnSearch"]</button>
+                </div>
             </form>
         </div>
     }
@@ -151,7 +155,6 @@
 
         var pagesizeCookie = 'search' + "-pagesize";
         if ($.cookie(pagesizeCookie)) {
-            console.log("found cookie");
             var storedSize = parseInt($.cookie(pagesizeCookie));
             $('a[data-toggle="fun"]')
                 .not('[data-title="' + storedSize + '"]')
@@ -164,7 +167,6 @@
         $(document)
             .on('click', '.radioBtn a',
                 function () {
-                    console.log("page size click");
                     var sel = $(this).data('title');
                     var tog = $(this).data('toggle');
                     $('#' + tog).prop('value', sel);

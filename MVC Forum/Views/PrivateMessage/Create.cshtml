@@ -84,12 +84,12 @@
         tinymce.init({
             selector: 'textarea#msg-text',
             height: 200,
-            plugins: 'bbcode code emoticons codesample',
+            plugins: 'code emoticons codesample',
             branding: false,
             statusbar: false,
             toolbar: 'undo redo | bold italic underline emoticons codesample | code ',
             emoticons_database: 'emojiimages',
-            emoticons_images_url: '/images/emoticon/',
+            emoticons_images_url: SnitzVars.baseUrl + '/images/emoticon/',
             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
         });
     </script>

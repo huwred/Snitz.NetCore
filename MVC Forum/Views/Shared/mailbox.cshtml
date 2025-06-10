@@ -2,28 +2,36 @@
 @using SnitzCore.Service.TagHelpers
 
 @inject IPrivateMessage pmService
-@inject IMember memberService
+
 
 @if (User.Identity.IsAuthenticated)
 {
-    var member = memberService.GetMember(User)!;
-    var pmcount = pmService.GetInbox(member.Id).Where(mbox=>mbox.Read == 0).Count();
-
-    if (pmcount > 0)
+    var member = MemberService.Current();
+    if(member != null)
     {
-        @* need to play sound? *@
-        if (SnitzConfig.GetIntValue("STRPMSOUND") == 1)
+        var pmcount = pmService.GetInbox(member!.Id).Where(mbox=>mbox.Read == 0).Count();
+
+        if (pmcount > 0)
         {
-            <audio autoplay>
-                <source src="~/content/pm.mp3" type="audio/mpeg">
-                <source src="~/content/pm.wav" type="audio/wav">
-                Your browser does not support the audio element
-            </audio>
-        }
-        <span class=" text-white m-2 center">
-            <a href="~/PrivateMessage/Inbox" class="text-white nav-link" title="Youv'e got Mail'"><i class="fa fa-envelope fs-3"></i></a>&nbsp;(@pmcount)
-        </span>
+            @* need to play sound? *@
+            if (SnitzConfig.GetIntValue("STRPMSOUND") == 1)
+            {
+                <audio autoplay>
+                    <source src="~/content/pm.mp3" type="audio/mpeg">
+                    <source src="~/content/pm.wav" type="audio/wav">
+                    Your browser does not support the audio element
+                </audio>
+            }
+
+            <a href="~/PrivateMessage/Inbox" class="text-white nav-link" title="Youv'e got Mail'">
+                <span class="fa-stack fa-lg text-white m-2">
+                    <i class="fa fa-envelope-o fa-stack-2x"></i>
+                    <strong class="fa-stack-1x"> @pmcount </strong>
+                </span>
+            </a>
+        }        
     }
+
 
 }
 

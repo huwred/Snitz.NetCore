@@ -56,6 +56,8 @@ namespace SnitzCore.Service.TagHelpers
             output.TagName = "img";
             output.Attributes.Add("loading","lazy");
             output.Attributes.Add("class", Class /*+ " lazy"*/);
+            var scaled = _config.GetValue("STRTHUMBTYPE") == "scaled";
+            //TODO: Config.GetValue("STRTHUMBTYPE") == "scaled" or "cropped??
             if (Width.HasValue && OrgWidth > 0)
             {
                 if (OrgWidth < Width && OrgHeight < Height)
@@ -68,7 +70,15 @@ namespace SnitzCore.Service.TagHelpers
                 {
                     output.Attributes.Add("width",$"{Width}");
                     output.Attributes.Add("height",$"{Height}");
-                    output.Attributes.Add("src", Src == null ? Fallback : $"{imagevirt}?width={Width}&height={Height}&rmode=crop&format=jpg");
+                    if (scaled)
+                    {
+                        output.Attributes.Add("src", Src == null ? Fallback : $"{imagevirt}?width={Width}&rmode=crop&format=jpg");
+                    }
+                    else
+                    {
+                        output.Attributes.Add("src", Src == null ? Fallback : $"{imagevirt}?width={Width}&height={Height}&rmode=crop&format=jpg");
+                    }
+                    
 
                 }
             }
@@ -76,7 +86,14 @@ namespace SnitzCore.Service.TagHelpers
             {
                 output.Attributes.Add("width",$"{Width}");
                 output.Attributes.Add("height",$"{Height}");
-                output.Attributes.Add("src", Src == null ? Fallback : $"{imagevirt}?width={Width}&height={Height}&rmode=crop&format=jpg");
+                if (scaled)
+                {
+                    output.Attributes.Add("src", Src == null ? Fallback : $"{imagevirt}?width={Width}&rmode=crop&format=jpg");
+                }
+                else
+                {
+                    output.Attributes.Add("src", Src == null ? Fallback : $"{imagevirt}?width={Width}&height={Height}&rmode=crop&format=jpg");
+                }
 
             }
             output.Attributes.Add("alt",Description);

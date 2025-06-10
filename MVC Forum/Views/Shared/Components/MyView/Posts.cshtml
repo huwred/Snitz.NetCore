@@ -7,9 +7,10 @@
 
 @foreach (Post topic in Model.Topics)
 {
-        //ViewBag.RatingSum =  Model.GetTopicRating();
-        // bool allowrating = Model.Forum != null ? Model.Forum.AllowTopicRating : Model.ForumAllowRating==1;
-        // allowrating = allowrating && Model.AllowRating == 1 && ClassicConfig.GetIntValue("INTTOPICRATING", 0) == 1;
+        ViewBag.RatingSum =  topic.GetTopicRating();
+        bool allowrating = topic.Forum != null ? topic.Forum.Rating == 1 : false;
+        allowrating = allowrating && topic.AllowRating == 1 && SnitzConfig.GetIntValue("INTTOPICRATING", 0) == 1;
+
         string postsclass = "read";
         string forumTitle = Uri.EscapeDataString(SnitzConfig.ForumTitle);
         var actionuri = Url.Action("Index", "Topic", new { id = topic.Id });

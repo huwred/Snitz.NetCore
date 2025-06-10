@@ -108,7 +108,6 @@ $(document).on('click','.fa-object-group',function(e) {
                 selected: selected
             },
             function(data) {
-                console.log(data);
                 if (!data) {
                     alert(data.error);
                 } else {

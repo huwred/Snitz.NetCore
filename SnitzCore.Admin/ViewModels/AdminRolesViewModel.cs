@@ -1,6 +1,7 @@
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SQLitePCL;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
@@ -62,26 +63,27 @@ namespace SnitzCore.BackOffice.ViewModels
     public class AdminGroupsViewModel
     {
 
-        public int CurrentGroupId { get; set; }
+        public int GroupNameId { get; set; }
+        public string? GroupName { get; set; }
         public List<GroupName>? Groups { get; set; }
         public List<Category> CategoryList { get; set; }
-        public Dictionary<int, string>? CurrentGroupForums { get; set; }
+        public Dictionary<int, string>? Categories { get; set; }
 
         public AdminGroupsViewModel(int id,ICategory category)
         {
-            this.CurrentGroupId = id;
+            this.GroupNameId = id;
             CategoryList = category.GetAll().ToList();
             if (id > 0)
             {
-                this.CurrentGroupForums = new Dictionary<int, string>();
+                this.Categories = new Dictionary<int, string>();
                 foreach (var (key, value) in category.GetGroups().Where(g=>g.GroupNameId == id).ToDictionary(t => t.CategoryId, t => t.Category!.Name))
                 {
-                    if (value != null) this.CurrentGroupForums.Add(key, value);
+                    if (value != null) this.Categories.Add(key, value);
                 }
             }
             else
             {
-                this.CurrentGroupForums = null;
+                this.Categories = null;
             }
         }
     }

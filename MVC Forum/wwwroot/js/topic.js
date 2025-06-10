@@ -96,7 +96,7 @@ $(document).ready(function() {
                                 }
                                 tinymce.activeEditor.execCommand('mceInsertContent', false, img);
                             } else {
-                                alert(data.type);
+                                //alert(data.type);
                                 var file = "[file " + data.filesize + "]" + data.data + "[/file]";
                                 if (data.type === ".pdf") {
                                     file = "[pdf]" + data.data + "[/pdf]";

@@ -40,6 +40,11 @@ public partial class PostReply
     public string? Ip { get; set; }
 
     [Column("R_STATUS")]
+    //        Closed = 0,
+    //        Open = 1,
+    //        UnModerated = 2,
+    //        OnHold = 3,
+    //        Draft = 99
     public short Status { get; set; }
 
     [Column("R_LAST_EDIT")]

@@ -10,7 +10,6 @@ $(document).on('click','#btnYes',function(e) {
     e.preventDefault();
     var id = $('#confirmModal').data('id');
     var url = $('#confirmModal').data('url');
-    console.log(url);
     $.get(url, function(result){
         $('[data-id='+id+']').remove();
         $('#confirmModal').modal('hide');

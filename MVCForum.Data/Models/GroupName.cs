@@ -1,4 +1,5 @@
 ﻿using SnitzCore.Data.Extensions;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -27,5 +28,6 @@ public partial class GroupName
     [StringLength(255)]
     public string? Image { get; set; }
 
+    public virtual IEnumerable<Group>? Groups { get; set; }
 
 }

@@ -6,7 +6,7 @@
     bool showprivate = false;
     if(ViewBag.IsOwner != null)
     {
-        showprivate = false || ViewBag.IsOwner;
+        showprivate = false || ViewBag.IsOwner || User.IsAdministrator();
     }
 }
 
@@ -40,7 +40,7 @@
             <th class="col-1 d-none d-sm-none d-md-none d-lg-inline">
                 <a href="&sortby=date">@Localizer["Size"]</a>
             </th>
-            @if (ViewBag.IsOwner != null && ViewBag.IsOwner)
+                @if ((ViewBag.IsOwner != null && ViewBag.IsOwner) || User.IsAdministrator())
             {
                 <th class="col-1 d-none d-sm-none d-md-none d-lg-inline col-ctrl"></th>
             }
@@ -65,15 +65,15 @@
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Views</td>
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Width x @photo.Height</td>
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@photo.Size</td>
-                        @if (ViewBag.IsOwner != null && ViewBag.IsOwner)
+                        @if ((ViewBag.IsOwner != null && ViewBag.IsOwner) || User.IsAdministrator())
                         {
                             <td class="col-1 d-none d-sm-none d-md-none d-lg-inline col-ctrl">
-                                <link-confirm snitz-if="@photo.IsPrivate" title="@Localizer["lblIsPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@photo.Id/?state=false&memberid=@photo.MemberId" config-class="fa fa-user-secret" config-key="@photo.Id"></link-confirm>
-                                <link-confirm snitz-if="@(!photo.IsPrivate)" title="@Localizer["lblPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@photo.Id/?state=true&memberid=@photo.MemberId" config-class="fa fa-user-o" config-key="@photo.Id"></link-confirm>
-                                <link-confirm snitz-if="@photo.DoNotFeature" title="@Localizer["lblDoNotFeature"].Value" jq-selector="confirm-feature" href="~/PhotoAlbum/ToggleDoNotFeature/@photo.Id/?state=false&memberid=@photo.MemberId" config-class="fa fa-square-o" config-key="@photo.Id"></link-confirm>
-                                <link-confirm snitz-if="@(!photo.DoNotFeature)" title="@Localizer["imgFeature"].Value" jq-selector="confirm-feature" href="~/PhotoAlbum/ToggleDoNotFeature/@photo.Id/?state=true&memberid=@photo.MemberId" config-class="fa fa-picture-o" config-key="@photo.Id"></link-confirm>
+                                <link-confirm snitz-if="@photo.IsPrivate" title="@Localizer["lblIsPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@photo.Id/?state=false&memberid=@photo.MemberId&display=@ViewBag.Display" config-class="fa fa-user-secret" config-key="@photo.Id"></link-confirm>
+                                <link-confirm snitz-if="@(!photo.IsPrivate)" title="@Localizer["lblPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@photo.Id/?state=true&memberid=@photo.MemberId&display=@ViewBag.Display" config-class="fa fa-user-o" config-key="@photo.Id"></link-confirm>
+                                <link-confirm snitz-if="@photo.DoNotFeature" title="@Localizer["lblDoNotFeature"].Value" jq-selector="confirm-feature" href="~/PhotoAlbum/ToggleDoNotFeature/@photo.Id/?state=false&memberid=@photo.MemberId&display=@ViewBag.Display" config-class="fa fa-square-o" config-key="@photo.Id"></link-confirm>
+                                <link-confirm snitz-if="@(!photo.DoNotFeature)" title="@Localizer["imgFeature"].Value" jq-selector="confirm-feature" href="~/PhotoAlbum/ToggleDoNotFeature/@photo.Id/?state=true&memberid=@photo.MemberId&display=@ViewBag.Display" config-class="fa fa-picture-o" config-key="@photo.Id"></link-confirm>
                                 <a href="@Url.Action("Edit", new {id = photo.Id})" class="gallery-link" title="@Localizer["tipEditImage"].Value" data-toggle="tooltip"><i class="fa fa-pencil-square-o"></i></a>
-                                <link-confirm title="@Localizer["tipDelImage"].Value" jq-selector="confirm-delete" href="~/PhotoAlbum/DeleteImage/@photo.Id/?memberid=@photo.MemberId" config-class="fa fa-trash-o" config-key="@photo.Id"></link-confirm>
+                                <link-confirm title="@Localizer["tipDelImage"].Value" jq-selector="confirm-delete" href="~/PhotoAlbum/DeleteImage/@photo.Id/?memberid=@photo.MemberId&display=@ViewBag.Display" config-class="fa fa-trash-o" config-key="@photo.Id"></link-confirm>
                                 <input type="checkbox" class="thumb" name="imgDelete" data-img="@photo.Location" value="@photo.Id" />
                             </td>
                         }
@@ -89,7 +89,7 @@
                     <tr class=""><td colspan="@colspan">@Localizer["lblNoImg"]</td></tr>
                 }
             </tbody>
-            if (User.Identity.IsAuthenticated && ViewBag.IsOwner != null && ViewBag.IsOwner)
+            if (User.Identity.IsAuthenticated && ((ViewBag.IsOwner != null && ViewBag.IsOwner) || User.IsAdministrator()))
             {
                 <tfoot>
                     <tr>

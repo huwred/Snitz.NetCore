@@ -14,6 +14,8 @@
     <meta name="robots" content="index,nofollow" />
 }
 @section Styles{
+        <link href="~/css/star-rating.min.css" rel="stylesheet" />
+        <link href="~/css/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css"/>
     @if (ViewBag.RequireAuth)
     {
         <style>
@@ -239,6 +241,8 @@
 <input type="text" style="display: none;" id="req-forumid" value="@Model.Forum.Id" />
 <partial name="PasswordDlg" model='new ConfirmDialogViewModel(){Title=Localizer["popPasswordRqdTitle"].Value,Message = Localizer["popPasswordRqdMessage"].Value}' />
 @section Scripts {
+<script src="~/js/star-rating.min.js"></script>
+<script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
     <script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
     <script type="text/javascript" src="~/js/postcontroller.min.js"></script>
     <script type="text/javascript">
@@ -275,6 +279,10 @@
                 if ($('#req-auth').val() === 'True') {
                     $('#passwordDlg').modal('show');
                 }
+                $('.rb-rating').rating({
+                    'showCaption': false,
+                    'displayOnly':true
+                });
             });
 
 
@@ -303,4 +311,5 @@
             });
     </script>
     <renderstoredcontent asp-key="topic-post-controls"></renderstoredcontent>
+
 }

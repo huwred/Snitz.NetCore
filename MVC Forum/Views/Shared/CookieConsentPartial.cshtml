@@ -17,7 +17,6 @@
     </div>
     <storecontent asp-key="cookie-consent">
     <script type="text/javascript">
-            console.log($(".accept-policy").attr("data-cookie-string"));
             $(document).on("click", ".accept-policy", function (event) {
                 document.cookie = $(".accept-policy").data("cookie-string");
                 $("#cookieConsent").hide();

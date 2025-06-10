@@ -88,11 +88,15 @@ namespace MVCForum.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public IActionResult SetLanguage(string lang, string returnUrl)
+        public IActionResult SetLanguage(string? lang, string? returnUrl)
         {
             if (string.IsNullOrWhiteSpace(returnUrl))
             {
                 returnUrl = _config.ForumUrl!;
+            }
+            if (string.IsNullOrWhiteSpace(lang))
+            {
+                lang = "en";
             }
             _snitzcookie.SetCookie(
                 "CookieLang",

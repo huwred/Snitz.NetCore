@@ -445,6 +445,8 @@ namespace Snitz.PhotoAlbum.Controllers
         public IActionResult MemberImages(int id, int display, int pagenum = 1, string sortby = "date",string sortorder = "desc")
         {
             int memberid = id;
+            var currentmemberid = _memberservice.Current()?.Id;
+            if (currentmemberid != null) ViewBag.CurrentMemberId = currentmemberid;
 
             var images = _dbContext.Set<AlbumImage>()
                 .Include(i => i.Group)
@@ -469,7 +471,7 @@ namespace Snitz.PhotoAlbum.Controllers
             return PartialView(images.ToList());
         }
 
-        public IActionResult TogglePrivacy(int id, int memberid, bool state)
+        public IActionResult TogglePrivacy(int id, int memberid, bool state, int display)
         {
             var image = _dbContext.Set<AlbumImage>().Find(id);
             if (image != null)
@@ -479,9 +481,9 @@ namespace Snitz.PhotoAlbum.Controllers
                 _dbContext.SaveChanges();
             }
 
-            return RedirectToAction("MemberImages", new {id=memberid,display=1 });
+            return RedirectToAction("MemberImages", new {id=memberid,display });
         }
-        public IActionResult ToggleDoNotFeature(int id, int memberid, bool state)
+        public IActionResult ToggleDoNotFeature(int id, int memberid, bool state, int display)
         {
             var image = _dbContext.Set<AlbumImage>().Find(id);
             if (image != null)
@@ -491,9 +493,9 @@ namespace Snitz.PhotoAlbum.Controllers
                 _dbContext.SaveChanges();
             }
 
-            return RedirectToAction("MemberImages", new {id=memberid,display=1 });
+            return RedirectToAction("MemberImages", new {id=memberid,display });
         }
-        public IActionResult DeleteImage(int id, int memberid)
+        public IActionResult DeleteImage(int id, int memberid, int display)
         {
             var image = _dbContext.Set<AlbumImage>().Find(id);
             if (image != null)
@@ -603,13 +605,27 @@ namespace Snitz.PhotoAlbum.Controllers
             return null;
         }
 
-        private static IImageProcessingContext ConvertToThumb(IImageProcessingContext context, Size size)
+        private IImageProcessingContext ConvertToThumb(IImageProcessingContext context, Size size)
         {
-            return context.Resize(new ResizeOptions
+            var scaled = _config.GetValue("STRTHUMBTYPE") == "scaled";
+            if (scaled)
             {
-                Size = size,
-                Mode = ResizeMode.Crop
-            });
+                size.Height = 0;
+                return context.Resize(new ResizeOptions
+                {
+                    Size = size,
+                    Mode = ResizeMode.Pad
+                });
+            }
+            else
+            {
+                return context.Resize(new ResizeOptions
+                {
+                    Size = size,
+                    Mode = ResizeMode.Crop
+                });
+            }
+
         }
         private List<AlbumImage> GetSpeciesEntries(string? sortby = "id", int groupid = 0, bool? speciesOnly = true, List<string>? searchin = null, string? searchfor = null, string sortDesc="")
         {

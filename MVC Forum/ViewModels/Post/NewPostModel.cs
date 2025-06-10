@@ -17,6 +17,10 @@ namespace MVCForum.ViewModels.Post
 
         public int TopicId { get; set; }
 
+        public bool AllowRating {get;set;}
+        public bool AllowTopicRating {get;set;}
+        public bool IsAuthor {get;set;}
+
         public bool IsPost { get; set; }
         public bool UseSignature { get; set; }
         public bool Lock { get; set; }

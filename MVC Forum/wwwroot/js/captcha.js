@@ -15,7 +15,7 @@
         $(document).on("click","#captcha-refresh", function(e) {
             e.preventDefault();
             $.ajax({
-                url: SnitzVars.baseUrl + "refreshcaptcha",
+                url: SnitzVars.baseUrl + "/refreshcaptcha",
                 success: function (data) {
                     $("#captchaimage-div").html(data);
                 }

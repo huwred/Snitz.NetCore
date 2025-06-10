@@ -137,7 +137,7 @@
                 
                 switch (activeTab) {
                     case "v-pills-archive-tab" :
-                        $('#forum-archives').load(SnitzVars.baseUrl + '/Admin/ArchiveSettings/' + $(this).val(), function () {
+                        $('#forum-archives').load(SnitzVars.baseUrl + '/Archive/Index/' + $(this).val(), function () {
                             $(document).on('click', '#btnYes', function (e) {
                                 // handle deletion here
                                 e.preventDefault();
@@ -158,7 +158,7 @@
                         });
                     break;
                     case "v-pills-group-tab" :
-                        $('#forum-groups').load(SnitzVars.baseUrl + '/Admin/ManageGroups/' + $(this).val(), function () { });
+                        $('#forum-groups').load(SnitzVars.baseUrl + '/Groups/ManageGroups/' + $(this).val(), function () { });
                     break;
                 }
             }
@@ -168,11 +168,11 @@
             function(e) {
                 $('[id^=result]').html('');
                 if (e.target.id === "v-pills-group-tab") {
-                    $('#forum-groups').load(SnitzVars.baseUrl + '/Admin/ManageGroups/' + $(this).val(), function () {
+                    $('#forum-groups').load(SnitzVars.baseUrl + '/Groups/ManageGroups/' + $(this).val(), function () {
                     });
                 }
                 if (e.target.id === "v-pills-archive-tab") {
-                    $('#forum-archives').load(SnitzVars.baseUrl + '/Admin/ArchiveSettings/' + $(this).val(), function () {
+                    $('#forum-archives').load(SnitzVars.baseUrl + '/Archive/Index/' + $(this).val(), function () {
                         $(document).on('click','#btnYes',function(e) {
                             // handle deletion here
                             e.preventDefault();
@@ -188,12 +188,12 @@
                 }
             });
         $(function() {
-            $('#forum-groups').load(SnitzVars.baseUrl + '/Admin/ManageGroups/' + $(this).val(), function () {
+            $('#forum-groups').load(SnitzVars.baseUrl + '/Groups/ManageGroups/' + $(this).val(), function () {
             });
         });  
         $(document).on('click', '.manage-group', function (e) {
             e.preventDefault();
-            $('#forum-groups').load(SnitzVars.baseUrl + '/Admin/ManageGroups/' + $(this).data('id'), function () {
+            $('#forum-groups').load(SnitzVars.baseUrl + '/Groups/ManageGroups/' + $(this).data('id'), function () {
             });
         });
         $(document).on('click','.confirm-delete', function(e) {

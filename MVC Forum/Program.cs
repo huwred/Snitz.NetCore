@@ -111,6 +111,7 @@ builder.Services.AddScoped<IBookmark, BookmarkService>();
 builder.Services.AddScoped<ISubscriptions, ProcessSubscriptions>();
 builder.Services.AddScoped<IEmoticon, EmoticonService>();
 builder.Services.AddScoped<ISnitz, SnitzService>();
+builder.Services.AddScoped<IGroups, GroupService>();
 builder.Services.AddTransient<ISnitzConfig, ConfigService>();
 builder.Services.AddTransient<ICodeProcessor, BbCodeProcessor>();
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
@@ -210,47 +211,50 @@ builder.Services.AddHsts(options =>
     {
         options.AllowSynchronousIO = true;
     });
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 app.MigrateDatabase();
 
-app.Use(async (ctx, next) =>
-{
-    await next();
+//app.Use(async (ctx, next) =>
+//{
+//    await next();
 
-    if(ctx.Response.StatusCode == 404 && !ctx.Response.HasStarted)
-    {
-        //Re-execute the request so the user gets the error page
-        string originalPath = ctx.Request.Path.Value;
-        ctx.Items["originalPath"] = originalPath;
-        ctx.Request.Path = "/error/404";
-        await next();
-    }
-});
+//    if (ctx.Response.StatusCode == 404 && !ctx.Response.HasStarted)
+//    {
+//        //Re-execute the request so the user gets the error page
+//        string originalPath = ctx.Request.Path.Value;
+//        ctx.Items["originalPath"] = originalPath;
+//        ctx.Request.Path = "/error/404";
+//        await next();
+//    }
+//});
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-    app.UseMigrationsEndPoint();
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseDeveloperExceptionPage();
+//    app.UseMigrationsEndPoint();
 
-}
-else
-{
-    app.UseExceptionHandler("/error/handle-exception");
-    app.UseStatusCodePages(context =>
-    {
-        var response = context.HttpContext.Response;
-        if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
-        {
-            response.Redirect("/Account/Login");
-        }
-        return Task.CompletedTask;
-    });
-    app.UseStatusCodePagesWithReExecute("/error/{0}");
-    //The default HSTS value is 30 days.You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
+//}
+//else
+//{
+//    app.UseExceptionHandler("/error/handle-exception");
+//    app.UseStatusCodePages(context =>
+//    {
+//        var response = context.HttpContext.Response;
+//        if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
+//        {
+//            response.Redirect("/Account/Login");
+//        }
+//        return Task.CompletedTask;
+//    });
+//    app.UseStatusCodePagesWithReExecute("/error/{0}");
+//    //The default HSTS value is 30 days.You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+//    app.UseHsts();
+//}
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.UseRequestLocalization(app.Services.GetRequiredService < IOptions < RequestLocalizationOptions >> ().Value);

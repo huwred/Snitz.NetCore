@@ -483,7 +483,7 @@ namespace SnitzCore.Service
             var lastreply = _dbContext.Replies.AsNoTrackingWithIdentityResolution()
                 .Where(t=>t.PostId == topicid && t.Status < 2)
                 .OrderByDescending(t=>t.Created)
-                .Select(p => new { LastPostId = p.Id, LastPostAuthorId = p.MemberId,LastPostDate = p.Created, PostCount = _dbContext.Replies.Count(r=>r.PostId == topicid && r.Status <2) })
+                .Select(p => new { LastPostId = p.Id, LastPostAuthorId = p.MemberId,LastPostDate = p.Created })
                 .FirstOrDefault();
 
             if (lastreply == null)
@@ -498,7 +498,7 @@ namespace SnitzCore.Service
                 topic.LastPostReplyId = lastreply.LastPostId;
                 topic.LastPostDate = lastreply.LastPostDate;
                 topic.LastPostAuthorId = lastreply.LastPostAuthorId;
-                topic.ReplyCount = lastreply.PostCount;
+                topic.ReplyCount = count;
             }
 
             if (moderatedcount != null)
@@ -658,6 +658,37 @@ namespace SnitzCore.Service
             return topic;
         }
 
+        public decimal GetTopicRating(int topicid)
+        {
+            var ratings = _dbContext.Posts
+                .AsNoTracking()
+                .Single(p => p.Id == topicid);
 
+            decimal rating = 0;
+            if (ratings.RatingTotal > 0)
+            {
+                decimal ratingSum = Decimal.Divide(ratings.RatingTotal,10);
+                var ratingCount = ratings.RatingTotalCount;
+                rating = (ratingSum / ratingCount);
+            }
+            return decimal.Parse(rating.ToString());
+        }
+
+        public decimal GetReplyRating(int topicid)
+        {
+            var ratings = _dbContext.Replies
+                .AsNoTracking()
+                .Where(r=>r.PostId == topicid && r.Status<2)
+                .ToList();
+
+            decimal rating = 0;
+            if (ratings.Any())
+            {
+                decimal ratingSum = Decimal.Divide(ratings.Sum(d => d.Rating),10);
+                var ratingCount = ratings.Count;
+                rating = (ratingSum / ratingCount);
+            }
+            return decimal.Parse(rating.ToString());
+        }
     }
 }
