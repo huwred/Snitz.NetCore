@@ -10,7 +10,11 @@
 
     if (Context.Request.Query["page"].Count > 0)
     {
-        page = Convert.ToInt32(Context.Request.Query["page"].ToString());
+        page = Convert.ToInt32(Context.Request.Query["page"][0].ToString());
+        if(page == -1)
+        {
+            page = pagecount;
+        }
     }
     var intLow = page - 1;
     var intHigh = page + 3;

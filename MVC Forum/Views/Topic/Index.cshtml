@@ -443,7 +443,7 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    location.href = data.url;
+                    location.href = data.url + '?page=-1';
                 },
                 error: function (err) {
                     console.log(err);

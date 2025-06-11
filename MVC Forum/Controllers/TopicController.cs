@@ -146,7 +146,11 @@ namespace MVCForum.Controllers
             {
                 pageCount = (int)Math.Ceiling((double)totalCount! / pagesize);
             }
-
+            if(page == -1)
+            {
+                page = pageCount;
+                //pagedReplies = PagedReplies(page, pagesize, sortdir, post); 
+            }
             PagedList<PostReply>? pagedReplies = PagedReplies(page, pagesize, sortdir, post);
             //we have a replyid, is it in the current set, otherwise skip forwards
             if (replyid.HasValue && totalCount > 1)
@@ -156,7 +160,7 @@ namespace MVCForum.Controllers
                     page += 1;
                     pagedReplies = PagedReplies(page, pagesize, sortdir, post);                    
                 }
-            }
+            } 
 
             IEnumerable<PostReplyModel>? replies = null;
             if (pagedReplies != null)
