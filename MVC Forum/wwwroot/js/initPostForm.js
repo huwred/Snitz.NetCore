@@ -45,6 +45,7 @@ tinymce.init({
         blockquote: { block: 'blockquote', classes: 'newquote' },
         bold: { inline: 'span', classes: [ 'fw-bold' ] }
     },
+    extended_valid_elements: 'div[*]',
     toolbar: 'code undo redo | styleselect | bold italic | alignleft aligncenter alignright | ' +
         'bullist numlist | link emoticons | fileButton imageButton media codesample',
     images_upload_url: SnitzVars.baseUrl + "/forumupload",

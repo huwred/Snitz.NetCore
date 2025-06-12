@@ -96,18 +96,18 @@ public class BbCodeProcessor : ICodeProcessor
     _codeformatter.Add(new RegexFormatter(@"\[scrollcode(?:\s*)\]((.|\n)*?)\[/scrollcode(?:\s*)]", "<div class=\"bbc-codetitle\" dir=\"ltr\">Code:</div><div class=\"bbc-codecontent\" dir=\"ltr\"><pre><code>$1</code></pre></div>"));
 
     #region tables
-    _tables.Add(new RegexFormatter(@"(\[table([^]]*)])", "<div name=\"divTable\" $2>"));
-    _tables.Add(new RegexFormatter(@"(\[\/table])", "</div>"));
-    _tables.Add(new RegexFormatter(@"(\[(tr)([^]]*)])", "<div name=\"divTableRow\" $3>"));
-    _tables.Add(new RegexFormatter(@"(\[(td)([^]]*)])", "<div name=\"divTableCell\" $3>"));
-    _tables.Add(new RegexFormatter(@"(\[(th)([^]]*)])", "<div name=\"divTableHead\" $3>"));
-    _tables.Add(new RegexFormatter(@"(\[\/t([rdh])](\r\n|\r|\n)*)", "</div>"));
-    _tables.Add(new RegexFormatter(@"(\[tbody([^]]*)])", "<div name=\"divTableBody\" $2>"));
-    _tables.Add(new RegexFormatter(@"(\[\/tbody])", "</div>"));
-    _tables.Add(new RegexFormatter(@"(\[thead([^]]*)])", "<div name=\"divTableHeader\" $2>"));
-    _tables.Add(new RegexFormatter(@"(\[\/thead])", "</div>"));
-    _tables.Add(new RegexFormatter(@"(\[tfoot([^]]*)])", "<div name=\"divTableFooter\" $2>"));
-    _tables.Add(new RegexFormatter(@"(\[\/tfoot])", "</div>"));
+    //_tables.Add(new RegexFormatter(@"(\[table([^]]*)])", "<div name=\"divTable\" $2>"));
+    //_tables.Add(new RegexFormatter(@"(\[\/table])", "</div>"));
+    //_tables.Add(new RegexFormatter(@"(\[(tr)([^]]*)])", "<div name=\"divTableRow\" $3>"));
+    //_tables.Add(new RegexFormatter(@"(\[(td)([^]]*)])", "<div name=\"divTableCell\" $3>"));
+    //_tables.Add(new RegexFormatter(@"(\[(th)([^]]*)])", "<div name=\"divTableHead\" $3>"));
+    //_tables.Add(new RegexFormatter(@"(\[\/t([rdh])](\r\n|\r|\n)*)", "</div>"));
+    //_tables.Add(new RegexFormatter(@"(\[tbody([^]]*)])", "<div name=\"divTableBody\" $2>"));
+    //_tables.Add(new RegexFormatter(@"(\[\/tbody])", "</div>"));
+    //_tables.Add(new RegexFormatter(@"(\[thead([^]]*)])", "<div name=\"divTableHeader\" $2>"));
+    //_tables.Add(new RegexFormatter(@"(\[\/thead])", "</div>"));
+    //_tables.Add(new RegexFormatter(@"(\[tfoot([^]]*)])", "<div name=\"divTableFooter\" $2>"));
+    //_tables.Add(new RegexFormatter(@"(\[\/tfoot])", "</div>"));
     #endregion
 
     _formatters.Add(new LineBreaksFormatter(new[] { "html", "csharp", "code", "jscript", "sql", "vb", "php" }));
@@ -179,20 +179,38 @@ public class BbCodeProcessor : ICodeProcessor
     }
     _postformatters.Add(new SearchReplaceFormatter(@"[Done]", "<i class=\"fa fa-check-square\"></i>"));
             _postformatters.Add(new SearchReplaceFormatter(@"[Fixed]", "<i class=\"fa fa-check-square\"></i>"));
-    #endregion
+            #endregion
 
-    #region CleanCode
-    _cleancodeformatters.Add(new RegexFormatter(@"(<table([^>]*)>)", "[table$2]"));
-    _cleancodeformatters.Add(new RegexFormatter(@"(<\/table>)", "[/table]"));
-    _cleancodeformatters.Add(new RegexFormatter(@"(<t([rdh])([^>]*)>)", "[t$2 $3]"));
-    _cleancodeformatters.Add(new RegexFormatter(@"(<\/t([rdh])>)", "[/t$2]"));
-    _cleancodeformatters.Add(new RegexFormatter(@"(<tbody([^>]*)>)", "[tbody$2]"));
-    _cleancodeformatters.Add(new RegexFormatter(@"(<\/tbody>)", "[/tbody]"));
-    _cleancodeformatters.Add(new RegexFormatter(@"(<thead([^>]*)>)", "[thead$2]"));
-    _cleancodeformatters.Add(new RegexFormatter(@"(<\/thead>)", "[/thead]"));
-    _cleancodeformatters.Add(new RegexFormatter(@"(<tfoot([^>]*)>)", "[tfoot$2]"));
-    _cleancodeformatters.Add(new RegexFormatter(@"(<\/tfoot>)", "[/tfoot]"));
-    _cleancodeformatters.Add(new SearchReplaceFormatter("<br />", "\r\n"));
+            #region CleanCode
+            _cleancodeformatters.Add(new RegexFormatter(@"(<table([^>]*)>)", "<table class=\"divTable\" $2>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<\/table>)", "[/table]"));
+            _cleancodeformatters.Add(new RegexFormatter(@"(<tr([^>]*)>)", "<tr $2 class=\"divTableRow\">"));
+            _cleancodeformatters.Add(new RegexFormatter(@"(<td([^>]*)>)", "<td $2 class=\"divTableCell\">"));
+            _cleancodeformatters.Add(new RegexFormatter(@"(<th([^>]*)>)", "<th $2 class=\"divTableHeader\">"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<\/t([rdh])>)", "[/t$2]"));
+            _cleancodeformatters.Add(new RegexFormatter(@"(<tbody([^>]*)>)", "<tbody$2 class=\"divTableBody\">"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<\/tbody>)", "[/tbody]"));
+            _cleancodeformatters.Add(new RegexFormatter(@"(<thead([^>]*)>)", "<thead$2 class=\"divTableHeader\">"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<\/thead>)", "[/thead]"));
+            _cleancodeformatters.Add(new RegexFormatter(@"(<tfoot([^>]*)>)", "<tfoot$2 class=\"divTableFooter\">"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<\/tfoot>)", "[/tfoot]"));
+
+            #region tables
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<(div) (name=\"divTable\") ([^>]*)>)", "<table $3 $4>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(\[\/table])", "</div>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<(div) (name=\"divTableRow\") ([^>]*)>)", "<tr $3 $4>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<(div) (name=\"divTableCell\") ([^>]*)>)", "<td $3 $4>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<(div) (name=\"divTableHeader\") ([^>]*)>)", "<th $3 $4>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(\[\/t([rdh])](\r\n|\r|\n)*)", "</div>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<(div) (name=\"divTableBody\") ([^>]*)>)", "<tbody $3 $4>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(\[\/tbody])", "</div>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<(div) (name=\"divTableHeader\") ([^>]*)>)", "<th $3 $4>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(\[\/thead])", "</div>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(<(div) (name=\"divTableFooter\") ([^>]*)>)", "<tfoot $3 $4>"));
+            //_cleancodeformatters.Add(new RegexFormatter(@"(\[\/tfoot])", "</div>"));
+            #endregion
+
+            _cleancodeformatters.Add(new SearchReplaceFormatter("<br />", "\r\n"));
     _cleancodeformatters.Add(new RegexFormatter(@"<blockquote id=""quote""><(font) (\b[^>]*)>(.*?)</font></blockquote>", "[quote]$3[/quote]"));
 
     _cleancodeformatters.Add(new RegexFormatter(@"(<blockquote id=(?:\\""|"")quote(?:\\""|"")>.*quote:<hr (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"") noshade (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"")>)", "[quote]"));
