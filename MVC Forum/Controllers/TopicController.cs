@@ -195,7 +195,7 @@ namespace MVCForum.Controllers
                 Edited = post.LastEdit?.FromForumDateStr(),
                 EditedBy = post.LastEditby == null ? "" : _memberService.GetMemberName(post.LastEditby.Value),
                 AllowTopicRating = post.Forum.Rating == 1 && _config.GetIntValue("INTTOPICRATING")==1,
-                AllowRating = post.AllowRating==1 && _config.GetIntValue("INTTOPICRATING")==1,
+                AllowRating = post.AllowRating==1 && _config.GetIntValue("INTTOPICRATING")==1 && !_memberService.HasRatedTopic(post.Id,post.Member!.Id),
                 Rating = post.GetTopicRating()
             };
 

@@ -466,5 +466,10 @@ namespace SnitzCore.Service
             }
             return false;
         }
+
+        public bool HasRatedTopic(int topicid, int memberid)
+        {
+            return _dbContext.TopicRating.Where(t=>t.RatingsTopicId == topicid && t.RatingsBymemberId == memberid).Any();
+        }
     }
 }
