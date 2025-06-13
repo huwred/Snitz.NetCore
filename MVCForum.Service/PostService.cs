@@ -7,6 +7,7 @@ using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using X.PagedList;
 using X.PagedList.Extensions;
@@ -116,7 +117,7 @@ namespace SnitzCore.Service
         /// <returns></returns>
         public int CreateForMerge(int[]? selected)
         {
-            var topics = _dbContext.Posts.AsNoTracking().Where(p => selected != null && EF.Constant(selected).Contains(p.Id)).OrderBy(t => t.Created).ToList();
+            var topics = _dbContext.Posts.AsNoTracking().Include(t=>t.Member).Where(p => selected != null && EF.Constant(selected).Contains(p.Id)).OrderBy(t => t.Created).ToList();
             int unmoderatedposts = 0;
             int replycounter = 0;
             Post mainTopic = topics.First();
@@ -128,6 +129,9 @@ namespace SnitzCore.Service
             {
                 if (topic.Id != mainTopic.Id)
                 {
+                    //Update the replies with new topic ID and add the number updated to the replycounter
+                    var updatereplies = $"UPDATE {_tableprefix}REPLY SET TOPIC_ID={mainTopic.Id},FORUM_ID={mainTopic.ForumId},CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}";
+                    replycounter += _dbContext.Database.ExecuteSql(FormattableStringFactory.Create(updatereplies));
                     unmoderatedposts += topic.UnmoderatedReplies;
                     //creat a new reply from the topic
                     if (topic.ForumId != mainTopic.ForumId)
@@ -155,27 +159,31 @@ namespace SnitzCore.Service
                     _dbContext.Add<PostReply>(reply);
                     _dbContext.Remove(topic);
                     _dbContext.SaveChanges();
-                    //Update any subscriptionc for the old Topic with the new topic ID
-                    _dbContext.Database.ExecuteSql($"UPDATE {_tableprefix}SUBSCRIPTIONS SET TOPIC_ID={mainTopic.Id}, FORUM_ID={mainTopic.ForumId}, CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
-                    //Update the replies with new topic ID and add the number updated to the replycounter
-                    replycounter += _dbContext.Database.ExecuteSql(
-                        $"UPDATE {_tableprefix}REPLY SET TOPIC_ID={mainTopic.Id},FORUM_ID={mainTopic.ForumId},CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}");
+                    try
+                    {
+                        //Update any subscriptions for the old Topic with the new topic ID
+                        var subsSql = $"UPDATE {_tableprefix}SUBSCRIPTIONS SET TOPIC_ID={mainTopic.Id}, FORUM_ID={mainTopic.ForumId}, CAT_ID={mainTopic.CategoryId} WHERE TOPIC_ID={topic.Id}";
+                        _dbContext.Database.ExecuteSql(FormattableStringFactory.Create(subsSql));
+
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
                     if (oldforum != null)
                     {
                         _forumservice.UpdateLastPost(oldforum.Id);
                     }
 
                     if (_config.GetIntValue("STRMOVENOTIFY") == 1)
-                        _mailSender.TopicMergeEmail(topic, mainTopic,topic.Member!);
+                        _mailSender.TopicMergeEmail(topic, mainTopic, topic.Member!);
                 }
             }
 
-            mainTopic.ReplyCount += replycounter;
-            _dbContext.Update(mainTopic);
-            _dbContext.SaveChanges();
             //update counts
-            _ = UpdateLastPost(mainTopic.Id,unmoderatedposts);
-            _forumservice.UpdateLastPost(forum!.Id);
+            _ = UpdateLastPost(maintopicid,unmoderatedposts);
+            _forumservice.UpdateLastPost(mainTopic.ForumId);
             return maintopicid;
         }
         public async Task<bool> LockTopic(int id, short status = 0)

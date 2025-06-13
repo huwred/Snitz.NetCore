@@ -342,6 +342,7 @@ namespace MVCForum.Controllers
                 AuthorName = User.Identity?.Name!,
                 UseSignature = member!.SigDefault == 1,
                 AllowRating = forum.Rating == 1,
+                IsAuthor = true,
                 Lock = false,
                 Sticky = false,
                 DoNotArchive = false,
@@ -454,7 +455,7 @@ namespace MVCForum.Controllers
                 AllowTopicRating = topic.AllowRating == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = topic.Created.FromForumDateStr(),
-                IsAuthor = User.Identity?.Name == member!.Name
+                IsAuthor = member!.Id == topic.MemberId
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
@@ -1331,7 +1332,33 @@ namespace MVCForum.Controllers
             ViewBag.Error = "Unknown problem";
             return View("Error");
         }
+        [Route("Topic/SaveRating/")]
+        public IActionResult SaveRating(IFormCollection form)
+        {
+            if (form.Keys.Contains("PostRating"))
+            {
+                var topic = _postService.GetTopicForUpdate(Convert.ToInt32(Request.Form["TopicId"]));
+                if (Request.Form["PostRating"] != "0")
+                {
+                    topic.RatingTotal += (int) (decimal.Parse(Request.Form["PostRating"])*10);
+                }
 
+                topic.RatingTotalCount += 1;
+                _snitzDbContext.Posts.Update(topic);
+
+                TopicRating tr = new TopicRating
+                {
+                    RatingsBymemberId = Convert.ToInt32(Request.Form["MemberId"]),
+                    RatingsTopicId = Convert.ToInt32(Request.Form["TopicId"])
+                };
+                _snitzDbContext.Add(tr);
+                _snitzDbContext.SaveChanges();
+
+                return Json(new {success = true, responseText = "Voted"});
+            }
+            return Json(new {success = false, responseText = "PostRating not found"});
+            
+        }
         /// <summary>
         /// Tracks Checked Topic list
         /// </summary>

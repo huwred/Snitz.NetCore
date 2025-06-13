@@ -163,7 +163,9 @@ $(document).on('submit', 'form', function () {
     function displayBusyIndicator() {
     $('.loading').show();
 }
-
+$(document).ajaxComplete(function(event, xhr, settings) {
+    $('.loading').hide();
+});
 </script>
 }
 </body>

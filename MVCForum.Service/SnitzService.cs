@@ -32,29 +32,37 @@ namespace SnitzCore.Service
 
         public LastPostViewModel LastPost()
         {
-            var lastpost = _dbContext.Forums.AsNoTracking().OrderByDescending(f=>f.LastPost).First();
-            var lastreply = _dbContext.Replies.AsNoTracking().Include(f=>f.Member).SingleOrDefault(p=>p.Id == lastpost.LatestReplyId);
-            var lasttopic = _dbContext.Posts.AsNoTracking().Include(f=>f.Member).Single(p=>p.Id == lastpost.LatestTopicId);
-
-            dynamic latest = lastreply?.Created.FromForumDateStr() > lasttopic.Created.FromForumDateStr() ? lastreply : lasttopic;
-
-            if (latest is Post)
+            try
             {
+                var lastpost = _dbContext.Forums.AsNoTracking().OrderByDescending(f=>f.LastPost).First();
+                var lastreply = _dbContext.Replies.AsNoTracking().Include(f=>f.Member).SingleOrDefault(p=>p.Id == lastpost.LatestReplyId);
+                var lasttopic = _dbContext.Posts.AsNoTracking().Include(f=>f.Member).Single(p=>p.Id == lastpost.LatestTopicId);
+
+                dynamic latest = lastreply?.Created.FromForumDateStr() > lasttopic.Created.FromForumDateStr() ? lastreply : lasttopic;
+
+                if (latest is Post)
+                {
                 
+                    return new LastPostViewModel()
+                    {
+                        LastPostDate = latest.Created,
+                        LastPostAuthor = latest.Member.Id,
+                        LastTopic = latest.Id
+                    };
+                }
                 return new LastPostViewModel()
                 {
                     LastPostDate = latest.Created,
                     LastPostAuthor = latest.Member.Id,
-                    LastTopic = latest.Id
+                    LastTopic = latest.PostId,
+                    LastReply = latest.Id
                 };
             }
-            return new LastPostViewModel()
+            catch (System.Exception)
             {
-                LastPostDate = latest.Created,
-                LastPostAuthor = latest.Member.Id,
-                LastTopic = latest.PostId,
-                LastReply = latest.Id
-            };
+                return new LastPostViewModel();
+            }
+
         }
 
         public int ForumCount()

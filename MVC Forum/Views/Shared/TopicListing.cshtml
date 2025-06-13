@@ -76,7 +76,7 @@
                 @if (allowrating)
                 {
                     @* <input value="@Model.Rating" type="text" class="rb-rating" /> *@
-                    <form><input id="input-id-@Model.Id" name="input-name" type="number" class="rb-rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs"></form>
+                    <input name="input-name" type="number" class="rb-rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs">
 
                 }
             </div>

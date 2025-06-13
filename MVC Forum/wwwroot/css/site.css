@@ -846,3 +846,8 @@ i.modstatus-2, i.modstatus-3 {
 .divTableBody, div[name=divTableBody] {
     display: table-row-group;
 }
+
+#rating-grp .input-group-text {
+    border: 0;
+    background-color: revert-layer;
+}
