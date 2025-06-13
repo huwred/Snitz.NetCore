@@ -1929,7 +1929,7 @@ namespace Snitz.PhotoAlbum.Migrations
 
                     b.Property<int>("RatingsBymemberId")
                         .HasColumnType("int")
-                        .HasColumnName("RATINGS_BYMEMBERID");
+                        .HasColumnName("RATINGS_BYMEMBER_ID");
 
                     b.Property<int>("RatingsTopicId")
                         .HasColumnType("int")

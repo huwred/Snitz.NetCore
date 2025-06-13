@@ -11,7 +11,7 @@ public partial class TopicRating
     [Key]
     public int Id { get; set; }
 
-    [Column("RATINGS_BYMEMBERID")]
+    [Column("RATINGS_BYMEMBER_ID")]
     public int RatingsBymemberId { get; set; }
 
     [Column("RATINGS_TOPIC_ID")]

@@ -1745,7 +1745,7 @@ namespace WebApplication1.Migrations
 
                     b.Property<int>("RatingsBymemberId")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("RATINGS_BYMEMBERID");
+                        .HasColumnName("RATINGS_BYMEMBER_ID");
 
                     b.Property<int>("RatingsTopicId")
                         .HasColumnType("INTEGER")

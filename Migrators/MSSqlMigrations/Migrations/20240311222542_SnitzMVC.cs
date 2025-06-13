@@ -403,7 +403,7 @@ namespace Migrations
                     {
                         RATING = table.Column<int>(type: "int", nullable: false)
                             .Annotation("SqlServer:Identity", "1, 1"),
-                        RATINGS_BYMEMBERID = table.Column<int>(type: "int", nullable: false),
+                        RATINGS_BYMEMBER_ID = table.Column<int>(type: "int", nullable: false),
                         RATINGS_TOPIC_ID = table.Column<int>(type: "int", nullable: false)
                     },
                     constraints: table =>

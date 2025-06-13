@@ -146,7 +146,7 @@ namespace WebApplication1.Migrations
                 {
                     RATING = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    RATINGS_BYMEMBERID = table.Column<int>(type: "INTEGER", nullable: false),
+                    RATINGS_BYMEMBER_ID = table.Column<int>(type: "INTEGER", nullable: false),
                     RATINGS_TOPIC_ID = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
