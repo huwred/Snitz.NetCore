@@ -19,7 +19,7 @@ namespace SnitzCore.Service
 
         public ForumTotal Totals()
         {
-            var result = _dbContext.ForumTotal.AsNoTracking().First();
+            var result = _dbContext.ForumTotal.AsNoTracking().OrderBy(t=>t.Id).First();
             var activemembers = _dbContext.Members.Where(m => m.Status == 1 && m.Posts > 0).Count();
             result.ActiveMembers = activemembers;
             return result;

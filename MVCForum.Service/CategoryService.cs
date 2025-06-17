@@ -19,9 +19,9 @@ namespace SnitzCore.Service
         }
         public Category GetById(int id)
         {
-            var category = _dbContext.Categories.Where(f => f.Id == id)
+            var category = _dbContext.Categories
                 .Include(f => f.Forums)
-                .First();
+                .SingleOrDefault(f => f.Id == id);
 
             return category;
         }

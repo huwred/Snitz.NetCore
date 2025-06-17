@@ -65,7 +65,7 @@ namespace SnitzCore.Service
                 await _memberService.UpdateLastPost(post.MemberId);
             }
             
-            var forumtotals = _dbContext.ForumTotal.First();
+            var forumtotals = _dbContext.ForumTotal.OrderBy(t=>t.Id).First();
             forumtotals.TopicCount += 1;
             await _dbContext.SaveChangesAsync();
             return post.Id;
@@ -105,7 +105,7 @@ namespace SnitzCore.Service
             {
                 await _memberService.UpdateLastPost(post.MemberId);
             }
-            var forumtotals = _dbContext.ForumTotal.First();
+            var forumtotals = _dbContext.ForumTotal.OrderBy(t=>t.Id).First();
             forumtotals.PostCount += 1;
             await _dbContext.SaveChangesAsync();
             return post.Id;
@@ -120,7 +120,7 @@ namespace SnitzCore.Service
             var topics = _dbContext.Posts.AsNoTracking().Include(t=>t.Member).Where(p => selected != null && EF.Constant(selected).Contains(p.Id)).OrderBy(t => t.Created).ToList();
             int unmoderatedposts = 0;
             int replycounter = 0;
-            Post mainTopic = topics.First();
+            Post mainTopic = topics.OrderBy(t => t.Created).First();
             int maintopicid = mainTopic.Id;
             unmoderatedposts += mainTopic.UnmoderatedReplies;
             Forum? forum = _dbContext.Forums.Find(mainTopic.ForumId);
@@ -273,7 +273,7 @@ namespace SnitzCore.Service
         }
         public async Task UpdateTopicContent(int id, string content)
         {
-            var topic = _dbContext.Posts.First(x=>x.Id == id);
+            var topic = _dbContext.Posts.OrderBy(p=>p.Id).First(x=>x.Id == id);
             topic.Content = content;
             _dbContext.Update(topic);
             await _dbContext.SaveChangesAsync();
@@ -586,7 +586,7 @@ namespace SnitzCore.Service
         public Post? SplitTopic(string[] ids, int forumId, string subject)
         {
             var forum = (from forums in _dbContext.Forums
-                    select forums).First(f => f.Id == forumId);
+                    select forums).OrderBy(t=>t.Id).First(f => f.Id == forumId);
             int replycount = 0;
             int originaltopicid = 0;
             Post? topic = null;
