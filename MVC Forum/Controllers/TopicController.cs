@@ -87,7 +87,7 @@ namespace MVCForum.Controllers
                 return View("Error");
             }    
             //if we have a replyid, does it exist in ths topic?
-            if (replyid.HasValue && post.Replies != null)
+            if (replyid.HasValue && post.Replies.Any())
             {
                 //no reply in that topic, so reset the jumpto replyid
                 if (!post.Replies.Any(r => r.Id == replyid))

@@ -278,6 +278,7 @@
     <ProjectReference Include="..\Migrators\SqliteMigrations\SqliteMigrations.csproj" />
     <ProjectReference Include="..\MVCForum.Data\SnitzCore.Data.csproj" />
     <ProjectReference Include="..\MVCForum.Service\SnitzCore.Service.csproj" />
+    <ProjectReference Include="..\Snitz.PostThanks\Snitz.PostThanks.csproj" />
     <ProjectReference Include="..\SnitzCore.Admin\SnitzCore.BackOffice.csproj" />
   </ItemGroup>
 

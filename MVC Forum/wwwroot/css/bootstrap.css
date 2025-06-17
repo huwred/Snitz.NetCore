@@ -7484,7 +7484,9 @@ textarea.form-control-lg {
 .start-50 {
   left: 50% !important;
 }
-
+.start-75 {
+    left: 75% !important;
+}
 .start-100 {
   left: 100% !important;
 }

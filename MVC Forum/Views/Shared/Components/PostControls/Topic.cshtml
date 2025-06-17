@@ -7,6 +7,7 @@
     bool islocked = Model.Status == 0;
     bool isauthor = User.Identity.Name == Model.Member.Name;
     var subscriptions = MemberService.Current()?.Subscriptions;
+    bool allowThanks = (bool)TempData["allowThanks"];
 }
 @if (User.Identity.IsAuthenticated)
 {
@@ -29,6 +30,13 @@
         {
             <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" data-id="@Model.Id"></i>
             <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-commenting m-1 post-quote" title="@Localizer["tipQuoteTopic"]" data-id="@Model.Id"></i>
+        }
+        @if (SnitzConfig.GetIntValue("STRTHANKS", 0) == 1)
+        {
+            if (allowThanks && User.Identity.IsAuthenticated)
+            {
+                @await Component.InvokeAsync("PostThanks", new { template = "TopicSummary", topicid = Model.Id, id = 0, showcount = true })
+            }
         }
         @if (SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1)
         {

@@ -192,6 +192,8 @@ builder.Services.AddImageSharp(
 builder.Services.AddTransient<ISyndicationXmlService, SyndicationXmlService>();
 builder.Services.AddEventsServices(builder.Configuration);
 builder.Services.AddAlbumServices(builder.Configuration);
+builder.Services.AddPostThanksServices(builder.Configuration);
+
 builder.Services.AddHangfire(configuration => configuration
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_110)
     .UseSimpleAssemblyNameTypeSerializer()

@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using SmartBreadcrumbs
 @using Snitz.Events.Helpers
+@using Snitz.PostThanks.Helpers
 @using SnitzCore.Data
 @using SnitzCore.Service.Extensions
 @using SnitzCore.Service.TagHelpers
@@ -66,7 +67,11 @@
     var isAuthenticated = User.Identity!.IsAuthenticated;
     bool allowrating = Model.ForumId != 0 ? Model.AllowTopicRating : Model.AllowRating;
     allowrating = allowrating && Model.AllowRating && SnitzConfig.GetIntValue("INTTOPICRATING", 0) == 1;
-
+    var thanksservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(PostThanksService));
+    if(thanksservice != null)
+    {
+        TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.ForumId);
+    }
 }
 @if (!(bool)ViewBag.RequireAuth)
 {

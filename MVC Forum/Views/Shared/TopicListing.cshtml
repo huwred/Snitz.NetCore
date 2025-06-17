@@ -2,6 +2,7 @@
 @using BbCodeFormatter
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Snitz.Events.Helpers
+@using Snitz.PostThanks.Helpers
 @using SnitzCore.Data
 @using SnitzCore.Service.TagHelpers
 @model MVCForum.ViewModels.Post.PostListingModel
@@ -25,6 +26,11 @@
     bool archives = ViewData["Archives"] != null ? (bool)ViewData["Archives"]! : false;
     bool allowrating = Model.Forum != null ? Model.Forum.AllowTopicRating : Model.ForumAllowRating == 1;
     allowrating = allowrating && Model.AllowRating == 1 && SnitzConfig.GetIntValue("INTTOPICRATING", 0) == 1;
+    var thanksservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(PostThanksService));
+    if (thanksservice != null)
+    {
+        TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.Forum.Id);
+    }
 }
 <div class="table-row @answeredClass rounded-2 @moderatedClass">
 

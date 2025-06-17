@@ -1,6 +1,7 @@
 @model MVCForum.ViewModels.Forum.ActiveTopicModel
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using SmartBreadcrumbs
+@using Snitz.PostThanks.Helpers
 @using SnitzCore.Data
 @using SnitzCore.Data.Extensions
 @using BbCodeFormatter
@@ -18,6 +19,7 @@
 
     var refresh = ViewBag.RefreshSeconds;
     ViewData["Archives"] = false;
+    //TempData["allowThanks"] = true;
 }
 @section MetaData
 {
