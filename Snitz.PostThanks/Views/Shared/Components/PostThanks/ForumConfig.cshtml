@@ -1,0 +1,40 @@
+﻿
+@model dynamic
+<div class="panel panel-default">
+    <div class="panel-body">
+        <label>@Localizer["ForumSettingTitle"]</label>
+        <div class="form-group">
+            <label for="strThanks" class="control-label col-xs-6">
+                <input id="strThanks" type="checkbox" name="strThanks" data-size="mini" data-id="@Model.Id" checked="@ViewBag.IsAllowed" />
+                @Localizer["ForumSetting"]
+            </label>
+        </div>
+    </div>
+</div>
+<storecontent asp-key="forum-plugins">
+    <script>
+        $(document)
+            .ready(function () {
+
+                $('#strThanks').change(function () {
+                    var id = $(this).data('id');
+                    $.ajax(
+                        {
+                            url: SnitzVars.baseUrl + '/PostThanks/ForumSettings/' + id + '?check=' + this.checked,
+                            async: false,
+                            success: function (response) {
+                                //alert('saved');
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                BootstrapDialog.show({
+                                    type: BootstrapDialog.TYPE_WARNING,
+                                    title: textStatus,
+                                    message: errorThrown
+                                });
+                            }
+                        });
+                });
+
+            });
+    </script>
+</storecontent>

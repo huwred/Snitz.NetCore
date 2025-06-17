@@ -1,0 +1,58 @@
+﻿@model PostThanks.Models.PostThanksViewModel
+<span id="thanksplugin">
+    @if (!Model.PostAuthor && User.Identity.IsAuthenticated && Model.Showlink)
+    {
+        if (!Model.Thanked)
+        {
+            <i class="fa fa-thumbs-o-up fa-1_5x topic" title="@Localizer["Thank"]" data-id="@Model.TopicId" data-replyid="@Model.ReplyId">
+
+            </i>
+        }
+        else
+        {
+            <i class="fa fa-thumbs-up fa-2x topic position-relative z-1" title="@Localizer["UnThank"]" data-id="@Model.TopicId" data-replyid="@Model.ReplyId">
+                @if (Model.ShowCount && Model.ThanksCount > 0)
+                {
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger z-0" data-placement="auto" data-id="@Model.TopicId" data-replyid="@Model.ReplyId">@Model.ThanksCount<span class="visually-hidden">unread messages</span></span>
+                }
+            </i>
+        }
+
+    }
+
+
+</span>
+<storecontent asp-key="forum-plugins">
+    <script>
+        $(document)
+            .ready(function () {
+                $(".thanks-count")
+                    .popover({
+                        html: true,
+                        container: 'body',
+                        trigger: 'hover',
+                        content: function () {
+                            var id = $(this).data('id');
+                            var replyid = $(this).data('replyid');
+                        var output = '';
+                        $.ajax(
+                            {
+                                url: SnitzVars.baseUrl + '/PostThanks/Members/' + id + '?replyid=' + replyid,
+                                async: false,
+                                success: function (response) {
+                                output = response;
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    BootstrapDialog.show({
+                                        type: BootstrapDialog.TYPE_WARNING,
+                                        title: textStatus,
+                                        message: jqXHR.responseText
+                                    });
+                                }
+                                });
+                            return output;
+                        }
+                    });
+            });
+    </script>
+</storecontent>

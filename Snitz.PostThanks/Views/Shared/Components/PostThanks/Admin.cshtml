@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Drawing.Text
+
+
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="flush-headingThanks">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThanks" aria-expanded="false" aria-controls="flush-collapseThanks">
+                Post Thanks
+            </button>
+        </h2>
+        <div id="flush-collapseThanks" class="accordion-collapse collapse" aria-labelledby="flush-headingThanks" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+                <form id="thanks-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
+                    @await Component.InvokeAsync("PostThanks", new {template="EnableButton"})
+                </form> 
+                <div id="result"></div>
+            </div>
+        </div>
+    </div>

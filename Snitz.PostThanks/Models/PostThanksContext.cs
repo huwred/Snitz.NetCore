@@ -1,0 +1,47 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Snitz.PostThanks.Models;
+using SnitzCore.Data;
+
+
+namespace Snitz.PhotoAlbum.Models
+{
+    public static class Extensions
+    {
+        public static void AddPostThanksServices(this IServiceCollection serviceCollection,ConfigurationManager configuration)
+        {
+            var connectionString = configuration.GetConnectionString("SnitzConnection");
+
+            serviceCollection.AddDbContext<PostThanksContext>(
+                options => options.UseSqlServer(connectionString,o => o.MigrationsAssembly("Snitz.PostThanks"))
+            );
+            using (var scope = serviceCollection.BuildServiceProvider().CreateScope())
+            {
+                using (var dbContext = scope.ServiceProvider.GetRequiredService<PostThanksContext>())
+                {
+                    if (dbContext.Database.GetPendingMigrations().Any())
+                    {
+                        dbContext.Database.Migrate();
+                    }
+                }
+            }
+        }
+    }
+    public class PostThanksContext : DbContext
+    {
+
+        public DbSet<PostThanksEntry> PostThanks { get; set; }
+
+        public PostThanksContext(DbContextOptions<PostThanksContext> options) : base(options){} 
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder); // Essential to call the base method!
+
+            modelBuilder.Entity<PostThanksEntry>().HasNoKey();
+
+        }
+    }
+}

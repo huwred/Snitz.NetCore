@@ -1,0 +1,6 @@
+﻿
+@model PostThanks.Models.PostThanksProfile
+<div class="panel panel-thanks">
+    <label>@Localizer["lblRecieved"] <span class="badge badge-success" title="@Localizer["lblReceived"] @Localizer["thanks"]" data-toggle="tooltip">@Model.Received</span> @Localizer["thanks"]</label><br />
+    <label>@Localizer["given"] <span class="badge badge-primary" title="@Localizer["given"]" data-toggle="tooltip">@Model.Given</span></label>
+</div>

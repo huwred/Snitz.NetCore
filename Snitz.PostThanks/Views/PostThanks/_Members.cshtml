@@ -1,0 +1,11 @@
+﻿@using System.Globalization
+@using System.Resources
+@using Microsoft.AspNetCore.Http
+@model System.Collections.Generic.List<string>
+<ul class="list-unstyled">
+    <li><b>[@Localizer["Thanked"]]</b></li>
+    @foreach (var member in Model)
+    {
+        <li>@member</li>
+    }
+</ul>
