@@ -237,6 +237,76 @@ $(document).on("click",".post-edit", function() {
     location.href = SnitzVars.baseUrl + "/Topic/Edit/" + postid;
 
 });
+//Thanks Plugin
+$(document).on('click',
+    '.thumbs-up',
+    function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        var replyid = $(this).data('replyid');
+            $.post(SnitzVars.baseUrl + "/PostThanks/Thank",
+                {
+                    id: id,
+                    replyid:replyid
+                },
+                function(data, status){
+                    $('#confirmModal').modal('hide');
+                    if (!data.result) {
+                        alert(data.error);
+                    } else {
+
+                        location.reload(true);
+                    }
+                });
+        });
+$(document).on('click',
+    '.thumbs-down',
+    function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        var replyid = $(this).data('replyid');
+            $.post(SnitzVars.baseUrl + "/PostThanks/UnThank",
+                {
+                    id: id,
+                    replyid:replyid
+                },
+                function(data, status){
+                    $('#confirmModal').modal('hide');
+                    if (!data.result) {
+                        alert(data.error);
+                    } else {
+
+                        location.reload(true);
+                    }
+                });
+        });
+$( ".thanks-list" )
+  .on( "mouseenter", function() {
+    var e=$(this);
+    var id = e.data('id');
+    var replyid = e.data('replyid');
+
+    $.ajax(
+        {
+            url: SnitzVars.baseUrl + '/PostThanks/Members/' + id + '?replyid=' + replyid,
+            async: false,
+            success: function (response) {
+            e.popover({html: true,content: response}).popover('show');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_WARNING,
+                    title: textStatus,
+                    message: jqXHR.responseText
+                });
+            }
+            });
+
+  } )
+  .on( "mouseleave", function() {
+        var e=$(this);
+        e.popover('hide');
+  } );
 
     // functions to insert/select text in textarea
 $.fn.extend({

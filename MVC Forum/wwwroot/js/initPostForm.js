@@ -45,7 +45,7 @@ tinymce.init({
         blockquote: { block: 'blockquote', classes: 'newquote' },
         bold: { inline: 'span', classes: [ 'fw-bold' ] }
     },
-    extended_valid_elements: 'div[*]',
+    extended_valid_elements: 'i[class],div[*],',
     toolbar: 'code undo redo | styleselect | bold italic | alignleft aligncenter alignright | ' +
         'bullist numlist | link emoticons | fileButton imageButton media codesample',
     images_upload_url: SnitzVars.baseUrl + "/forumupload",
@@ -53,7 +53,9 @@ tinymce.init({
     images_reuse_filename: true,
     emoticons_database: 'emojiimages',
     emoticons_images_url: SnitzVars.baseUrl + '/images/emoticon/',
-    content_style: `body { font-family:Helvetica,Arial,sans-serif; font-size:14px; } 
+    content_css: SnitzVars.baseUrl +'/css/bootstrap.min.css,'+SnitzVars.baseUrl +'/lib/font-awesome/css/font-awesome.min.css,'+SnitzVars.baseUrl +'/css/site.min.css',
+    content_css_cors: true,
+    content_style: `body { font-family:Helvetica,Arial,sans-serif; font-size:14px; padding:1rem;} 
     .mce-content-body img {max-width: 99% !important;height: auto;} `,
     setup: function(editor) {
         if (attach) {

@@ -851,3 +851,7 @@ i.modstatus-2, i.modstatus-3 {
     border: 0;
     background-color: revert-layer;
 }
+
+.fs-7{
+    font-size:0.7rem;
+}
