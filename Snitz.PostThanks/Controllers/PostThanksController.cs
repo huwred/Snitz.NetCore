@@ -30,7 +30,7 @@ namespace Snitz.PostThanks.Controllers
             _memberService = memberService;
             _tableprefix = options.Value.forumTablePrefix;
             _snitzContext = snitzContext;
-            thanksRepository = new PostThanksRepository(_context,_config,_snitzContext,options);
+            thanksRepository = new PostThanksRepository(_context,_config,_snitzContext,options,memberService);
         }
         //
         // GET: /PostThanks/
@@ -72,11 +72,11 @@ namespace Snitz.PostThanks.Controllers
         /// <param name="returnUrl">Url of calling page</param>
         /// <returns></returns>
         [Authorize]
-        public IActionResult Thank(int id, int replyid, string returnUrl)
+        public IActionResult Thank(int id, int replyid/*, string returnUrl*/)
         {
             thanksRepository.AddThanks(id, replyid);
 
-            return Redirect(returnUrl + "#" + replyid);
+            return Json(new { result = "OK", error = "" });
 
         }
 
@@ -94,10 +94,10 @@ namespace Snitz.PostThanks.Controllers
         /// <param name="returnUrl"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public IActionResult UnThank(int id, int replyid, string returnUrl = "")
+        public IActionResult UnThank(int id, int replyid/*, string returnUrl = ""*/)
         {
             thanksRepository.DeleteThanks(id, replyid);
-            return Redirect(returnUrl + "#" + replyid);
+            return Json(new { result = "OK", error = "" });
 
         }
 

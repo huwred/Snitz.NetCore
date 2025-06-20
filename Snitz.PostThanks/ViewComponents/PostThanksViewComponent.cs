@@ -22,7 +22,7 @@ namespace Snitz.PostThanks.ViewComponents
             _dbContext = dbContext;
             _config = config;
             _thanksContext = thanksContext;
-            thanksRepository = new PostThanksRepository(thanksContext,_config,dbContext,options);
+            thanksRepository = new PostThanksRepository(thanksContext,_config,dbContext,options, memberService);
             _memberService = memberService;
         }
 
@@ -48,10 +48,19 @@ namespace Snitz.PostThanks.ViewComponents
                 };
                 vm.Thanked = thanksRepository.IsThanked(topicid.Value, id);
                 vm.ThanksCount = thanksRepository.Count(topicid.Value, id);
-                //vm.PostAuthor = thanksRepository.IsAuthor(topicid.Value, id);
+                vm.PostAuthor = thanksRepository.IsAuthor(topicid.Value, id);
                 return await Task.FromResult((IViewComponentResult)View(template,vm));
             }
+            if(template == "Profile")
+            {
+                var vm = new PostThanksProfile
+                {
+                    Received = thanksRepository.MemberCountReceived(id),
+                    Given = thanksRepository.MemberCountGiven(id),
+                };
 
+                return await Task.FromResult((IViewComponentResult)View(template,vm));
+            }
             if (template == "EnableButton")
             {
                 var installed = _config.TableExists("FORUM_THANKS");

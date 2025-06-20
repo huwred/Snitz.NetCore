@@ -1,0 +1,11 @@
+﻿@model PostThanks.Models.PostThanksProfile
+<div class="card panel-secondary card-body mt-3">
+    <h5 class="card-header"><i class="fa fa-thumbs-up"></i> @Localizer["ForumSettingTitle"]</h5>
+    <div class="card-body p-3">
+        <label>@Localizer["lblReceived"] <span class="badge rounded-pill bg-success" title="@Localizer["lblReceived"] @Localizer["thanks"]" data-toggle="tooltip">@Model.Received</span> @Localizer["thanks"]</label><br />
+        <label>@Localizer["given"] <span class="badge rounded-pill bg-primary" title="@Localizer["given"]" data-toggle="tooltip">@Model.Given</span></label>
+
+    </div>
+</div>
+
+

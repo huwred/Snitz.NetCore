@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Snitz.PostThanks.Models;
 using SnitzCore.Data;
+using static Dapper.SqlMapper;
 
 
 namespace Snitz.PhotoAlbum.Models
@@ -40,8 +41,7 @@ namespace Snitz.PhotoAlbum.Models
         {
             base.OnModelCreating(modelBuilder); // Essential to call the base method!
 
-            modelBuilder.Entity<PostThanksEntry>().HasNoKey();
-
+            modelBuilder.Entity<PostThanksEntry>().HasKey(e => new { e.MemberId, e.TopicId,e.ReplyId });
         }
     }
 }

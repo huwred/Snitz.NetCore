@@ -10,6 +10,7 @@ using Snitz.PostThanks.Models;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using System.Runtime.CompilerServices;
 
 namespace PostThanks.Models
 {
@@ -23,12 +24,13 @@ namespace PostThanks.Models
         private readonly SnitzDbContext _snitzContext;
         protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
-        public PostThanksRepository(PostThanksContext dbContext,ISnitzConfig config,SnitzDbContext snitzContext,IOptions<SnitzForums> options)
+        public PostThanksRepository(PostThanksContext dbContext,ISnitzConfig config,SnitzDbContext snitzContext,IOptions<SnitzForums> options,IMember memberservice)
         {
             _dbContext = dbContext;
             _config = config;
             _snitzContext = snitzContext;
             _tableprefix = options.Value.forumTablePrefix;
+            _memberid = memberservice.Current().Id;
         }
         public void Dispose()
         {
@@ -45,9 +47,9 @@ namespace PostThanks.Models
                 _dbContext.SaveChanges();
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                var test = e.Message;
             }
         }
         public bool IsAllowedForum(int topicid)
@@ -92,18 +94,13 @@ namespace PostThanks.Models
 
         public int MemberCountReceived(int memberid)
         {
+            var sqlString = $@"SELECT t.T_AUTHOR,r.R_AUTHOR FROM {_tableprefix}THANKS ft
+                LEFT JOIN {_tableprefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
+                LEFT JOIN {_tableprefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
+                WHERE t.T_AUTHOR = {memberid} OR r.R_AUTHOR  = {memberid}";
 
-            var count =  _dbContext.PostThanks
-                .Join(_snitzContext.Posts,
-                      thanks => thanks.TopicId,
-                      post => post.Id,
-                      (thanks, post) => new { thanks, post })
-                .Join(_snitzContext.Replies,
-                    combined => combined.thanks.ReplyId,
-                    reply => reply.Id,
-                    (combined, reply) => new { combined.thanks, combined.post,reply})
-                .Where(joined => joined.post.MemberId == memberid || joined.reply.MemberId == memberid)
-                .Count();
+            var count = _snitzContext.Forums
+                .FromSqlInterpolated(FormattableStringFactory.Create(sqlString)).Count();
 
             return count;
 
@@ -120,6 +117,18 @@ namespace PostThanks.Models
 
         }
 
+        internal bool IsAuthor(int id, int replyid)
+        {
+            if(replyid == 0)
+            {
+                return _snitzContext.Posts.Single(p=>p.Id == id).MemberId == _memberid;
+            }
+            else
+            {
+                return _snitzContext.Replies.Single(p=>p.Id == replyid).MemberId == _memberid;
+            }
+
+        }
     }
 
 }

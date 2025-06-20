@@ -12,6 +12,7 @@ namespace Snitz.PostThanks.Models
     [SnitzTable("THANKS","FORUM")]
     public class PostThanksEntry
     {
+
         [Column("TOPIC_ID")]
         public int TopicId { get; set; }
 
