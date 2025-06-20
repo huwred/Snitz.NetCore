@@ -192,7 +192,7 @@ public class BbCodeProcessor : ICodeProcessor
 
     _cleancodeformatters.Add(new SearchReplaceFormatter("<br />", "\r\n"));
     _cleancodeformatters.Add(new RegexFormatter(@"<blockquote id=""quote""><(font) (\b[^>]*)>(.*?)</font></blockquote>", "[quote]$3[/quote]"));
-
+    _cleancodeformatters.Add(new RegexFormatter(@"<i class=""(.*)""\>\</i\>", "[i class=\"$1\"][/i]"));      
     _cleancodeformatters.Add(new RegexFormatter(@"(<blockquote id=(?:\\""|"")quote(?:\\""|"")>.*quote:<hr (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"") noshade (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"")>)", "[quote]"));
     _cleancodeformatters.Add(new RegexFormatter(@"(<hr (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"") noshade (?:id|height)=(?:\\""|"")[a-z0-9]+(?:\\""|"")></font id=(?:\\""|"")quote(?:\\""|"")></blockquote id=(?:\\""|"")quote(?:\\""|"")>)", "[/quote]"));
     _cleancodeformatters.Add(new RegexFormatter(@"(<pre id=""code""><font.*"">)(.*)(</font id=""code""></pre id=""code"">)", "[code]$2[/code]"));
