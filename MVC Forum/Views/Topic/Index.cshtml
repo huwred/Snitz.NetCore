@@ -66,7 +66,7 @@
     var hasForumRole = User.IsInRole("Forum_" + Model.ForumId);
     var isAuthenticated = User.Identity!.IsAuthenticated;
     bool allowrating = Model.ForumId != 0 ? Model.AllowTopicRating : Model.AllowRating;
-    allowrating = allowrating && Model.AllowRating && SnitzConfig.GetIntValue("INTTOPICRATING", 0) == 1;
+    allowrating = allowrating && Model.AllowRating;
     var thanksservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(PostThanksService));
     if(thanksservice != null)
     {
@@ -142,18 +142,17 @@
 
         @if (allowrating @* && Model.AuthorName != User.Identity.Name *@)
         {
-            <form asp-action="SaveRating" asp-controller="Topic" method="POST" data-ajax="true" data-ajax-update="#topic_rating" data-ajax-complete="TopicRated">
+            <form asp-action="SaveRating" id="save-rating" asp-controller="Topic" method="POST" data-ajax="true" data-ajax-update="#topic_rating" data-ajax-complete="TopicRated">
                 <div class="padding-md" dir="ltr"  style="margin-left: 40px;">
-                    @Html.Hidden("TopicId", Model.Id)
-                    @Html.Hidden("MemberId", currmember.Id)
+                    <input type="number" name="TopicId" value="@Model.Id" style="display:none" />
+                    <input type="number" name="MemberId" value="@currmember.Id" style="display:none"/>
                     <div class="input-group" id="rating-grp">
-                    <span class="input-group-text">@Localizer["lblRateMe"]</span>
-            <div class="input-group-addon topic_rating mt-2"><button type="submit" class="btn fa fa-check" title="@Localizer["lblRateMe"]" /></div>
+                        <span class="input-group-text">@Localizer["lblRateMe"]</span>
+                        <input id="rating-id" name="PostRating" type="number" class="rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="sm">
+       @*                  <div  class="input-group-addon topic_rating mt-2"><button type="submit" class="btn fa fa-check" title="@Localizer["lblRateMe"]" /></div> *@
                     </div>
                 </div>
-                <div id="topic_rating">
-
-                </div>
+                <div id="topic_rating"></div>
             </form>
         }else if (Model.AllowTopicRating)
         {
@@ -266,6 +265,7 @@
             <p snitz-if="@(isAuthenticated && !Model.IsLocked)" class="p-4">@Localizer["lblNoReplyMessage"]</p>
             <p snitz-if="@(!isAuthenticated && !Model.IsLocked)" class="p-4">@Localizer["lblNoReplies"]</p>
     }
+    
     <!--Reply Area-->
     @if (SnitzConfig.GetIntValue("STRSHOWQUICKREPLY") == 1 && !Model.Archived)
     {
@@ -389,11 +389,24 @@
 <script src="~/js/star-rating.min.js"></script>
 <script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
     <script type="text/javascript">
-//         $(document).ready(function(){
-//     $('#input-id-@Model.Id').rating().on("rating:change", function(event, value, caption) {
-//         $('#input-id-@Model.Id').rating("refresh", {disabled:true, showClear:false});
-//     });
-// });
+        $(document).ready(function(){
+    $('#rating-id').on("rating:change", function(event, value, caption) {
+        var form = $('#save-rating');
+        $.ajax({
+            url: SnitzVars.baseUrl + '/Topic/SaveRating',
+            type: "POST",
+            data: form.serialize(),
+            success: function (data) {
+                console.log(data);
+                $('#rating-id').rating("refresh", {disabled:true, showClear:false});
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+        //$('#input-id-@Model.Id').rating("refresh", {disabled:true, showClear:false});
+    });
+});
         function TopicRated(){
             $('.topic_rating').hide();
             $('#input-id-@Model.Id').rating("refresh", {disabled:true, showClear:false});
@@ -421,7 +434,7 @@
                     function (e) {
                         $.ajax({
                             type: "POST",
-                            url: '/Forum/PasswordCheck',
+                            url: SnitzVars.baseUrl + '/Forum/PasswordCheck',
                             data: { pwd: $('#forum-pass').val(), forumid: $('#req-forumid').val(), topicid: '0' },
                             success: function (result) {
                                 alert(result);

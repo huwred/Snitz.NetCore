@@ -87,7 +87,7 @@ namespace MVCForum.Controllers
                 return View("Error");
             }    
             //if we have a replyid, does it exist in ths topic?
-            if (replyid.HasValue && post.Replies.Any())
+            if (replyid.HasValue && post.Replies != null && post.Replies.Any())
             {
                 //no reply in that topic, so reset the jumpto replyid
                 if (!post.Replies.Any(r => r.Id == replyid))
@@ -194,8 +194,8 @@ namespace MVCForum.Controllers
                 SortDir = sortdir,
                 Edited = post.LastEdit?.FromForumDateStr(),
                 EditedBy = post.LastEditby == null ? "" : _memberService.GetMemberName(post.LastEditby.Value),
-                AllowTopicRating = post.Forum.Rating == 1 && _config.GetIntValue("INTTOPICRATING")==1,
-                AllowRating = post.AllowRating==1 && _config.GetIntValue("INTTOPICRATING")==1 && !_memberService.HasRatedTopic(post.Id,post.Member!.Id),
+                AllowTopicRating = post.AllowRating == 1 && _config.GetIntValue("INTTOPICRATING")==1 ,
+                AllowRating = post.Forum.Rating==1 && _config.GetIntValue("INTTOPICRATING")==1 && !_memberService.HasRatedTopic(post.Id,_memberService.Current().Id),
                 Rating = post.GetTopicRating()
             };
 
