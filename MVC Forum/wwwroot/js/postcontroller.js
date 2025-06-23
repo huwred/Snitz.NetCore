@@ -19,7 +19,10 @@ $(document).on("change",
     function () {
         $("#defaultdays-form").submit();
     });
-//post button controls
+
+/* post button controls */
+
+// Delete Reply
 $(document).on("click",".reply-del", function() {
     let postid;
     if (confirm("Are you sure!") === true) {
@@ -38,6 +41,7 @@ $(document).on("click",".reply-del", function() {
         
     } 
 });
+// Delete Post
 $(document).on("click",".post-del", function(e) {
     e.preventDefault();
     var postid = $(this).data("id");
@@ -45,7 +49,6 @@ $(document).on("click",".post-del", function(e) {
     $('#confirmModal h4.text-bg-warning').html('Delete Post');
     $('#confirmModal #confirm-body').html('<p>You are about to Delete this Topic.</p><p>Do you wish to proceed?</p>');
     $('#confirmModal').data('id', postid).data('url', href).modal('show');
-
     $('#confirmModal').on('click','#btnYes',function(e) {
         // handle deletion here
         e.preventDefault();
@@ -54,44 +57,45 @@ $(document).on("click",".post-del", function(e) {
                 id: postid
             },
             function(data, status){
-                
-                if (!data.result) {
-                    alert(data.error);
-                } else {
-                    location.href = data.url;
-                }
-            });
+            if (!data.result) {
+                alert(data.error);
+            } else {
+                location.href = data.url;
+            }
+        });
     });
 });
-        $(document).on("click",
-            ".lock-member",
+// Lock Member
+$(document).on("click",
+    ".lock-member",
+    function(e) {
+        e.preventDefault();
+        var memberid = $(this).data("id");
+        var href = $(this).data("url");
+        $('#modal-title').html('Lock Member');
+        $('#member-modal').html('Toggle Member Status');
+        $('#memberModal').data('id', memberid).modal('show');
+        $('#memberModal #btnOk').show();
+        $('#memberModal').one('click',
+            '#btnOk',
             function(e) {
+                // handle deletion here
                 e.preventDefault();
-                var memberid = $(this).data("id");
-                var href = $(this).data("url");
-                $('#modal-title').html('Lock Member');
-                $('#member-modal').html('Toggle Member Status');
-                $('#memberModal').data('id', memberid).modal('show');
-                $('#memberModal #btnOk').show();
-                $('#memberModal').one('click',
-                    '#btnOk',
-                    function(e) {
-                        // handle deletion here
-                        e.preventDefault();
-                        $.post(href,
-                            {
-                                id: memberid
-                            },
-                            function(data, status) {
+                $.post(href,
+                    {
+                        id: memberid
+                    },
+                    function(data, status) {
 
-                                if (!data.result) {
-                                    alert(data.error);
-                                } else {
-                                    location.reload();
-                                }
-                            });
+                        if (!data.result) {
+                            alert(data.error);
+                        } else {
+                            location.reload();
+                        }
                     });
             });
+    });
+// Bookmark Post
 $(document).on('click',
     '.bookmark-add',
     function(e) {
@@ -120,37 +124,39 @@ $(document).on('click',
                     }
                 });
                     
+    }); 
+});
+// Delete Bookmark
+$(document).on('click',
+    '.bookmark-del',
+    function(e) {
+        e.preventDefault();
+        var href = $(this).attr('href');
+        var postid = $(this).data("id");
+        //confirm-body
+        $('#confirmModal h4.text-bg-warning').html('Delete Bookmark');
+        $('#confirmModal #confirm-body').html('<p>You are about to delete this Bookmark.</p><p>Do you wish to proceed?</p>');
+        $('#confirmModal').data('id', postid).data('url', href).modal('show');
+        $('#confirmModal').on('click','#btnYes',function(e) {
+            // handle deletion here
+            e.preventDefault();
+            $.post(SnitzVars.baseUrl + "/Bookmark/Delete",
+                {
+                    id: postid
+                },
+                function(data, status){
+                    $('#confirmModal').modal('hide');
+                    if (!data.result) {
+                        alert(data.error);
+                    } else {
+
+                        location.reload(true);
+                    }
+                });
+                    
         }); 
     });
-    $(document).on('click',
-        '.bookmark-del',
-        function(e) {
-            e.preventDefault();
-            var href = $(this).attr('href');
-            var postid = $(this).data("id");
-            //confirm-body
-            $('#confirmModal h4.text-bg-warning').html('Delete Bookmark');
-            $('#confirmModal #confirm-body').html('<p>You are about to delete this Bookmark.</p><p>Do you wish to proceed?</p>');
-            $('#confirmModal').data('id', postid).data('url', href).modal('show');
-            $('#confirmModal').on('click','#btnYes',function(e) {
-                // handle deletion here
-                e.preventDefault();
-                $.post(SnitzVars.baseUrl + "/Bookmark/Delete",
-                    {
-                        id: postid
-                    },
-                    function(data, status){
-                        $('#confirmModal').modal('hide');
-                        if (!data.result) {
-                            alert(data.error);
-                        } else {
-
-                            location.reload(true);
-                        }
-                    });
-                    
-            }); 
-        });
+// Lock Post
 $(document).on('click', '.post-lock', function (e) {
     e.preventDefault();
 
@@ -182,24 +188,60 @@ $(document).on('click', '.post-lock', function (e) {
                     
     });        
 });
+// Stick Post
+$(document).on('click', '.post-stick', function (e) {
+    e.preventDefault();
 
+    var href = $(this).attr('href');
+    var postid = $(this).data("id");
+    var poststatus = $(this).data("status");
+    //confirm-body
+    $('#confirmModal h4.text-bg-warning').html('Lock Post');
+    $('#confirmModal #confirm-body').html('<p>Toggle stickiness.</p><p>Do you wish to proceed?</p>');
+    $('#confirmModal').data('id', postid).data('url', href).modal('show');
+    $('#confirmModal').on('click','#btnYes',function(e) {
+        // handle deletion here
+        e.preventDefault();
+        e.stopPropagation();
+        $.post(SnitzVars.baseUrl + "/Topic/MakeSticky",
+            {
+                id: postid,
+                status: poststatus
+            },
+            function(data, status){
+                $('#confirmModal').modal('hide');
+                if (!data.result) {
+                    alert(data.error);
+                } else {
+
+                    location.reload(true);
+                }
+            });
+                    
+    });        
+});
+// Quote Reply
 $(document).on("click",".reply-quote", function() {
     var postid = $(this).data("id");
     location.href = SnitzVars.baseUrl + "/Topic/QuoteReply/" + postid;
 });
+// Quote Post
 $(document).on("click",".post-quote", function() {
     var postid = $(this).data("id");
     location.href = SnitzVars.baseUrl + "/Topic/Quote/" + postid;
 });
+// Reply to Post
 $(document).on("click",".post-reply", function() {
     var postid = $(this).data("id");
     location.href = SnitzVars.baseUrl + "/Topic/Reply/" + postid;
 });
+// Edit Reply
 $(document).on("click",".reply-edit", function() {
 
     var postid = $(this).data("id");
     location.href = SnitzVars.baseUrl + "/Topic/EditReply/" + postid;
 });
+// Mark as Answer
 $(document).on('click', '.reply-answer', function (e) {
     e.preventDefault();
 
@@ -231,13 +273,14 @@ $(document).on('click', '.reply-answer', function (e) {
                     
     });        
 });
+// Edit Post
 $(document).on("click",".post-edit", function() {
 
     var postid = $(this).data("id");
     location.href = SnitzVars.baseUrl + "/Topic/Edit/" + postid;
 
 });
-//Thanks Plugin
+// Thumbs Up
 $(document).on('click',
     '.thumbs-up',
     function(e) {
@@ -259,6 +302,7 @@ $(document).on('click',
                     }
                 });
         });
+// Thumbs Down
 $(document).on('click',
     '.thumbs-down',
     function(e) {
@@ -280,6 +324,7 @@ $(document).on('click',
                     }
                 });
         });
+// Show/Hide Thanks List
 $( ".thanks-list" )
   .on( "mouseenter", function() {
     var e=$(this);
@@ -308,7 +353,7 @@ $( ".thanks-list" )
         e.popover('hide');
   } );
 
-    // functions to insert/select text in textarea
+/* functions to insert/select text in textarea */
 $.fn.extend({
     insertAtCaret: function (myValue) {
         var textComponent = $(this)[0];

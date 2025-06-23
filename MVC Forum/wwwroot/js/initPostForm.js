@@ -5,6 +5,8 @@
         ValidateForms();
     }, false);
 })();
+
+/* Set up language variables */
 let curLang = "en";
 let langDirection = "ltr";
 if ($.cookie("CookieLang")) {
@@ -19,22 +21,38 @@ if ($.cookie("CookieLang")) {
 
 }
 
+/* Toolbar/Menu default */
+let toolbardef = 
+'fileButton imageButton media | undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist | link emoticons | code codesample';
+
+let menudef = 'favs edit insert format table help';
+
+/* Quick reply editor overrides */
+if ($('#QuickReply').length > 0) {
+    menudef = false; // turn off the menu bar
+    toolbardef =
+    'fileButton imageButton media | undo redo | styleselect | bullist numlist | link emoticons | code codesample';
+
+}
+
+// Initialize the TinyMCE editor
 tinymce.remove();
 tinymce.init({
     selector: 'textarea#msg-text',
     menu: {
         favs: {title: 'My Favourites', items: 'code | searchreplace | emoticons'}
     },
-    menubar: 'favs edit insert format table help',
+    menubar: menudef,
+    toolbar: toolbardef,
     language: curLang,
     directionality: langDirection,
-/*    height: 200,*/
+/*  DO NOT EDIT BELOW THIS LINE */
     browser_spellcheck: true,
     contextmenu: false,
     plugins:  [
-        'advlist autolink link lists charmap hr',
-        'searchreplace wordcount code insertdatetime media',
-        'table emoticons paste help codesample'
+        'advlist autolink link lists code media',
+        'searchreplace wordcount charmap hr insertdatetime paste',
+        'table emoticons codesample'
     ],
     branding: false,
     relative_urls : false,
@@ -46,8 +64,6 @@ tinymce.init({
         bold: { inline: 'span', classes: [ 'fw-bold' ] }
     },
     extended_valid_elements: 'i[class],div[*],',
-    toolbar: 'code undo redo | styleselect | bold italic | alignleft aligncenter alignright | ' +
-        'bullist numlist | link emoticons | fileButton imageButton media codesample',
     images_upload_url: SnitzVars.baseUrl + "/forumupload",
     images_upload_base_path: window.ContentFolder,
     images_reuse_filename: true,

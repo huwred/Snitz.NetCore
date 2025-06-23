@@ -87,7 +87,7 @@
                     </div>
                     @if (SnitzConfig.GetIntValue("STRTHANKS") == 1)
                     {
-                        @await Component.InvokeAsync("PostThanks", new { template = "Profile", id = Model.Id })
+                        @await Component.InvokeAsync("PostThanks", new { template = "Profile", id = Model.Member.Id })
                     }
                 </div>
             </div>
