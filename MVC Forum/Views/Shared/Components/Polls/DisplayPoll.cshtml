@@ -55,7 +55,8 @@ else
                         }
                         else
                         {
-                            @Html.Raw(string.Format(Localizer["LoginToVote"].Value, Html.ActionLink(Localizer["SignIn"].Value, "Login", "Account", new { ReturnUrl = Context.Request.PathBase }, htmlAttributes: new { id = "loginLink" })))
+                            string loginlink = $"<a href=\"/Account/Login\" id=\"loginLink\">{Localizer["SignIn"].Value}</a>";
+                            @Html.Raw(string.Format(Localizer["LoginToVote"].Value, loginlink))
                         }
                     </div>
                 </div>
