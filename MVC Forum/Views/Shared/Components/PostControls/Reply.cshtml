@@ -28,7 +28,7 @@
         <i snitz-if="@(!Model.Topic.Answered && (isauthor || isadmin))" class="fa fa-flag-checkered m-1 reply-answer" title="@Localizer["tipAnswer"]" data-id="@Model.Id"></i>
         @if (isadmin || isauthor || ismoderator)
         {
-            <i snitz-if="@(!islocked)" class="fa fa-pencil m-1 reply-edit" title="@Localizer["tipEditReply"]" data-id="@Model.Id"></i>
+            <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-pencil m-1 reply-edit" title="@Localizer["tipEditReply"]" data-id="@Model.Id"></i>
             <i class="fa fa-trash m-1 reply-del" title="@Localizer["tipDelReply"]" data-id="@Model.Id"></i>
             <i snitz-if="@(islocked && (isadmin || ismoderator))" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.PostId" data-status="1"></i>
             <i snitz-if="@(!islocked && (isadmin || ismoderator))" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.PostId" data-status="0"></i>
