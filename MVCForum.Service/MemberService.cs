@@ -99,6 +99,10 @@ namespace SnitzCore.Service
 
         public Member? Current()
         {
+            if (_contextAccessor.HttpContext == null || _contextAccessor.HttpContext.User == null || _contextAccessor.HttpContext.User.Identity == null)
+            {
+                return null;
+            }
             var user = _contextAccessor.HttpContext?.User.Identity?.Name;
             if (user != null) return GetByUsername(user);
 
@@ -467,8 +471,12 @@ namespace SnitzCore.Service
             return false;
         }
 
-        public bool HasRatedTopic(int topicid, int memberid)
+        public bool HasRatedTopic(int topicid, int? memberid)
         {
+            if(memberid == null)
+            {
+                return true;
+            }
             return _dbContext.TopicRating.Where(t=>t.RatingsTopicId == topicid && t.RatingsBymemberId == memberid).Any();
         }
     }

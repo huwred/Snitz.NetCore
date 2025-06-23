@@ -39,6 +39,6 @@ namespace SnitzCore.Data
         IEnumerable<Member?>  GetRecent(int max);
         Task UpdateLastPost(int memberid);
         bool ZapMember(int memberid);
-        bool HasRatedTopic(int topicid,int memberid);
+        bool HasRatedTopic(int topicid,int? memberid);
     }
 }
