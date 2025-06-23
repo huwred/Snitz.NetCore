@@ -33,7 +33,7 @@ namespace Snitz.PostThanks.ViewComponents
                 var forum = _dbContext.Forums
                 .FromSqlInterpolated($"SELECT * FROM FORUM_FORUM WHERE F_ALLOWTHANKS=1 AND FORUM_ID={id}");
                 ViewBag.IsAllowed = forum.Any();
-                return await Task.FromResult((IViewComponentResult)View(template,forum.First()));
+                return await Task.FromResult((IViewComponentResult)View(template,forum.FirstOrDefault()));
             }
             if (template == "TopicSummary")
             {

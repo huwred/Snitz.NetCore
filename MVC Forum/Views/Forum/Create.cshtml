@@ -165,12 +165,9 @@
                     <div class="mb-3 bg-primary text-bg-primary p-3 rounded">
                         @await Component.InvokeAsync("Events", new { template = "ForumConfig", id = Model.ForumId, topicid = 0 })
                     </div>
-                    <div class="mb-3 bg-primary text-bg-primary p-3 rounded">
-                        @await Component.InvokeAsync("Polls", new { template = "ForumConfig", forumid = Model.ForumId })
-                    </div>
-                    <div class="mb-3 bg-primary text-bg-primary p-3 rounded">
-                        @await Component.InvokeAsync("PostThanks", new { template = "ForumConfig", id = Model.ForumId, topicid = 0 })
-                    </div>
+                    @await Component.InvokeAsync("Polls", new { template = "ForumConfig", forumid = Model.ForumId })
+                    @await Component.InvokeAsync("PostThanks", new { template = "ForumConfig", id = Model.ForumId, topicid = 0 })
+
                 }
             </fieldset>
         </div>
