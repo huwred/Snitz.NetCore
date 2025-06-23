@@ -20,7 +20,7 @@ $(document).on("change",
         $("#defaultdays-form").submit();
     });
 
-/* post button controls */
+/* post button events */
 
 // Delete Reply
 $(document).on("click",".reply-del", function() {
@@ -196,17 +196,16 @@ $(document).on('click', '.post-stick', function (e) {
     var postid = $(this).data("id");
     var poststatus = $(this).data("status");
     //confirm-body
-    $('#confirmModal h4.text-bg-warning').html('Lock Post');
+    $('#confirmModal h4.text-bg-warning').html('Sticky Post');
     $('#confirmModal #confirm-body').html('<p>Toggle stickiness.</p><p>Do you wish to proceed?</p>');
     $('#confirmModal').data('id', postid).data('url', href).modal('show');
     $('#confirmModal').on('click','#btnYes',function(e) {
-        // handle deletion here
         e.preventDefault();
         e.stopPropagation();
         $.post(SnitzVars.baseUrl + "/Topic/MakeSticky",
             {
                 id: postid,
-                status: poststatus
+                state: poststatus
             },
             function(data, status){
                 $('#confirmModal').modal('hide');
