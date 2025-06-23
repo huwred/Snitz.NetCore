@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.1-rc03</Version>
+    <Version>1.0.1-rc05</Version>
     <Authors>Huw Reddick</Authors>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -28,8 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="7.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.17">
+    <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="8.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
