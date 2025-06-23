@@ -46,5 +46,6 @@ namespace SnitzCore.Data.Interfaces
         void MoveSubscriptions(int oldtopicid, int newtopicid, int newforumId, int newcatId);
         void MoveReplies(int oldtopicid, Post newTopic);
         Post? SplitTopic(string[] ids, int forumId, string subject);
+        Task<bool> MakeSticky(int id, short status = 0);
     }
 }

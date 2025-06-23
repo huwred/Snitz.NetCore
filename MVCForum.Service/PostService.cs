@@ -198,7 +198,18 @@ namespace SnitzCore.Service
             var result = await _dbContext.SaveChangesAsync();
             return result > 0;
         }
+        public async Task<bool> MakeSticky(int id, short status = 0)
+        {
+            var topic = _dbContext.Posts.SingleOrDefault(f => f.Id == id);
+            if (topic != null)
+            {
+                topic.IsSticky = status;
+                _dbContext.Update(topic);
+            }
 
+            var result = await _dbContext.SaveChangesAsync();
+            return result > 0;
+        }
         public async Task DeleteTopic(int id)
         {
             var post = _dbContext.Posts.Include(p=>p.Replies).SingleOrDefault(f => f.Id == id);
