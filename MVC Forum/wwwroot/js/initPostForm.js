@@ -21,29 +21,14 @@ if ($.cookie("CookieLang")) {
 
 }
 
-/* Toolbar/Menu default */
-let toolbardef = 
-'fileButton imageButton media | undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist | link emoticons | code codesample';
-
-let menudef = 'favs edit insert format table help';
-
-/* Quick reply editor overrides */
-if ($('#QuickReply').length > 0) {
-    menudef = false; // turn off the menu bar
-    toolbardef =
-    'fileButton imageButton media | undo redo | styleselect | bullist numlist | link emoticons | code codesample';
-
-}
 
 // Initialize the TinyMCE editor
 tinymce.remove();
 tinymce.init({
     selector: 'textarea#msg-text',
-    menu: {
-        favs: {title: 'My Favourites', items: 'code | searchreplace | emoticons'}
-    },
-    menubar: menudef,
-    toolbar: toolbardef,
+    menu: SnitzVars.favmenu,
+    menubar: SnitzVars.menudef,
+    toolbar: SnitzVars.toolbardef,
     language: curLang,
     directionality: langDirection,
 /*  DO NOT EDIT BELOW THIS LINE */
@@ -74,8 +59,8 @@ tinymce.init({
     content_style: `body { font-family:Helvetica,Arial,sans-serif; font-size:14px; padding:1rem;} 
     .mce-content-body img {max-width: 99% !important;height: auto;} `,
     setup: function(editor) {
-        if (attach) {
-            editor.ui.registry.addButton('fileButton',
+        if (SnitzVars.attach) {
+            editor.ui.registry.addButton('snitzAttach',
                 {
                     icon: 'new-document',
                     tooltip: SnitzVars.toolTips.fileBtn + '\n(' + SnitzVars.allowedfiles + ')',
@@ -87,8 +72,8 @@ tinymce.init({
                     }
                 });
         }
-        if (photoalbum) {
-            editor.ui.registry.addButton('imageButton',
+        if (SnitzVars.photoalbum) {
+            editor.ui.registry.addButton('snitzImage',
                 {
                     icon: 'gallery',
                     tooltip: SnitzVars.toolTips.albumBtn + '\n(' + SnitzVars.allowedimagetypes + ')',

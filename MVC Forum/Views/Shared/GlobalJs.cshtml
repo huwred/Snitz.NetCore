@@ -65,7 +65,24 @@
                     return false;
                 }
             });
-        }
+        },
+        attach : '@SnitzConfig.GetIntValue("STRALLOWUPLOADS")' === '1',
+        photoalbum : '@SnitzConfig.GetIntValue("STRPHOTOALBUM")' === '1',
+        favmenu : {
+            favs: {title: 'My Favourites', items: 'code | searchreplace | emoticons'}
+        },
+        toolbardef :
+            'snitzAttach snitzImage | undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist | link emoticons media | code codesample',
+        menudef : 'favs edit insert format table help'
     };
+
+        /* Quick reply editor overrides */
+    if ($('#QuickReply').length > 0) {
+        SnitzVars.menudef = false; // turn off the menu bar
+        SnitzVars.toolbardef =
+        'snitzAttach snitzImage | undo redo | styleselect | bullist numlist | link emoticons media | codesample';
+
+    }
+
 </script>
 
