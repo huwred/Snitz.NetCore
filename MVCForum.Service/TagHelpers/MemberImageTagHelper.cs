@@ -59,6 +59,7 @@ public class MemberImageTagHelper : TagHelper
         output.TagMode = TagMode.StartTagAndEndTag;
         output.TagName = "img";
         output.Attributes.Add("class", Classes);
+        output.Attributes.Add("loading", "lazy");
         output.Attributes.Add("src", urlHelper.Content(SourceFile) ?? urlHelper.Content(Fallback));
 
         output.Attributes.Add("alt", urlHelper.Content(MemberName));
