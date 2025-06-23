@@ -83,14 +83,14 @@ public class BbCodeProcessor : ICodeProcessor
     _formatters.Add(new RegexFormatter(@"\[/\*(?:\s*)](\r\n)*", "</li>"));
     //some stray break tags in lists fail validation so get rid of them
     _formatters.Add(new SearchReplaceFormatter("</li><br />", "</li>"));
-    #endregion
+            #endregion
 
-    _formatters.Add(new RegexFormatter(@"(?<!t.+])(?:\r\n|\r|\n|\\n)", "<br/>"));
-    _formatters.Add(new RegexFormatter(@"(?<=t.+])(?:\r\n|\r|\n|\\n)", " "));
-    _formatters.Add(new SearchReplaceFormatter(@"\r", ""));
+            //_formatters.Add(new RegexFormatter(@"(?<!t.+])(?:\r\n|\r|\n|\\n)", "<br/>"));
+            //_formatters.Add(new RegexFormatter(@"(?<=t.+])(?:\r\n|\r|\n|\\n)", " "));
+            //_formatters.Add(new SearchReplaceFormatter(@"\r", ""));
 
-    //some users use both tags, so lets filter that out
-    _codeformatter.Add(new SearchReplaceFormatter("[scrollcode][code]", "[scrollcode]"));
+            //some users use both tags, so lets filter that out
+            _codeformatter.Add(new SearchReplaceFormatter("[scrollcode][code]", "[scrollcode]"));
     _codeformatter.Add(new SearchReplaceFormatter("[/code][/scrollcode]", "[/scrollcode]"));
     _codeformatter.Add(new RegexFormatter(@"\[code(?:=""(?<class>[\S\s][^""]*)"")?(?:\s*)\]((.|\n)*?)((\[/code(?:=""\k<class>"")])|(\[/code(?:\s*)]))", "<div class=\"bbc-codetitle\" dir=\"ltr\">Code:</div><div class=\"bbc-codecontent\" dir=\"ltr\"><pre><code class=\"${class}\">$1</code></pre></div>"));
     _codeformatter.Add(new RegexFormatter(@"\[scrollcode(?:\s*)\]((.|\n)*?)\[/scrollcode(?:\s*)]", "<div class=\"bbc-codetitle\" dir=\"ltr\">Code:</div><div class=\"bbc-codecontent\" dir=\"ltr\"><pre><code>$1</code></pre></div>"));
@@ -110,8 +110,9 @@ public class BbCodeProcessor : ICodeProcessor
     _tables.Add(new RegexFormatter(@"(\[\/tfoot])", "</tfoot>"));
     #endregion
 
-    _formatters.Add(new LineBreaksFormatter(new[] { "html", "csharp", "code", "jscript", "sql", "vb", "php" }));
-    _formatters.Add(new RegexFormatter(@"\[(red|blue|pink|brown|black|orange|violet|yellow|green|gold|white|purple|maroon|teal|limegreen|navy)(?:\s*)\]((.|\n)*?)\[/\1(?:\s*)]", "<span style=\"color:$1;\">$2</span>"));
+    //_formatters.Add(new LineBreaksFormatter(new[] { "html", "csharp", "code", "jscript", "sql", "vb", "php" }));
+    _formatters.Add(new RegexFormatter(@"(?<![.?!\]>])\r\n", "<br/>"));
+            _formatters.Add(new RegexFormatter(@"\[(red|blue|pink|brown|black|orange|violet|yellow|green|gold|white|purple|maroon|teal|limegreen|navy)(?:\s*)\]((.|\n)*?)\[/\1(?:\s*)]", "<span style=\"color:$1;\">$2</span>"));
     _formatters.Add(new RegexFormatter(@"\[h([1-6])(?:\s*)\]((.|\n)*?)\[/h[1-6](?:\s*)\]", "<h$1>$2</h$1>"));
   
     _formatters.Add(new RegexFormatter(@"\[i(?:\s*)\]((.|\n)*?)\[/i(?:\s*)\]", "<em>$1</em>"));
