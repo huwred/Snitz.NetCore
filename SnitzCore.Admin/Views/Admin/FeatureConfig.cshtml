@@ -379,7 +379,7 @@
 
 
         async function handleSubmit(event) {
-            console.log("submit");
+            //console.log("submit");
             event.preventDefault();
             form = document.getElementById("bookmark-enable");
             var status = document.getElementById("result");
@@ -415,7 +415,7 @@
             populateRegions($("#STRCALCOUNTRY").val());
         });
         function populateRegions(country) {
-            console.log(country);
+            //console.log(country);
             var subItems="";
             $.getJSON(SnitzVars.baseUrl + "/Calendar/GetRegions/", { id: country }, function (data) {
                 subItems = "";

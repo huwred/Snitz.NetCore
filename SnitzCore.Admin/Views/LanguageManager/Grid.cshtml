@@ -174,8 +174,8 @@
             evt.preventDefault();
             var data = table.row($(this).parents('tr')).data();
             var rownum = $(this).parents('tr').data("row");
-            console.log(JSON.stringify({ id: rownum, rowData: data }));
-            var jsondata = JSON.stringify(data);
+            //console.log(JSON.stringify({ id: rownum, rowData: data }));
+            //var jsondata = JSON.stringify(data);
             //$('#ResourceTable tbody').off('click', 'button');
             let formData = {
                 id: rownum,

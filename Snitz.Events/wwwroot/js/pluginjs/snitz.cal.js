@@ -100,8 +100,8 @@ UpComingCalendar = function(url, divid) {
 };
 
 FullCalendar = function(url, divid, firstday, country) {
-    console.log("SnitzVars.baseUrl");
-    console.log(SnitzVars.baseUrl);
+    //console.log("SnitzVars.baseUrl");
+    //console.log(SnitzVars.baseUrl);
     var view = $('#' + divid).fullCalendar('getView');
     if (country.length > 1) {
         $('#' + divid).fullCalendar('destroy');

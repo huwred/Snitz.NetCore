@@ -15,6 +15,7 @@
             fileBtn: '@Localizer["tipAttach"]', //"Attach a file to the post" ,
             albumBtn: '@Localizer["tipUpload"]', // "Upload an image to your album and display a thumbnail in the post"
         },
+        contentFolder : ('@SnitzConfig.GetIntValue("INTPROTECTPHOTO")' == '1') ? '~/Content/PhotoAlbum/' : "~/@SnitzConfig.ContentFolder/PhotoAlbum/",
         showPageTimer: '@SnitzConfig.GetIntValue("INTPAGETIMER")',
         AdDuration: '@SnitzConfig.GetIntValue("INTADDURATION", 30)',
         userName: '@User.Identity?.Name',

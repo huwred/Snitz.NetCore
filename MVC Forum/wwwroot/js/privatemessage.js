@@ -38,7 +38,7 @@
         $(".pm-delete").on("click",
             function(e) {
                 if ($(this).attr('disabled')) {
-                    console.log("disabled");
+                    //console.log("disabled");
                     e.preventDefault();
                     return false;
                 }

@@ -184,12 +184,7 @@
 
 @section Scripts
 {
-    <script>
-        let ContentFolder = "~/Content/PhotoAlbum/";
-        if ('@SnitzConfig.GetIntValue("INTPROTECTPHOTO")' == '1') {
-            ContentFolder = "~/@SnitzConfig.ContentFolder/PhotoAlbum/"
-        }
-    </script>
+
     <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="~/js/initPostForm.js"></script>
     <script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
@@ -201,7 +196,7 @@
             }
         });
         $('#authtype').on('change',function() {
-            alert(this.value);
+            //alert(this.value);
             if (this.value == 2 || this.value == 3 || this.value == 7) {
                 $('#req-password').show();
             } else {

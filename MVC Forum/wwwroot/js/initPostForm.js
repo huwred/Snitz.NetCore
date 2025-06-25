@@ -50,7 +50,7 @@ tinymce.init({
     },
     extended_valid_elements: 'i[class],div[*],',
     images_upload_url: SnitzVars.baseUrl + "/forumupload",
-    images_upload_base_path: window.ContentFolder,
+    images_upload_base_path: SnitzVars.contentFolder,
     images_reuse_filename: true,
     emoticons_database: 'emojiimages',
     emoticons_images_url: SnitzVars.baseUrl + '/images/emoticon/',
