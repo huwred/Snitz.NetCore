@@ -81,9 +81,9 @@
             </div>
             <div class="mb-3">
                 <div class="row g-0">
-                    @if (SnitzConfig.GetIntValue("INTTOPICRATING", 0) == 1)
+                    @if (SnitzConfig.GetIntValue("INTTOPICRATING", 0) == 1 && Model.AllowRating)
                     {
-                        if ((Model.AllowRating && Model.IsAuthor) || User.IsInRole("Administrator"))
+                        if ((Model.IsAuthor) || User.IsInRole("Administrator"))
                         {
                             <div class="pl-3 col-12 col-md-6 form-check">
                                 <input class="form-check-input" asp-for="AllowTopicRating" tabindex="4" type="checkbox" value="true" checked="@Model.AllowTopicRating">

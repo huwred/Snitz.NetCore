@@ -451,7 +451,7 @@ namespace MVCForum.Controllers
                 UseSignature = member.SigDefault == 1,
                 Lock = topic.Status == 0,
                 Sticky = topic.IsSticky == 1,
-                AllowRating = topic.AllowRating == 1 || topic.Forum.Rating == 1,
+                AllowRating = topic.Forum.Rating == 1,
                 AllowTopicRating = topic.AllowRating == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = topic.Created.FromForumDateStr(),
