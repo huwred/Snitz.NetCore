@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Snitz.PostThanks.Models;
-using SnitzCore.Data;
-using static Dapper.SqlMapper;
 
 
 namespace Snitz.PhotoAlbum.Models
@@ -15,7 +13,7 @@ namespace Snitz.PhotoAlbum.Models
             var connectionString = configuration.GetConnectionString("SnitzConnection");
 
             serviceCollection.AddDbContext<PostThanksContext>(
-                options => options.UseSqlServer(connectionString,o => o.MigrationsAssembly("Snitz.PostThanks"))
+                options => options.UseSqlServer(connectionString,o => {o.UseCompatibilityLevel(120);o.MigrationsAssembly("Snitz.PostThanks");})
             );
             using (var scope = serviceCollection.BuildServiceProvider().CreateScope())
             {

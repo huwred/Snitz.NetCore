@@ -16,7 +16,7 @@ namespace PostThanks.Models
 {
     public class PostThanksRepository : IDisposable
     {
-        private int _memberid;
+        private int? _memberid;
         private readonly string? _tableprefix;
 
         private readonly PostThanksContext _dbContext;
@@ -30,7 +30,7 @@ namespace PostThanks.Models
             _config = config;
             _snitzContext = snitzContext;
             _tableprefix = options.Value.forumTablePrefix;
-            _memberid = memberservice.Current().Id;
+            _memberid = memberservice.Current()?.Id;
         }
         public void Dispose()
         {
@@ -40,9 +40,14 @@ namespace PostThanks.Models
 
         public void AddThanks(int topicid, int replyid = 0)
         {
+            if(_memberid == null)
+            {
+                _logger.Error("Member ID is null, cannot add thanks.");
+                return;
+            }
             try
             {
-                var entity = new PostThanksEntry { MemberId = _memberid,TopicId = topicid,ReplyId=replyid };
+                var entity = new PostThanksEntry { MemberId = _memberid.Value,TopicId = topicid,ReplyId=replyid };
                 _dbContext.PostThanks.Add(entity);
                 _dbContext.SaveChanges();
 
@@ -62,9 +67,14 @@ namespace PostThanks.Models
         }
         public bool DeleteThanks(int topicid, int replyid = 0)
         {
+            if(_memberid == null)
+            {
+                _logger.Error("Member ID is null, cannot delete thanks.");
+                return false;
+            }
             try
             {
-                var entity = new PostThanksEntry { MemberId = _memberid,TopicId = topicid,ReplyId=replyid };
+                var entity = new PostThanksEntry { MemberId = _memberid.Value,TopicId = topicid,ReplyId=replyid };
                 _dbContext.PostThanks.Remove(entity);
                 _dbContext.SaveChanges();
 

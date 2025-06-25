@@ -26,7 +26,7 @@ namespace Snitz.PostThanks.ViewComponents
             _memberService = memberService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string template,int id = 0,int? topicid = 0, bool showcount = false)
+        public async Task<IViewComponentResult> InvokeAsync(string template,int? id = 0,int? topicid = 0, bool showcount = false)
         {
             if (template == "ForumConfig")
             {
@@ -41,22 +41,22 @@ namespace Snitz.PostThanks.ViewComponents
                 {
                     UserId = _memberService.Current().Id,
                     TopicId = topicid.Value,
-                    ReplyId = id,
+                    ReplyId = id.Value,
                     Thanked = false,
                     ShowCount = showcount,
                     Showlink = true
                 };
-                vm.Thanked = thanksRepository.IsThanked(topicid.Value, id);
-                vm.ThanksCount = thanksRepository.Count(topicid.Value, id);
-                vm.PostAuthor = thanksRepository.IsAuthor(topicid.Value, id);
+                vm.Thanked = thanksRepository.IsThanked(topicid.Value, id.Value);
+                vm.ThanksCount = thanksRepository.Count(topicid.Value, id.Value);
+                vm.PostAuthor = thanksRepository.IsAuthor(topicid.Value, id.Value);
                 return await Task.FromResult((IViewComponentResult)View(template,vm));
             }
             if(template == "Profile")
             {
                 var vm = new PostThanksProfile
                 {
-                    Received = thanksRepository.MemberCountReceived(id),
-                    Given = thanksRepository.MemberCountGiven(id),
+                    Received = thanksRepository.MemberCountReceived(id.Value),
+                    Given = thanksRepository.MemberCountGiven(id.Value),
                 };
 
                 return await Task.FromResult((IViewComponentResult)View(template,vm));
