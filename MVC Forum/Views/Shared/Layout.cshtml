@@ -112,6 +112,8 @@
             </div>
         </div>
     </div>
+}
+
     <script type="text/javascript">
     $(document).on('click', '.confirm-restart', function (e) {
         e.preventDefault();
@@ -166,7 +168,30 @@ $(document).on('submit', 'form', function () {
 $(document).ajaxComplete(function(event, xhr, settings) {
     $('.loading').hide();
 });
-</script>
+if(SnitzVars.showPageTimer == '1'){
+    window.addEventListener('load', () => {  
+        //debugger;
+        const [pageNav] = performance.getEntriesByType('navigation');
+        const footer = document.getElementById('loadTime');  
+
+        let workerTime = 0;
+
+        if (pageNav.responseEnd > 0) {
+            workerTime = (pageNav.responseEnd - pageNav.workerStart)/1000;
+
+            if (footer) {  
+                var test = (workerTime).toLocaleString(
+                    undefined, // leave undefined to use the visitor's browser 
+                                // locale or a string like 'en-US' to override it.
+                    { minimumFractionDigits: 2 }
+                );
+                footer.textContent = `Page loaded in ${test} s`;  
+            } 
+        }
+    });  
 }
+
+
+</script>
 </body>
 </html>

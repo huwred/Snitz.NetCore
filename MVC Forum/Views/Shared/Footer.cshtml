@@ -1,3 +1,5 @@
-﻿<footer>
+﻿
+<footer>
     <span>@Html.Raw(SnitzConfig.ForumTitle) - &copy; @string.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year) </span>
+    <span snitz-if="@(SnitzConfig.GetIntValue("INTPAGETIMER") == 1)" class="page-timer float-end" id="loadTime">Page rendered in @Context.Items["PageLoadTime"] ms</span>
 </footer>

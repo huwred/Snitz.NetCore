@@ -15,6 +15,7 @@
             fileBtn: '@Localizer["tipAttach"]', //"Attach a file to the post" ,
             albumBtn: '@Localizer["tipUpload"]', // "Upload an image to your album and display a thumbnail in the post"
         },
+        showPageTimer: '@SnitzConfig.GetIntValue("INTPAGETIMER")',
         AdDuration: '@SnitzConfig.GetIntValue("INTADDURATION", 30)',
         userName: '@User.Identity?.Name',
         currentUserId: '@MemberService.Current()?.Id',
