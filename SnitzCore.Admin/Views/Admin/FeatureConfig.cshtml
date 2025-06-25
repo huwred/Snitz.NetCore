@@ -143,6 +143,23 @@
                     <div class="col">
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <select class="form-select mb-2" id="sortdir" name="STRTOPICSORT" title="Change sort direction">
+                            @if (SnitzConfig.GetValueWithDefault("STRTOPICSORT","asc") == "asc")
+                            {
+                                <option value="des">@Localizer["optDesc"]</option>
+                                <option value="asc" selected>@Localizer["optAsc"]</option>
+                            }
+                            else
+                            {
+                                <option value="des" selected>@Localizer["optDesc"]</option>
+                                <option value="asc">@Localizer["optAsc"]</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col"><span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span></div>
+                </div>
             </div>
             <button type="reset" class="btn btn-outline-warning">Cancel</button>
             <button type="submit" class="btn btn-outline-success">Save</button>

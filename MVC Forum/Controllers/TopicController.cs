@@ -60,9 +60,12 @@ namespace MVCForum.Controllers
         [Route("Topic/{id}")]
         [Route("Topic/Index/{id}")]
         [Route("Topic/Posts/{id}")]
-        public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="asc", int? replyid = null)
+        public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="", int? replyid = null)
         {
-
+            if(sortdir == "")
+            {
+                sortdir = _config.GetValueWithDefault("STRTOPICSORT","asc");
+            }
             if(TempData["Error"] != null)
             {
                 ViewBag.Error = TempData["Error"];
