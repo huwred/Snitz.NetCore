@@ -13,7 +13,7 @@ namespace Snitz.PhotoAlbum.Models
             var connectionString = configuration.GetConnectionString("SnitzConnection");
 
             serviceCollection.AddDbContext<PhotoContext>(
-                options => options.UseSqlServer(connectionString,o => o.MigrationsAssembly("Snitz.PhotoAlbum"))
+                options => options.UseSqlServer(connectionString,o => {o.UseCompatibilityLevel(120);o.MigrationsAssembly("Snitz.PhotoAlbum");})
             );
             using (var scope = serviceCollection.BuildServiceProvider().CreateScope())
             {

@@ -19,7 +19,7 @@ namespace MVCForum.Extensions
             {
                 Mssql => builder.UseSqlServer(connectionstring, opt => 
                 {
-                    
+                    opt.UseCompatibilityLevel(120);
                     opt.MigrationsAssembly("MSSqlMigrations");
                 }),
 
