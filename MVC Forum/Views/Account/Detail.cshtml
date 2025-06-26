@@ -9,6 +9,8 @@
 @{
     var _ranking = MemberService.GetRankings();
     var canedit = Model.CanEdit || User.IsInRole("Administrator");
+    var memberproperties = Model.Member!.GetType().GetProperties().Where(p => !p.SystemProperty()); 
+    var systemproperties = Model.Member!.GetType().GetProperties().Where(p => p.SystemProperty());
 }
 @section Styles
 {
@@ -97,13 +99,11 @@
                     <legend>@Localizer["Profile"]</legend>
                     <hr />
                     @{
-                        var memberproperties = Model.Member!.GetType().GetProperties().Where(p => !p.SystemProperty());
-                        memberproperties = memberproperties.Where(p =>  p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Profile);
-
-                        foreach (PropertyInfo property in memberproperties.OrderBy(p => p.PropertyOrder()))
+                        var profileprops = memberproperties.Where(p =>  p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Profile);
+                        foreach (PropertyInfo property in profileprops.OrderBy(p => p.PropertyOrder()))
                         {
                             var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit) && !(property.Name == "PhotoUrl");
-                            <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
+                            <div class="col-6 form-label" snitz-if="@showme && !property.PropertyReadOnly()">
                                 <snitz-config can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
                             </div>
                         }
@@ -116,12 +116,39 @@
                     <legend>@Localizer["mnuAbout"]</legend>
                     <hr />
                     @{
-                        foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Bio).OrderBy(p => p.PropertyOrder()))
+                        var bioprops = memberproperties.Where(p=> p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Bio).OrderBy(p => p.PropertyOrder());
+                        foreach (PropertyInfo property in bioprops)
                         {
-                            var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit);
-                            <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
+                            var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!,1) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit);
+                            <div class="col-6 form-label" snitz-if="@showme && !property.PropertyReadOnly()">
                                 <snitz-config can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
                             </div>
+                        }
+                        <legend>@Localizer["Signature"]</legend>
+                        <hr />
+                        foreach (PropertyInfo property in memberproperties.Where(p => p.PropertyLayoutSection() == MemberLayout.Signature).OrderBy(p => p.PropertyOrder()))
+                        {
+                            var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit);
+                            var reqProp = property.GetPropertyRequiredCheck<Member>();
+                            var req = false;
+                            if (reqProp != null)
+                            {
+                                req = SnitzConfig.GetIntValue(reqProp, 0) == 1;
+                            }                            
+                            if (property.PropertyFieldType() == "checkbox")
+                            {
+
+                                <div class="col-6 form-label" snitz-if="@showme && !property.PropertyReadOnly()">
+                                    <snitz-config can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(req)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col form-label" snitz-if="@showme && !property.PropertyReadOnly()">
+                                    <snitz-config can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(req)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                                </div>                                
+                            }
+
                         }
                         <div class="mb-3" snitz-if="@canedit">
                             <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
@@ -129,44 +156,46 @@
                             <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
                         </div>
                     }
-                    @{
-
-                        <div class="parent">
-                            <legend>@Localizer["SocialMedia"]</legend>
-                            <hr />
-                            @foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.SocialMedia).OrderBy(p => p.PropertyOrder()))
-                            {
-                                var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit);
-                                <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
-                                    <snitz-config can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
-                                </div>
-                            }
-                            <div class="mb-3" snitz-if="@canedit">
-                                <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
-                                <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
-                                <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
+                    <div class="parent">
+                        <legend>@Localizer["SocialMedia"]</legend>
+                        <hr />
+                        @foreach (PropertyInfo property in memberproperties.Where(p => p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.SocialMedia).OrderBy(p => p.PropertyOrder()))
+                        {
+                            var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit);
+                            <div class="col-6 form-label" snitz-if="@showme && !property.PropertyReadOnly()">
+                                <snitz-config can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
                             </div>
+                        }
+                        <div class="mb-3" snitz-if="@canedit">
+                            <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
+                            <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+                            <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
                         </div>
-
-                    }
+                    </div>
                 </div>
                 <div class="row bg-form p-3 rounded mb-2" snitz-if="@canedit">
                     <legend>@Localizer["Options"]</legend>
                     <hr />
                     @{
-                        foreach (PropertyInfo prop in Model.Member.GetType().GetProperties().Where(p => p.SystemProperty() && p.Name != "Newemail").OrderBy(p => p.PropertyOrder()))
+                        foreach (PropertyInfo prop in systemproperties.Where(p => p.Name != "Newemail").OrderBy(p => p.PropertyOrder()))
                         {
                             <snitz-config can-edit="@canedit" property-info="@prop" property-val="@prop.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(prop.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
                         }
                     }
-                </div>
-                <div class="row bg-form p-3 rounded mb-2" snitz-if="@canedit">
+
                     @{
-                        foreach (PropertyInfo property in Model.Member.GetType().GetProperties().Where(p => !p.SystemProperty() && p.PropertyFieldType() == "checkbox" && !p.PropertyIsPrivate()).OrderBy(p => p.PropertyOrder()))
+                        foreach (PropertyInfo property in memberproperties.Where(p => p.PropertyFieldType() == "checkbox" && !p.PropertyIsPrivate() && p.PropertyLayoutSection() != MemberLayout.Signature).OrderBy(p => p.PropertyOrder()))
                         {
                             var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && !property.PropertyIsPrivate();
-                            <div class="col-6 form-label" snitz-if="@showme && !(property.SystemProperty() && property.PropertyReadOnly())">
-                                <snitz-config config-type="checkbox" can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
+                            var reqProp = property.GetPropertyRequiredCheck<Member>();
+                            var req = false;
+                            if (reqProp != null)
+                            {
+                                req = SnitzConfig.GetIntValue(reqProp, 0) == 1;
+                            }
+
+                            <div class="col-6 form-label" snitz-if="@(!property.PropertyReadOnly())">
+                                <snitz-config config-type="checkbox" can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(req)" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></snitz-config>
                             </div>
                         }
                     }
@@ -225,6 +254,8 @@
 {
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="~/js/initPostForm.js"></script>
     <script type="text/javascript">
         // Disable form submissions if there are invalid fields
         (function () {

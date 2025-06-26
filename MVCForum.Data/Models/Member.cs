@@ -126,18 +126,18 @@ public partial class Member
     [ProfileDisplay("ProfileDefaultView",SystemField = true, Order = 15,FieldType = "select",SelectEnum = "SnitzCore.Data.Models.DefaultDays",LayoutSection = MemberLayout.Extra)]
     public int DefaultView { get; set; }
     [Column("M_SIG")]
-    [ProfileDisplay("ProfileSignature",FieldType = "textarea",Order=98,LayoutSection = MemberLayout.Bio)]
+    [ProfileDisplay("ProfileSignature",FieldType = "textarea",Order=98,LayoutSection = MemberLayout.Signature)]
     public string? Signature { get; set; }
     #endregion
 
 
     #region Checkboxes
     [Column("M_VIEW_SIG")]
-    [ProfileDisplay("ProfileShowSig",Order = 21, FieldType = "checkbox")]
+    [ProfileDisplay("ProfileShowSig",Order = 21, FieldType = "checkbox",LayoutSection = MemberLayout.Signature)]
     public short ViewSig { get; set; }
 
     [Column("M_SIG_DEFAULT")]
-    [ProfileDisplay("ProfileUseSig",Order = 22, FieldType = "checkbox")]
+    [ProfileDisplay("ProfileUseSig",Order = 22, FieldType = "checkbox",LayoutSection = MemberLayout.Signature)]
     public short SigDefault { get; set; }
 
     [Column("M_HIDE_EMAIL")]

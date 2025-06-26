@@ -26,7 +26,8 @@ namespace SnitzCore.Data.Models
         Profile,
         SocialMedia,
         Bio,
-        Extra
+        Extra,
+        Signature
     }
     public enum DefaultDays
     {
