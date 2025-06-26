@@ -12,11 +12,20 @@ namespace SnitzCore.Data.Extensions
         {
             if (date != null)
             {
-                if (date.Length == 8)
+                try
                 {
-                    return DateTime.ParseExact(date, DateFormat, CultureInfo.CurrentCulture);
+                    if (date.Length == 8)
+                    {
+                        return DateTime.ParseExact(date, DateFormat, CultureInfo.CurrentCulture);
+                    }
+
+                    return DateTime.ParseExact(date.Substring(0, 14), DateTimeFormat, CultureInfo.CurrentCulture);
                 }
-                return DateTime.ParseExact(date.Substring(0, 14), DateTimeFormat, CultureInfo.CurrentCulture);
+                catch (Exception)
+                {
+                    return DateTime.MinValue;
+                }
+
             }
             else
             {
