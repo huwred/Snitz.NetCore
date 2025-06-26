@@ -187,6 +187,22 @@ namespace MVCForum.Controllers
                 };
                 return View(model);
 
+            }else if (member != null && user == null)
+            {
+                //If no username passed in, then we are looking at the current user
+                var model = new MemberDetailModel
+                {
+                    Id = member.Id, 
+                    Name = id ?? member.Name,
+                    Firstname = member.Firstname,
+                    Lastname = member.Lastname,
+                    Title = member.Title,
+                    Email = user?.Email ?? member?.Email ?? "",
+                    Newemail = user?.Email ?? member?.Email ?? "",
+                    Member = member,
+                    CanEdit = false
+                };
+                return View(model);
             }
 
             return View("Error");
