@@ -11,7 +11,7 @@
 @{
     ViewBag.PageCount = Model.PageCount;
     var pagenum = Model.PageNum?.ToString() ?? Context.Request.Query["page"];
-    var lastvisit = DateTime.UtcNow;
+    var lastvisit = DateTime.UtcNow.AddDays(-7);
     if (User.Identity!.IsAuthenticated)
     {
         lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.LastLogin.FromForumDateStr().ToLocalTime();

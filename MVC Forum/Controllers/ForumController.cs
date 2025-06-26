@@ -611,7 +611,7 @@ namespace MVCForum.Controllers
                 PageCount = latestPosts.PageCount,
                 PageNum = latestPosts.PageNumber,
                 Refresh = Refresh ?? ActiveRefresh.None,
-                Since = member == null || Since == null ? ActiveSince.LastVisit : Since.Value,
+                Since = Since == null ? ActiveSince.LastVisit : Since.Value,
                 PageSize = pagesize
             };
 
