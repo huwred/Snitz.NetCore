@@ -68,7 +68,8 @@ $(document).ready(function() {
             location.href = SnitzVars.baseUrl + '/Topic/Print/' + id + '?archived=' + archive;
 
         });
-        $(document).on('click','.sendto-link', function () {
+        $(document).on('click','.sendto-link', function (e) {
+             e.preventDefault();
             var id = $(this).data('id');
             var archive = $.getUrlParam('archived');
             $.get(SnitzVars.baseUrl + '/Topic/SendTo/' + id + '?archived=' + archive, function (data) {

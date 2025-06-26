@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Web;
 using BbCodeFormatter.Formatters;
-using Microsoft.AspNetCore.Http;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 
@@ -179,7 +178,7 @@ public class BbCodeProcessor : ICodeProcessor
         _postformatters.Add(new BadWordFilter(_dbContext));
     }
     _postformatters.Add(new SearchReplaceFormatter(@"[Done]", "<i class=\"fa fa-check-square\"></i>"));
-    _postformatters.Add(new SearchReplaceFormatter(@"[Fixed]", "<i class=\"fa fa-check-square\"></i>"));
+    _postformatters.Add(new SearchReplaceFormatter(@"[Fixed]", "<i class=\"fa fa-check-square text-success\"></i>"));
     #endregion
 
     #region CleanCode

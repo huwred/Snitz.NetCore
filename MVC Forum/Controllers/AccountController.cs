@@ -388,7 +388,7 @@ namespace MVCForum.Controllers
                         currmember.LastIp = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
                         _memberService.Update(currmember);
                     }
-
+                    _logger.Warn("ReturnUrl1:" + returnUrl);
                     return LocalRedirect(returnUrl);
                 }
                 if (result.IsLockedOut)
@@ -1054,6 +1054,7 @@ namespace MVCForum.Controllers
                         return LocalRedirect("~/Account/ForgotPassword");
                     }
                     await _signInManager.SignInAsync(existingUser, login.RememberMe);
+                    _logger.Warn("ReturnUrl2:" + returnUrl);
                     return LocalRedirect(returnUrl);
                 }
                 foreach (IdentityError error in result.Errors)

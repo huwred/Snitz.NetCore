@@ -10,17 +10,19 @@
     <div>
         @if (SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1)
         {
-            <a href="~/Topic/Print/@Model.Id" id="print-topic" class="btn btn-outline-primary" title="@Localizer["tipPrintTopic"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa fa-print p-2"></i></a>
+            <a href="~/Topic/Print/@Model.Id" id="print-topic" title="@Localizer["tipPrintTopic"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa fa-print fa-2x"></i></a>
         }
         @if (SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 && User.Identity.IsAuthenticated)
         {
-            <button id="SendTopic" class="btn btn-outline-primary sendto-link" type="button" data-id="@Model.Id" data-href="~/Topic/SendTo" title="@Localizer["tipSendTopic"] "><i class="fa fa-envelope p-2"></i></button>
+            <a href="~/Topic/SendTo/@Model.Id" id="SendTopic" class="sendto-link" type="button" data-id="@Model.Id" data-href="~/Topic/SendTo" title="@Localizer["tipSendTopic"] " rel="noopener nofollow" target="_blank"><i class="fa fa-envelope fa-2x"></i></a>
         }
-        @*    @if (SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1)
+        @if (SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1)
         {
-            <a href="https://www.facebook.com/share.php?u=@pageUrl&title=@SnitzConfig.ForumTitle" id="ShareFacebook" class="btn btn-outline-primary" title="@Localizer["FacebookShare"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa fa-facebook-square p-2"></i></a>
-             <a href="https://twitter.com/home?status=@SnitzConfig.ForumTitle+@pageUrl" id="ShareTwitter" class="btn btn-outline-primary" title="@Localizer["TwitterShare"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa  fa-twitter-square p-2"></i></a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=@pageUrl&title=@SnitzConfig.ForumTitle" id="ShareFacebook" title="@Localizer["FacebookShare"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa fa-facebook-square fa-2x"></i></a>
+            <a href="https://twitter.com/intent/tweet?url=@pageUrl&text=@SnitzConfig.ForumTitle" id="ShareTwitter" title="@Localizer["TwitterShare"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa  fa-twitter-square fa-2x"></i></a>
+            <a href="http://www.linkedin.com/shareArticle?mini=true&url=pageUr" id="ShareLinkedIn" title="@Localizer["LinkedInShare"]" data-id="@Model.Id" target="_blank" rel="nofollow"><i class="fa  fa-linkedin-square fa-2x"></i></a>
+            @* <a href="https://plus.google.com/share?url=@pageUrl&text=@SnitzConfig.ForumTitle" id="ShareGoogle" title="@Localizer["GoogleShare"]" data-id="@Model.Id" rel="noopener nofollow" target="_blank"><i class="fa fa-google-plus-square fa-2x"></i></a> *@
         }
-        *@
+       
     </div>    
 }

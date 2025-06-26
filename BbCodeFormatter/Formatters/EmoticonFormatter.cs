@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Xml.Linq;
 using Flurl;
-using Microsoft.AspNetCore.Http;
 using SnitzCore.Data.Interfaces;
 
 namespace BbCodeFormatter.Formatters
