@@ -222,15 +222,22 @@ namespace MVCForum.Controllers
             if (ModelState.IsValid)
             {
                 _memberService.Update(model);
-                //TODO: process anonymous user role.
                 var user = _userManager.FindByNameAsync(model.Name).Result;
                 if(user != null)
                 {
                     if(model.HideOnline == 1)
-                    { _userManager.AddToRoleAsync(user, "HiddenMembers"); }
+                    { 
+                        if(_userManager.IsInRoleAsync(user, "HiddenMembers").Result == false)
+                        {
+                            _userManager.AddToRoleAsync(user, "HiddenMembers");
+                        }
+                    }
                     else
                     {
-                        _userManager.RemoveFromRoleAsync(user,"HiddenMembers");
+                        if(_userManager.IsInRoleAsync(user, "HiddenMembers").Result == true)
+                        {
+                            _userManager.RemoveFromRoleAsync(user,"HiddenMembers");
+                        }
                     }
                 }
                  
