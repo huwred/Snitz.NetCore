@@ -97,7 +97,7 @@ namespace SnitzCore.Service.TagHelpers
                     output.TagName = "div";
                     output.Content.AppendHtml($@"<input type=""{valtype}"" role=""switch"" name=""{PropertyInfo?.Name}"" id=""{PropertyInfo?.Name}"" value=""1"" class=""form-check-input"" {required} {disabled} {ischecked} style=""transform: scale(1.4);""/>");
                     output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{PropertyInfo?.Name}"" value=""0"" {required} {disabled} checked style=""display:none""/>");
-                    output.Content.AppendHtml($@"<label class=""form-check-label"" for=""{PropertyInfo?.Name}"">{displayName ?? PropertyInfo?.Name}</label></label>");
+                    output.Content.AppendHtml($@"<label class=""form-check-label"" for=""{PropertyInfo?.Name}"">{displayName ?? PropertyInfo?.Name}</label>");
                     output.AddClass("form-check", HtmlEncoder.Default);
                     output.AddClass("form-switch", HtmlEncoder.Default);
                     output.AddClass("mb-3", HtmlEncoder.Default);
@@ -114,8 +114,13 @@ namespace SnitzCore.Service.TagHelpers
                     output.Content.AppendHtml($@"<label class=""form-label"" for=""{PropertyInfo?.Name}"">{displayName ?? PropertyInfo?.Name}</label>");
                     if (CanEdit)
                     {
-                        output.Content.AppendHtml($@"<textarea type=""{valtype}"" name=""{PropertyInfo?.Name}"" id=""{PropertyInfo?.Name}"" class=""form-control"" {required} {disabled} rows=""3"">{Value}</textarea>");
-                        output.Content.AppendHtml($@"<div class=""invalid-feedback"">You must select a value for {PropertyInfo?.Name}.</div>");
+                        var id = PropertyInfo?.Name;
+                        if(PropertyInfo?.Name == "Signature")
+                        {
+                            id = "msg-text";
+                        }
+                        output.Content.AppendHtml($@"<textarea type=""{valtype}"" title=""{PropertyInfo?.Name}"" name=""{PropertyInfo?.Name}"" id=""{id}"" class=""form-control"" {required} {disabled} rows=""3"">{Value}</textarea>");
+                        output.Content.AppendHtml($@"<div class=""invalid-feedback"">You must enter a value for {PropertyInfo?.Name}.</div>");
                     }
                     else
                     {

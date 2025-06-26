@@ -5,7 +5,6 @@
 @using SnitzCore.Data
 @using SnitzCore.Data.Extensions
 @using BbCodeFormatter
-
 @using SnitzCore.Service.Extensions
 
 @{
@@ -16,14 +15,12 @@
     {
         lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.LastLogin.FromForumDateStr().ToLocalTime();
     }
-
     var refresh = ViewBag.RefreshSeconds;
     ViewData["Archives"] = false;
-    //TempData["allowThanks"] = true;
 }
 @section MetaData
 {
-    @if (ViewBag.RefreshSeconds > 0)
+    @if (refresh > 0)
     {
         <meta http-equiv="refresh" content="@refresh">
     }
@@ -31,57 +28,44 @@
 }
 @section Styles
 {
-            <link href="~/css/star-rating.min.css" rel="stylesheet" />
-        <link href="~/css/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css"/>
+    <link href="~/css/star-rating.min.css" rel="stylesheet" />
+    <link href="~/css/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css"/>
 }
 
 <div class="pt-0">
     <snitz-breadcrumb show-filter="true"></snitz-breadcrumb>
-
     <div class="row">
         <div class="col">
-
-    <div class="collapse" id="showFilters">
-        <form id="defaultdays-form" asp-action="Active" class="form-inline" method="get">
-            <div class="row m-2">
-                <div class="col">
-                    <partial snitz-if="@(SnitzConfig.GetIntValue("STRGROUPCATEGORIES") == 1)" name="CategoryFilter" />
-
+            <div class="collapse" id="showFilters">
+                <form id="defaultdays-form" asp-action="Active" class="form-inline" method="get">
+                    <div class="row m-2">
+                        <div class="col">
+                            <partial snitz-if="@(SnitzConfig.GetIntValue("STRGROUPCATEGORIES") == 1)" name="CategoryFilter" />
+                        </div>
+                    </div>
+                    <div class="row m-2">
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <enum-select name="Since" id="default-days" last-visit="@lastvisit" enum-type="typeof(ActiveSince)" selected-value="(int)Model.Since" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                                <enum-select name="Refresh" id="active-refresh" enum-type="typeof(ActiveRefresh)" selected-value="(int)Model.Refresh" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                                <div snitz-if="@(SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "") != "")" class="radioBtn btn-group input-group-addon" role="group" aria-label="Select page size" title="Select page size">
+                                    @{
+                                        var ischecked = Model.PageSize;
+                                        foreach (var size in SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "")!.Split(","))
+                                        {
+                                            <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (ischecked == Convert.ToInt32(size)) {@Html.Raw("checked")} />
+                                            <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
+                                        }
+                                    }
+                                </div>
+                        </div>
+                    </div>
                 </div>
+                <input type="number" value="@pagenum" name="page" style="display: none;" />
+                <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
+                <input type="hidden" name="fun" id="fun">
+            </form>
             </div>
-
-            <div class="row m-2">
-                <div class="col">
-                    <div class="input-group mb-3">
-                        <enum-select name="Since" id="default-days" last-visit="@lastvisit" enum-type="typeof(ActiveSince)" selected-value="(int)Model.Since" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
-                        <enum-select name="Refresh" id="active-refresh" enum-type="typeof(ActiveRefresh)" selected-value="(int)Model.Refresh" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
-
-                        @if (SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "") != "")
-                        {
-                            var ischecked = Model.PageSize;
-                            @* <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span> *@
-
-                            <div class="radioBtn btn-group input-group-addon" role="group" aria-label="Select page size" title="Select page size">
-                                @foreach (var size in SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "")!.Split(","))
-                                {
-                                    <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (ischecked == Convert.ToInt32(size))
-                                    {
-                                        @Html.Raw("checked")
-                                    } />
-                                    <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
-
-                                }
-                            </div>
-                        }
-                </div>
-            </div>
-        </div>
-        <input type="number" value="@pagenum" name="page" style="display: none;" />
-        <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
-        <input type="hidden" name="fun" id="fun">
-    </form>
-    </div>
-
             @if (Model.Posts!.Any())
             {
                 <div class="posts-table">
@@ -110,7 +94,6 @@
             }
             <partial name="IconInfo" />
         </div>
-
         <div class="d-none d-xxl-block col-3">
             <partial name="QuickSearch" />
             @await Component.InvokeAsync("Members", new{max=10})
@@ -128,42 +111,38 @@
 }
 <partial name="ConfirmDialog" model="@confModel" />
 @section Scripts{
-    <script type="text/javascript" src="~/js/postcontroller.min.js"></script>
-    <script src="~/js/star-rating.min.js"></script>
+<script type="text/javascript" src="~/js/postcontroller.min.js"></script>
+<script src="~/js/star-rating.min.js"></script>
 <script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
-    <script type="text/javascript">
-                $(window).on("load",
-            function(e) {
-
-                $('.rb-rating').rating({
-                    'showCaption': false,
-                    'displayOnly':true
-                });
+<script type="text/javascript">
+    let refresh = '@refresh';
+    $(window).on("load",
+        function(e) {
+            $('.rb-rating').rating({
+                'showCaption': false,
+                'displayOnly':true
             });
-
-        $(document).on("change", "#default-days", function() {
-            $("#hdndefaultdays").val($(this).val());
-            $("#defaultdays-form").submit();
         });
-        $(document).on("change", "#active-refresh", function() {
-            $("#hdndefaultdays").val($('#default-days').val());
-            $("#defaultdays-form").submit();
-        });
-        $(document).on("change", "input[type=radio][name=pagesize]", function() {
-            $("#defaultdays-form").submit();
-        });
+    $(document).on("change", "#default-days", function() {
+        $("#hdndefaultdays").val($(this).val());
+        $("#defaultdays-form").submit();
+    });
+    $(document).on("change", "#active-refresh", function() {
+        $("#hdndefaultdays").val($('#default-days').val());
+        $("#defaultdays-form").submit();
+    });
+    $(document).on("change", "input[type=radio][name=pagesize]", function() {
+        $("#defaultdays-form").submit();
+    });
+    $(document).ready(function() {
+        $('select option:contains("Last Visit")').text("Last Visit " + '(@lastvisit.ToLocalTime().ToForumDisplay()) ');
+    });
 
-        $(document).ready(function() {
-            $('select option:contains("Last Visit")').text("Last Visit " + '(@lastvisit.ToLocalTime().ToForumDisplay()) ');
-        });
-        var refresh = '@refresh';
-
-        if (refresh.length && refresh > 0) {
-            setInterval("window.location.reload();", refresh);
-        }
-        //uncomment the line below to expand filters by default
-        //SnitzVars.expandPageFilters();
-
-    </script>
-    <renderstoredcontent asp-key="topic-post-controls"></renderstoredcontent>
+    if (refresh.length && refresh > 0) {
+        setInterval("window.location.reload();", refresh);
+    }
+    //uncomment the line below to expand filters by default
+    //SnitzVars.expandPageFilters();
+</script>
+<renderstoredcontent asp-key="topic-post-controls"></renderstoredcontent>
 }
