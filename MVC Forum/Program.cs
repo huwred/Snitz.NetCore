@@ -52,6 +52,7 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
     options.ConfigureWarnings(warnings => warnings
         .Ignore(CoreEventId.FirstWithoutOrderByAndFilterWarning)
         .Ignore(SqlServerEventId.SavepointsDisabledBecauseOfMARS)
+        .Ignore(CoreEventId.RowLimitingOperationWithoutOrderByWarning)
     );
     options.UseDatabase(builder.Configuration.GetConnectionString("DBProvider"), builder.Configuration, System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
