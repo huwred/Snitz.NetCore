@@ -40,5 +40,6 @@ namespace SnitzCore.Data
         Task UpdateLastPost(int memberid);
         bool ZapMember(int memberid);
         bool HasRatedTopic(int topicid,int? memberid);
+        IEnumerable<int> AllowedForums();
     }
 }

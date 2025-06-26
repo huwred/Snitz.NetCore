@@ -479,5 +479,70 @@ namespace SnitzCore.Service
             }
             return _dbContext.TopicRating.Where(t=>t.RatingsTopicId == topicid && t.RatingsBymemberId == memberid).Any();
         }
+
+        public List<int> AllowedForumIDs()
+        {
+            if (!_contextAccessor.HttpContext.Session.Keys.Contains("AllowedForums"))
+            {
+                _contextAccessor.HttpContext.Session.SetObject("AllowedForums", AllowedForums().Select(x => x).ToList());
+
+            }
+            return _contextAccessor.HttpContext.Session.GetObject<List<int>>("AllowedForums");
+        }
+
+        public IEnumerable<int> AllowedForums()
+        {
+            List<int> allowedforums = new List<int>();
+            if (_contextAccessor.HttpContext.User == null)
+            {
+                return allowedforums;
+            }
+                //var forums = _dbContext.Forums("SELECT F.FORUM_ID,F.F_PRIVATEFORUMS,F.F_TOPICS,F.F_COUNT FROM " + db.ForumTablePrefix + "FORUM F");
+                foreach (var forum in _dbContext.Forums)
+                {
+                    if (IsAllowed(forum.Id, _userManager.GetUserAsync(_contextAccessor.HttpContext.User).Result, forum.Privateforums))
+                    {
+                        if (!allowedforums.Contains(forum.Id))
+                        {
+                            allowedforums.Add(forum.Id);
+                        }
+                    }
+                }
+            return allowedforums;
+        }
+  
+        private bool IsAllowed(int forumid, ForumUser? user, ForumAuthType type)
+        {
+
+            if (user == null)
+            {
+                return type == ForumAuthType.All;
+            }
+            if (_userManager.IsInRoleAsync(user, "Administrator").Result)
+            {
+                return true;
+            }
+            if (type == ForumAuthType.All ||
+                type == ForumAuthType.PasswordProtected ||
+                type == ForumAuthType.Members ||
+                type == ForumAuthType.MembersPassword)
+                {
+                    return true;
+                }
+            if (type == ForumAuthType.AllowedMembers ||
+                type == ForumAuthType.AllowedMemberPassword ||
+                type == ForumAuthType.AllowedMembersHidden )
+                {
+                    if (_userManager.IsInRoleAsync(user, "Forum_" + forumid).Result)
+                    {
+                        return true;
+                    }
+
+                        var exists = _dbContext.ForumAllowedMembers.Any(f=>f.ForumId == forumid && f.MemberId == user.MemberId);
+                        return exists;
+                }
+            return false;
+        }
+
     }
 }
