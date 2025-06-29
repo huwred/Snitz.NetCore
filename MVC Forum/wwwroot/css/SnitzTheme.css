@@ -142,7 +142,7 @@ h1 {
 /* ########################################### */
 
 .subforum-title, .subforum-title a {
-    background-color: #6A5ACD;
+    background-color: var(--primary-header); /*#6A5ACD;*/
     color: #F5FFFA !important;
 }
 
@@ -584,7 +584,7 @@ a.latestpost-title {
 
 .accordion-button:not(.collapsed) {
     color: #F5FFFA !important;
-    background-color: #6A5ACD;
+    background-color: var(--primary-header);
     box-shadow: revert;
 }
 .accordion-button:focus {
@@ -595,7 +595,7 @@ a.latestpost-title {
 }
 .accordion-button {
     color: #F5FFFA !important;
-    background-color: #6A5ACD;
+    background-color: var(--primary-header);
     box-shadow: revert;
 }
 .newposts {
