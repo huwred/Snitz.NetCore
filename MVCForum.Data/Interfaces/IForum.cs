@@ -44,5 +44,6 @@ namespace SnitzCore.Data.Interfaces
         IEnumerable<ArchivedPost>? ArchivedPosts(int id);
 
         Task DeleteArchivedTopics(int id);
+        Dictionary<int, string> ModeratedForums();
     }
 }

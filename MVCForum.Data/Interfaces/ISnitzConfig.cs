@@ -9,6 +9,7 @@ namespace SnitzCore.Data.Interfaces
         string DateTimeFormat { get; }
         string? CookiePath { get; }
         string? ForumUrl { get; set; }
+        string? ForumDescription {get;set;}
         string? RootFolder { get; }
         string ContentFolder { get; set; }
         string? ForumTitle { get; set; }
