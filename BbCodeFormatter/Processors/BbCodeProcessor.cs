@@ -179,6 +179,7 @@ public class BbCodeProcessor : ICodeProcessor
     }
     _postformatters.Add(new SearchReplaceFormatter(@"[Done]", "<i class=\"fa fa-check-square\"></i>"));
     _postformatters.Add(new SearchReplaceFormatter(@"[Fixed]", "<i class=\"fa fa-check-square text-success\"></i>"));
+    _postformatters.Add(new SearchReplaceFormatter(@"[FAQ]", "<i class=\"fa fa-info-circle text-primary \"></i>"));
     #endregion
 
     #region CleanCode
