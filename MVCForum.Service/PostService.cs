@@ -326,13 +326,13 @@ namespace SnitzCore.Service
 
         public async Task<Post?> GetTopicAsync(int id)
         {
-            var post = await _dbContext.Posts
+            return await _dbContext.Posts
                 .AsNoTracking()
                 .Include(p => p.Category)
                 .Include(p => p.Forum)
                 .Include(p => p.Member)
                 .SingleOrDefaultAsync(p => p.Id == id);
-            return post;
+
         }
         public Post GetTopicForUpdate(int id)
         {
@@ -351,10 +351,10 @@ namespace SnitzCore.Service
                 .SingleOrDefault(p => p.Id == id);
             return post;
         }
-        public Post? GetTopicWithRelated(int id)
+        public async Task<Post?> GetTopicWithRelated(int id)
         {
 
-            var post = _dbContext.Posts.Where(p => p.Id == id)
+            return await _dbContext.Posts
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Member).AsNoTracking()
                 .Include(p => p.LastPostAuthor).AsNoTracking()
@@ -363,9 +363,8 @@ namespace SnitzCore.Service
                 .Include(p => p.Replies!.OrderByDescending(r => r.Created))
                 .ThenInclude(r => r.Member).AsNoTracking()
                 //.AsSplitQuery()
-                .SingleOrDefault();
+                .SingleOrDefaultAsync(p => p.Id == id);
 
-            return post;
         }
         public ArchivedPost? GetArchivedTopicWithRelated(int id)
         {

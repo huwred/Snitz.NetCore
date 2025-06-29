@@ -71,7 +71,7 @@ namespace SnitzCore.Services.TagHelpers
                     output.TagName = "div";
                     output.Content.AppendHtml($@"<input type=""{valtype}"" role=""switch"" name=""{Key}"" id=""{Key}"" value=""1"" class=""form-check-input"" {required} {disabled} {ischecked} style=""transform: scale(1.4);""/>");
                     output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{Key}"" value=""0"" {required} {disabled} checked style=""display:none""/>");
-                    output.Content.AppendHtml($@"<label class=""form-check-label"" for=""{Key}"">{Label}</label></label>");
+                    output.Content.AppendHtml($@"&nbsp;<label class=""form-check-label"" for=""{Key}"">{Label}</label></label>");
                     output.AddClass("form-check",HtmlEncoder.Default);
                     output.AddClass("form-switch",HtmlEncoder.Default);
                     output.AddClass("mb-3",HtmlEncoder.Default);

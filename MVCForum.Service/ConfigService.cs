@@ -115,6 +115,11 @@ namespace SnitzCore.Service
             }
         }
 
+        string? ISnitzConfig.ForumDescription
+        {
+            get => _config.GetSection("SnitzForums").GetSection("strForumDescription").Value; 
+            set => AddOrUpdateAppSetting("strForumDescription",value);
+        }
         public ConfigService(SnitzDbContext dbContext,IConfiguration config,IHttpContextAccessor httpContextAccessor,IWebHostEnvironment env)
         {
             _dbContext = dbContext;

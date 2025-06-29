@@ -35,6 +35,9 @@ namespace SnitzCore.Service.TagHelpers
         [HtmlAttributeName("lastpost")]
         public DateTime? LastPost { get; set; }
         public bool Answered { get; set; }
+
+        [HtmlAttributeName("plugin-icon")]
+        public string? PluginIcon {get; set;}
         /// <summary>
         ///             <span class="fa-stack fa-1x">
         ///             <i class="fa fa-folder-o fa-stack-2x"></i>
@@ -88,8 +91,14 @@ namespace SnitzCore.Service.TagHelpers
                     }
                 }
             }
-
-            if (newclass)
+            if(PluginIcon != null)
+            {
+                output.Attributes.Add("title", $"{locked}{newposts}");
+                mainTag.AddClass("fa", HtmlEncoder.Default);
+                mainTag.AddClass(PluginIcon, HtmlEncoder.Default);
+                mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+            }
+            else if (newclass)
             {
                 output.Attributes.Add("title", $"{locked}{newposts}");
                 mainTag.AddClass("fa", HtmlEncoder.Default);
@@ -145,7 +154,7 @@ namespace SnitzCore.Service.TagHelpers
                 overlayTag.AddClass("fa-stack-1x", HtmlEncoder.Default);
             }
 
-            if (newclass) { output.AddClass("newposts", HtmlEncoder.Default); }
+            if (newclass) { mainTag.AddClass("newposts", HtmlEncoder.Default); }
 
             output.Content.AppendHtml(mainTag);
             output.Content.AppendHtml(overlayTag);

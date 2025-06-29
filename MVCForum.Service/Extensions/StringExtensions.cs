@@ -66,7 +66,14 @@ namespace SnitzCore.Service.Extensions
                 return ip;
             }
         }
-
+        public static string LocalReturnUrl(this string? returnUrl,string? forumurl)
+        {
+            if(returnUrl != null && forumurl != null)
+            {
+                return returnUrl.Replace(forumurl,"");
+            }
+            return string.IsNullOrEmpty(returnUrl) ? "/" : returnUrl;
+        }
         /// <summary>
         /// Turns a List<typeparamref name="T"/> into a csv file
         /// </summary>

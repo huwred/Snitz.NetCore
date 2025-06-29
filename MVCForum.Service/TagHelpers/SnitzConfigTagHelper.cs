@@ -124,7 +124,7 @@ namespace SnitzCore.Service.TagHelpers
                     }
                     else
                     {
-                        output.Content.AppendHtml($@"<label class=""form-label m-2"" >{Value}</label>");
+                        output.Content.AppendHtml($@"<label class=""form-text m-2"" >{Value}</label>");
                     }
                     output.TagMode = TagMode.StartTagAndEndTag;
                     break;
@@ -162,7 +162,7 @@ namespace SnitzCore.Service.TagHelpers
                     }
                     else
                     {
-                        output.Content.AppendHtml($@"<label class=""form-label m-2"" >{Value}</label>");
+                        output.Content.AppendHtml($@"<label class=""form-text m-2"" >{Value}</label>");
                     }
 
                     output.TagMode = TagMode.StartTagAndEndTag;
@@ -179,7 +179,7 @@ namespace SnitzCore.Service.TagHelpers
                     }
                     else
                     {
-                        output.Content.AppendHtml($@"<label class=""form-label m-2"" for=""inputFile"">{Value ?? "Choose file"}</label>");
+                        output.Content.AppendHtml($@"<label class=""form-text m-2"" for=""inputFile"">{Value ?? "Choose file"}</label>");
                     }
                     output.TagMode = TagMode.StartTagAndEndTag;
                     break;
@@ -187,7 +187,7 @@ namespace SnitzCore.Service.TagHelpers
                     output.TagName = "div";
                     output.AddClass("mb-3", HtmlEncoder.Default);
                     output.Content.AppendHtml(
-                        $@"<label class=""form-label""  for=""{PropertyInfo?.Name}"">{displayName ?? PropertyInfo?.Name}</label>");
+                    $@"<label class=""form-label""  for=""{PropertyInfo?.Name}"">{displayName ?? PropertyInfo?.Name}</label>");
                     if (CanEdit)
                     {
                         output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{Name ?? PropertyInfo?.Name}"" id=""{PropertyInfo?.Name}"" value=""{Value}"" class=""form-control"" {required} {disabled}/>");
@@ -195,7 +195,7 @@ namespace SnitzCore.Service.TagHelpers
                     }
                     else
                     {
-                        output.Content.AppendHtml($@"<label class=""form-label m-2"" >{Value}</label>");
+                        output.Content.AppendHtml($@"<label class=""form-text m-2"" >{Value}</label>");
                     }
 
                     output.TagMode = TagMode.StartTagAndEndTag;

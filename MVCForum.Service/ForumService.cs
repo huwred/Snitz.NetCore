@@ -197,7 +197,10 @@ namespace SnitzCore.Service
             }
             return _dbContext.Forums.AsNoTracking().Where(f=>f.Privateforums == ForumAuthType.All).OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value);
         }
-
+        public Dictionary<int, string> ModeratedForums()
+        {
+            return _dbContext.Forums.AsNoTracking().Where(f=>f.Moderation != Moderation.UnModerated).OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value);
+        }
         public string ForumName(string rolename)
         {
             var id = rolename.ToUpperInvariant().Replace("FORUM_","");
