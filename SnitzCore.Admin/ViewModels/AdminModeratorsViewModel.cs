@@ -28,7 +28,7 @@ public class AdminModeratorsViewModel
     {
 
         this.ForumList = new Dictionary<int, string> { { -1, "--Select Forum--" } };
-        foreach (KeyValuePair<int, string> forum in forumservice.ForumList().ToDictionary(t => t.Key, t => t.Value))
+        foreach (KeyValuePair<int, string> forum in forumservice.ModeratedForums().ToDictionary(t => t.Key, t => t.Value))
         {
             this.ForumList.Add(forum.Key, forum.Value);
         }

@@ -7,13 +7,13 @@
 <div class="m-3">
 <div class="nav nav-tabs me-3" id="v-pills-tab" role="tablist">
     <button class="nav-link active" id="v-pills-general-tab" data-bs-toggle="pill" data-bs-target="#v-pills-general" type="button" role="tab" aria-controls="v-pills-general" aria-selected="true">General</button>
-    <button class="nav-link" id="v-pills-moderation-tab" data-bs-toggle="pill" data-bs-target="#v-pills-moderation" type="button" role="tab" aria-controls="v-pills-moderation" aria-selected="false">Moderation</button>
+    @* <button class="nav-link" id="v-pills-moderation-tab" data-bs-toggle="pill" data-bs-target="#v-pills-moderation" type="button" role="tab" aria-controls="v-pills-moderation" aria-selected="false">Moderation</button> *@
     <button class="nav-link" id="v-pills-forum-tab" data-bs-toggle="pill" data-bs-target="#v-pills-forum" type="button" role="tab" aria-controls="v-pills-forum" aria-selected="false">Forum</button>
     <button class="nav-link" id="v-pills-topic-tab" data-bs-toggle="pill" data-bs-target="#v-pills-topic" type="button" role="tab" aria-controls="v-pills-topic" aria-selected="false">Topic</button>
     <button class="nav-link" id="v-pills-posting-tab" data-bs-toggle="pill" data-bs-target="#v-pills-posting" type="button" role="tab" aria-controls="v-pills-posting" aria-selected="false">Posting</button>
-    <button class="nav-link" id="v-pills-spam-tab" data-bs-toggle="pill" data-bs-target="#v-pills-spam" type="button" role="tab" aria-controls="v-pills-spam" aria-selected="false">Anti-Spam</button>
+    @* <button class="nav-link" id="v-pills-spam-tab" data-bs-toggle="pill" data-bs-target="#v-pills-spam" type="button" role="tab" aria-controls="v-pills-spam" aria-selected="false">Anti-Spam</button> *@
     <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Private Messaging</button>
-    <button class="nav-link" id="v-pills-announce-tab" data-bs-toggle="pill" data-bs-target="#v-pills-announce" type="button" role="tab" aria-controls="v-pills-announce" aria-selected="false">Announcement</button>
+    @* <button class="nav-link" id="v-pills-announce-tab" data-bs-toggle="pill" data-bs-target="#v-pills-announce" type="button" role="tab" aria-controls="v-pills-announce" aria-selected="false">Announcement</button> *@
     <button class="nav-link" id="v-pills-plugin-tab" data-bs-toggle="pill" data-bs-target="#v-pills-plugin" type="button" role="tab" aria-controls="v-pills-plugin" aria-selected="false">Plugins</button>
 </div>
 <div class="tab-content bg-white p-4" id="v-pills-tabContent">
@@ -25,18 +25,18 @@
             <fieldset @(SnitzConfig.GetIntValue("STRIPLOGGING") == 0 ? "disabled" : "") id="IPLOGENABLED">
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="STRIPLOOKUP" config-label="third party service" config-val="@SnitzConfig.GetValue("STRIPLOOKUP")" placeholder="URL to third party lookup service"></admin-config>
+                        <admin-config config-key="STRIPLOOKUP" config-label="third party IP lookup service" config-val="@SnitzConfig.GetValue("STRIPLOOKUP")" placeholder="URL to third party lookup service"></admin-config>
                     </div>
                     <div class="col"></div>
                 </div>
                 <div class="form-text mb-3">use [IP] to indicate where the IP should be passed in the url<br/>e.g. http://www.ripe.net/whois?form_type=simple&full_query_string=&searchtext=[IP]</div>
             </fieldset>
             <admin-config config-key="INTFULLTEXT" config-label="Use Fulltext search" config-val="@SnitzConfig.GetIntValue("INTFULLTEXT")"></admin-config>
-            <admin-config config-key="STRGROUPCATEGORIES" config-label="Group Categories" config-val="@SnitzConfig.GetIntValue("STRGROUPCATEGORIES")"></admin-config>
+            @* <admin-config config-key="STRGROUPCATEGORIES" config-label="Group Categories" config-val="@SnitzConfig.GetIntValue("STRGROUPCATEGORIES")"></admin-config> *@
             <admin-config name="STRSUBSCRIPTION" config-type="select-subs" config-key="STRSUBSCRIPTION" config-label="Highest level of Subscription" config-val="@SnitzConfig.GetIntValue("STRSUBSCRIPTION")" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></admin-config>
             <admin-config config-key="INTPROTECTCONTENT" config-label="Protected Content" config-val="@SnitzConfig.GetIntValue("INTPROTECTCONTENT")"></admin-config>
             <admin-config config-key="INTALLOWHIDEONLINE" config-label="Allow members to hide from Online" config-val="@SnitzConfig.GetIntValue("INTALLOWHIDEONLINE")"></admin-config>
-            <admin-config config-key="STREXCLUDEBOTS" config-label="Bots to exclude from counnter" config-val="@SnitzConfig.GetValue("STREXCLUDEBOTS")"></admin-config>
+            <admin-config config-key="STREXCLUDEBOTS" config-label="Bots to exclude from counter" config-val="@SnitzConfig.GetValue("STREXCLUDEBOTS")"></admin-config>
             <hr class="title" />
             <div class="row mb-3">
                 <div class="col">
@@ -48,20 +48,6 @@
             </div>
             <partial name="_FormButtons"/>
         </form>
-    </div>
-    <div class="tab-pane fade w-100" id="v-pills-moderation" role="tabpanel" aria-labelledby="moderation-tab">
-        <h4>Moderation</h4>
-        <hr/>
-        <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-moderation">
-            <div class="mb-3">
-                <admin-config config-key="STRMODERATION" config-label="Allow Topic Moderation" config-val="@SnitzConfig.GetIntValue("STRMODERATION")"></admin-config>
-                <admin-config config-key="STRSHOWMODERATORS" config-label="Show Moderators" config-val="@SnitzConfig.GetIntValue("STRSHOWMODERATORS")"></admin-config>
-                <admin-config config-key="STRMOVETOPICMODE" config-label="Restrict Topic move" config-val="@SnitzConfig.GetIntValue("STRMOVETOPICMODE")"></admin-config>
-                <admin-config config-key="STRMOVENOTIFY" config-label="Email author when moving topics" config-val="@SnitzConfig.GetIntValue("STRMOVENOTIFY")"></admin-config>
-            </div>
-            <partial name="_FormButtons"/>
-        </form>
-            <div id="result-moderation"></div>
     </div>
     <div class="tab-pane fade w-100" id="v-pills-forum" role="tabpanel" aria-labelledby="forum-tab">
         <h4>Forum Settings</h4>
@@ -183,9 +169,9 @@
                     </div>
                 </div>
                 <admin-config config-key="STRBADWORDFILTER" config-label="Filter out bad words" config-val="@SnitzConfig.GetIntValue("STRBADWORDFILTER")"></admin-config>
-                <input type="hidden" value="1" name="STRALLOWFORUMCODE" />
-                <input type="hidden" value="1" name="STRIMGINPOSTS" />
-                <input type="hidden" value="1" name="STRICONS" />
+                <admin-config config-key="STRALLOWFORUMCODE" config-label="Allow BB code tags" config-val="@SnitzConfig.GetIntValue("STRALLOWFORUMCODE")"></admin-config>
+                <admin-config config-key="STRIMGINPOSTS" config-label="Allow images in posts" config-val="@SnitzConfig.GetIntValue("STRIMGINPOSTS")"></admin-config>
+                <admin-config config-key="STRICONS" config-label="Allow smiley icons" config-val="@SnitzConfig.GetIntValue("STRICONS")"></admin-config>
                 <admin-config config-key="STRALLOWUPLOADS" config-label="Allow File Attachments" config-val="@SnitzConfig.GetIntValue("STRALLOWUPLOADS")"></admin-config>
                 <fieldset @(SnitzConfig.GetIntValue("STRALLOWUPLOADS") == 0 ? "disabled" : "") id="UPLOADSENABLED">
                     <div class="row">
@@ -204,51 +190,18 @@
                         <admin-config config-key="STRSIGNATURES" config-label="Allow Signatures" config-val="@SnitzConfig.GetIntValue("STRSIGNATURES")"></admin-config>
                     </div>
                     <div class="col">
-                        <admin-config config-key="STRDSIGNATURES" config-label="Dynamic Signatures" config-val="@SnitzConfig.GetIntValue("STRDSIGNATURES")"></admin-config>
+                        <admin-config config-key="STRSHOWQUICKREPLY" config-label="Show Quick Reply" config-val="@SnitzConfig.GetIntValue("STRSHOWQUICKREPLY")"></admin-config>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                            <admin-config config-key="STRSHOWQUICKREPLY" config-label="Show Quick Reply" config-val="@SnitzConfig.GetIntValue("STRSHOWQUICKREPLY")"></admin-config>
-
+                        <admin-config config-key="STRDSIGNATURES" config-label="Dynamic Signatures" config-val="@SnitzConfig.GetIntValue("STRDSIGNATURES")"></admin-config>
                     </div>
                 </div>
             </div>
             <partial name="_FormButtons"/>
         </form>
             <div id="result-posts"></div>
-    </div>
-    <div class="tab-pane fade w-100" id="v-pills-spam" role="tabpanel" aria-labelledby="spam-tab">
-        <h4>Anti-Spam Settings</h4>
-        <hr/>
-        <form asp-action="SaveCaptcha" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-spam">
-            <admin-config config-key="STRUSECAPTCHA" config-label="Use Captcha for Registration" config-val="@SnitzConfig.GetIntValue("STRUSECAPTCHA")"></admin-config>
-            <admin-config config-key="INTEMAILCAPTCHA" config-label="Use Captcha when Emailing" config-val="@SnitzConfig.GetIntValue("INTEMAILCAPTCHA")"></admin-config>
-            <div class="mb-3">
-                <div class="form-text">
-                    <p>
-                        The captcha automatically generates an image containing a simple maths question,
-                        You can choose which operators to use below
-                    </p>
-                </div>
-                <div class="mb-3">
-                    <div class="col-5 col-sm-3 mb-3">
-
-                        <select asp-for="@SnitzConfig.CaptchaOperators"
-                                asp-items="@Html.GetEnumSelectList<CaptchaOperator>()" class="form-select">
-                        </select>
-                    </div>
-                    <partial name="_FormButtons"/>
-                </div>
-                <span class="form-text">
-                    <legend>Example Captcha</legend><hr/>
-                    <span class="border-1 rounded w-50">
-                        @await Component.InvokeAsync("Captcha")
-                    </span>
-                </span>
-            </div>
-        </form>
-            <div id="result-spam"></div>
     </div>
     <div class="tab-pane fade w-100" id="v-pills-messages" role="tabpanel" aria-labelledby="messages-tab">
         <h4>Private messaging</h4>
@@ -271,19 +224,6 @@
             <partial name="_FormButtons"/>
         </form>
             <div id="result-msg"></div>
-    </div>
-    <div class="tab-pane fade w-100" id="v-pills-announce" role="tabpanel" aria-labelledby="announce-tab">
-        <h4>Forum Announcement</h4>
-        <hr/>
-        <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-announce">
-            <admin-config config-key="STRSHOWANNOUNCE" config-label="Show Announcement" config-val="@SnitzConfig.GetIntValue("STRSHOWANNOUNCE")"></admin-config>
-            <fieldset @(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 0 ? "disabled" : "") id="ANNOUNCEENABLED" class="mb-3">
-                <admin-config config-key="STRANNOUNCETITLE" config-label="Title" config-val="@SnitzConfig.GetValue("STRANNOUNCETITLE")" placeholder="Add a title, leave blank to use default"></admin-config>
-                <admin-config config-type="textarea" config-key="STRANNOUNCE" config-label="Message" config-val="@SnitzConfig.GetValue("STRANNOUNCE")" placeholder="Enter text for announcement"></admin-config>
-            </fieldset>
-            <partial name="_FormButtons"/>
-        </form>
-            <div id="result-announce"></div>
     </div>
     <div class="tab-pane fade w-100" id="v-pills-plugin" role="tabpanel" aria-labelledby="plugin-tab">
         <div class="accordion accordion-flush" id="accordionFlushExample">
