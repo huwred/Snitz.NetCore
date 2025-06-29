@@ -11,7 +11,7 @@ namespace Snitz.Events.Models
             var connectionString = configuration.GetConnectionString("SnitzConnection");
 
             serviceCollection.AddDbContext<EventContext>(
-                options => options.UseSqlServer(connectionString,o => {o.UseCompatibilityLevel(120);o.MigrationsAssembly("Snitz.Events");})
+                options => options.UseSqlServer(connectionString,o => {o.UseCompatibilityLevel(120);o.MigrationsAssembly("Snitz.Events");}),ServiceLifetime.Transient
             );
             using (var scope = serviceCollection.BuildServiceProvider().CreateScope())
             {
