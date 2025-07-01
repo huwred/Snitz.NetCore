@@ -16,12 +16,16 @@
                 <h4>@Localizer["FeaturedPoll"]</h4>
             }
             <span>@Model.Poll.Question @if (!Model.Poll.Question.Contains("?")) { @Html.Raw("?"); }</span>
-            @if (!(bool)TempData["featured"]! && User.IsInRole("Administrator") && Model.Poll.Topic != null && Model.Poll.Topic.Status == 1)
+            @if ( User.IsInRole("Administrator") )
             {
                 <span class="pull-right flip">
                     @if (SnitzConfig.GetIntValue("INTFEATUREDPOLLID") != Model.Poll.Id)
                     {
                         <a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = Model.Poll.Id })" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = 0 })" title="@Localizer["UnFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a>
                     }
                     @if (Model.Poll.Topic == null)
                     {
@@ -29,7 +33,14 @@
                     }
                     else
                     {
-                        <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="Lock Poll" data-toggle="tooltip"><i class="fa fa-lock"></i></a>
+                        if(Model.Poll.Topic.Status == 1)
+                        {
+                            <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="Lock Poll" data-toggle="tooltip"><i class="fa fa-lock"></i></a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="UnLock Poll" data-toggle="tooltip"><i class="fa fa-unlock"></i></a>
+                        }
                     }
                 </span>
             }

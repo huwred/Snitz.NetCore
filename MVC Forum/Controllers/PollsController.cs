@@ -119,14 +119,18 @@ namespace MVCForum.Controllers
             var topic = _snitzDbContext.Posts.Find(id);
             if (topic != null)
             {
-                topic.Status = 0;
+                if(topic.Status == 1)
+                {
+                    topic.Status = 0;
+                    if (_config.GetIntValue("INTFEATUREDPOLLID") == pollid)
+                    {
+                        _config.SetValue("INTFEATUREDPOLLID", "0");
+                    }                
+                }else
+                    { topic.Status = 1; }
+
                 _snitzDbContext.Update(topic);
                 _snitzDbContext.SaveChanges();
-            }
-
-            if (_config.GetIntValue("INTFEATUREDPOLLID") == pollid)
-            {
-                _config.SetValue("INTFEATUREDPOLLID", "0");
             }
 
             return Redirect(Request.Headers["Referer"].ToString());
