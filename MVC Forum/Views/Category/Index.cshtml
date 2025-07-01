@@ -203,23 +203,23 @@
             case ForumAuthType.PasswordProtected:
                 return true;
             case ForumAuthType.AllowedMemberPassword:
-                // if (SignInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forumId) || User.IsInRole("Administrator")))
-                // {
-                //     return true;
-                // }
-                return true;
+                if (SignInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forumId) || User.IsInRole("Administrator")))
+                {
+                    return true;
+                }
+                return false;
             case ForumAuthType.Members:
-                // if (SignInManager.IsSignedIn(User))
-                //     return true;
-                return true;
+                if (SignInManager.IsSignedIn(User))
+                    return true;
+                return false;
             case ForumAuthType.MembersHidden:
                 return false;
             case ForumAuthType.AllowedMembersHidden:
                 return false;
             case ForumAuthType.MembersPassword:
-                // if (SignInManager.IsSignedIn(User))
-                //     return true;
-                return true;
+                if (SignInManager.IsSignedIn(User))
+                    return true;
+                return false;
 
         }
 

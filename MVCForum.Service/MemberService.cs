@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using X.PagedList;
 using Microsoft.Extensions.Options;
 using X.PagedList.Extensions;
+using Microsoft.Data.SqlClient;
 
 namespace SnitzCore.Service
 {
@@ -140,11 +141,11 @@ namespace SnitzCore.Service
                 if (additionalField.Key.ToUpper() == "DOB")
                 {
                     var date = DateTime.Parse(additionalField.Value.ToString()!).ToString("yyyyMMdd");
-                    _dbContext.Database.ExecuteSqlRaw("UPDATE " + _memberprefix + "MEMBERS SET M_"+additionalField.Key.ToUpper()+"=@0 WHERE MEMBER_ID=@1",date,member.Id);
+                    _dbContext.Database.ExecuteSqlRaw("UPDATE " + _memberprefix + "MEMBERS SET M_"+additionalField.Key.ToUpper()+"=@Dob WHERE MEMBER_ID=@MemberId",new SqlParameter("Dob", date),new SqlParameter("MemberId", member.Id));
                 }
                 else
                 {
-                    _dbContext.Database.ExecuteSqlRaw("UPDATE " + _memberprefix + "MEMBERS SET M_"+additionalField.Key.ToUpper()+"=@0 WHERE MEMBER_ID=@1 ",additionalField.Value,member.Id);
+                    _dbContext.Database.ExecuteSqlRaw("UPDATE " + _memberprefix + "MEMBERS SET M_"+additionalField.Key.ToUpper()+"=@FieldName WHERE MEMBER_ID=@MemberId ",new SqlParameter("FieldName", additionalField.Value),new SqlParameter("MemberId", member.Id));
                 }
             }
 

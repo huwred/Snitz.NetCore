@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.TagHelpers;
+﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -14,11 +15,14 @@ namespace SnitzCore.Service.TagHelpers
     {
         private readonly ISnitzConfig _config;
         private readonly ISnitzCookie _cookie;
-
-        public TopicImageTagHelper(ISnitzConfig snitzConfig, ISnitzCookie snitzCookie)
+        private readonly IActionContextAccessor _actionAccessor;
+        private readonly SnitzCore.Data.IMember _memberService;
+        public TopicImageTagHelper(ISnitzConfig snitzConfig, ISnitzCookie snitzCookie,IActionContextAccessor actionAccessor,SnitzCore.Data.IMember memberservice)
         {
             _config = snitzConfig;
             _cookie = snitzCookie;
+            _actionAccessor = actionAccessor;
+            _memberService = memberservice;
         }
 
         [HtmlAttributeName("status")]
@@ -79,12 +83,29 @@ namespace SnitzCore.Service.TagHelpers
             );
             overlayTag.TagMode = TagMode.StartTagAndEndTag;
 
+            //if (LastPost.HasValue)
+            //{
+            //    var lasthere = _cookie.GetLastVisitDate()?.FromForumDateStr();
+            //    if (lasthere.HasValue)
+            //    {
+            //        if (LastPost > lasthere)
+            //        {
+            //            newposts = ", Contains new posts";
+            //            newclass = true;
+            //        }
+            //    }
+            //}
             if (LastPost.HasValue)
             {
+                var user = _actionAccessor.ActionContext?.HttpContext?.User;
                 var lasthere = _cookie.GetLastVisitDate()?.FromForumDateStr();
+                if (user != null && user.Identity!.IsAuthenticated)
+                {
+                    lasthere = _memberService.GetByUsername(user.Identity.Name!)!.LastLogin.FromForumDateStr().ToLocalTime();
+                }
                 if (lasthere.HasValue)
                 {
-                    if (LastPost > lasthere)
+                    if (LastPost.Value.ToLocalTime() > lasthere)
                     {
                         newposts = ", Contains new posts";
                         newclass = true;

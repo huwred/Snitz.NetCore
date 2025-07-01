@@ -13,7 +13,4 @@
   <ItemGroup>
     <ProjectReference Include="..\MVCForum.Data\SnitzCore.Data.csproj" />
   </ItemGroup>
-
-
-
 </Project>

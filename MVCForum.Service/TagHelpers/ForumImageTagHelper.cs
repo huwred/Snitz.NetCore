@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.TagHelpers;
+﻿using log4net.Layout.Members;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -12,9 +14,14 @@ namespace SnitzCore.Service.TagHelpers
     public class ForumImageTagHelper : TagHelper
     {
         private readonly ISnitzCookie _cookie;
-        public ForumImageTagHelper(ISnitzCookie snitzCookie)
+        private readonly SnitzCore.Data.IMember _memberService;
+        private readonly IActionContextAccessor _actionAccessor;
+
+        public ForumImageTagHelper(ISnitzCookie snitzCookie,SnitzCore.Data.IMember memberservice,IActionContextAccessor actionAccessor)
         {
             _cookie = snitzCookie;
+            _memberService = memberservice;
+            _actionAccessor = actionAccessor;
         }
         [HtmlAttributeName("lastpost")]
         public DateTime? LastPost { get; set; }
@@ -37,10 +44,15 @@ namespace SnitzCore.Service.TagHelpers
             output.TagName = "i";
             if (LastPost.HasValue)
             {
+                var user = _actionAccessor.ActionContext?.HttpContext?.User;
                 var lasthere = _cookie.GetLastVisitDate()?.FromForumDateStr();
+                if (user != null && user.Identity!.IsAuthenticated)
+                {
+                    lasthere = _memberService.GetByUsername(user.Identity.Name!)!.LastLogin.FromForumDateStr().ToLocalTime();
+                }
                 if (lasthere.HasValue)
                 {
-                    if (LastPost > lasthere)
+                    if (LastPost.Value.ToLocalTime() > lasthere)
                     {
                         newclass = true;
                     }

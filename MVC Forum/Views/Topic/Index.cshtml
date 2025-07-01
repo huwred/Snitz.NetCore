@@ -106,7 +106,7 @@
                 }
             }
             <div class="card-header @answer modstatus-@Model.Status">
-                @Model.Title - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (@Model.Views @Localizer["Views"])</span>
+                @Html.Raw(BbCodeProcessor.Subject(Model.Title)) - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (@Model.Views @Localizer["Views"])</span>
                 <a asp-controller="Topic" asp-action="Moderate" asp-route-id="@Model.Id" title="Moderate" class="modal-link"><i class="modstatus-@Model.Status fa fa-hand-stop-o"></i></a>
             </div>
             <div class="card-body">

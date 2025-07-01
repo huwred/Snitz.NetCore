@@ -1,31 +1,35 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using BbCodeFormatter;
+using BbCodeFormatter.Processors;
+using Hangfire;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using MVCForum.ViewModels;
+using MVCForum.ViewModels.Post;
 using SmartBreadcrumbs.Nodes;
+using Snitz.Events.Models;
+using Snitz.PhotoAlbum.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using X.PagedList;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Snitz.PhotoAlbum.ViewModels;
-using MVCForum.ViewModels.Post;
-using MVCForum.ViewModels;
-using Microsoft.EntityFrameworkCore;
-using System.Globalization;
-using System.Threading;
-using BbCodeFormatter;
-using Hangfire;
 using System.Net;
+using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
-using Snitz.Events.Models;
+using System.Threading;
+using System.Threading.Tasks;
+using X.PagedList;
 
 namespace MVCForum.Controllers
 {
@@ -208,6 +212,14 @@ namespace MVCForum.Controllers
 
             return View(model);
         }
+        private string GetString(IHtmlContent content)
+        {
+            using (var writer = new System.IO.StringWriter())
+            {        
+                content.WriteTo(writer, HtmlEncoder.Default);
+                return writer.ToString();
+            } 
+        }  
         public IActionResult Archived(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
         {
             bool signedin = false;
@@ -612,7 +624,6 @@ namespace MVCForum.Controllers
                 {
                     await _postService.Update(post);
                 }
-                
             }
             else
             {
@@ -630,7 +641,6 @@ namespace MVCForum.Controllers
                                 BackgroundJob.Enqueue(() => _processSubscriptions.Topic(topicid));
                                 break;
                         }
-
                         switch (forum.Subscription)
                         {
                             case 1:
@@ -661,11 +671,8 @@ namespace MVCForum.Controllers
                         }
                     }
                 }
-
             }
-
             return Json(new{url=Url.Action("Index", "Topic", new { id = post.Id }),id=post.Id});
-
         }
         
         [HttpPost]
