@@ -59,7 +59,7 @@
         <div class="col col-md-8 offset-md-2 ">
             <form asp-controller="Forum" asp-action="SearchResult" class="needs-validation bg-form p-4 rounded" novalidate>
 
-                <div class="mb-3">
+                <div class="row mb-3">
                     <label asp-for="Terms" class="form-label">@Localizer["lblKeywords"]</label>
                     <div class="input-group">
                         <input asp-for="Terms" type="text" class="form-control" placeholder="@Localizer["plhSearchTerm"]" aria-label="@Localizer["plhSearchTerm"]" aria-describedby="button-addon2">

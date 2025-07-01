@@ -592,8 +592,8 @@ namespace MVCForum.Controllers
                 Answered = p.Answered,
                 AllowRating = p.AllowRating,
                 ForumAllowRating = p.Forum.Rating,
-                Rating = p.GetTopicRating()
-                //HasPoll = _postService.HasPoll(p.Id),
+                Rating = p.GetTopicRating(),
+                HasPoll = _postService.HasPoll(p.Id),
             });
             if (Refresh == null)
             {

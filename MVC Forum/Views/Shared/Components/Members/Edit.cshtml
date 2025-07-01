@@ -1,0 +1,250 @@
+﻿@model MVCForum.ViewModels.Member.MemberDetailModel
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Data
+@using SnitzCore.Service
+@using SnitzCore.Service.Extensions
+@inject IMember _memberService
+@{
+    var _ranking = MemberService.GetRankings();
+    var canedit = Model.CanEdit || User.IsInRole("Administrator");
+    var memberproperties = Model.Member!.GetType().GetProperties().Where(p => !p.SystemProperty());
+    var systemproperties = Model.Member!.GetType().GetProperties().Where(p => p.SystemProperty());
+}
+<form asp-action="Update" method="post" class="needs-validation" novalidate>
+    <div class="row">
+        <div class="col-6 col-md-2 avatar-container">
+            <snitz-avatar src="~/Content/Avatar/@Model.Member!.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid" />
+            <div class="overlay-delete" snitz-if="@canedit">
+                <a href="#" class="icon" title="Delete Avatar" data-url="~/Account/DeleteAvatar/" data-id="@Model.Member.Id">
+                    <i class="fa fa-trash"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <input asp-for="Id" class="form-control" type="hidden" />
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">@Localizer["Username"]</label>
+                <input asp-for="Name" class="form-control" disabled="disabled" />
+            </div>
+            <div snitz-if="@(canedit || (Model.Member?.HideEmail != 1 && Model.Member?.Privateprofile != 1 && User.Identity!.IsAuthenticated))" class="mb-3">
+                <label asp-for="Email" class="form-label">@Localizer["Email"]</label>
+                <input asp-for="Email" type="hidden" />
+                <input asp-for="Newemail" class="form-control" value="@Model.Member?.Email" disabled="disabled" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label">@Localizer["ProfileTitle"]</label>
+                <input name="Title" class="form-control" disabled="@(!User.IsInRole("Administrator"))" value="@MemberRankTitle(Model.Member!, _ranking)" />
+            </div>
+            <div class="mb-3" snitz-if="@canedit">
+                <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
+                <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+                <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
+            </div>
+        </div>
+        <div class="col col-md-4">
+            <div class="mb-1">
+                <label asp-for="Member!.Created" class="col-sm-3 form-label">@Localizer["ProfileDate"]</label>
+                <div class="col-sm-9">
+                    <label class="form-label">@Model.Member?.Created.FromForumDateStr().ToForumDisplay()</label>
+                </div>
+            </div>
+            <div class="mb-1">
+                <label asp-for="Member!.Posts" class="col-sm-3 col-form-label">@Localizer["ProfilePosts"]</label>
+                <div class="col-sm-9">
+                    <label class="form-label">@Model.Member?.Posts</label>
+                </div>
+            </div>
+            <div class="mb-1">
+                <label asp-for="Member!.Lastpostdate" class="col-sm-3 col-form-label">@Localizer["ProfileLastPost"]</label>
+                <div class="col-sm-9">
+                    @if (Model.Member?.Lastpostdate != null)
+                    {
+                        <label class="form-label">@Model.Member?.Lastpostdate?.FromForumDateStr().ToForumDisplay()</label>
+                    }
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Member!.LastLogin" class="col-sm-3 col-form-label">@Localizer["ProfileLastVisit"]</label>
+                <div class="col-sm-9">
+                    <label class="form-label">@Model.Member?.LastLogin.FromForumDateStr().ToForumDisplay()</label>
+                </div>
+            </div>
+            <input asp-for="Member!.Id" type="hidden" />
+        </div>
+        <div class="col col-md-3">
+            <div class="card panel-primary card-body p-3">
+                <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SearchMessage=true" id="member_posts">@Localizer["lblProfileAllPosts", Model.Member?.Name]</a>
+                <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SinceDate=14&SearchMessage=true" id="member_recent_posts">@Localizer["lblProfileRecentPosts", Model.Member?.Name]</a>
+                <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name" id="member_my_posts">@Localizer["lblProfileMyPosts", Model.Member!.Name]</a>
+                <a href="~/PhotoAlbum/Member/@Model.Member?.Id?sortby=date&sortorder=desc" id="member_album" target="_blank">@Localizer["lblAlbum", _memberService.GetMemberName(Model.Member.Id)]</a>
+            </div>
+            @if (SnitzConfig.GetIntValue("STRTHANKS") == 1)
+            {
+                @await Component.InvokeAsync("PostThanks", new { template = "Profile", id = Model.Member.Id })
+            }
+        </div>
+    </div>
+    <input name="PhotoUrl" type="hidden" value="@Model.Member?.PhotoUrl" />
+    <div snitz-if="@((Model.Member?.Privateprofile != 1 || canedit) && User.Identity!.IsAuthenticated)">
+        <div class="row  bg-form p-2 rounded mb-2">
+            <legend>@Localizer["Profile"]</legend>
+            <hr />
+            @{
+                var profileprops = memberproperties.Where(p => p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Profile);
+                foreach (PropertyInfo property in profileprops.OrderBy(p => p.PropertyOrder()))
+                {
+                    var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit) && !(property.Name == "PhotoUrl");
+                    <div class="col-6 form-label" snitz-if="@showme && !property.PropertyReadOnly()">
+                        <snitz-config can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                    </div>
+                }
+            }
+            <div class="mb-3" snitz-if="@canedit">
+                <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
+                <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+                <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
+            </div>
+        </div>
+        <div class="row  bg-form p-2 rounded mb-2">
+            <legend>@Localizer["mnuAbout"]</legend>
+            <hr />
+            @{
+                var bioprops = memberproperties.Where(p => p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Bio).OrderBy(p => p.PropertyOrder());
+                foreach (PropertyInfo property in bioprops)
+                {
+                    var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit);
+                    <div class="col-6 form-label" snitz-if="@showme && !property.PropertyReadOnly()">
+                        <snitz-config can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                    </div>
+                }
+            }
+        </div>
+        <div snitz-if="@canedit" class="row  bg-form p-2 rounded mb-2">
+            <legend>@Localizer["Signature"]</legend>
+            <hr />
+            @foreach (PropertyInfo property in memberproperties.Where(p => p.PropertyLayoutSection() == MemberLayout.Signature).OrderBy(p => p.PropertyOrder()))
+            {
+                var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit);
+                var reqProp = property.GetPropertyRequiredCheck<Member>();
+                var req = false;
+                if (reqProp != null)
+                {
+                    req = SnitzConfig.GetIntValue(reqProp, 0) == 1;
+                }
+                if (property.PropertyFieldType() == "checkbox")
+                {
+
+                    <div class="col-6 form-label" snitz-if="@showme && !property.PropertyReadOnly()">
+                        <snitz-config can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(req)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                    </div>
+                }
+                else
+                {
+                    <div class="col form-label" snitz-if="@showme && !property.PropertyReadOnly()">
+                        <snitz-config can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(req)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                    </div>
+                }
+
+            }
+            <div class="mb-3" snitz-if="@canedit">
+                <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
+                <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+                <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
+            </div>
+
+        </div>
+        <div class="row  bg-form p-2 rounded mb-2">
+            <div class="parent">
+                <legend>@Localizer["SocialMedia"]</legend>
+                <hr />
+                @foreach (PropertyInfo property in memberproperties.Where(p => p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.SocialMedia).OrderBy(p => p.PropertyOrder()))
+                {
+                    var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!) == 1 && (!property.PropertyIsPrivate() || Model.CanEdit);
+                    <div class="col-6 form-label" snitz-if="@showme && !property.PropertyReadOnly()">
+                        <snitz-config can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                    </div>
+                }
+                <div class="mb-3" snitz-if="@canedit">
+                    <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
+                    <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+                    <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
+                </div>
+            </div>
+        </div>
+        <div class="row bg-form p-3 rounded mb-2" snitz-if="@canedit">
+            <legend>@Localizer["Options"]</legend>
+            <hr />
+            @{
+                foreach (PropertyInfo prop in systemproperties.Where(p => p.Name != "Newemail").OrderBy(p => p.PropertyOrder()))
+                {
+                    <snitz-config can-edit="@canedit" property-info="@prop" property-val="@prop.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(prop.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                }
+            }
+
+            @{
+                foreach (PropertyInfo property in memberproperties.Where(p => p.PropertyFieldType() == "checkbox" && !p.PropertyIsPrivate() && p.PropertyLayoutSection() != MemberLayout.Signature).OrderBy(p => p.PropertyOrder()))
+                {
+                    var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && !property.PropertyIsPrivate();
+                    var reqProp = property.GetPropertyRequiredCheck<Member>();
+                    var req = false;
+                    if (reqProp != null)
+                    {
+                        req = SnitzConfig.GetIntValue(reqProp, 0) == 1;
+                    }
+
+                    <div class="col-6 form-label" snitz-if="@(!property.PropertyReadOnly())">
+                        <snitz-config config-type="checkbox" can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(req)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                    </div>
+                }
+            }
+            @if (SnitzConfig.GetIntValue("INTALLOWHIDEONLINE", 0) == 1)
+            {
+                <div class="col-6 form-label">
+                    <div class="form-check form-switch mb-3">
+                        @if (Model.Member.HideOnline == 1)
+                        {
+                            <input type="checkbox" role="switch" name="HideOnline" id="HideOnline" value="1" class="form-check-input" checked style="transform: scale(1.4);">
+                            <input type="checkbox" name="HideOnline" value="0" style="display:none">
+                        }
+                        else
+                        {
+                            <input type="checkbox" role="switch" name="HideOnline" id="HideOnline" value="1" class="form-check-input" style="transform: scale(1.4);">
+                            <input type="checkbox" name="HideOnline" value="0" checked style="display:none">
+                        }
+                        <label class="form-check-label" for="HideOnline">@Localizer["AnonymousUser"]</label>
+                    </div>
+
+                </div>
+            }
+            <div class="mb-3" snitz-if="@canedit">
+                <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
+                <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+                <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
+            </div>
+        </div>
+    </div>
+    <input name="Name" type="hidden" value="@Model.Member?.Name" />
+</form>
+
+@functions
+{
+    private string? MemberRankTitle(Member author, Dictionary<int, MemberRanking>? ranking)
+    {
+
+        string? mTitle = author.Title ?? "";
+        if (author.Status == 0 || author.Name == "n/a")
+        {
+            mTitle = Localizer.GetString("tipMemberLocked");
+        }
+        if (author.Name == "zapped")
+        {
+            mTitle = Localizer.GetString("tipZapped");
+        }
+
+        var unused = new RankInfoHelper(author, ref mTitle, author.Posts, ranking);
+
+        return mTitle;
+    }
+}

@@ -447,7 +447,7 @@ footer{
 
 i.fa-reply, i.fa-trash, i.fa-share, i.fa-close, i.fa-pencil, i.fa-comment-o, i.fa-commenting,
 i.fa-share-square, i.fa-share-square-o, i.fa-flag-checkered, i.fa-thumbs-o-up, i.fa-thumbs-up,
-i.fa-bookmark-o, i.fa-bookmark{
+i.fa-bookmark-o, i.fa-bookmark, i.fa-thumb-tack{
     cursor: pointer;
 }
 i.fa-share-square.category, i.fa-share-square-o.category {

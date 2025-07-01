@@ -97,5 +97,10 @@ public partial class ArchivedPost
     public virtual Member? LastPostAuthor { get; set; }
     public virtual Forum? Forum { get; set; }
     public virtual Category? Category { get; set; }
-    public virtual IEnumerable<ArchivedReply>? Replies { get; set; }
+    public virtual IEnumerable<ArchivedReply> Replies { get; set; }
+
+    public ArchivedPost()
+    {
+        Replies = new List<ArchivedReply>();
+    }
 }

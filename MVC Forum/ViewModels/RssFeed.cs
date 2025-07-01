@@ -29,7 +29,7 @@ namespace SnitzCore.Data.Models
             STitle = config.ForumTitle;
             SSiteUrl = config.ForumUrl;
             SCopyright = config.Copyright;
-            //SDescription = config.;
+            SDescription = config.ForumDescription;
             AppUrl = config.ForumUrl; 
             _dbContext = dbContext;
             _config = config;
@@ -157,7 +157,7 @@ namespace SnitzCore.Data.Models
                 .Include(p => p.Forum)
                 .Include(p => p.Member)
                 .Include(p=>p.LastPostAuthor)
-                .Include(p=>p.Replies!).ThenInclude(r=>r.Member).SingleOrDefault(t=>t.Id == id);// Topic.WithAuthor(id);
+                .Include(p=>p.Replies).ThenInclude(r=>r.Member).SingleOrDefault(t=>t.Id == id);// Topic.WithAuthor(id);
 
             if (topic == null || !_memberService.AllowedForums().Contains(topic.ForumId))
             {

@@ -148,12 +148,12 @@ namespace MVCForum.Controllers
         public async Task<IActionResult> Detail(string? id)
         {
             ForumUser? currUser =  null;
+            ForumUser? user;
+            Member? member;
             if (User.Identity?.Name != null)
             {
                 currUser = (await _userManager.FindByNameAsync(User.Identity?.Name!))!;
             }
-            ForumUser? user;
-            Member? member;
             if (id != null)
             {
                 member = _memberService.GetByUsername(id);
@@ -161,16 +161,11 @@ namespace MVCForum.Controllers
             }
             else
             {
-                //Get current logged in user record because no username passed in
-                var memberid = _userManager.GetUserId(User);
-                user = await _userManager.FindByIdAsync(memberid!);
+                user = currUser;
                 member = _memberService.GetByUsername(user?.UserName!);
                 member!.HideOnline = User.IsInRole("HiddenMembers") ? 1 : 0;
             }
-            
-
-
-            if (member != null && user != null)
+            try
             {
                 var model = new MemberDetailModel
                 {
@@ -183,29 +178,14 @@ namespace MVCForum.Controllers
                     Email = user?.Email ?? member?.Email ?? "",
                     Newemail = user?.Email ?? member?.Email ?? "",
                     Member = member,
-                    CanEdit = currUser?.UserName == member?.Name 
-                };
-                return View(model);
-
-            }else if (member != null && user == null)
-            {
-                //If no username passed in, then we are looking at the current user
-                var model = new MemberDetailModel
-                {
-                    Id = member.Id, 
-                    Name = id ?? member.Name,
-                    Firstname = member.Firstname,
-                    Lastname = member.Lastname,
-                    Title = member.Title,
-                    Email = user?.Email ?? member?.Email ?? "",
-                    Newemail = user?.Email ?? member?.Email ?? "",
-                    Member = member,
-                    CanEdit = false
+                    CanEdit = currUser?.MemberId == member?.Id 
                 };
                 return View(model);
             }
-
-            return View("Error");
+            catch (Exception e)
+            {
+                return View("Error");
+            }
         }
 
         [HttpPost]
@@ -411,8 +391,17 @@ namespace MVCForum.Controllers
                         currmember.LastIp = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
                         _memberService.Update(currmember);
                     }
-                    _logger.Warn("ReturnUrl1:" + returnUrl);
-                    return LocalRedirect(returnUrl);
+                    //_logger.Warn("ReturnUrl1:" + returnUrl);
+                    if(Url.IsLocalUrl(returnUrl))
+                    {
+                        _logger.Info("ReturnUrl is local");
+                    }
+                    else
+                    {
+                        _logger.Info("ReturnUrl is not local, redirecting to forum url");
+                        returnUrl = _config.ForumUrl;
+                    }
+                    return LocalRedirect("~/");
                 }
                 if (result.IsLockedOut)
                 {
@@ -1077,7 +1066,16 @@ namespace MVCForum.Controllers
                         return LocalRedirect("~/Account/ForgotPassword");
                     }
                     await _signInManager.SignInAsync(existingUser, login.RememberMe);
-                    _logger.Warn("ReturnUrl2:" + returnUrl);
+                    //_logger.Warn("ReturnUrl2:" + returnUrl);
+                    if(Url.IsLocalUrl(returnUrl))
+                    {
+                        _logger.Info("ReturnUrl is local");
+                    }
+                    else
+                    {
+                        _logger.Info("ReturnUrl is not local, redirecting to forum url");
+                        returnUrl = "~/";
+                    }
                     return LocalRedirect(returnUrl);
                 }
                 foreach (IdentityError error in result.Errors)

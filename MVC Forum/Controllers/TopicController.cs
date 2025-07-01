@@ -25,6 +25,7 @@ using BbCodeFormatter;
 using Hangfire;
 using System.Net;
 using System.Text.RegularExpressions;
+using Snitz.Events.Models;
 
 namespace MVCForum.Controllers
 {
@@ -40,10 +41,12 @@ namespace MVCForum.Controllers
         private readonly ICodeProcessor _bbcodeProcessor;
         private readonly HttpContext? _httpcontext;
         private readonly IPrivateMessage _pmService;
+        private readonly EventContext _eventsContext;
 
         public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             IPost postService, IForum forumService, UserManager<ForumUser> userManager,IWebHostEnvironment environment,
-            IEmailSender mailSender, ISubscriptions processSubscriptions, ICodeProcessor bbcodeProcessor,IPrivateMessage pmService) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
+            IEmailSender mailSender, ISubscriptions processSubscriptions, ICodeProcessor bbcodeProcessor,
+            IPrivateMessage pmService,EventContext eventsContext) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
         {
             _postService = postService;
             _forumService = forumService;
@@ -54,6 +57,7 @@ namespace MVCForum.Controllers
             _bbcodeProcessor = bbcodeProcessor;
             _httpcontext = httpContextAccessor.HttpContext;
             _pmService = pmService;
+            _eventsContext = eventsContext;
         }
 
         //[Route("{id:int}")]
@@ -90,7 +94,7 @@ namespace MVCForum.Controllers
                 return View("Error");
             }    
             //if we have a replyid, does it exist in ths topic?
-            if (replyid.HasValue && post.Replies != null && post.Replies.Any())
+            if (replyid.HasValue && post.Replies.Any())
             {
                 //no reply in that topic, so reset the jumpto replyid
                 if (!post.Replies.Any(r => r.Id == replyid))
@@ -117,7 +121,7 @@ namespace MVCForum.Controllers
 
             if (post.ReplyCount > 0 || post.UnmoderatedReplies > 0)
             {
-                post = _postService.GetTopicWithRelated(id);
+                post = _postService.GetTopicWithRelated(id).Result;
             }
             if (!HttpContext.Session.Keys.Contains("TopicId_"+ id))
             {
@@ -143,7 +147,7 @@ namespace MVCForum.Controllers
             ViewData["BreadcrumbNode"] = topicPage;
             
             ViewData["Title"] = post.Title;
-            var totalCount = post.Replies?.Count();
+            var totalCount = post.Replies.Count();
             var pageCount = 1;
             if (totalCount > 0)
             {
@@ -165,7 +169,7 @@ namespace MVCForum.Controllers
                 }
             } 
 
-            IEnumerable<PostReplyModel>? replies = null;
+            IEnumerable<PostReplyModel> replies = new HashSet<PostReplyModel>();
             if (pagedReplies != null)
             {
                 replies = BuildPostReplies(pagedReplies);
@@ -263,7 +267,7 @@ namespace MVCForum.Controllers
             ViewData["BreadcrumbNode"] = topicPage;
             
             ViewData["Title"] = post.Subject;
-            var totalCount = post.Replies?.Count();
+            var totalCount = post.Replies.Count();
             var pageCount = 1;
             if (totalCount > 0)
             {
@@ -373,7 +377,7 @@ namespace MVCForum.Controllers
                     return View("Error");
                 }
             }
-            var topic = _postService.GetTopicWithRelated(id);
+            var topic = await _postService.GetTopicWithRelated(id);
             
             var forum = _forumService.GetWithPosts(topic!.ForumId);
             var model = new NewPostModel()
@@ -404,7 +408,7 @@ namespace MVCForum.Controllers
         {
 
             var member = await _memberService.GetById(User);
-            var topic = _postService.GetTopicWithRelated(id);
+            var topic = await _postService.GetTopicWithRelated(id);
             
             var forum = _forumService.GetWithPosts(topic!.ForumId);
             var model = new NewPostModel()
@@ -436,7 +440,7 @@ namespace MVCForum.Controllers
         {
 
             var member = await _memberService.GetById(User);
-            var topic = _postService.GetTopicWithRelated(id);
+            var topic = await _postService.GetTopicWithRelated(id);
             var haspoll = _postService.HasPoll(id);
             var forum = _forumService.GetWithPosts(topic!.ForumId);
             var model = new NewPostModel()
@@ -491,7 +495,7 @@ namespace MVCForum.Controllers
             }
             var reply = _postService.GetReply(id);
             
-            var topic = _postService.GetTopicWithRelated(reply!.PostId);
+            var topic = await _postService.GetTopicWithRelated(reply!.PostId);
             var model = new NewPostModel()
             {
                 Id = 0,
@@ -525,7 +529,7 @@ namespace MVCForum.Controllers
 
             var member = await _memberService.GetById(User);
             var reply = _postService.GetReply(id);
-            var topic = _postService.GetTopicWithRelated(reply!.PostId);
+            var topic = await _postService.GetTopicWithRelated(reply!.PostId);
             var model = new NewPostModel()
             {
                 Id = id,
@@ -562,6 +566,9 @@ namespace MVCForum.Controllers
             ModelState.Remove("ForumName");
             ModelState.Remove("AuthorName");
             ModelState.Remove("AuthorImageUrl");
+            ModelState.Remove("Sticky");
+            ModelState.Remove("Lock");
+            ModelState.Remove("DoNotArchive");
 
             if (!ModelState.IsValid)
             {
@@ -658,8 +665,7 @@ namespace MVCForum.Controllers
             }
 
             return Json(new{url=Url.Action("Index", "Topic", new { id = post.Id }),id=post.Id});
-            // TODO: Implement User Rating Management
-            //return RedirectToAction("Index", "Topic", new { id = post.Id });
+
         }
         
         [HttpPost]
@@ -841,6 +847,21 @@ namespace MVCForum.Controllers
             if (member != null && (member.Roles.Contains("Administrator") || post!.MemberId == member.Id))
             {
                 await _postService.DeleteTopic(id);
+                //Are there any Polls or events to remove?
+                var topicpoll = _snitzDbContext.Polls.FirstOrDefault(p => p.TopicId == id);
+                if (topicpoll != null)
+                {
+                    _snitzDbContext.PollAnswers.Where(a=>a.PollId == topicpoll.Id).ExecuteDelete();
+                    _snitzDbContext.PollVotes.Where(a=>a.PollId == topicpoll.Id).ExecuteDelete();
+                    _snitzDbContext.Polls.Remove(topicpoll);
+                    _snitzDbContext.SaveChanges();
+                }
+                var topicevent = _eventsContext.EventItems.FirstOrDefault(e => e.TopicId == id);
+                if (topicevent != null)
+                {
+                    _eventsContext.EventItems.Remove(topicevent);
+                    _eventsContext.SaveChanges();
+                }
                 return Json(new { result = true, url = Url.Action("Index","Forum", new{id=post!.ForumId}) });
 
             }
@@ -965,8 +986,6 @@ namespace MVCForum.Controllers
             TempData["Success"] = "Email sent successfully";
             return RedirectToAction("Index", "Topic", new { id=model.ReturnUrl, pagenum = -1 });
         }
-
-
         public ActionResult Print(int id)
         {
             bool moderator;
@@ -1010,7 +1029,7 @@ namespace MVCForum.Controllers
                     AuthorName = topic.Member?.Name ?? "Unknown",
                     Created = topic.Created.FromForumDateStr(),
                     Content = topic.Message,
-                    Replies = pagedReplies != null ? BuildPostReplies(pagedReplies) : null,
+                    Replies = pagedReplies != null ? BuildPostReplies(pagedReplies) : new HashSet<PostReplyModel>(),
                     ForumId = topic.Forum!.Id,
                     ForumName = topic.Forum.Title,
                     PageNum = 1,
@@ -1037,7 +1056,7 @@ namespace MVCForum.Controllers
                 }
                 if (topic.ReplyCount > 0)
                 {
-                    topic = _postService.GetTopicWithRelated(id);
+                    topic = _postService.GetTopicWithRelated(id).Result;
                 }
                 PagedList<PostReply>? pagedReplies = PagedReplies(1, 100, "asc", topic!);
                 model = new PostIndexModel()
@@ -1056,7 +1075,7 @@ namespace MVCForum.Controllers
                     AuthorName = topic.Member?.Name ?? "Unknown",
                     Created = topic.Created.FromForumDateStr(),
                     Content = topic.Content,
-                    Replies = pagedReplies != null ? BuildPostReplies(pagedReplies) : null,
+                    Replies = pagedReplies != null ? BuildPostReplies(pagedReplies) : new HashSet<PostReplyModel>(),
                     ForumId = topic.Forum!.Id,
                     ForumName = topic.Forum.Title,
                     PageNum = 1,
@@ -1269,7 +1288,7 @@ namespace MVCForum.Controllers
                 if(!vm.ForumList!.ContainsKey(forum.Key))
                     vm.ForumList.Add(forum.Key, forum.Value);
             }
-            var topic = _postService.GetTopicWithRelated(id);
+            var topic = _postService.GetTopicWithRelated(id).Result;
             if (topic != null)
             {
                 vm.Topic = topic;
@@ -1296,7 +1315,7 @@ namespace MVCForum.Controllers
         [Route("Topic/SplitTopic/")]
         public IActionResult SplitTopic(SplitTopicViewModel vm)
         {
-            var originaltopic = _postService.GetTopicWithRelated(vm.Id);
+            var originaltopic = _postService.GetTopicWithRelated(vm.Id).Result;
             if (!ModelState.IsValid)
             {
                 foreach (KeyValuePair<int, string> vmforum in _forumService.ForumList())
@@ -1582,16 +1601,18 @@ namespace MVCForum.Controllers
         {
             if(post.ReplyCount < 1 && post.UnmoderatedReplies < 1) return null;
             var pagedReplies = sortdir == "asc"
-                ? new PagedList<PostReply>(post.Replies!.OrderBy(r => r.Created), page, pagesize)
-                : new PagedList<PostReply>(post.Replies!.OrderByDescending(r => r.Created), page, pagesize);
+                ? new PagedList<PostReply>(post.Replies.OrderBy(r => r.Created), page, pagesize)
+                : new PagedList<PostReply>(post.Replies.OrderByDescending(r => r.Created), page, pagesize);
             return pagedReplies;
         }
         private PagedList<ArchivedReply>? PagedReplies(int page, int pagesize, string sortdir, ArchivedPost post)
         {
             if(post.ReplyCount < 1) return null;
+            if(!post.Replies.Any()) return null;
+
             var pagedReplies = sortdir == "asc"
-                ? new PagedList<ArchivedReply>(post.Replies!.OrderBy(r => r.Created), page, pagesize)
-                : new PagedList<ArchivedReply>(post.Replies!.OrderByDescending(r => r.Created), page, pagesize);
+                ? new PagedList<ArchivedReply>(post.Replies.OrderBy(r => r.Created), page, pagesize)
+                : new PagedList<ArchivedReply>(post.Replies.OrderByDescending(r => r.Created), page, pagesize);
             return pagedReplies;
         }
         private string GetUniqueFileName(string fileName, out string timestamp)

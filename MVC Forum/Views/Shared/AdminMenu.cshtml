@@ -15,13 +15,16 @@
         <li><hr class="dropdown-divider" /></li>
         <li snitz-if="@User.IsInRole("SuperAdmin")"><a class="dropdown-item" asp-controller="Admin" asp-action="ListViews">Page Templates</a></li>
         <li><a class="dropdown-item" asp-controller="LogView" asp-action="Index">Logs</a></li>
-
         <li><hr class="dropdown-divider" /></li>
         <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">@Localizer["tipNewCategory"]</a></li>
         <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">@Localizer["tipNewForum"]</a></li>
-        <li><hr class="dropdown-divider" /></li>
-        <li>
-            <link-confirm title="Restart Application" jq-selector="confirm-restart" href="~/Admin/Restart" class="dropdown-item text-warning"></link-confirm>
-        </li>
+        @if (User.IsInRole("SuperAdmin"))
+        {
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="~/snitzjobs">@Localizer["tipHangfire"]</a></li>
+            <li>
+                <link-confirm title="Restart Application" jq-selector="confirm-restart" href="~/Admin/Restart" class="dropdown-item text-warning"></link-confirm>
+            </li>       
+        }
     </ul>
 </li>

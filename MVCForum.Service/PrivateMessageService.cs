@@ -24,9 +24,9 @@ namespace SnitzCore.Service
             _mailSender = mailSender;
             _config = config;
         }
-        public PrivateMessage GetById(int id)
+        public PrivateMessage? GetById(int id)
         {
-            return _dbContext.PrivateMessages.OrderBy(m=>m.Id).First(pm=>pm.Id == id);
+            return _dbContext.PrivateMessages.OrderBy(m=>m.Id).FirstOrDefault(pm=>pm.Id == id);
         }
 
         public IEnumerable<PrivateMessage> GetAll()

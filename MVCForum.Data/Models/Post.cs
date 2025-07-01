@@ -103,7 +103,7 @@ public partial class Post
 
     public virtual Forum? Forum { get; set; }
     public virtual Category? Category { get; set; }
-    public virtual IEnumerable<PostReply>? Replies { get; set; }
+    public virtual IEnumerable<PostReply> Replies { get; set; }
 
     public decimal GetTopicRating()
         {
@@ -118,4 +118,24 @@ public partial class Post
             return decimal.Parse(rating.ToString());
         }
 
+    public Post(){
+        Created = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+        LastPostDate = Created;
+        LastPostReplyId = null;
+        LastPostAuthorId = null;
+        LastEdit = null;
+        LastEditby = null;
+        Title = string.Empty;
+        Content = string.Empty;
+        Ip = string.Empty;
+        IsSticky = 0;
+        Sig = 0;
+        Ispoll = 0;
+        Pollstatus = 0;
+        ReplyCount = 0;
+        UnmoderatedReplies = 0;
+        ViewCount = 0;
+        Status = 1; // Open
+        Replies = new HashSet<PostReply>();
+    }
 }

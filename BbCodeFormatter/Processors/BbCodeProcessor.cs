@@ -59,12 +59,12 @@ public class BbCodeProcessor : ICodeProcessor
         _urlformatters.Add((new UrlFormatter(@"(?<start>\[url(?:\s*)\])(?!(https?|ftp|file|/))(?<url>(.|\n)*?)(?<end>\[/url(?:\s*)\])", "[url=\"http://${url}\"]${url}[/url]")));
         _urlformatters.Add(new UrlFormatter(@"(?<start>\[url=)(?:['""])(?!(https?|ftp|file|/))(?<url>(?:.|\n)*?)(?:['""])*(?<end>(?:\s*)\](?<content>(?:.|\n)*?)\[/url(?:\s*)\])", "${start}\"http://${url}\"${end}"));
         //parse links in [url] tags
-        _urlformatters.Add(new UrlFormatter(@"(?<start>\[url(?:\s*)\])(?<url>(.|\n)*?)(?<end>\[/url(?:\s*)\])", "<a href=\"${url}\" target=\"_blank\" rel=\"nofollow\" title=\"${url}\">${url}</a>"));
-        _urlformatters.Add(new UrlFormatter(@"(?<start>\[url=)("")*(?<url>(.|\n)*?)("")*(?<end>(?:\s*)\](?<content>(.|\n)*?)\[/url(?:\s*)\])", "<a href=\"${url}\" target=\"_blank\" rel=\"nofollow\" title=\"\">${content}</a>"));
+        _urlformatters.Add(new UrlFormatter(@"(?<start>\[url(?:\s*)\])(?<url>(.|\n)*?)(?<end>\[/url(?:\s*)\])", "<a href=\"${url}\" target=\"_blank\" rel=\"noopener noreferrer nofollow\" title=\"${url}\">${url}</a>"));
+        _urlformatters.Add(new UrlFormatter(@"(?<start>\[url=)("")*(?<url>(.|\n)*?)("")*(?<end>(?:\s*)\](?<content>(.|\n)*?)\[/url(?:\s*)\])", "<a href=\"${url}\" target=\"_blank\" rel=\"noopener noreferrer nofollow\" title=\"\">${content}</a>"));
         _urlformatters.Add((new UrlFormatter(@"(?<start>\[urlpreview(?:\s*)\])(?!(?:https?/))(?<url>(?:.|\n)*?)(?<end>\[/urlpreview(?:\s*)\])", config.ForumUrl + "websitethumbnailhandler.ashx?url=${url}&tw=400&th=300")));
 
     #endregion
-        _formatters.Add(new RegexFormatter(@"(?:\[file((.|\n)*?)(?:\s*)])([^?#\[]*/)([^.?\[]+)/([^\[]+)(?:\[/file])", "<span class=\"file-attachment\">$5 <a href=\"$3$4/$5\" rel=\"nofollow\" title=\"Download file\" data-toggle=\"tooltip\" ><i class=\"fa  fa-download fa-1_5x\"></i></a>$1</span>"));
+        _formatters.Add(new RegexFormatter(@"(?:\[file((.|\n)*?)(?:\s*)])([^?#\[]*/)([^.?\[]+)/([^\[]+)(?:\[/file])", "<span class=\"file-attachment\">$5 <a href=\"$3$4/$5\" rel=\"noopener noreferrer nofollow\" title=\"Download file\" data-toggle=\"tooltip\" ><i class=\"fa  fa-download fa-1_5x\"></i></a>$1</span>"));
 
         string embed = "<embed src=\"$1$2$3\" type=\"application/pdf\" class=\"object-pdf\" />";
         _formatters.Add(new RegexFormatter(@"(?:\[pdf])([^?#\[]*/)([^.?\[]+)([^\[]+)(?:\[/pdf])", embed));
@@ -180,6 +180,7 @@ public class BbCodeProcessor : ICodeProcessor
     _postformatters.Add(new SearchReplaceFormatter(@"[Done]", "<i class=\"fa fa-check-square\"></i>"));
     _postformatters.Add(new SearchReplaceFormatter(@"[Fixed]", "<i class=\"fa fa-check-square text-success\"></i>"));
     _postformatters.Add(new SearchReplaceFormatter(@"[FAQ]", "<i class=\"fa fa-info-circle text-primary \"></i>"));
+    _postformatters.Add(new SearchReplaceFormatter(@"[BUG]", "<i class=\"fa fa-bug text-warning \"></i>"));
     #endregion
 
     #region CleanCode

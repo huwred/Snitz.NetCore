@@ -9,7 +9,7 @@ namespace MVCForum.ViewModels.Post
         public int ForumId { get; set; }
         public string ForumName { get; set; } = null!;
 
-        public IEnumerable<PostReplyModel>? Replies { get; set; }
+        public IEnumerable<PostReplyModel> Replies { get; set; }
         public int PageCount { get; set; }
 
         public string? SortDir { get; set; }
@@ -31,5 +31,18 @@ namespace MVCForum.ViewModels.Post
         public bool AllowRating { get; internal set; }
         public bool AllowTopicRating { get; internal set; }
         public decimal Rating { get; internal set; }
+
+        public PostIndexModel()
+        {
+            Replies = new HashSet<PostReplyModel>();
+            Title = string.Empty;
+            ForumName = string.Empty;
+            Author = new SnitzCore.Data.Models.Member();
+            SortDir = "asc";
+            PageNum = 1;
+            PageSize = 10;
+            ShowSig = true;
+            Rating = 0.0m;
+        }
     }
 }

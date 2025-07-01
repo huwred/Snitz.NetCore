@@ -12,7 +12,10 @@
     <meta name="title" content="Forum: @Model.Forum?.Title" />
     <meta name="description" content="@Model.Forum?.Description" />
     <meta name="robots" content="index,nofollow" />
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/forum/@Model.Forum.Id">
+    @if (SnitzConfig.GetIntValue("INTFORUMRSS") == 1)
+    {
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/forum/@Model.Forum?.Id">      
+    }
 }
 @section Styles{
     <link href="~/css/star-rating.min.css" rel="stylesheet" />
@@ -43,7 +46,7 @@
     ViewBag.PageCount = Model.PageCount;
     var pagenum = Model.PageNum?.ToString() ??  Context.Request.Query["page"];
     var pagesize = Context.Session.GetInt32("TopicPageSize");
-    ViewBag.PageSize = pagesize ?? 10;
+    ViewBag.PageSize = pagesize ?? Model.PageSize;
     ViewBag.PageNum = pagenum;
     if (Model.AccessDenied)
     {

@@ -65,7 +65,7 @@
             username += "&SearchMessage=true";
         }
     }
-    var pagesize = $"&pagesize={Model.PageSize}";
+    var pagesize = $"&pagesize={(Context.Request.Query["PageSize"].Count > 0 ? Context.Request.Query["PageSize"][0] : (Context.Session.GetInt32("TopicPageSize") != null ? Context.Session.GetInt32("TopicPageSize") : Model.PageSize))}";
 }
 <nav aria-label="Page navigation" class="mb-1">
     <ul class="pagination">

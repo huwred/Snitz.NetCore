@@ -610,3 +610,7 @@ a.latestpost-title {
     border-radius: 50% !important;
     padding: .25rem !important;
 }
+
+.table-row .status .fa.fa-stack-1x {
+    color: #7d7f66 !important;
+}

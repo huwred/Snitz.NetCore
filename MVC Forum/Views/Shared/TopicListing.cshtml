@@ -37,14 +37,20 @@
     <div class="status" data-status="@Model.Status" style="z-index: 2">
         @if (eventservice != null && eventservice.EnabledForTopic(Model.Id))
         {
-            <i class="fa fa-calendar"></i>
+            @* <i class="fa fa-calendar"></i> *@
+            <snitz-topic-icon plugin-icon="fa-calendar" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+
         }else if (Model.HasPoll)
         {
-            <i class="fa fa-bar-chart"></i>
+            @* <i class="fa fa-bar-chart"></i> *@
+            <snitz-topic-icon plugin-icon="fa-bar-chart" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+
         }
         else if (archives)
         {
-            <i class="fa fa-archive"></i>
+            @* <i class="fa fa-archive"></i> *@
+            <snitz-topic-icon plugin-icon="fa-archive" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+
         }
         else
         {

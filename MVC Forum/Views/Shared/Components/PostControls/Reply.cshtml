@@ -4,7 +4,7 @@
     bool isadmin = User.IsInRole("Administrator");
     bool ismoderator = User.IsInRole("Moderator"); 
     bool islocked = Model.Topic?.Status == 0;
-    bool isauthor = User.Identity?.Name == Model?.Member?.Name;
+    bool isauthor = User.Identity?.Name?.ToLowerInvariant() == Model?.Member?.Name.ToLowerInvariant();
     bool allowThanks = (bool)TempData["allowThanks"] ;
 }
 @if (User.Identity.IsAuthenticated)

@@ -6,7 +6,7 @@ namespace SnitzCore.Data.Interfaces;
 
 public interface IPrivateMessage
 {
-    PrivateMessage GetById(int id);
+    PrivateMessage? GetById(int id);
     IEnumerable<PrivateMessage> GetAll();
     IEnumerable<PrivateMessage> GetAll(int memberid);
     IEnumerable<PrivateMessage> GetInbox(int memberid);

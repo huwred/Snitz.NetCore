@@ -1,4 +1,6 @@
 ﻿@using System.Globalization
+@using SnitzCore.Service.Extensions;
+
 @using BbCodeFormatter
 @inject ICodeProcessor BbCodeProcessor
 @model MVCForum.ViewModels.Post.PostIndexModel
@@ -28,7 +30,6 @@
     <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/css/site.min.css">
     <link rel="stylesheet" href="~/css/print.min.css">
-
 </head>
 <body>
     <span class="button pull-right flip"><button class="btn btn-sm btn-primary" onclick="javascript:window.print();">@Localizer["lblPrint"]</button><button class="btn btn-sm btn-default" onclick="javascript:window.close();">@Localizer["lblClose"]</button></span>
@@ -36,7 +37,7 @@
         <h4>@Html.Raw(BbCodeProcessor.Format(Model.Title))</h4>
         <label>@Localizer["lblPrintedFrom"]:</label> @SnitzConfig.ForumTitle<br />
         <label>URL:</label> @string.Format("{0}Topic/Posts/{1}?pagenum=1", SnitzConfig.ForumUrl, Model.Id) <br />
-        <label>@Localizer["lblPrinted"]:</label> @DateTime.Now.ToShortDateString()<br />
+        <label>@Localizer["lblPrinted"]:</label> @DateTime.Now.ToLocalTime().ToForumDisplay()<br />
         <div class="title">
             <h4>@Localizer["lblTopic"] </h4>
             <hr />
@@ -45,29 +46,28 @@
         <div class="message-reply">
             <label>@Localizer["lblAuthor"] :</label> @Model.AuthorName <br />
             <label>@Localizer["lblSubject"] :</label> @Model.Title <br />
-            <label>@Localizer["lblPosted"] :</label> @Model.Created.ToShortDateString() <br />
+            <label>@Localizer["lblPosted"] :</label> @Model.Created.ToLocalTime().ToForumDisplay() <br />
             <label>@Localizer["Message"] :</label> <br /><br />
             <div class="message clearfix">
                 @Html.Raw(BbCodeProcessor.Format(Model.Content))
             </div>
         </div>
         <p>&nbsp;</p>
-        <div class="title">
-            <h4>@Localizer["lblReplies"] ... </h4>
-            <hr />
-        </div>
         @{
             int counter = 1;
         }
-        @if (Model.Replies != null)
+        @if (Model.Replies.Any())
         {
+            <div class="title">
+                <h4>@Localizer["lblReplies"] ... </h4>
+                <hr />
+            </div>
             foreach (var item in Model.Replies)
             {
                 <i class="fa fa-hashtag"></i><label>@counter</label>
-
                 <div class="message-reply">
                     <label>@Localizer["lblReplyAuthor"]</label> @item.Author.Name <br />
-                    <label>@Localizer["lblRepliedOn"]</label> @item.Created.ToShortDateString() <br />
+                    <label>@Localizer["lblRepliedOn"]</label> @item.Created..ToLocalTime().ToForumDisplay() <br />
                     <label>@Localizer["Message"]:</label> <br /><br />
                     <div class="message clearfix">
                         @Html.Raw(BbCodeProcessor.Format(item.Content))
@@ -82,9 +82,7 @@
 
     <script type="text/javascript" src="~/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="~/js/jquery.min.js"></script>
-    <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js" ></script>
     <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" type="text/javascript"></script>
-    <partial name="ValidationScriptsPartial" />
     <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
     <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
     <script snitz-if="@(clang == "fa")" type="text/javascript" src="~/bundles/Persian"></script>
@@ -95,11 +93,6 @@
         var src = $"{SnitzConfig.RootFolder}/js/timeago/timeago.{clang}.js";
         <script type="text/javascript" src="@src"></script>
     }
-<script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.js"></script>
-<script>
-    $(document).ready(function() {
-        lazyload();
-    });
-</script>
+
 </body >
 </html >

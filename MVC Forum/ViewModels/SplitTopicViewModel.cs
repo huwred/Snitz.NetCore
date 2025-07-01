@@ -10,7 +10,7 @@ namespace MVCForum.ViewModels
     {
         public int Id { get; set; }
         public SnitzCore.Data.Models.Post? Topic { get; set; }
-        public IEnumerable<PostReply>? Replies { get; set; }
+        public IEnumerable<PostReply> Replies { get; set; }
 
         public Dictionary<int, string>? ForumList { get; set; }
 
@@ -23,8 +23,8 @@ namespace MVCForum.ViewModels
         public SplitTopicViewModel()
         {
             this.ForumList = new Dictionary<int, string> { { 0, "Select Forum" } };
-
+            this.Replies = new HashSet<PostReply>();
+            this.Subject = string.Empty;
         }
-
     }
 }

@@ -30,6 +30,9 @@
         forumDesc: '@Config.Value.strForumDescription',
         MaxImageSize: parseInt('@SnitzConfig.GetIntValue("INTMAXIMAGESIZE")') * 1024 * 1024,
         MaxFileSize: parseInt('@SnitzConfig.GetIntValue("INTMAXFILESIZE")'),
+        allowForumcode:'@SnitzConfig.GetIntValue("STRALLOWFORUMCODE")' === '1',
+        allowImgInPosts:'@SnitzConfig.GetIntValue("STRIMGINPOSTS")' === '1',
+        allowIcons:'@SnitzConfig.GetIntValue("STRICONS")' === '1',
         allowedimagetypes: '@SnitzConfig.GetValue("STRIMAGETYPES")',
         allowedfiles: [
             @foreach (var allowedFile in SnitzConfig.GetValue("STRFILETYPES").Split(','))
@@ -77,13 +80,31 @@
             'snitzAttach snitzImage | undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist | link emoticons media | code codesample',
         menudef : 'favs edit insert format table help'
     };
-
+    if(!SnitzVars.attach) {
+        SnitzVars.toolbardef =
+            ' undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist | link emoticons media | code codesample';
+    }
+    if(!SnitzVars.allowIcons){
+        SnitzVars.toolbardef = SnitzVars.toolbardef.replace('emoticons ', '');
+    }
+    if(!SnitzVars.allowImgInPosts){
+        SnitzVars.toolbardef = SnitzVars.toolbardef.replace('snitzImage ', '');
+    }
         /* Quick reply editor overrides */
     if ($('#QuickReply').length > 0) {
         SnitzVars.menudef = false; // turn off the menu bar
         SnitzVars.toolbardef =
         'snitzAttach snitzImage | undo redo | styleselect | bullist numlist | link emoticons media | codesample';
-
+        if(!SnitzVars.attach) {
+            SnitzVars.toolbardef =
+                ' undo redo | styleselect | bullist numlist | link emoticons media | codesample';
+        }
+        if(!SnitzVars.allowIcons){
+            SnitzVars.toolbardef = SnitzVars.toolbardef.replace('emoticons ', '');
+        }
+        if(!SnitzVars.allowImgInPosts){
+            SnitzVars.toolbardef = SnitzVars.toolbardef.replace('snitzImage ', '');
+        }
     }
 
 </script>

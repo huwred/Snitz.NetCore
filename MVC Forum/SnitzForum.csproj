@@ -89,6 +89,7 @@
     <Content Remove="wwwroot\css\site.css" />
     <Content Remove="wwwroot\css\SnitzTheme.css" />
     <Content Remove="wwwroot\css\VellumTheme.css" />
+    <Content Remove="wwwroot\js\addpostform.js" />
     <Content Remove="wwwroot\js\jquery.unobtrusive-ajax.js" />
     <Content Remove="wwwroot\js\postcontroller.js" />
     <Content Remove="wwwroot\js\prism.js" />
@@ -149,6 +150,8 @@
     <Content Remove="wwwroot\js\tinymce\themes\silver\theme.min.js" />
     <Content Remove="wwwroot\js\tinymce\tinymce.min.js" />
     <Content Remove="wwwroot\js\topic.js" />
+    <Content Remove="wwwroot\lib\jquery\dist\jquery-ui.js" />
+    <Content Remove="wwwroot\lib\jquery\jquery.timeago.js" />
     <Content Remove="wwwroot\ProtectedContent\Avatar\HuwR132430879466080654.jpg" />
     <Content Remove="wwwroot\ProtectedContent\Avatar\Torborg.gif" />
     <Content Remove="wwwroot\ProtectedContent\Avatar\untitled.png" />
@@ -204,6 +207,7 @@
     <None Include="wwwroot\css\prism.css" />
     <None Include="wwwroot\css\site.css" />
     <None Include="wwwroot\css\VellumTheme.css" />
+    <None Include="wwwroot\js\addpostform.js" />
     <None Include="wwwroot\js\jquery.unobtrusive-ajax.js" />
     <None Include="wwwroot\js\postcontroller.js" />
     <None Include="wwwroot\js\prism.js" />
@@ -265,6 +269,8 @@
     <None Include="wwwroot\js\tinymce\themes\silver\theme.min.js" />
     <None Include="wwwroot\js\tinymce\tinymce.min.js" />
     <None Include="wwwroot\js\topic.js" />
+    <None Include="wwwroot\lib\jquery\dist\jquery-ui.js" />
+    <None Include="wwwroot\lib\jquery\jquery.timeago.js" />
     <None Include="wwwroot\ProtectedContent\Avatar\HuwR132430879466080654.jpg" />
     <None Include="wwwroot\ProtectedContent\Avatar\Torborg.gif" />
     <None Include="wwwroot\ProtectedContent\Avatar\untitled.png" />
@@ -313,9 +319,9 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.3" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="Snitz.Events" Version="1.0.1-rc06" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc01" />
-    <PackageReference Include="Snitz.PostThanks" Version="1.0.2-rc18" />
+    <PackageReference Include="Snitz.Events" Version="1.0.1-rc08" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc02" />
+    <PackageReference Include="Snitz.PostThanks" Version="1.0.2-rc19" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />

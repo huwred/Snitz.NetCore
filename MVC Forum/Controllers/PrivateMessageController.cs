@@ -129,7 +129,10 @@ namespace MVCForum.Controllers
         public IActionResult Read(int id)
         {
             var message = _pmService.GetById(id);
-                
+            if(message == null)
+            {
+                return NotFound();
+            }
             var pm = new PrivateMessageListingModel()
             {
                 Id = message.Id,

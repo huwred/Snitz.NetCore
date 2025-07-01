@@ -87,18 +87,17 @@
                                 }
                                 <div class="subforum-row @weblinkclass ">
                                     <div class="subforum-icon subforum-column text-center">
-                                        <snitz-forum-icon is-administrator="@User.IsInRole("Administrator")" forum-id="@forum.Id" status="@forum.Status" forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
+                                        <snitz-forum-icon lastpost="@forum.LastPostDateTime" is-administrator="@User.IsInRole("Administrator")" forum-id="@forum.Id" status="@forum.Status" forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
                                         @if (User.IsInRole("Administrator") && forum.ForumType is ForumType.WebLink)
                                         {
                                             <br />
-                                            <i class="fa fa-trash weblink-del" data-id="@forum.Id"></i>
+                                            <i class="fa fa-trash weblink-del" title="Delete External link" data-id="@forum.Id"></i>
                                         }
-
                                     </div>
                                     <div class="subforum-description subforum-column">
                                         @if (forum.ForumType == ForumType.WebLink)
                                         {
-                                            <h4><a href="@forum.Url" target="_blank" title="">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
+                                            <h4><a href="@forum.Url" target="_blank">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
                                         }
                                         else
                                         {

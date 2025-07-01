@@ -1,0 +1,141 @@
+﻿@model MVCForum.ViewModels.Member.MemberDetailModel
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Data
+@using SnitzCore.Service
+@using SnitzCore.Service.Extensions
+@inject IMember _memberService
+@{
+    var _ranking = MemberService.GetRankings();
+    var memberproperties = Model.Member!.GetType().GetProperties().Where(p => !p.SystemProperty());
+    var systemproperties = Model.Member!.GetType().GetProperties().Where(p => p.SystemProperty());
+    //var canedit = false;
+}
+
+    <div class="row">
+        <div class="col-6 col-md-2 avatar-container">
+            <snitz-avatar src="~/Content/Avatar/@Model.Member!.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid" />
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">@Localizer["Username"]</label>
+                <input asp-for="Name" class="form-control" disabled="disabled" />
+            </div>
+            <div snitz-if="@((Model.Member?.HideEmail != 1 && Model.Member?.Privateprofile != 1 && User.Identity!.IsAuthenticated))" class="mb-3">
+                <label asp-for="Email" class="form-label">@Localizer["Email"]</label>
+                <input asp-for="Newemail" class="form-control" value="@Model.Member?.Email" disabled="disabled" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label">@Localizer["ProfileTitle"]</label>
+                <input name="Title" class="form-control" disabled="disabled" value="@MemberRankTitle(Model.Member!, _ranking)" />
+            </div>
+        </div>
+        <div class="col col-md-4">
+            <div class="mb-1">
+                <label asp-for="Member!.Created" class="col-sm-3 form-label">@Localizer["ProfileDate"]</label>
+                <div class="col-sm-9">
+                    <label class="form-label">@Model.Member?.Created.FromForumDateStr().ToForumDisplay()</label>
+                </div>
+            </div>
+            <div class="mb-1">
+                <label asp-for="Member!.Posts" class="col-sm-3 col-form-label">@Localizer["ProfilePosts"]</label>
+                <div class="col-sm-9">
+                    <label class="form-label">@Model.Member?.Posts</label>
+                </div>
+            </div>
+            <div class="mb-1">
+                <label asp-for="Member!.Lastpostdate" class="col-sm-3 col-form-label">@Localizer["ProfileLastPost"]</label>
+                <div class="col-sm-9">
+                    @if (Model.Member?.Lastpostdate != null)
+                    {
+                        <label class="form-label">@Model.Member?.Lastpostdate?.FromForumDateStr().ToForumDisplay()</label>
+                    }
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Member!.LastLogin" class="col-sm-3 col-form-label">@Localizer["ProfileLastVisit"]</label>
+                <div class="col-sm-9">
+                    <label class="form-label">@Model.Member?.LastLogin.FromForumDateStr().ToForumDisplay()</label>
+                </div>
+            </div>
+        </div>
+        <div class="col col-md-3">
+            <div class="card panel-primary card-body p-3">
+                <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SearchMessage=true" id="member_posts">@Localizer["lblProfileAllPosts", Model.Member?.Name]</a>
+                <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name&SinceDate=14&SearchMessage=true" id="member_recent_posts">@Localizer["lblProfileRecentPosts", Model.Member?.Name]</a>
+                <a href="~/Forum/SearchResult/?UserName=@Model.Member?.Name" id="member_my_posts">@Localizer["lblProfileMyPosts", Model.Member!.Name]</a>
+                <a href="~/PhotoAlbum/Member/@Model.Member?.Id?sortby=date&sortorder=desc" id="member_album" target="_blank">@Localizer["lblAlbum", _memberService.GetMemberName(Model.Member.Id)]</a>
+            </div>
+            @if (SnitzConfig.GetIntValue("STRTHANKS") == 1)
+            {
+                @await Component.InvokeAsync("PostThanks", new { template = "Profile", id = Model.Member.Id })
+            }
+        </div>
+    </div>
+    <div snitz-if="@((Model.Member?.Privateprofile != 1) && User.Identity!.IsAuthenticated)">
+        <div class="row p-2 rounded mb-2">
+            <legend>@Localizer["Profile"]</legend>
+            <hr />
+            @{
+                var profileprops = memberproperties.Where(p => p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Profile);
+                foreach (PropertyInfo property in profileprops.OrderBy(p => p.PropertyOrder()))
+                {
+                var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && (!property.PropertyIsPrivate()) && !(property.Name == "PhotoUrl") && property.GetValue(Model.Member, null) != null;
+                    <div class="col-6 form-label" snitz-if="@showme && !property.PropertyReadOnly()">
+                        <snitz-config can-edit="false" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                    </div>
+                }
+            }
+        </div>
+        <div class="row p-2 rounded mb-2">
+            <legend>@Localizer["mnuAbout"]</legend>
+            <hr />
+            @{
+                var bioprops = memberproperties.Where(p => p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.Bio).OrderBy(p => p.PropertyOrder());
+                foreach (PropertyInfo property in bioprops)
+                {
+                var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && (!property.PropertyIsPrivate()) && property.GetValue(Model.Member, null) != null;
+                    <div class="col-6 form-label" snitz-if="@showme && !property.PropertyReadOnly()">
+                        <snitz-config can-edit="false" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="row p-2 rounded mb-2">
+            <div class="parent">
+                <legend>@Localizer["SocialMedia"]</legend>
+                <hr />
+                @foreach (PropertyInfo property in memberproperties.Where(p => p.PropertyFieldType() != "checkbox" && p.PropertyLayoutSection() == MemberLayout.SocialMedia).OrderBy(p => p.PropertyOrder()))
+                {
+                    var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!) == 1 && (!property.PropertyIsPrivate()) && property.GetValue(Model.Member, null) != null;
+                    <div class="col-6 form-label" snitz-if="@showme && !property.PropertyReadOnly()">
+                        <snitz-config can-edit="false" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(property.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+
+@functions
+{
+    private string? MemberRankTitle(Member author, Dictionary<int, MemberRanking>? ranking)
+    {
+
+        string? mTitle = author.Title ?? "";
+        if (author.Status == 0 || author.Name == "n/a")
+        {
+            mTitle = Localizer.GetString("tipMemberLocked");
+        }
+        if (author.Name == "zapped")
+        {
+            mTitle = Localizer.GetString("tipZapped");
+        }
+
+        var unused = new RankInfoHelper(author, ref mTitle, author.Posts, ranking);
+
+        return mTitle;
+    }
+}

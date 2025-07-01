@@ -16,7 +16,11 @@
     <meta name="title" content="Topic: @Model.Title" />
     <meta name="description" content="@Model.Content" />
     <meta name="robots" content="index,nofollow" />
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/topic/@Model.Id">
+    @if (SnitzConfig.GetIntValue("INTFORUMRSS") == 1)
+    {
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/topic/@Model.Id">     
+    }
+
 }
 @section Styles
 {
@@ -160,7 +164,7 @@
             
         }
         <!--Replies Section-->
-        @if (Model.Replies != null && Model.Replies!.Any())
+        @if (Model.Replies.Any())
         {
             var rowclass = "alt";
             var firstpage = true;
@@ -198,7 +202,7 @@
             </form>
             </div>
             <div class="reply-container">
-                @foreach (var reply in Model.Replies!)
+                @foreach (var reply in Model.Replies)
                 {
                     rowclass = rowclass == "alt" ? "" : "alt";
                     var hidemestyle = firstpage ? "" : "display:none;";

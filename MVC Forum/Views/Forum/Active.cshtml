@@ -24,7 +24,11 @@
     {
         <meta http-equiv="refresh" content="@refresh">
     }
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/active">
+    @if (SnitzConfig.GetIntValue("INTFORUMRSS") == 1)
+    {
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/active">     
+    }
+    
 }
 @section Styles
 {

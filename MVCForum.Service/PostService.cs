@@ -360,7 +360,7 @@ namespace SnitzCore.Service
                 .Include(p => p.LastPostAuthor).AsNoTracking()
                 .Include(p => p.Category).AsNoTracking()
                 .Include(p => p.Forum).AsNoTracking()
-                .Include(p => p.Replies!.OrderByDescending(r => r.Created))
+                .Include(p => p.Replies.OrderByDescending(r => r.Created))
                 .ThenInclude(r => r.Member).AsNoTracking()
                 //.AsSplitQuery()
                 .SingleOrDefaultAsync(p => p.Id == id);
@@ -375,7 +375,7 @@ namespace SnitzCore.Service
                 .Include(p => p.LastPostAuthor).AsNoTracking()
                 .Include(p => p.Category).AsNoTracking()
                 .Include(p => p.Forum).AsNoTracking()
-                .Include(p => p.Replies!.OrderByDescending(r => r.Created))
+                .Include(p => p.Replies.OrderByDescending(r => r.Created))
                 .ThenInclude(r => r.Member).AsNoTracking()
                 //.AsSplitQuery()
                 .Single();
@@ -455,7 +455,7 @@ namespace SnitzCore.Service
             }
             if (!string.IsNullOrWhiteSpace(searchQuery.UserName) && searchQuery.SearchMessage)
             {
-                var p1 = posts.Where(p=> p.Replies != null && p.Replies.Any(r=>r.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower()))).ToList();
+                var p1 = posts.Where(p=> p.Replies.Any(r=>r.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower()))).ToList();
 
                 var p2 = posts.Where(p => p.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower())).ToList();
 

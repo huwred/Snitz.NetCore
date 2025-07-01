@@ -120,6 +120,7 @@ namespace MVCForum.Controllers
             if (topic != null)
             {
                 topic.Status = 0;
+                _snitzDbContext.Update(topic);
                 _snitzDbContext.SaveChanges();
             }
 
@@ -134,9 +135,7 @@ namespace MVCForum.Controllers
         [Authorize(Roles = "Administrator")]
         public IActionResult MakeFeaturedPoll(int id)
         {
-            var routinfo = _httpContextAccessor?.HttpContext!.Request.Headers["Referer"].ToString();
             _config.SetValue("INTFEATUREDPOLLID", id.ToString());
-
             return Redirect(Request.Headers["Referer"].ToString());            
         }
 

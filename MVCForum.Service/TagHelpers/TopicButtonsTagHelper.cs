@@ -49,7 +49,7 @@ namespace SnitzCore.Service.TagHelpers
                 tagButton.Attributes.Add("type", "button");
                 tagButton.Attributes.Add("data-id", PrintTopic.ToString());
                 tagButton.Attributes.Add("href", "~/Topic/Print/" + PrintTopic.ToString());
-                tagButton.Attributes.Add("rel", "noopener nofollow");
+                tagButton.Attributes.Add("rel", "noopener noreferrer nofollow");
                 tagButton.Attributes.Add("target", "_blank");
                 if (TextLocalizerDelegate != null) tagButton.Attributes.Add("title", TextLocalizerDelegate("tipPrintTopic"));
                 tagButton.InnerHtml.AppendHtml("<i class=\"fa fa-print p-2\"></i>");
@@ -77,7 +77,7 @@ namespace SnitzCore.Service.TagHelpers
                 fbButton.Attributes.Add("class", Class ?? "btn btn-outline-primary ");
                 fbButton.Attributes.Add("data-id", SocialMedia.ToString());
                 fbButton.Attributes.Add("href", $"https://www.facebook.com/share.php?u={pageUrl}&title={forumTitle}");
-                fbButton.Attributes.Add("rel", "noopener nofollow");
+                fbButton.Attributes.Add("rel", "noopener noreferrer nofollow");
                 fbButton.Attributes.Add("target", "_blank");
                 if (TextLocalizerDelegate != null) fbButton.Attributes.Add("title", TextLocalizerDelegate("FacebookShare"));
                 fbButton.InnerHtml.AppendHtml("<i class=\"fa fa-facebook-square p-2\"></i>");
@@ -89,7 +89,7 @@ namespace SnitzCore.Service.TagHelpers
                 //twButton.Attributes.Add("type", "button");
                 twButton.Attributes.Add("data-id", SocialMedia.ToString());
                 twButton.Attributes.Add("href", $"https://twitter.com/home?status={forumTitle}+{pageUrl}");
-                twButton.Attributes.Add("rel", "noopener nofollow");
+                twButton.Attributes.Add("rel", "noopener noreferrer nofollow");
                 twButton.Attributes.Add("target", "_blank");
                 if (TextLocalizerDelegate != null) twButton.Attributes.Add("title", TextLocalizerDelegate("TwitterShare"));
                 twButton.InnerHtml.AppendHtml("<i class=\"fa fa-twitter-square p-2\"></i>");

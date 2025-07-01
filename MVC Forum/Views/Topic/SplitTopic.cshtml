@@ -79,7 +79,7 @@
                             <th class="col-1"><input type="checkbox" id="checkAll" title="@Localizer["tipCheckAll"]" /></th>
                         </tr>
                     </thead>
-                    @if (Model.Replies != null)
+                    @if (Model.Replies.Any())
                     {
                         foreach (var item in Model.Replies)
                         {

@@ -154,5 +154,11 @@
     "inputFiles": [
       "wwwroot/js/addpostform.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/jquery/dist/jquery-ui.min.js",
+    "inputFiles": [
+      "wwwroot/lib/jquery/dist/jquery-ui.js"
+    ]
   }
 ]

@@ -5,7 +5,7 @@
     bool isadmin = User.IsInRole("Administrator");
     bool ismoderator = User.IsInRole("Moderator");
     bool islocked = Model.Status == 0;
-    bool isauthor = User.Identity.Name == Model.Member.Name;
+    bool isauthor = User.Identity?.Name?.ToLowerInvariant() == Model.Member?.Name.ToLowerInvariant();
     var subscriptions = MemberService.Current()?.Subscriptions;
     bool allowThanks = (bool)TempData["allowThanks"];
 }
@@ -46,12 +46,12 @@
         }
         @if (isadmin || isauthor || ismoderator)
         {
-            <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-pencil m-1 post-edit" title="@Localizer["tipEditTopic"]" data-id="@Model.Id"></i>
+            <i snitz-if="@((!islocked && isauthor) || isadmin || ismoderator)" class="fa fa-pencil m-1 post-edit" title="@Localizer["tipEditTopic"]" data-id="@Model.Id"></i>
             <i class="fa fa-trash m-1 post-del" title="@Localizer["tipTopicDel"]" data-id="@Model.Id"></i>
             <i snitz-if="@(islocked && (isadmin || ismoderator))" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.Id" data-status="1"></i>
             <i snitz-if="@((isadmin || ismoderator) && !islocked)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.Id" data-status="0"></i>
-            <i snitz-if="@(Model.IsSticky == 0)" class="fa fa-thumb-tack m-1 post-stick" title="@Localizer["tipMakeSticky"]" data-id="@Model.Id" data-status="1"></i>
-            <i snitz-if="@(Model.IsSticky == 1)" class="fa fa-thumb-tack fa-rotate-90 red m-1 post-stick" title="@Localizer["tipUnStick"]" data-id="@Model.Id" data-status="0"></i>
+            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 0)" class="fa fa-thumb-tack m-1 post-stick" title="@Localizer["tipMakeSticky"]" data-id="@Model.Id" data-status="1"></i>
+            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 1)" class="fa fa-thumb-tack fa-rotate-90 red m-1 post-stick" title="@Localizer["tipUnStick"]" data-id="@Model.Id" data-status="0"></i>
         }
     </div>
 }

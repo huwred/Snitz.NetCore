@@ -6,7 +6,10 @@
     <meta name="title" content="@Config.Value.strForumTitle" />
     <meta name="description" content="@Config.Value.strForumDescription" />
     <meta name="robots" content="index,follow" />
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/active">
+    @if (SnitzConfig.GetIntValue("INTFORUMRSS") == 1)
+    {
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/active">
+    }
 }
 <div class="container">
     <div class="row">
@@ -15,12 +18,12 @@
         </div>
         <div class="d-none d-lg-block col-4 mt-3">
             <partial name="QuickSearch"/>
+            <partial name="LatestPosts" model="@Model.LatestPosts" />
             @if (SnitzConfig.GetIntValue("INTFEATUREDPHOTO") == 1)
             {
                 @await Component.InvokeAsync("ImageAlbum", new { template = "Featured" })
             }
             <partial name="FeaturedPoll" />
-            <partial name="LatestPosts" model="@Model.LatestPosts"/>
         </div>
     </div>
 </div>
