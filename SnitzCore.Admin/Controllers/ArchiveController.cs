@@ -65,33 +65,37 @@ namespace SnitzCore.BackOffice.Controllers
             try
             {
                 _dbcontext.Database.BeginTransaction();
-                foreach (var category in model.Categories)
+                if (model.Categories.Any())
                 {
-                    if(category.Forums != null)
+                    foreach (var category in model.Categories)
                     {
-                        bool update = false;
-                        foreach (var forum in category.Forums)
+                        if(category.Forums != null)
                         {
-                            var origforum = _dbcontext.Forums.First(f=>f.Id == forum.Id);
+                            bool update = false;
+                            foreach (var forum in category.Forums)
+                            {
+                                var origforum = _dbcontext.Forums.First(f=>f.Id == forum.Id);
 
-                            if(forum.ArchiveSched != origforum.ArchiveSched)
-                            {
-                                update = true;
-                                origforum.ArchiveSched = forum.ArchiveSched;
+                                if(forum.ArchiveSched != origforum.ArchiveSched)
+                                {
+                                    update = true;
+                                    origforum.ArchiveSched = forum.ArchiveSched;
+                                }
+                                if(forum.DeleteSched != origforum.DeleteSched)
+                                {
+                                    update = true;
+                                    origforum.DeleteSched = forum.DeleteSched;
+                                }
+                                if (update)
+                                {
+                                    _dbcontext.Update(origforum);
+                                }                    
                             }
-                            if(forum.DeleteSched != origforum.DeleteSched)
-                            {
-                                update = true;
-                                origforum.DeleteSched = forum.DeleteSched;
-                            }
-                            if (update)
-                            {
-                                _dbcontext.Update(origforum);
-                            }                    
+                            _dbcontext.SaveChanges();
                         }
-                        _dbcontext.SaveChanges();
                     }
                 }
+
             }
             catch (Exception)
             {

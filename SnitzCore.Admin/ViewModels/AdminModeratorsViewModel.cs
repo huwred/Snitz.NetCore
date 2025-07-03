@@ -36,7 +36,11 @@ public class AdminModeratorsViewModel
     }
     public class ArchivesViewModel
     {
-        public List<Category>? Categories { get; set; }
-        //public List<Forum> Forums { get; set; }
+        public List<Category> Categories { get; set; }
+
+        public ArchivesViewModel()
+        {
+            Categories = new List<Category>();
+        }
     }
 }
