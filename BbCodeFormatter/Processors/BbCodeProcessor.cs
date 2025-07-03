@@ -91,8 +91,8 @@ public class BbCodeProcessor : ICodeProcessor
             //some users use both tags, so lets filter that out
             _codeformatter.Add(new SearchReplaceFormatter("[scrollcode][code]", "[scrollcode]"));
     _codeformatter.Add(new SearchReplaceFormatter("[/code][/scrollcode]", "[/scrollcode]"));
-    _codeformatter.Add(new RegexFormatter(@"\[code(?:=""(?<class>[\S\s][^""]*)"")?(?:\s*)\]((.|\n)*?)((\[/code(?:=""\k<class>"")])|(\[/code(?:\s*)]))", "<div class=\"bbc-codetitle\" dir=\"ltr\">Code:</div><div class=\"bbc-codecontent\" dir=\"ltr\"><pre><code class=\"${class}\">$1</code></pre></div>"));
-    _codeformatter.Add(new RegexFormatter(@"\[scrollcode(?:\s*)\]((.|\n)*?)\[/scrollcode(?:\s*)]", "<div class=\"bbc-codetitle\" dir=\"ltr\">Code:</div><div class=\"bbc-codecontent\" dir=\"ltr\"><pre><code>$1</code></pre></div>"));
+    _codeformatter.Add(new RegexFormatter(@"\[code(?:=""(?<class>[\S\s][^""]*)"")?(?:\s*)\]((.|\n)*?)((\[/code(?:=""\k<class>"")])|(\[/code(?:\s*)]))", "<div class=\"bbc-codetitle\" dir=\"ltr\">Code:</div><div class=\"bbc-codecontent\" dir=\"ltr\"><pre class=\"language-markup\"><code class=\"language-markup\">$1</code></pre></div>"));
+    _codeformatter.Add(new RegexFormatter(@"\[scrollcode(?:\s*)\]((.|\n)*?)\[/scrollcode(?:\s*)]", "<div class=\"bbc-codetitle\" dir=\"ltr\">Code:</div><div class=\"bbc-codecontent\" dir=\"ltr\"><pre class=\"language-markup\"><code class=\"language-markup\">$1</code></pre></div>"));
 
     #region tables
     _tables.Add(new RegexFormatter(@"(\[table([^]]*)])", "<table class=\"divTable\" $2>"));
