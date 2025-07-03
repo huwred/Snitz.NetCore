@@ -35,7 +35,7 @@ namespace Snitz.PostThanks.ViewComponents
                 ViewBag.IsAllowed = forum.Any();
                 return await Task.FromResult((IViewComponentResult)View(template,forum.FirstOrDefault()));
             }
-            if (template == "TopicSummary")
+            if (template == "TopicSummary" && topicid != null && id != null)
             {
                 var vm = new PostThanksViewModel
                 {
