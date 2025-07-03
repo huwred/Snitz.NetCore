@@ -1,0 +1,249 @@
+﻿@using BbCodeFormatter
+@using MVCForum.ViewModels.Post
+@using SnitzCore.Service.Extensions
+@inject ICodeProcessor BbCodeProcessor
+@model PostIndexModel
+
+@{
+    ViewBag.Title = Localizer["ttlBlog"] + " - " + BbCodeProcessor.Subject(Model.Topic.Title) + " | " + (SnitzConfig.ForumTitle);
+    ViewBag.Topic = Model.Topic;
+
+    string metaTitle = ViewBag.Title;
+}
+@section MetaData
+{
+<meta name="title" content="@metaTitle" />
+<meta name="description" content="@BbCodeProcessor.StripTags(Model.Topic.Content).TruncateLongString(149)">
+<meta name="author" content="@Model.Topic.Member.Name">
+<meta name="copyright" content="@Html.Raw(String.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year)) - @SnitzConfig.ForumTitle, @Model.Topic.Member.Name">
+<meta name="distribution" content="global">
+<meta name="rating" content="14 years">
+}
+@section Styles{
+    
+    <link href="~/css/star-rating.min.css" rel="stylesheet" />
+    <link href="~/css/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css"/>
+    <link href="@SnitzConfig.ThemeCss("tag_cloud.css")" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/prism.min.css">
+    @if (ViewBag.RequireAuth)
+    {
+        <style>
+            .modal-backdrop
+            {
+                opacity:1.0 !important;
+            }
+            .modal-backdrop.in {
+                    opacity: 1.0 !important;
+                }
+        </style>
+    }
+    <renderstoredcontent asp-key="blog-css"></renderstoredcontent>
+}
+<snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
+@if (!ViewBag.RequireAuth)
+{
+<div class="btn-toolbar padding-sm" id="page-top">
+@*     @if (SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1)
+    {
+        <a title="@Localizer["tipPrintBlog"]" data-bs-toggle="tooltip" href="@Url.Action(" Print", "Topic" , new { id=Model.Id, archived=Model.Topic.ArchiveFlag })" class="btn btn-sm btn-primary" target="_blank">
+            <i class="fa fa-print"></i>
+            <span class="hidden-xs hidden-sm">@Localizer["btnPrintBlog"]</span>
+        </a>
+    } *@
+           <vc:topic-buttons postid="@Model.Id" topic-email="@(@User.Identity.IsAuthenticated ? 1 : 0)" snitz-if="@User.Identity.IsAuthenticated"></vc:topic-buttons>
+</div>
+
+<hr class="title" />
+<div class="row">
+    <div class="col-9">
+            <partial name="Blog/_TopicNew" model="@Model.Topic" view-data="@this.ViewData" />
+    </div>
+    <div class="d-none d-lg-block col-3">
+            @await Component.InvokeAsync("Blog", new { template = "TagCloud", id = Model.ForumId })
+            @await Component.InvokeAsync("Blog", new { template = "List", id = Model.ForumId })
+    </div>
+</div>
+
+    if (Model.PageCount > 0)
+    {
+        <div class="col-9">
+            <h4>@Localizer["lblComments"]</h4>
+            <hr class="title" />
+        </div>
+        <div class="col-8" id="comments">
+            @foreach (var item in Model.Replies)
+            {
+                item.Status = Model.Topic.Forum.Status;
+                if (item.Reply.Topic == null)
+                {
+                    item.Reply.Topic = Model.Topic;
+                }
+                <a id="@item.Id"></a>
+                <partial name="Blog/_ReplyNew" model="@item.Reply" view-data="@this.ViewData" />
+            }
+        </div>
+        @if (Model.PageCount > 1)
+        {
+            <partial name="ListPaging" 
+                model="@(new PagingModel{
+                        PageCount = Model.PageCount,
+                        PageSize = Model.PageSize,
+                        Page = Model.PageNum,
+                        OrderBy = "lpd",
+                        SortDir = Model.SortDir})" />
+        }
+        else
+        {
+            <div class="mb3">&nbsp;</div>
+        }
+    }
+    else
+    {
+@*         if (Model.Topic.Forum.Status == (int)Status.Open && Model.Topic.ArchiveFlag != 1)
+        {
+            if (User.Identity.IsAuthenticated && SnitzConfig.GetIntValue("STRSHOWQUICKREPLY") == 1 && Model.Topic.Status == (int)Status.Open)
+            {
+                <div class="col-xs-9 col-xs-offset-2" id="qr-container">
+                    @{Html.RenderPartial("Blog/_QuickReply", ViewData["quickreply"], new ViewDataDictionary(this.ViewData) { { "noToolbar", true } });}
+                </div>
+            }
+        } *@
+    }
+@*     if (Model.Topic.Forum.Status == (int)Status.Open && Model.Topic.ArchiveFlag != 1)
+    {
+        if (User.Identity.IsAuthenticated && SnitzConfig.GetIntValue("STRSHOWQUICKREPLY") == 1 && Model.Topic.Status == (int)Status.Open)
+        {
+            <div class="row-fluid" id="qr-dummy" style="display: none;">
+                @{Html.RenderPartial("Blog/_QuickReply", ViewData["quickreply"], new ViewDataDictionary(this.ViewData) { { "noToolbar", true } });}
+            </div>
+        }
+    } *@
+}
+
+@* @{Html.RenderPartial("_ModalPopups");} *@
+
+
+@section Scripts
+{
+<script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+<script type="text/javascript" src="~/js/postcontroller.min.js"></script>
+<script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
+<script type="text/javascript" src="~/js/initPostForm.js"></script>
+<script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
+<script type="text/javascript" src="~/js/topic.min.js"></script>
+<script src="~/js/star-rating.min.js"></script>
+<script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
+    <script type="text/javascript">
+const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+const appendAlert = (message, type) => {
+  const wrapper = document.createElement('div')
+  wrapper.innerHTML = [
+    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+    `   <div>${message}</div>`,
+    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+    '</div>'
+  ].join('')
+
+  alertPlaceholder.append(wrapper)
+}
+
+
+        $(document).ready(function(){
+            $('#rating-id').on("rating:change", function(event, value, caption) {
+                var form = $('#save-rating');
+                $.ajax({
+                    url: SnitzVars.baseUrl + '/Topic/SaveRating',
+                    type: "POST",
+                    data: form.serialize(),
+                    success: function (data) {
+                        $('#rating-id').rating("refresh", {disabled:true, showClear:false});
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            });
+        });
+        function TopicRated(){
+            $('.topic_rating').hide();
+            $('#input-id-@Model.Id').rating("refresh", {disabled:true, showClear:false});
+        }
+        $(document).ajaxComplete(function(event, xhr, settings) {
+            $('.loading').hide();
+        });
+        document.querySelectorAll('.star-rating:not(.readonly) label').forEach(star => {
+            star.addEventListener('click', function() {
+                this.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+        $(window).on("load",
+            function (e) {
+                $("#passwordDlg").on('hide.bs.modal',
+                    function () {
+                        //alert("close");
+                        window.location.href = '/Category/Index';
+                    });
+                $('#passwordDlg').on('click',
+                    '#btnPassYes',
+                    function (e) {
+                        $.ajax({
+                            type: "POST",
+                            url: SnitzVars.baseUrl + '/Forum/PasswordCheck',
+                            data: { pwd: $('#forum-pass').val(), forumid: $('#req-forumid').val(), topicid: '0' },
+                            success: function (result) {
+                                //alert(result);
+                                if (result) {
+                                    $("#passwordDlg").off('hide.bs.modal');
+                                    location.reload(true);
+                                    $('#passwordDlg').modal('hide');
+                                    return false;
+                                } else {
+                                    window.location.href = '/Category/Index';
+                                }
+                            },
+                            error: function (error) {
+                                alert(error);
+                                window.location.href = '/Category/Index';
+                                return false;
+                            }
+                        });
+                    });
+                if ($('#req-auth').val() === 'True') {
+                    $('#passwordDlg').modal('show');
+                }
+                $('.split-topic').on('click', function (e) {
+                    e.preventDefault();
+                    location.href = SnitzVars.baseUrl + "/Topic/SplitTopic/?id=" + $(this).data("topic") + "&replyid=" + $(this).data("id");
+                });
+            });
+
+        $("#QuickReply").submit(function (e) {
+            e.preventDefault();
+
+            tinyMCE.get("msg-text").save();
+            var form = $("#QuickReply");
+            var formData = new FormData(form[0]);
+            $.ajax({
+                url: $(this).attr("action"),
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    location.href = data.url + '?page=-1';
+                },
+                error: function (err) {
+                    //alert("error");
+                    console.log(err.responseJSON.err);
+                    appendAlert(SnitzVars.floodErr, 'danger');
+                }
+            });
+            return false;
+        });
+    </script>
+
+    <renderstoredcontent asp-key="topic-post-controls"></renderstoredcontent>
+}

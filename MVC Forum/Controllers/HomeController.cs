@@ -50,6 +50,7 @@ namespace MVCForum.Controllers
             .Select(post => new PostListingModel
             {
                 Id = post.Id,
+                Topic = post,
                 Title = post.Title,
                 Message = post.Content,
                 AuthorName = post.Member?.Name ?? "Unknown",

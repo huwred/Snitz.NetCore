@@ -136,7 +136,7 @@
                     <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && Model.Edited != null)" class="form-text">@Localizer["lblEditedBy", Model.EditedBy!, Model.Edited?.ToLocalTime().ToForumDisplay()!]</span>
                 @if (!Model.Archived)
                 {
-                    @await Component.InvokeAsync("PostControls", new { post = Model })
+                    @await Component.InvokeAsync("PostControls", new { post = Model.Topic })
 
                 }else{
                     <span class="form-text">@Localizer["tipTopicArchived"]</span>
@@ -273,6 +273,8 @@
         <!--Reply Area-->
         @if (SnitzConfig.GetIntValue("STRSHOWQUICKREPLY") == 1 && !Model.Archived)
         {
+            <div id="liveAlertPlaceholder"></div>
+
             <div snitz-if="@(!Model.IsLocked)" class="comment-area @replyClass mt-2" id="reply-area">
                 <form asp-controller="Topic" asp-action="AddReply" class="needs-validation" id="QuickReply" novalidate>
                     <textarea name="Content" id="msg-text" placeholder="reply here ... " class="form-control" required="required" rows="6"></textarea>
@@ -387,6 +389,20 @@
 <script src="~/js/star-rating.min.js"></script>
 <script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
     <script type="text/javascript">
+const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+const appendAlert = (message, type) => {
+  const wrapper = document.createElement('div')
+  wrapper.innerHTML = [
+    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+    `   <div>${message}</div>`,
+    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+    '</div>'
+  ].join('')
+
+  alertPlaceholder.append(wrapper)
+}
+
+
         $(document).ready(function(){
             $('#rating-id').on("rating:change", function(event, value, caption) {
                 var form = $('#save-rating');
@@ -475,11 +491,14 @@
                     location.href = data.url + '?page=-1';
                 },
                 error: function (err) {
-                    console.log(err);
+                    //alert("error");
+                    console.log(err.responseJSON.err);
+                    appendAlert(SnitzVars.floodErr, 'danger');
                 }
             });
             return false;
         });
     </script>
+
     <renderstoredcontent asp-key="topic-post-controls"></renderstoredcontent>
 }

@@ -1,4 +1,5 @@
-﻿using BbCodeFormatter;
+﻿using Azure;
+using BbCodeFormatter;
 using BbCodeFormatter.Processors;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
@@ -182,6 +183,7 @@ namespace MVCForum.Controllers
             var model = new PostIndexModel()
             {
                 Id = post.Id,
+                Topic = post,
                 Title = post.Title,
                 Author = post.Member!,
                 AuthorId = post.Member!.Id,
@@ -209,8 +211,15 @@ namespace MVCForum.Controllers
                 AllowRating = post.Forum.Rating==1 && _config.GetIntValue("INTTOPICRATING")==1 && !_memberService.HasRatedTopic(post.Id,_memberService.Current()?.Id),
                 Rating = post.GetTopicRating()
             };
+            if(post.Forum.Type == (int)ForumType.BlogPosts)
+            {
+                return View("Blog/Posts",model);
+            }
+            else
+            {
+                return View(model);
+            }
 
-            return View(model);
         }
         private string GetString(IHtmlContent content)
         {
@@ -581,7 +590,17 @@ namespace MVCForum.Controllers
             ModelState.Remove("Sticky");
             ModelState.Remove("Lock");
             ModelState.Remove("DoNotArchive");
-
+            if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
+            {
+                var member = await _memberService.GetById(User);
+                var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
+                if (member!.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
+                {
+                    TempData["Error"] = "floodcheck";
+                    ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
+                    return View("Error");
+                }
+            }
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -753,8 +772,8 @@ namespace MVCForum.Controllers
                 {
                     
                     TempData["Error"] = "floodcheck";
-
-                    return Json(new{url=Url.Action("Index", "Topic", new { id = model.TopicId }),id=model.TopicId});
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return Json(new{err=_languageResource.GetString("FloodcheckErr", timeout),url=Url.Action("Index", "Topic", new { id = model.TopicId }),id=model.TopicId});
                 }
             }
             var reply = BuildReply(model, member!.Id);
@@ -1069,6 +1088,7 @@ namespace MVCForum.Controllers
                 model = new PostIndexModel()
                 {
                     Id = topic!.Id,
+                    Topic = topic,
                     Title = topic.Title,
                     Author = topic.Member!,
                     AuthorId = topic.Member!.Id,
@@ -1510,7 +1530,33 @@ namespace MVCForum.Controllers
             var result = await _postService.MakeSticky(id, (short)state);
             return result ? Json(new { result, data = id }) : Json(new { result, error = "Unable to toggle Status" });
         }
+        public PartialViewResult BlogList(int id)
+        {
 
+            var forum = _forumService.GetWithPosts(id);
+
+            if (forum == null)
+            {
+                ViewBag.Error = "Forum not found";
+                return PartialView("Error");
+            }
+            PagedList<Post> result = new PagedList<Post>(forum.Posts!,1,50); //forum.Posts(50, 1, User, WebSecurity.CurrentUserId, 120);
+
+            ForumViewModel vm = new()
+            {
+                Forum = forum, 
+                Topics = result.ToList()
+            };
+            vm.Id = forum.Id;
+            vm.Forum = forum;
+            vm.PageSize = 50;
+            vm.StickyTopics = null;
+            vm.TotalRecords = result.TotalItemCount;
+            int pagecount = Convert.ToInt32(result.PageCount);
+            vm.PageCount = pagecount;
+            vm.Page = 1;
+            return PartialView("_BlogList", vm);
+        }
         private Post BuildPost(NewPostModel model, int memberid)
         {
             if (model.TopicId != 0)
@@ -1571,6 +1617,7 @@ namespace MVCForum.Controllers
             return replies.Select(reply => new PostReplyModel()
             {
                 Id = reply.Id,
+                Reply = reply,
                 AuthorId = reply.Member!.Id,
                 Author = reply.Member,
                 AuthorName = reply.Member.Name,
@@ -1591,6 +1638,7 @@ namespace MVCForum.Controllers
             return replies.Select(reply => new PostReplyModel()
             {
                 Id = reply.Id,
+
                 AuthorId = reply.Member!.Id,
                 Author = reply.Member,
                 AuthorName = reply.Member.Name,

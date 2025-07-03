@@ -230,7 +230,7 @@ $(document).ready(function() {
             $(".reply-card").each(function () {
                 var ot = $(this).offset().top;  //* top of object (i.e. advertising div)
                 var ob = ot + $(this).height(); //* bottom of object
-                console.log(ob);
+                //console.log(ob);
                 if(!$(this).attr("loaded") && wt<=ob && wb >= ot && ot !=0) {
                     $(this).children().show();
                     $(this).attr("loaded",true);

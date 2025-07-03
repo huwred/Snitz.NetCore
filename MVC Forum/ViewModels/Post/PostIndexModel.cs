@@ -5,6 +5,7 @@ namespace MVCForum.ViewModels.Post
     public class PostIndexModel : PostBase
     {
         public string Title { get; set; } = null!;
+        public SnitzCore.Data.Models.Post Topic { get; set; } = null!;
 
         public int ForumId { get; set; }
         public string ForumName { get; set; } = null!;

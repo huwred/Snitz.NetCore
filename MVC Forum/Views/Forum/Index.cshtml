@@ -18,8 +18,11 @@
     }
 }
 @section Styles{
+    
     <link href="~/css/star-rating.min.css" rel="stylesheet" />
     <link href="~/css/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css"/>
+    <link href="@SnitzConfig.ThemeCss("tag_cloud.css")" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/prism.min.css">
     @if (ViewBag.RequireAuth)
     {
         <style>
@@ -32,6 +35,7 @@
                 }
         </style>
     }
+    <renderstoredcontent asp-key="blog-css"></renderstoredcontent>
 }
 @{
     var auth = (bool)ViewBag.RequireAuth;
@@ -164,69 +168,91 @@
             </div>
         </div>
         <!--Display posts table-->
-        <div class="posts-table">
-            <div class="table-head">
-                <div class="status rounded-2">
-                    @if (!Model.Archives && User.Identity.IsAuthenticated && Model.Forum.ForumSubscription == ForumSubscription.ForumSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
+        <div class="row">
+            <div class="col">
+                <div class="posts-table">
+                    <div class="table-head">
+                        <div class="status rounded-2">
+                            @if (!Model.Archives && User.Identity.IsAuthenticated && Model.Forum.ForumSubscription == ForumSubscription.ForumSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
+                            {
+                                if (subscriptions != null && subscriptions.Where(s => s.ForumId == Model.Forum.Id && s.PostId == 0).Select(s => s.ForumId).Any())
+                                {
+                                    <i class="fa fa-share-square forum center" title="@Localizer["btnUnsubscribe"]" data-id="@Model.Forum.Id"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-share-square-o forum center " title="@Localizer["cnfSubscribeForum"]" data-id="@Model.Forum.Id"></i>
+                                }
+                            }
+                        </div>
+                        <div class="subjects rounded-2">@Localizer["lblSubject"]</div>
+                        <div class="replies rounded-2"></div>
+                        <div class="last-reply rounded-2">@Localizer["lblLastPost"]</div>
+                        <div class="subscribe rounded-1 d-none d-md-inline-block"><i class="fa fa-object-group" title="@Localizer["tipMergeTopic"]" style="display: none;"></i></div>
+                    </div>
+                    @{
+                        ViewData["ActiveTopics"] = false;
+                        ViewData["Archives"] = Model.Archives;
+                    }
+                    <!--Sticky Topics-->
+                    @if (Model.StickyPosts!.Any())
                     {
-                        if (subscriptions != null && subscriptions.Where(s => s.ForumId == Model.Forum.Id && s.PostId == 0).Select(s => s.ForumId).Any())
+                        if (Model.StickyPosts != null)
                         {
-                            <i class="fa fa-share-square forum center" title="@Localizer["btnUnsubscribe"]" data-id="@Model.Forum.Id"></i>
+                            foreach (var post in Model.StickyPosts)
+                            {
+                                <partial name="TopicListing" model="post" view-data="ViewData" />
+                            }
+                        }
+                        <hr />
+                    }
+                    <!--Topics start here-->
+                    @foreach (var post in Model.Posts!){
+                        if(Model.Forum.ForumType == ForumType.BlogPosts)
+                        {
+                            <partial name="BlogListing" model="post" view-data="ViewData" />
                         }
                         else
                         {
-                            <i class="fa fa-share-square-o forum center " title="@Localizer["cnfSubscribeForum"]" data-id="@Model.Forum.Id"></i>
+                            <partial name="TopicListing" model="post" view-data="ViewData" />
                         }
+
                     }
-                </div>
-                <div class="subjects rounded-2">@Localizer["lblSubject"]</div>
-                <div class="replies rounded-2"></div>
-                <div class="last-reply rounded-2">@Localizer["lblLastPost"]</div>
-                <div class="subscribe rounded-1 d-none d-md-inline-block"><i class="fa fa-object-group" title="@Localizer["tipMergeTopic"]" style="display: none;"></i></div>
-            </div>
-            @{
-                ViewData["ActiveTopics"] = false;
-                ViewData["Archives"] = Model.Archives;
-            }
-            <!--Sticky Topics-->
-            @if (Model.StickyPosts!.Any())
-            {
-                if (Model.StickyPosts != null)
-                {
-                    foreach (var post in Model.StickyPosts)
+                    @if (Model.Forum.Topics == 0)
                     {
-                        <partial name="TopicListing" model="post" view-data="ViewData" />
+                        <p class="text-center p-4">@Localizer["lblNoForumTopics"]</p>
+                    }else if (Model.Posts == null || Model.Posts?.Count() == 0)
+                    {
+                        <p class="text-center p-4">@Localizer["lblNoTopicsToDisplay"]</p>
                     }
+                    <!--ends here-->
+
+                </div>
+                <!--Pagination starts-->
+                <partial snitz-if="@(Model.PageCount > 1)" 
+                         name="ListPaging" 
+                         model="@(new PagingModel
+                                {
+                                    PageCount = Model.PageCount,
+                                    Page = pagenum != null ? Convert.ToInt32(pagenum) : 1,
+                                    PageSize = ViewBag.PageSize,
+                                    OrderBy = Model.Forum!.OrderBy,
+                                    SortDir = Model.Forum.SortDir,
+                                    DefaultDays = (int)Model.Forum.DefaultView
+                                })" />
+                <!--pagination ends-->
+                <partial name="IconInfo" />
+            </div>
+
+            <div class="d-none d-lg-block col-3" snitz-if="@(Model.Forum.ForumType == ForumType.BlogPosts)">
+                <partial name="QuickSearch" />
+                @if(Model.Forum.ForumType == ForumType.BlogPosts){
+                    @await Component.InvokeAsync("Blog", new { template = "TagCloud", id = Model.Forum.Id })
+                    @await Component.InvokeAsync("Blog", new { template = "List", id = Model.Forum.Id })
                 }
-                <hr />
-            }
-            <!--Topics start here-->
-            @foreach (var post in Model.Posts!){
-                <partial name="TopicListing" model="post" view-data="ViewData" />
-            }
-            @if (Model.Forum.Topics == 0)
-            {
-                <p class="text-center p-4">@Localizer["lblNoForumTopics"]</p>
-            }else if (Model.Posts == null || Model.Posts?.Count() == 0)
-            {
-                <p class="text-center p-4">@Localizer["lblNoTopicsToDisplay"]</p>
-            }
-            <!--ends here-->
+            </div>
         </div>
-        <!--Pagination starts-->
-        <partial snitz-if="@(Model.PageCount > 1)" 
-                 name="ListPaging" 
-                 model="@(new PagingModel
-                        {
-                            PageCount = Model.PageCount,
-                            Page = pagenum != null ? Convert.ToInt32(pagenum) : 1,
-                            PageSize = ViewBag.PageSize,
-                            OrderBy = Model.Forum!.OrderBy,
-                            SortDir = Model.Forum.SortDir,
-                            DefaultDays = (int)Model.Forum.DefaultView
-                        })" />
-        <!--pagination ends-->
-        <partial name="IconInfo" />
+
     </div>
 }
 @{
@@ -241,6 +267,7 @@
 <input type="text" style="display: none;" id="req-forumid" value="@Model.Forum.Id" />
 <partial name="PasswordDlg" model='new ConfirmDialogViewModel(){Title=Localizer["popPasswordRqdTitle"].Value,Message = Localizer["popPasswordRqdMessage"].Value}' />
 @section Scripts {
+    <script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
 <script src="~/js/star-rating.min.js"></script>
 <script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
 <script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
@@ -306,6 +333,13 @@
             $("#hdndefaultdays").val($("#default-days").val());
             $("#defaultdays-form").submit();
         });
+        Prism.hooks.add("before-highlight",
+        function(env) {
+            env.code = env.element.innerText;
+        });
+
+    code = document.getElementsByTagName('code');
+    Array.from(code).forEach(el => { Prism.highlightElement(el) });
 </script>
 <renderstoredcontent asp-key="topic-post-controls"></renderstoredcontent>
 

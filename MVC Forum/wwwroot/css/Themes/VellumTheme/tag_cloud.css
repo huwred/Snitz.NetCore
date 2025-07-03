@@ -1,4 +1,4 @@
-.tag-cloud {font: 0.8em Arial, San-Serif !important;color: #000;background: #e2e2e2;text-align: center;opacity: 0;border-radius: 2rem;}
+.tag-cloud {font: 0.8em Arial, San-Serif !important;color: #000;background: #e2e2e2;text-align: center;border-radius: 2rem;}
 .tag{display: inline-block;vertical-align: middle;line-height: .75em;margin: 0 .2em;}
 .tag.kind-0{color: #E4BB37;text-transform: lowercase;font-size: 5em;}
 .tag.kind-1{color: #E68D3A;font-size: 3em;}

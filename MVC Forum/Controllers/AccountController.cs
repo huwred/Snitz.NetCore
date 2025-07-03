@@ -395,6 +395,7 @@ namespace MVCForum.Controllers
                     if(Url.IsLocalUrl(returnUrl))
                     {
                         _logger.Info("ReturnUrl is local");
+                        return LocalRedirect(returnUrl);
                     }
                     else
                     {

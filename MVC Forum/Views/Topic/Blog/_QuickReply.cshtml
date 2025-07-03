@@ -1,0 +1,51 @@
+﻿
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzDataModel
+@using SnitzDataModel.Models
+@using WWW.Views.Helpers
+
+
+@model WWW.ViewModels.PostMessageViewModel
+
+@using (Html.BeginForm("PostMessage", "Reply", FormMethod.Post,new{id="quickpostForm"}))
+{
+    ViewBag.SubmitButton = ResourceManager.GetLocalisedString("btnPost", "labels"); 
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal  clearfix">
+
+            <h4>@ResourceManager.GetLocalisedString("lblBlogReply", "BlogPages")</h4><hr class="title"/>
+            @Html.ValidationSummary(true)
+        <div class="form-group" id="editorDiv">
+            @if (ViewData["noToolbar"] == null)
+            {
+                <div class="col-xs-12 padding-lg">@Html.Partial("_EditorBar", Model)</div>
+            }
+                       
+            <div class="qr-editor-field col-xs-12 padding-lg">
+
+                <textarea name="Message" class="bbc-code-editor multi-line form-control" id="Message" data-val-required="@ResourceManager.GetLocalisedString("MessageRequired", "General")" data-val="true"></textarea>
+                     
+            </div>
+            <div class="hidden-xs col-sm-7">
+                @if (ClassicConfig.EmoticonTable)
+                {
+                    Html.RenderPartial("_emoticons", Emoticon.Emoticons());
+                }
+                @Html.HiddenFor(model => model.CatId)
+                @Html.HiddenFor(model => model.ForumId)
+                @Html.HiddenFor(model => model.TopicId)
+                @Html.HiddenFor(model => model.ReplyId)
+                    
+            </div>
+            <div class="padding-md" dir="ltr">
+                <span class="text-muted small">@ResourceManager.GetLocalisedString("lblRateMe", "BlogPages")</span>
+                <input id="PostRating" name="PostRating" value="0" type="number" class="rate-mex" min=0 max=5 step=0.5 data-size="sm" title="@ResourceManager.GetLocalisedString("lblRateMe", "BlogPages")" rel="tooltip"/>
+            </div>
+            <div class="col-sm-4 pull-right flip">@Html.Partial("_FormButtons")</div>
+        </div>
+                @*@Html.Partial("_PostOptions")*@
+ 
+    </div>
+}
+

@@ -1,0 +1,32 @@
+﻿@using Snitz.Base
+@using SnitzConfig
+@using WWW.Views.Helpers
+
+@model SnitzDataModel.Models.Reply
+@{
+    DateTime date = Model.Date.Value;
+
+    var unmoderatedClass = "";
+    if (Model.PostStatus == Enumerators.PostStatus.UnModerated)
+    {
+        unmoderatedClass = "topic-unmoderated";
+    }
+    else if (Model.PostStatus == Enumerators.PostStatus.OnHold)
+    {
+        unmoderatedClass = "topic-onhold";
+    }    
+}
+
+
+        <div class="col-xs-9 col-xs-offset-1 blog-container @unmoderatedClass">
+
+            @Html.Partial("_MessageButtons", Model,new ViewDataDictionary(this.ViewData) { {"buttonsOnly", true },{"buttons",new List<string>{"reply","quote","split","select"}}})
+            <p>@Model.Author.Username <span class="small">@Html.Timeago(date)</span></p>            
+            
+        <div class="blog-message padding-md">
+            @Html.FormatBbCode(Model.Message)
+        </div>
+
+    </div>
+
+

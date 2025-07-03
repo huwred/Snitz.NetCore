@@ -1,0 +1,65 @@
+﻿@using BbCodeFormatter
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Snitz.Events.Helpers
+@using Snitz.PostThanks.Helpers
+@using SnitzCore.Data
+@using SnitzCore.Service.TagHelpers
+@model MVCForum.ViewModels.Post.PostListingModel
+@inject ICodeProcessor BbCodeProcessor
+@inject IEnumerable<ISnitzStartupService> pluginservices
+
+@{
+    ViewBag.RatingSum = Model.Rating;
+    var moderatedClass = $"modstatus-{Model.Status}";
+    if (Model.UnmoderatedReplies > 0 && User.IsInRole("Administrator"))
+    {
+        moderatedClass = "modstatus-2";
+    }
+
+    int replies = Model.RepliesCount;
+    if (User.IsInRole("Administrator") || User.IsInRole("Forum_" + Model.Forum.Id))
+    {
+        replies += Model.UnmoderatedReplies;
+    }
+
+}
+<storecontent asp-key="blog-css">
+    <style>
+        .table-head {display:none;}
+        .row{flex-wrap:nowrap;}
+    </style>
+</storecontent>
+<div class="blog-row">
+    <div class="blog-container @moderatedClass">
+        <div class="text ellipsis">
+            <h4>
+                <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" data-title='@BbCodeProcessor.Format(Model.Title, false)'>@BbCodeProcessor.Format(Model.Title, false)</a>
+
+            </h4>
+            <snitz-datetime datetime="@Model?.Created"></snitz-datetime> .
+            <div>
+                <snitz-avatar src="~/Content/Avatar/@Model.AuthorImageUrl" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle" />
+                <a href="~/Account/Detail/@Model.AuthorName" title="@Localizer["tipViewProfile"]">@Model.AuthorName</a>
+            </div>
+            @if (Model.Rating > 0)
+            {
+                <input name="input-name" type="number" class="rb-rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs">
+
+            }
+
+            <br />
+            <div class="text-concat" style="margin-top:11px; padding-bottom: 6px;">@Html.Raw(BbCodeProcessor.Format(Model.Message))</div>
+        </div>
+
+        <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" data-toggle="tooltip" data-title='@Localizer["lblView"] @BbCodeProcessor.Format(Model.Title)'>@Localizer["blogMore"]</a><br />
+        <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })#comments" data-toggle="tooltip" data-title='@Localizer["lblView"] @BbCodeProcessor.Format(Model.Title)'><i class="fa fa-comment-o fa-1_5x"></i> Comments</a>
+        @if (replies > 0)
+        {
+            @Html.Raw("(")
+            @replies
+            @Html.Raw(")")
+        }
+
+    </div>
+</div>
+

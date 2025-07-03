@@ -1,9 +1,12 @@
-﻿namespace MVCForum.ViewModels.Post
+﻿using SnitzCore.Data.Models;
+
+namespace MVCForum.ViewModels.Post
 {
     public class PostReplyModel : PostBase
     {
         public int PostId;
 
+        public PostReply Reply { get; set; } = null!;
         public int AuthorPosts { get; set; }
         public short AuthorRole { get; set; }
         public SnitzCore.Data.Models.Member Author { get; set; } = null!;

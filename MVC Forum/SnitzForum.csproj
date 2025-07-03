@@ -77,6 +77,10 @@
     <Content Remove="bundleconfig.json" />
     <Content Remove="log4net.config" />
     <Content Remove="Views\Shared\_BookmarkLink.cshtml" />
+    <Content Remove="Views\Topic\Blog\Print.cshtml" />
+    <Content Remove="Views\Topic\Blog\_QuickReply.cshtml" />
+    <Content Remove="Views\Topic\Blog\_Reply.cshtml" />
+    <Content Remove="Views\Topic\Blog\_Topic.cshtml" />
     <Content Remove="wwwroot\Content\Avatar\HuwR132430879466080654.jpg" />
     <Content Remove="wwwroot\Content\Avatar\Torborg.gif" />
     <Content Remove="wwwroot\Content\Avatar\untitled.png" />

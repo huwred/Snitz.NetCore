@@ -1,0 +1,88 @@
+﻿@using System.Globalization
+@using LangResources.Utility
+@using SnitzConfig
+@using SnitzCore.Utility
+@using SnitzDataModel.Extensions
+@using WWW.Views.Helpers
+@model WWW.ViewModels.TopicViewModel
+@{
+    //check the culture so we can set the page direction and language
+    CultureInfo ci = SessionData.Get<CultureInfo>("Culture");
+    string clang = ci.TwoLetterISOLanguageName;
+
+    string[] rtlLangs = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur", "yi", "he" };
+    string[] arabic = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur" }; //Cairo
+    string[] aramaic = new string[] { "yi", "he" }; //Tinos
+
+    bool isRighToLeft = rtlLangs.Contains(clang);
+
+    Layout = null;
+    ViewBag.Title = ResourceManager.GetLocalisedString("pagePrint", "BlogPages") + Model.Topic.Subject;
+}
+
+<!DOCTYPE html>
+
+<html lang="@clang" dir="@(isRighToLeft ?  "rtl" : "ltr" )">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/bundles/sitecss")
+
+    @Styles.Render("~/Content/css/stylesheet.min.css")
+    @Styles.Render("~" + Config.ThemeFolder() + "/snitz.min.css")
+    @Styles.Render("~/Content/css/print.min.css")
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        @Scripts.Render("~/bundles/oldIEBrowsersSupport")
+    <![endif]-->
+
+</head>
+<body>
+    <span class="button pull-right flip"><button class="btn btn-sm btn-primary" onclick="javascript:window.print();">@ResourceManager.GetLocalisedString("lblPrint", "labels")</button><button class="btn btn-sm btn-default" onclick="javascript:window.close();">@ResourceManager.GetLocalisedString("lblClose", "labels")</button></span>
+    <div class="title">
+        <h4>@Html.FormatBbCode(WebUtility.HtmlDecode(Model.Topic.Subject), false)</h4>
+        <label>@ResourceManager.GetLocalisedString("lblPrintedFrom", "labels"):</label> @ClassicConfig.ForumTitle<br />
+        <label>URL:</label> @String.Format("{0}Topic/Posts/{1}?pagenum=1", Config.ForumUrl, Model.Id) <br />
+        <label>@ResourceManager.GetLocalisedString("lblPrinted", "labels"):</label> @DateTime.Now.ToFormattedString()<br />
+        <div class="title">
+            <h4>@ResourceManager.GetLocalisedString("ttlBlog", "BlogPages") </h4>
+            <hr />
+        </div>
+
+        <div class="message-reply">
+            <label>@ResourceManager.GetLocalisedString("lblAuthor", "labels") :</label> @Model.Topic.Author.Username <br />
+            <label>@ResourceManager.GetLocalisedString("lblSubject", "labels") :</label> @Model.Topic.Subject <br />
+            <label>@ResourceManager.GetLocalisedString("lblPosted", "labels") :</label> @Model.Topic.Date.ToFormattedString() <br />
+            <label>@ResourceManager.GetLocalisedString("lblBlog", "BlogPages") :</label> <br /><br />
+            <div class="message">
+                @Html.FormatBbCode(Model.Topic.Message)
+            </div>
+        </div>
+        <p>&nbsp;</p>
+        <div class="title">
+            <h4>@ResourceManager.GetLocalisedString("lblComments", "BlogPages") ... </h4>
+            <hr />
+        </div>
+        @{
+            int counter = 1;
+        }
+        @foreach (var item in Model.Replies)
+        {
+            <i class="fa fa-hashtag"></i><label>@counter</label>
+
+            <div class="message-reply">
+                <label>@ResourceManager.GetLocalisedString("lblReplyAuthor", "labels")</label> @item.Author.Username <br />
+                <label>@ResourceManager.GetLocalisedString("lblRepliedOn", "labels")</label> @item.Date.Value.ToFormattedString() <br />
+                <label>@ResourceManager.GetLocalisedString("Message", "General"):</label> <br /><br />
+                <div class="message">
+                    @Html.FormatBbCode(item.Message)
+                </div>
+            </div>
+            counter++;
+        }
+    </div>
+    <span class="small pull-right flip">&copy; @Html.Raw(String.Format(ClassicConfig.Copyright, DateTime.UtcNow.Year))</span>
+</body>
+</html>

@@ -112,8 +112,10 @@ namespace MVCForum.Controllers
                 .Select(p => new PostListingModel()
                 {
                     Id = p.Id,
+                    Topic =  p,
                     AuthorId = p.MemberId,
                     AuthorName = p.Member?.Name ?? "Unknown",
+                    AuthorImageUrl = p.Member.PhotoUrl,
                     //AuthorRating = p.User?.Rating ?? 0,
                     Title = p.Title,
                     Created = p.Created.FromForumDateStr(),
@@ -239,6 +241,7 @@ namespace MVCForum.Controllers
                 var postlistings = pagedTopics.Select(p => new PostListingModel()
                 {
                     Id = p.Id,
+                    Topic = p,
                     AuthorId = p.MemberId,
                     AuthorName = p.Member?.Name ?? "Unknown",
                     //AuthorRating = p.User?.Rating ?? 0,
@@ -437,6 +440,7 @@ namespace MVCForum.Controllers
                 var postlistings = pagedTopics.Select(p => new PostListingModel()
                 {
                     Id = p.Id,
+
                     AuthorId = p.MemberId,
                     AuthorName = p.Member?.Name ?? "Unknown",
                     //AuthorRating = p.User?.Rating ?? 0,
@@ -574,6 +578,7 @@ namespace MVCForum.Controllers
             var activeposts = latestPosts.Select(p => new PostListingModel()
             {
                 Id = p.Id,
+                Topic = p,
                 AuthorId = p.MemberId,
                 AuthorName = p.Member?.Name ?? "Unknown",
                 //AuthorRating = p.User?.Rating ?? 0,
@@ -796,6 +801,7 @@ namespace MVCForum.Controllers
             var posts = _postService.GetFilteredPost(searchFor!,out int totalcount,pagesize,page,catid,forumid).Select(p => new PostListingModel()
             {
                 Id = p.Id,
+                Topic = p,
                 AuthorId = p.MemberId,
                 AuthorName = p.Member?.Name ?? "Unknown",
                 //AuthorRating = p.User?.Rating ?? 0,
@@ -872,6 +878,7 @@ namespace MVCForum.Controllers
             var posts = _postService.Find(searchmodel,out int totalcount,pagesize,page).Select(p => new PostListingModel()
             {
                 Id = p.Id,
+                Topic = p,
                 AuthorId = p.MemberId,
                 AuthorName = p.Member?.Name ?? "Unknown",
                 //AuthorRating = p.User?.Rating ?? 0,

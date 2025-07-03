@@ -4,28 +4,32 @@
 @using SnitzCore.Service.TagHelpers
 @model MVCForum.ViewModels.BookmarkViewModel
 @{
+
     var lastvisit = DateTime.UtcNow;
     if (User.Identity!.IsAuthenticated)
     {
-        lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.LastLogin.FromForumDateStr();
+        if (User != null && User.Identity!.IsAuthenticated)
+        {
+            lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.LastLogin.FromForumDateStr().ToLocalTime();
+        }
+        else
+        {
+            lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.LastLogin.FromForumDateStr();
+        }
     }
 }
 
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
-
     <form id="defaultdays-form" asp-action="Active" class="form-inline">
         <div class="row m-2">
             <div class="col col-md-8">
                 <div class="input-group mb-3">
                     <enum-select name="Since" id="default-days" last-visit="@lastvisit" enum-type="typeof(ActiveSince)" selected-value="(int)Model.ActiveSince" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                     <enum-select name="Refresh" id="active-refresh" enum-type="typeof(ActiveRefresh)" selected-value="(int)Model.Refresh" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
-
                 </div>
             </div>
         </div>
-@*      <input type="number" value="@pagenum" name="page" style="display: none;" />
-        <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" /> *@
         <input type="hidden" name="fun" id="fun">
     </form>
     @if (Model.Bookmarks.Any())
@@ -48,14 +52,10 @@
                 </div>
             }
         </div>
-        <!--Pagination starts-->
-
-        <!--pagination ends-->
     }
     else
     {
         <div class="center"><h4>No active Posts</h4></div>
     }
-
 
 </div>

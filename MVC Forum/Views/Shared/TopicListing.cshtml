@@ -95,7 +95,7 @@
             <div class="d-none d-md-flex  p-2 bd-highlight fs-6 post-buttons">
                 @if (!archives)
                 {
-                    @await Component.InvokeAsync("PostControls", new { post = Model ,forlist = true})
+                    @await Component.InvokeAsync("PostControls", new { post = Model.Topic ,forlist = true})
                     
                 }
 
@@ -119,7 +119,7 @@
         <div class="d-sm-inline-flex d-md-none bd-highlight fs-6 post-buttons">
             @if (!archives)
             {
-                @await Component.InvokeAsync("PostControls", new { post = Model, forlist = true })
+                @await Component.InvokeAsync("PostControls", new { post = Model.Topic, forlist = true })
 
             }
         </div>

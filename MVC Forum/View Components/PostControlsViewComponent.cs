@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using MVCForum.ViewModels.Post;
 using SnitzCore.Data.Interfaces;
+using SnitzCore.Data.Models;
 
 namespace MVCForum.View_Components
 {
@@ -18,13 +19,17 @@ namespace MVCForum.View_Components
             TempData["List"] = forlist;
             if (post is PostReplyModel)
             {
-                var reply = _postService.GetReply(post.Id);
-                return await Task.FromResult((IViewComponentResult)View("Reply",reply));
+                //var reply = _postService.GetReply(post.Id);
+                return await Task.FromResult((IViewComponentResult)View("Reply",post.Reply));
+            }else if (post is PostReply)
+            {
+                //var reply = _postService.GetReply(post.Id);
+                return await Task.FromResult((IViewComponentResult)View("Reply",post));
             }
             else
             {
-                var topic = await _postService.GetTopicAsync(post.Id);
-                return await Task.FromResult((IViewComponentResult)View("Topic",topic));
+                //var topic = await _postService.GetTopicAsync(post.Id);
+                return await Task.FromResult((IViewComponentResult)View("Topic",post));
             }
         }
     }

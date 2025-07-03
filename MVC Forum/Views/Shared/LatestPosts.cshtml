@@ -1,5 +1,8 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+﻿@using BbCodeFormatter
+
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using SnitzCore.Data
+@inject ICodeProcessor BbCodeProcessor
 @model IEnumerable<MVCForum.ViewModels.Post.PostListingModel>
 @{
     var posts = Model;
@@ -27,7 +30,7 @@
             <li class="list-group-item @moderatedClass">
                 <div class="forumLogo" style="background-image: url(@p.Forum?.ImageUrl); background-size: 100%"></div>
                 <div class="postTitle">
-                    <a class="latestpost-title" asp-controller="Topic" asp-action="Index" asp-route-id="@p.Id" title="@p.Title">@p.Title</a>
+                    <a class="latestpost-title" asp-controller="Topic" asp-action="Index" asp-route-id="@p.Id" title="@p.Title">@Html.Raw(BbCodeProcessor.Subject(p.Title))</a>
                     @Localizer["lblPostedBy"] <a asp-controller="Account" asp-action="Detail" asp-route-id="@p.AuthorName">@p.AuthorName</a>
                 </div>
                 <div class="postSubtitle">
