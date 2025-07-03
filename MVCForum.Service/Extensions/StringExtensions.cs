@@ -93,7 +93,12 @@ namespace SnitzCore.Service.Extensions
             return CreateCsvFile(list, path, include, exclude);
         }
 
-
+        public static string TruncateLongString(this string str, int maxLength)
+        {
+            if (String.IsNullOrWhiteSpace(str))
+                return str;
+            return str.Substring(0, Math.Min(str.Length, maxLength));
+        }
 
         private static string? CreateCsvFile<T>(IList<T> list, string path, string include, string exclude)
         {

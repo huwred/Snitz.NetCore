@@ -481,27 +481,35 @@ namespace SnitzCore.Service
             return _dbContext.TopicRating.Where(t=>t.RatingsTopicId == topicid && t.RatingsBymemberId == memberid).Any();
         }
 
-        public List<int> AllowedForumIDs()
+        public List<int>? AllowedForumIDs()
         {
-            if (!_contextAccessor.HttpContext.Session.Keys.Contains("AllowedForums"))
+            var context = _contextAccessor.HttpContext;
+            if (context != null && context.Session != null && !context.Session.Keys.Contains("AllowedForums"))
             {
-                _contextAccessor.HttpContext.Session.SetObject("AllowedForums", AllowedForums().Select(x => x).ToList());
+                context.Session.SetObject("AllowedForums", AllowedForums().Select(x => x).ToList());
 
             }
-            return _contextAccessor.HttpContext.Session.GetObject<List<int>>("AllowedForums");
+            if(context != null && context.Session != null && context.Session.Keys.Contains("AllowedForums"))
+            {
+                return context.Session.GetObject<List<int>>("AllowedForums");
+            }
+            return null;
         }
 
         public IEnumerable<int> AllowedForums()
         {
             List<int> allowedforums = new List<int>();
-            if (_contextAccessor.HttpContext.User == null)
+            var context = _contextAccessor.HttpContext;
+            if (context != null && context.User == null)
             {
                 return allowedforums;
             }
+            else if (context != null && context.User != null)
+            {
                 //var forums = _dbContext.Forums("SELECT F.FORUM_ID,F.F_PRIVATEFORUMS,F.F_TOPICS,F.F_COUNT FROM " + db.ForumTablePrefix + "FORUM F");
                 foreach (var forum in _dbContext.Forums)
                 {
-                    if (IsAllowed(forum.Id, _userManager.GetUserAsync(_contextAccessor.HttpContext.User).Result, forum.Privateforums))
+                    if (IsAllowed(forum.Id, _userManager.GetUserAsync(context.User).Result, forum.Privateforums))
                     {
                         if (!allowedforums.Contains(forum.Id))
                         {
@@ -509,6 +517,8 @@ namespace SnitzCore.Service
                         }
                     }
                 }
+            }
+
             return allowedforums;
         }
   

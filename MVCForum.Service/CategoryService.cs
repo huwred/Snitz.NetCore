@@ -17,7 +17,7 @@ namespace SnitzCore.Service
         {
             _dbContext = dbContext;
         }
-        public Category GetById(int id)
+        public Category? GetById(int id)
         {
             var category = _dbContext.Categories
                 .Include(f => f.Forums)

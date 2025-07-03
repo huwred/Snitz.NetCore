@@ -45,8 +45,8 @@ namespace SnitzCore.Service
             {
 
                 dynamic email = new TopicSubscriptionEmail();
-                email.To = a.Member.Email;
-                email.UserName = a.Member.Name;
+                email.To = a.Member?.Email;
+                email.UserName = a.Member?.Name;
                 email.Subject = _config.ForumTitle;
 
                 email.Unsubscribe = string.Format("{0}Topic/UnSubscribe/{1}?forumid={2}&catid={3}&userid={4}", _config.ForumUrl, a.PostId, a.ForumId, a.CategoryId, a.MemberId);

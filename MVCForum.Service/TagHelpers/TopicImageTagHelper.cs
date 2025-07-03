@@ -43,10 +43,10 @@ namespace SnitzCore.Service.TagHelpers
         [HtmlAttributeName("plugin-icon")]
         public string? PluginIcon {get; set;}
         /// <summary>
-        ///             <span class="fa-stack fa-1x">
-        ///             <i class="fa fa-folder-o fa-stack-2x"></i>
-        ///             //<i class="fa fa-lock fa-stack-1x "></i>
-        ///             </span>
+        ///  <span class="fa-stack fa-1x">
+        ///  <i class="fa fa-folder-o fa-stack-2x"></i>
+        ///  <i class="fa fa-lock fa-stack-1x "></i>
+        ///  </span>
         /// </summary>
         /// <param name="context"></param>
         /// <param name="output"></param>
@@ -83,18 +83,6 @@ namespace SnitzCore.Service.TagHelpers
             );
             overlayTag.TagMode = TagMode.StartTagAndEndTag;
 
-            //if (LastPost.HasValue)
-            //{
-            //    var lasthere = _cookie.GetLastVisitDate()?.FromForumDateStr();
-            //    if (lasthere.HasValue)
-            //    {
-            //        if (LastPost > lasthere)
-            //        {
-            //            newposts = ", Contains new posts";
-            //            newclass = true;
-            //        }
-            //    }
-            //}
             if (LastPost.HasValue)
             {
                 var user = _actionAccessor.ActionContext?.HttpContext?.User;

@@ -665,15 +665,16 @@ namespace SnitzCore.Service
             {
                 _dbContext.Database.CommitTransaction();
             }
-            _ = UpdateLastPost(topic.Id, 0);
-            _forumservice.UpdateLastPost(topic.ForumId);
+            if(topic != null)
+            {
+                _ = UpdateLastPost(topic.Id, replycount);
+                _forumservice.UpdateLastPost(topic.ForumId);
+            }
+
 
             Post? originaltopic = (from t in _dbContext.Posts select t).OrderBy(m=>m.Id).FirstOrDefault(t=>t.Id == originaltopicid);
             if (originaltopic != null)
             {
-                //originaltopic.ReplyCount -= replycount + 1;
-                //_dbContext.Update(originaltopic);
-                //_dbContext.SaveChanges();
                 _ = UpdateLastPost(originaltopicid, 0);
                 _forumservice.UpdateLastPost(originaltopic.ForumId);
             }

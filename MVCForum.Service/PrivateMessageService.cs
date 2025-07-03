@@ -264,9 +264,12 @@ namespace SnitzCore.Service
         public void MarkRead(int id, int val)
         {
             var pm = GetById(id);
-            pm.Read = val;
-            _dbContext.PrivateMessages.Update(pm);
-            _dbContext.SaveChanges();
+            if(pm != null)
+            {
+                pm.Read = val;
+                _dbContext.PrivateMessages.Update(pm);
+                _dbContext.SaveChanges();
+            }
 
         }
     }
