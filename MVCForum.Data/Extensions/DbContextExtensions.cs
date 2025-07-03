@@ -13,6 +13,6 @@ public static class DbContextExtensions
 }
     public class Pair<T1, T2>
     {
-        public T1 Key { get; set; }
-        public T2 Value { get; set; }
+        public required T1 Key { get; set; }
+        public required T2 Value { get; set; }
     }

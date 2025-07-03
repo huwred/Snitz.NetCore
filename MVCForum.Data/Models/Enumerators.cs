@@ -163,6 +163,9 @@ namespace SnitzCore.Data.Models
 
     }
 
+    /// <summary>
+    /// Post Status
+    /// </summary>
     public enum Status
     {
         [Display(Name="PostStatus_Closed")]
