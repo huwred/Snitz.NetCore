@@ -31,6 +31,8 @@ public class MemberImageTagHelper : TagHelper
     [HtmlAttributeName("class")]
     public string? Classes { get; set; }
 
+    public string? Title {get;set;}
+
     private readonly ISnitzConfig _config;
     public MemberImageTagHelper(
         IUrlHelperFactory urlHelperFactory,
@@ -58,6 +60,10 @@ public class MemberImageTagHelper : TagHelper
         base.Process(context, output);
         output.TagMode = TagMode.StartTagAndEndTag;
         output.TagName = "img";
+        if(Title != null)
+        {
+            output.Attributes.Add("title", Title);
+        }
         output.Attributes.Add("class", Classes);
         output.Attributes.Add("loading", "lazy");
         output.Attributes.Add("src", urlHelper.Content(SourceFile) ?? urlHelper.Content(Fallback));
