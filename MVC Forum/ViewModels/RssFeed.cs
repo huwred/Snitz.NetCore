@@ -426,9 +426,12 @@ namespace SnitzCore.Data.Models
                 }
                 //idlink += "&";
             }
+            if(items.Count != 0)
+            {
+                feed.Items = items.OrderByDescending(t=>t.LastUpdatedTime).Take(10);
+                feed.LastUpdatedTime = feed.Items.Last().LastUpdatedTime;
+            }
 
-            feed.Items = items.OrderByDescending(t=>t.LastUpdatedTime).Take(10);
-            feed.LastUpdatedTime = feed.Items.Last().LastUpdatedTime;
             #endregion
 
             return feed;
