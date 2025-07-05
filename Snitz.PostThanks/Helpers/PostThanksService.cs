@@ -29,8 +29,9 @@ namespace Snitz.PostThanks.Helpers
 
         public bool EnabledForTopic(int topicid)
         {
-                        return _snitzDbContext.Forums
-                .FromSqlInterpolated($"SELECT FORUM_ID FROM FORUM_FORUM WHERE F_ALLOWTHANKS=1").Any(f=>f.Id == topicid);
+                var test =  _snitzDbContext.Forums
+                .FromSqlInterpolated($"SELECT * FROM FORUM_FORUM WHERE F_ALLOWTHANKS=1");
+            return test.Any(f=>f.Id == topicid);
         }
 
         public IEnumerable<object> Get(int id)

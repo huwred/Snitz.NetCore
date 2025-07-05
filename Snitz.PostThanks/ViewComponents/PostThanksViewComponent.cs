@@ -31,9 +31,11 @@ namespace Snitz.PostThanks.ViewComponents
             if (template == "ForumConfig")
             {
                 var forum = _dbContext.Forums
-                .FromSqlInterpolated($"SELECT * FROM FORUM_FORUM WHERE F_ALLOWTHANKS=1 AND FORUM_ID={id}");
-                ViewBag.IsAllowed = forum.Any();
-                return await Task.FromResult((IViewComponentResult)View(template,forum.FirstOrDefault()));
+                .FromSqlInterpolated($"SELECT * FROM FORUM_FORUM WHERE F_ALLOWTHANKS=1")
+                .SingleOrDefault(f => f.Id == id);
+                ViewBag.IsAllowed = forum != null;
+                ViewBag.ForumId = id;
+                return await Task.FromResult((IViewComponentResult)View(template,forum));
             }
             if (template == "TopicSummary" && topicid != null && id != null)
             {

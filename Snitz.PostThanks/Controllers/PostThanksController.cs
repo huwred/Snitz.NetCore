@@ -109,21 +109,21 @@ namespace Snitz.PostThanks.Controllers
         //    return PartialView("_ForumSetting");
         //}
 
-        //public IActionResult ForumSettings(int id, string check)
-        //{
-        //    try
-        //    {
-        //        thanksRepository.SetAllowThanks(id, check=="true"?1:0);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ViewBag.Error = "Problem updating F_ALLOWTHANKS in Forum";
-        //        ViewBag.ErrTitle = "Error: Thanks";
-        //        return View("_Error");
-        //    }
+        public IActionResult ForumSettings(int id, string check)
+        {
+            try
+            {
+                thanksRepository.SetAllowThanks(id, check == "true" ? 1 : 0);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Problem updating F_ALLOWTHANKS in Forum";
+                ViewBag.ErrTitle = "Error: Thanks";
+                return View("_Error");
+            }
 
-        //    return new EmptyResult();
-        //}
+            return new EmptyResult();
+        }
         #endregion
 
         #region Profile

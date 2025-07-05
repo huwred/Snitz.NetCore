@@ -139,6 +139,11 @@ namespace PostThanks.Models
             }
 
         }
+
+        internal void SetAllowThanks(int id, int v)
+        {
+            _snitzContext.Database.ExecuteSqlAsync($"Update FORUM_FORUM Set F_ALLOWTHANKS = {v} Where FORUM_ID={id}");
+        }
     }
 
 }

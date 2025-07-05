@@ -1,13 +1,13 @@
 ﻿
 @model Forum?
-@if(Model != null){
+
 <div class="mb-3 bg-primary text-bg-primary p-3 rounded">
     <div class="panel panel-default">
         <div class="panel-body">
             <label>@Localizer["ForumSettingTitle"]</label>
             <div class="form-group">
                 <label for="strThanks" class="control-label col-xs-6">
-                    <input id="strThanks" type="checkbox" name="strThanks" data-size="mini" data-id="@Model.Id" checked="@ViewBag.IsAllowed" />
+                    <input id="strThanks" type="checkbox" name="strThanks" data-size="mini" data-id="@ViewBag.ForumId" checked="@ViewBag.IsAllowed" />
                     @Localizer["ForumSetting"]
                 </label>
             </div>
@@ -42,4 +42,3 @@
     </script>
 </storecontent>
 
-}
