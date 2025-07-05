@@ -165,9 +165,9 @@
         },
         _generateRating: function () {
             var self = this, $el = self.$element, $rating, $container, w;
-            $container = self.$container = $(document.createElement('div')).insertBefore($el);
+            $container = self.$container = $(document.createElement('span')).insertBefore($el);
             $h.addCss($container, self._getContainerCss());
-            self.$rating = $rating = $(document.createElement('div')).attr('class', 'rating-stars').appendTo($container)
+            self.$rating = $rating = $(document.createElement('span')).attr('class', 'rating-stars').appendTo($container)
                 .append(self._getStars('empty')).append(self._getStars('filled'));
             if (self.keyboardEnabled) {
                 self.$rating.attr('tabindex', self.tabindex);

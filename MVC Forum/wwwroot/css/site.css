@@ -634,14 +634,14 @@ pre.language-markup{
 
 .avatar-container {
     position: relative;
-    width: 100%;
+    width: auto;
     max-width: 100px;
 }
 img.avatarsmall {
     margin: 2px;
     width: auto;
-    max-width: 40px;
-    max-height: 40px;
+    max-width: 50px;
+    max-height: 50px;
 }
 
 /* The overlay effect (full height and width) - lays on top of the container and over the image */
@@ -871,9 +871,9 @@ i.modstatus-2, i.modstatus-3 {
 .blog-container {
     border-radius: 8px;
     padding: 15px;
-    margin-bottom: 11px;
-    background-color: white;
-    border: #888888 1px dotted;
+    margin-bottom: .5rem;
+    background-color: #f7f5f5;
+    border: #e2e2e2 1px dotted;
 }
 .blog-strap {
     margin-top: 12px;
@@ -908,3 +908,46 @@ i.modstatus-2, i.modstatus-3 {
     right: 0px;
     bottom: 0px;
 }
+
+.blog-container .content-header .author-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 2rem;
+    /*border-bottom: 1px solid gray;*/
+}
+.blog-container .content-header .author-info .author-details {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.blog-container .content-header .author-info .author-details .author-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.blog-container .content {
+    max-width:revert;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: color-mix(in srgb, var(--default-color), transparent 10%);
+}
+
+.widget-item {
+    margin-bottom: 30px;
+    background-color: #f7f5f5;
+    border: 1px solid #e2e2e2;
+    padding: 30px;
+    border-radius: 5px;
+}
+    .widget-item.tag-cloud {
+        background-color: #f7f5f5;
+        border: 1px solid #e2e2e2;
+        padding: .5rem !important;
+        font: 0.8em Arial, San-Serif !important;
+        text-align: center;
+        border-radius: 5px;
+    }
