@@ -116,6 +116,7 @@ namespace MVCForum.Controllers
                     AuthorId = p.MemberId,
                     AuthorName = p.Member?.Name ?? "Unknown",
                     AuthorImageUrl = p.Member.PhotoUrl,
+                    AuthorTitle = p.Member.Title,
                     //AuthorRating = p.User?.Rating ?? 0,
                     Title = p.Title,
                     Created = p.Created.FromForumDateStr(),
@@ -244,7 +245,8 @@ namespace MVCForum.Controllers
                     Topic = p,
                     AuthorId = p.MemberId,
                     AuthorName = p.Member?.Name ?? "Unknown",
-                    //AuthorRating = p.User?.Rating ?? 0,
+                    AuthorImageUrl = p.Member?.PhotoUrl,
+                    AuthorTitle = p.Member.Title,
                     Title = p.Title,
                     Created = p.Created.FromForumDateStr(),
                     RepliesCount = p.ReplyCount,
@@ -276,6 +278,10 @@ namespace MVCForum.Controllers
                     PageSize = pagesize,
                     
                 };
+                if(forum.Type == (int)ForumType.BlogPosts)
+                {
+                    return View("Blog/Index",model);
+                }
 
                 return View("Index",model);
             }
