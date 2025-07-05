@@ -35,6 +35,7 @@
                 }
         </style>
     }
+    <renderstoredcontent asp-key="blog-css"></renderstoredcontent>
 }
 @{
     var auth = (bool)ViewBag.RequireAuth;
@@ -168,46 +169,16 @@
         </div>
         <!--Display posts table-->
         <div class="row">
-            <div class="col">
+            <div class="col col-lg-9">
                 <div class="posts-table">
-                    <div class="table-head">
-                        <div class="status rounded-2">
-                            @if (!Model.Archives && User.Identity.IsAuthenticated && Model.Forum.ForumSubscription == ForumSubscription.ForumSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
-                            {
-                                if (subscriptions != null && subscriptions.Where(s => s.ForumId == Model.Forum.Id && s.PostId == 0).Select(s => s.ForumId).Any())
-                                {
-                                    <i class="fa fa-share-square forum center" title="@Localizer["btnUnsubscribe"]" data-id="@Model.Forum.Id"></i>
-                                }
-                                else
-                                {
-                                    <i class="fa fa-share-square-o forum center " title="@Localizer["cnfSubscribeForum"]" data-id="@Model.Forum.Id"></i>
-                                }
-                            }
-                        </div>
-                        <div class="subjects rounded-2">@Localizer["lblSubject"]</div>
-                        <div class="replies rounded-2"></div>
-                        <div class="last-reply rounded-2">@Localizer["lblLastPost"]</div>
-                        <div class="subscribe rounded-1 d-none d-md-inline-block"><i class="fa fa-object-group" title="@Localizer["tipMergeTopic"]" style="display: none;"></i></div>
-                    </div>
                     @{
                         ViewData["ActiveTopics"] = false;
                         ViewData["Archives"] = Model.Archives;
                     }
-                    <!--Sticky Topics-->
-                    @if (Model.StickyPosts!.Any())
-                    {
-                        if (Model.StickyPosts != null)
-                        {
-                            foreach (var post in Model.StickyPosts)
-                            {
-                                <partial name="TopicListing" model="post" view-data="ViewData" />
-                            }
-                        }
-                        <hr />
-                    }
+
                     <!--Topics start here-->
                     @foreach (var post in Model.Posts!){
-                        <partial name="TopicListing" model="post" view-data="ViewData" />
+                        <partial name="BlogListing" model="post" view-data="ViewData" />
                     }
                     @if (Model.Forum.Topics == 0)
                     {
@@ -232,10 +203,14 @@
                                     DefaultDays = (int)Model.Forum.DefaultView
                                 })" />
                 <!--pagination ends-->
-                <partial name="IconInfo" />
             </div>
-
-
+            <div class="d-none d-lg-block col-3">
+                <partial name="QuickSearch" />
+                @if(Model.Forum.ForumType == ForumType.BlogPosts){
+                    @await Component.InvokeAsync("Blog", new { template = "TagCloud", id = Model.Forum.Id })
+                    @await Component.InvokeAsync("Blog", new { template = "List", id = Model.Forum.Id })
+                }
+            </div>
         </div>
 
     </div>

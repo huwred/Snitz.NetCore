@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<TagCloud.TagCloudTag>
 
-<div class="tag-cloud p-2 mb-3">
+<div class="widget-item tag-cloud">
     @foreach (var tag in Model)
     {
         <span class="tag kind-@tag.Category">@tag.Text</span>

@@ -1,7 +1,9 @@
 ﻿@using BbCodeFormatter
 @using MVCForum.ViewModels.Post
+@using Snitz.PostThanks.Helpers
 @using SnitzCore.Service.Extensions
 @inject ICodeProcessor BbCodeProcessor
+@inject IEnumerable<ISnitzStartupService> pluginservices
 @model PostIndexModel
 
 @{
@@ -35,52 +37,81 @@
             .modal-backdrop.in {
                     opacity: 1.0 !important;
                 }
+
         </style>
     }
     <renderstoredcontent asp-key="blog-css"></renderstoredcontent>
 }
+@{
+    var jumpToreply = Context.Request.Query.ContainsKey("replyid");
+    var isAdmin = User.IsInRole("Administrator");
+    var hasForumRole = User.IsInRole("Forum_" + Model.ForumId);
+    var isAuthenticated = User.Identity!.IsAuthenticated;
+    bool allowrating = Model.ForumId != 0 ? Model.AllowTopicRating : Model.AllowRating;
+    allowrating = allowrating && Model.AllowRating;
+    var thanksservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(PostThanksService));
+    if(thanksservice != null)
+    {
+        TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.ForumId);
+    }
+    var currmember = MemberService.Current();
+}
 <snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
 @if (!ViewBag.RequireAuth)
 {
-<div class="btn-toolbar padding-sm" id="page-top">
-@*     @if (SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY") == 1)
-    {
-        <a title="@Localizer["tipPrintBlog"]" data-bs-toggle="tooltip" href="@Url.Action(" Print", "Topic" , new { id=Model.Id, archived=Model.Topic.ArchiveFlag })" class="btn btn-sm btn-primary" target="_blank">
-            <i class="fa fa-print"></i>
-            <span class="hidden-xs hidden-sm">@Localizer["btnPrintBlog"]</span>
-        </a>
-    } *@
-           <vc:topic-buttons postid="@Model.Id" topic-email="@(@User.Identity.IsAuthenticated ? 1 : 0)" snitz-if="@User.Identity.IsAuthenticated"></vc:topic-buttons>
-</div>
+    <div class="btn-toolbar padding-sm" id="page-top">
+        <vc:topic-buttons postid="@Model.Id" topic-email="@(@User.Identity.IsAuthenticated ? 1 : 0)" snitz-if="@User.Identity.IsAuthenticated"></vc:topic-buttons>
+    </div>
 
-<hr class="title" />
-<div class="row">
-    <div class="col-9">
-            <partial name="Blog/_TopicNew" model="@Model.Topic" view-data="@this.ViewData" />
+    <hr class="title" />
+    <div class="row">
+        <div class="col-9">
+                <partial name="Blog/BlogPost" model="@Model.Topic" view-data="@this.ViewData" />
+        @if (allowrating @* && Model.AuthorName != User.Identity.Name *@)
+        {
+            <form asp-action="SaveRating" id="save-rating" asp-controller="Topic" method="POST" data-ajax="true" data-ajax-update="#topic_rating" data-ajax-complete="TopicRated">
+                <div class="padding-md mb-3" dir="ltr"  style="margin-left: 4px;">
+                    <input type="number" name="TopicId" value="@Model.Id" style="display:none" />
+                    <input type="number" name="MemberId" value="@currmember.Id" style="display:none"/>
+                    <div class="input-group" id="rating-grp">
+                        <span class="input-group-text">@Localizer["lblRateMe"]</span>
+                        <input id="rating-id" name="PostRating" type="number" class="rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="sm">
+                    </div>
+                </div>
+                <div id="topic_rating"></div>
+            </form>
+        }else if (Model.AllowTopicRating)
+        {
+            <input disabled name="PostRating" type="number" class="rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="sm">
+            
+        }
+            <h4>@Localizer["lblComments"]</h4>
+            <hr class="title" />        
+            <div class="col-11 offset-1" id="comments">
+                @foreach (var item in Model.Replies)
+                {
+                    item.Status = Model.Topic.Forum.Status;
+                    if (item.Reply.Topic == null)
+                    {
+                        item.Reply.Topic = Model.Topic;
+                    }
+                    <a id="@item.Id"></a>
+                    <partial name="Blog/Comment" model="@item.Reply" view-data="@this.ViewData" />
+                }
+            </div>
+        
+        </div>
+        <div class="d-none d-lg-block col-3">
+                @await Component.InvokeAsync("Blog", new { template = "TagCloud", id = Model.ForumId })
+
+                @await Component.InvokeAsync("Blog", new { template = "List", id = Model.ForumId })
+        </div>
     </div>
-    <div class="d-none d-lg-block col-3">
-            @await Component.InvokeAsync("Blog", new { template = "TagCloud", id = Model.ForumId })
-            @await Component.InvokeAsync("Blog", new { template = "List", id = Model.ForumId })
-    </div>
-</div>
 
     if (Model.PageCount > 0)
     {
         <div class="col-9">
-            <h4>@Localizer["lblComments"]</h4>
-            <hr class="title" />
-        </div>
-        <div class="col-8" id="comments">
-            @foreach (var item in Model.Replies)
-            {
-                item.Status = Model.Topic.Forum.Status;
-                if (item.Reply.Topic == null)
-                {
-                    item.Reply.Topic = Model.Topic;
-                }
-                <a id="@item.Id"></a>
-                <partial name="Blog/_ReplyNew" model="@item.Reply" view-data="@this.ViewData" />
-            }
+
         </div>
         @if (Model.PageCount > 1)
         {
@@ -149,6 +180,7 @@ const appendAlert = (message, type) => {
 
 
         $(document).ready(function(){
+            $(".post-control-btn").addClass("pull-right");
             $('#rating-id').on("rating:change", function(event, value, caption) {
                 var form = $('#save-rating');
                 $.ajax({

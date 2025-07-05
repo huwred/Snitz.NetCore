@@ -1,0 +1,57 @@
+﻿@using BbCodeFormatter
+@using MVCForum.ViewModels.Post
+@using Snitz.PostThanks.Helpers
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Service.Extensions
+@inject ICodeProcessor BbCodeProcessor
+@inject IEnumerable<ISnitzStartupService> pluginservices
+
+@model Post
+
+@{
+    DateTime date = Model.Created.FromForumDateStr();
+    var thanksservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(PostThanksService));
+    if (thanksservice != null)
+    {
+        TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.Forum.Id);
+    }
+}
+<div class="blog-container clearfix">
+    <div class="content-header">
+        <h1>@BbCodeProcessor.Subject(Model.Title) </h1>
+        <div class="author-info">
+            <div class="author-details">
+                <a href="~/Account/Detail/@Model.Member.Name" title="@Model.Member.Name">
+                    <snitz-avatar src="~/Content/Avatar/@Model.Member.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle avatar-container mb-2" member="@Model.Member.Name" />
+                </a>
+                <div class="info">
+                    <h4>@Model.Member.Name</h4>
+                    <span class="role">@Model.Member.Title</span>
+                </div>
+            </div>
+            <div class="post-meta">
+                <span class="date"><i class="fa fa-calendar"></i> <snitz-datetime datetime="@Model.Created.FromForumDateStr()"></snitz-datetime></span>
+                <span class="divider">•</span>
+                <span class="comments"><i class="fa fa-comment-o"></i> @Model.ReplyCount Comments</span>
+            </div>
+        </div>
+        @if (ViewBag.RatingSum > 0)
+        {
+            <input id="star-rating-@Model.Id" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
+        }
+        else if (ViewBag.RatingSum < 0)
+        {
+            <input id="star-rating-@Model.Id" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
+        }
+    </div>
+    <div class="row-fluid">
+        <div class="blog-message content">
+            @Html.Raw(BbCodeProcessor.Format(Model.Content))
+        </div>
+        <span class="fs-4">
+            @await Component.InvokeAsync("PostControls", new { post = Model })
+        </span>
+
+    </div>
+</div>
+

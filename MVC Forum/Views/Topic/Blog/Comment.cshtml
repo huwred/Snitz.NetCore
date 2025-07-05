@@ -1,0 +1,65 @@
+﻿@using BbCodeFormatter
+@using Snitz.PostThanks.Helpers
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Service
+@using SnitzCore.Service.Extensions
+@inject ICodeProcessor BbCodeProcessor
+@inject IEnumerable<ISnitzStartupService> pluginservices
+
+@model PostReply
+@{
+    var mTitle = Model.Member.Title;
+    var ranking = MemberService.GetRankings();
+    var rankInfoHelper = new RankInfoHelper(Model.Member, ref mTitle, Model.Member.Posts, ranking);
+
+    var thanksservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(PostThanksService));
+    if (thanksservice != null)
+    {
+        TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.Topic.Forum.Id);
+    }
+    DateTime date = Model.Created.FromForumDateStr();
+
+    var unmoderatedClass = "";
+    if (Model.Topic.Status == (int)Status.UnModerated)
+    {
+        unmoderatedClass = "topic-unmoderated";
+    }
+    else if (Model.Topic.Status == (int)Status.OnHold)
+    {
+        unmoderatedClass = "topic-onhold";
+    }
+}
+
+
+    <div class="col-11 offset-1 blog-container reply @unmoderatedClass mb-2" id="r_@Model.Id">
+    <div class="content-header">
+        <div class="author-info">
+            <div class="author-details">
+                <a href="~/Account/Detail/@Model.Member.Name" title="@Model.Member.Name">
+                    <snitz-avatar src="~/Content/Avatar/@Model.Member.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle avatarsmall" member="@Model.Member.Name" />
+                </a>
+                <div class="info">
+                    <h4>@Model.Member.Name</h4>
+                    <span class="role">@mTitle</span>
+                </div>
+            </div>
+            <div class="post-meta">
+                <span class="date"><i class="fa fa-calendar"></i> <snitz-datetime datetime="@Model.Created.FromForumDateStr()"></snitz-datetime></span>
+                <span class="divider">&nbsp;</span>
+                <span class="comments"><a href="#page-top" data-toggle="tooltip" title="@Localizer["tipPageTop"]"><i class="fa fa-2x fa-angle-double-up"></i></a></span>
+            </div>
+        </div>
+    </div>
+        
+    <div class="row-fluid clearfix">
+        <div class="blog-message">
+            @Html.Raw(BbCodeProcessor.Format(Model.Content))
+        </div>
+        <span class="fs-4">
+            @await Component.InvokeAsync("PostControls", new { post = Model })
+        </span>
+    </div>
+    </div>
+
+
+

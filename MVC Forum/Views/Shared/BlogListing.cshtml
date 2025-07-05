@@ -21,45 +21,51 @@
     {
         replies += Model.UnmoderatedReplies;
     }
-
+    var thanksservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(PostThanksService));
+    if (thanksservice != null)
+    {
+        TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.Forum.Id);
+    }
 }
 <storecontent asp-key="blog-css">
     <style>
         .table-head {display:none;}
-        .row{flex-wrap:nowrap;}
     </style>
 </storecontent>
 <div class="blog-row">
     <div class="blog-container @moderatedClass">
         <div class="text ellipsis">
-            <h4>
-                <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" data-title='@BbCodeProcessor.Format(Model.Title, false)'>@BbCodeProcessor.Format(Model.Title, false)</a>
 
-            </h4>
-            <snitz-datetime datetime="@Model?.Created"></snitz-datetime> .
-            <div>
-                <snitz-avatar src="~/Content/Avatar/@Model.AuthorImageUrl" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle" />
-                <a href="~/Account/Detail/@Model.AuthorName" title="@Localizer["tipViewProfile"]">@Model.AuthorName</a>
+            <div class="content-header">
+                <h1><a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" data-title='@BbCodeProcessor.Format(Model.Title, false)'>@BbCodeProcessor.Format(Model.Title, false)</a></h1>
+                <div class="author-info">
+                    <div class="author-details">
+                        <a href="~/Account/Detail/@Model.AuthorName" title="@Model.AuthorName">
+                            <snitz-avatar src="~/Content/Avatar/@Model.AuthorImageUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle avatarsmall" member="@Model.AuthorName" />
+                        </a>
+                        <div class="info">
+                            <h4>@Model.AuthorName</h4>
+                            <span class="role">@Model.AuthorTitle</span>
+                        </div>
+                    </div>
+                    <div class="post-meta">
+                        <span class="date"><i class="fa fa-calendar"></i> <snitz-datetime datetime="@Model.Created"></snitz-datetime></span>
+                        <span class="divider">•</span>
+                        <span class="comments"><i class="fa fa-comment-o"></i> @Model.RepliesCount Comments</span>
+                    </div>
+                </div>
+                @if (ViewBag.RatingSum > 0)
+                {
+                    <input id="star-rating-@Model.Id" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
+                }
+
             </div>
-            @if (Model.Rating > 0)
-            {
-                <input name="input-name" type="number" class="rb-rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs">
 
-            }
-
-            <br />
             <div class="text-concat" style="margin-top:11px; padding-bottom: 6px;">@Html.Raw(BbCodeProcessor.Format(Model.Message))</div>
         </div>
 
         <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" data-toggle="tooltip" data-title='@Localizer["lblView"] @BbCodeProcessor.Format(Model.Title)'>@Localizer["blogMore"]</a><br />
-        <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })#comments" data-toggle="tooltip" data-title='@Localizer["lblView"] @BbCodeProcessor.Format(Model.Title)'><i class="fa fa-comment-o fa-1_5x"></i> Comments</a>
-        @if (replies > 0)
-        {
-            @Html.Raw("(")
-            @replies
-            @Html.Raw(")")
-        }
+        @* <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })#comments" data-toggle="tooltip" data-title='@Localizer["lblView"] @BbCodeProcessor.Format(Model.Title)'><i class="fa fa-comment-o fa-1_5x"></i> Comments</a> *@
 
     </div>
 </div>
-
