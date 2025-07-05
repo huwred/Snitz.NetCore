@@ -213,7 +213,7 @@ namespace MVCForum.Controllers
             };
             if(post.Forum.Type == (int)ForumType.BlogPosts)
             {
-                return View("Blog/Posts",model);
+                return View("Blog/Index",model);
             }
             else
             {
