@@ -59,6 +59,7 @@ public class Forum
     public int? LastPostAuthorId { get; set; }
 
     [Column("F_LAST_POST_TOPIC_ID")]
+    [ForeignKey("LatestTopic")]
     public int? LatestTopicId { get; set; }
 
     [Column("F_LAST_POST_REPLY_ID")]
@@ -112,6 +113,9 @@ public class Forum
     public virtual IEnumerable<Post>? Posts { get; set; }
     public virtual Category? Category { get; set; }
 
+    public virtual Member? LastPostAuthor { get; set; }
+    [NotMapped]
+    public virtual Post? LatestTopic { get; set; }
     public virtual IEnumerable<ForumModerator>? ForumModerators { get; set; }
     public virtual IEnumerable<ArchivedPost>? ArchivedPosts { get; set; }
 }

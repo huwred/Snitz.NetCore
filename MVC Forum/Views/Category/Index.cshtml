@@ -54,7 +54,7 @@
     </div>
     <div class="row">
         <div class="col accordion">
-            @foreach (var category in Model.Categories!)
+            @foreach (var category in Model.Categories.OrderBy(cat=>cat.Sort)!)
             {
                 var ID = category.Id;
                 <div class="subforum border-0 border-primary accordion-item">

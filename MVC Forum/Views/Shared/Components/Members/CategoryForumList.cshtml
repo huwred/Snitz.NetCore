@@ -1,0 +1,57 @@
+﻿@using SnitzCore.Service.Extensions
+@model List<Category>
+@{
+    var groupedCats = Model.GroupBy(c => (c.Id, c.Name)).Select(g => new
+    {
+        Id = g.Key.Id,
+        Name = g.Key.Name,
+        Forums = g.OrderBy(x => x.Name)
+    });
+}
+<div id="content" class="widget-item">
+    <h5 snitz-if="@User.IsInRole("Administrator")">@Localizer["lblCategories"] </h5>
+    <hr class="title" style="margin:0px;padding:1px;" />
+    <div class="accordion" id="accordianParent">
+        @foreach (var cat in groupedCats)
+        {
+            var catlink = "#c_" + cat.Id;
+            bool hasMatch = User.CanViewCategory(cat.Forums.First(), null);
+            if (hasMatch)
+            {
+                <div class="accordion">
+                    <div class="category">
+                        <a class="accordion-toggle collapsed" data-bs-toggle="collapse" href="@catlink">
+                            @cat.Name
+                        </a>
+                    </div>
+                    <div id="c_@cat.Id" class="collapse">
+                        <div class="accordion-inner-small m-2">
+                            @foreach (var c in cat.Forums)
+                            {
+                                foreach (var f in c.Forums)
+                                {
+                                    bool ismoderator = User.IsInRole("FORUM_" + f.Id);
+                                    switch ((ForumType)f.Type)
+                                    {
+                                        case ForumType.WebLink:
+                                            <span class="web-link"><span class="fa fa-globe" aria-hidden="true"></span><a href="@f.Url" title="">@f.Title</a></span>
+                                            break;
+                                        default:
+                                            <span class="d-block">
+                                                @Html.ShowHideForums(User,f, null,Localizer)
+
+                                            </span>
+                                            break;
+                                    }                                    
+                                }
+
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+</div>

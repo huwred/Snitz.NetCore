@@ -210,6 +210,7 @@
                     @await Component.InvokeAsync("Blog", new { template = "TagCloud", id = Model.Forum.Id })
                     @await Component.InvokeAsync("Blog", new { template = "List", id = Model.Forum.Id })
                 }
+                @await Component.InvokeAsync("Members", new { template = "CategoryForumList", id = Model.Forum.Id })
             </div>
         </div>
 

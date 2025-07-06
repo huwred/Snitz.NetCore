@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVCForum.ViewModels.Member;
 using SnitzCore.Data;
+using SnitzCore.Data.Interfaces;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,9 +10,11 @@ namespace MVCForum.View_Components
     public class MembersViewComponent : ViewComponent
     {
         private readonly IMember _memberService;
-        public MembersViewComponent(IMember memberService)
+        private readonly ICategory _catService;
+        public MembersViewComponent(IMember memberService, ICategory catService)
         {
             _memberService = memberService;
+            _catService = catService;
         }
 
         public async Task<IViewComponentResult> InvokeAsync(int max,string? template = null,MemberDetailModel? member = null)
@@ -24,7 +27,11 @@ namespace MVCForum.View_Components
             {
                 return await Task.FromResult((IViewComponentResult)View(template,member));
             }
-
+            else if (template == "CategoryForumList")
+            {
+                var categories = _catService.FetchCategoryForumList(User);
+                return await Task.FromResult((IViewComponentResult)View(template,categories.ToList()));
+            }
             var recentMembers = _memberService.GetRecent(max).ToList();
             if(template != null) {
                 return await Task.FromResult((IViewComponentResult)View(template,recentMembers));

@@ -103,8 +103,8 @@
         </div>
         <div class="d-none d-lg-block col-3">
                 @await Component.InvokeAsync("Blog", new { template = "TagCloud", id = Model.ForumId })
-
                 @await Component.InvokeAsync("Blog", new { template = "List", id = Model.ForumId })
+                @await Component.InvokeAsync("Members", new { template = "CategoryForumList", id = Model.ForumId })
         </div>
     </div>
 

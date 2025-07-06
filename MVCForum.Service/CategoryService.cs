@@ -1,10 +1,12 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using SkiaSharp;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace SnitzCore.Service
@@ -104,6 +106,57 @@ namespace SnitzCore.Service
                 throw;
             }
 
+        }
+
+        public IEnumerable<Category> FetchCategoryForumList(IPrincipal user)
+        {
+            var categories = from a in _dbContext.Categories
+             join b in _dbContext.Forums on a.Id equals b.CategoryId 
+             join c in _dbContext.Posts on b.LatestTopicId equals c.Id 
+             join d in _dbContext.Members on c.MemberId equals d.Id into joinedData
+             from d in joinedData.DefaultIfEmpty()
+             select new Category()
+             {
+                Id = a.Id,
+                Name = a.Name,
+                Moderation = a.Moderation,
+                Status = a.Status,
+                Sort = a.Sort,
+                Forums = new List<Forum>()
+                {
+                    new Forum()
+                    {
+                        Id = b.Id,
+                        Title = b.Title,
+                        Description = b.Description,
+                        LatestTopic = new Post()
+                        {
+                            Id = c.Id,
+                            Member = d,
+                            Created = c.Created
+                        },
+                        Type = b.Type,
+                        Status = b.Status,
+                        Moderation = b.Moderation,
+                        Subscription = b.Subscription,
+                        Privateforums = b.Privateforums,
+                        Order = b.Order
+                    }
+                }
+             };
+
+            //var categories = _dbContext.Categories
+            //    .Include(f => f.Forums)
+            //    .ThenInclude(f => f.LatestTopic)
+            //    .ThenInclude(p => p.Member)
+            //    .OrderBy(c => c.Sort).ThenBy(f => f.Forums.OrderBy(c => c.Order).ToList()).ToList();
+            //    //.AsEnumerable();
+
+            if (user.IsInRole("Administrator"))
+            {
+                return categories;
+            }
+            return categories; //.Where(c => c.Forums.Any(f => f.Group.Members.Any(m => m.UserName == user.Identity?.Name)));
         }
     }
 }

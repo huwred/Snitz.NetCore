@@ -27,6 +27,6 @@ public class Category
     [Column("CAT_ORDER")]
     public int Sort { get; set; }
 
-    public virtual IEnumerable<Forum>? Forums { get; set; }
+    public virtual required IEnumerable<Forum> Forums { get; set; }
     //public virtual Group?  Group { get; set; }
 }

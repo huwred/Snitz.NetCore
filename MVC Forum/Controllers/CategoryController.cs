@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 using System;
 using Microsoft.Extensions.Hosting;
 using SnitzCore.Service;
+using System.Collections.Generic;
 
 namespace MVCForum.Controllers
 {
@@ -220,7 +221,8 @@ namespace MVCForum.Controllers
                     Status = (short)model.Status,
                     Sort = model.Sort,
                     Moderation = (int)model.Moderation,
-                    Subscription = (int)(model.Subscription)
+                    Subscription = (int)(model.Subscription),
+                    Forums = new List<Forum>()
                 };
                 if (model.Id != 0)
                 {
