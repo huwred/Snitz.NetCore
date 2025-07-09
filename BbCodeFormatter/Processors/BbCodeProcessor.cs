@@ -270,16 +270,13 @@ public class BbCodeProcessor : ICodeProcessor
     /// <returns>Valid HTML5</returns>
     public string? Format(string? data,bool parseurls=true, bool tooltip = false, bool newsfeed = false)
     {
-        if (data == null)
-        {
+        if (String.IsNullOrWhiteSpace(data))
             return data;
-        }
-        _useFullUrl = newsfeed;
         if (_config.GetIntValue("STRALLOWFORUMCODE") != 1)
             return data;
 
-        if (String.IsNullOrWhiteSpace(data))
-            return data;
+        _useFullUrl = newsfeed;
+
         //classic forum stores some codes as html, so lets' parse it back into [bbcode]
         data = CleanCode(data);
         

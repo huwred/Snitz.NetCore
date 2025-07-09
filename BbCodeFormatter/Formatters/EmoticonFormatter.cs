@@ -47,8 +47,14 @@ namespace BbCodeFormatter.Formatters
 
     public string Format(string data)
     {
-        foreach (IHtmlFormatter formatter in _formatters!)
-            data = formatter.Format(data);
+        if(_formatters != null && _formatters.Count > 0)
+        {
+            foreach (IHtmlFormatter formatter in _formatters)
+            { 
+                    data = formatter.Format(data); 
+            }
+
+        }
 
         return data;
     }
