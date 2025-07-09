@@ -60,6 +60,11 @@ namespace SnitzCore.BackOffice.ViewModels
             get { return (RankType)_config.GetIntValue("STRSHOWRANK"); }
         }
     }
+    public class RankingPost
+    {
+        public RankType Type {get;set;}
+        public Dictionary<int, MemberRanking> Ranks  {get;set;}
+    }
     public class AdminGroupsViewModel
     {
 

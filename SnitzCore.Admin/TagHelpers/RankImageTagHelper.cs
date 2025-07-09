@@ -15,6 +15,9 @@ namespace SnitzCore.BackOffice.TagHelpers
         public string? Key { get; set; }
         [HtmlAttributeName("config-val")]
         public string? Value { get; set; }
+
+        public int? Repeat {get;set;}
+
         [ViewContext]
         public ViewContext? ViewContext { set; get; }
         private readonly IWebHostEnvironment _environment;
@@ -27,20 +30,30 @@ namespace SnitzCore.BackOffice.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            //var physicalPath = _contextAccessor.Current.Server.MapPath("~/Content/rankimages");
-            var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, "Content\\rankimages\\"), "*.gif");
-            
             output.TagName = "div";
-            output.TagMode = TagMode.StartTagAndEndTag;
-
-            foreach (var file in files)
+            output.TagMode = TagMode.StartTagAndEndTag;   
+            
+            if (Value != null && Value.Contains("."))
             {
-                
-                var imagefile = Path.GetFileName(file);
-                string selected = Value != null && imagefile.Contains(Value) ? "selected" : "";
-                output.Content.AppendHtml($@"<img data-id=""rankImage_{Key}"" data-val=""{imagefile}"" src=""{_config.RootFolder}/Content/rankimages/{imagefile}"" title=""{imagefile}"" class=""rank {selected} rank-image rankImage_{Key}"" />");
+                var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, "Content\\rankimages\\"), "*.gif");
 
+                foreach (var file in files)
+                {
+                
+                    var imagefile = Path.GetFileName(file);
+                    string selected = Value != null && imagefile.Contains(Value) ? "selected" : "";
+                    output.Content.AppendHtml($@"<img data-id=""rankImage_{Key}"" data-val=""{imagefile}"" src=""{_config.RootFolder}/Content/rankimages/{imagefile}"" title=""{imagefile}"" class=""rank {selected} rank-image rankImage_{Key}"" />");
+
+                }
             }
+            else
+            {
+                for (int i = 0; i < Repeat; i++)
+                {
+                    output.Content.AppendHtml($@"<i class=""fa fa-star {Value}""></i>");
+                }
+            }
+
 
         }
 

@@ -161,10 +161,37 @@ namespace SnitzCore.BackOffice.Controllers
         }
         
         [HttpPost]
-        public IActionResult RankingConfig(RankingViewModel model)
+        public IActionResult RankingConfig(RankingPost form)
         {
-            
-            return PartialView("SaveResult", "Ranking saved");
+            try
+            {
+                var ranktype = _config.GetIntValue("STRSHOWRANK");
+                if ((int)form.Type != ranktype)
+                {
+                    _config.SetValue("STRSHOWRANK", ((int)form.Type).ToString());
+                }
+                foreach (var rank in form.Ranks)
+                {
+                    var existingRank = _context.MemberRanking.Find(rank.Key);
+                    if (existingRank != null)
+                    {
+                        existingRank.Title = rank.Value.Title;
+                        existingRank.Posts = rank.Value.Posts;
+                        existingRank.Image = rank.Value.Image;
+                        existingRank.ImgRepeat = rank.Value.ImgRepeat;
+                        if(rank.Key != 0)
+                            _context.MemberRanking.Update(existingRank);
+                    }
+
+                }
+                _context.SaveChanges(true);
+                return PartialView("SaveResult", "Ranking saved");
+            }
+            catch (Exception e)
+            {
+                return PartialView("SaveResult",e.Message);
+            }
+
         }
 
         public IActionResult SaveUsername(IFormCollection form)

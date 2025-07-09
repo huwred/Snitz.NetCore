@@ -18,7 +18,10 @@
     @foreach (var rank in Model.Ranks)
     {
         MemberRanking ranking = (MemberRanking)rank.Value;
-
+        if (rank.Value.ImgRepeat == 0)
+        {
+            rank.Value.ImgRepeat = 1;
+        }
         <div class="row mb-3">
 
             @switch (rank.Key)
@@ -26,48 +29,55 @@
                 case 0:
                     <div class="col-12">
                         <label class="form-label">Administrator title</label>
-                        <input type="hidden" id="rankId_@rank.Key" name="rankId_@rank.Key" value="@rank.Key" />
-                        <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="hidden" class="form-control" value="@ranking.Posts" />
+                        <input id="Ranks_0_Id" type="hidden" name="Ranks[0].Id" value="@Model.Ranks[0].Id" />
+                        <input id="Ranks_0_Image" name="Ranks[0].Image" value="@Model.Ranks[0].Image" type="hidden" />
+                        <input id="Ranks_0_Posts" name="Ranks[0].Posts" value="@Model.Ranks[0].Posts" type="hidden" />
                     </div>
                     break;
                 case 1:
                     <div class="col-12">
                         <label class="form-label">Moderator title</label>
-                        <input type="hidden" id="rankId_@rank.Key" name="rankId_@rank.Key" value="@rank.Key" />
-                        <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="hidden" class="form-control" value="@ranking.Posts" />
+                        <input id="Ranks_1_Id" type="hidden" name="Ranks[1].Id" value="@Model.Ranks[1].Id" />
+                        <input id="Ranks_1_Image" name="Ranks[1].Image" value="@Model.Ranks[1].Image" type="hidden" />
+                        <input id="Ranks_1_Posts" name="Ranks[1].Posts" value="@Model.Ranks[1].Posts" type="hidden" />
                     </div>
                     break;
                 case 2:
                     <div class="col-12">
                         <label class="form-label">Starting Member title</label>
-                        <input type="hidden" id="rankId_@rank.Key" name="rankId_@rank.Key" value="@rank.Key" />
-                        <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="hidden" class="form-control" value="@ranking.Posts" />
+                        <input id="Ranks_2_Id" type="hidden" name="Ranks[2].Id" value="@Model.Ranks[2].Id" />
+                        <input id="Ranks_2_Image" name="Ranks[2].Image" value="@Model.Ranks[2].Image" type="hidden" />
+                        <input id="Ranks_2_Posts" name="Ranks[2].Posts" value="@Model.Ranks[2].Posts" type="hidden" />
                     </div>
                     break;
                 default:
                     <div class="col-12">
                         <label class="form-label">Member Level @(rank.Key - 2)</label>
-                        <input type="hidden" id="rankId_@rank.Key" name="rankId_@rank.Key" value="@rank.Key" />
                     </div>
                     <div class="col-2">
-                        <input id="rankLevel_@rank.Key" name="rankLevel_@rank.Key" type="text" class="form-control" value="@ranking.Posts" />
+                        <input id="Ranks_@rank.Key-Id" type="hidden" name="Ranks[@rank.Key].Id" value="@rank.Value.Id" />
+                        <input id="Ranks_@rank.Key-Image" name="Ranks[@rank.Key].Image" value="@rank.Value.Image" type="hidden" />
+                        <input id="Ranks_@rank.Key-Posts" name="Ranks[@rank.Key].Posts" type="text" class="form-control" value="@rank.Value.Posts" />
                     </div>
                     break;
             }
 
 
             <div class="col-3">
-                <input type="text" id="rankTitle_@rank.Key" name="rankTitle_@rank.Key" class="form-control" value="@ranking.Title" />
+                <input type="text" id="rankTitle_@rank.Key" name="Ranks[@rank.Key].Title" class="form-control" value="@ranking.Title" />
             </div>
             <div class="col-6 rank-admin">
+                <input name="Ranks[@rank.Key].ImgRepeat" value="@rank.Value.ImgRepeat" type="number" min="1" max="5" />
                 @if (rank.Key != 2)
                 {
-                        <rank-image config-key="@rank.Key" config-val="@ranking.Image"></rank-image>
+                    <rank-image config-key="@rank.Key" config-val="@ranking.Image" repeat="@rank.Value.ImgRepeat"></rank-image>
 
                 }
-                <input type="text" id="rankImage_@rank.Key" name="rankImage_@rank.Key" value="@ranking.Image" style="display: none;" />
+
+                @* <input type="text" id="rankImage_@rank.Key" name="rankImage_@rank.Key" value="@ranking.Image" style="display: none;" /> *@
             </div>
         </div>
     }
-    @* Html.RenderPartial("_FormButtons"); *@
+    <partial name="_FormButtons" />
+    <div id="RankingConfig"></div>
 </form>
