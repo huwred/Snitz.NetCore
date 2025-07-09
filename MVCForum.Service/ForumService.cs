@@ -5,6 +5,7 @@ using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -137,12 +138,15 @@ namespace SnitzCore.Service
         }
         public IEnumerable<Forum> GetAll()
         {
-            var forums = _dbContext.Forums
+            //var forums = _dbContext.Forums
+            //    .AsNoTracking()
+            //    .Include(f=>f.Category)
+            //    .OrderBy(forum=>forum.Category!.Sort).ThenBy(forum=>forum.Order);
+            return CacheProvider.GetOrCreate("AllForums", () => _dbContext.Forums
                 .AsNoTracking()
                 .Include(f=>f.Category)
-                .OrderBy(forum=>forum.Category!.Sort).ThenBy(forum=>forum.Order);
-
-            return forums;
+                .OrderBy(forum=>forum.Category!.Sort).ThenBy(forum=>forum.Order).ToList(), TimeSpan.FromMinutes(10));
+            //return forums;
         }
         public Dictionary<int, string?> CategoryList()
         {

@@ -1,16 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using log4net.Layout.Members;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using X.PagedList;
 using X.PagedList.Extensions;
+using IMember = SnitzCore.Data.IMember;
 
 namespace SnitzCore.Service
 {
@@ -22,7 +27,8 @@ namespace SnitzCore.Service
         private readonly ISnitzConfig _config;
         private readonly IEmailSender _mailSender;
         private readonly string? _tableprefix;
-        public PostService(SnitzDbContext dbContext, IMember memberService,IForum forumservice,ISnitzConfig config,IEmailSender mailSender,IOptions<SnitzForums> options)
+        private readonly IPrincipal _user;
+        public PostService(SnitzDbContext dbContext, IMember memberService,IForum forumservice,ISnitzConfig config,IEmailSender mailSender,IOptions<SnitzForums> options,IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
             _memberService = memberService;
@@ -30,6 +36,7 @@ namespace SnitzCore.Service
             _config = config;
             _mailSender = mailSender;
             _tableprefix = options.Value.forumTablePrefix;
+            _user = httpContextAccessor.HttpContext.User;
         }
 
         /// <summary>
@@ -277,33 +284,61 @@ namespace SnitzCore.Service
         }
         public async Task UpdateViewCount(int id)
         {
-            var topic = _dbContext.Posts.OrderBy(m=>m.Id).First(x=>x.Id == id);
-            topic.ViewCount += 1;
-            _dbContext.Update(topic);
+            var topic = _dbContext.Posts.AsNoTracking().SingleOrDefault(x=>x.Id == id);
+            var views = topic.ViewCount += 1;
+            var itemInfoEntity = new Post()
+            {
+                Id          = id,
+                ViewCount    = views
+            };
+
+            _dbContext.Posts.Attach(itemInfoEntity);
+            _dbContext.Entry(itemInfoEntity).Property(x => x.Id).IsModified = true;
+            _dbContext.Entry(itemInfoEntity).Property(x => x.ViewCount).IsModified = true;
             await _dbContext.SaveChangesAsync();
         }
         public async Task UpdateTopicContent(int id, string content)
         {
-            var topic = _dbContext.Posts.OrderBy(p=>p.Id).First(x=>x.Id == id);
-            topic.Content = content;
-            _dbContext.Update(topic);
+            var itemInfoEntity = new Post()
+            {
+                Id          = id,
+                Content    = content
+            };
+
+            _dbContext.Posts.Attach(itemInfoEntity);
+            _dbContext.Entry(itemInfoEntity).Property(x => x.Id).IsModified = true;
+            _dbContext.Entry(itemInfoEntity).Property(x => x.Content).IsModified = true;
             await _dbContext.SaveChangesAsync();
         }
         public async Task UpdateReplyContent(int id, string content)
         {
-            var reply = _dbContext.Replies.OrderBy(m=>m.Id).First(x=>x.Id == id);
-            reply.Content = content;
-            _dbContext.Update(reply);
+            var itemInfoEntity = new PostReply()
+            {
+                Id          = id,
+                Content    = content
+            };
+
+            _dbContext.Replies.Attach(itemInfoEntity);
+            _dbContext.Entry(itemInfoEntity).Property(x => x.Id).IsModified = true;
+            _dbContext.Entry(itemInfoEntity).Property(x => x.Content).IsModified = true;
             await _dbContext.SaveChangesAsync();
         }
 
         public IEnumerable<Post> GetLatestPosts(int n)
         {
-            return _dbContext.Posts
-                .AsNoTracking()
-                .Include(p => p.Category)
-                .Include(p => p.Forum)
-                .Include(p => p.Member).OrderByDescending(post => post.LastPostDate).Take(n);
+                var posts = GetAllTopicsAndRelated()
+                .OrderByDescending(t=>t.LastPostDate).AsEnumerable();
+
+            var member = _memberService.Current();
+            if (!_user.IsInRole("Administrator") && member != null) //TODO: Is the member a moderator?
+            {
+                posts = posts.Where(p => (p.Status < 2 || p.MemberId == member!.Id) && _user.CanViewForum(p.Forum, null));
+            }else if (member == null)
+            {
+                posts = posts.Where(p => p.Status < 2 && p.Forum.Privateforums == ForumAuthType.All);
+            }
+
+            return posts.Take(n);
         }
         public IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize = 10, int pagenumber = 1)
         {

@@ -104,7 +104,7 @@ namespace SnitzCore.Service.Extensions
             }
 
             if (user.IsAdministrator())
-                return new HtmlString(String.Format(wrapper, forumlink));
+            { return new HtmlString(String.Format(wrapper, forumlink)); }
             if (user.CanViewForum(model, roles))
             {
                 return new HtmlString(String.Format(wrapper, forumlink));
@@ -115,7 +115,7 @@ namespace SnitzCore.Service.Extensions
 
         public static bool CanViewCategory(this IPrincipal user, Category cat, IEnumerable<string> roles)
         {
-            var key = user.Identity.Name + "_" + cat.Id;
+            var key = user.Identity?.Name + "_C" + cat.Id;
             var result = CacheProvider.GetOrCreate(key, () => CanViewCategoryCache(user, cat, roles), TimeSpan.FromMinutes(10));
 
             return result;
@@ -169,17 +169,15 @@ namespace SnitzCore.Service.Extensions
         }
         public static bool CanViewForum(this IPrincipal user, Forum forum, IEnumerable<string> roles)
         {
-            var key = user.Identity.Name + "_" + forum.Id;
+            var key = user.Identity?.Name + "_F" + forum.Id;
             var result = CacheProvider.GetOrCreate(key, () => CanViewForumCache(user, forum, roles), TimeSpan.FromMinutes(10));
 
             return result;
         }
         public static bool CanViewForumCache(this IPrincipal user, Forum forum, IEnumerable<string> roles)
         {
-            //var key = user.Identity.Name + "_" + forum.Id;
 
             bool canview = false;
-
 
             switch (forum.Privateforums)
             {

@@ -17,6 +17,7 @@ using X.PagedList;
 using Microsoft.Extensions.Options;
 using X.PagedList.Extensions;
 using Microsoft.Data.SqlClient;
+using SnitzCore.Service.Extensions;
 
 namespace SnitzCore.Service
 {
@@ -156,8 +157,12 @@ namespace SnitzCore.Service
         }
         public Dictionary<int, MemberRanking>? GetRankings()
         {
+            return CacheProvider.GetOrCreate("Snitz.Rankings", () => Rankings(), TimeSpan.FromMinutes(10));
+
+        }
+        private Dictionary<int, MemberRanking>? Rankings()
+        {
             Dictionary<int, MemberRanking> rankings = new Dictionary<int, MemberRanking>();
-            var service = new InMemoryCache() { DoNotExpire = true };
             try
             {
                 foreach (var rank in _dbContext.MemberRanking)
@@ -170,11 +175,8 @@ namespace SnitzCore.Service
             {
                 //Supress any errors
             }
-
-            return service.GetOrSet("Snitz.Rankings", () => rankings);
-
+            return rankings;
         }
-
         public Member? GetMember(ClaimsPrincipal user)
         {
             return _dbContext.Members.SingleOrDefault(m=>m.Name == user.Identity!.Name);
@@ -232,6 +234,14 @@ namespace SnitzCore.Service
                                 return isadmin ? _dbContext.Members.OrderBy(p => p.Name).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderBy(p => p.Name).ToPagedList(page, pagesize);
                             default :
                                 return isadmin ? _dbContext.Members.OrderByDescending(p => p.Name).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderByDescending(p => p.Name).ToPagedList(page, pagesize);
+                        }
+                    case "lastpost" :
+                        switch (dir)
+                        {
+                            case "asc" :
+                                return isadmin ? _dbContext.Members.OrderBy(p => p.Lastpostdate).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderBy(p => p.Lastpostdate).ToPagedList(page, pagesize);
+                            default :
+                                return isadmin ? _dbContext.Members.OrderByDescending(p => p.Lastpostdate).ToPagedList(page, pagesize) : _dbContext.Members.Where(m=>m.Status == 1).OrderByDescending(p => p.Lastpostdate).ToPagedList(page, pagesize);
                         }
                     case "lastvisit" :
                         switch (dir)

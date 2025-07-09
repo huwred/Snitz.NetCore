@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SkiaSharp;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,8 +33,8 @@ namespace SnitzCore.Service
         //[OutputCache(Duration = 600)]
         public IEnumerable<Category> GetAll()
         {
-            var result = _dbContext.Categories.AsEnumerable();
-            return result;
+            return CacheProvider.GetOrCreate("AllCats", () => _dbContext.Categories.ToList(), TimeSpan.FromMinutes(10));
+
         }
 
         public async Task Create(Category category)
@@ -145,18 +147,7 @@ namespace SnitzCore.Service
                 }
              };
 
-            //var categories = _dbContext.Categories
-            //    .Include(f => f.Forums)
-            //    .ThenInclude(f => f.LatestTopic)
-            //    .ThenInclude(p => p.Member)
-            //    .OrderBy(c => c.Sort).ThenBy(f => f.Forums.OrderBy(c => c.Order).ToList()).ToList();
-            //    //.AsEnumerable();
-
-            if (user.IsInRole("Administrator"))
-            {
-                return categories;
-            }
-            return categories; //.Where(c => c.Forums.Any(f => f.Group.Members.Any(m => m.UserName == user.Identity?.Name)));
+            return categories.ToList(); //.Where(c => c.Forums.Any(f => f.Group.Members.Any(m => m.UserName == user.Identity?.Name)));
         }
     }
 }
