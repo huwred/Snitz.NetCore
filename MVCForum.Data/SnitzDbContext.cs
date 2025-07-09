@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using SnitzCore.Data.Models;
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace SnitzCore.Data
@@ -51,9 +52,18 @@ namespace SnitzCore.Data
             modelBuilder.Entity<PrivateMessage>();
             modelBuilder.Entity<PrivateMessageBlocklist>();
             modelBuilder.Entity<BookmarkEntry>();
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.PhotoAlbum"));
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.Events"));
             modelBuilder.Entity<OldUserInRole>().HasNoKey();
+            modelBuilder.Entity<MemberRanking>()
+                    .Property(x => x.Id)
+                    .UseIdentityColumn(seed: 0, increment: 1);
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.StartsWith("Snitz.")).ToArray();
+            foreach (var assembly in assemblies)
+            {
+                modelBuilder.ApplyConfigurationsFromAssembly(assembly);
+            }
+            //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.PhotoAlbum"));
+            //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.Events"));
+            //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.PostThanks"));
         }
 
 
