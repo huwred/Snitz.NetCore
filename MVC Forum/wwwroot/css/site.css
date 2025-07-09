@@ -84,7 +84,13 @@ header{
     padding-left: 5px;
     
 }
-
+.dropdown-menu {
+    background-color: var(--primary-header);
+    color:white;
+}
+    .dropdown-menu a {
+        color: white;
+    }
 .close-icon i{
     font-size:60px;
     float: left;
@@ -628,9 +634,9 @@ img.flag {
     }
 }
 
-pre.language-markup{
+/*pre.language-markup{
     max-width:80%;
-}
+}*/
 
 .avatar-container {
     position: relative;
