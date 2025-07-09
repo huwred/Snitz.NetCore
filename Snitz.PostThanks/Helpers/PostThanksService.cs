@@ -2,7 +2,7 @@
 using SnitzCore.Data;
 using NetCore.AutoRegisterDi;
 using SnitzCore.Data.Interfaces;
-using Snitz.PhotoAlbum.Models;
+using Snitz.PostThanks.Models;
 
 namespace Snitz.PostThanks.Helpers
 {
