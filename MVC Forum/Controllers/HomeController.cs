@@ -28,7 +28,6 @@ namespace MVCForum.Controllers
             _snitzcookie = snitzcookie;
         }
 
-        //[ResponseCache(VaryByHeader = "User-Agent", Duration = 60)]
         public IActionResult Index()
         {            
 
@@ -76,15 +75,16 @@ namespace MVCForum.Controllers
             };
         }
 
+        [Route("Privacy")]
         public IActionResult Privacy()
         {
             return View();
         }
+        [Route("CookiePolicy")]
         public IActionResult CookiePolicy()
         {
             return View();
         }
-        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

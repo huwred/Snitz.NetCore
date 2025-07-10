@@ -16,6 +16,7 @@ using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -490,6 +491,7 @@ namespace MVCForum.Controllers
 
 
         [Route("Topic/Active")]
+        [Route("LatestPosts")]
         public IActionResult Active(int page = 1, int pagesize = 0,ActiveRefresh? Refresh = null,ActiveSince? Since = null, int groupId=0)
         {
             if (_config.GetIntValue("STRGROUPCATEGORIES") ==1)
@@ -566,7 +568,7 @@ namespace MVCForum.Controllers
             //TODO: filter by group ??
 
             var posts = _postService.GetAllTopicsAndRelated()
-                .Where(f => f.LastPostDate?.FromForumDateStr() > lastvisit)
+                .Where(f => f.LastPostDate?.FromForumDateStr() > lastvisit )
                 .OrderByDescending(t=>t.LastPostDate).AsEnumerable();
             if(groupId > 1)
             {
@@ -577,7 +579,7 @@ namespace MVCForum.Controllers
             }
             if (!User.IsInRole("Administrator")) //TODO: Is the member a moderator?
             {
-                posts = posts.Where(p => p.Status < 2 || p.MemberId == member?.Id);
+                posts = posts.Where(p => (p.Status < 2 || p.MemberId == member?.Id) && User.CanViewForum(p.Forum, null));
             }
             PagedList<Post> latestPosts = new(posts, page, pagesize);
                 

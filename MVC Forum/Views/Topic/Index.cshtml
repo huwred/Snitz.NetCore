@@ -78,6 +78,23 @@
         TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.ForumId);
     }
 }
+    @if (Model.AccessDenied)
+    {
+        if (!SignInManager.IsSignedIn(User))
+        {
+            <div class="container">
+                <h3>You do not have access to this post, please try <a href="~/Account/Login">logging in</a> first</h3>
+            </div>
+        }
+        else
+        {
+            <div class="container">
+                <h3>You do not have access to this post</h3>
+            </div>
+        }
+        return;
+    }
+
 @if (!(bool)ViewBag.RequireAuth)
 {
     var eventservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(CalEventsService));

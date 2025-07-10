@@ -38,7 +38,7 @@
 
             @if (!SignInManager.IsSignedIn(User))
             {
-                <li class="nav-item"><a asp-controller="Account" asp-action="Login" class="nav-link">@Localizer["SignIn"]</a></li>
+                <li class="nav-item"><a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path" class="nav-link">@Localizer["SignIn"]</a></li>
                 @if (SnitzConfig.GetIntValue("STRPROHIBITNEWMEMBERS") != 1)
                 {
                     <li class="nav-item"><a asp-controller="Account" asp-action="Register" class="nav-link">@Localizer["Register"]</a></li>

@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Member;
 using MVCForum.ViewModels.User;
-using Snitz.PhotoAlbum.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -163,7 +162,10 @@ namespace MVCForum.Controllers
             {
                 user = currUser;
                 member = _memberService.GetByUsername(user?.UserName!);
-                member!.HideOnline = User.IsInRole("HiddenMembers") ? 1 : 0;
+                if (member != null)
+                {
+                    member!.HideOnline = User.IsInRole("HiddenMembers") ? 1 : 0;
+                }
             }
             try
             {
@@ -865,7 +867,7 @@ namespace MVCForum.Controllers
         }
         public IActionResult UploadForm(int? id)
         {
-            return PartialView("popUploadAvatar",new AlbumUploadViewModel());;
+            return PartialView("popUploadAvatar",new ViewModels.UploadViewModel());;
         }
 
         [Authorize(Roles = "Administrator,Moderator")]
@@ -875,7 +877,7 @@ namespace MVCForum.Controllers
             ViewBag.HostName = StringExtensions.GetReverseDNS(ip, 5); //Dns.GetHostEntry(Model.IpAddress).HostName;
             return PartialView("popUserIP");
         }
-        public IActionResult UploadAvatar(AlbumUploadViewModel model)
+        public IActionResult UploadAvatar(ViewModels.UploadViewModel model)
         {
             var uploadFolder = Combine(_config.ContentFolder, "Avatar");
             var currentMember = _memberService.Current();

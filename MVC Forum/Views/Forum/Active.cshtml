@@ -1,7 +1,6 @@
 @model MVCForum.ViewModels.Forum.ActiveTopicModel
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using SmartBreadcrumbs
-@using Snitz.PostThanks.Helpers
 @using SnitzCore.Data
 @using SnitzCore.Data.Extensions
 @using BbCodeFormatter
@@ -100,6 +99,7 @@
         </div>
         <div class="d-none d-xxl-block col-3">
             <partial name="QuickSearch" />
+            @await Component.InvokeAsync("Members", new { template = "CategoryForumList" })
             @await Component.InvokeAsync("Members", new{max=10})
             <partial name="FeaturedPoll" />
         </div>

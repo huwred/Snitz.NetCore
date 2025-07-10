@@ -1,40 +1,39 @@
 ﻿using BbCodeFormatter;
 using BbCodeFormatter.Processors;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MVCForum.Extensions;
-using SnitzCore.Data;
-using SnitzCore.Data.Extensions;
-using SnitzCore.Data.Interfaces;
-using SnitzCore.Data.Models;
-using SnitzCore.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Hangfire;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MVCForum.Extensions;
 using NetCore.AutoRegisterDi;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Processors;
 using SmartBreadcrumbs.Extensions;
-using Snitz.Events.Models;
-using Snitz.PhotoAlbum.Models;
+using SnitzCore.Data;
+using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Interfaces;
+using SnitzCore.Data.Models;
+using SnitzCore.Service;
 using SnitzCore.Service.Extensions;
 using SnitzCore.Service.Hangfire;
 using SnitzCore.Service.MiddleWare;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Hosting;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 
 
@@ -156,11 +155,6 @@ EmailConfiguration emailConfig = builder.Configuration
 builder.Services.AddSingleton(emailConfig);
 builder.Services.Configure<SnitzForums>(builder.Configuration.GetSection(SnitzForums.SectionName));
 
-var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.StartsWith("Snitz.")).ToArray();
-var results = builder.Services.RegisterAssemblyPublicNonGenericClasses(assemblies)
-    .Where(c => c.Name.EndsWith("Service"))
-    .AsPublicImplementedInterfaces();
-
 builder.Logging.ClearProviders();
 builder.Logging.AddLog4Net("log4net.config");
 builder.Services.AddImageSharp(
@@ -192,9 +186,8 @@ builder.Services.AddImageSharp(
         };
     });
 builder.Services.AddTransient<ISyndicationXmlService, SyndicationXmlService>();
-builder.Services.AddEventsServices(builder.Configuration);
-builder.Services.AddAlbumServices(builder.Configuration);
-builder.Services.AddPostThanksServices(builder.Configuration);
+builder.Services.RegisterPlugins(builder.Configuration);
+
 
 builder.Services.AddHangfire(configuration => configuration
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_110)

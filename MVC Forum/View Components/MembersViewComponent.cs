@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MVCForum.ViewModels.Member;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
+using SnitzCore.Service.Extensions;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,7 +20,7 @@ namespace MVCForum.View_Components
             _catService = catService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int max,string? template = null,MemberDetailModel? member = null)
+        public async Task<IViewComponentResult> InvokeAsync(int? max,string? template = null,MemberDetailModel? member = null)
         {
             if(template == "Public")
             {
@@ -29,10 +32,13 @@ namespace MVCForum.View_Components
             }
             else if (template == "CategoryForumList")
             {
-                var categories = _catService.FetchCategoryForumList(User);
+                var key = "CategoryForumList_" + User.Identity?.Name;
+                var categories = 
+                CacheProvider.GetOrCreate(key, () => _catService.FetchCategoryForumList(User), TimeSpan.FromMinutes(10));
+
                 return await Task.FromResult((IViewComponentResult)View(template,categories.ToList()));
             }
-            var recentMembers = _memberService.GetRecent(max).ToList();
+            var recentMembers = _memberService.GetRecent(max!.Value).ToList();
             if(template != null) {
                 return await Task.FromResult((IViewComponentResult)View(template,recentMembers));
                 }

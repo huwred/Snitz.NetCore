@@ -32,6 +32,7 @@ namespace MVCForum.ViewModels.Post
         public bool AllowRating { get; internal set; }
         public bool AllowTopicRating { get; internal set; }
         public decimal Rating { get; internal set; }
+        public bool AccessDenied { get; internal set; }
 
         public PostIndexModel()
         {

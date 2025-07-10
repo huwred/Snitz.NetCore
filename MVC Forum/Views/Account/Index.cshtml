@@ -81,13 +81,13 @@
             </div>
 
             <table class="table table-sm table-bordered table-hover table-striped">
-                <thead>
-                <tr class="bg-dark">
+                <thead class=" bg-dark text-white table-primary">
+                <tr class="bg-dark text-white">
                     <th>&nbsp;</th>
                     <th><a href="?sortCol=name&sortOrder=@sortorder">@Localizer["UserName"]</a></th>
                     <th>@Localizer["ProfileTitle"]</th>
                     <th><a href="?sortCol=posts&sortOrder=@sortorder">@Localizer["ProfilePosts"]</a></th>
-                    <th>@Localizer["ProfileLastPost"]</th>
+                    <th><a href="?sortCol=lastpost&sortOrder=@sortorder">@Localizer["ProfileLastPost"]</a></th>
                     <th class="d-none d-md-table-cell"><a href="?sortCol=membersince&sortOrder=@sortorder">@Localizer["ProfileDate"]</a></th>
                     <th class="d-none d-md-table-cell"><a href="?sortCol=lastvisit&sortOrder=@sortorder">@Localizer["ProfileLastVisit"]</a></th>
                     <th snitz-if="@(userroles != null && userroles.Contains("Administrator"))" class="d-none d-md-table-cell">@Localizer["Email"]</th>

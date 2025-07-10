@@ -64,6 +64,7 @@ namespace MVCForum.Controllers
             ViewBag.GroupId = groupId;
 
             var categories = _categoryService.GetAll().OrderBy(c=>c.Sort).ToList();
+
             var forums = _forumService.GetAll().Select(forum => new ForumListingModel()
             {
                 Id = forum.Id,
@@ -97,31 +98,7 @@ namespace MVCForum.Controllers
                 .Where(f =>  catfilter.Contains(f.Id))
                 .OrderBy(c=>c.Sort).ToList();
 
-                forums = _forumService.GetAll().Where(f=>catfilter.Contains(f.CategoryId)).Select(forum => new ForumListingModel()
-                {
-                    Id = forum.Id,
-                    Title = forum.Title,
-                    Description = forum.Description,
-                    CategoryId = forum.CategoryId,
-                    CategoryName = forum.Category?.Name,
-                    Topics = forum.TopicCount,
-                    Posts = forum.ReplyCount,
-                    DefaultView = (DefaultDays)forum.Defaultdays,
-                    LastPostDateTime = !string.IsNullOrEmpty(forum.LastPost) ? forum.LastPost.FromForumDateStr() : null,
-                    LastPostAuthorId = forum.LastPostAuthorId,
-                    LastPostTopicId = forum.LatestTopicId,
-                    LastPostReplyId = forum.LatestReplyId,
-                    AccessType = forum.Privateforums,
-                    ForumModeration = forum.Moderation,
-                    ForumType = (ForumType)forum.Type,
-                    Url = forum.Url,
-                    Status = forum.Status,
-                    Order = forum.Order,
-                    CategorySubscription = (CategorySubscription)forum.Category?.Subscription,
-                    ForumSubscription = (ForumSubscription)forum.Subscription,
-                    ArchivedCount = forum.ArchivedTopics
-                
-                });
+                forums = forums.Where(f=>catfilter.Contains(f.CategoryId));
 
             }
 
@@ -162,6 +139,7 @@ namespace MVCForum.Controllers
                 AllowRating = post.AllowRating,
                 ForumAllowRating = post.Forum.Rating
             });
+
             var model = new ForumIndexModel()
             {
                 Categories = categories,

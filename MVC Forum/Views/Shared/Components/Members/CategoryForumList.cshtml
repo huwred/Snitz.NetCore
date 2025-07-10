@@ -9,7 +9,7 @@
     });
 }
 <div id="content" class="widget-item">
-    <h5 snitz-if="@User.IsInRole("Administrator")">@Localizer["lblCategories"] </h5>
+    <h5>@Localizer["lblCategories"] </h5>
     <hr class="title" style="margin:0px;padding:1px;" />
     <div class="accordion" id="accordianParent">
         @foreach (var cat in groupedCats)

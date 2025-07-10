@@ -1,6 +1,4 @@
-﻿using Azure;
-using BbCodeFormatter;
-using BbCodeFormatter.Processors;
+﻿using BbCodeFormatter;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -9,13 +7,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Post;
 using SmartBreadcrumbs.Nodes;
 using Snitz.Events.Models;
-using Snitz.PhotoAlbum.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -63,6 +59,7 @@ namespace MVCForum.Controllers
             _httpcontext = httpContextAccessor.HttpContext;
             _pmService = pmService;
             _eventsContext = eventsContext;
+
         }
 
         //[Route("{id:int}")]
@@ -86,13 +83,14 @@ namespace MVCForum.Controllers
                 TempData["Error"] = null;
                 return View("Error");
             }
+            var post = _postService.GetTopicAsync(id).Result;
             bool signedin = false;
             ViewBag.RequireAuth = false;
             if (User.Identity is { IsAuthenticated: true })
             {
                 signedin = true;
             }
-            var post = _postService.GetTopicAsync(id).Result;
+
             if(post == null)
             {
                 ViewBag.Error = "No Topic Found with that ID";
@@ -209,7 +207,8 @@ namespace MVCForum.Controllers
                 EditedBy = post.LastEditby == null ? "" : _memberService.GetMemberName(post.LastEditby.Value),
                 AllowTopicRating = post.AllowRating == 1 && _config.GetIntValue("INTTOPICRATING")==1 ,
                 AllowRating = post.Forum.Rating==1 && _config.GetIntValue("INTTOPICRATING")==1 && !_memberService.HasRatedTopic(post.Id,_memberService.Current()?.Id),
-                Rating = post.GetTopicRating()
+                Rating = post.GetTopicRating(),
+                AccessDenied = notallowed,
             };
             if(post.Forum.Type == (int)ForumType.BlogPosts)
             {
@@ -587,6 +586,7 @@ namespace MVCForum.Controllers
             ModelState.Remove("ForumName");
             ModelState.Remove("AuthorName");
             ModelState.Remove("AuthorImageUrl");
+            ModelState.Remove("AuthorTitle");
             ModelState.Remove("Sticky");
             ModelState.Remove("Lock");
             ModelState.Remove("DoNotArchive");
@@ -603,7 +603,15 @@ namespace MVCForum.Controllers
             }
             if (!ModelState.IsValid)
             {
-                return View(model);
+                var errorList = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
+
+                TempData["Error"] = string.Join(Environment.NewLine, errorList);
+                return View("Error");
             }
             var userId = _userManager.GetUserId(User);
             var user = await _userManager.FindByIdAsync(userId!);
@@ -1484,7 +1492,7 @@ namespace MVCForum.Controllers
         /// <returns></returns>
         [Route("Topic/Upload/")]
         //[HttpPost]
-        public IActionResult Upload(AlbumUploadViewModel model)
+        public IActionResult Upload(UploadViewModel model)
         {
             var uploadFolder = Combine(_config.ContentFolder, "Members");
             var currentMember = _memberService.Current();
@@ -1519,7 +1527,7 @@ namespace MVCForum.Controllers
         public IActionResult UploadForm()
         {
             ViewBag.Title = "lblUpload";
-            return PartialView("popUpload",new AlbumUploadViewModel());
+            return PartialView("popUpload",new UploadViewModel());
         }
 
         [HttpPost]
