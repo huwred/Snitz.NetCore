@@ -2,6 +2,7 @@
     --primary-header: #191970;
     --font-size: 14px;
     --spacing: 1rem;
+    
 }
 
 html, body {
@@ -9,6 +10,9 @@ html, body {
     font-family: Verdana, Arial, helvetica;
     background-color: whitesmoke !important;
     color: var(--primary-header) !important;
+}
+.dropdown-menu {
+    --bs-dropdown-divider-bg: whitesmoke;
 }
 .btn-primary {
     --bs-btn-color: #fff;
