@@ -64,24 +64,24 @@ namespace SnitzCore.Service.Extensions
             return new HtmlString(stars.GetString());
         }
 
-        public static object MemberRankStars(this IHtmlHelper htmlhelper, MemberListingModel author, Dictionary<int, MemberRanking>? ranking, IViewLocalizer language)
-        {
-            string? mTitle = author.Title;
-            if (author.Member.Status == 0 || author.Member.Name == "n/a")
-            {
-                mTitle = language.GetString("tipMemberLocked");
-            }
-            if (author.Member.Name == "zapped")
-            {
-                mTitle = language.GetString("tipZapped");
-            }
-            RankInfoHelper rank = new RankInfoHelper(author.Member, ref mTitle, author.Member.Posts, ranking);
-            TagBuilder stars = new TagBuilder("span");
-            stars.AddCssClass("rank-label");
-            stars.InnerHtml.AppendHtml(rank.Stars);
+        //public static HtmlString MemberRankStars(this IHtmlHelper htmlhelper, MemberListingModel author, Dictionary<int, MemberRanking>? ranking, IViewLocalizer language)
+        //{
+        //    string? mTitle = author.Title;
+        //    if (author.Member.Status == 0 || author.Member.Name == "n/a")
+        //    {
+        //        mTitle = language.GetString("tipMemberLocked");
+        //    }
+        //    if (author.Member.Name == "zapped")
+        //    {
+        //        mTitle = language.GetString("tipZapped");
+        //    }
+        //    RankInfoHelper rank = new RankInfoHelper(author.Member, ref mTitle, author.Member.Posts, ranking);
+        //    TagBuilder stars = new TagBuilder("span");
+        //    stars.AddCssClass("rank-label");
+        //    stars.InnerHtml.AppendHtml(rank.Stars);
 
-            return new HtmlString(stars.GetString());
-        }
+        //    return new HtmlString(stars.GetString());
+        //}
 
         public static string GetString(this IHtmlContent content)
         {
@@ -120,7 +120,7 @@ namespace SnitzCore.Service.Extensions
 
             return result;
         }
-        public static bool CanViewCategoryCache(this IPrincipal user, Category cat, IEnumerable<string> roles)
+        private static bool CanViewCategoryCache(this IPrincipal user, Category cat, IEnumerable<string> roles)
         {
             //var key = user.Identity.Name + "_" + cat.Id;
 
@@ -174,7 +174,7 @@ namespace SnitzCore.Service.Extensions
 
             return result;
         }
-        public static bool CanViewForumCache(this IPrincipal user, Forum forum, IEnumerable<string> roles)
+        private static bool CanViewForumCache(this IPrincipal user, Forum forum, IEnumerable<string> roles)
         {
 
             bool canview = false;
