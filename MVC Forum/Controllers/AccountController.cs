@@ -1,5 +1,5 @@
-﻿using CreativeMinds.StopForumSpam.Responses;
-using CreativeMinds.StopForumSpam;
+﻿using CreativeMinds.StopForumSpam;
+using CreativeMinds.StopForumSpam.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,10 +11,12 @@ using Microsoft.Extensions.Options;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Member;
 using MVCForum.ViewModels.User;
+using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Data.ViewModels;
 using SnitzCore.Service;
 using SnitzCore.Service.Extensions;
 using System;
@@ -29,7 +31,6 @@ using System.Threading.Tasks;
 using System.Web;
 using X.PagedList;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
-using SnitzCore.Data.ViewModels;
 
 namespace MVCForum.Controllers
 {
@@ -101,7 +102,9 @@ namespace MVCForum.Controllers
             var totalCount = _memberService.GetAll(admin).Count();
             IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(admin, pagesize, page,sortCol,sortOrder);
             var pageCount = (int)Math.Ceiling((double)totalCount / pagesize);
-            
+
+            var memberPage = new MvcBreadcrumbNode("Index", "Account", "lblMembers");
+            ViewData["BreadcrumbNode"] = memberPage;            
 
             var members = memberListingModel.Select(m => new MemberListingModel
             {
@@ -167,6 +170,9 @@ namespace MVCForum.Controllers
                     member!.HideOnline = User.IsInRole("HiddenMembers") ? 1 : 0;
                 }
             }
+            var memberPage = new MvcBreadcrumbNode("Index", "Account", "lblMembers");
+            var myPage = new MvcBreadcrumbNode("Index", "Account", "lblProfile"){ Parent = memberPage };
+            ViewData["BreadcrumbNode"] = myPage;  
             try
             {
                 var model = new MemberDetailModel

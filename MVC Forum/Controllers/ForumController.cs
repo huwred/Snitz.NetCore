@@ -924,6 +924,9 @@ namespace MVCForum.Controllers
             var forumsubs = _memberService.ForumSubscriptions().ToList();
             var result = _forumService.FetchMyForumTopicsPaged(5, pagenum, forumsubs);
 
+            var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
+            var topicPage = new MvcBreadcrumbNode("MyView", "Forum", "mnuMyView") { Parent = forumPage };
+            ViewData["BreadcrumbNode"] = topicPage;
             MyTopicsViewModel vm = new MyTopicsViewModel
             {
                 Topics = result,

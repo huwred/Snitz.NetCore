@@ -1,17 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using MVCForum.ViewModels;
+using MVCForum.ViewModels.PrivateMessage;
+using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
-using MVCForum.ViewModels;
-using Microsoft.AspNetCore.Mvc.Localization;
-using SnitzCore.Service.Extensions;
-using Microsoft.AspNetCore.Http;
-using MVCForum.ViewModels.PrivateMessage;
 
 namespace MVCForum.Controllers
 {
@@ -41,7 +42,9 @@ namespace MVCForum.Controllers
                 ToMemberId = pm.To,
                 FromMemberName = _memberService.GetMemberName(pm.From) ?? pm.From.ToString()
             });
-
+            var profilePage = new MvcBreadcrumbNode("Index", "PrivateMessage", "mnuAccountPM");;
+            ViewData["BreadcrumbNode"] = profilePage;
+            
             var model = new PrivateMessageIndexModel()
             {
                 MemberId = _member.Id,
@@ -53,6 +56,9 @@ namespace MVCForum.Controllers
 
         public IActionResult Inbox()
         {
+            var profilePage = new MvcBreadcrumbNode("Index", "PrivateMessage", "mnuAccountPM");;
+            ViewData["BreadcrumbNode"] = profilePage;
+            
             _member = _memberService.GetMember(User);
             var inbox = _pmService.GetInbox(_member!.Id).Select(pm => new PrivateMessageListingModel()
             {
@@ -75,6 +81,9 @@ namespace MVCForum.Controllers
         }
         public IActionResult Outbox()
         {
+            var profilePage = new MvcBreadcrumbNode("Index", "PrivateMessage", "mnuAccountPM");;
+            ViewData["BreadcrumbNode"] = profilePage;
+
             _member = _memberService.GetMember(User);
             var outbox = _pmService.GetOutbox(_member!.Id).Select(pm => new PrivateMessageListingModel()
             {
@@ -151,6 +160,7 @@ namespace MVCForum.Controllers
 
         public IActionResult Settings()
         {
+
             _member = _memberService.GetMember(User);
             var settings = new PrivateMessageSettingsModel
                 {

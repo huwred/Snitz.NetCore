@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using MVCForum.ViewModels;
+using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -27,7 +28,8 @@ namespace MVCForum.Controllers
                 ActiveSince = ActiveSince.LastVisit,
                 Refresh = ActiveRefresh.None
             };
-
+            var BookmarkPage = new MvcBreadcrumbNode("Index", "Bookmark", "mnuBookmarks");
+            ViewData["BreadcrumbNode"] = BookmarkPage;
             return View("Index",vm);
         }
 
