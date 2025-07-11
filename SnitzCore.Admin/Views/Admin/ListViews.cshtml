@@ -4,7 +4,7 @@
 @inject IWebHostEnvironment _env
 @{
     ViewBag.Title = "title";
-    Layout = "_MasterLayout";
+    Layout = "AdminLayout";
     var dir = Directory.GetFiles($@"{_env.ContentRootPath}\Views",
         "*.cshtml", SearchOption.AllDirectories);
     string[] folders = Directory.GetDirectories($@"{_env.ContentRootPath}\Views", "*", System.IO.SearchOption.AllDirectories);

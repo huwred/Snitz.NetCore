@@ -4,7 +4,7 @@
 @using SnitzCore.Data.Models
 @inject IOptionsSnapshot<SnitzForums> Config
 @{
-    Layout = "_MasterLayout";
+    Layout = "AdminLayout";
     string disableme = "";
     if (!User.IsInRole("SuperAdmin"))
     {
