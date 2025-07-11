@@ -1,5 +1,6 @@
 ﻿
 <footer>
-    <span>@Html.Raw(SnitzConfig.ForumTitle) - &copy; @string.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year) </span>
-    <span snitz-if="@(SnitzConfig.GetIntValue("INTPAGETIMER") == 1)" class="page-timer float-end" id="loadTime">Page rendered in @Context.Items["PageLoadTime"] ms</span>
+    <span class="flo">@Html.Raw(SnitzConfig.ForumTitle) - &copy; @string.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year) </span>
+    <span><br /><a href="~/Privacy">Privacy</a> | <a href="~/CookiePolicy">Cookie Policy</a><br /></span>
+    <span snitz-if="@(SnitzConfig.GetIntValue("INTPAGETIMER") == 1)" class="page-timer" id="loadTime"></span>
 </footer>
