@@ -17,7 +17,7 @@ namespace MVCForum.View_Components
 
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string template, int? catid, int? forumid, int topicid = 0)
+        public async Task<IViewComponentResult> InvokeAsync(string template, int? catid, int? forumid, int topicid = 0, bool featured = false)
         {
             if (template == "MenuItem")
             {
@@ -51,6 +51,8 @@ namespace MVCForum.View_Components
 
             if (template == "Featured")
             {
+                TempData["featured"] = true;
+                TempData["panel"] = "subforum-title";
                 var vm = new PollViewModel()
                 {
                     Poll = _dbContext.Polls.Include(p => p.PollAnswers).Include(p=>p.Topic).SingleOrDefault(x => x.Id == topicid),
@@ -61,8 +63,16 @@ namespace MVCForum.View_Components
             }
             if (template == "PollSummary")
             {
-                TempData["featured"] = false;
-                TempData["panel"] = "bg-primary";
+                if(featured){
+                    TempData["featured"] = false;
+                    TempData["panel"] = "subforum-title";
+                }
+                else
+                {
+                    TempData["featured"] = false;
+                    TempData["panel"] = "bg-primary";
+                }
+
                 var vm = new PollViewModel()
                 {
                     TopicId = topicid,

@@ -9,8 +9,8 @@
     string culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
 }
 <div class="user-poll-section">
-    <div class="card col-12">
-        <div class="card-header  @TempData["panel"] text-@TempData["panel"]">
+    <div class="card col-12 mb-2">
+        <div class="card-header @TempData["panel"] text-@TempData["panel"]">
             @if ((bool)TempData["featured"]!)
             {
                 <h4>@Localizer["FeaturedPoll"]</h4>

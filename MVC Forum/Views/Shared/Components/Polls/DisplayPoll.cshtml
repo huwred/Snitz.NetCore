@@ -9,7 +9,7 @@ else
     var memberid = MemberService.Current()?.Id;
     if (Model.Votes.SingleOrDefault(v => v.MemberId == memberid && v.PollId == Model.Poll.Id) != null || SnitzCookie.HasVoted(Model.Poll.Id, memberid))
     {
-        @await Component.InvokeAsync("Polls", new { template = "PollSummary", topicid = Model.Poll.TopicId })
+        @await Component.InvokeAsync("Polls", new { template = "PollSummary", topicid = Model.Poll.TopicId, featured = true })
     }
     else
     {
