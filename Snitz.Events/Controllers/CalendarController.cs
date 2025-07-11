@@ -1,11 +1,12 @@
-﻿using System.Net;
-using BbCodeFormatter;
+﻿using BbCodeFormatter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SmartBreadcrumbs.Nodes;
 using Snitz.Events.Models;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using System.Net;
 
 
 namespace Snitz.Events.Controllers;
@@ -28,6 +29,7 @@ public class CalendarController : Controller
     // GET
     public IActionResult Index()
     {
+        ViewData["BreadcrumbNode"] = new MvcBreadcrumbNode("Index", "Calendar", "calTitle");
         return View();
     }
     [HttpPost]
