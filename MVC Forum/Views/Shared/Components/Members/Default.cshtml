@@ -40,7 +40,14 @@
 <div id="content" class="widget-item">
 <ul class="list-unstyled">
     <li>
-        @Localizer["lblOnlineUsersDesc", new object[] { onlinecount, activecount, hiddencount, Math.Max(onlinecount - activecount,0), maxonline, "" }]
+        @if(onlinecount == 1)
+        {
+            @Localizer["lblOnlineUsersDesc1", new object[] { onlinecount, activecount, hiddencount, Math.Max(onlinecount - activecount,0), maxonline, "" }]
+        }
+        else
+        {
+            @Localizer["lblOnlineUsersDesc", new object[] { onlinecount, activecount, hiddencount, Math.Max(onlinecount - activecount,0), maxonline, "" }] 
+        }
     </li>
     <li>
         @foreach (var activemember in activemembers)
