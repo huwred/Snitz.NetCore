@@ -16,10 +16,17 @@
     {
         cat = (string)routeid;
     }
-
+    var isAdministrator = false;
     TempData["CatId"] = cat;
     TempData["ForumId"] = 0;
-    var subscriptions = MemberService.Current()?.Subscriptions;
+    var subscriptions = new List<MemberSubscription>();
+    if (User.Identity!.IsAuthenticated && MemberService.Current() != null)
+    {
+        // Get the current user's subscriptions
+        // This is used to determine if the user is subscribed to a category
+        subscriptions = MemberService.Current()?.Subscriptions;
+        isAdministrator = User.IsInRole("Administrator");
+    }
 }
 <div class="pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
@@ -27,7 +34,7 @@
         <form id="goups-form" asp-action="Index" class="form-inline" method="get">
             <partial snitz-if="@(SnitzConfig.GetIntValue("STRGROUPCATEGORIES") == 1)" name="CategoryFilter" />
         </form>
-        @if (User.IsInRole("Administrator"))
+        @if (isAdministrator)
         {
             if (!string.IsNullOrWhiteSpace(cat))
             {
@@ -86,8 +93,8 @@
                                 }
                                 <div class="subforum-row @weblinkclass ">
                                     <div class="subforum-icon subforum-column text-center">
-                                        <snitz-forum-icon lastpost="@forum.LastPostDateTime" is-administrator="@User.IsInRole("Administrator")" forum-id="@forum.Id" status="@forum.Status" forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
-                                        @if (User.IsInRole("Administrator") && forum.ForumType is ForumType.WebLink)
+                                        <snitz-forum-icon lastpost="@forum.LastPostDateTime" is-administrator="@isAdministrator" forum-id="@forum.Id" status="@forum.Status" forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
+                                        @if (isAdministrator && forum.ForumType is ForumType.WebLink)
                                         {
                                             <br />
                                             <i class="fa fa-trash weblink-del" title="Delete External link" data-id="@forum.Id"></i>
@@ -125,7 +132,7 @@
                                         </div>
 
                                         <div class="subforum-info subforum-column">
-                                            @if (forum.AccessType == ForumAuthType.All || User.IsInRole("Administrator"))
+                                            @if (forum.AccessType == ForumAuthType.All || isAdministrator)
                                             {
                                                 if (forum.LastPostTopicId.HasValue && forum.LastPostTopicId.Value > 0)
                                                 {

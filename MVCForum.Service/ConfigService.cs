@@ -130,29 +130,28 @@ namespace SnitzCore.Service
 
         public void RemoveFromCache(string key)
         {
-            var service = new InMemoryCache();
-            service.Remove("cfg_" + key);
+            CacheProvider.Remove("cfg_" + key);
         }
         public int GetIntValue(string key, int defaultvalue = 0)
         {
-            var service = new InMemoryCache() { DoNotExpire = true };
-            var result = service.GetOrSet("cfg_" + key, () => CachedIntValue(key, defaultvalue));
-            return result != null ? int.Parse(result) : defaultvalue;
+
+            var test = CacheProvider.GetOrCreate<int>("cfg_" + key,()=> CachedIntValue(key, defaultvalue),TimeSpan.MaxValue);
+            return test;
         }
 
         public IEnumerable<string> GetRequiredMemberFields()
         {
             return _dbContext.SnitzConfig.Where(c => c.Key.StartsWith("STRREQ") && c.Value == "1").Select(c=>c.Key);
         }
-        private string? CachedIntValue(string? key, int defaultvalue)
+        private int CachedIntValue(string? key, int defaultvalue)
         {
             var config = _dbContext.SnitzConfig.SingleOrDefault(c => c.Key == key);
-            if (config != null)
+            if (config != null && int.TryParse(config.Value, out int parsedValue))
             {
-                return config.Value;
+                return parsedValue;
             }
 
-            return defaultvalue.ToString();
+            return defaultvalue;
         }
 
         public string GetValue(string key)
@@ -161,9 +160,7 @@ namespace SnitzCore.Service
         }
         public string GetValueWithDefault(string key, string? defVal = null)
         {
-            var service = new InMemoryCache() { DoNotExpire = true };
-            return service.GetOrSet("cfg_" + key, () => CachedStringValue(key,defVal))!;
-
+            return CacheProvider.GetOrCreate("cfg_" + key, () => CachedStringValue(key,defVal),TimeSpan.MaxValue);
         }
 
         private string CachedStringValue(string key, string? defVal)

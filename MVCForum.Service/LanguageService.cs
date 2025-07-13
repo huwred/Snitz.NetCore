@@ -1,15 +1,16 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
+using SnitzCore.Service.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace SnitzCore.Service
 {
@@ -100,8 +101,7 @@ namespace SnitzCore.Service
             {
                 culture = _language;
             }
-            var service = new InMemoryCache(30);
-            return service.GetOrSet($"{culture}_{name}", () => CachedStringValue(name,culture));
+            return CacheProvider.GetOrCreate($"{culture}_{name}", () => CachedStringValue(name,culture),TimeSpan.FromMinutes(30));
 
         }
 

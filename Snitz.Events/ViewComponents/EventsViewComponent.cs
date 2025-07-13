@@ -1,13 +1,14 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Snitz.Events.Models;
 using Snitz.Events.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
-using Snitz.Events.Models;
 using SnitzCore.Data.Models;
 using SnitzCore.Data.Models;
+using SnitzCore.Service.Extensions;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Snitz.Events.ViewComponents
 {
@@ -106,9 +107,7 @@ namespace Snitz.Events.ViewComponents
 
         private List<EnricoCountry> GetCountries()
         {
-            var service = new InMemoryCache(600);
-
-            return service.GetOrSet("cal.countries", FetchJsonCountries);
+            return CacheProvider.GetOrCreate("cal.countries", FetchJsonCountries, TimeSpan.FromMinutes(600));
         }
         private List<EnricoCountry> FetchJsonCountries()
         {

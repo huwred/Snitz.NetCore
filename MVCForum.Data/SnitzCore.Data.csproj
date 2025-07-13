@@ -7,7 +7,9 @@
 
   <ItemGroup>
     <Compile Remove="BaseResourceProvider.cs" />
+    <Compile Remove="Interfaces\ICacheService.cs" />
     <Compile Remove="Interfaces\ILanguageResource.cs" />
+    <Compile Remove="Interfaces\InMemoryCache.cs" />
   </ItemGroup>
 
   <ItemGroup>

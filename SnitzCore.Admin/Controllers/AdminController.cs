@@ -1,8 +1,6 @@
-﻿using System.Data;
-using Azure;
+﻿using Azure;
 using CreativeMinds.StopForumSpam;
 using CreativeMinds.StopForumSpam.Responses;
-
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -18,6 +16,8 @@ using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service.Extensions;
+using System.Data;
 using static SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel;
 
 namespace SnitzCore.BackOffice.Controllers
@@ -647,8 +647,8 @@ namespace SnitzCore.BackOffice.Controllers
                     conf.Value = form[spamfilter][0];
                     _dbcontext.SnitzConfig.Update(conf);
                     _dbcontext.SaveChanges();
-                    var service = new InMemoryCache() { DoNotExpire = true };
-                    service.Remove("cfg_" + spamfilter);
+
+                    CacheProvider.Remove("cfg_" + spamfilter);
 
                 }
                 else
