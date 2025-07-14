@@ -6,7 +6,9 @@
     Layout = "AdminLayout";
  
 }
-
+@section Styles {
+    <link href="https://cdn.jsdelivr.net/npm/bootstrapv5-colorpicker@0.0.2/dist/css/bootstrap-colorpicker.min.css" rel="stylesheet">
+}
 <div class="m-3">
     <div class="nav nav-tabs me-3" id="v-pills-tab" role="tablist">
         <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Profile</button>
@@ -15,14 +17,13 @@
         <button class="nav-link" id="v-pills-subscriptions-tab" data-bs-toggle="pill" data-bs-target="#v-pills-subscriptions" type="button" role="tab" aria-controls="v-pills-subscriptions" aria-selected="false">Subscriptions</button>
         <button class="nav-link" id="v-pills-usernames-tab" data-bs-toggle="pill" data-bs-target="#v-pills-usernames" type="button" role="tab" aria-controls="v-pills-usernames" aria-selected="false">Username Filters</button>
         <button class="nav-link" id="v-pills-pending-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pending" type="button" role="tab" aria-controls="v-pills-pending" aria-selected="false">Pending Members</button>
-
     </div>
     <div class="tab-content bg-white p-4" id="v-pills-tabContent">
         <div class="tab-pane fade show active w-100" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
             <form asp-action="SaveMemberSettings" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRFULLNAME" config-label="Fullname" config-val="@SnitzConfig.GetIntValue("STRFULLNAME")"></admin-config>
+                        <admin-config config-key="STRFULLNAME" config-label="Fullname" config-val="@SnitzConfig.GetIntValue("STRFULLNAME")" help-text="@Localizer["STRFULLNAME"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQFULLNAME" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQFULLNAME")"></admin-config>
@@ -30,15 +31,15 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRAGE" config-label="Age" config-val="@SnitzConfig.GetIntValue("STRAGE")"></admin-config>
+                        <admin-config config-key="STRAGE" config-label="Age" config-val="@SnitzConfig.GetIntValue("STRAGE")" help-text="@Localizer["STRAGE"].Value"></admin-config>
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRREQAGE" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQAGE")"></admin-config>
+                        <admin-config config-key="STRREQAGE" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQAGE")" ></admin-config>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRAGEDOB" config-label="Date of Birth" config-val="@SnitzConfig.GetIntValue("STRAGEDOB")"></admin-config>
+                        <admin-config config-key="STRAGEDOB" config-label="Date of Birth" config-val="@SnitzConfig.GetIntValue("STRAGEDOB")" help-text="@Localizer["STRAGEDOB"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQAGEDOB" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQAGEDOB")"></admin-config>
@@ -46,7 +47,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRMINAGE" config-label="Min Age" config-val="@SnitzConfig.GetIntValue("STRMINAGE")"></admin-config>
+                        <admin-config config-key="STRMINAGE" config-label="Min Age" config-val="@SnitzConfig.GetIntValue("STRMINAGE")" help-text="@Localizer["STRMINAGE"].Value"></admin-config>
                 </div>
                 <div class="col">
 
@@ -54,7 +55,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRSEX" config-label="Gender" config-val="@SnitzConfig.GetIntValue("STRSEX")"></admin-config>
+                        <admin-config config-key="STRSEX" config-label="Gender" config-val="@SnitzConfig.GetIntValue("STRSEX")" help-text="@Localizer["STRSEX"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQSEX" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQSEX")"></admin-config>
@@ -62,7 +63,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRMARSTATUS" config-label="Marital Status" config-val="@SnitzConfig.GetIntValue("STRMARSTATUS")"></admin-config>
+                        <admin-config config-key="STRMARSTATUS" config-label="Marital Status" config-val="@SnitzConfig.GetIntValue("STRMARSTATUS")" help-text="@Localizer["STRMARSTATUS"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQMARSTATUS" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQMARSTATUS")"></admin-config>
@@ -70,7 +71,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRCITY" config-label="City" config-val="@SnitzConfig.GetIntValue("STRCITY")"></admin-config>
+                        <admin-config config-key="STRCITY" config-label="City" config-val="@SnitzConfig.GetIntValue("STRCITY")" help-text="@Localizer["STRCITY"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQCITY" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQCITY")"></admin-config>
@@ -78,7 +79,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRSTATE" config-label="State" config-val="@SnitzConfig.GetIntValue("STRSTATE")"></admin-config>
+                        <admin-config config-key="STRSTATE" config-label="State" config-val="@SnitzConfig.GetIntValue("STRSTATE")" help-text="@Localizer["STRSTATE"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQSTATE" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQSTATE")"></admin-config>
@@ -86,7 +87,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRCOUNTRY" config-label="Country" config-val="@SnitzConfig.GetIntValue("STRCOUNTRY")"></admin-config>
+                        <admin-config config-key="STRCOUNTRY" config-label="Country" config-val="@SnitzConfig.GetIntValue("STRCOUNTRY")" help-text="@Localizer["STRCOUNTRY"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQCOUNTRY" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQCOUNTRY")"></admin-config>
@@ -95,15 +96,15 @@
             <hr/>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRPICTURE" config-label="Avatar" config-val="@SnitzConfig.GetIntValue("STRPICTURE")"></admin-config>
+                        <admin-config config-key="STRPICTURE" config-label="Avatar" config-val="@SnitzConfig.GetIntValue("STRPICTURE")" help-text="@Localizer["STRPICTURE"].Value"></admin-config>
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRREQPICTURE" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQPICTURE")"></admin-config>
+                        <admin-config config-key="STRREQPICTURE" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQPICTURE")"></admin-config>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STROCCUPATION" config-label="Occupation" config-val="@SnitzConfig.GetIntValue("STROCCUPATION")"></admin-config>
+                        <admin-config config-key="STROCCUPATION" config-label="Occupation" config-val="@SnitzConfig.GetIntValue("STROCCUPATION")" help-text="@Localizer["STROCCUPATION"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQOCCUPATION" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQOCCUPATION")"></admin-config>
@@ -111,7 +112,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRHOMEPAGE" config-label="Homepage" config-val="@SnitzConfig.GetIntValue("STRHOMEPAGE")"></admin-config>
+                        <admin-config config-key="STRHOMEPAGE" config-label="Homepage" config-val="@SnitzConfig.GetIntValue("STRHOMEPAGE")" help-text="@Localizer["STRHOMEPAGE"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQHOMEPAGE" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQHOMEPAGE")"></admin-config>
@@ -119,7 +120,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRBIO" config-label="Bio" config-val="@SnitzConfig.GetIntValue("STRBIO")"></admin-config>
+                        <admin-config config-key="STRBIO" config-label="Bio" config-val="@SnitzConfig.GetIntValue("STRBIO")" help-text="@Localizer["STRBIO"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQBIO" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQBIO")"></admin-config>
@@ -129,7 +130,7 @@
             <hr/>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRAIM" config-label="AIM" config-val="@SnitzConfig.GetIntValue("STRAIM")"></admin-config>
+                        <admin-config config-key="STRAIM" config-label="AIM" config-val="@SnitzConfig.GetIntValue("STRAIM")" help-text="@Localizer["STRAIM"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQAIM" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQAIM")"></admin-config>
@@ -137,15 +138,15 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRICQ" config-label="ICQ" config-val="@SnitzConfig.GetIntValue("STRICQ")"></admin-config>
+                        <admin-config config-key="STRICQ" config-label="ICQ" config-val="@SnitzConfig.GetIntValue("STRICQ")" help-text="@Localizer["STRICQ"].Value"></admin-config>
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRREQICQ" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQICQ")"></admin-config>
+                        <admin-config config-key="STRREQICQ" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQICQ")"></admin-config>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRMSN" config-label="Skype (was MSN)" config-val="@SnitzConfig.GetIntValue("STRMSN")"></admin-config>
+                        <admin-config config-key="STRMSN" config-label="Skype (was MSN)" config-val="@SnitzConfig.GetIntValue("STRMSN")" help-text="@Localizer["STRMSN"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQMSN" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQMSN")"></admin-config>
@@ -153,7 +154,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRYAHOO" config-label="YAHOO!" config-val="@SnitzConfig.GetIntValue("STRYAHOO")"></admin-config>
+                        <admin-config config-key="STRYAHOO" config-label="YAHOO!" config-val="@SnitzConfig.GetIntValue("STRYAHOO")" help-text="@Localizer["STRYAHOO"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQYAHOO" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQYAHOO")"></admin-config>
@@ -162,7 +163,7 @@
             <hr/>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRFAVLINKS" config-label="Favorite Links" config-val="@SnitzConfig.GetIntValue("STRFAVLINKS")"></admin-config>
+                        <admin-config config-key="STRFAVLINKS" config-label="Favorite Links" config-val="@SnitzConfig.GetIntValue("STRFAVLINKS")" help-text="@Localizer["STRFAVLINKS"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQFAVLINKS" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQFAVLINKS")"></admin-config>
@@ -170,7 +171,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRHOBBIES" config-label="Hobbies" config-val="@SnitzConfig.GetIntValue("STRHOBBIES")"></admin-config>
+                        <admin-config config-key="STRHOBBIES" config-label="Hobbies" config-val="@SnitzConfig.GetIntValue("STRHOBBIES")" help-text="@Localizer["STRHOBBIES"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQHOBBIES" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQHOBBIES")"></admin-config>
@@ -178,7 +179,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRLNEWS" config-label="Latest News" config-val="@SnitzConfig.GetIntValue("STRLNEWS")"></admin-config>
+                        <admin-config config-key="STRLNEWS" config-label="Latest News" config-val="@SnitzConfig.GetIntValue("STRLNEWS")" help-text="@Localizer["STRLNEWS"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQLNEWS" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQLNEWS")"></admin-config>
@@ -186,7 +187,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <admin-config config-key="STRQUOTE" config-label="Quote" config-val="@SnitzConfig.GetIntValue("STRQUOTE")"></admin-config>
+                        <admin-config config-key="STRQUOTE" config-label="Quote" config-val="@SnitzConfig.GetIntValue("STRQUOTE")" help-text="@Localizer["STRQUOTE"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRREQQUOTE" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQQUOTE")"></admin-config>
@@ -194,7 +195,7 @@
             </div>
             <div class="row mb-3">
                 <div class="col">
-                    <admin-config config-key="STRRECENTTOPICS" config-label="Recent Topics" config-val="@SnitzConfig.GetIntValue("STRRECENTTOPICS")"></admin-config>
+                        <admin-config config-key="STRRECENTTOPICS" config-label="Recent Topics" config-val="@SnitzConfig.GetIntValue("STRRECENTTOPICS")" help-text="@Localizer["STRRECENTTOPICS"].Value"></admin-config>
                 </div>
                 <div class="col">
                     <admin-config config-key="STRRECENTTOPICS" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRRECENTTOPICS")"></admin-config>
@@ -253,10 +254,20 @@
     </div>
 </div>
 
-@section Scripts
-{
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrapv5-colorpicker@0.0.2/dist/js/bootstrap-colorpicker.min.js"></script>
+
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript">
+        $(function () {
+          // Basic instantiation:
+          $('#demo-input').colorpicker();
+
+          // Example using an event, to change the color of the #demo div background:
+          $('#demo-input').on('colorpickerChange', function(event) {
+            $('#demo').css('background-color', event.color.toString());
+          });
+        });
         $(document).on('click','.roleLink',function(e) {
             e.preventDefault();
             $('#member-roles').load($(this).attr('href'), function () {});

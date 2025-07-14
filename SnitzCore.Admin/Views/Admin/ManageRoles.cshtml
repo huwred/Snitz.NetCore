@@ -7,7 +7,7 @@
     string[] protectedRoles = new[] {"Administrator", "Moderator","ForumMember", "Disabled"};
 }
 <div class="mb-3">
-    <label name="Username" class="form-label">Enter a username/role name to add to one of the lists</label>
+    <label name="Username" class="form-label">Select a Role to manage the Members for that Role</label>
 </div>
 <div class="row mb-3">
     <div class="col-6" id="role-form">
@@ -37,7 +37,7 @@
                 </ul>
             </div>
             <div class="mb-3">
-                @Html.TextBoxFor(model => model.NewRolename, new { @class = "form-control" })
+                <input asp-for="NewRolename" class="form-control mb-2" />
                 <input type="submit" name="AddRole" class="btn btn-primary" value="Add Role" />
             </div>
         </form>

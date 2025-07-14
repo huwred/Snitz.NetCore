@@ -16,7 +16,7 @@
         </div>
 
         <div class="tab-content bg-white p-4">
-            <div class="tab-pane fade w-100 active show" id="email-server" role="tabpanel" aria-labelledby="server-tab">
+            <div class="tab-pane fade active show" id="email-server" role="tabpanel" aria-labelledby="server-tab">
             <form asp-action="EmailConfigUpdate" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="#ResultsDiv" class="form-inline row">
 
 
@@ -79,66 +79,62 @@
                             <hr/>
                             <div class="mb-3">
                                 <label class="form-label">Contact Email:</label>
-                                @Html.TextBoxFor(model => model.ContactEmail, new { @class = "form-control inline" })
+                                <i class="fa fa-question-circle fs-4" data-bs-toggle="tooltip" title="@Localizer["STRCONTACTEMAIL"]"></i>
+                            <input type="text" class="form-control inline" placeholder="Reply To address" value="@Model.ContactEmail" name="ContactEmail"  />
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">From Email:</label>
+                            <label class="form-label">From Email:</label><i class="fa fa-question-circle fs-4" data-bs-toggle="tooltip" title="@Localizer["STRFROMEMAIL"]"></i>
                                 <div class="input-group col-xs-12">
-                                    <input type="text" class="form-control resource-edit" placeholder="Resource string" value="@Model.From" name="From"/>
+                                <input type="text" class="form-control resource-edit" placeholder="Resource string" value="@Model.From" name="From" />
                                     <span class="input-group-btn">
-                                        <button data-toggle="tooltip" type="button" class="btn btn-default send-email" title="Send test email" data-id="@User.Identity!.Name"><i class="fa fa-envelope"></i></button>
+                                        <button data-toggle="tooltip" type="button" class="btn btn-default send-email" title="Send test email" data-id="@User.Identity!.Name" data-bs-toggle="tooltip"><i class="fa fa-envelope"></i></button>
                                     </span>
                                 </div>
                             </div>
-
                             <legend>Member email settings</legend>
                             <hr/>
                             <div class="mb-3">
-                                <admin-config config-key="STRUNIQUEEMAIL" config-label="Require Unique Email" config-val="@SnitzConfig.GetIntValue("STRUNIQUEEMAIL")"></admin-config>
-                                <admin-config config-key="STREMAILVAL" config-label="Validate email addresses" config-val="@SnitzConfig.GetIntValue("STREMAILVAL")"></admin-config>
-                                <admin-config config-key="STRLOGONFORMAIL" config-label="Logon to send email" config-val="@SnitzConfig.GetIntValue("STRLOGONFORMAIL")"></admin-config>
+                                <admin-config config-key="STRUNIQUEEMAIL" config-label="Require Unique Email" config-val="@SnitzConfig.GetIntValue("STRUNIQUEEMAIL")" help-text="@Localizer["STRUNIQUEEMAIL"].Value"></admin-config>
+                                <admin-config config-key="STREMAILVAL" config-label="Validate email addresses" config-val="@SnitzConfig.GetIntValue("STREMAILVAL")" help-text="@Localizer["STREMAILVAL"].Value"></admin-config>
+                                <admin-config config-key="STRLOGONFORMAIL" config-label="Logon to send email" config-val="@SnitzConfig.GetIntValue("STRLOGONFORMAIL")" help-text="@Localizer["STRLOGONFORMAIL"].Value"></admin-config>
                             </div>
-
                             <div class="mb-3">
-                                <label for="emailpostcount" class="form-label">Number of posts to allow sending email:</label>
-                                <input id="emailpostcount" class="form-control" type="number" name="INTMAXPOSTSTOEMAIL" value="@(SnitzConfig.GetIntValue("INTMAXPOSTSTOEMAIL"))"/>
+                                <admin-config config-key="INTMAXPOSTSTOEMAIL" config-label="Number of posts to allow sending email" config-val="@SnitzConfig.GetIntValue("INTMAXPOSTSTOEMAIL")" help-text="@Localizer["INTMAXPOSTSTOEMAIL"].Value"></admin-config>
                                 <input type="text" id="emailadmin" name="emailadmin" value="1" style="display: none;"/>
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" name="STRNOMAXPOSTSTOEMAIL" rows="4">@(SnitzConfig.GetValue("STRNOMAXPOSTSTOEMAIL"))</textarea>
+                                <admin-config config-type="textarea" config-key="STRNOMAXPOSTSTOEMAIL" config-label="" config-val="@SnitzConfig.GetValue("STRNOMAXPOSTSTOEMAIL")"></admin-config>
                             </div>
                         </fieldset>
                     </div>
                     <div class="mb-3"><partial name="_FormButtons"/></div>
-
                 </form>
                 <div id="ResultsDiv"></div>
             </div>
-
-            <div class="tab-pane fade w-100" id="email-spam" role="tabpanel" aria-labelledby="spam-tab">
+            <div class="tab-pane fade" id="email-spam" role="tabpanel" aria-labelledby="spam-tab">
                 <form method="POST" class="banned-add" id="form-adddom" data-ajax="true" data-ajax-update="#result-spamdomain" data-ajax-mode="replace">
                     <div class="mb-3">
-                        <admin-config config-key="STRFILTEREMAILADDRESSES" config-label="Filter known spam domains" config-val="@SnitzConfig.GetIntValue("STRFILTEREMAILADDRESSES")"></admin-config>
+                        <admin-config config-key="STRFILTEREMAILADDRESSES" config-label="Filter known spam domains" config-val="@SnitzConfig.GetIntValue("STRFILTEREMAILADDRESSES")" help-text="@Localizer["STRFILTEREMAILADDRESSES"].Value"></admin-config>
                     </div>
                     <div class="mb-3">
                         <div class="input-group">
                             <input type="text" name="EmailDomain" class="form-control" placeholder="New Spam domain, example @@test.com" aria-label="domain to ban" aria-describedby="button-addon2" required>
-                            @Html.ActionLink(" ", "AddSpamDomain", "Admin", new { }, new { @class = "fa fa-save fa-2x p-2 add-lnk", @id = "button-addon2", title = "Add Domain", data_toggle = "tooltip" })
+                            @Html.ActionLink(" ", "AddSpamDomain", "Admin", new { }, new { @class = "fa fa-save fa-2x p-2 add-lnk", @id = "button-addon2", title = "Add Domain", data_bs_toggle = "tooltip" })
                         </div>
                     </div>
                     <div id="result-spamdomain" class="mb-3"></div>
                     <hr/>
                 </form>
                 <div class="container-fluid" style="max-height: 500px; overflow-y: scroll;">
-                    <legend>Banned Domains</legend>
+                    <h5>Banned Domains</h5>
                     <hr/>
                     @for (int i = 0; i < Model.BannedDomains?.Length; i++)
                     {
                         <form method="POST" class="banned-doms" id="form-banned_@Model.BannedDomains[i].Id" data-ajax="true" data-ajax-update="#result-spamfilter" data-ajax-mode="replace">
                             <div class="input-group">
                                 @Html.TextBoxFor(m => Model.BannedDomains[i].Server, new { @class = "form-control" })
-                                <button class="btn btn-light delete-dom" type="button" title="Delete Domain" data-id="@Model.BannedDomains[i].Id"><i class='fa fa-trash fa-2x'></i></button>
-                                <button class="btn btn-light save-dom" type="button" title="Save Changes" data-id="@Model.BannedDomains[i].Id"><i class='fa fa-save fa-2x'></i></button>
+                            <button class="btn btn-light delete-dom" type="button" title="Delete Domain" data-bs-toggle="tooltip" data-id="@Model.BannedDomains[i].Id"><i class='fa fa-trash fa-2x'></i></button>
+                            <button class="btn btn-light save-dom" type="button" title="Save Changes" data-bs-toggle="tooltip" data-id="@Model.BannedDomains[i].Id"><i class='fa fa-save fa-2x'></i></button>
                                 <input type="hidden" asp-for="@Model.BannedDomains[i].Id"/>
                                 <input type="hidden" name="counter" value="@i"/>
                             </div>

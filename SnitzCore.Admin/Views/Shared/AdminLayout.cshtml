@@ -7,42 +7,40 @@
     @await RenderSectionAsync("MetaData", required: false)
     <link rel="stylesheet" href="~/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
-     <link rel="stylesheet" href="~/css/site.min.css">
+    <link rel="stylesheet" href="~/css/site.min.css">
     @await Component.InvokeAsync("SnitzThemeCss") 
-
     @await RenderSectionAsync("Styles", required: false)
+    <style>
+        .tooltip-inner {
+            text-align: left !important;
+        }
+    </style>
 </head>
 <body>
     <partial name="_BusyPartial" />
     <div class="d-flex flex-column" style="min-height: 100vh;">
         <partial name="MainNav" />
-
         <div class="container mt-6">
             <div class="d-flex flex-wrap">
-                <div class="w-25 flex-grow-0 bg-light border p-3">
+                <div class="w-20 flex-grow-0 bg-light border p-3">
                     <nav class="navbar bg-light">
-                    <ul class="navbar-nav" role="navigation" id="admin-nav">
-                        <li class="nav-item">
-                            <a href="~/Admin/" class="nav-link active" id="main-config">Main Config</a>
-                        </li>
-                        <li class="nav-item"><a href="~/Admin/EmailConfig" class="nav-link" id="email-setup">Email Setup</a></li>
-                        <li class="nav-item"><a href="~/Admin/Forum" class="nav-link" id="forum-options">Forum Options</a></li>
-                        <li class="nav-item"><a href="~/Admin/Features" class="nav-link" id="feature-config">Features</a></li>
-                        <li class="nav-item"><a href="~/Admin/Members" class="nav-link" id="member-settings">Membership Settings</a></li>
-                        <li class="nav-item"><a href="~/LanguageManager/" class="nav-link" id="lang-settings">Translation</a></li>
-                        <li class="nav-item"><a href="~/LogView/" class="nav-link" id="log-viewer">Log Viewer</a></li>
-
+                        <ul class="navbar-nav" role="navigation" id="admin-nav">
+                            <li class="nav-item">
+                                <a href="~/Admin/" class="nav-link active" id="main-config">Main Config</a>
+                            </li>
+                            <li class="nav-item"><a href="~/Admin/EmailConfig" class="nav-link" id="email-setup">Email Setup</a></li>
+                            <li class="nav-item"><a href="~/Admin/Forum" class="nav-link" id="forum-options">Forum Options</a></li>
+                            <li class="nav-item"><a href="~/Admin/Features" class="nav-link" id="feature-config">Features</a></li>
+                            <li class="nav-item"><a href="~/Admin/Members" class="nav-link" id="member-settings">Membership Settings</a></li>
+                            <li class="nav-item"><a href="~/LanguageManager/" class="nav-link" id="lang-settings">Translation</a></li>
+                            <li class="nav-item"><a href="~/LogView/" class="nav-link" id="log-viewer">Log Viewer</a></li>
                         </ul>
                     </nav>
                 </div>
-                <div class="w-75 flex-grow-0 bg-light border">
+                <div class="w-80 flex-grow-1 bg-light border">
                     @RenderBody()
                 </div>
             </div>
-            
-@*             <main role="main" class="p-2 bg-form rounded mt-3">
-                @RenderBody()
-            </main> *@
         </div>
         <partial name="Footer" />
     </div>
@@ -52,28 +50,28 @@
     <partial name="GlobalJs" />
     <partial name="ValidationScriptsPartial" />
     <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js"></script>
-
     <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    <renderstoredcontent asp-key="admin-scripts"></renderstoredcontent>
     <script>
-            $(window).on('beforeunload', function(){
-                displayBusyIndicator();
-            });
-            window.addEventListener( "pageshow", function ( event ) {
-              var historyTraversal = event.persisted ||
-                                         ( typeof window.performance != "undefined" &&
-                                              window.performance.navigation.type === 2 );
-                  if ( historyTraversal ) {
-                    // Handle page restore.
-                    window.location.reload();
-                  }
-            });
-
+        $(window).on('beforeunload', function(){
+            displayBusyIndicator();
+        });
+        window.addEventListener( "pageshow", function ( event ) {
+            var historyTraversal = event.persisted ||
+                                        ( typeof window.performance != "undefined" && window.performance.navigation.type === 2 );
+            if ( historyTraversal ) {
+                // Handle page restore.
+                window.location.reload();
+            }
+        });
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl,{target:"click"})
+        })
         $(document).on('submit', 'form', function () {
             displayBusyIndicator();
         });
-            function displayBusyIndicator() {
+        function displayBusyIndicator() {
             $('.loading').show();
         }
     </script>

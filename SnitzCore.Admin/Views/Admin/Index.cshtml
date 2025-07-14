@@ -20,11 +20,11 @@
                 <hr />
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="STRFORUMTITLE" config-label="Forum Title" config-val="@SnitzConfig.GetValue("STRFORUMTITLE")" disabled="true"></admin-config>
+                        <admin-config config-key="STRFORUMTITLE" config-label="Forum Title" config-val="@SnitzConfig.GetValue("STRFORUMTITLE")" disabled="true" help-text="@Localizer["STRFORUMTITLE"].Value"></admin-config>
                         <input type="text" name="_STRFORUMTITLE" value="@Config.Value.strForumTitle" class="form-control" />
                     </div>
                     <div class="col">
-                        <admin-config config-key="STRCOPYRIGHT" config-label="Forum Copyright" config-val="@SnitzConfig.GetValue("STRCOPYRIGHT")" disabled="true"></admin-config>
+                        <admin-config config-key="STRCOPYRIGHT" config-label="Forum Copyright" config-val="@SnitzConfig.GetValue("STRCOPYRIGHT")" disabled="true" help-text="@Localizer["STRCOPYRIGHT"].Value"></admin-config>
                         <input type="text" name="_STRCOPYRIGHT" value="@Config.Value.strCopyright" class="form-control" />
                     </div>
                 </div>
@@ -36,10 +36,10 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="STRHOMEURL" config-label="Home URL" config-val="@SnitzConfig.GetValue("STRHOMEURL")"></admin-config>
+                        <admin-config config-key="STRHOMEURL" config-label="Home URL" config-val="@SnitzConfig.GetValue("STRHOMEURL")" help-text="@Localizer["STRHOMEURL"].Value"></admin-config>
                     </div>
                     <div class="col">
-                        <admin-config config-key="STRFORUMURL" config-label="Forum URL" config-val="@SnitzConfig.ForumUrl" disabled="true"></admin-config>
+                        <admin-config config-key="STRFORUMURL" config-label="Forum URL" config-val="@SnitzConfig.ForumUrl" disabled="true" help-text="@Localizer["STRFORUMURL"].Value"></admin-config>
                         <input type="text" name="_STRFORUMURL" value="@Config.Value.strForumUrl" class="form-control" />
                     </div>
                 </div>
@@ -55,20 +55,20 @@
                 <hr />
                 <div class="row p-3">
                     <div class="col">
-                        <admin-config config-key="STREMAIL" config-label="Email mode" config-val="@SnitzConfig.GetIntValue("STREMAIL")"></admin-config>
-                        <admin-config config-key="STRUSERNAMEFILTER" config-label="Username filter" config-val="@SnitzConfig.GetIntValue("STRUSERNAMEFILTER")"></admin-config>
-                        <admin-config config-key="STRSETCOOKIETOFORUM" config-label="Set cookie to Forum" config-val="@SnitzConfig.GetIntValue("STRSETCOOKIETOFORUM")"></admin-config>
-                        <admin-config config-key="INTPAGETIMER" config-label="Show Page Timer" config-val="@SnitzConfig.GetIntValue("INTPAGETIMER")"></admin-config>
+                        <admin-config config-key="STREMAIL" config-label="Email mode" config-val="@SnitzConfig.GetIntValue("STREMAIL")" help-text="@Localizer["STREMAIL"].Value"></admin-config>
+                        <admin-config config-key="STRUSERNAMEFILTER" config-label="Username filter" config-val="@SnitzConfig.GetIntValue("STRUSERNAMEFILTER")" help-text="@Localizer["STRUSERNAMEFILTER"].Value"></admin-config>
+                        <admin-config config-key="STRSETCOOKIETOFORUM" config-label="Set cookie to Forum" config-val="@SnitzConfig.GetIntValue("STRSETCOOKIETOFORUM")" help-text="@Localizer["STRSETCOOKIETOFORUM"].Value"></admin-config>
+                        <admin-config config-key="INTPAGETIMER" config-label="Show Page Timer" config-val="@SnitzConfig.GetIntValue("INTPAGETIMER")" help-text="@Localizer["INTPAGETIMER"].Value"></admin-config>
                     </div>
                     <div class="col">
-                        <admin-config config-key="STRPROHIBITNEWMEMBERS" config-label="Prohibit new Members" config-val="@SnitzConfig.GetIntValue("STRPROHIBITNEWMEMBERS")"></admin-config>
-                        <admin-config config-key="STRREQUIREREG" config-label="Require registration" config-val="@SnitzConfig.GetIntValue("STRREQUIREREG")"></admin-config>
-                        <admin-config config-key="STRRESTRICTREG" config-label="Restrict registration" config-val="@SnitzConfig.GetIntValue("STRRESTRICTREG")"></admin-config>
+                        <admin-config config-key="STRPROHIBITNEWMEMBERS" config-label="Prohibit new Members" config-val="@SnitzConfig.GetIntValue("STRPROHIBITNEWMEMBERS")" help-text="@Localizer["STRPROHIBITNEWMEMBERS"].Value"></admin-config>
+                        <admin-config config-key="STRREQUIREREG" config-label="Require registration" config-val="@SnitzConfig.GetIntValue("STRREQUIREREG")" help-text="@Localizer["STRREQUIREREG"].Value"></admin-config>
+                        <admin-config config-key="STRRESTRICTREG" config-label="Restrict registration" config-val="@SnitzConfig.GetIntValue("STRRESTRICTREG")" help-text="@Localizer["STRRESTRICTREG"].Value"></admin-config>
                     </div>
                 </div>
                 <div class="row p-3">
                     <div class="col">
-                        <admin-config config-key="INTTHEMECHANGE" config-label="Allow Theme Change" config-val="@SnitzConfig.GetIntValue("INTTHEMECHANGE")"></admin-config>
+                        <admin-config config-key="INTTHEMECHANGE" config-label="Allow Theme Change" config-val="@SnitzConfig.GetIntValue("INTTHEMECHANGE")" help-text="@Localizer["INTTHEMECHANGE"].Value"></admin-config>
                         <select name="STRDEFAULTTHEME" id="theme-change-admin" class="form-control" title="@Localizer["tipChangeTheme"]">
                             <option value="SnitzTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Snitz Theme</option>
                             <option value="DarkTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Dark Theme</option>
@@ -82,7 +82,7 @@
                 </div>
                 <div class="mb-3 p-3">
                     <span class="form-text">If you use tracking cookies, this option may be required. It will display a cookie consent form at the bottom of the page.</span>
-                    <admin-config config-key="INTREQUIRECONSENT" config-label="Require Cookie consent" config-val="@SnitzConfig.GetIntValue("INTREQUIRECONSENT")"></admin-config>
+                    <admin-config config-key="INTREQUIRECONSENT" config-label="Require Cookie consent" config-val="@SnitzConfig.GetIntValue("INTREQUIRECONSENT")" help-text="@Localizer["INTREQUIRECONSENT"].Value"></admin-config>
                 </div>
             </div>
             <div class="mb-3 p-3">
@@ -99,5 +99,7 @@
     <script>
         $("#admin-nav li a.nav-link.active").removeClass("active");
         $("#main-config").addClass("active");
+
+
     </script>
 }

@@ -6,6 +6,7 @@
 @{
     ViewBag.PageTitle = "Feature Configuration";
 }
+
 <form asp-action="RankingConfig" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#RankingConfig">
 
     <div class="mb-3">
@@ -13,6 +14,7 @@
         <select class="form-select-sm" asp-for="Type" asp-items="@Html.GetEnumSelectList<RankType>()">
             <option>Please Select</option>
         </select>
+        <input id="demo-input" type="text" value="rgb(255, 128, 0)" />
     </div>
 
     @foreach (var rank in Model.Ranks)
@@ -61,20 +63,16 @@
                     </div>
                     break;
             }
-
-
             <div class="col-3">
                 <input type="text" id="rankTitle_@rank.Key" name="Ranks[@rank.Key].Title" class="form-control" value="@ranking.Title" />
             </div>
             <div class="col-6 rank-admin">
-                <input name="Ranks[@rank.Key].ImgRepeat" value="@rank.Value.ImgRepeat" type="number" min="1" max="5" />
+                <input name="Ranks[@rank.Key].ImgRepeat" value="@rank.Value.ImgRepeat" type="number" min="1" max="5" style="display:none;" />
                 @if (rank.Key != 2)
                 {
                     <rank-image config-key="@rank.Key" config-val="@ranking.Image" repeat="@rank.Value.ImgRepeat"></rank-image>
 
                 }
-
-                @* <input type="text" id="rankImage_@rank.Key" name="rankImage_@rank.Key" value="@ranking.Image" style="display: none;" /> *@
             </div>
         </div>
     }

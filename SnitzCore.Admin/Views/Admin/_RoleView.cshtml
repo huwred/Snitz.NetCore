@@ -3,7 +3,7 @@
 <form asp-action="AddMemberToRole" asp-controller="Admin" method="POST" data-ajax="true" data-ajax-update="#member-roles">
     <div class="mb-3">
         <ul class="list-group">
-            @if (Model.Members != null)
+            @if (Model.Members != null && Model.Members.Any())
             {
                 foreach (var user in Model.Members)
                 {
@@ -15,16 +15,20 @@
                     </li>
                 }
             }
+            else
+            {
+                <li class="list-group-item">No Members yet!</li>
+            }
         </ul>
         <hr class="title"/>
         <div class="mb-3">
-            <button type="submit" name="AddMemberToRole" class="btn btn-sm btn-primary" >Add member to role</button>
+            <button type="submit" name="AddMemberToRole" class="btn btn-sm btn-primary mb-2" >Add member to role</button>
             <div class="col-6">
-                @Html.TextBoxFor(model => model.Username, new {@class = "form-control",id="userNameLookup", data_autocomplete_url = Url.Action("AutoCompleteUsername")})
+                <input asp-for="Username" class="form-control" id="userNameLookup" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" />
+                @* @Html.TextBoxFor(model => model.Username, new {@class = "form-control",id="userNameLookup", data_autocomplete_url = Url.Action("AutoCompleteUsername")}) *@
             </div>
         </div>
-        @Html.HiddenFor(model => model.Rolename)
-              
+        @Html.HiddenFor(model => model.Rolename)  
         <input type="hidden" id="IsUsernameRequired" name="IsUsernameRequired" value="true"/>     
     </div>
 </form>
