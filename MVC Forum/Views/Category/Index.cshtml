@@ -28,6 +28,7 @@
         isAdministrator = User.IsInRole("Administrator");
     }
 }
+<partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
 <div class="pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
     <div class="row">

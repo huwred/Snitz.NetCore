@@ -34,7 +34,7 @@
     <link href="~/css/star-rating.min.css" rel="stylesheet" />
     <link href="~/css/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css"/>
 }
-
+ <partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
 <div class="pt-0">
     <snitz-breadcrumb show-filter="true"></snitz-breadcrumb>
     <div class="row">
