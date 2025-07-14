@@ -172,8 +172,6 @@ namespace SnitzCore.Service
 
                 throw new KeyNotFoundException($"Forum {id} not found");
             }
-            
-
         }
         public Forum GetWithPosts(int id)
         {
@@ -197,7 +195,6 @@ namespace SnitzCore.Service
             if (admin)
             {
                 return _dbContext.Forums.AsNoTracking().OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value);
-
             }
             return _dbContext.Forums.AsNoTracking().Where(f=>f.Privateforums == ForumAuthType.All).OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value);
         }
@@ -212,7 +209,7 @@ namespace SnitzCore.Service
                 _dbContext.Forums.OrderBy(f=>f.Id).FirstOrDefault(f => f.Id == Convert.ToInt32(id));
 
             if (result != null) return result.Title;
-            return String.Empty;
+            return "Forum no longer exists!";
         }
 
         public async Task EmptyForum(int id)
@@ -282,8 +279,7 @@ namespace SnitzCore.Service
             }
 
             return forum;
-            //var cacheService = new InMemoryCache();
-            //cacheService.Remove("category.forums");           
+          
         }
 
         public PagedList<Post> FetchMyForumTopicsPaged(int pagesize, int pagenum, IEnumerable<int> forumids)
