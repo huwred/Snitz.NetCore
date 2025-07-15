@@ -97,7 +97,7 @@ namespace SnitzCore.Service.Extensions
 
                     if (existing != null)
                     {
-                        if (updateExisting)
+                        if (updateExisting && res.ResourceSet !=null)
                         {
                             existing.Value = res.Value;
                             existing.ResourceSet = res.ResourceSet;
@@ -111,7 +111,7 @@ namespace SnitzCore.Service.Extensions
                     context.SaveChanges();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 context.Database.RollbackTransaction();
             }

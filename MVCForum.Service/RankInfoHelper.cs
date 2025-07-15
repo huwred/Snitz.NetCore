@@ -1,4 +1,5 @@
-﻿using SnitzCore.Data.Models;
+﻿using Newtonsoft.Json.Linq;
+using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using System.Text;
 
@@ -26,7 +27,8 @@ namespace SnitzCore.Service
             {
                 return;
             }
-            _isAdmin = user.Level == 3;
+
+            _isAdmin = user.Level == 3 ;
             _isModerator = user.Level == 2;            
             SetLevel();
             if (string.IsNullOrWhiteSpace(title))
@@ -72,7 +74,14 @@ namespace SnitzCore.Service
                         }
                         else
                         {
-                            imageString.AppendFormat($"<i class='fa fa-star fs-5 {rankImage}' alt='ranking star' ></i>");
+                            if (rankImage.Contains("#"))
+                            {
+                                imageString.AppendFormat($"<i class='fa fa-star fs-5 ' alt='ranking star' style='color:{rankImage};' ></i>");
+                            }
+                            else
+                            {
+                                imageString.AppendFormat($"<i class='fa fa-star fs-5 {rankImage}' alt='ranking star' ></i>");
+                            }
                         }
                     }
                 }

@@ -9,6 +9,7 @@ using SnitzCore.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using static Azure.Core.HttpHeader;
 
@@ -24,7 +25,7 @@ namespace SnitzCore.Service.Extensions
         /// <param name="ranking"></param>
         /// <returns></returns>
         public static HtmlString MemberRankTitle(this IHtmlHelper htmlhelper, Member author,
-            Dictionary<int, MemberRanking>? ranking, IViewLocalizer language)
+            Dictionary<int, MemberRanking>? ranking, IViewLocalizer language, string? wrapper = "")
         {
 
             string? mTitle = author.Title;
@@ -37,51 +38,16 @@ namespace SnitzCore.Service.Extensions
                 mTitle = language.GetString("tipZapped");
             }
             RankInfoHelper rank = new RankInfoHelper(author, ref mTitle, author.Posts, ranking);
+            if(wrapper == "")
+            {
+                return new HtmlString(mTitle);
+            }
             TagBuilder title = new TagBuilder("span");
             title.AddCssClass("rank-label");
             if (mTitle != null) title.InnerHtml.AppendHtml(mTitle);
 
             return new HtmlString(title.GetString());
         }
-        public static HtmlString MemberRankStars(this IHtmlHelper htmlhelper, Member author,
-            Dictionary<int, MemberRanking>? ranking, IViewLocalizer language)
-        {
-
-            string? mTitle = author.Title;
-            if (author.Status == 0 || author.Name == "n/a")
-            {
-                mTitle = language.GetString("tipMemberLocked");
-            }
-            if (author.Name == "zapped")
-            {
-                mTitle = language.GetString("tipZapped");
-            }
-            RankInfoHelper rank = new RankInfoHelper(author, ref mTitle, author.Posts, ranking);
-            TagBuilder stars = new TagBuilder("span");
-            stars.AddCssClass("rank-label");
-            stars.InnerHtml.AppendHtml(rank.Stars);
-
-            return new HtmlString(stars.GetString());
-        }
-
-        //public static HtmlString MemberRankStars(this IHtmlHelper htmlhelper, MemberListingModel author, Dictionary<int, MemberRanking>? ranking, IViewLocalizer language)
-        //{
-        //    string? mTitle = author.Title;
-        //    if (author.Member.Status == 0 || author.Member.Name == "n/a")
-        //    {
-        //        mTitle = language.GetString("tipMemberLocked");
-        //    }
-        //    if (author.Member.Name == "zapped")
-        //    {
-        //        mTitle = language.GetString("tipZapped");
-        //    }
-        //    RankInfoHelper rank = new RankInfoHelper(author.Member, ref mTitle, author.Member.Posts, ranking);
-        //    TagBuilder stars = new TagBuilder("span");
-        //    stars.AddCssClass("rank-label");
-        //    stars.InnerHtml.AppendHtml(rank.Stars);
-
-        //    return new HtmlString(stars.GetString());
-        //}
 
         public static string GetString(this IHtmlContent content)
         {
