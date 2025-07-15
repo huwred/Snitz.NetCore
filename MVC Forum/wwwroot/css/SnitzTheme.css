@@ -688,3 +688,7 @@ a.latestpost-title {
 .table-row .status .fa.fa-stack-1x {
     color: #191970 !important;
 }
+
+.table-row .status .fa.fa-fire {
+    color: red !important;
+}

@@ -419,3 +419,4 @@ FodyWeavers.xsd
 /MVC Forum/wwwroot/Templates/no/approvePost.html
 /MVC Forum/wwwroot/ProtectedContent/PhotoAlbum
 /SnitzCore.Admin/ViewModels
+/MVC Forum/App_Data/export_en_ConfigStrings.csv

@@ -793,7 +793,13 @@ i.modstatus-2, i.modstatus-3 {
 .fa-star.green {
     color: green;
 }
-
+.fa-star {
+    text-shadow: 1px 1px 2px #000000;
+    margin-left: 2px;
+}
+.table-row .status .fa.fa-stack-1x {
+    text-shadow: 1px 1px 2px #000000;
+}
 
 @media (max-width: 768px) {
     .navbar-collapse {
