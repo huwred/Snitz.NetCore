@@ -35,7 +35,7 @@
             </div>
             <div class="mb-3">
                 <label asp-for="Title" class="form-label">@Localizer["ProfileTitle"]</label>
-                <input name="Title" class="form-control" disabled="@(!User.IsInRole("Administrator"))" value="@MemberRankTitle(Model.Member!, _ranking)" />
+                <input name="Title" class="form-control" disabled="@(!User.IsInRole("Administrator"))" value="@Html.MemberRankTitle(Model.Member, _ranking, Localizer)" />
             </div>
             <div class="mb-3" snitz-if="@canedit">
                 <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
@@ -227,24 +227,3 @@
     </div>
     <input name="Name" type="hidden" value="@Model.Member?.Name" />
 </form>
-
-@functions
-{
-    private string? MemberRankTitle(Member author, Dictionary<int, MemberRanking>? ranking)
-    {
-
-        string? mTitle = author.Title ?? "";
-        if (author.Status == 0 || author.Name == "n/a")
-        {
-            mTitle = Localizer.GetString("tipMemberLocked");
-        }
-        if (author.Name == "zapped")
-        {
-            mTitle = Localizer.GetString("tipZapped");
-        }
-
-        var unused = new RankInfoHelper(author, ref mTitle, author.Posts, ranking);
-
-        return mTitle;
-    }
-}

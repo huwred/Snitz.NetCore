@@ -308,7 +308,8 @@ namespace MVCForum.Controllers
                 MemberSince = DateTime.UtcNow,
                 LockoutEnabled = true,
                 LockoutEnd = DateTime.UtcNow.AddMonths(2),
-                EmailConfirmed = false
+                EmailConfirmed = false,
+                
             };
             IdentityResult result = await _userManager.CreateAsync(appUser, user.Password);
             if (!result.Succeeded)

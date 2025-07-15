@@ -28,7 +28,7 @@
             </div>
             <div class="mb-3">
                 <label asp-for="Title" class="form-label">@Localizer["ProfileTitle"]</label>
-                <input name="Title" class="form-control" disabled="disabled" value="@MemberRankTitle(Model.Member!, _ranking)" />
+            <input name="Title" class="form-control" disabled="disabled" value="@Html.MemberRankTitle(Model.Member, _ranking, Localizer)" />
             </div>
         </div>
         <div class="col col-md-4">
@@ -118,24 +118,3 @@
         </div>
 
     </div>
-
-@functions
-{
-    private string? MemberRankTitle(Member author, Dictionary<int, MemberRanking>? ranking)
-    {
-
-        string? mTitle = author.Title ?? "";
-        if (author.Status == 0 || author.Name == "n/a")
-        {
-            mTitle = Localizer.GetString("tipMemberLocked");
-        }
-        if (author.Name == "zapped")
-        {
-            mTitle = Localizer.GetString("tipZapped");
-        }
-
-        var unused = new RankInfoHelper(author, ref mTitle, author.Posts, ranking);
-
-        return mTitle;
-    }
-}

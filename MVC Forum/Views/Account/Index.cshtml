@@ -112,7 +112,9 @@
                         </td>
                         <td snitz-if="!showlink">@member.Member.Name</td>
                         <td snitz-if="showlink"><a href="~/Account/Detail/@Flurl.Url.Encode(member.Member.Name)" title="@Localizer["tipViewProfile"]">@member.Member.Name</a></td>
-                        <td>@member.Title<br />@Html.MemberRankStars(member.Member, ranking, Localizer)</td>
+                        <td>@member.Title<br />
+                                <member-rank member="@member.Member" user="@User" ranking="@ranking"></member-rank>
+                        </td>
                         <td>@member.Member.Posts</td>
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>
                         <td class="d-none d-md-table-cell">@member.MemberSince?.ToForumDateDisplay()</td>
