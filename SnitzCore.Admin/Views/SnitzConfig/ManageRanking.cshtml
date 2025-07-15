@@ -14,7 +14,6 @@
         <select class="form-select-sm" asp-for="Type" asp-items="@Html.GetEnumSelectList<RankType>()">
             <option>Please Select</option>
         </select>
-        <input id="demo-input" type="text" value="rgb(255, 128, 0)" />
     </div>
 
     @foreach (var rank in Model.Ranks)
@@ -32,7 +31,6 @@
                     <div class="col-12">
                         <label class="form-label">Administrator title</label>
                         <input id="Ranks_0_Id" type="hidden" name="Ranks[0].Id" value="@Model.Ranks[0].Id" />
-                        <input id="Ranks_0_Image" name="Ranks[0].Image" value="@Model.Ranks[0].Image" type="hidden" />
                         <input id="Ranks_0_Posts" name="Ranks[0].Posts" value="@Model.Ranks[0].Posts" type="hidden" />
                     </div>
                     break;
@@ -40,7 +38,6 @@
                     <div class="col-12">
                         <label class="form-label">Moderator title</label>
                         <input id="Ranks_1_Id" type="hidden" name="Ranks[1].Id" value="@Model.Ranks[1].Id" />
-                        <input id="Ranks_1_Image" name="Ranks[1].Image" value="@Model.Ranks[1].Image" type="hidden" />
                         <input id="Ranks_1_Posts" name="Ranks[1].Posts" value="@Model.Ranks[1].Posts" type="hidden" />
                     </div>
                     break;
@@ -58,8 +55,7 @@
                     </div>
                     <div class="col-2">
                         <input id="Ranks_@rank.Key-Id" type="hidden" name="Ranks[@rank.Key].Id" value="@rank.Value.Id" />
-                        <input id="Ranks_@rank.Key-Image" name="Ranks[@rank.Key].Image" value="@rank.Value.Image" type="hidden" />
-                        <input id="Ranks_@rank.Key-Posts" name="Ranks[@rank.Key].Posts" type="text" class="form-control" value="@rank.Value.Posts" />
+                        <input id="Ranks_@rank.Key-Posts" name="Ranks[@rank.Key].Posts" type="text" class="form-control" value="@rank.Value.Posts" data-bs-toggle="tooltip" title="Number of posts to achieve this level"/>
                     </div>
                     break;
             }
@@ -68,14 +64,32 @@
             </div>
             <div class="col-6 rank-admin">
                 <input name="Ranks[@rank.Key].ImgRepeat" value="@rank.Value.ImgRepeat" type="number" min="1" max="5" style="display:none;" />
+              
                 @if (rank.Key != 2)
                 {
-                    <rank-image config-key="@rank.Key" config-val="@ranking.Image" repeat="@rank.Value.ImgRepeat"></rank-image>
+                    <div class="input-group">
+                        <input type="color" class="form-control cpick" name="Ranks[@rank.Key].Image"
+                           list="colors" id="GFG_Color_@rank.Key"
+                               placeholder="Select Color" value="@ranking.Image">
 
+                        &nbsp;<rank-image config-key="@rank.Key" config-val="@ranking.Image" repeat="@rank.Value.ImgRepeat"></rank-image>
+                    </div>
                 }
             </div>
         </div>
     }
+    <datalist id="colors">
+        <option value="#ffd700"></option>
+        <option value="#c0c0c0"></option>
+        <option value="#CD7F32"></option>
+        <option value="#8B4513"></option>
+        <option value="#008000"></option>
+        <option value="#00FFFF"></option>
+        <option value="#9370DB"></option>
+
+        <option value="#00cc00"></option>
+        <option value="#0034af"></option>
+    </datalist>    
     <partial name="_FormButtons" />
     <div id="RankingConfig"></div>
 </form>

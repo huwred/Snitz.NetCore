@@ -6,9 +6,14 @@
     Layout = "AdminLayout";
  
 }
-@section Styles {
-    <link href="https://cdn.jsdelivr.net/npm/bootstrapv5-colorpicker@0.0.2/dist/css/bootstrap-colorpicker.min.css" rel="stylesheet">
+@section Styles{
+    <style>
+        .input-group > input.cpick {
+            flex: 0 1 50px;
+        }
+    </style>
 }
+
 <div class="m-3">
     <div class="nav nav-tabs me-3" id="v-pills-tab" role="tablist">
         <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Profile</button>
@@ -255,19 +260,10 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/bootstrapv5-colorpicker@0.0.2/dist/js/bootstrap-colorpicker.min.js"></script>
 
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript">
-        $(function () {
-          // Basic instantiation:
-          $('#demo-input').colorpicker();
 
-          // Example using an event, to change the color of the #demo div background:
-          $('#demo-input').on('colorpickerChange', function(event) {
-            $('#demo').css('background-color', event.color.toString());
-          });
-        });
         $(document).on('click','.roleLink',function(e) {
             e.preventDefault();
             $('#member-roles').load($(this).attr('href'), function () {});
@@ -299,6 +295,11 @@
         $(document).on("change", "#filter-subs", function() {
             $('#member-subscriptions').load(SnitzVars.baseUrl + '/Admin/ManageSubscriptions/' + $(this).val(), function () { });
         });
+
+        $(document).on("change",".cpick",function(){
+            var newcol = $(this).val();
+            $(this).siblings().find(".fa-star").css({"color": newcol});
+        })
         $(document).on('click','.confirm-delete', function(e) {
             e.preventDefault();
             var id = $(this).data('id');

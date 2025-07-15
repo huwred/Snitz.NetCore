@@ -50,7 +50,15 @@ namespace SnitzCore.BackOffice.TagHelpers
             {
                 for (int i = 0; i < Repeat; i++)
                 {
-                    output.Content.AppendHtml($@"<i class=""fa fa-star {Value}""></i>");
+                    if (Value.Contains("#"))
+                    {
+                        output.Content.AppendHtml($@"<i class=""fa fa-star"" style=""color:{Value}""></i>");
+                    }
+                    else
+                    {
+                        output.Content.AppendHtml($@"<i class=""fa fa-star {Value}""></i>");
+                    }
+                    
                 }
             }
 

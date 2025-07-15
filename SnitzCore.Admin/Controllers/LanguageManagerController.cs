@@ -381,6 +381,7 @@ public class LanguageManagerController : Controller
                     await file.CopyToAsync(output);
 
                 _dbcontext.ImportLangResCSV(this.GetPathAndFilename(filename), Convert.ToBoolean(Request.Form["UpdateExisting"]));
+                return new JsonResult("success|Data imported");
                 }
 
         }
