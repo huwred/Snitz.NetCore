@@ -1,4 +1,5 @@
-﻿using SnitzCore.Data.Extensions;
+﻿using Microsoft.AspNetCore.Identity;
+using SnitzCore.Data.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -269,4 +270,12 @@ public partial class Member
 
     [NotMapped]
     public int HideOnline {get;set;}
+
+    [NotMapped]
+    public bool IsAdministrator
+    {
+        get;
+        set;
+    }
+
 }

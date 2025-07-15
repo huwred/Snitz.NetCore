@@ -61,9 +61,7 @@ namespace SnitzCore.Data
             {
                 modelBuilder.ApplyConfigurationsFromAssembly(assembly);
             }
-            //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.PhotoAlbum"));
-            //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.Events"));
-            //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("Snitz.PostThanks"));
+
         }
 
 
