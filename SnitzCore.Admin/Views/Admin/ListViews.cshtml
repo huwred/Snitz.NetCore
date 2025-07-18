@@ -4,7 +4,7 @@
 @inject IWebHostEnvironment _env
 @{
     ViewBag.Title = "title";
-    Layout = "AdminLayout";
+    Layout = "_MasterLayout";
     var dir = Directory.GetFiles($@"{_env.ContentRootPath}\Views",
         "*.cshtml", SearchOption.AllDirectories);
     string[] folders = Directory.GetDirectories($@"{_env.ContentRootPath}\Views", "*", System.IO.SearchOption.AllDirectories);
@@ -59,7 +59,7 @@
             var encoded = encodeURIComponent($(this).data("path"));
             $.get(SnitzVars.baseUrl + "/Admin/LoadFile?id=" + encoded, function (data) {
                 myCodeMirror.setValue(data);
-                myCodeMirror.setSize("98%", 300);
+                myCodeMirror.setSize("98%", 500);
             });
 
         });
