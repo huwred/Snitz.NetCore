@@ -1,23 +1,23 @@
-﻿using System;
+﻿using Hangfire;
+using Hangfire.SQLite;
+using Hangfire.SqlServer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using SnitzCore.Data;
+using SnitzCore.Data.Models;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
-using Hangfire.SqlServer;
-using Hangfire;
-using Microsoft.EntityFrameworkCore;
-using Hangfire.SQLite;
-using SnitzCore.Data.Models;
-using SnitzCore.Data;
 
 namespace SnitzCore.Service.Extensions
 {
     public static class DbContextsExtensions
     {
-        //public static IQueryable<TSource> DistinctBy<TSource, TKey>  (this IQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector)
-        //{
-        //    return source.GroupBy(keySelector).Select(x => x.FirstOrDefault());
-        //}
+        //private static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
         public static IGlobalConfiguration SetStorage(
             this IGlobalConfiguration configuration,
             string nameOrConnectionString, string dbProvider)
@@ -66,6 +66,7 @@ namespace SnitzCore.Service.Extensions
 
         public static void ImportLangResCSV(this SnitzDbContext context, string path, bool updateExisting)
         {
+            log4net.ILog _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
             var csv = new CSVFiles(path, new[]
             {
                 new DataColumn("pk", typeof(string)),
@@ -80,7 +81,7 @@ namespace SnitzCore.Service.Extensions
 
             try
             {
-                context.Database.BeginTransaction();
+                using var transaction = context.Database.BeginTransaction();
                 foreach (DataRow row in dt.Rows)
                 {
                     if (String.IsNullOrWhiteSpace(row.Field<string>("ResourceId")))
@@ -95,7 +96,7 @@ namespace SnitzCore.Service.Extensions
 
                     var existing = context.LanguageResources.SingleOrDefault(l=>l.Culture == res.Culture && l.Name == res.Name);
 
-                    if (existing != null)
+                    if (existing != null && !existing.Equals(default(LanguageResource)))
                     {
                         if (updateExisting && res.ResourceSet !=null)
                         {
@@ -110,15 +111,13 @@ namespace SnitzCore.Service.Extensions
                     }
                     context.SaveChanges();
                 }
+                transaction.Commit();
             }
             catch (Exception e)
             {
-                context.Database.RollbackTransaction();
+                _logger.Error("Error importing language resources from CSV file.",e);
             }
-            finally
-            {
-                context.Database.CommitTransaction();
-            }
+
         }
     }
 }
