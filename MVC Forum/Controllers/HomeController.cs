@@ -3,7 +3,6 @@ using SmartBreadcrumbs.Attributes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
-using SnitzCore.Service.Extensions;
 using System;
 using System.Diagnostics;
 using System.Globalization;

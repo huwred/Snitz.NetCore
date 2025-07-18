@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SnitzCore.Data.Interfaces;
-using SnitzCore.Data.Models;
 using System.Threading.Tasks;
 
 namespace MVCForum.View_Components

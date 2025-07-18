@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Post;
@@ -19,9 +18,7 @@ using SnitzCore.Data.Models;
 using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using X.PagedList;
 

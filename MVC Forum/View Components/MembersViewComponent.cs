@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MVCForum.ViewModels.Member;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;

@@ -8,7 +8,6 @@ using Snitz.PhotoAlbum.Models;
 using Snitz.PostThanks.Models;
 using System;
 using System.Linq;
-using System.Reflection;
 
 
 namespace MVCForum.Extensions

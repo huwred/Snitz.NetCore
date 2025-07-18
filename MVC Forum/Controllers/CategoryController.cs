@@ -14,11 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using MVCForum.ViewModels.Forum;
 using MVCForum.ViewModels.Category;
 using MVCForum.ViewModels.Post;
-using System.Net;
-using System.Text.RegularExpressions;
 using System;
-using Microsoft.Extensions.Hosting;
-using SnitzCore.Service;
 using System.Collections.Generic;
 
 namespace MVCForum.Controllers

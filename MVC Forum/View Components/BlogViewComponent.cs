@@ -1,12 +1,9 @@
 ﻿using BbCodeFormatter;
-using BbCodeFormatter.Processors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using MVCForum.ViewModels;
-using MVCForum.ViewModels.Forum;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
-using SnitzCore.Service;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,7 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TagCloud;
 using TagCloud;
 using X.PagedList;
 
