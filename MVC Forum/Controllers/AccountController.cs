@@ -874,7 +874,7 @@ namespace MVCForum.Controllers
         }
         public IActionResult UploadForm(int? id)
         {
-            return PartialView("popUploadAvatar",new ViewModels.UploadViewModel());;
+            return PartialView("popUpload",new ViewModels.UploadViewModel(){Controller="Account",Action="UploadAvatar",AllowedTypes=".gif,.png"});;
         }
 
         [Authorize(Roles = "Administrator,Moderator")]

@@ -1527,7 +1527,7 @@ namespace MVCForum.Controllers
         public IActionResult UploadForm()
         {
             ViewBag.Title = "lblUpload";
-            return PartialView("popUpload",new UploadViewModel());
+            return PartialView("popUpload",new UploadViewModel(){Controller="Topic",Action="Upload",AllowedTypes=_config.GetValue("STRFILETYPES")});
         }
 
         [HttpPost]

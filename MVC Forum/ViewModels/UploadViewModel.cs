@@ -12,5 +12,8 @@ public class UploadViewModel
     public string? AllowedTypes { get; internal set; }
 
     public int MaxSize { get; internal set; }
-}
+
+    public string Controller { get; set; }
+        public string Action { get; set; }
+    }
 }

@@ -1,18 +1,17 @@
 ﻿@model MVCForum.ViewModels.UploadViewModel
 @{
     Layout = null;
-    var allowedTypes = SnitzConfig.GetValue("STRFILETYPES");
+    var allowedTypes = Model.AllowedTypes;
 }
 <p class="form-text">
     @Localizer["tipAttach"]
 </p>
 <p class="mb-3">
     @Localizer["maxFileSize", SnitzConfig.GetIntValue("INTMAXFILESIZE", 5)]<br/>
-    @Localizer["allowedFiles", SnitzConfig.GetValue("STRFILETYPES")]
+    @Localizer["allowedFiles", allowedTypes]
 </p>
 
-<form action="/Topic/Upload/" method="post" enctype="multipart/form-data" role="form" id="upload-form" >
-
+<form action="/@Model.Controller/@Model.Action/" method="post" enctype="multipart/form-data" role="form" id="upload-form" >
     <div class="photo-input mb-3">
         <input asp-for="AlbumImage" class="form-control" accept="@allowedTypes" id="aFile_upload" />
         <span asp-validation-for="AlbumImage"></span>
@@ -21,5 +20,8 @@
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">@Localizer["btnCancel"]</button>
         <input name="submitUpload" type="button" id="submitUpload" value="@Localizer["btnUpload"]" class="btn btn-primary" />
     </div>
+    <input type="hidden" name="Controller" value="@Model.Controller" />
+    <input type="hidden" name="Action" value="@Model.Action" />
+    <input type="hidden" name="AllowedTypes" value="@Model.AllowedTypes" />
 </form>
 

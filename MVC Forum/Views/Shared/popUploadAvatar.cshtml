@@ -7,12 +7,11 @@
     @Localizer["tipAttach"]
 </p>
 <p class="mb-3">
-    @Localizer["maxFileSize", 5]<br/>
+    @Localizer["maxFileSize", SnitzConfig.GetIntValue("INTMAXFILESIZE", 5)]<br />
     @Localizer["allowedFiles", allowedTypes]
 </p>
 
 <form action="~/Account/UploadAvatar/" method="post" enctype="multipart/form-data" role="form" id="upload-form" >
-
     <div class="photo-input mb-3">
         <input asp-for="AlbumImage" class="form-control" accept="@allowedTypes" max="" id="aFile_upload" />
         <span asp-validation-for="AlbumImage"></span>
