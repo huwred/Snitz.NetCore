@@ -215,7 +215,35 @@
             var href = $(this).attr('href');
             $('#rsModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
         });
+        $(document).on('click', '#submitUpload',
+            function (e) {
+                e.preventDefault();
+                var form = $("#frmUploadCSV");
+                var formData = new FormData(form[0]);
+                $.ajax({
+                    url: $("#frmUploadCSV").attr("action"),
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data.result) {
+                            $('#modal-container').modal('hide');
+                            location.reload();
+                        }
+                    },
+                    error: function (data) {
+                        alert(data);
+                        $('#uploadFileForm').html(data);
 
+                    },
+                    complete: function (data) {
+                        $('#uploadFileForm').html("Import finished");
+                        $('#modal-container').modal('hide');
+                    }
+                });
+                return false;
+            });
         document.getElementById('modal-container')
         .addEventListener('show.bs.modal', function (event) {
             // Button that triggered the modal
