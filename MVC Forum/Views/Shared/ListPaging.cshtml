@@ -8,7 +8,7 @@
     var defaultdays = "";
     var sortdir = "";
 
-    if (Context.Request.Query["page"].Count > 0)
+    if (Context.Request.Query.Keys.Contains("page"))
     {
         page = Convert.ToInt32(Context.Request.Query["page"][0].ToString());
         if(page == -1)
@@ -23,7 +23,7 @@
     if (intHigh - intLow < 5) {while ((intHigh < intLow + 4) && intHigh < pagecount) {intHigh++;}}
     if (intHigh - intLow < 5) {while ((intLow > intHigh - 4) && intLow > 1) {intLow--;}}
 
-    if (Context.Request.Query["orderby"].Count > 0)
+    if (Context.Request.Query.Keys.Contains("orderby"].Count > 0)
     {
         orderby = $"&orderby={Context.Request.Query["orderby"]}";
     }
@@ -142,6 +142,5 @@
             </li>
         }
         <li class="page-item disabled d-none d-sm-inline-block"><span class="page-link">@Localizer["lblTotalPages", pagecount]</span></li>
-        
     </ul>
 </nav>

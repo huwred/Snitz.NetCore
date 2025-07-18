@@ -12,14 +12,12 @@
         {
             Uri baseUri = new Uri(referer);
             returnurl = baseUri.AbsolutePath;
-            returnurl = returnurl;
         }
         else
         {
             returnurl = Context.Request.Query["ReturnUrl"].ToString();
         }
     }
-    
     <div class="m-2 bg-form border border-dark rounded" style="display:none" id="login-form">
         <div class="subforum">
             <h1 class="bg-dark text-white p-2">@Localizer["SignIn"]</h1>

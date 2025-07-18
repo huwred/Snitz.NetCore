@@ -8,7 +8,6 @@
     if(member != null)
     {
         var pmcount = pmService.GetInbox(member!.Id).Where(mbox=>mbox.Read == 0).Count();
-
         if (pmcount > 0)
         {
             @* need to play sound? *@
@@ -20,7 +19,6 @@
                     Your browser does not support the audio element
                 </audio>
             }
-
             <a href="~/PrivateMessage/Inbox" class="text-white nav-link" title="Youv'e got Mail'">
                 <span class="fa-stack fa-lg text-white m-2">
                     <i class="fa fa-envelope-o fa-stack-2x"></i>

@@ -35,7 +35,6 @@
 <div class="blog-row">
     <div class="blog-container @moderatedClass">
         <div class="text ellipsis">
-
             <div class="content-header">
                 <h1><a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" data-title='@BbCodeProcessor.Format(Model.Title, false)'>@BbCodeProcessor.Format(Model.Title, false)</a></h1>
                 <div class="author-info">
@@ -58,14 +57,9 @@
                 {
                     <input id="star-rating-@Model.Id" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
                 }
-
             </div>
-
             <div class="text-concat" style="margin-top:11px; padding-bottom: 6px;">@Html.Raw(BbCodeProcessor.Format(Model.Message))</div>
-        </div>
-
+       </div>
         <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" data-toggle="tooltip" data-title='@Localizer["lblView"] @BbCodeProcessor.Format(Model.Title)'>@Localizer["blogMore"]</a><br />
-        @* <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })#comments" data-toggle="tooltip" data-title='@Localizer["lblView"] @BbCodeProcessor.Format(Model.Title)'><i class="fa fa-comment-o fa-1_5x"></i> Comments</a> *@
-
     </div>
 </div>

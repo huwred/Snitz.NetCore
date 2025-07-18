@@ -13,12 +13,8 @@
             $(element).addClass("is-valid").removeClass("is-invalid");
             $(element.form).find('[data-valmsg-for="' + element.name + '"]').removeClass("invalid-feedback");
         }
-
     }; 
     $.validator.setDefaults(settings);
     $.validator.unobtrusive.options = settings;
-
-
-
 </script>
 

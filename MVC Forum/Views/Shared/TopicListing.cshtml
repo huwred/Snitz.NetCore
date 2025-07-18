@@ -1,5 +1,4 @@
-﻿
-@using BbCodeFormatter
+﻿@using BbCodeFormatter
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Snitz.Events.Helpers
 @using Snitz.PostThanks.Helpers
@@ -37,20 +36,15 @@
     <div class="status" data-status="@Model.Status" style="z-index: 2">
         @if (eventservice != null && eventservice.EnabledForTopic(Model.Id))
         {
-            @* <i class="fa fa-calendar"></i> *@
             <snitz-topic-icon plugin-icon="fa-calendar" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
-
-        }else if (Model.HasPoll)
+        }
+        else if (Model.HasPoll)
         {
-            @* <i class="fa fa-bar-chart"></i> *@
             <snitz-topic-icon plugin-icon="fa-bar-chart" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
-
         }
         else if (archives)
         {
-            @* <i class="fa fa-archive"></i> *@
             <snitz-topic-icon plugin-icon="fa-archive" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
-
         }
         else
         {
@@ -87,24 +81,19 @@
                 }
                 @if (allowrating)
                 {
-                    @* <input value="@Model.Rating" type="text" class="rb-rating" /> *@
                     <input name="input-name" type="number" class="rb-rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs">
-
                 }
             </div>
             <div class="d-none d-md-flex  p-2 bd-highlight fs-6 post-buttons">
                 @if (!archives)
                 {
                     @await Component.InvokeAsync("PostControls", new { post = Model.Topic ,forlist = true})
-                    
                 }
-
             </div>
         </div>
     </div>
     <div class="replies">
         @Model?.RepliesCount @Localizer["lblReplies"] <br/> @Model?.ViewCount @Localizer["lblViews"]
-
     </div>
     <div class="last-reply d-flex" style="z-index:2">
         @if (Model?.LastPostDate != null)
@@ -120,12 +109,10 @@
             @if (!archives)
             {
                 @await Component.InvokeAsync("PostControls", new { post = Model.Topic, forlist = true })
-
             }
         </div>
     </div>
     <div class="subscribe d-none d-sm-inline-flex">
-
         <input snitz-if="@(User?.IsInRole("Administrator"))" type="checkbox" class="form-check-input topic-select" value="@Model?.Id" name="topicselected" />
     </div>
 </div>
