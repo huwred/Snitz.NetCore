@@ -23,7 +23,7 @@
     if (intHigh - intLow < 5) {while ((intHigh < intLow + 4) && intHigh < pagecount) {intHigh++;}}
     if (intHigh - intLow < 5) {while ((intLow > intHigh - 4) && intLow > 1) {intLow--;}}
 
-    if (Context.Request.Query.Keys.Contains("orderby"].Count > 0)
+    if (Context.Request.Query.Keys.Contains("orderby"))
     {
         orderby = $"&orderby={Context.Request.Query["orderby"]}";
     }
