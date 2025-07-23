@@ -225,15 +225,15 @@
                 <div id="result-msg"></div>
         </div>
         <div class="tab-pane fade w-100" id="v-pills-plugin" role="tabpanel" aria-labelledby="plugin-tab">
-            <div class="accordion accordion-flush" id="accordionFlushExample">
+            <div class="accordion accordion-flush" id="plugin-accordion">
                 @await Component.InvokeAsync("Polls", new { template ="Config" })
                 <div class="accordion-item">
-                    <h2 class="accordion-header" id="flush-headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                    <h2 class="accordion-header" id="bookmark-heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bookmark-collapse" aria-expanded="false" aria-controls="bookmark-collapse">
                             Bookmarks
                         </button>
                     </h2>
-                    <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+                    <div id="bookmark-collapse" class="accordion-collapse collapse" aria-labelledby="bookmark-heading" data-bs-parent="#plugin-accordion">
                         <div class="accordion-body">
                             @if (SnitzConfig.TableExists("FORUM_BOOKMARKS"))
                             {
@@ -244,26 +244,26 @@
                         </div>
                     </div>
                 </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="flush-headingRating">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseRating" aria-expanded="false" aria-controls="flush-collapseRating">
-                                Topic Rating
-                            </button>
-                        </h2>
-                        <div id="flush-collapseRating" class="accordion-collapse collapse" aria-labelledby="flush-headingRating" data-bs-parent="#accordionFlushExample">
-                            <div class="accordion-body">
-                                @if (SnitzConfig.TableExists("TOPIC_RATINGS"))
-                                {
-                                    <form id="rating-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
-                                        <admin-config config-key="INTTOPICRATING" config-label="Enable Rating" config-val="@SnitzConfig.GetIntValue("INTTOPICRATING", 0)"></admin-config>
-                                    </form>
-                                }
-                            </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="rating-heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#rating-collapse" aria-expanded="false" aria-controls="rating-collapse">
+                            Topic Rating
+                        </button>
+                    </h2>
+                    <div id="rating-collapse" class="accordion-collapse collapse" aria-labelledby="rating-heading" data-bs-parent="#plugin-accordion">
+                        <div class="accordion-body">
+                            @if (SnitzConfig.TableExists("TOPIC_RATINGS"))
+                            {
+                                <form id="rating-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
+                                    <admin-config config-key="INTTOPICRATING" config-label="Enable Rating" config-val="@SnitzConfig.GetIntValue("INTTOPICRATING", 0)"></admin-config>
+                                </form>
+                            }
                         </div>
                     </div>
-                    @await Component.InvokeAsync("ImageAlbum", "Config")
-                    @await Component.InvokeAsync("Events", new { template = "Admin" })
-                    @await Component.InvokeAsync("PostThanks", new { template = "Admin" })
+                </div>
+                @await Component.InvokeAsync("ImageAlbum", "Config")
+                @await Component.InvokeAsync("Events", new { template = "Admin" })
+                @await Component.InvokeAsync("PostThanks", new { template = "Admin" })
             </div>
         </div>
         <div id="result"></div>
@@ -274,8 +274,6 @@
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-
-
 
             $(document).on("click", "#STRBOOKMARK", function (e) {
                 $("#bookmark-enable").submit();
@@ -369,9 +367,39 @@
         }
         $("#admin-nav li a.nav-link.active").removeClass("active");
         $("#feature-config").addClass("active");
+
+        $(document).ready(function(){
+            $('button[data-bs-toggle="pill"]').on('show.bs.tab', function (e) {
+                localStorage.setItem('activeTab', e.target.id);
+            });
+            var activeTab = localStorage.getItem('activeTab');
+            var activePlugin = localStorage.getItem('activePlugin');
+
+            if(activeTab) {
+                $("#v-pills-tab .nav-link.active").removeClass("active");
+                $("#v-pills-tabContent .tab-pane.active").removeClass("active").removeClass("show");
+
+                $("#v-pills-tab #" + activeTab).addClass("active");
+                $("#v-pills-tabContent #" + activeTab.replace("-tab","")).addClass("active").addClass("show");
+
+                switch (activeTab) {
+
+                    case "v-pills-plugin-tab" :
+                        $('#plugin-accordion').on('show.bs.collapse', function (e) {
+                            console.log(e.target.id)
+                            localStorage.setItem('activePlugin', e.target.id);
+                        });
+                        if(activePlugin){
+                            $('#' + activePlugin).collapse('toggle');
+                        }
+                    break;
+                }
+            }
+        });
     </script>
     <renderstoredcontent asp-key="album-groups"></renderstoredcontent>
     <renderstoredcontent asp-key="topic-poll-controls"></renderstoredcontent>
-        
+    <renderstoredcontent asp-key="events-admin"></renderstoredcontent>
+
 }
 
