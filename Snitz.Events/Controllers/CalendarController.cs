@@ -1,9 +1,11 @@
 ﻿using BbCodeFormatter;
+using BbCodeFormatter.Processors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartBreadcrumbs.Nodes;
 using Snitz.Events.Models;
 using SnitzCore.Data;
+using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System.Net;
@@ -59,7 +61,26 @@ public class CalendarController : Controller
         return new EventsRepository(_context,_config,_snitzContext,_bbCodeProcessor).GetBirthdays(User,start, end);
     }
 
+        public JsonResult GetUpcomingEvents(int count)
+        {
+            string datetime = DateTime.UtcNow.ToForumDateStr(true);
 
+            IEnumerable<CalendarEventItem> eventDetails = _context.EventItems.OrderBy(e=>e.Start).Where(e=> string.Compare(e.Start,datetime) > 0).Take(count);
+
+                var eventList = from item in eventDetails
+                    select new
+                    {
+                        id = item.TopicId,
+                        title = _bbCodeProcessor.Format(item.Title),
+                        start = item.StartDate.Value.ToString("s"),
+                        end = item.EndDate.HasValue ? item.EndDate.Value.ToString("s") : "",
+                        allDay = item.IsAllDayEvent,
+                        editable = false,
+                        url = "/Topic/" + item.TopicId
+                    };
+
+                return Json(eventList.ToArray());
+        }
 
     public JsonResult GetHolidays(string country = "")
     {

@@ -73,7 +73,7 @@ UpComingCalendar = function(url, divid) {
             allDayText: 'all-day',
             dateFormat: 'DD/MM/YY',
             timeFormat: 'HH:mm',
-            titleFormat: upComingEventsTitle,
+            //titleFormat: 'Upcoming Events', //TODO
             height: 560,
             eventSources: [
                 { url: url },

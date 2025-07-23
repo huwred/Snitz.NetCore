@@ -11,6 +11,7 @@ using BbCodeFormatter;
 using SkiaSharp;
 using SnitzCore.Service;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Snitz.Events.ViewModels;
 
 namespace Snitz.Events.Models
 {
@@ -261,8 +262,8 @@ namespace Snitz.Events.Models
             existingevent.ClubId = model.ClubId;
             _dbContext.EventItems.Update(existingevent);
         }
-            else
-            {
+        else
+        {
             model.AuthorId = memberService.Current()?.Id;
             _dbContext.EventItems.Add(model);
         }
@@ -357,6 +358,67 @@ namespace Snitz.Events.Models
 
     }
 
+        internal void SaveEventCategory(EditListViewModel vm)
+        {
+            if(vm.Id == 0)
+            {
+                ClubCalendarCategory cat = new ClubCalendarCategory()
+                {
+                    Name = vm.Name,
+                    Order = vm.Order
+                };
+                _dbContext.Set<ClubCalendarCategory>().Add(cat);
+            }
+            else
+            {
+                var cat = _dbContext.Set<ClubCalendarCategory>().FirstOrDefault(c => c.Id == vm.Id);
+                if (cat != null)
+                {
+                    cat.Name = vm.Name;
+                    cat.Order = vm.Order;
+                    _dbContext.Set<ClubCalendarCategory>().Update(cat);
+                }
+            }
+            _dbContext.SaveChanges();
+        }
 
+        internal void SaveEventLocation(EditListViewModel vm)
+        {
+            if(vm.Id == 0)
+            {
+                ClubCalendarLocation loc = new ClubCalendarLocation()
+                {
+                    Name = vm.Name,
+                    Order = vm.Order
+                };
+                _dbContext.Set<ClubCalendarLocation>().Add(loc);
+            }
+            else
+            {
+                var loc = _dbContext.Set<ClubCalendarLocation>().FirstOrDefault(c => c.Id == vm.Id);
+                if (loc != null)
+                {
+                    loc.Name = vm.Name;
+                    loc.Order = vm.Order;
+                    _dbContext.Set<ClubCalendarLocation>().Update(loc);
+                }
+            }
+            _dbContext.SaveChanges();
+        }
+
+        internal void DeleteCategory(int id)
+        {
+            _dbContext.Set<ClubCalendarCategory>().Where(c => c.Id == id).ExecuteDelete();
+        }
+
+        internal void DeleteClub(int id)
+        {
+            _dbContext.Set<ClubCalendarClub>().Where(c => c.Id == id).ExecuteDelete();
+        }
+
+        internal void DeleteLocation(int id)
+        {
+            _dbContext.Set<ClubCalendarLocation>().Where(c => c.Id == id).ExecuteDelete();
+        }
     }
 }

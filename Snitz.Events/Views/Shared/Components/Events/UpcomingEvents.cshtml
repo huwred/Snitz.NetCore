@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Http
+
+<div class="card mb-2" id="upcoming-events">
+    <div class="card-header subforum-title">
+        @Localizer["Upcoming Events"]
+    </div>
+    <i class="fa fa-spinner fa-pulse fa-3x fa-fw" id="cal-loading"></i>
+    <div class="card-body p-3" id="calendar-list">
+
+    </div>
+</div>
+<storecontent asp-key="upcoming-events" >
+    <script type="text/javascript" src="~/_content/Snitz.Events/js/moment.min.js"></script>
+
+    @if (Context.Session.Keys.Contains("Culture") && Context.Session.GetString("Culture") == "fa")
+    {
+        <script type="text/javascript" src="~/_content/Snitz.Events/js/moment-jalaali.min.js"></script>
+
+    }
+    <script type="text/javascript" src="~/_content/Snitz.Events/js/pluginjs/fullcalendar-year.min.js"></script>
+
+    @if (Context.Session.Keys.Contains("Culture"))
+    {
+        var src = "~/_content/Snitz.Events/js/lang/" + Context.Session.GetString("Culture") + ".js";
+        <script type="text/javascript" src="@src"></script>
+    }
+    <script type="text/javascript" src="~/_content/Snitz.Events/js/pluginjs/snitz.cal.min.js"></script>
+
+    <script type="text/javascript">
+        $(document)
+            .ready(function () {
+                UpComingCalendar("@Url.Action("GetUpcomingEvents", "Calendar", new { count = 60 })", 'calendar-list');
+            });
+    </script>
+</storecontent>
+

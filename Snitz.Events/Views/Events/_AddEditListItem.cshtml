@@ -1,0 +1,28 @@
+﻿@using Snitz.Events.ViewModels
+@model EditListViewModel
+<div class="container">
+    <!-- Form itself -->
+    @using (Html.BeginForm("AddEditItem", "Events", FormMethod.Post, new { @id = "editItemForm" }))
+    {
+        <div class="form">
+            <input type="hidden" name="Id" id="Id" value="@Model.Id" />
+            <input type="hidden" name="ListType" id="ListType" value="@Model.ListType" />
+            <div class="form-group">
+                <label class="control-label" for="Name">Name</label>
+                <input type="text" class="form-control" name="Name" id="Name" placeholder="Item name" value="@Model.Name" />
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="Order">Order</label>
+                <input type="number" class="form-control number" id="Order" name="Order" value="@Model.Order" />
+            </div>
+        </div>
+        <div id="validationSummary" class="validation-summary">
+            <ul></ul>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn btn-danger text-bg-danger" data-bs-dismiss="modal">Cancel</a>
+            <a href="#" class="btn btn-success text-bg-success">Save Changes</a>
+        </div>        
+    }
+
+</div>

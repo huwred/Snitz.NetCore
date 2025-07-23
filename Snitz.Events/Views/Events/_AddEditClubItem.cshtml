@@ -1,0 +1,40 @@
+﻿@using Snitz.Events.Models
+@model ClubCalendarClub
+<div class="container">
+    <!-- Form itself -->
+    @using (Html.BeginForm("AddEditClub", "Events", FormMethod.Post, new { @id = "editItemForm" }))
+    {
+        <div class="form">
+            <input type="hidden" name="Id" id="Id" value="@Model.Id" />
+            <div class="form-group">
+                <label class="control-label" for="ShortName">Short Name</label>
+                <input type="text" class="form-control" name="ShortName" id="ShortName" placeholder="Short name" value="@Model.ShortName" />
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="LongName">Long Name</label>
+                <input type="text" class="form-control" name="LongName" id="LongName" placeholder="Long name" value="@Model.LongName" />
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="Name">Abbreviation</label>
+                <input type="text" class="form-control" name="Abbreviation" id="Abbreviation" placeholder="Abbr" value="@Model.Abbreviation" />
+            </div>
+            <div class="form-group clearfix">
+                <label class="control-label col-xs-2">@Localizer["lblEventLocation"]</label>
+                <div class="col-xs-5">
+                    @Html.DropDownListFor(model => model.DefLocId, new SelectList(ViewBag.Locations, "Key", "Value"), new { @class = "form-select", @tabindex = 1 })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="Order">Order</label>
+                <input type="number" class="form-control number" id="Order" name="Order" value="@Model.Order" />
+            </div>
+        </div>
+        <div id="validationSummary" class="validation-summary">
+            <ul></ul>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn btn-danger text-bg-danger" data-bs-dismiss="modal">Close</a>
+            <a href="#" class="btn btn-success text-bg-success">Save Changes</a>
+        </div>        
+    }
+</div>

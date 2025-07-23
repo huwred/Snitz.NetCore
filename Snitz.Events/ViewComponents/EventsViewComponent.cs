@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Snitz.Events.Models;
 using Snitz.Events.ViewModels;
 using SnitzCore.Data;
@@ -27,6 +28,10 @@ namespace Snitz.Events.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync(string template,int id = 0,int? topicid = 0)
         {
+            if(template == "UpcomingEvents")
+            {
+                return await Task.FromResult((IViewComponentResult)View(template));
+            }
             if (template == "ForumConfig")
             {
                 var forum = _dbContext.Forums.Find(id);
@@ -34,7 +39,7 @@ namespace Snitz.Events.ViewComponents
             }
             if (template == "TopicSummary")
             {
-                var eventitem = _eventContext.EventItems.FirstOrDefault(e=>e.TopicId == id);
+                var eventitem = _eventContext.EventItems.Include(e=>e.Loc).Include(e=>e.Club).Include(e=>e.Cat).FirstOrDefault(e=>e.TopicId == id);
                 return await Task.FromResult((IViewComponentResult)View(template,eventitem));
             }
             if (template == "AddEvent")
