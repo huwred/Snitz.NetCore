@@ -99,6 +99,10 @@
         </div>
         <div class="d-none d-xxl-block col-3">
             <partial name="QuickSearch" />
+            @if (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALPUBLIC") == 1)
+            {
+                @await Component.InvokeAsync("Events", new { template = "UpcomingEvents" })
+            }
             @await Component.InvokeAsync("Members", new { template = "CategoryForumList" })
             @await Component.InvokeAsync("Members", new{max=10})
             <partial name="FeaturedPoll" />
@@ -149,4 +153,5 @@
     //SnitzVars.expandPageFilters();
 </script>
 <renderstoredcontent asp-key="topic-post-controls"></renderstoredcontent>
+<renderstoredcontent asp-key="upcoming-events"></renderstoredcontent>
 }

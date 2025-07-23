@@ -5,7 +5,7 @@
             Polls
         </button>
     </h2>
-    <div id="flush-collapsePolls" class="accordion-collapse collapse" aria-labelledby="flush-polls" data-bs-parent="#accordionFlushExample">
+    <div id="flush-collapsePolls" class="accordion-collapse collapse" aria-labelledby="flush-polls" data-bs-parent="#plugin-accordion">
         <div class="accordion-body">
             <form id="polls-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
                 <admin-config config-key="INTPOLLS" config-label="Allow Polls" config-val="@SnitzConfig.GetIntValue("INTPOLLS", 0)"></admin-config>

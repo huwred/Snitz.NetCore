@@ -177,6 +177,11 @@
             {
                 @await Component.InvokeAsync("ImageAlbum", new { template = "Featured" })
             }
+            @if (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALPUBLIC") == 1)
+            {
+                @await Component.InvokeAsync("Events", new { template = "UpcomingEvents" })
+            }
+
         </div>
     </div>
 
@@ -313,5 +318,6 @@
             $('.accordion').find("[data-bs-target='#" + target + "'] i").addClass('fa-plus');
         }
     </script>
+    <renderstoredcontent asp-key="upcoming-events"></renderstoredcontent>
 }
     

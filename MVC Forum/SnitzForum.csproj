@@ -14,7 +14,6 @@
   <ItemGroup>
     <Compile Remove="logs\**" />
     <Compile Remove="Views\Admin\**" />
-    <Compile Remove="Views\Shared\Components\Events\**" />
     <Compile Remove="wwwroot\Content\Members\**" />
     <Compile Remove="wwwroot\Content\PhotoAlbum\**" />
     <Compile Remove="wwwroot\images\forum\**" />
@@ -25,7 +24,6 @@
     <Compile Remove="wwwroot\Templates\no\**" />
     <Content Remove="logs\**" />
     <Content Remove="Views\Admin\**" />
-    <Content Remove="Views\Shared\Components\Events\**" />
     <Content Remove="wwwroot\Content\Members\**" />
     <Content Remove="wwwroot\Content\PhotoAlbum\**" />
     <Content Remove="wwwroot\images\forum\**" />
@@ -36,7 +34,6 @@
     <Content Remove="wwwroot\Templates\no\**" />
     <EmbeddedResource Remove="logs\**" />
     <EmbeddedResource Remove="Views\Admin\**" />
-    <EmbeddedResource Remove="Views\Shared\Components\Events\**" />
     <EmbeddedResource Remove="wwwroot\Content\Members\**" />
     <EmbeddedResource Remove="wwwroot\Content\PhotoAlbum\**" />
     <EmbeddedResource Remove="wwwroot\images\forum\**" />
@@ -47,7 +44,6 @@
     <EmbeddedResource Remove="wwwroot\Templates\no\**" />
     <None Remove="logs\**" />
     <None Remove="Views\Admin\**" />
-    <None Remove="Views\Shared\Components\Events\**" />
     <None Remove="wwwroot\Content\Members\**" />
     <None Remove="wwwroot\Content\PhotoAlbum\**" />
     <None Remove="wwwroot\images\forum\**" />
@@ -58,7 +54,6 @@
     <None Remove="wwwroot\Templates\no\**" />
     <TypeScriptCompile Remove="logs\**" />
     <TypeScriptCompile Remove="Views\Admin\**" />
-    <TypeScriptCompile Remove="Views\Shared\Components\Events\**" />
     <TypeScriptCompile Remove="wwwroot\Content\Members\**" />
     <TypeScriptCompile Remove="wwwroot\Content\PhotoAlbum\**" />
     <TypeScriptCompile Remove="wwwroot\is-cache\**" />
@@ -324,9 +319,9 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.3" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="Snitz.Events" Version="1.0.1-rc14" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc05" />
-    <PackageReference Include="Snitz.PostThanks" Version="1.0.2-rc30" />
+    <PackageReference Include="Snitz.Events" Version="1.0.1-rc28" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc06" />
+    <PackageReference Include="Snitz.PostThanks" Version="1.0.2-rc31" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
