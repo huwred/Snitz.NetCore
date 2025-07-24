@@ -5,12 +5,12 @@
     <fieldset @(!Model.EnableEvents ? "disabled" : "") class="border rounded-3 p-3" id="EVENTSCONFIG">
     <legend>Club/Society Events Add On</legend>
     <div class="mb-3 form-check">
-        <input class="form-check-input" id="EnableEvents" type="checkbox" name="INTCLUBEVENTS" data-size="mini" checked="@SnitzConfig.GetIntValue("INTCLUBEVENTS") == 1" value="1" />
+            <input class="form-check-input" id="EnableEvents" type="checkbox" name="INTCLUBEVENTS" data-size="mini" @(Html.Raw(SnitzConfig.GetIntValue("INTCLUBEVENTS") == 1 ? "checked=\"checked\"" : "")) value="1" />
         <label for="EnableEvents" class="form-check-label">@Localizer["PluginTitle"]</label>
         <input type="checkbox" name="INTCLUBEVENTS" checked value="0" style="display:none" />
     </div>
     <div class="mb-3 form-check">
-        <input class="form-check-input" id="ShowInCalendar" type="checkbox" name="INTCALSHOWEVENTS" data-size="mini" checked="@SnitzConfig.GetIntValue("INTCALSHOWEVENTS") == 1" value="1" />
+            <input class="form-check-input" id="ShowInCalendar" type="checkbox" name="INTCALSHOWEVENTS" data-size="mini" @(Html.Raw(SnitzConfig.GetIntValue("INTCALSHOWEVENTS") == 1 ? "checked=\"checked\"" : "")) value="1" />
         <label for="ShowInCalendar" class="form-check-label">@Localizer["lblShowInCalendar"]</label>
         <input type="checkbox" name="INTCALSHOWEVENTS" checked value="0" style="display:none" />
     </div>
