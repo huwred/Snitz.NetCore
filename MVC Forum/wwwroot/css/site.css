@@ -963,3 +963,7 @@ i.modstatus-2, i.modstatus-3 {
         text-align: center;
         border-radius: 5px;
     }
+
+.my-fc-row > div {
+    display: inline-block !important;
+}

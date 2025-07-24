@@ -319,7 +319,7 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.3" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="Snitz.Events" Version="1.0.1-rc28" />
+    <PackageReference Include="Snitz.Events" Version="1.0.1-rc34" />
     <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc06" />
     <PackageReference Include="Snitz.PostThanks" Version="1.0.2-rc31" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />

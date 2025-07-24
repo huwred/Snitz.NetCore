@@ -20,7 +20,9 @@
 .my-fc-list > div {
     border-top: 1px solid #222
 }
-
+.my-fc-row > div {
+    display: inline-block;
+}
 .my-fc-row {
     padding: 3px
 }
@@ -47,19 +49,19 @@ td.fc-day {
     background-color: #FFF
 }
 
-.event-birthday div.fc-content span.fc-title:before, .event-birthday div.my-fc-time:before {
+.event-birthday span.fc-content span.fc-title:before, .event-birthday span.my-fc-time:before {
     font-family: FontAwesome;
     content: "\f1fd\00a0";
     color: goldenrod !important
 }
 
-.event-birthday > div.fc-time:before {
+.event-birthday > span.fc-time:before {
     font-family: FontAwesome;
     content: "\f1fd\00a0";
     color: goldenrod !important
 }
 
-.event-birthday div.fc-content span.fc-title {
+.event-birthday span.fc-content span.fc-title {
     color: goldenrod !important
 }
 

@@ -641,19 +641,21 @@ a.latestpost-title {
     color: magenta !important;
 }
 
-.event-birthday div.fc-content span.fc-title:before, .event-birthday div.my-fc-time:before {
+.event-birthday span.fc-content span.fc-title:before, .event-birthday span.my-fc-time:before {
     font-family: FontAwesome;
     content: "\f1fd\00a0";
     color: goldenrod !important
 }
 
-.event-birthday > div.fc-time:before {
+.event-birthday > span.fc-time:before {
     font-family: FontAwesome;
     content: "\f1fd\00a0";
     color: goldenrod !important
 }
-
-.event-birthday div.fc-content span.fc-title {
+li.my-fc-row {
+    list-style-type: none;
+}
+.event-birthday span.fc-content span.fc-title {
     color: goldenrod !important
 }
 
