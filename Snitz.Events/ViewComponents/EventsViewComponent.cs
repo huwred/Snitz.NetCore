@@ -39,8 +39,16 @@ namespace Snitz.Events.ViewComponents
             }
             if (template == "TopicSummary")
             {
-                var eventitem = _eventContext.EventItems.Include(e=>e.Loc).Include(e=>e.Club).Include(e=>e.Cat).FirstOrDefault(e=>e.TopicId == id);
-                return await Task.FromResult((IViewComponentResult)View(template,eventitem));
+                try
+                {
+                    var eventitem = _eventContext.EventItems.Include(e=>e.Loc).Include(e=>e.Club).Include(e=>e.Cat).FirstOrDefault(e=>e.TopicId == id);
+                    return await Task.FromResult((IViewComponentResult)View(template,eventitem));
+
+                }
+                catch (Exception)
+                {
+                    return await Task.FromResult((IViewComponentResult)View());
+                }
             }
             if (template == "AddEvent")
             {

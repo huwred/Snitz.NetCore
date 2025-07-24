@@ -19,14 +19,16 @@ public class CalendarController : Controller
     private readonly EventContext _context;
     private readonly ICodeProcessor _bbCodeProcessor;
     private readonly SnitzDbContext _snitzContext;
+    private readonly IMember _memberService;
     protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
-    public CalendarController(ISnitzConfig config,EventContext dbContext,ICodeProcessor BbCodeProcessor,SnitzDbContext snitzContext)
+    public CalendarController(ISnitzConfig config,EventContext dbContext,ICodeProcessor BbCodeProcessor,SnitzDbContext snitzContext,IMember memberservice)
     {
         _config = config;
         _context = dbContext;
         _bbCodeProcessor = BbCodeProcessor;
         _snitzContext = snitzContext;
+        _memberService = memberservice;
     }
     // GET
     public IActionResult Index()

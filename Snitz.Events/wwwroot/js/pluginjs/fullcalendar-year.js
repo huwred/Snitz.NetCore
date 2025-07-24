@@ -5173,12 +5173,12 @@ DayGrid.mixin({
 					''
 					) +
 			'>' +
-				'<div class="fc-content">' +
+				'<span class="fc-content">' +
 					(this.isRTL ?
 						titleHtml + ' ' + timeHtml : // put a natural space in between
 						timeHtml + ' ' + titleHtml   //
 						) +
-				'</div>' +
+				'</span>' +
 				(isResizableFromStart ?
 					'<div class="fc-resizer fc-start-resizer" />' :
 					''
@@ -6724,7 +6724,7 @@ TimeGrid.mixin({
 				''
 				) +
 			'>' +
-				'<div class="fc-content">' +
+				'<span class="fc-content">' +
 					(timeText ?
 						'<div class="fc-time"' +
 						' data-start="' + htmlEscape(startTimeText) + '"' +
@@ -6740,7 +6740,7 @@ TimeGrid.mixin({
 						'</div>' :
 						''
 						) +
-				'</div>' +
+				'</span>' +
 				'<div class="fc-bg"/>' +
 				/* TODO: write CSS for this
 				(isResizableFromStart ?
@@ -11644,8 +11644,8 @@ fcViews.agendaDay = {
 
                         var segEl = $('\
                             <li class="my-fc-row ' + e.className + '">\
-                                <div class="my-fc-time">' + (e.className == 'event-birthday' ? '' : (e.allDay ? this.opt('allDayText') : e.start.format('HH:mm', this.isJalaali) + " - " + (e.end == null ? '' : e.end.format('HH:mm',this.isJalaali)))) + '</div>\
-                                <div class="my-fc-title" >--' + userlink + '--</div>\
+                                <span class="my-fc-time">' + (e.className == 'event-birthday' ? '' : (e.allDay ? this.opt('allDayText') : e.start.format('HH:mm', this.isJalaali) + " - " + (e.end == null ? '' : e.end.format('HH:mm',this.isJalaali)))) + '</span>\
+                                <span class="my-fc-title">-' + userlink + '-</span>\
                             </li>');
                         tbody.append(segEl);
 
@@ -12020,7 +12020,7 @@ fcViews.agendaDay = {
                 //Assume events were ordered descending originally (notice we reversed them)
                 for (var i = eventsCopy.length - 1; i >= 0; --i) {
                     var e = eventsCopy[i];
-
+					//console.log(e);
                     var eventStart = e.start.clone();
                     var eventEnd = this.calendar.getEventEnd(e);
 
@@ -12035,8 +12035,8 @@ fcViews.agendaDay = {
                             var segTel = '\
                                 <li class="my-fc-header" data-club="' + e.clublong + '" data-loc="' + e.location + '" >\
                                     <span class="my-fc-header-date">' + ' ' + '</span>\
-                                    <span class="my-fc-header-day">' + e.title + ' <i title="' + e.author + ' ' + postdate.format(this.opt('dateFormat')) + '" data-toggle="tooltip" class="fa fa-info-circle fa-1_5x"></i> ';
-                            if (e.author === e.currentuser) {
+                                    <span class="my-fc-header-day">' + e.title + ' <i title="' + e.author.name + ' ' + postdate.format(this.opt('dateFormat')) + '" data-toggle="tooltip" class="fa fa-info-circle fa-1_5x"></i> ';
+                            if (e.author.name === e.currentuser) {
                                 segTel += '<a href="' + '/Events/AddEditEvent/' + e.id + '"><i class="fa fa-edit fa-1_5x"></i></a> <a href="#" data-id="' + e.id + '" class="event-del"><i class="fa fa-trash-o fa-1_5x"></i></a>';
                             }
                             segTel += '</span></li>';

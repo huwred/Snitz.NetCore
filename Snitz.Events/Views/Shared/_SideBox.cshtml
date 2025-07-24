@@ -1,0 +1,56 @@
+﻿@model SnitzEvents.ViewModels.AgendaViewModel
+
+<div class="d-none d-xxl-block col-3">
+    <div class="card col-12 mb-2">
+        <div class="card-body p-2">
+            <a href="@Url.Action("Index", new { id = 0, old = 0 })">@Localizer["UpcomingEvents"]</a><span title="Number of events"></span><br />
+            <a href="@Url.Action("Index", new { id = -1, old = ViewBag.OldNew })">@Localizer["PastEvents"]</a><span title="Number of events"></span><br />
+        </div>
+    </div>
+    <div class="card col-12 mb-2">
+        <div class="card-header">@Localizer["EventCategories"]</div>
+        <div class="card-body p-2">
+            @foreach (var cat in Model.CatSummary)
+            {
+                <a href="@Url.Action("Index", new { id = cat.CatId, old = ViewBag.OldNew })" class="catFilter" data-id="@cat.CatId">@cat.Name (@cat.EventCount)</a>
+
+                <br />
+            }
+        </div>
+    </div>
+    <div class="card col-12 mb-2">
+        <div class="card-header">@Localizer["EventFilter"]</div>
+        <div class="card-body p-2">
+            @*<div class="form-group clearfix">
+                        @Html.DropDownListFor(model => model.CatId, new SelectList(Model.Categories, "Key", "Value"), @ResourceManager.GetLocalisedString("AllCategories", "Events"), new {@class = "form-control", tabindex = 1, id = "cat-filter"})
+                    </div>*@
+            <div class="form-group clearfix mb-2">
+                @Html.DropDownListFor(model => model.ClubId, new SelectList(Model.Clubs, "Key", "Value"), @Localizer["AllClubs"].Value, new { @class = "form-select", tabindex = 1, id = "club-filter", onchange = "filterClub();" })
+            </div>
+            <div class="form-group clearfix">
+                @Html.DropDownListFor(model => model.LocId, new SelectList(Model.Locations, "Key", "Value"), @Localizer["AllLocations"].Value, new { @class = "form-select", tabindex = 1, id = "loc-filter", onchange = "filterLocation();" })
+            </div>
+            <input type="hidden" value="@ViewBag.OldNew" id="old-new" />
+        </div>
+    </div>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="card col-12 mb-2">
+            <div class="card-header">@Localizer["Other"]</div>
+            <div class="card-body p-2">
+                @if (String.IsNullOrWhiteSpace(SnitzConfig.GetValue("STRRESTRICTROLES")))
+                {
+                    <a href="@Url.Action("AddEditEvent", new { id = 0 })">@Localizer["AddEvent"]</a>
+                    <br />
+                }
+                else if (Model.AllowedRoles.Any(role => User.IsInRole(role)))
+                {
+                    <a href="@Url.Action("AddEditEvent", new { id = 0 })">@Localizer["AddEvent"]</a>
+                    <br />
+                }
+                <a href="@Url.Action("EventSubs")">@Localizer["MySubs"]</a><br />
+            </div>
+        </div>
+    }
+
+</div>

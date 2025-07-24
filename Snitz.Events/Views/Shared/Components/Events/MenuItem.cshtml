@@ -9,5 +9,9 @@
 }
 @if (showcalendar)
 {
-<li><a class="dropdown-item" asp-controller="Calendar" asp-action="Index">@Localizer["mnuCalendar"]</a></li>
+    <li><a class="dropdown-item" asp-controller="Calendar" asp-action="Index">@Localizer["mnuCalendar"]</a></li>
+}
+@if (SnitzConfig.GetIntValue("INTCLUBEVENTS") == 1 && (User.Identity.IsAuthenticated))
+{
+    <li><a class="dropdown-item" asp-controller="Events" asp-action="Index">@Localizer["mnuEvents"]</a></li>
 }

@@ -1,0 +1,53 @@
+﻿
+
+@model SnitzEvents.ViewModels.SubscribeModel
+<snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
+<h5>@Localizer["EventSubs"]</h5>
+<hr class="title" />
+@using (Html.BeginForm("EventSubs"))
+{
+    <div class="container-fluid">
+        <p>@Localizer["SubsDesc"]</p>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" value="" id="checkAll">
+          <label class="form-check-label" for="checkAll">
+            @Localizer["lblSelectAll"]
+          </label>
+        </div>
+        <fieldset>
+            <legend>@Localizer["Clubs"]</legend>
+            @if (Model.SubscriptionSources != null)
+            {
+                foreach (var item in Model.SubscriptionSources)
+                {
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" value="@item.Key" name="selectedItems" @(Html.Raw(Model.SelectedSources.Contains(item.Key) ? "checked=\"checked\"" : ""))>
+                        <label class="form-check-label">
+                            @item.Value
+                        </label>
+                    </div>
+
+                }
+            }
+        </fieldset>
+
+
+        <div class="form-group col-xs-9 padding-md">
+            <input type="button" value="@Localizer["btnCancel"]" class="btn btn-sm btn-warning cancel" />
+            <input type="reset" value="@Localizer["btnReset"]" class="btn btn-sm btn-primary" />
+            <input type="submit" value="@Localizer["btnSave"]" class="btn btn-sm btn-success" />
+        </div>
+    </div>
+}
+@section scripts {
+    <script>
+        $('body').on('change', '#checkAll', function () {
+            var checkboxes = $(this).closest('form').find(':checkbox');
+            if ($(this).is(':checked')) {
+                checkboxes.prop('checked', true);
+            } else {
+                checkboxes.prop('checked', false);
+            }
+        });
+    </script>
+}

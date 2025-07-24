@@ -1,0 +1,142 @@
+﻿@using System.Globalization
+
+@model SnitzEvents.ViewModels.ClubEventViewModel
+@{
+    CultureInfo ci = CultureInfo.CurrentUICulture;
+    string clang = ci.TwoLetterISOLanguageName;
+    string langscript = clang + ".js";
+}
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar.min.css">
+}
+<div class="pt-0">
+    <snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
+    <div class="row">
+        <div class="col">
+            <div class="row-fluid">
+                <input type="hidden" value="@ViewBag.CatFilter" id="cat_filter" />
+                <div id="calendar">
+                    @using (Html.BeginForm("AddEditEvent", "Events", FormMethod.Post, new { @class = "form form-horizontal" }))
+                    {
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                <label for="Title" class="col-form-label">@Localizer["lblEventTitle"]</label>
+                            </div>
+                            <div class="col-4">
+                                @Html.TextBoxFor(model => model.Title, new { @class = "form-control", @maxlength = 90 })
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                <label for="StartDate" class="col-form-label">@Localizer["lblStartDate"]</label>
+                            </div>
+                            <div class="col-auto">
+                                @if (Model.StartDate.HasValue)
+                                {
+                                    <input type="datetime-local" class="form-control club-dates" id="calendar-start-date" name="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-ddTHH:mm")" />
+                                }
+                                else
+                                {
+                                    <input type="datetime-local" class="form-control club-dates" id="calendar-start-date" name="StartDate" value="" />
+                                }
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                <label for="EndDate" class="col-form-label">@Localizer["lblEndDate"]</label>
+                            </div>
+                            <div class="col-auto">
+                                @if (Model.EndDate.HasValue)
+                                {
+                                    <input type="datetime-local" class="form-control club-dates" id="calendar-end-date" name="EndDate" value="@Model.EndDate?.ToString("yyyy-MM-ddTHH:mm")" />
+                                }
+                                else
+                                {
+                                    <input type="datetime-local" class="form-control club-dates" id="calendar-end-date" name="EndDate" value="" />
+                                }
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                <label for="CatId" class="col-form-label">@Localizer["lblEventCategory"]</label>
+                            </div>
+                            <div class="col-auto">
+                                @foreach (var option in Model.Categories)
+                                {
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" asp-for="CatId" value="@option.Value" id="option-@option.Value">
+                                        <label class="form-check-label" for="option-@option.Value">@option.Value</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                <label for="EventClub" class="col-form-label">@Localizer["lblEventClub"]</label>
+                            </div>
+                            <div class="col-2">
+                                @Html.DropDownListFor(model => model.ClubId, new SelectList(Model.Clubs, "Key", "Value"), new { @class = "form-select", @tabindex = 1, @title = "Select a Club" })
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                <label for="EventLocation" class="col-form-label">@Localizer["lblEventLocation"]</label>
+                            </div>
+                            <div class="col-2">
+                                @Html.DropDownListFor(model => model.LocId, new SelectList(Model.Locations, "Key", "Value"), new { @class = "form-select", @tabindex = 1, @title = "Select a Location" })
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                <label for="EventLocation" class="col-form-label">@Localizer["lblEventDetails"]</label>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group" id="editorDiv">
+                                    <textarea type="text" class="form-control" name="Description" rows="5">@Model.Description</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                @Html.HiddenFor(model => model.Id)
+                            </div>
+                            <div class="col-auto">
+                                @Html.ValidationSummary(false, "", new { @class = "list-group-item-info" })
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                @Html.HiddenFor(model => model.Id)
+                            </div>
+                            <div class="col-auto">
+                                <input type="button" value="@Localizer["btnCancel"]" class="btn btn-sm btn-warning cancel" />
+                                <input type="reset" value="@Localizer["btnReset"]" class="btn btn-sm btn-primary" />
+                                <input type="submit" value="@Localizer["btnSave"]" class="btn btn-sm btn-success" />
+                            </div>
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+
+        </div>
+        <partial name="_SideBox" model="Model" />
+
+    </div>
+</div>
+<div class="container-fluid">
+
+
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript" src="~/_content/Snitz.Events/js/pluginjs/snitz.cal.min.js"></script>
+    @if (clang != "en")
+    {
+        <script type="text/javascript" src="~/_content/Snitz.Events/js/lang/@langscript"></script>
+    }
+}

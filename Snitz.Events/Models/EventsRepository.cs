@@ -21,6 +21,8 @@ namespace Snitz.Events.Models
         private readonly ISnitzConfig _config;
         private readonly SnitzDbContext _snitzContext;
         private readonly ICodeProcessor _bbCodeProcessor;
+        //private readonly IMember _memberService;
+
         protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
         public EventsRepository(EventContext dbContext,ISnitzConfig config,SnitzDbContext snitzContext,ICodeProcessor BbCodeProcessor)
@@ -29,6 +31,7 @@ namespace Snitz.Events.Models
             _config = config;
             _snitzContext = snitzContext;
             _bbCodeProcessor = BbCodeProcessor;
+            //_memberService = memberservice;
         }
 
         public void Dispose()
@@ -193,7 +196,7 @@ namespace Snitz.Events.Models
         {
             return CacheProvider.GetOrCreate("cal.countries", FetchJsonCountries,TimeSpan.FromMinutes(600));
         }
-    public JsonResult GetClubCalendarEvents(string id,string old, int calendar = 0, string start = "", string end = "")
+    public JsonResult GetClubCalendarEvents(string id,string old, int calendar = 0, string start = "", string end = "", string currmember = "")
     {
         //2018-09-23
         var eventDetails = new List<CalendarEventItem>();
@@ -226,7 +229,7 @@ namespace Snitz.Events.Models
                         id = item.Id,
                         title = WebUtility.HtmlDecode(_bbCodeProcessor.Format(item.Title)),
                         author = item.Author,
-                        //currentuser = _memberService.Current(),
+                        currentuser = currmember,
                         description = _bbCodeProcessor.Format(item.Description),
                         start = item.StartDate.Value.ToString("s"),
                         enddate = item.EndDate.HasValue ? item.EndDate.Value.ToString("s") : "",
@@ -419,6 +422,69 @@ namespace Snitz.Events.Models
         internal void DeleteLocation(int id)
         {
             _dbContext.Set<ClubCalendarLocation>().Where(c => c.Id == id).ExecuteDelete();
+        }
+
+        public List<CatSummary> GetCategorySummaryList(string startDate)
+        {
+            var test = from c in _dbContext.Set<CalendarEventItem>()
+                        join ce in _dbContext.Set<ClubCalendarCategory>() on c.CatId equals ce.Id into ceGroup
+                        where c.CatId != null
+                       //where string.Compare(c.Start , startDate.ToEnglishNumber().Replace("-", "")) > 0
+                       group ceGroup by new{c.Cat.Name,c.CatId } into g
+                       select new CatSummary
+                        {
+                            CatId = g.Key.CatId.Value,
+                            Name = g.Key.Name,
+                            EventCount = g.Count()
+                        };
+            return test.ToList();
+
+            //using (var context = new SnitzDataContext())
+            //{
+            //    var sql = new Sql();
+            //    sql.Select("c.CAT_ID AS CatId ,c.CAT_NAME As Name, COUNT(ce.C_ID) as EventCount");
+            //    sql.From("CAL_EVENTS ce");
+            //    sql.LeftJoin("EVENT_CAT c").On("c.CAT_ID=ce.CAT_ID");
+            //    sql.Where("ce.CAT_ID IS NOT NULL ");
+            //    if (startDate != null)
+            //    {
+            //        sql.Where(" ce.EVENT_DATE >= '" + startDate.Replace("-", "") + "'");
+            //    }
+            //    sql.GroupBy("c.CAT_NAME,c.CAT_ID");
+            //    return _dbContext.Fetch<CatSummary>(sql);
+            //}
+        }
+
+        public string OldestEvent()
+        {
+                string top = "TOP 1";
+                string limit = "";
+
+                var evnt = _dbContext.EventItems.OrderBy(e=>e.Start).First();
+                if (evnt != null)
+                {
+                    if (evnt.StartDate != null) return evnt.StartDate.Value.AddDays(-1).ToString("yyyy-MM-dd");
+                }
+            return null;
+        }
+
+        internal IEnumerable<int> GetSubsList(int memberid)
+        {
+            return _dbContext.Set<ClubCalendarSubscriptions>().Where(s=>s.MemberId == memberid).Select(s=>s.Id);
+
+        }
+
+        internal void SubDelete(int subid, int memberid)
+        {
+            _dbContext.Set<ClubCalendarSubscriptions>().Where(s => s.Id == subid && s.MemberId == memberid).ExecuteDelete();
+        }
+        public IEnumerable<Pair<int, string>> GetClubsList()
+        {
+            return _dbContext.Set<ClubCalendarClub>()
+                .OrderBy(c => c.Order)
+                .Select(c => new Pair<int, string> { Key = c.Id, Value = c.ShortName })
+                .ToList();
+
         }
     }
 }

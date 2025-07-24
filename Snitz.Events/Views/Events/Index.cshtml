@@ -1,0 +1,133 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Http
+@using SnitzCore.Data.Extensions
+
+@model SnitzEvents.ViewModels.AgendaViewModel
+
+@{
+    CultureInfo ci = CultureInfo.CurrentUICulture;
+    string clang = ci.TwoLetterISOLanguageName;
+    string langscript = clang + ".js";
+    ViewBag.Title = SnitzConfig.ForumTitle + " | " + Localizer["PluginTitle"];
+    string[] rtlLangs = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur", "yi", "he" };
+    string[] arabic = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur" }; //Cairo
+    string[] aramaic = new string[] { "yi", "he" }; //Tinos
+
+    bool isRighToLeft = (rtlLangs.Contains(clang));
+
+    if (!Context.Session.Keys.Contains("isRighToLeft") || isRighToLeft != Context.Session.GetObject<bool>("isRighToLeft"))
+    {
+        Context.Session.SetObject("isRighToLeft", isRighToLeft);
+    }
+}
+@section Styles {
+    <link rel="stylesheet" href="~/_content/Snitz.Events/css/jquery-ui-timepicker-addon.min.css">
+    <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar.min.css">
+    <link snitz-if="@(isRighToLeft)" rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar-rtl.css">
+}
+<div class="pt-0">
+    <snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
+    <div class="row">
+        <div class="col">
+            <div class="row-fluid">
+                <input type="hidden" value="@ViewBag.CatFilter" id="cat_filter" />
+                <div id="calendar"></div>
+            </div>
+        </div>
+        <partial name="_SideBox" model="Model" />
+
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        var upComingEventsTitle = '[@Localizer["upComingEventTitle"]]';
+        var pastEventsTitle = '[@Localizer["upPastEventsTitle"]]';
+
+    </script>
+    <script type="text/javascript" src="~/_content/Snitz.Events/js/moment.min.js"></script>
+
+    @if (clang == "fa")
+    {
+        <script type="text/javascript" src="~/_content/Snitz.Events/js/moment-jalaali.min.js"></script>
+    }
+
+    <script type="text/javascript" src="~/_content/Snitz.Events/js/pluginjs/fullcalendar-year.min.js"></script>
+    <script type="text/javascript" src="~/_content/Snitz.Events/js/lang/@langscript"></script>
+    <script type="text/javascript" src="~/_content/Snitz.Events/js/pluginjs/snitz.cal.min.js"></script>
+
+
+    <script type="text/javascript">
+        $(document)
+            .ready(function () {
+                var filter = $('#cat_filter').val();
+                if (filter === '-1') {
+                    ClubCalendar("@Url.Action("GetClubCalendarEvents", new { id = -1, old = -1 })", 'calendar','@ViewBag.StartDate');
+                } else {
+                    if ($('#old-new').val() === '-1') {
+                        ClubCalendar("@Url.Action("GetClubCalendarEvents", new { id = ViewBag.CatFilter, old = -1 })", 'calendar', '@ViewBag.StartDate');
+                    } else {
+                        ClubCalendar("@Url.Action("GetClubCalendarEvents", new { id = ViewBag.CatFilter, old = 0 })", 'calendar','');
+                    }
+
+                }
+                $('.del-event')
+                    .on('click',
+                        function (e) {
+                            e.preventDefault();
+                            var data = {};
+                            data.id = $(this).data("id");
+
+                            BootstrapDialog.confirm({
+                                title: '@Localizer["lblDeleteEvent"]',
+                                message: '@Localizer["msgDeleteEvent"]<br/>', callback: function (ok) {
+                                    if (ok) {
+                                        $.ajax({
+                                            url: window.SnitzVars.baseUrl + 'Events/RemoveEvent',
+                                            data: data,
+                                            type: "POST",
+                                            cache: false,
+                                            success: function (response) {
+
+                                                window.location.reload();
+                                            },
+                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_WARNING,
+                                                    title: textStatus,
+                                                    message: jqXHR.responseText
+                                                });
+
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                    });
+
+                @*$('#cat-filter')
+                    .change(function() {
+                            alert('changed');
+                            //$(this).parent('form').submit();
+                            if ($('#old-new').val() === '-1') {
+                                ClubCalendar("@Url.Action("GetClubCalendarEvents",new{id=ViewBag.CatFilter,old=-1})", 'calendar', "@ViewBag.StartDate");
+                            } else {
+                                ClubCalendar("@Url.Action("GetClubCalendarEvents",new{id=ViewBag.CatFilter,old=0})", 'calendar','');
+                            }
+                        });*@
+            });
+        function filterClub() {
+            alert($('#club-filter option:selected').text());
+            $("li[data-club!='" + $('#club-filter option:selected').text() + "']").hide();
+            $("li[data-club='" + $('#club-filter option:selected').text() + "']").show();
+            $(".dropdown").show();
+        }
+        function filterLocation() {
+            alert($('#loc-filter option:selected').val());
+            $("li[data-loc!='" + $('#loc-filter option:selected').text() + "']").hide();
+            $("li[data-loc='" + $('#loc-filter option:selected').text() + "']").show();
+            $(".dropdown").show();
+        }
+
+    </script>
+}
