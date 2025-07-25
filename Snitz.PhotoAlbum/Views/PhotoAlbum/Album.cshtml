@@ -11,7 +11,7 @@
 @{
 
     Layout = "Layout";
-    bool showprivate = false;
+    bool showprivate = User.IsInRole("Administrator");
     var speciesonly = Model.SpeciesOnly ? 0 : 1;
 }
 <div class="pt-0">
@@ -138,7 +138,7 @@
                         <option value="asc" snitz-if="@(ViewBag.SortDir.ToLower() == "asc")" selected>@Localizer["optAsc"]</option>
                         <option value="asc" snitz-if="@(ViewBag.SortDir.ToLower() != "asc")">@Localizer["optAsc"]</option>
                     </select>
-                    <button snitz-if="@showprivate" class="btn btn-outline-primary" id="photo-upload" title="@Localizer["tipUpload"]"><i class="fa fa-upload"></i></button>
+                        <button snitz-if="@showprivate" class="btn btn-outline-primary" id="photo-upload" title="@Localizer["lblUpload"]"><i class="fa fa-upload"></i> @Localizer["lblUpload"]</button>
                 </div>
             </div>
         </div>
@@ -204,6 +204,8 @@
         </table>
     </div>
 </div>
+<partial name="Modal\UploadModal" />
+
 @section Scripts
 {
     <script type="text/javascript">
@@ -215,6 +217,13 @@
                 else
                     $('.col-thumb').css('display', 'none');
             });
-
+        $(document).on("click", "#photo-upload",
+            function(e) {
+                e.preventDefault();
+                $('#upload-content').load(SnitzVars.baseUrl + "/PhotoAlbum/UploadForm/?showall=true",
+                    function() {
+                        $('#uploadModal').modal('show');
+                    });
+            });
     </script>
 }

@@ -87,7 +87,10 @@
                                 }
                             </td>
                         }
-                    <td><button class="btn btn-primary"><i class="fa fa-edit"></i></button></td>
+                    <td class="fs-3">
+                            <i class="fa fa-pencil"></i>
+                            <i class="fa fa-trash" data-id="@group.Key" data-url="~/LanguageManager/DeleteResource/"></i>
+                    </td>
                 </tr>
                 rowcount += 1;
             }
@@ -119,6 +122,24 @@
                     <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
                     <span class="sr-only">Loading...</span>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="rsModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="rsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline-danger">X</a>
+                <h3>Delete ResourceSet</h3>
+            </div>
+            <div class="modal-body">
+                <p>Delete current ResourceSet.<br /><span class="form-text">This will remove the ResourceSet and all it's Resources.</span></p>
+            </div>
+            <div class="modal-footer">
+                <label class="form-label">Do you wish to proceed?</label>
+                <a href="#" id="rsbtnYes" class="btn btn-danger">Yes</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-warning">No</a>
             </div>
         </div>
     </div>
@@ -169,7 +190,26 @@
             ],
 
         });
-        $('#ResourceTable tbody').on('click', 'button', function (evt) {
+        $('#ResourceTable tbody').on('click', '.fa-trash', function (evt) {
+            evt.preventDefault();
+            var id = $(this).data('id');
+            var href = $(this).data('url');
+            $('#rsModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
+        });
+
+
+        $(document).on('click', '#rsbtnYes', function (e) {
+            // handle deletion here
+            e.preventDefault();
+            var url = $('#rsModal').data('url') + $('#rsModal').data('id');
+
+            $.get(url, function (result) {
+                $('#rsModal').modal('hide');
+                location.reload();
+            });
+        });
+
+        $('#ResourceTable tbody').on('click', '.fa-pencil', function (evt) {
 
             evt.preventDefault();
             var data = table.row($(this).parents('tr')).data();
