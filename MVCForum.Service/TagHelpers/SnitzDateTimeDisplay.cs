@@ -1,8 +1,11 @@
-﻿using System;
-using System.Text.Encodings.Web;
+﻿using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Localization;
+using SnitzCore.Data.Interfaces;
 using SnitzCore.Service.Extensions;
+using System;
+using System.Text.Encodings.Web;
 
 namespace SnitzCore.Service.TagHelpers
 {
@@ -15,7 +18,14 @@ namespace SnitzCore.Service.TagHelpers
         public bool? FreindlyTime { get; set; } = true;
 
         [HtmlAttributeName("format")]
-        public string? Format { get; set; } = "dd MMM yyyy HH:mm";
+        public string? Format { get; set; }
+
+        private readonly LanguageService  _languageResource;
+        public SnitzDateTimeDisplay(IHtmlLocalizerFactory localizerFactory )
+        {
+            _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
+            Format = _languageResource.GetString("dateLong");
+        }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {

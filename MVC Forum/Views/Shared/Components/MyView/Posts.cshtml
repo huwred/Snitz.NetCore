@@ -2,7 +2,6 @@
 @using Microsoft.AspNetCore.Identity
 @using SnitzCore.Data.Extensions
 @model MVCForum.ViewModels.MyTopicsViewModel
-@inject ICodeProcessor BbCodeProcessor
 @inject UserManager<ForumUser> userManager
 
 @foreach (Post topic in Model.Topics)

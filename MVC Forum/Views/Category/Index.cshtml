@@ -8,7 +8,6 @@
 @using SnitzCore.Data.Models
 @using SnitzCore.Service.TagHelpers
 @inject SignInManager<ForumUser> SignInManager
-@inject ICodeProcessor BbCodeProcessor
 @{
     var cat = Context.Request.Query["id"];
     var routeid = Context.GetRouteValue("id");
