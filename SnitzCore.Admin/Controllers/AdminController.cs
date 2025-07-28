@@ -19,6 +19,7 @@ using SnitzCore.Data.Models;
 using SnitzCore.Service.Extensions;
 using System.Data;
 using static SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SnitzCore.BackOffice.Controllers
 {
@@ -325,9 +326,14 @@ namespace SnitzCore.BackOffice.Controllers
                             {
                                 ModelState.AddModelError(model.Username,error.Description);
                             }
-                    
+                            return PartialView("ManageRoles",model);
                         }
                     }
+                }
+                else
+                {
+                    ModelState.AddModelError(model.Username,"Member not validated");
+                    return PartialView("ManageRoles",model);
                 }
             }
             List<string> names = new List<string>();
@@ -807,15 +813,15 @@ namespace SnitzCore.BackOffice.Controllers
         {
             Client client = new Client(); //(apiKeyTextBox.Text)
             CreativeMinds.StopForumSpam.Responses.Response response;
-            if (!String.IsNullOrWhiteSpace(id) && String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
+            if (!string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(userip))
             {
                 response = client.CheckUsername(id);
             }
-            else if (String.IsNullOrWhiteSpace(id) && !String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
+            else if (string.IsNullOrWhiteSpace(id) && !string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(userip))
             {
                 response = client.CheckEmailAddress(email);
             }
-            else if (String.IsNullOrWhiteSpace(id) && String.IsNullOrWhiteSpace(email) && !String.IsNullOrWhiteSpace(userip))
+            else if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(userip))
             {
                 response = client.CheckIPAddress(userip);
             }
@@ -831,7 +837,7 @@ namespace SnitzCore.BackOffice.Controllers
             }
             else
             {
-                ViewBag.Text = String.Format("Error: {0}", ((FailResponse)response).Error);
+                ViewBag.Text = string.Format("Error: {0}", ((FailResponse)response).Error);
             }
 
             return PartialView(response.ResponseParts);
