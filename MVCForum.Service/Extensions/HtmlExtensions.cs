@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Data.ViewModels;
 using System;
@@ -17,6 +18,7 @@ namespace SnitzCore.Service.Extensions
 {
     public static class HtmlExtensions
     {
+
         /// <summary>
         /// Renders the Members Rank titles and stars for display in the forum
         /// </summary>
@@ -57,12 +59,14 @@ namespace SnitzCore.Service.Extensions
         }
         public static HtmlString ShowHideForums(this IHtmlHelper helper, IPrincipal user, Forum model, IEnumerable<string> roles, IViewLocalizer language, string wrapper = "{0}")
         {
+            var cssclass="forum-link";
             if (wrapper == "li")
             {
-                wrapper = "<li class=\"list-unstyled\">{0}</li>";
+                wrapper = "<li class=\"list-unstyled jumpto\">{0}</li>";
+                cssclass = "dropdown-item";
             }
             var baseUrl = helper.ViewContext.HttpContext.Request.PathBase;
-            string forumlink = $"<a data-title='{language.GetString("tipForumViewPosts", "Tooltip")}' data-toggle='tooltip' class='forum-link' href='{baseUrl}/Forum/{model.Id}?pagenum=1' >{model.Title}</a>";
+            string forumlink = $"<a data-title='{language.GetString("tipForumViewPosts", "Tooltip")}' data-toggle='tooltip' class='{cssclass}' href='{baseUrl}/Forum/{model.Id}?pagenum=1' >{model.Title}</a>";
             string archivelink = "&nbsp;<a data-title='" + language.GetString("tipForumViewArchived", "Tooltip") + "' data-toggle='tooltip' href='" + baseUrl + "/Forum/" + model.Id + "?pagenum=1&archived=1' ><i class='fa fa-file-text'></i></a>";
             if (model.ArchivedCount > 0 && user.Identity.IsAuthenticated)
             {

@@ -27,11 +27,12 @@ namespace SnitzCore.Service
         private readonly Dictionary<int, MemberRanking>? _rankings;
         private readonly ISnitzCookie _cookie;
         private readonly UserManager<ForumUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly string? _tableprefix;
         private readonly string? _memberprefix;
 
-        public MemberService(SnitzDbContext dbContext,ISnitzCookie snitzcookie,UserManager<ForumUser> userManager,IHttpContextAccessor contextAccessor,IOptions<SnitzForums> config)
+        public MemberService(SnitzDbContext dbContext,ISnitzCookie snitzcookie,UserManager<ForumUser> userManager,IHttpContextAccessor contextAccessor,IOptions<SnitzForums> config,RoleManager<IdentityRole> roleManager)
         {
             _dbContext = dbContext;
             _rankings = GetRankings();
@@ -40,6 +41,21 @@ namespace SnitzCore.Service
             _contextAccessor = contextAccessor;
             _tableprefix = config.Value.forumTablePrefix;
             _memberprefix = config.Value.memberTablePrefix;
+            _roleManager = roleManager;
+        }
+        public async Task<List<Member>> GetUsersInRoleAsync(string roleName)
+        {
+            var usersInRole = new List<Member>();
+
+            foreach (var user in _userManager.Users)
+            {
+                if (await _userManager.IsInRoleAsync(user, roleName))
+                {
+                    usersInRole.Add(GetByUsername(user.UserName));
+                }
+            }
+
+            return usersInRole;
         }
         public Member? GetById(int? id)
         {

@@ -23,6 +23,7 @@ namespace SnitzCore.Service.TagHelpers
         public Member Member { get; set; } = new Member();
         public Dictionary<int, MemberRanking>? Ranking { get; set; }
         public ClaimsPrincipal? User { get; set; }
+        public string? Size {get;set;}
         private readonly UserManager<ForumUser> _userManager;
         public MemberRankTagHelper(UserManager<ForumUser> usrMgr)
         {
@@ -40,7 +41,7 @@ namespace SnitzCore.Service.TagHelpers
                 output.Attributes.Add("style", $"color:{Ranking[0].Image} ;");
                 for (int i = 0; i < Ranking[0].ImgRepeat; i++)
                 {
-                    output.Content.AppendHtml($@"<i class=""fa fa-star fs-5""></i>");
+                    output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
                 }
             }
             else if((user != null && _userManager.IsInRoleAsync(user,"Moderator").Result) || Member.Level == 2)
@@ -48,7 +49,7 @@ namespace SnitzCore.Service.TagHelpers
                 output.Attributes.Add("style", $"color:{Ranking[1].Image} ;");
                 for (int i = 0; i < Ranking[1].ImgRepeat; i++)
                 {
-                    output.Content.AppendHtml($@"<i class=""fa fa-star fs-5""></i>");
+                    output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
                 }
             }
             else
@@ -63,7 +64,7 @@ namespace SnitzCore.Service.TagHelpers
                     output.Attributes.Add("style", $"color:{thisrank.Value.Value.Image} ;");
                     for (int i = 0; i < thisrank.Value.Value.ImgRepeat; i++)
                     {
-                        output.Content.AppendHtml($@"<i class=""fa fa-star fs-5""></i>");
+                        output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
                     }
                 }
                 catch (Exception)

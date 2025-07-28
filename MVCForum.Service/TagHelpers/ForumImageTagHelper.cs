@@ -77,6 +77,14 @@ namespace SnitzCore.Service.TagHelpers
                     }
                 }
             }
+            else if (Type == "3") //Bug
+            {
+                output.AddClass("fa-bug", HtmlEncoder.Default);
+            }
+            else if (Type == "4") //Blog
+            {
+                output.AddClass("fa-file-text-o", HtmlEncoder.Default);
+            }
             else if (Access != "0")
             {
                 output.AddClass("fa-ban", HtmlEncoder.Default);

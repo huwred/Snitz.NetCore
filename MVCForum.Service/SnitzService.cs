@@ -85,6 +85,15 @@ namespace SnitzCore.Service
             //use string.compare because raw dates are stored as strings
             return _dbContext.Posts.AsNoTracking().Where(t=> string.Compare(t.LastPostDate, lastvisit) > 0).Count();
         }
+
+        public int MembersSince(string lastvisit)
+        {
+            return _dbContext.Members.AsNoTracking().Where(t=> string.Compare(t.Lastactivity, lastvisit) > 0).Count();
+        }
+        public int SignupsSince(string lastvisit)
+        {
+            return _dbContext.Members.AsNoTracking().Where(t=> string.Compare(t.Lastactivity, lastvisit) > 0).Count();
+        }
     }
 
 
