@@ -1,120 +1,93 @@
-﻿$(document).ready(function () {
-    if ($('.cal-dates').length >= 1) {
+﻿$('.date').datepicker({
+    autoclose: true,
+    format: {
+        /*
+         * Say our UI should display a week ahead,
+         * but textbox should store the actual date.
+         * This is useful if we need UI to select local dates,
+         * but store in UTC
+         */
 
-        $('#calendar-start-date').datepicker({
-            autoclose: true,
-            format: {
-                /*
-                 * Say our UI should display a week ahead,
-                 * but textbox should store the actual date.
-                 * This is useful if we need UI to select local dates,
-                 * but store in UTC
-                 */
-
-                toDisplay: function (date, format, language) {
-                    var d = new Date(date);
-                    d.setDate(d.getDate());
-                    return d.toLocaleDateString();
-                },
-                toValue: function (date, format, language) {
-                    let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
-                    let lastFirst = date.replace(re, '$1-$2-$3');
-                    var d = new Date(lastFirst);
-                    d.setDate(d.getDate());
-                    return new Date(d);
-                }
-            }
-        });
-
-        $('#calendar-end-date').datepicker({
-            autoclose: true,
-            format: {
-                /*
-                 * Say our UI should display a week ahead,
-                 * but textbox should store the actual date.
-                 * This is useful if we need UI to select local dates,
-                 * but store in UTC
-                 */
-
-                toDisplay: function (date, format, language) {
-                    var d = new Date(date);
-                    d.setDate(d.getDate());
-                    return d.toLocaleDateString();
-                },
-                toValue: function (date, format, language) {
-                    let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
-                    let lastFirst = date.replace(re, '$1-$2-$3');
-                    var d = new Date(lastFirst);
-                    d.setDate(d.getDate());
-                    return new Date(d);
-                }
-            }
-        });
-        if ($('#cal-recur').val() == 'EveryDay') {
-            $('#cal-dow').show();
+        toDisplay: function (date, format, language) {
+            var d = new Date(date);
+            d.setDate(d.getDate());
+            return d.toLocaleDateString();
+        },
+        toValue: function (date, format, language) {
+            let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
+            let lastFirst = date.replace(re, '$1-$2-$3');
+            var d = new Date(lastFirst);
+            d.setDate(d.getDate());
+            return new Date(d);
         }
-        $(document).on('change', '#cal-recur', function (evt) {
-            console.log($(this).val());
-            if ($(this).val() == 'EveryDay') {
-                $('#cal-dow').show();
-            } else {
-                $('#cal-dow').hide();
-            }
-        });
-    }
-    if ($('.club-dates').length >= 1) {
-
-        $('#calendar-start-date').datepicker({
-            autoclose: true,
-            format: {
-                /*
-                 * Say our UI should display a week ahead,
-                 * but textbox should store the actual date.
-                 * This is useful if we need UI to select local dates,
-                 * but store in UTC
-                 */
-
-                toDisplay: function (date, format, language) {
-                    var d = new Date(date);
-                    d.setDate(d.getDate());
-                    return d.toLocaleDateString();
-                },
-                toValue: function (date, format, language) {
-                    let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
-                    let lastFirst = date.replace(re, '$1-$2-$3');
-                    var d = new Date(lastFirst);
-                    d.setDate(d.getDate());
-                    return new Date(d);
-                }
-            }
-        });
-
-        $('#calendar-end-date').datepicker({
-            autoclose: true,
-            format: {
-                /*
-                 * Say our UI should display a week ahead,
-                 * but textbox should store the actual date.
-                 * This is useful if we need UI to select local dates,
-                 * but store in UTC
-                 */
-
-                toDisplay: function (date, format, language) {
-                    var d = new Date(date);
-                    d.setDate(d.getDate());
-                    return d.toLocaleDateString();
-                },
-                toValue: function (date, format, language) {
-                    let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
-                    let lastFirst = date.replace(re, '$1-$2-$3');
-                    var d = new Date(lastFirst);
-                    d.setDate(d.getDate());
-                    return new Date(d);
-                }
-            }
-        });
     }
 });
+
+if ($('.cal-dates').length >= 1) {
+
+    //$('#calendar-start-date').datepicker({
+    //    autoclose: true,
+    //    format: {
+    //        /*
+    //         * Say our UI should display a week ahead,
+    //         * but textbox should store the actual date.
+    //         * This is useful if we need UI to select local dates,
+    //         * but store in UTC
+    //         */
+
+    //        toDisplay: function (date, format, language) {
+    //            var d = new Date(date);
+    //            d.setDate(d.getDate());
+    //            return d.toLocaleDateString();
+    //        },
+    //        toValue: function (date, format, language) {
+    //            let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
+    //            let lastFirst = date.replace(re, '$1-$2-$3');
+    //            var d = new Date(lastFirst);
+    //            d.setDate(d.getDate());
+    //            return new Date(d);
+    //        }
+    //    }
+    //});
+
+    //$('#calendar-end-date').datepicker({
+    //    autoclose: true,
+    //    format: {
+    //        /*
+    //         * Say our UI should display a week ahead,
+    //         * but textbox should store the actual date.
+    //         * This is useful if we need UI to select local dates,
+    //         * but store in UTC
+    //         */
+
+    //        toDisplay: function (date, format, language) {
+    //            var d = new Date(date);
+    //            d.setDate(d.getDate());
+    //            return d.toLocaleDateString();
+    //        },
+    //        toValue: function (date, format, language) {
+    //            let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
+    //            let lastFirst = date.replace(re, '$1-$2-$3');
+    //            var d = new Date(lastFirst);
+    //            d.setDate(d.getDate());
+    //            return new Date(d);
+    //        }
+    //    }
+    //});
+
+    if ($('#cal-recur').val() == 'EveryDay') {
+        $('#cal-dow').show();
+    }
+    $(document).on('change', '#cal-recur', function (evt) {
+        console.log($(this).val());
+        if ($(this).val() == 'EveryDay') {
+            $('#cal-dow').show();
+        } else {
+            $('#cal-dow').hide();
+        }
+    });
+}
+
 
 UpComingCalendar = function(url, divid) {
     var d = new Date();
@@ -275,7 +248,7 @@ calcWeeks = function(parm1) {
 
 postEvent = function(event, arr) {
 
-    if ($('#calendar-start-date').val() === '') {
+    if ($('#startdate').val() === '') {
         location.reload(arr[1]);
         return false;
     }

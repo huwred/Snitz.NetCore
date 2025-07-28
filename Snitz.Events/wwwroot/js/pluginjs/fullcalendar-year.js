@@ -11354,8 +11354,8 @@ fcViews.agendaDay = {
         // Compute the value to feed into setRange. Overrides superclass.
         computeRange: function (date) {
             var range = View.prototype.computeRange.call(this, date); // get value from the super-method
-            console.log("range.start" + range.start);
-            console.log("range.end=" + range.end);
+            //console.log("range.start" + range.start);
+            //console.log("range.end=" + range.end);
 
             // year and month views should be aligned with weeks. this is already done for week
             if (/year|month/.test(range.intervalUnit)) {
@@ -11753,8 +11753,8 @@ fcViews.agendaDay = {
         // Compute the value to feed into setRange. Overrides superclass.
         computeRange: function (date) {
             var range = View.prototype.computeRange.call(this, date); // get value from the super-method
-            console.log("range.start" + range.start);
-            console.log("range.end=" + range.end);
+            //console.log("range.start" + range.start);
+            //console.log("range.end=" + range.end);
 
             // year and month views should be aligned with weeks. this is already done for week
             if (/year|month/.test(range.intervalUnit)) {

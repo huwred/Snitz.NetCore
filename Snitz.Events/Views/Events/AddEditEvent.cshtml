@@ -8,7 +8,7 @@
 }
 @section Styles {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
-    <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar.min.css">
+    @* <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar.min.css"> *@
 }
 <div class="pt-0">
     <snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
@@ -34,11 +34,11 @@
                             <div class="col-auto">
                                 @if (Model.StartDate.HasValue)
                                 {
-                                    <input type="datetime-local" class="form-control club-dates" id="calendar-start-date" name="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-ddTHH:mm")" />
+                                    <input type="datetime-local" class="form-control" id="startdate" name="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-ddTHH:mm")" />
                                 }
                                 else
                                 {
-                                    <input type="datetime-local" class="form-control club-dates" id="calendar-start-date" name="StartDate" value="" />
+                                    <input type="datetime-local" class="form-control" id="startdate" name="StartDate" />
                                 }
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                             <div class="col-auto">
                                 @foreach (var option in Model.Categories)
                                 {
-                                    <div class="form-check">
+                                    <div class="form-check form-check-inline">
                                         <input type="radio" class="form-check-input" asp-for="CatId" value="@option.Value" id="option-@option.Value">
                                         <label class="form-check-label" for="option-@option.Value">@option.Value</label>
                                     </div>

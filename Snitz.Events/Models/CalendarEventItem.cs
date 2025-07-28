@@ -135,6 +135,12 @@ namespace Snitz.Events.Models
                 Posted = value.HasValue ? value.Value.ToForumDateStr() : null;
             }
         }
+
+        public ClubCalendarEventItem()
+        {
+            StartDate = DateTime.UtcNow;
+            EndDate = DateTime.UtcNow.AddHours(1);
+        }
     }
 
     [SnitzTable("EVENT_CAT", "")]
