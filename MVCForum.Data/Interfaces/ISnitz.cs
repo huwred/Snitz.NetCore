@@ -47,5 +47,7 @@ namespace SnitzCore.Data.Interfaces
         /// <param name="lastvisit">Date parameter as ForumDateStr</param>
         /// <returns>Number of posts</returns>
         int ActiveSince(string lastvisit);
+        int MembersSince(string lastvisit);
+        int SignupsSince(string lastvisit);
     }
 }

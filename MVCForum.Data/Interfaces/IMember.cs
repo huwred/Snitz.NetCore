@@ -1,4 +1,5 @@
-﻿using SnitzCore.Data.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace SnitzCore.Data
     public interface IMember
     {
         Member? GetById(int? id);
+        Task<List<Member>> GetUsersInRoleAsync(string roleName);
         Task<Member?> GetById(ClaimsPrincipal user);
         IPagedList<Member?> GetPagedMembers(bool isadmin,int pagesize, int page,string? sortcol,string? dir);
         string? GetMemberName(int id);
