@@ -3,7 +3,7 @@
 @using SnitzCore.Service.TagHelpers
 @inject UserManager<ForumUser> UserManager
 @inject SignInManager<ForumUser> SignInManager
-@inject ISnitzCookie SnitzCookie
+
 @{
     var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? SnitzConfig.GetValueWithDefault("STRDEFAULTTHEME", "SnitzTheme");
     var currForumUser = UserManager.GetUserAsync(User).Result;
@@ -23,8 +23,18 @@
                     <li><a class="dropdown-item" asp-controller="Forum" asp-action="Active">@Localizer["mnuForumActive"]</a></li>
                     <li><a class="dropdown-item" asp-controller="Account" asp-action="Index">@Localizer["mnuForumMembers"]</a></li>
                     <li><a class="dropdown-item" asp-controller="Forum" asp-action="Search">@Localizer["mnuForumSearch"]</a></li>
+                    <li><hr class="dropdown-divider" /></li>
                     @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
                     @await Component.InvokeAsync("Events", new{template = "MenuItem"})
+                    <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT",1) == 1)"><hr class="dropdown-divider" /></li>
+                    <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT",1) == 1)">
+                        <a class="dropdown-item" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownAbout">@Localizer["mnuAbout"]</a>
+                        <ul class="dropdown-menu dropdown-submenu">
+                            <li><a class="dropdown-item" href="~/About#about">@Localizer["mnuAbout"]</a></li>
+                            <li><a class="dropdown-item" href="~/About#privacy">@Localizer["mnuPrivacyPolicy"]</a></li>
+                            <li><a class="dropdown-item" href="~/About#cookie">@Localizer["mnuCookies"]</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </li>
             <li class="nav-item dropdown" snitz-if="@(SnitzConfig.TableExists("FORUM_IMAGES") && SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)">

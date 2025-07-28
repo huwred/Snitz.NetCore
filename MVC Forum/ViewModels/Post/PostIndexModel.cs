@@ -43,7 +43,7 @@ namespace MVCForum.ViewModels.Post
             SortDir = "asc";
             PageNum = 1;
             PageSize = 10;
-            ShowSig = true;
+            ShowSig = false;
             Rating = 0.0m;
         }
     }

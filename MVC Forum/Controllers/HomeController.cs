@@ -73,17 +73,12 @@ namespace MVCForum.Controllers
                 SearchQuery = ""
             };
         }
+        [Route("About")]
+        public IActionResult About()
+        {
+            return View();
+        }
 
-        [Route("Privacy")]
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-        [Route("CookiePolicy")]
-        public IActionResult CookiePolicy()
-        {
-            return View();
-        }
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

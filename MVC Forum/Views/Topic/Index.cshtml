@@ -242,7 +242,7 @@
                                     <input type="checkbox" class="form-check-input reply-select" value="@reply.Id" name="replyselected" />
                                 </span>
                             </div>
-                            <div class="card-body p-1" id="reply-@reply.Id">
+                            <div class="card-body" id="reply-@reply.Id">
                                 <div class="body @rowclass">
                                     <partial name="PostAuthor" model="reply.Author"/>
                                     <div class="content">
@@ -353,7 +353,7 @@
         </div>
     </div>
 </div>
-<div id="moderateModal" class="modal fade" tabindex="-1" aria-labelledby="moderateModalLabel" aria-hidden="true">
+<div id="moderateModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="moderateModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content" id="posModeration"></div>
     </div>
@@ -371,11 +371,11 @@
 <!-- Send Topic Popup -->
 @if (SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1)
 {
-    <div id='modal-sendto' class='modal fade in' tabindex="-1" data-url='@Url.Action("SendTo", "Topic")' aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id='modal-sendto' class='modal fade in' role="dialog" tabindex="-1" data-url='@Url.Action("SendTo", "Topic")' aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="uploadModalLabel">
+                <div class="modal-header bg-primary" >
+                    <h5 class="modal-title text-bg-primary" id="uploadModalLabel">
                         @Localizer["dlgSendTopic"]
                     </h5> 
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -396,6 +396,7 @@
 
 @section Scripts
 {
+<renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
 <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
 <script type="text/javascript" src="~/js/postcontroller.min.js"></script>
 <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
@@ -451,39 +452,6 @@
         });
         $(window).on("load",
             function (e) {
-                $("#passwordDlg").on('hide.bs.modal',
-                    function () {
-                        //alert("close");
-                        window.location.href = '/Category/Index';
-                    });
-                $('#passwordDlg').on('click',
-                    '#btnPassYes',
-                    function (e) {
-                        $.ajax({
-                            type: "POST",
-                            url: SnitzVars.baseUrl + '/Forum/PasswordCheck',
-                            data: { pwd: $('#forum-pass').val(), forumid: $('#req-forumid').val(), topicid: '0' },
-                            success: function (result) {
-                                //alert(result);
-                                if (result) {
-                                    $("#passwordDlg").off('hide.bs.modal');
-                                    location.reload(true);
-                                    $('#passwordDlg').modal('hide');
-                                    return false;
-                                } else {
-                                    window.location.href = '/Category/Index';
-                                }
-                            },
-                            error: function (error) {
-                                alert(error);
-                                window.location.href = '/Category/Index';
-                                return false;
-                            }
-                        });
-                    });
-                if ($('#req-auth').val() === 'True') {
-                    $('#passwordDlg').modal('show');
-                }
                 $('.split-topic').on('click', function (e) {
                     e.preventDefault();
                     location.href = SnitzVars.baseUrl + "/Topic/SplitTopic/?id=" + $(this).data("topic") + "&replyid=" + $(this).data("id");
@@ -513,6 +481,6 @@
             return false;
         });
     </script>
-
+    <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
     <renderstoredcontent asp-key="topic-post-controls"></renderstoredcontent>
 }

@@ -179,15 +179,15 @@
         Title = Localizer["popEmptyForumTitle"].Value, // "Empty Forum",
         Message = Localizer["popEmptyForumMessage"].Value /* @"<p>You are about to Empty this Forum.</p>   <p>Do you wish to proceed?</p>" */
     };
+    <partial name="ConfirmDialog" model="@confModel" />
 }
-<partial name="ConfirmDialog" model="@confModel" />
 
 @section Scripts
 {
 
     <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="~/js/initPostForm.js"></script>
-    <script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
+    <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
     <script type="text/javascript">
         $(document).ready(function() {
             var selected = $('#authtype').find(":selected").val();

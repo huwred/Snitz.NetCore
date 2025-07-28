@@ -91,6 +91,10 @@
                                 {
                                     weblinkclass = "subforum-weblink";
                                 }
+                                if (forum.ForumType == ForumType.BlogPosts)
+                                {
+                                    weblinkclass = "subforum-blog";
+                                }
                                 <div class="subforum-row @weblinkclass ">
                                     <div class="subforum-icon subforum-column text-center">
                                         <snitz-forum-icon lastpost="@forum.LastPostDateTime" is-administrator="@isAdministrator" forum-id="@forum.Id" status="@forum.Status" forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
@@ -161,6 +165,8 @@
                     </div>
                 </div>
             }
+
+            @await Component.InvokeAsync("Members", new { template = "CategoryForumJumpTo" })
             @if (SnitzConfig.GetIntValue("STRSHOWSTATISTICS") == 1)
             {
                 <partial name="ForumStats" />
@@ -182,6 +188,7 @@
             }
 
         </div>
+
     </div>
 
 </div>
@@ -190,8 +197,8 @@
         Title = Localizer["popDelCatTitle"].Value, // "Delete Category", 
         Message = Localizer["popDelCatMessage"].Value /* @"<p>You are about to delete this Category.</p><p>Do you wish to proceed?</p>" */
     };
+    <partial name="ConfirmDialog" model="@confModel" />
 }
-<partial name="ConfirmDialog" model="@confModel" />
 
 @functions
 {
@@ -239,7 +246,7 @@
 }
 @section Scripts
 {
-    <script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
+    <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
     <script>
         
         $(document).on("click", ".weblink-edit", function (e) {

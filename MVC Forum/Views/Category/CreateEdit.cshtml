@@ -61,13 +61,11 @@
     {
         Title = Localizer["lblCategory"].Value,
         Message = Localizer["popDelCategory"].Value
-        // @"<p>You are about to Delete or Empty this Category.</p>
-        // <p>Do you wish to proceed?</p>"
     };
-}
 <partial name="ConfirmDialog" model="@confModel" />
+}
 @section Scripts
 {
-    <script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
+    <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
 
 }

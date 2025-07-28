@@ -1,0 +1,47 @@
+﻿@using SnitzCore.Service.Extensions
+@model List<Category>
+@{
+    var groupedCats = Model.GroupBy(c => (c.Id, c.Name)).Select(g => new
+    {
+        Id = g.Key.Id,
+        Name = g.Key.Name,
+        Forums = g.OrderBy(x => x.Name)
+    });
+}
+<div class="dropdown-container dropdown-container-right dropdown-up dropdown-left dropdown-button-control clearfix" id="jumpbox">
+    <div class="dropdown pull-right flip">
+        <a class="btn dropdown-toggle" href="#" data-bs-toggle="dropdown">@Localizer["JumpTo"] <span class="caret"></span></a>
+        <ul class="jumpto dropdown-menu">
+
+            @foreach (var cat in groupedCats)
+            {
+                var catlink = "#c_" + cat.Id;
+                bool hasMatch = User.CanViewCategory(cat.Forums.First(), null);
+
+                if (hasMatch)
+                {
+                    <li>
+                        <a href="~/Category/Index/@cat.Id" class="category">@cat.Name</a>
+                        <ul>
+
+                    @foreach (var c in cat.Forums)
+                    {
+                        @foreach (var f in c.Forums)
+                        {
+                            switch ((ForumType)f.Type)
+                            {
+                                case ForumType.WebLink:
+                                    break;
+                                default:
+                                    @Html.ShowHideForums(User, f, null, Localizer,"li")
+                                    break;
+                            }
+                        }
+                    }
+                        </ul>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</div>

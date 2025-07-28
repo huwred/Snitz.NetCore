@@ -1,6 +1,6 @@
 ﻿
 <footer>
     <span class="flo">@Html.Raw(SnitzConfig.ForumTitle) - &copy; @string.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year) </span>
-    <span><br /><a href="~/Privacy">Privacy</a> | <a href="~/CookiePolicy">Cookie Policy</a><br /></span>
+    <span><br /><a href="~/About#privacy" title="View our privacy policy">@Localizer["mnuPrivacyPolicy"]</a> | <a href="~/About#cookie" title="View our cookie policy">@Localizer["mnuCookies"]</a><br /></span>
     <span snitz-if="@(SnitzConfig.GetIntValue("INTPAGETIMER") == 1)" class="page-timer" id="loadTime"></span>
 </footer>

@@ -31,24 +31,27 @@ else
                 <div class="subforum col-6 bg-form border border-dark rounded">
                     <h1 class="bg-dark text-white p-2">@Localizer["registerTitle"]</h1>
                     <div class="p-2">
-                    <div class="mb-3">
-                        <label asp-for="Name" class="form-label">@Localizer["Username"]</label>
-                        <input asp-for="Name" class="form-control" required="required" />
-                        <div class="invalid-feedback">@Localizer["UsernameRequired"]</div>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label">@Localizer["Email"]</label>
-                        <input asp-for="Email" class="form-control" required="required" />
-                        <div class="invalid-feedback">@Localizer["PropertyRequired", Localizer["prompt_email_url"]]</div>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-label">@Localizer["Password"]</label>
-                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", required = "required" })
-                        <div class="invalid-feedback">@Localizer["dlgPasswordMsg"]</div>
-
-                        <label for="pwRepeat" class="form-label">@Localizer["ConfirmPassword"]</label>
-                        <input type="password" name="pwRepeat" id="pwRepeat" class="form-control" />
-                        <div class="invalid-feedback">@Localizer["compPassword", Localizer["Password"], Localizer["ConfirmPassword"]]</div>
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">@Localizer["Username"]</label>
+                            <input asp-for="Name" class="form-control" required="required" />
+                            <div class="invalid-feedback">@Localizer["UsernameRequired"]</div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">@Localizer["Email"]</label>
+                            <input asp-for="Email" class="form-control" required="required" />
+                            <div class="invalid-feedback">@Localizer["PropertyRequired", Localizer["prompt_email_url"]]</div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">@Localizer["Password"]</label>
+                            <div class="input-group mb-3">
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control", required = "required" })
+                            </div>     
+                            <div class="invalid-feedback">@Localizer["dlgPasswordMsg"]</div>
+                            <label for="pwRepeat" class="form-label">@Localizer["ConfirmPassword"]</label>
+                            <div class="input-group mb-3">
+                                <input type="password" name="pwRepeat" id="pwRepeat" class="form-control" />
+                            </div>
+                            <div class="invalid-feedback">@Localizer["compPassword", Localizer["Password"], Localizer["ConfirmPassword"]]</div>
                         </div>
                     </div>
                 </div>
@@ -86,6 +89,7 @@ else
     {
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
         <script src="~/js/captcha.js" type="text/javascript" ></script>
+        <script src="~/js/jquery.passwordstrength.js" type="text/javascript"></script>
     <script type="text/javascript">
             // Disable form submissions if there are invalid fields
             (function() {
@@ -113,7 +117,37 @@ else
                     });
                 }, false);
             })();
-
+            var pwdOptions = {
+                // The password strength you consider secure
+                secureStrength: 25,
+                indicatorDisplayType: "inline-block",
+                indicatorClassName: "password-strength-indicator input-group-text",
+                // Points for different character sets
+                points: {
+                    forEachCharacter: 1,
+                    forEachSpace: 0,
+                    containsLowercaseLetter: 2,
+                    containsUppercaseLetter: 2,
+                    containsNumber: 4,
+                    containsSymbol: 5
+                },
+                strengthClassNames: [{
+                    name: "very-weak",
+                    text: Snitzres.pwVWeak
+                    }, {
+                    name: "weak",
+                    text: Snitzres.pwWeak
+                    }, {
+                    name: "mediocre",
+                    text: Snitzres.pwMedium
+                    }, {
+                    name: "strong",
+                    text: Snitzres.pwStrong
+                    }, {
+                    name: "very-strong",
+                    text: Snitzres.pwVStrong
+                }]
+            };
             $(function () {
                 $('.date').datepicker({
                     autoclose: true,
@@ -138,10 +172,12 @@ else
                 });
 
                 revalidate();
+                $("#Password").passwordStrength(pwdOptions);
+                $("#pwRepeat").passwordStrength(pwdOptions);
             });
             function revalidate() {
-                var container = document.getElementById("member-profile");
-                var forms = container.getElementsByTagName("form");
+                //var container = document.getElementById("member-profile");
+                var forms = document.getElementsByTagName("form");
                 var newForm = forms[forms.length - 1];
                 $.validator.unobtrusive.parse(newForm);
             }

@@ -1,9 +1,0 @@
-﻿@using System.Globalization
-@{
-    ViewData["Title"] = Localizer["lblPrivacyTitle"];
-    var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-    var partialname = "_PrivacyPolicy-" + lang;
-}
-<h3>@ViewData["Title"]</h3>
-
-<partial name="@partialname" />

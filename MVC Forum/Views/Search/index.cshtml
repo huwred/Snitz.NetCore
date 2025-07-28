@@ -63,7 +63,7 @@
                     <label asp-for="Terms" class="form-label">@Localizer["lblKeywords"]</label>
                     <div class="input-group">
                         <input asp-for="Terms" type="text" class="form-control" placeholder="@Localizer["plhSearchTerm"]" aria-label="@Localizer["plhSearchTerm"]" aria-describedby="button-addon2">
-                        <button class="btn btn-outline-secondary" type="button" id="button-addon2" title="Advanced search" data-bs-toggle="collapse" data-bs-target="#showFilters" aria-expanded="false"><i class="fa fa-sliders"></i></button>
+                        <button class="btn btn-primary" type="button" id="button-addon2" title="@Localizer["tipAdvancedSearch"]" data-bs-toggle="collapse" data-bs-target="#showFilters" aria-expanded="false"><i class="fa fa-sliders"></i></button>
                     </div>
 @*                     @if (SnitzConfig.GetIntValue("INTFULLTEXT") == 1)
                     {

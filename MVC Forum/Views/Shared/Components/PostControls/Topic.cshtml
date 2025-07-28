@@ -1,6 +1,6 @@
 ﻿@model Post
 @inject IBookmark Bookmarks
-@inject IMember MemberService
+
 @{
     bool isadmin = User.IsInRole("Administrator");
     bool ismoderator = User.IsInRole("Moderator");

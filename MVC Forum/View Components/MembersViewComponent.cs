@@ -37,6 +37,14 @@ namespace MVCForum.View_Components
 
                 return await Task.FromResult((IViewComponentResult)View(template,categories.ToList()));
             }
+            else if (template == "CategoryForumJumpTo")
+            {
+                var key = "CategoryForumJumpTo_" + User.Identity?.Name;
+                var categories = 
+                CacheProvider.GetOrCreate(key, () => _catService.FetchCategoryForumList(User), TimeSpan.FromMinutes(10));
+
+                return await Task.FromResult((IViewComponentResult)View(template,categories.ToList()));
+            }
             var recentMembers = _memberService.GetRecent(max!.Value).ToList();
             if(template != null) {
                 return await Task.FromResult((IViewComponentResult)View(template,recentMembers));

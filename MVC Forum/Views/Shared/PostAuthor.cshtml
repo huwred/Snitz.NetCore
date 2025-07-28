@@ -12,7 +12,7 @@
     <div>@Html.MemberRankTitle(Model, ranking, Localizer,"span")</div>
     <a href="~/Account/Detail/@Model.Name"><snitz-avatar src="~/Content/Avatar/@Model.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle" member="@Model.Name"/></a>
     <div><span class="post-count">@Localizer["lblPosts"]:</span> @Model.Posts</div>
-    <div><member-rank member="@Model" user="@User" ranking="@ranking"></member-rank></div>
+    <div><member-rank member="@Model" user="@User" ranking="@ranking" size="fs-5"></member-rank></div>
     <div class="d-none d-lg-inline-flex">
         <ul class="list-group list-group-horizontal list-unstyled mb-0">
             <li snitz-if="@showEmail" class="p-1">

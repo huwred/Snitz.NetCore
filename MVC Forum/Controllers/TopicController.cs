@@ -317,7 +317,7 @@ namespace MVCForum.Controllers
                 Title = post.Subject,
                 Author = post.Member!,
                 AuthorId = post.Member!.Id,
-                ShowSig = post.Sig == 1,
+                ShowSig = post.Sig == 1 && !string.IsNullOrWhiteSpace(post.Member?.Signature),
                 Views = post.ViewCount,
                 Status = post.Status,
                 IsLocked = post.Status == 0 || post.Forum?.Status == 0,
@@ -379,7 +379,10 @@ namespace MVCForum.Controllers
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Create", "Topic", "New Post") { Parent = forumPage };
             ViewData["BreadcrumbNode"] = topicPage;
-
+            if (forum.Type == (int)ForumType.BugReports)
+            {
+                return View("Bug/Create", model);
+            }
             return View(model);
         }
         [Authorize]
@@ -1053,7 +1056,7 @@ namespace MVCForum.Controllers
                     Title = topic.Subject,
                     Author = topic.Member!,
                     AuthorId = topic.Member!.Id,
-                    ShowSig = topic.Sig == 1,
+                    ShowSig = topic.Sig == 1 && !string.IsNullOrWhiteSpace(topic.Member?.Signature),
                     Views = topic.ViewCount,
                     Status = topic.Status,
                     IsLocked = topic.Status == 0 || topic.Forum?.Status == 0,
@@ -1100,7 +1103,7 @@ namespace MVCForum.Controllers
                     Title = topic.Title,
                     Author = topic.Member!,
                     AuthorId = topic.Member!.Id,
-                    ShowSig = topic.Sig == 1,
+                    ShowSig = topic.Sig == 1 && !string.IsNullOrWhiteSpace(topic.Member?.Signature),
                     Views = topic.ViewCount,
                     IsLocked = topic.Status == 0 || topic.Forum?.Status == 0,
                     IsSticky = topic.IsSticky == 1,
@@ -1637,7 +1640,7 @@ namespace MVCForum.Controllers
                 AuthorRole = reply.Member.Level,
                 Edited = reply.LastEdited?.FromForumDateStr(),
                 Status = reply.Status,
-                ShowSig = reply.Sig == 1,
+                ShowSig = reply.Sig == 1 && !string.IsNullOrWhiteSpace(reply.Member?.Signature),
                 EditedBy = reply.LastEditby == null ? "" : _memberService.GetMemberName(reply.LastEditby.Value)
             });
         }
@@ -1656,7 +1659,7 @@ namespace MVCForum.Controllers
                 AuthorPosts = reply.Member.Posts,
                 AuthorRole = reply.Member.Level,
                 Edited = reply.LastEdited?.FromForumDateStr(),
-                ShowSig = reply.Sig == 1,
+                ShowSig = reply.Sig == 1 && !string.IsNullOrWhiteSpace(reply.Member.Signature),
                 EditedBy = reply.LastEditby == null ? "" : _memberService.GetMemberName(reply.LastEditby.Value)
             });
         }

@@ -1,0 +1,392 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.FileProviders
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Service
+@inject ISnitz SnitzService
+@inject IFileProvider fileProvider
+
+@{
+    DateTimeOffset lastModifiedDate = fileProvider.GetFileInfo(@"Views\Home\Privacy.cshtml").LastModified;
+    var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var partialname = "_PrivacyPolicy-" + lang;
+    var ranking = MemberService.GetRankings();
+    var admins = MemberService.GetUsersInRoleAsync("Administrator").Result;
+    var moderators = MemberService.GetUsersInRoleAsync("Moderator").Result;
+    var stats = SnitzService.Totals();
+}
+@section Styles{
+    <style>
+        .privacy-policy  p {
+            margin-left: 4rem;
+        }
+
+        .about-page .body-page {
+            max-width: unset;
+        }
+
+        .about__header {
+            max-width: 1100px;
+        }
+        .wrap .contents {
+            position: relative;
+        }
+
+        .body-page li {
+            margin-bottom: 8px;
+        }
+        .nav-stacked {
+            margin-left: 0;
+            list-style: none;
+        }
+        .clearfix::before, .container::before, .clearfix::after, .container::after {
+            display: table;
+            content: " ";
+        }
+        .about__main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2em;
+            max-width: 1100px;
+        }
+        .nav-tabs{border:0;}
+        .about__left-side {
+            flex: 1 1 650px;
+        }
+
+        .about__right-side {
+            flex: 1 2 200px;
+        }
+        .about__stats {
+            display: flex;
+            border-top: 1px solid lightgray;
+            border-bottom: 1px solid lightgray;
+            padding: 1em 1em;
+            margin-bottom: 1em;
+        }
+
+        .about__admins, .about__moderators {
+            margin-top: 3em;
+        }
+        .about__banner {
+            margin-bottom: 1em;
+            width: 100%;
+            height: auto;
+            position: relative;
+            padding-top: 5%;
+        }
+        .about__banner-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+/*             width: 100%;
+            height: 100%; */
+            object-fit: cover;
+        }
+
+        .about__stats-item {
+            flex: 1 0 fit-content;
+        }
+
+        .about-page-users-list {
+            display: grid;
+            gap: 1em;
+            grid-template-columns: repeat(auto-fit, minmax(14em, 1fr));
+        }
+
+        .user-info {
+            display: flex;
+            gap: 1em;
+            margin-bottom: .75rem;
+        }
+
+        .about__activities-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5em;
+        }
+
+        .about__activities-item-icon {
+            margin-right: 1em;
+        }
+
+        .about__activities-item-type span{
+            display:block;
+        }
+
+        .nav-tabs .nav-item{
+            border: 0;
+        }
+        .nav-tabs .nav-item .nav-link.active {
+            background-color: transparent;
+            color: #000;
+            border:0;
+            border-bottom:2px solid black;
+        }
+    </style>
+}
+
+<div class="container my-5">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab" aria-controls="about" aria-selected="true">About</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="privacy-tab" data-bs-toggle="tab" data-bs-target="#privacy" type="button" role="tab" aria-controls="privacy" aria-selected="false">Privacy</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cookie-tab" data-bs-toggle="tab" data-bs-target="#cookie" type="button" role="tab" aria-controls="cookie" aria-selected="false">Cookies</button>
+        </li>    
+        </ul>
+
+    <div class="tab-content mt-3" id="myTabContent">
+        <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
+            <section>
+                <div class="container">
+                    <div class="contents clearfix body-page">
+
+                        <section class="about__header">
+                            <div class="about__banner">
+                                <img class="about__banner-img" src="~/images/logo.png">
+                            </div>
+                            <h3>@Html.Raw(SnitzConfig.ForumTitle)</h3>
+                            <p class="short-description"></p>
+                        </section>
+                        <div class="about__main-content">
+                            <div class="about__left-side">
+
+                                <div class="about__stats">
+                                    <span class="about__stats-item members">
+                                        <i class="fa fa-users"></i>
+                                        <span>851 Members</span>
+                                    </span>
+                                    <span class="about__stats-item admins">
+                                        <i class="fa fa-shield"></i>
+                                        <span>@admins.Count Admins</span>
+                                    </span>
+                                    <span class="about__stats-item moderators">
+                                        <i class="fa fa-shield"></i>
+                                        <span>@moderators.Count Moderators</span>
+                                    </span>
+                                    <span class="about__stats-item site-creation-date">
+                                        <i class="fa fa-calendar"></i>
+                                        <span>Created 6 months ago</span>
+                                    </span>
+                                </div>
+
+                                <h4>About</h4>
+                                <div>
+                                    <p>The Snitz community forum is an online platform where developers collaborate, share knowledge, and seek solutions related to Snitz Forums.</p>
+                                    <p>
+                                        Snitz™ Forums 2000 is a web-based forum software developed by a group of independent programmers. It was designed as a solution for creating and managing online discussion boards or forums. It gained popularity during the early 2000s and was widely used by various online communities.
+                                </p>
+                                </div>
+
+                                <section class="about__admins">
+                                    <h5>Our Admins</h5>
+                                    <div class="about-page-users-list">
+                                        @foreach (var member in admins)
+                                        {
+                                            <div data-username="@member.Name" class="user-info small">
+                                                <div class="user-image">
+                                                    <div class="user-image-inner">
+                                                        <a href="/Account/Detail/@member.Name" data-user-card="@member.Name" aria-hidden="">
+                                                            <snitz-avatar member-id="@member.Id" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle"></snitz-avatar>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="user-detail">
+                                                    <div class="name-line">
+                                                        <a href="/Account/Detail/@member.Name" data-user-card="@member.Name" aria-label="@member.Name's profile">
+                                                            <span class="username">
+                                                                @member.Firstname @member.Lastname
+                                                            </span>
+                                                            <span class="name">
+                                                                @member.Name
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                    <div class="title">@member.Title<member-rank member="@member" user="@User" ranking="@ranking" size="fs-6"></member-rank></div>
+                                                </div>
+                                            </div>
+
+                                        }
+
+
+                                    </div>
+                                    <!---->
+                                </section>
+                                <!---->
+
+                                <section class="about__moderators">
+                                    <h5>Our Moderators</h5>
+
+                                    <div class="about-page-users-list">
+                                        @foreach (var member in moderators)
+                                        {
+                                            var mTitle = member.Title;
+                                            var rankInfoHelper = new RankInfoHelper(member, ref mTitle, member.Posts, ranking);
+
+                                            <div data-username="@member.Name" class="user-info small">
+                                                <div class="user-image">
+                                                    <div class="user-image-inner">
+                                                        <a href="/Account/Detail/@member.Name" data-user-card="@member.Name" aria-hidden="">
+                                                            <snitz-avatar member-id="@member.Id" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle"></snitz-avatar>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="user-detail">
+                                                    <div class="name-line">
+                                                        <a href="/Account/Detail/@member.Name" data-user-card="@member.Name" aria-label="@member.Name's profile">
+                                                            <span class="username">
+                                                                @member.Firstname @member.Lastname
+                                                            </span>
+                                                            <span class="name">
+                                                                @member.Name
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                    <div class="title">@mTitle<member-rank member="@member" user="@User" ranking="@ranking" size="fs-6"></member-rank></div>
+                                                </div>
+                                            </div>
+
+                                        }
+                                    </div>
+
+                                </section>
+                                <!---->
+                                <!---->
+                            </div>
+
+                            <div class="about__right-side">
+                                <h3>Contact us</h3>
+                                <p class="about__contact-info">In the event of a critical issue or urgent matter affecting this site, please contact <a href="mailto:conduct@umbraco.com">conduct@umbraco.com</a>.</p>
+                                <p>If you come across any inappropriate content, don't hesitate to start a conversation with our moderators and admins. Remember to log in before reaching out.</p>
+                                <h4>Site activity</h4>
+                                <div class="about__activities">
+                                    <div class="about__activities-item topics">
+                                        <span class="about__activities-item-icon"><i class="fa fa-comments"><use href="#scroll"></use></i></span>
+                                        <span class="about__activities-item-type">
+                                            <span class="about__activities-item-count">@SnitzService.ActiveSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) topics</span>
+                                            <span class="about__activities-item-period">in the last 7 days</span>
+                                        </span>
+                                    </div>
+                                    <div class="about__activities-item posts">
+                                        <span class="about__activities-item-icon"><i class="fa fa-pencil"><use href="#pencil"></use></i></span>
+                                        <span class="about__activities-item-type">
+                                            <span class="about__activities-item-count">@SnitzService.ActiveSince(DateTime.UtcNow.ToForumDateStr(true) + "000001") posts</span>
+                                            <span class="about__activities-item-period">today</span>
+                                        </span>
+                                    </div>
+                                    <div class="about__activities-item active-users">
+                                        <span class="about__activities-item-icon"><i class="fa fa-user"><use href="#user-group"></use></i></span>
+                                        <span class="about__activities-item-type">
+                                            <span class="about__activities-item-count">@SnitzService.MembersSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) active users</span>
+                                            <span class="about__activities-item-period">in the last 7 days</span>
+                                        </span>
+                                    </div>
+
+                                    <div class="about__activities-item sign-ups">
+                                        <span class="about__activities-item-icon"><i class="fa fa-user-plus"><use href="#user-plus"></use></i></span>
+                                        <span class="about__activities-item-type">
+                                            <span class="about__activities-item-count">@SnitzService.SignupsSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) sign-ups</span>
+                                            <span class="about__activities-item-period">in the last 7 days</span>
+                                        </span>
+                                    </div>
+                                    <div class="about__activities-item likes">
+                                        <span class="about__activities-item-icon"><i class="fa fa-heart"><use href="#heart"></use></i></span>
+                                        <span class="about__activities-item-type">
+                                            <span class="about__activities-item-count">@(stats.PostCount + stats.ArchivedPostCount) posts</span>
+                                            <span class="about__activities-item-period">all time</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!---->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="tab-pane fade" id="privacy" role="tabpanel" aria-labelledby="privacy-tab">
+            <partial name="@partialname" model="@lastModifiedDate.DateTime" />
+        </div>
+        <div class="tab-pane fade" id="cookie" role="tabpanel" aria-labelledby="cookie-tab">
+            <partial name="_CookiePolicy-@lang" />
+        </div>    
+        </div>
+</div>
+
+<div id="memberModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-bg-dark">
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline-light">X</a>
+                <h4 class="bg-dark text-bg-dark" id="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <div id="member-modal"></div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="btnOk" class="btn btn-danger">@Localizer["btnOk"]</a>
+                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">@Localizer["btnCancel"]</a>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        window.addEventListener
+        (
+            'popstate',
+            function( event )
+            {
+                tab_change();
+            }
+        );
+        tab_change();
+        function tab_change(){           
+            var anchorHash = window.location.href.toString();
+            if( anchorHash.lastIndexOf('#') != -1 ) {
+                anchorHash = anchorHash.substr(anchorHash.lastIndexOf('#'));
+                var activeTab = anchorHash.replace("#","");
+                $("#myTab .nav-link.active").removeClass("active");
+                $("#myTabContent .tab-pane.active").removeClass("active").removeClass("show");
+                $("#myTab #" + activeTab+ "-tab").addClass("active");
+                $("#myTabContent #" + activeTab ).addClass("active").addClass("show");
+                $('html, body').animate({scrollTop: '0px'}, 300);
+            }
+        }
+        $(document).on("click", ".email-link", function(e) {
+            e.preventDefault();
+            var memberid = $(this).data("id");
+            var href = $(this).data("url");
+            $('#modal-title').html('Send Email');
+            $('#member-modal').load(href + "/" + memberid, function() {});
+            $('#memberModal #btnOk').hide();
+
+            $(document).on("click",
+                "#send-email",
+                function(e) {
+                    e.preventDefault();
+                    $(this).prop('disabled', true);
+                    var post_url = $('#sendemail-form').attr("action");
+                    var form_data = $('#sendemail-form').serialize();
+                    $.ajax({
+                        url: post_url,
+                        type: "POST",
+                        data: form_data
+                    }).done(function(response) {
+                        if (response.result) {
+                            $('#memberModal').modal('hide');
+                        } else {
+                            //Dont close the modal, display the error
+                            $('#member-modal').html(response);
+                        }
+                    });
+                });
+            $('#memberModal').data('id', memberid).modal('show');
+        });
+    </script>
+}

@@ -232,6 +232,7 @@
                                     DefaultDays = (int)Model.Forum.DefaultView
                                 })" />
                 <!--pagination ends-->
+                @await Component.InvokeAsync("Members", new { template = "CategoryForumJumpTo"})
                 <partial name="IconInfo" />
             </div>
 
@@ -240,14 +241,15 @@
 
     </div>
 }
+
 @{
     var confModel = new ConfirmDialogViewModel()
     {
         Title = Localizer["popDelForumTitle"].Value, //"Delete Forum",
         Message = Localizer["popDelForumMessage",Model.Forum!.Title!].Value /* $@"<p>You are about to delete the Forum {Model.Forum!.Title}</p>        <p>Do you wish to proceed?</p>" */
     };
+    <partial name="ConfirmDialog" model="@confModel" />
 }
-<partial name="ConfirmDialog" model="@confModel" />
 <input type="text" style="display: none;" id="req-auth" value="@ViewBag.RequireAuth.ToString()" />
 <input type="text" style="display: none;" id="req-forumid" value="@Model.Forum.Id" />
 <partial name="PasswordDlg" model='new ConfirmDialogViewModel(){Title=Localizer["popPasswordRqdTitle"].Value,Message = Localizer["popPasswordRqdMessage"].Value}' />
@@ -255,41 +257,11 @@
     <script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
 <script src="~/js/star-rating.min.js"></script>
 <script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
-<script type="text/javascript" src="~/js/ConfirmDialog.js" crossorigin="anonymous"></script>
+<renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
 <script type="text/javascript" src="~/js/postcontroller.min.js" asp-append-version="true"></script>
 <script type="text/javascript">
     $(window).on("load",
         function(e) {
-            $("#passwordDlg").on('hide.bs.modal',
-                function() {
-                    window.location.href = '/Category/Index';
-                });
-            $('#passwordDlg').on('click',
-                '#btnPassYes',
-                function(e) {
-                    $.ajax({
-                        type: "POST",
-                        url: '/Forum/PasswordCheck',
-                        data: { pwd: $('#forum-pass').val(), forumid: $('#req-forumid').val(), topicid: '0' },
-                        success: function(result) {
-                            if (result) {
-                                $("#passwordDlg").off('hide.bs.modal');
-                                $('#passwordDlg').modal('hide');
-                                location.reload(true);
-                                return false;
-                            } else {
-                                window.location.href = '/Category/Index';
-                            }
-                        },
-                        error: function(error) {
-                            window.location.href = '/Category/Index';
-                            return false;
-                        }
-                    });
-                });
-            if ($('#req-auth').val() === 'True') {
-                $('#passwordDlg').modal('show');
-            }
             $('.rb-rating').rating({
                 'showCaption': false,
                 'displayOnly':true
@@ -326,6 +298,7 @@
     code = document.getElementsByTagName('code');
     Array.from(code).forEach(el => { Prism.highlightElement(el) });
 </script>
+<renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
 <renderstoredcontent asp-key="topic-post-controls"></renderstoredcontent>
 
 }

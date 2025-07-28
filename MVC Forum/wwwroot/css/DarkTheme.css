@@ -383,6 +383,21 @@ footer {
     .dropdown-menu a:hover {
         color: #000;
     }
+.jumpto.dropdown-menu {
+    /*background-color: whitesmoke !important;*/
+    color: white;
+    width: auto;
+    padding: .5rem;
+}
+
+    .jumpto.dropdown-menu a, .jumpto.dropdown-menu a:visited {
+        color: white;
+    }
+
+.jumpto a.dropdown-item, .jumpto a.dropdown-item:visited {
+    color: white;
+}
+
 .editor-buttons .dropdown-menu a, .editor-buttons .dropdown-menu a:visited {
     color: #000;
 }
@@ -676,3 +691,27 @@ a.latestpost-title {
 }
 
 
+.password-strength-indicator.very-weak {
+    background: #cf0000;
+    border-color: #a60000;
+}
+
+.password-strength-indicator.weak {
+    background: #f6891f;
+    border-color: #c56e19;
+}
+
+.password-strength-indicator.mediocre {
+    background: #eeee00;
+    border-color: #d6d600;
+}
+
+.password-strength-indicator.strong {
+    background: #99ff33;
+    border-color: #7acc29;
+}
+
+.password-strength-indicator.very-strong {
+    background: #22cf00;
+    border-color: #1B9900;
+}

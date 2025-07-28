@@ -113,7 +113,7 @@
                         <td snitz-if="!showlink">@member.Member.Name</td>
                         <td snitz-if="showlink"><a href="~/Account/Detail/@Flurl.Url.Encode(member.Member.Name)" title="@Localizer["tipViewProfile"]">@member.Member.Name</a></td>
                         <td>@member.Title<br />
-                                <member-rank member="@member.Member" user="@User" ranking="@ranking"></member-rank>
+                                <member-rank member="@member.Member" user="@User" ranking="@ranking" size="fs-5"></member-rank>
                         </td>
                         <td>@member.Member.Posts</td>
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>
@@ -169,6 +169,7 @@
 
 @section Scripts
     {
+        <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
         <script type="text/javascript">
 
             $(document).on("change", "input[type=radio][name=pagesize]", function() {

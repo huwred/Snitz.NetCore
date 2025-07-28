@@ -14,6 +14,7 @@ namespace MVCForum.Extensions
 {
     public static class Extensions
     {
+
         public static void RegisterPlugins(this IServiceCollection serviceCollection,ConfigurationManager configuration)
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.StartsWith("Snitz.")).ToArray();

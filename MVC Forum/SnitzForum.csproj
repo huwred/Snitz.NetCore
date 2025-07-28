@@ -165,7 +165,6 @@
     <_ContentIncludedByDefault Remove="bundleconfig.json" />
     <_ContentIncludedByDefault Remove="Views\Account\ChangeUsername.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Account\EmailMember.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Home\CookiePolicy.cshtml" />
     <_ContentIncludedByDefault Remove="Views\PrivateMessage\Search.cshtml" />
     <_ContentIncludedByDefault Remove="Views\PrivateMessage\SearchResult.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
@@ -175,7 +174,6 @@
     <_ContentIncludedByDefault Remove="Views\Shared\_BookmarkLink.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_PageNotFound.cshtml" />
     <_ContentIncludedByDefault Remove="wwwroot\css\LightTheme.min.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\css\SnitzTheme.min.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -319,8 +317,8 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.3" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="Snitz.Events" Version="1.0.1-rc34" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc11" />
+    <PackageReference Include="Snitz.Events" Version="1.0.1-rc40" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc14" />
     <PackageReference Include="Snitz.PostThanks" Version="1.0.2" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
@@ -389,9 +387,6 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Account\ChangeUsername.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Home\CookiePolicy.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\Components\Polls\Config.cshtml" />

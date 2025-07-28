@@ -95,18 +95,21 @@
             {
                 <div class="center"><h4>@Localizer["lblOldPosts"]</h4></div>
             }
+     
+            @await Component.InvokeAsync("Members", new { template = "CategoryForumJumpTo"})
             <partial name="IconInfo" />
         </div>
         <div class="d-none d-xxl-block col-3">
             <partial name="QuickSearch" />
+            @await Component.InvokeAsync("Members", new{max=10})
             @if (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALPUBLIC") == 1)
             {
                 @await Component.InvokeAsync("Events", new { template = "UpcomingEvents" })
             }
-            @await Component.InvokeAsync("Members", new { template = "CategoryForumList" })
-            @await Component.InvokeAsync("Members", new{max=10})
             <partial name="FeaturedPoll" />
+            @await Component.InvokeAsync("Members", new { template = "CategoryForumList" })
         </div>
+
     </div>
 </div>
 
@@ -116,9 +119,10 @@
         Title = Localizer["popDelTopicTitle"].Value, // "Delete Forum",
         Message = Localizer["popDelTopicMessage"].Value /* $@"<p>You are about to delete the Topic.</p>       <p>Do you wish to proceed?</p>" */
     };
+    <partial name="ConfirmDialog" model="@confModel" />
 }
-<partial name="ConfirmDialog" model="@confModel" />
 @section Scripts{
+    <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
 <script type="text/javascript" src="~/js/postcontroller.min.js"></script>
 <script src="~/js/star-rating.min.js"></script>
 <script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
