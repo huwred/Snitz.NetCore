@@ -17,15 +17,14 @@ namespace BbCodeFormatter.Formatters
       /// </summary>
       public EmoticonFormatter(ISnitzConfig config)
       {
-          //string urlpath = config.ForumUrl(); // HttpContext.Current.Request.ApplicationPath == "/" ? Config.ForumUrl : HttpContext.Current.Request.ApplicationPath;
           var urlpath = Url.Combine(config.ForumUrl, "/images/emoticon/");
          _formatters = new List<IHtmlFormatter>();
-         //string appdata = Path.Combine(httpContextAccessor.HttpContext!.Request.PathBase, @"App_Data\emoticons.xml");
          XElement emoticons = XElement.Load(@"App_Data\emoticons.xml");
 
-          IEnumerable<XElement> childList =
-                from el in emoticons.Elements()
-                select el;
+          List<XElement> childList =
+                (from el in emoticons.Elements()
+                select el).ToList();
+
           foreach (XElement el in childList)
           {
               string emoticon = el.Attribute("code")!.Value;
