@@ -273,12 +273,8 @@ postEvent = function(event, arr) {
             }
 
         },
-        error: function(jqXHR, textStatus, errorThrown) {
-            BootstrapDialog.alert(
-            {
-                title: "Event Error ",
-                message: jqXHR.responseText
-            });
+        error: function (jqXHR, textStatus, errorThrown) {
+            appendAlert(jqXHR.responseText, 'warning');
             location.href = arr[1];
             return false;
         }
@@ -295,22 +291,14 @@ setForumEventsAuth = function(event) {
         dataType: "json",
         success: function(data) {
             if (data.success) {
-                BootstrapDialog.alert(
-                {
-                    title: "Event Info ",
-                    message: data.responseText
-                });
+                appendAlert(data.responseText, 'info');
                 location.reload();
                 return false;
             }
 
         },
-        error: function(result) {
-            BootstrapDialog.alert(
-            {
-                title: "Event Error ",
-                message: result
-            });
+        error: function (result) {
+            appendAlert(result, 'danger');
         }
     });
 };

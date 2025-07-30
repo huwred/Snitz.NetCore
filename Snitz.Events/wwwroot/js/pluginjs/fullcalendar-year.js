@@ -11639,7 +11639,7 @@ fcViews.agendaDay = {
                         }
                         var userlink = e.title;
                         if (e.className == 'event-birthday') {
-                            userlink = '<a href="' + '/Account/UserProfile/' + e.title.trim() + '">' + e.title + '</a>';
+							userlink = '<a href="' + '/Account/Detail/' + e.title.trim() + '" aria-label="View members profile" class="profile-popup">' + e.title + '</a>';
                         }
 
                         var segEl = $('\
