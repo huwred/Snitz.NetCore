@@ -35,14 +35,14 @@ namespace SnitzCore.BackOffice.TagHelpers
             
             if (Value != null && Value.Contains("."))
             {
-                var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, "Content\\rankimages\\"), "*.gif");
+                var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, "images\\rankimages\\"), "*.gif");
 
                 foreach (var file in files)
                 {
                 
                     var imagefile = Path.GetFileName(file);
                     string selected = Value != null && imagefile.Contains(Value) ? "selected" : "";
-                    output.Content.AppendHtml($@"<img data-id=""rankImage_{Key}"" data-val=""{imagefile}"" src=""{_config.RootFolder}/Content/rankimages/{imagefile}"" title=""{imagefile}"" class=""rank {selected} rank-image rankImage_{Key}"" />");
+                    output.Content.AppendHtml($@"<img data-id=""rankImage_{Key}"" data-val=""{imagefile}"" src=""{_config.RootFolder}/images/rankimages/{imagefile}"" title=""{imagefile}"" class=""rank {selected} rank-image rankImage_{Key}"" />");
 
                 }
             }
