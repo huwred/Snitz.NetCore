@@ -9,6 +9,10 @@ namespace SnitzCore.Service.Extensions
         {
             return date.ToString("MMM dd, yyyy HH:mm", CultureInfo.CurrentCulture);
         }
+        public static string ToCustomDisplay(this DateTime date, string format)
+        {
+            return date.ToString(format, CultureInfo.CurrentCulture);
+        }
         public static string ToForumDateTimeDisplay(this DateTime date)
         {
             return date.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture);

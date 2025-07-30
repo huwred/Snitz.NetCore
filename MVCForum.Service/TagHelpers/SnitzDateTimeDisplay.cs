@@ -36,7 +36,14 @@ namespace SnitzCore.Service.TagHelpers
             { output.AddClass("timeago", HtmlEncoder.Default); }
             output.Attributes.Add("datetime",SnitzDate?.ToTimeagoDate());
             output.Attributes.Add("aria-label", $"{SnitzDate?.ToLocalTime()}");
-            output.PreContent.SetHtmlContent(SnitzDate?.ToLocalTime().ToForumDisplay());
+            if (!string.IsNullOrWhiteSpace(Format))
+            {
+                output.PreContent.SetHtmlContent(SnitzDate?.ToLocalTime().ToCustomDisplay(Format));
+            }
+            else
+            {
+                output.PreContent.SetHtmlContent(SnitzDate?.ToLocalTime().ToForumDisplay());
+            }
 
         }
     }
