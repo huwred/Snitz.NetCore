@@ -27,7 +27,7 @@
                     if (data) {
                         $('#poll-result').html(data);
                     } else {
-                        alert(data);
+                        appendAlert(data, 'error');
                     }
                 });
             });

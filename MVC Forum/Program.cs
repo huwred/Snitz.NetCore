@@ -223,7 +223,8 @@ app.MigrateDatabase();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+    //app.UseDeveloperExceptionPage();
+    app.UseExceptionHandler();
 }
 else
 {

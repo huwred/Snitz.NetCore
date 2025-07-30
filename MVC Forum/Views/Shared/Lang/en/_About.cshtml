@@ -1,0 +1,165 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.FileProviders
+@using SnitzCore.Data.Extensions
+@using SnitzCore.Service
+@inject ISnitz SnitzService
+
+@{
+    var ranking = MemberService.GetRankings();
+    var admins = MemberService.GetUsersInRoleAsync("Administrator").Result;
+    var moderators = MemberService.GetUsersInRoleAsync("Moderator").Result;
+    var stats = SnitzService.Totals();
+}
+
+<section>
+    <div class="container">
+        <div class="contents clearfix body-page">
+            <section class="about__header">
+                <div class="about__banner">
+                    <img class="about__banner-img" src="~/images/logo.png">
+                </div>
+                <h3>@Html.Raw(SnitzConfig.ForumTitle)</h3>
+                <p class="short-description"></p>
+            </section>
+            <div class="about__main-content">
+                <div class="about__left-side">
+                    <div class="about__stats">
+                        <span class="about__stats-item members">
+                            <i class="fa fa-users"></i>
+                            <span>@stats.UserCount Members</span>
+                        </span>
+                        <span class="about__stats-item admins">
+                            <i class="fa fa-shield"></i>
+                            <span>@admins.Count Admins</span>
+                        </span>
+                        <span class="about__stats-item moderators">
+                            <i class="fa fa-shield"></i>
+                            <span>@moderators.Count Moderators</span>
+                        </span>
+                        <span class="about__stats-item site-creation-date">
+                            <i class="fa fa-calendar"></i>
+                            <span>Created 18 months ago</span>
+                        </span>
+                    </div>
+                    <h4>About</h4>
+                    <div>
+                        <p>The Snitz community forum is an online platform where developers collaborate, share knowledge, and seek solutions related to Snitz Forums.</p>
+                        <p>
+                            Snitz™ Forums 2000 is a web-based forum software developed by a group of independent programmers. It was designed as a solution for creating and managing online discussion boards or forums. It gained popularity during the early 2000s and was widely used by various online communities.
+                        </p>
+                    </div>
+                    <section class="about__admins">
+                        <h5>Our Admins</h5>
+                        <div class="about-page-users-list">
+                            @foreach (var member in admins)
+                            {
+                                var mTitle = member.Title;
+                                var rankInfoHelper = new RankInfoHelper(member, ref mTitle, member.Posts, ranking);
+
+                                <div data-username="@member.Name" class="user-info small">
+                                    <div class="user-image profile-popup" data-id="@member.Id">
+                                        <div class="user-image-inner">
+                                            <a href="/Account/Detail/@member.Name" data-user-card="@member.Name" aria-hidden="true">
+                                                <snitz-avatar member-id="@member.Id" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle"></snitz-avatar>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="user-detail">
+                                        <div class="name-line" >
+                                            <a href="/Account/Detail/@member.Name" data-id="@member.Id" data-user-card="@member.Name" aria-label="@member.Name's profile" >
+                                                <span class="username" >
+                                                    @member.Firstname @member.Lastname
+                                                </span>
+                                                <span class="name">
+                                                    @member.Name
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div class="title">@mTitle<member-rank member="@member" user="@User" ranking="@ranking" size="fs-6"></member-rank></div>
+                                    </div>
+                                </div>                               
+                            }
+                        </div>
+                    </section>
+                    <section class="about__moderators">
+                        <h5>Our Moderators</h5>
+                        <div class="about-page-users-list">
+                            @foreach (var member in moderators)
+                            {
+                                var mTitle = member.Title;
+                                var rankInfoHelper = new RankInfoHelper(member, ref mTitle, member.Posts, ranking);
+
+                                <div data-username="@member.Name" class="user-info small">
+                                    <div class="user-image profile-popup" data-id="@member.Id">
+                                        <div class="user-image-inner">
+                                            <a href="/Account/Detail/@member.Name" data-id="@member.Id" data-user-card="@member.Name" aria-hidden="true">
+                                                <snitz-avatar member-id="@member.Id" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle" title="@member.Firstname @member.Lastname"></snitz-avatar>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="user-detail">
+                                        <div class="name-line">
+                                            <a href="/Account/Detail/@member.Name" data-id="@member.Id" data-user-card="@member.Name" aria-label="@member.Name's profile">
+                                                <span class="username">
+                                                    @member.Firstname @member.Lastname
+                                                </span>
+                                                <span class="name">
+                                                    @member.Name
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div class="title">@mTitle<member-rank member="@member" user="@User" ranking="@ranking" size="fs-6"></member-rank></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </section>
+                </div>
+                <div class="about__right-side">
+                    <h3>Contact us</h3>
+                    <p class="about__contact-info">In the event of a critical issue or urgent matter affecting this site, please <a href="#contact" title="contact us">contact us</a></p>
+                    <p>If you come across any inappropriate content, don't hesitate to start a conversation with our moderators and admins. Remember to log in before reaching out.</p>
+                    <h4>Site activity</h4>
+                    <div class="about__activities">
+                        <div class="about__activities-item topics">
+                            <span class="about__activities-item-icon"><i class="fa fa-comments"><use href="#scroll"></use></i></span>
+                            <span class="about__activities-item-type">
+                                <span class="about__activities-item-count">@SnitzService.ActiveSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) topics</span>
+                                <span class="about__activities-item-period">in the last 7 days</span>
+                            </span>
+                        </div>
+                        <div class="about__activities-item posts">
+                            <span class="about__activities-item-icon"><i class="fa fa-pencil"><use href="#pencil"></use></i></span>
+                            <span class="about__activities-item-type">
+                                <span class="about__activities-item-count">@SnitzService.ActiveSince(DateTime.UtcNow.ToForumDateStr(true) + "000001") posts</span>
+                                <span class="about__activities-item-period">today</span>
+                            </span>
+                        </div>
+                        <div class="about__activities-item active-users">
+                            <span class="about__activities-item-icon"><i class="fa fa-user"><use href="#user-group"></use></i></span>
+                            <span class="about__activities-item-type">
+                                <span class="about__activities-item-count">@SnitzService.MembersSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) active users</span>
+                                <span class="about__activities-item-period">in the last 7 days</span>
+                            </span>
+                        </div>
+                        <div class="about__activities-item sign-ups">
+                            <span class="about__activities-item-icon"><i class="fa fa-user-plus"><use href="#user-plus"></use></i></span>
+                            <span class="about__activities-item-type">
+                                <span class="about__activities-item-count">@SnitzService.SignupsSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) sign-ups</span>
+                                <span class="about__activities-item-period">in the last 7 days</span>
+                            </span>
+                        </div>
+                        <div class="about__activities-item likes">
+                            <span class="about__activities-item-icon"><i class="fa fa-heart"><use href="#heart"></use></i></span>
+                            <span class="about__activities-item-type">
+                                <span class="about__activities-item-count">@(stats.PostCount + stats.ArchivedPostCount) posts</span>
+                                <span class="about__activities-item-period">all time</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

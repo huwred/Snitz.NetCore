@@ -89,7 +89,7 @@
                     $("time.timeago").timeago();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert("Error while retrieving data! " + errorThrown);
+                    appendAlert("Error while retrieving data! " + errorThrown, 'error');
                 }
             });
         }

@@ -109,7 +109,7 @@ $(document).on('click','.fa-object-group',function(e) {
             },
             function(data) {
                 if (!data) {
-                    alert(data.error);
+                    appendAlert(data.error, 'error');;
                 } else {
                     location.reload();
                 }

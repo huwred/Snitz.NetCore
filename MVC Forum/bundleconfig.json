@@ -160,5 +160,11 @@
     "inputFiles": [
       "wwwroot/lib/jquery/dist/jquery-ui.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/about.min.css",
+    "inputFiles": [
+      "wwwroot/css/about.css"
+    ]
   }
 ]

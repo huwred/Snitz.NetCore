@@ -192,7 +192,7 @@
                         },
                         function(data, status) {
                             if (!data.result) {
-                                alert(data.error);
+                                appendAlert(data.error, 'error');
                             } else {
                                 location.reload();
                             }
@@ -216,9 +216,9 @@
                         function(data, status){
                     
                             if (!data.result) {
-                                alert(data.error);
+                                appendAlert(data.error, 'error');
                             } else {
-                            location.reload();
+                                location.reload();
                             }
                         });
                 });
@@ -240,7 +240,7 @@
                     function (data, status) {
 
                         if (!data.result) {
-                            alert(data);
+                            appendAlert(data, 'error');
                         } else {
                             location.reload();
                         }
@@ -264,7 +264,7 @@
                         function(data, status){
                     
                             if (!data.result) {
-                                alert(data);
+                                appendAlert(data, 'error');
                             } else {
                             location.reload();
                             }

@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVCForum.ViewModels.Member.EmailMemberViewModel
+
+<div class="card" style="width:70%;margin:auto;">
+    <div class="card-body text-dark">
+        <form id="contact-sendemail-form" method="post" asp-controller="Account" asp-action="EmailMember" class="needs-validation p-2" novalidate>
+            <input asp-for="To" type="hidden" />
+            <div class="mb-3">
+                <label asp-for="Subject">@Localizer["Subject"]</label>
+                <input asp-for="Subject" class="form-control" />
+                <span asp-validation-for="Subject"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Message">@Localizer["Message"]</label>
+                <textarea asp-for="Message" class="form-control email-text" id="email-text" rows="5" required="required"></textarea>
+                <span asp-validation-for="Message"></span>
+                <div class="invalid-feedback text-danger-emphasis">@Localizer["MessageRequired"]</div>
+            </div>
+            <div class="mb-3 p-2">
+                <button type="reset" class="btn btn-warning ">@Localizer["btnReset"]</button>
+                <button id="send-email" type="submit" class="btn btn-success " disabled>@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -3,127 +3,56 @@
 @using Microsoft.Extensions.FileProviders
 @using SnitzCore.Data.Extensions
 @using SnitzCore.Service
-@inject ISnitz SnitzService
-@inject IFileProvider fileProvider
 
 @{
-    DateTimeOffset lastModifiedDate = fileProvider.GetFileInfo(@"Views\Home\Privacy.cshtml").LastModified;
     var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-    var partialname = "_PrivacyPolicy-" + lang;
-    var ranking = MemberService.GetRankings();
-    var admins = MemberService.GetUsersInRoleAsync("Administrator").Result;
-    var moderators = MemberService.GetUsersInRoleAsync("Moderator").Result;
-    var stats = SnitzService.Totals();
 }
 @section Styles{
-    <style>
-        .privacy-policy  p {
-            margin-left: 4rem;
-        }
+<style>
+    .nav-tabs {
+        border: 0;
+    }
+    .nav-tabs .nav-item {
+        border: 0;
+    }
+    .nav-tabs .nav-item .nav-link.active {
+        background-color: transparent;
+        color: #000;
+        border: 0;
+        border-bottom: 2px solid black;
+    }
+    .avatarlarge{
+        max-height:100px;
+        max-width:100px;
+    }
+    .modal-content{
+        background-color: rgba(255, 255, 255, 0.85);
+        width:640px;
+    }
+    .user-info .user-detail .name-line .name, .user-info .user-detail .name-line .username {
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    .user-card .names__primary, .group-card .names__primary {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+        font-size: 2em;
+        font-weight: bold;
+    }
+    .public-user-fields .user-field-name {
+        font-weight: bold;
+        display:block;
+    }
+    .user-info .user-detail .name-line span:first-child {
+    font-weight: bold;
+    display:block;
+    }
+</style>
 
-        .about-page .body-page {
-            max-width: unset;
-        }
-
-        .about__header {
-            max-width: 1100px;
-        }
-        .wrap .contents {
-            position: relative;
-        }
-
-        .body-page li {
-            margin-bottom: 8px;
-        }
-        .nav-stacked {
-            margin-left: 0;
-            list-style: none;
-        }
-        .clearfix::before, .container::before, .clearfix::after, .container::after {
-            display: table;
-            content: " ";
-        }
-        .about__main-content {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2em;
-            max-width: 1100px;
-        }
-        .nav-tabs{border:0;}
-        .about__left-side {
-            flex: 1 1 650px;
-        }
-
-        .about__right-side {
-            flex: 1 2 200px;
-        }
-        .about__stats {
-            display: flex;
-            border-top: 1px solid lightgray;
-            border-bottom: 1px solid lightgray;
-            padding: 1em 1em;
-            margin-bottom: 1em;
-        }
-
-        .about__admins, .about__moderators {
-            margin-top: 3em;
-        }
-        .about__banner {
-            margin-bottom: 1em;
-            width: 100%;
-            height: auto;
-            position: relative;
-            padding-top: 5%;
-        }
-        .about__banner-img {
-            position: absolute;
-            top: 0;
-            left: 0;
-/*             width: 100%;
-            height: 100%; */
-            object-fit: cover;
-        }
-
-        .about__stats-item {
-            flex: 1 0 fit-content;
-        }
-
-        .about-page-users-list {
-            display: grid;
-            gap: 1em;
-            grid-template-columns: repeat(auto-fit, minmax(14em, 1fr));
-        }
-
-        .user-info {
-            display: flex;
-            gap: 1em;
-            margin-bottom: .75rem;
-        }
-
-        .about__activities-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5em;
-        }
-
-        .about__activities-item-icon {
-            margin-right: 1em;
-        }
-
-        .about__activities-item-type span{
-            display:block;
-        }
-
-        .nav-tabs .nav-item{
-            border: 0;
-        }
-        .nav-tabs .nav-item .nav-link.active {
-            background-color: transparent;
-            color: #000;
-            border:0;
-            border-bottom:2px solid black;
-        }
-    </style>
 }
 
 <div class="container my-5">
@@ -136,186 +65,27 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="cookie-tab" data-bs-toggle="tab" data-bs-target="#cookie" type="button" role="tab" aria-controls="cookie" aria-selected="false">Cookies</button>
-        </li>    
-        </ul>
+        </li> 
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact Us</button>
+        </li> 
+    </ul>
 
     <div class="tab-content mt-3" id="myTabContent">
         <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
-            <section>
-                <div class="container">
-                    <div class="contents clearfix body-page">
-
-                        <section class="about__header">
-                            <div class="about__banner">
-                                <img class="about__banner-img" src="~/images/logo.png">
-                            </div>
-                            <h3>@Html.Raw(SnitzConfig.ForumTitle)</h3>
-                            <p class="short-description"></p>
-                        </section>
-                        <div class="about__main-content">
-                            <div class="about__left-side">
-
-                                <div class="about__stats">
-                                    <span class="about__stats-item members">
-                                        <i class="fa fa-users"></i>
-                                        <span>851 Members</span>
-                                    </span>
-                                    <span class="about__stats-item admins">
-                                        <i class="fa fa-shield"></i>
-                                        <span>@admins.Count Admins</span>
-                                    </span>
-                                    <span class="about__stats-item moderators">
-                                        <i class="fa fa-shield"></i>
-                                        <span>@moderators.Count Moderators</span>
-                                    </span>
-                                    <span class="about__stats-item site-creation-date">
-                                        <i class="fa fa-calendar"></i>
-                                        <span>Created 6 months ago</span>
-                                    </span>
-                                </div>
-
-                                <h4>About</h4>
-                                <div>
-                                    <p>The Snitz community forum is an online platform where developers collaborate, share knowledge, and seek solutions related to Snitz Forums.</p>
-                                    <p>
-                                        Snitz™ Forums 2000 is a web-based forum software developed by a group of independent programmers. It was designed as a solution for creating and managing online discussion boards or forums. It gained popularity during the early 2000s and was widely used by various online communities.
-                                </p>
-                                </div>
-
-                                <section class="about__admins">
-                                    <h5>Our Admins</h5>
-                                    <div class="about-page-users-list">
-                                        @foreach (var member in admins)
-                                        {
-                                            <div data-username="@member.Name" class="user-info small">
-                                                <div class="user-image">
-                                                    <div class="user-image-inner">
-                                                        <a href="/Account/Detail/@member.Name" data-user-card="@member.Name" aria-hidden="">
-                                                            <snitz-avatar member-id="@member.Id" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle"></snitz-avatar>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                                <div class="user-detail">
-                                                    <div class="name-line">
-                                                        <a href="/Account/Detail/@member.Name" data-user-card="@member.Name" aria-label="@member.Name's profile">
-                                                            <span class="username">
-                                                                @member.Firstname @member.Lastname
-                                                            </span>
-                                                            <span class="name">
-                                                                @member.Name
-                                                            </span>
-                                                        </a>
-                                                    </div>
-                                                    <div class="title">@member.Title<member-rank member="@member" user="@User" ranking="@ranking" size="fs-6"></member-rank></div>
-                                                </div>
-                                            </div>
-
-                                        }
-
-
-                                    </div>
-                                    <!---->
-                                </section>
-                                <!---->
-
-                                <section class="about__moderators">
-                                    <h5>Our Moderators</h5>
-
-                                    <div class="about-page-users-list">
-                                        @foreach (var member in moderators)
-                                        {
-                                            var mTitle = member.Title;
-                                            var rankInfoHelper = new RankInfoHelper(member, ref mTitle, member.Posts, ranking);
-
-                                            <div data-username="@member.Name" class="user-info small">
-                                                <div class="user-image">
-                                                    <div class="user-image-inner">
-                                                        <a href="/Account/Detail/@member.Name" data-user-card="@member.Name" aria-hidden="">
-                                                            <snitz-avatar member-id="@member.Id" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle"></snitz-avatar>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                                <div class="user-detail">
-                                                    <div class="name-line">
-                                                        <a href="/Account/Detail/@member.Name" data-user-card="@member.Name" aria-label="@member.Name's profile">
-                                                            <span class="username">
-                                                                @member.Firstname @member.Lastname
-                                                            </span>
-                                                            <span class="name">
-                                                                @member.Name
-                                                            </span>
-                                                        </a>
-                                                    </div>
-                                                    <div class="title">@mTitle<member-rank member="@member" user="@User" ranking="@ranking" size="fs-6"></member-rank></div>
-                                                </div>
-                                            </div>
-
-                                        }
-                                    </div>
-
-                                </section>
-                                <!---->
-                                <!---->
-                            </div>
-
-                            <div class="about__right-side">
-                                <h3>Contact us</h3>
-                                <p class="about__contact-info">In the event of a critical issue or urgent matter affecting this site, please contact <a href="mailto:conduct@umbraco.com">conduct@umbraco.com</a>.</p>
-                                <p>If you come across any inappropriate content, don't hesitate to start a conversation with our moderators and admins. Remember to log in before reaching out.</p>
-                                <h4>Site activity</h4>
-                                <div class="about__activities">
-                                    <div class="about__activities-item topics">
-                                        <span class="about__activities-item-icon"><i class="fa fa-comments"><use href="#scroll"></use></i></span>
-                                        <span class="about__activities-item-type">
-                                            <span class="about__activities-item-count">@SnitzService.ActiveSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) topics</span>
-                                            <span class="about__activities-item-period">in the last 7 days</span>
-                                        </span>
-                                    </div>
-                                    <div class="about__activities-item posts">
-                                        <span class="about__activities-item-icon"><i class="fa fa-pencil"><use href="#pencil"></use></i></span>
-                                        <span class="about__activities-item-type">
-                                            <span class="about__activities-item-count">@SnitzService.ActiveSince(DateTime.UtcNow.ToForumDateStr(true) + "000001") posts</span>
-                                            <span class="about__activities-item-period">today</span>
-                                        </span>
-                                    </div>
-                                    <div class="about__activities-item active-users">
-                                        <span class="about__activities-item-icon"><i class="fa fa-user"><use href="#user-group"></use></i></span>
-                                        <span class="about__activities-item-type">
-                                            <span class="about__activities-item-count">@SnitzService.MembersSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) active users</span>
-                                            <span class="about__activities-item-period">in the last 7 days</span>
-                                        </span>
-                                    </div>
-
-                                    <div class="about__activities-item sign-ups">
-                                        <span class="about__activities-item-icon"><i class="fa fa-user-plus"><use href="#user-plus"></use></i></span>
-                                        <span class="about__activities-item-type">
-                                            <span class="about__activities-item-count">@SnitzService.SignupsSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) sign-ups</span>
-                                            <span class="about__activities-item-period">in the last 7 days</span>
-                                        </span>
-                                    </div>
-                                    <div class="about__activities-item likes">
-                                        <span class="about__activities-item-icon"><i class="fa fa-heart"><use href="#heart"></use></i></span>
-                                        <span class="about__activities-item-type">
-                                            <span class="about__activities-item-count">@(stats.PostCount + stats.ArchivedPostCount) posts</span>
-                                            <span class="about__activities-item-period">all time</span>
-                                        </span>
-                                    </div>
-                                </div>
-                                <!---->
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </section>
+            <partial name="Lang/@lang/_About" fallback-name="Lang/en/_About" />
         </div>
         <div class="tab-pane fade" id="privacy" role="tabpanel" aria-labelledby="privacy-tab">
-            <partial name="@partialname" model="@lastModifiedDate.DateTime" />
+            <partial name="Lang/@lang/_PrivacyPolicy" fallback-name="Lang/en/_PrivacyPolicy" />
         </div>
         <div class="tab-pane fade" id="cookie" role="tabpanel" aria-labelledby="cookie-tab">
-            <partial name="_CookiePolicy-@lang" />
-        </div>    
-        </div>
+            <partial name="Lang/@lang/_CookiePolicy" fallback-name="Lang/en/_CookiePolicy" />
+        </div>  
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+            <h1>Under Construction!</h1>
+            <partial name="EmailMember" />
+        </div> 
+    </div>
 </div>
 
 <div id="memberModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -335,6 +105,9 @@
         </div>
     </div>
 </div>
+
+
+
 @section Scripts{
     <script>
         window.addEventListener
@@ -358,6 +131,7 @@
                 $('html, body').animate({scrollTop: '0px'}, 300);
             }
         }
+
         $(document).on("click", ".email-link", function(e) {
             e.preventDefault();
             var memberid = $(this).data("id");
@@ -388,5 +162,7 @@
                 });
             $('#memberModal').data('id', memberid).modal('show');
         });
+
+
     </script>
 }

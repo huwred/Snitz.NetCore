@@ -1,0 +1,71 @@
+﻿@using SnitzCore.Data.Extensions
+@using SnitzCore.Service
+@model Member
+@{
+    var ranking = MemberService.GetRankings();
+    var mTitle = Model.Title;
+    var rankInfoHelper = new RankInfoHelper(Model, ref mTitle, Model.Posts, ranking);
+}
+
+    <div class="card-row first-row">
+        <div class="user-card-avatar" aria-hidden="true">
+            <a href="/Account/Detail/@Model.Name" class="card-huge-avatar" tabindex="-1" aria-label="@Model.Name, view profile">
+                <snitz-avatar member-id="@Model.Id" def-src="~/images/ninja-1027877_960_720.webp" class="avatarlarge rounded-circle"></snitz-avatar>
+            </a>
+        </div>
+        <div class="names">
+            <div class="names__primary staff full-name">
+                <a href="~/Account/Detail/@Model.Name" class="user-profile-link" aria-label="@Model.Name, view profile">
+                    <span class="name-username-wrapper">
+                        @Model.Firstname @Model.Lastname
+                    </span>
+                    <i class="fa fa-shield" aria-hidden="true"></i><span class="sr-only">@Model.Firstname @Model.Lastname is a moderator</span>
+                </a>
+            </div>
+            <div class="names__secondary username">@Model.Name</div>
+            <div class="names__secondary">@mTitle</div>
+        </div>
+    </div>
+    <div class="card-row">
+        <div class="location-and-website">
+            <span class="website-name" snitz-if="@(!string.IsNullOrWhiteSpace(Model.Homepage))">
+                <i class="fa fa-globe" aria-hidden="true"></i>
+                <a href="@Model.Homepage" rel="noopener " target="_blank">Member's Homepage</a>
+            </span>
+            <span class="location" snitz-if="@(!string.IsNullOrWhiteSpace(Model.Country))">
+                    &nbsp;<i class="fa fa-map-marker" aria-hidden="true"></i>
+                    <span snitz-if="@(!string.IsNullOrWhiteSpace(Model.City))">@Model.City,</span><span> @Model.Country</span>
+                  </span>
+            <span class="local-time" title="Local Time">
+                &nbsp;<i class="fa fa-clock-o" aria-hidden="true"></i>
+                <snitz-datetime datetime="@DateTime.UtcNow.ToLocalTime()" format="HH:mm" freindly-time="false"></snitz-datetime>
+            </span>
+        </div>
+    </div>
+    <div class="card-row metadata-row">
+        <div class="metadata">
+            <div class="metadata__last-posted">
+                <span class="desc">@Localizer["ProfileLastPost"]:</span>
+                <snitz-datetime datetime="@Model.Lastpostdate.FromForumDateStr()" ></snitz-datetime>
+            </div>
+            <div class="metadata__user-created">
+                <span class="desc">@Localizer["ProfileDate"]:</span>
+                <snitz-datetime datetime="@Model.Created.FromForumDateStr()" freindly-time="false" format="MMM yyyy"></snitz-datetime>
+            </div>
+            <div class="metadata__time-read">
+                <span class="desc">@Localizer["ProfileLastVisit"]:</span>
+                <snitz-datetime datetime="@Model.Lastactivity.FromForumDateStr()"></snitz-datetime>
+            </div>
+        </div>
+    </div>
+    <div class="card-row" snitz-if="@(!string.IsNullOrWhiteSpace(Model.Bio))">
+        <div class="public-user-fields">
+            <div class="public-user-field public-user-field__pronouns">
+                <span class="user-field-name">@Localizer["ProfileBio"]:</span>
+                <span class="user-field-value">
+                    @Html.Raw(Model.Bio)
+                </span>
+            </div>
+        </div>
+    </div>
+

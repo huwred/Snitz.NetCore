@@ -1,30 +1,29 @@
-﻿        $('.date').datepicker({
-            autoclose: true,
-            format: {
-                /*
-                 * Say our UI should display a week ahead,
-                 * but textbox should store the actual date.
-                 * This is useful if we need UI to select local dates,
-                 * but store in UTC
-                 */
+﻿        //$('.date').datepicker({
+        //    autoclose: true,
+        //    format: {
+        //        /*
+        //         * Say our UI should display a week ahead,
+        //         * but textbox should store the actual date.
+        //         * This is useful if we need UI to select local dates,
+        //         * but store in UTC
+        //         */
                     
-                toDisplay: function (date, format, language) {
-                    var d = new Date(date);
-                    d.setDate(d.getDate());
-                    return d.toLocaleDateString();
-                },
-                toValue: function (date, format, language) {
-                    let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
-                    let lastFirst = date.replace(re, '$1-$2-$3');
-                    var d = new Date(lastFirst);
-                    d.setDate(d.getDate());
-                    return new Date(d);
-                }
-            }
-        });
-        $("#addPostForm").submit(function (e) {
+        //        toDisplay: function (date, format, language) {
+        //            var d = new Date(date);
+        //            d.setDate(d.getDate());
+        //            return d.toLocaleDateString();
+        //        },
+        //        toValue: function (date, format, language) {
+        //            let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
+        //            let lastFirst = date.replace(re, '$1-$2-$3');
+        //            var d = new Date(lastFirst);
+        //            d.setDate(d.getDate());
+        //            return new Date(d);
+        //        }
+        //    }
+        //});
+        $(document).on("submit", "#addPostForm", function (e) {
             e.preventDefault();
-
             tinyMCE.get("msg-text").save();
             var form = $("#addPostForm");
             var formData = new FormData(form[0]);
@@ -135,7 +134,7 @@
 
                     },
                     error: function (data) {
-                        alert("error");
+                        appendAlert(data, 'error');
                         $('#upload-content').html(data);
                     },
                     complete: function (data) {
@@ -152,7 +151,7 @@
                 var filesize = ((this.files[0].size / 1024) / 1024).toFixed(4); // MB
                 var maxsize = SnitzVars.MaxFileSize;
                 if (filesize > maxsize) {
-                    alert("File is too big!");
+                    appendAlert("File is too big!", 'warning');
                     this.value = "";
                 }
 

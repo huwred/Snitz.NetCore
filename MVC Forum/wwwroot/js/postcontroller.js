@@ -33,7 +33,7 @@ $(document).on("click",".reply-del", function() {
             },
             function(data, status){
                 if (!data.result) {
-                    alert(data.error);
+                    appendAlert(data.error, 'error');
                 } else {
                     location.reload(true);
                 }
@@ -58,7 +58,7 @@ $(document).on("click",".post-del", function(e) {
             },
             function(data, status){
             if (!data.result) {
-                alert(data.error);
+                appendAlert(data.error, 'error');
             } else {
                 location.href = data.url;
             }
@@ -88,7 +88,7 @@ $(document).on("click",
                     function(data, status) {
 
                         if (!data.result) {
-                            alert(data.error);
+                            appendAlert(data.error, 'error');
                         } else {
                             location.reload();
                         }
@@ -117,7 +117,7 @@ $(document).on('click',
                 function(data, status){
                     $('#confirmModal').modal('hide');
                     if (!data.result) {
-                        alert(data.error);
+                        appendAlert(data.error, 'error');
                     } else {
 
                         location.reload(true);
@@ -147,7 +147,7 @@ $(document).on('click',
                 function(data, status){
                     $('#confirmModal').modal('hide');
                     if (!data.result) {
-                        alert(data.error);
+                        appendAlert(data.error, 'error');
                     } else {
 
                         location.reload(true);
@@ -179,7 +179,7 @@ $(document).on('click', '.post-lock', function (e) {
             function(data, status){
                 $('#confirmModal').modal('hide');
                 if (!data.result) {
-                    alert(data.error);
+                    appendAlert(data.error, 'error');
                 } else {
 
                     location.reload(true);
@@ -210,7 +210,7 @@ $(document).on('click', '.post-stick', function (e) {
             function(data, status){
                 $('#confirmModal').modal('hide');
                 if (!data.result) {
-                    alert(data.error);
+                    appendAlert(data.error, 'error');
                 } else {
 
                     location.reload(true);
@@ -263,7 +263,7 @@ $(document).on('click', '.reply-answer', function (e) {
             function(data, status){
                 $('#confirmModal').modal('hide');
                 if (!data.result) {
-                    alert(data.error);
+                    appendAlert(data.error, 'error');
                 } else {
 
                     location.reload(true);
@@ -294,7 +294,7 @@ $(document).on('click',
                 function(data, status){
                     $('#confirmModal').modal('hide');
                     if (!data.result) {
-                        alert(data.error);
+                        appendAlert(data.error, 'error');
                     } else {
 
                         location.reload(true);
@@ -316,7 +316,7 @@ $(document).on('click',
                 function(data, status){
                     $('#confirmModal').modal('hide');
                     if (!data.result) {
-                        alert(data.error);
+                        appendAlert(data.error, 'error');
                     } else {
 
                         location.reload(true);
@@ -338,11 +338,7 @@ $( ".thanks-list" )
             e.popover({html: true,content: response}).popover('show');
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                BootstrapDialog.show({
-                    type: BootstrapDialog.TYPE_WARNING,
-                    title: textStatus,
-                    message: jqXHR.responseText
-                });
+                appendAlert(jqXHR.responseText, 'warning');
             }
             });
 

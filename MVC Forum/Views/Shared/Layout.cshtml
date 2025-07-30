@@ -39,6 +39,7 @@
     
     <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/css/site.min.css">
+    <link rel="stylesheet" href="~/css/about.min.css">
     @await Component.InvokeAsync("SnitzThemeCss")
     <link rel="stylesheet" href="~/css/busy.min.css">
     @await RenderSectionAsync("Styles", required: false)
@@ -51,6 +52,7 @@
         <div class="container flex-grow-1">
             <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
             <main role="main" class="pb-3 mt-6">
+            <div id="liveAlertPlaceholder"></div>
            
                 @RenderBody()
             </main>
@@ -58,7 +60,17 @@
 
         <partial name="Footer"/>
     </div>
-
+<div id="user-card" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body user-card">
+                <div class="card-content" id="user-card-content" data-name="popover">
+                    some stuff <b>bold</b>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     <script type="text/javascript" src="~/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="~/js/jquery.min.js"></script>
     <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
@@ -115,6 +127,20 @@
 }
 
     <script type="text/javascript">
+
+        const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+        const appendAlert = (message, type) => {
+          const wrapper = document.createElement('div')
+          wrapper.innerHTML = [
+            `<div class="alert alert-${type} alert-dismissible position-absolute top-50 start-50 translate-middle" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+          ].join('')
+
+          alertPlaceholder.append(wrapper)
+        }
+
     $(document).on('click', '.confirm-restart', function (e) {
         e.preventDefault();
         var href = $(this).attr('href');
@@ -125,7 +151,7 @@
             $.post(href,'',
                 function(data, status){
                     if (!data) {
-                        alert("There was a problem!");
+                        appendAlert("There was a problem!", 'error');
                     } else {
                         $('#confirmRestart .modal-body').html("<p>Application is restarting, please wait ...</p>");
                         $('#btnRestartYes').hide();
@@ -187,9 +213,24 @@ if(SnitzVars.showPageTimer == '1'){
                 );
                 footer.textContent = `Page loaded in ${test} s`;  
             } 
+            
         }
     });  
 }
+        $(document).on("click",".profile-popup",function(e){
+            console.log("avatar clicked");
+            e.preventDefault();
+            var rect = e.target.getBoundingClientRect(); // get some poition, scale,... properties of the item
+            $("#user-card .modal-dialog").css('position', 'absolute');
+            $("#user-card .modal-dialog").css('top', rect.top-100 + "px");
+            $("#user-card .modal-dialog").css('left', rect.left);
+            $('#user-card').modal('show');
+            $('#user-card-content').html('');
+            console.log("avatar load profile @clang" );
+            $('#user-card-content').load(SnitzVars.baseUrl + "/Account/DetailPopup/" + $(this).data("id") + "/?lang=@clang",function(response, status, xhr) {
+                $("time.timeago").timeago();
+            });
+        });
 </script>
 </body>
 </html>

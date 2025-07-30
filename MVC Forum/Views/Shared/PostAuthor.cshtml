@@ -10,7 +10,7 @@
 <div class="authors flex-grow-0 flex-shrink-1">
     <div class="username"><a href="~/Account/Detail/@Model.Name">@Model.Name</a></div>
     <div>@Html.MemberRankTitle(Model, ranking, Localizer,"span")</div>
-    <a href="~/Account/Detail/@Model.Name"><snitz-avatar src="~/Content/Avatar/@Model.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle" member="@Model.Name"/></a>
+    <a href="#" class="profile-popup" data-id="@Model.Id" title="View profile"><snitz-avatar src="~/Content/Avatar/@Model.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle" member="@Model.Name"/></a>
     <div><span class="post-count">@Localizer["lblPosts"]:</span> @Model.Posts</div>
     <div><member-rank member="@Model" user="@User" ranking="@ranking" size="fs-5"></member-rank></div>
     <div class="d-none d-lg-inline-flex">

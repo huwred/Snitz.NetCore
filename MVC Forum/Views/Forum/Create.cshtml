@@ -215,7 +215,7 @@
                 success: function(data)
                 {
                     if (data.error) {
-                        alert(data.error);
+                        appendAlert(data.error, 'error');
                         return false;
                     }
                     if (data.id !== 0) { // append the new item to select box.
@@ -236,7 +236,7 @@
                 data: form.serialize(),
                 success: function (data) {
                     if (data.error) {
-                        alert(data.error);
+                        appendAlert(data.error, 'error');
                         return false;
                     }
                     if (data.id) { //remove the value from select list

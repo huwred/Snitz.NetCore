@@ -147,6 +147,11 @@ namespace MVCForum.Controllers
             return Json(new { result = true, data = id });
             
         }
+        public IActionResult DetailPopup(int id, string lang="")
+        {
+            Member? member = _memberService.GetById(id);
+            return PartialView($"Lang/{lang}/popProfile",member);
+        }
         public async Task<IActionResult> Detail(string? id)
         {
             ForumUser? currUser =  null;
