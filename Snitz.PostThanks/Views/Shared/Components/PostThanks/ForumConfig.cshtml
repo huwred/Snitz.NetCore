@@ -29,11 +29,8 @@
                                 //alert('saved');
                             },
                             error: function (jqXHR, textStatus, errorThrown) {
-                                BootstrapDialog.show({
-                                    type: BootstrapDialog.TYPE_WARNING,
-                                    title: textStatus,
-                                    message: errorThrown
-                                });
+                                appendAlert(errorThrown, 'warning');
+
                             }
                         });
                 });

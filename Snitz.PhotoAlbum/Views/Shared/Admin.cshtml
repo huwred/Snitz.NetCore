@@ -164,12 +164,7 @@
                 //check if albums are allow
                 if ($('[name=MemberAlbums').bootstrapSwitch('state') === false) {
                     $(this).bootstrapSwitch('state', false);
-                    BootstrapDialog.show({
-                        type: BootstrapDialog.TYPE_WARNING,
-                        title: 'Error: ',
-                        message: 'Need to enable albums first',
-                        size: BootstrapDialog.SIZE_SMALL
-                    });
+                        appendAlert('Need to enable albums first', 'warning');
                     return false;
                 }
             }
@@ -179,12 +174,7 @@
                 data: { 'id': key, 'value': JSON.stringify(state) },
                 cache: false,
                 error: function (jqXHR, exception) {
-                    BootstrapDialog.show({
-                        type: BootstrapDialog.TYPE_WARNING,
-                        title: 'Error: ' + jqXHR.status,
-                        message: exception,
-                        size: BootstrapDialog.SIZE_SMALL
-                    });
+                        appendAlert(exception, 'warning');
                 }
             });
             
@@ -203,20 +193,12 @@
                 dataType: "json",
                 data: $('#limitsForm').serialize(),
                 error: function (xhr, textStatus, exceptionThrown) {
-                    debugger;
-                    BootstrapDialog.show({
-                        type: BootstrapDialog.TYPE_WARNING,
-                        title: 'Error: ' + xhr.status,
-                        message: exceptionThrown,
-                        size: BootstrapDialog.SIZE_SMALL
-                    });
+                        appendAlert(exceptionThrown, 'warning');
+
                 },
                 success: function (data) {
-
-                    BootstrapDialog.success(data, function () {
-                        location.reload();
-                    });
-
+                    appendAlert(data, 'success');
+                    location.reload();
                 }
             });
 
