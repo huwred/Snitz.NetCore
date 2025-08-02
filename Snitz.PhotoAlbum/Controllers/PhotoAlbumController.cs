@@ -14,6 +14,8 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Service;
 using Microsoft.Extensions.FileProviders;
 using X.PagedList;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp;
 
 
 namespace Snitz.PhotoAlbum.Controllers
