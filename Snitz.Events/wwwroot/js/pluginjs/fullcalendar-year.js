@@ -11599,10 +11599,10 @@ fcViews.agendaDay = {
 
             var eventsCopy = events.slice().reverse(); //copy and reverse so we can modify while looping
 
-            var tbody = $('<div></div>');
+			var tbody = $('<ul class="my-fc-list"></ul>');
 
             this.el.html('')
-                .append('<ul class="my-fc-list"></ul>').children()
+                .append('<div></div>').children()
                 .append(tbody);
 
             var periodEnd = this.end.clone(); //clone so as to not accidentally modify
@@ -12000,12 +12000,12 @@ fcViews.agendaDay = {
 
             var eventsCopy = events.slice().reverse(); //copy and reverse so we can modify while looping
 
-            var tbody = $('<div></div>');
+			var tbody = $('<ul class="my-fc-list"></ul>');
 
             this.scrollerEl = this.el.addClass('');
 
             this.el.html('')
-                .append('<ul class="my-fc-list"></ul>').children()
+                .append('<div></div>').children()
                 .append(tbody);
 
             var periodEnd = this.end.clone(); //clone so as to not accidentally modify

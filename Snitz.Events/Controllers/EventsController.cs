@@ -205,7 +205,8 @@ public class EventsController : Controller
     [HttpGet]
     public JsonResult GetClubCalendarEvents(string id,string old, int calendar = 0, string start = "", string end = "")
     {
-        return _eventsRepository.GetClubCalendarEvents(id, old, calendar, start, end,_memberService.Current().Name);
+        var currmembername = _memberService.Current()?.Name;
+        return _eventsRepository.GetClubCalendarEvents(id, old, calendar, start, end,currmembername??"");
 
     }
 

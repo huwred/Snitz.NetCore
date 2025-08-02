@@ -1,27 +1,27 @@
-﻿$('.date').datepicker({
-    autoclose: true,
-    format: {
-        /*
-         * Say our UI should display a week ahead,
-         * but textbox should store the actual date.
-         * This is useful if we need UI to select local dates,
-         * but store in UTC
-         */
+﻿//$('.date').datepicker({
+//    autoclose: true,
+//    format: {
+//        /*
+//         * Say our UI should display a week ahead,
+//         * but textbox should store the actual date.
+//         * This is useful if we need UI to select local dates,
+//         * but store in UTC
+//         */
 
-        toDisplay: function (date, format, language) {
-            var d = new Date(date);
-            d.setDate(d.getDate());
-            return d.toLocaleDateString();
-        },
-        toValue: function (date, format, language) {
-            let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
-            let lastFirst = date.replace(re, '$1-$2-$3');
-            var d = new Date(lastFirst);
-            d.setDate(d.getDate());
-            return new Date(d);
-        }
-    }
-});
+//        toDisplay: function (date, format, language) {
+//            var d = new Date(date);
+//            d.setDate(d.getDate());
+//            return d.toLocaleDateString();
+//        },
+//        toValue: function (date, format, language) {
+//            let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
+//            let lastFirst = date.replace(re, '$1-$2-$3');
+//            var d = new Date(lastFirst);
+//            d.setDate(d.getDate());
+//            return new Date(d);
+//        }
+//    }
+//});
 
 if ($('.cal-dates').length >= 1) {
 
