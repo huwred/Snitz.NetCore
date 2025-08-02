@@ -5,7 +5,6 @@
 @using SnitzCore.Service.TagHelpers
 @using Microsoft.AspNetCore.Http
 @using Snitz.Events.Helpers
-@inject SignInManager<ForumUser> SignInManager
 @inject IEnumerable<ISnitzStartupService> pluginservices
 @section MetaData
 {
@@ -159,7 +158,7 @@
                         }
                         @if (User.IsInRole("Administrator"))
                         {
-                            <button asp-controller="Forum" asp-action="Edit" asp-route-id="@Model.Forum!.Id" title="Edit Forum" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-lg-inline"> @Localizer["tipEditForum"]</span></button>
+                            <button asp-controller="Forum" asp-action="Edit" asp-route-id="@Model.Forum!.Id" aria-label="Edit Forum" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-lg-inline"> @Localizer["tipEditForum"]</span></button>
                             <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Forum!.Id" href="@SnitzConfig.RootFolder/Forum/Delete/?id=" title="@Localizer["cnfDeleteForum"].Value"></button-confirm>
                         }
                     </div>

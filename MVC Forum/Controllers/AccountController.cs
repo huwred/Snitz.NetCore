@@ -812,7 +812,28 @@ namespace MVCForum.Controllers
             return PartialView(model);
 
         }
+        public IActionResult ContactUs(EmailMemberViewModel model)
+        {
+            ReturnArgs r = new ReturnArgs();
 
+            if (ModelState.IsValid)
+            {
+                //Send Email here
+                var message = new EmailMessage(new[] { model.To },
+                    model.Subject,
+                    model.Message);
+            
+                _emailSender.SendEmailAsync(message);
+                r.Status = 200; //good status ... proceed normally
+                r.ViewString = _languageResource.GetString("SendEmailSuccess") ;
+                return Json(r);
+
+            }
+
+            r.Status = 400; //bad status ... proceed normally
+            r.ViewString = this.RenderViewAsync("EmailMember", model, true).Result;
+            return Json(r);
+        }
         [HttpGet]
         [Authorize]
         public IActionResult ChangeUsername(int? id)
@@ -1138,5 +1159,14 @@ namespace MVCForum.Controllers
             return freq < 10;
         }
 
+    }
+    public class ReturnArgs
+    {
+        public ReturnArgs()
+        {
+        }
+
+        public int Status { get; set; }
+        public string ViewString { get; set; }
     }
 }

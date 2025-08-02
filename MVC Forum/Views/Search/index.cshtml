@@ -63,7 +63,7 @@
                     <label asp-for="Terms" class="form-label">@Localizer["lblKeywords"]</label>
                     <div class="input-group">
                         <input asp-for="Terms" type="text" class="form-control" placeholder="@Localizer["plhSearchTerm"]" aria-label="@Localizer["plhSearchTerm"]" aria-describedby="button-addon2">
-                        <button class="btn btn-primary" type="button" id="button-addon2" title="@Localizer["tipAdvancedSearch"]" data-bs-toggle="collapse" data-bs-target="#showFilters" aria-expanded="false"><i class="fa fa-sliders"></i></button>
+                        <button class="btn btn-primary" type="button" id="button-addon2" title="@Localizer["tipAdvancedSearch"]" data-bs-toggle="collapse" data-bs-target="#showFilters" aria-expanded="false" data-toggle="tooltip"><i class="fa fa-sliders"></i></button>
                     </div>
 @*                     @if (SnitzConfig.GetIntValue("INTFULLTEXT") == 1)
                     {
@@ -99,7 +99,7 @@
                     <label for="UserName" class="form-label">@Localizer["Search_Member"]</label>
                     <div class="input-group">
                         <span class="input-group-text" id="basic-addon1"><i class="fa fa-address-book-o"></i></span>
-                        <input id="UserName" name="UserName" placeholder="@Localizer["plhUsername"]" type="text" aria-describedby="text1HelpBlock" class="form-control">
+                        <input id="UserName" name="UserName" placeholder="@Localizer["plhUsername"]" type="text" class="form-control">
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -133,7 +133,7 @@
                 </div>
                 </div>
                 <div class="mb-3 p-2">
-                    <button type="button" class="btn btn-danger cancel" onclick="history.go(-1);">@Localizer["btnCancel"]</button>
+                    <button type="button" class="btn btn-danger-ou cancel" onclick="history.go(-1);">@Localizer["btnCancel"]</button>
                     <button type="reset" class="btn btn-warning ">@Localizer["btnReset"]</button>
                     <button type="submit" id="btn-submit" value="Search" class="btn btn-success">@Localizer["btnSearch"]</button>
                 </div>

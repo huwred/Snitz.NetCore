@@ -35,30 +35,28 @@
     <div class="blog-container @moderatedClass">
         <div class="text ellipsis">
             <div class="content-header">
-                <h1><a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" data-title='@BbCodeProcessor.Format(Model.Title, false)'>@BbCodeProcessor.Format(Model.Title, false)</a></h1>
+                <h2><a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" class="topic-link" aria-label='@Localizer["lblView"] Topic, @BbCodeProcessor.Format(Model.Title, false)'>@BbCodeProcessor.Format(Model.Title, false)</a></h2>
                 <div class="author-info">
                     <div class="author-details">
-                        <a href="~/Account/Detail/@Model.AuthorName" title="@Model.AuthorName">
-                            <snitz-avatar src="~/Content/Avatar/@Model.AuthorImageUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle avatarsmall" member="@Model.AuthorName" />
-                        </a>
+                        <snitz-avatar src="~/Content/Avatar/@Model.AuthorImageUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle avatarsmall profile-popup" data-id="@Model.AuthorId" member="@Model.AuthorName" />
                         <div class="info">
                             <h4>@Model.AuthorName</h4>
                             <span class="role">@Model.AuthorTitle</span>
                         </div>
                     </div>
                     <div class="post-meta">
-                        <span class="date"><i class="fa fa-calendar"></i> <snitz-datetime datetime="@Model.Created"></snitz-datetime></span>
-                        <span class="divider">•</span>
-                        <span class="comments"><i class="fa fa-comment-o"></i> @Model.RepliesCount Comments</span>
+                        <span class="date"><i class="fa fa-calendar" aria-hidden="true"></i> <snitz-datetime datetime="@Model.Created"></snitz-datetime></span>
+                        <span class="divider" aria-hidden="true">•</span>
+                        <span class="comments"><i class="fa fa-comment-o" aria-hidden="true"></i> @Model.RepliesCount Comments</span>
                     </div>
                 </div>
                 @if (ViewBag.RatingSum > 0)
                 {
-                    <input id="star-rating-@Model.Id" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
+                    <input disabled id="star-rating-@Model.Id" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs" />
                 }
             </div>
-            <div class="text-concat" style="margin-top:11px; padding-bottom: 6px;">@Html.Raw(BbCodeProcessor.Format(Model.Message))</div>
+            <div class="text-concat p-2 mt-1">@Html.Raw(BbCodeProcessor.Format(Model.Message))</div>
        </div>
-        <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" data-toggle="tooltip" data-title='@Localizer["lblView"] @BbCodeProcessor.Format(Model.Title)'>@Localizer["blogMore"]</a><br />
+        <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" data-toggle="tooltip" title='@Localizer["lblView"] Topic, @BbCodeProcessor.Subject(Model.Title)'>@Localizer["blogMore"] ... </a><br />
     </div>
 </div>

@@ -1,60 +1,55 @@
 ﻿@using System.Globalization
 @model MVCForum.ViewModels.ForumViewModel
 @{
-
     var topicByYear = Model.Topics.GroupBy(t => t.Created.Substring(0, 4));
-    //string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(8);
 }
-<div class="widget-item">
-<h5>@Localizer["lblBlogArchive"]</h5>
-<hr class="title" style="margin: 0px; padding: 1px;">
-<div class="accordion" id="accordianParent">
-
-    @foreach (var year in topicByYear.OrderByDescending(y => y.Key))
-    {
-        var groupKey = year.Key;
-        <div class="accordion-group">
-            <div class="category">
-                <a class="accordion-toggle-small" href="#@groupKey" data-bs-toggle="collapse" data-parent="#accordianParent">
-                    @groupKey
-                </a>
-            </div>
-            <div class="accordion-body collapse p-2" id="@groupKey">
-                <div class="accordion-inner-small">
-                    <div class="accordion" id="@groupKey">
-                        @{
-                            var topicByMonth = year.GroupBy(t => t.Created.Substring(4, 2));
-                            foreach (var month in topicByMonth.OrderByDescending(m => m.Key))
-                            {
-                                var monthKey = month.Key;
-                                string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Convert.ToInt32(monthKey));
-                                <div class="accordion-group">
-                                    <div class="category">
-                                        <a class="accordion-toggle-small forum-link" href="#@monthKey" data-bs-toggle="collapse" data-parent="#@groupKey">
-                                            @monthName
-                                        </a>
-                                    </div>
-                                    <div class="accordion-body collapse p-2" id="@monthKey">
-                                        <div class="accordion-inner-small">
-                                            <ul class="list-unstyled mb-1">
-                                                @foreach (var topic in month.OrderBy(t => t.Created))
-                                                {
-                                                    <li class="list-item">
-                                                        @topic.Created!.Substring(6, 2) - <a title="@topic.Title" class="blog-link" href="@Url.Action("Index", "Topic", new { id = topic.Id, pagenum = 1 })" data-bs-toggle="tooltip">@topic.Title</a>
-                                                    </li>
-                                                }
-                                            </ul>
+<div class="widget-item mb-2">
+    <h5>@Localizer["lblBlogArchive"]</h5>
+    <hr class="title m-0 p-1">
+    <div class="accordion" id="accordianParent">
+        @foreach (var year in topicByYear.OrderByDescending(y => y.Key))
+        {
+            var groupKey = year.Key;
+            <div class="accordion-group">
+                <div class="category">
+                    <a class="accordion-toggle-small" href="#@groupKey" data-bs-toggle="collapse" data-parent="#accordianParent">
+                        @groupKey
+                    </a>
+                </div>
+                <div class="accordion-body collapse p-2" id="@groupKey">
+                    <div class="accordion-inner-small">
+                        <div class="accordion" id="@groupKey">
+                            @{
+                                var topicByMonth = year.GroupBy(t => t.Created.Substring(4, 2));
+                                foreach (var month in topicByMonth.OrderByDescending(m => m.Key))
+                                {
+                                    var monthKey = month.Key;
+                                    string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Convert.ToInt32(monthKey));
+                                    <div class="accordion-group">
+                                        <div class="category">
+                                            <a class="accordion-toggle-small forum-link" href="#@monthKey" data-bs-toggle="collapse" data-parent="#@groupKey">
+                                                @monthName
+                                            </a>
+                                        </div>
+                                        <div class="accordion-body collapse p-2" id="@monthKey">
+                                            <div class="accordion-inner-small">
+                                                <ul class="list-unstyled mb-1">
+                                                    @foreach (var topic in month.OrderBy(t => t.Created))
+                                                    {
+                                                        <li class="list-item">
+                                                            @topic.Created!.Substring(6, 2) - <a title="@topic.Title" class="blog-link" href="@Url.Action("Index", "Topic", new { id = topic.Id, pagenum = 1 })" data-bs-toggle="tooltip">@topic.Title</a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                }
                             }
-                        }
-
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
-
+        }
+    </div>
 </div>

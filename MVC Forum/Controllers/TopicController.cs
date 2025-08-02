@@ -43,11 +43,12 @@ namespace MVCForum.Controllers
         private readonly HttpContext? _httpcontext;
         private readonly IPrivateMessage _pmService;
         private readonly EventContext _eventsContext;
+        private readonly ISnitzCookie _cookie;
 
         public TopicController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             IPost postService, IForum forumService, UserManager<ForumUser> userManager,IWebHostEnvironment environment,
             IEmailSender mailSender, ISubscriptions processSubscriptions, ICodeProcessor bbcodeProcessor,
-            IPrivateMessage pmService,EventContext eventsContext) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
+            IPrivateMessage pmService,EventContext eventsContext,ISnitzCookie cookie) : base(memberService, config, localizerFactory,dbContext, httpContextAccessor)
         {
             _postService = postService;
             _forumService = forumService;
@@ -59,7 +60,7 @@ namespace MVCForum.Controllers
             _httpcontext = httpContextAccessor.HttpContext;
             _pmService = pmService;
             _eventsContext = eventsContext;
-
+            _cookie = cookie;
         }
 
         //[Route("{id:int}")]
@@ -131,8 +132,12 @@ namespace MVCForum.Controllers
                 HttpContext.Session.SetInt32("TopicId_"+ id,1);
                 post!.ViewCount += 1;
                 _postService.UpdateViewCount(post.Id);
-            }
 
+
+
+            }
+            if(_memberService.Current() != null)
+            { _cookie.UpdateTopicTrack(post.Id.ToString()); }
             if (HttpContext.Session.GetInt32("TopicPageSize") != null && pagesize == 0)
             {
                 pagesize = HttpContext.Session.GetInt32("TopicPageSize")!.Value;
@@ -849,7 +854,7 @@ namespace MVCForum.Controllers
             topic.Status = (short)(model.Lock ? 0 : 1);
             topic.IsSticky = (short)(model.Sticky ? 1 : 0);
             topic.ArchiveFlag = (short)(model.DoNotArchive ? 1 : 0);
-            _postService?.Update(topic);
+            _postService?.UpdateReplyTopic(topic);
 
             // TODO: Implement User Rating Management
             return Json(new{url=Url.Action("Index", "Topic", new { id = reply.PostId }),id=reply.PostId});

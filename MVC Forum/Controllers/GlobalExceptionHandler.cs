@@ -20,14 +20,15 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-
-        _logger.Error("Exception occurred: {Message}", exception);
+        _logger.Error(httpContext.Request.Path.Value);
+        _logger.Error(exception.Message, exception);
 
         var problemDetails = new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
-            Title = "Server error",
-            Detail = exception.Message
+            Title = exception.Message,
+            Instance = httpContext.Request.Path,
+            Detail = exception.StackTrace
         };
 
         httpContext.Response.StatusCode = problemDetails.Status.Value;

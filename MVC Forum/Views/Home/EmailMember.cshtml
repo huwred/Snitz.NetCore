@@ -3,7 +3,7 @@
 
 <div class="card" style="width:70%;margin:auto;">
     <div class="card-body text-dark">
-        <form id="contact-sendemail-form" method="post" asp-controller="Account" asp-action="EmailMember" class="needs-validation p-2" novalidate>
+        <form id="contact-sendemail-form" method="post" asp-controller="Account" asp-action="EmailMember" class="needs-validation p-2" >
             <input asp-for="To" type="hidden" />
             <div class="mb-3">
                 <label asp-for="Subject">@Localizer["Subject"]</label>
@@ -18,7 +18,7 @@
             </div>
             <div class="mb-3 p-2">
                 <button type="reset" class="btn btn-warning ">@Localizer["btnReset"]</button>
-                <button id="send-email" type="submit" class="btn btn-success " disabled>@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                <button id="send-email" type="submit" class="btn btn-success" aria-label="Send Email" >@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
             </div>
         </form>
     </div>

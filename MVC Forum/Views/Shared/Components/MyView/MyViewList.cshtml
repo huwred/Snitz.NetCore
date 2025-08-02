@@ -2,13 +2,11 @@
 @using System.Resources
 @model IEnumerable<MyViewTopic>
 @{
-    var topicByYear = Model.GroupBy(t => t.Date.Substring(0, 4));
-    
+    var topicByYear = Model.GroupBy(t => t.Date?.Substring(0, 4));
 }
 <h5 class="title">@Localizer["lblMyViewList"]</h5>
-<hr class="title" style="margin: 0px; padding: 1px;">
+<hr class="title m-0 p-1">
 <div class="accordion" id="accordianParent">
-
     @foreach (var year in topicByYear.OrderByDescending(y=>y.Key))
     {
         var groupKey = year.Key;
@@ -22,7 +20,7 @@
                 <div class="accordion-inner-small">
                     <div class="accordion" id="@groupKey">
                         @{
-                            var topicByMonth = year.GroupBy(t => t.Date.Substring(4, 2));
+                            var topicByMonth = year.GroupBy(t => t.Date?.Substring(4, 2));
                             foreach (var month in topicByMonth.OrderByDescending(m=>m.Key))
                             {
                                 var monthKey = month.Key;
@@ -48,7 +46,6 @@
                                 </div>
                             }
                         }
-
                     </div>
                 </div>
             </div>

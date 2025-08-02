@@ -51,6 +51,7 @@
     font-weight: bold;
     display:block;
     }
+
 </style>
 
 }
@@ -82,8 +83,29 @@
             <partial name="Lang/@lang/_CookiePolicy" fallback-name="Lang/en/_CookiePolicy" />
         </div>  
         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-            <h1>Under Construction!</h1>
-            <partial name="EmailMember" />
+            <div class="card contact-card" id="contact-sendemail">
+                <div class="card-body text-dark">
+                    <form id="contact-sendemail-form" method="post" asp-controller="Account" asp-action="ContactUs" class="needs-validation p-2" novalidate data-ajax="true" data-ajax-update="#contact-sendemail" data-ajax-complete="emailcompleted">
+                        <input name="To" type="hidden" value="@SnitzConfig.GetValueWithDefault("STRCONTACTEMAIL", "")" />
+                        <div class="mb-3">
+                            <label for="Subject">@Localizer["EmailReason"]</label>
+                            <input name="Subject" class="form-control" required="required" placeholder="Please provide a reason for contacting us ..." />
+                            <span validation-for="Subject"></span>
+                            <div class="invalid-feedback text-danger-emphasis">@Localizer["PropertyRequired","Reason for Email"]</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email-text">@Localizer["Message"]</label>
+                            <textarea name="Message" class="form-control email-text" id="email-text" rows="5" required="required"></textarea>
+                            <span validation-for="Message"></span>
+                            <div class="invalid-feedback text-danger-emphasis">@Localizer["MessageRequired"]</div>
+                        </div>
+                        <div class="mb-3 p-2">
+                            <button type="reset" class="btn btn-warning ">@Localizer["btnReset"]</button>
+                            <button id="send-email" type="submit" class="btn btn-success" aria-label="Send Email"><i class="fa fa-paper-plane" aria-hidden="true"></i> @Localizer["btnSend"] </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div> 
     </div>
 </div>
@@ -109,7 +131,23 @@
 
 
 @section Scripts{
+    <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+
     <script>
+        // Disable form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                ValidateForms();
+            }, false);
+        })();
+        emailcompleted = function (xhr) {
+
+            $('#contact-sendemail').html(xhr.responseJSON.viewString);
+            if(xhr.responseJSON.status == 200){
+                $('#send-email').prop("disabled", true);
+            }
+        };
         window.addEventListener
         (
             'popstate',

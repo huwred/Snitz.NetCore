@@ -32,6 +32,8 @@ namespace MVCForum.View_Components
         }
         public async Task<IViewComponentResult> InvokeAsync(string template, MyTopicsViewModel? model)
         {
+            var subs = _memberService.ForumSubscriptions().ToList();
+
             if (template == "TagCloud")
             {
                 TagCloudSetting setting = new TagCloudSetting
@@ -41,7 +43,7 @@ namespace MVCForum.View_Components
                 };
                 var stopwords = LoadStopWords();
 
-                var phrases = _forumService.GetTagStrings(_memberService.ForumSubscriptions().ToList());
+                var phrases = _forumService.GetTagStrings(subs);
                 var tagfree = new List<string>();
                 Regex singleletters = new Regex(@"(?: |^|\(|\.|&)[A-Za-z0-9]{1,3}(?:$| |\.|,|\)|;)",RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
@@ -63,8 +65,6 @@ namespace MVCForum.View_Components
                     }
 
                     tagfree.Add(newphrase);
-                    
-
                 }
                 var vm = new TagCloudAnalyzer(setting)
                     .ComputeTagCloud(tagfree)
@@ -74,7 +74,9 @@ namespace MVCForum.View_Components
 
             if (template == "MyViewList")
             {
-                return await Task.FromResult((IViewComponentResult)View(template,model.AllTopics));
+                var forumsubs = _memberService.ForumSubscriptions().ToList();
+
+                return await Task.FromResult((IViewComponentResult)View(template,_forumService.FetchAllMyForumTopics(forumsubs)));
             }
             if (template == "Posts")
             {
@@ -96,7 +98,6 @@ namespace MVCForum.View_Components
             if (System.IO.File.Exists(path))
             {
                 logFile = System.IO.File.ReadAllText(path);
-
             }
 
             var wordList = logFile.Split(new string[] { Environment.NewLine, "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);

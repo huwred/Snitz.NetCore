@@ -30,7 +30,7 @@ namespace MVCForum.View_Components
         }
         public async Task<IViewComponentResult> InvokeAsync(string template, int? id = null)
         {
-            if(template == "List" && id != null){
+            if(template == "List" && id != null && id != 0){
                 var forum = _forumService.GetWithPosts(id.Value);
                 PagedList<Post> result = new PagedList<Post>(forum.Posts!,1,50); //forum.Posts(50, 1, User, WebSecurity.CurrentUserId, 120);
 
@@ -48,7 +48,7 @@ namespace MVCForum.View_Components
                 vm.PageCount = pagecount;
                 vm.Page = 1;
                 return await Task.FromResult((IViewComponentResult)View(template,vm));
-            }else if (template == "TagCloud")
+            }else if (template == "TagCloud" && id != null && id != 0)
             {
                 TagCloudSetting setting = new TagCloudSetting
                 {
@@ -91,7 +91,7 @@ namespace MVCForum.View_Components
                 return await Task.FromResult((IViewComponentResult)View(template,vm));
             }
             // You can add logic here to handle different templates or models
-            return await Task.FromResult((IViewComponentResult)View(template,id));
+            return Content(string.Empty);
         }
         private HashSet<string> LoadStopWords()
         {

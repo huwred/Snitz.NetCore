@@ -111,7 +111,7 @@
                             }
                         </td>
                         <td snitz-if="!showlink">@member.Member.Name</td>
-                        <td snitz-if="showlink"><a href="~/Account/Detail/@Flurl.Url.Encode(member.Member.Name)" title="@Localizer["tipViewProfile"]">@member.Member.Name</a></td>
+                        <td snitz-if="showlink"><a href="~/Account/Detail/@Flurl.Url.Encode(member.Member.Name)" aria-label="@member.Member.Name, @Localizer[" tipViewProfile"]">@member.Member.Name</a></td>
                         <td>@member.Title<br />
                                 <member-rank member="@member.Member" user="@User" ranking="@ranking" size="fs-5"></member-rank>
                         </td>

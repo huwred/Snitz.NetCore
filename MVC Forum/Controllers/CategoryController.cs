@@ -112,35 +112,11 @@ namespace MVCForum.Controllers
                 var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
                 ViewData["BreadcrumbNode"] = forumPage;
             }
-            
-            var latestPosts = _postService.GetLatestPosts(_config.GetIntValue("INTRECENTCOUNT",10))
-            .Select(post => new PostListingModel
-            {
-                Id = post.Id,
-                Topic = post,
-                Title = post.Title,
-                Message = post.Content,
-                AuthorName = post.Member?.Name ?? "Unknown",
-                AuthorId = post.Member!.Id,
-                Created = post.Created.FromForumDateStr(),
-                LastPostDate = !string.IsNullOrEmpty(post.LastPostDate) ? post.LastPostDate.FromForumDateStr() : null,
-                LatestReply = post.LastPostReplyId,
-                Forum = id > 0 ? GetForumListingForPost(post) : null,
-                RepliesCount = post.ReplyCount,
-                ViewCount = post.ViewCount,
-                UnmoderatedReplies = post.UnmoderatedReplies,
-                IsSticky = post.IsSticky == 1,
-                Status = post.Status,
-                Answered = post.Answered,
-                AllowRating = post.AllowRating,
-                ForumAllowRating = post.Forum.Rating
-            });
 
             var model = new ForumIndexModel()
             {
                 Categories = categories,
-                ForumList = forums,
-                LatestPosts = latestPosts
+                ForumList = forums
             };
                 return View("Index",model);
         }

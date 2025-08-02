@@ -27,6 +27,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     @await RenderSectionAsync("MetaData", required: false)
     @if (isRighToLeft)
     {
@@ -40,8 +41,8 @@
     <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/css/site.min.css">
     <link rel="stylesheet" href="~/css/about.min.css">
-    @await Component.InvokeAsync("SnitzThemeCss")
     <link rel="stylesheet" href="~/css/busy.min.css">
+    @await Component.InvokeAsync("SnitzThemeCss")
     @await RenderSectionAsync("Styles", required: false)
 
 </head>
@@ -60,26 +61,27 @@
 
         <partial name="Footer"/>
     </div>
-<div id="user-card" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body user-card">
-                <div class="card-content" id="user-card-content" data-name="popover">
-                    some stuff <b>bold</b>
+    <div id="user-card" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body user-card">
+                    <div class="card-content" id="user-card-content" data-name="popover">
+                        some stuff <b>bold</b>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
     <script type="text/javascript" src="~/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="~/js/jquery.min.js"></script>
     <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
     <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
 
     <partial name="GlobalJs" />
     <partial name="ValidationScriptsPartial" />
     <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
-    <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
 
 @if (!clang.Contains("en"))
 {
@@ -125,112 +127,20 @@
         </div>
     </div>
 }
-
-    <script type="text/javascript">
-
-        const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
-        const appendAlert = (message, type) => {
-          const wrapper = document.createElement('div')
-          wrapper.innerHTML = [
-            `<div class="alert alert-${type} alert-dismissible position-absolute top-50 start-50 translate-middle" role="alert">`,
-            `   <div>${message}</div>`,
-            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-            '</div>'
-          ].join('')
-
-          alertPlaceholder.append(wrapper)
-        }
-
-    $(document).on('click', '.confirm-restart', function (e) {
-        e.preventDefault();
-        var href = $(this).attr('href');
-        $('#confirmRestart').data('url', href).modal('show');
-
-        $('#confirmRestart').on('click', '#btnRestartYes', function (e) {
-            e.preventDefault();
-            $.post(href,'',
-                function(data, status){
-                    if (!data) {
-                        appendAlert("There was a problem!", 'error');
-                    } else {
-                        $('#confirmRestart .modal-body').html("<p>Application is restarting, please wait ...</p>");
-                        $('#btnRestartYes').hide();
-                        setTimeout(function () {
-                            $('#confirmRestart').modal('hide');
-                            location.reload(true);
-                        }, 25000);
-                        
-                    }
-                });
-        });
+<script type="text/javascript">
+/* Show the user card popup when clicking on a profile link */
+$(document).on("click", ".profile-popup", function (e) {
+    e.preventDefault();
+    var rect = e.target.getBoundingClientRect(); // get some poition, scale,... properties of the item
+    $("#user-card .modal-dialog").css('position', 'absolute');
+    $("#user-card .modal-dialog").css('top', rect.top - 100 + "px");
+    $("#user-card .modal-dialog").css('left', rect.left);
+    $('#user-card').modal('show');
+    $('#user-card-content').html('');
+    $('#user-card-content').load(SnitzVars.baseUrl + "/Account/DetailPopup/" + $(this).data("id") + "/?lang=@clang", function (response, status, xhr) {
+        $("time.timeago").timeago();
     });
-    $(document).ready(function () {
-        if (SnitzVars.pending > 0) {
-            $('#forumAlert').modal('show');
-            setTimeout(function () {
-                $('#forumAlert').modal('hide');
-            }, 3000);
-        }           
-    });
-    $(window).on('beforeunload', function(){
-        displayBusyIndicator();
-    });
-    window.addEventListener( "pageshow", function ( event ) {
-      var historyTraversal = event.persisted || 
-                                 ( typeof window.performance != "undefined" && 
-                                      window.performance.navigation.type === 2 );
-          if ( historyTraversal ) {
-            // Handle page restore.
-            window.location.reload();
-          }
-    });
-
-$(document).on('submit', 'form', function () {
-    displayBusyIndicator();
 });
-    function displayBusyIndicator() {
-    $('.loading').show();
-}
-$(document).ajaxComplete(function(event, xhr, settings) {
-    $('.loading').hide();
-});
-if(SnitzVars.showPageTimer == '1'){
-    window.addEventListener('load', () => {  
-        //debugger;
-        const [pageNav] = performance.getEntriesByType('navigation');
-        const footer = document.getElementById('loadTime');  
-
-        let workerTime = 0;
-
-        if (pageNav.responseEnd > 0) {
-            workerTime = (pageNav.responseEnd - pageNav.workerStart)/1000;
-
-            if (footer) {  
-                var test = (workerTime).toLocaleString(
-                    undefined, // leave undefined to use the visitor's browser 
-                                // locale or a string like 'en-US' to override it.
-                    { minimumFractionDigits: 2 }
-                );
-                footer.textContent = `Page loaded in ${test} s`;  
-            } 
-            
-        }
-    });  
-}
-        $(document).on("click",".profile-popup",function(e){
-            console.log("avatar clicked");
-            e.preventDefault();
-            var rect = e.target.getBoundingClientRect(); // get some poition, scale,... properties of the item
-            $("#user-card .modal-dialog").css('position', 'absolute');
-            $("#user-card .modal-dialog").css('top', rect.top-100 + "px");
-            $("#user-card .modal-dialog").css('left', rect.left);
-            $('#user-card').modal('show');
-            $('#user-card-content').html('');
-            console.log("avatar load profile @clang" );
-            $('#user-card-content').load(SnitzVars.baseUrl + "/Account/DetailPopup/" + $(this).data("id") + "/?lang=@clang",function(response, status, xhr) {
-                $("time.timeago").timeago();
-            });
-        });
-</script>
+    </script>
 </body>
 </html>

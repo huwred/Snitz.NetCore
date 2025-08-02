@@ -60,7 +60,7 @@
     {
         if (!activemembers.Contains(member))
         {
-            <li><a href="~/Account/Detail/@member.Name" title="@Localizer["tipViewProfile"]">@member.Name</a> (<snitz-datetime datetime="@member.Lastactivity.FromForumDateStr()"></snitz-datetime>) </li>
+            <li><a href="~/Account/Detail/@member.Name" aria-label="@member.Name, @Localizer["tipViewProfile"]">@member.Name</a> (<snitz-datetime datetime="@member.Lastactivity.FromForumDateStr()"></snitz-datetime>) </li>
         }
     }
 </ul>

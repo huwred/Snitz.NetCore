@@ -11,11 +11,26 @@
         allowrating = allowrating && topic.AllowRating == 1 && SnitzConfig.GetIntValue("INTTOPICRATING", 0) == 1;
 
         string postsclass = "read";
-        string forumTitle = Uri.EscapeDataString(SnitzConfig.ForumTitle);
-        var actionuri = Url.Action("Index", "Topic", new { id = topic.Id });
-        string pageUrl = Uri.EscapeDataString(actionuri);
-        string tracked = null; //SnitzCookie.Tracked(Model.Id.ToString());
-        bool newPosts = false;
+        //string forumTitle = Uri.EscapeDataString(SnitzConfig.ForumTitle);
+        //var actionuri = Url.Action("Index", "Topic", new { id = topic.Id });
+        //string pageUrl = Uri.EscapeDataString(actionuri);
+@*     var tracked = SnitzCookie.Tracked(topic.Id.ToString());
+    bool newPosts;
+    if (tracked != null)
+    {
+        var today = DateTime.UtcNow.ToString("yyyyMM");
+        newPosts = (today + tracked).FromForumDateStr() < topic.LastPostDate.FromForumDateStr();
+        if ((DateTime)ViewData["LastVisitDateTime"] > topic.LastPostDate.FromForumDateStr())
+        {
+            SnitzCookie.ClearTracking(topic.Id.ToString());
+            newPosts = (DateTime)ViewData["LastVisitDateTime"] < topic.LastPostDate.FromForumDateStr();
+        }
+
+    }
+    else
+    {
+        newPosts = (DateTime)ViewData["LastVisitDateTime"] < topic.LastPostDate.FromForumDateStr();
+    } *@
         int replies = topic.ReplyCount;
         var lpAuthor = MemberService.GetById(topic.LastPostAuthorId);
         var author = MemberService.GetById(topic.MemberId);
@@ -26,7 +41,7 @@
         {
             replies += topic.UnmoderatedReplies;
         }
-        if (tracked != null)
+@*         if (tracked != null)
         {
             var today = DateTime.UtcNow.ToString("yyyyMM");
             newPosts = (today + tracked).FromForumDateStr() < topic.LastPostDate?.FromForumDateStr();
@@ -39,58 +54,59 @@
         {
             postsclass = "newposts";
 
-        }
+        } *@
         if (topic.LastPostAuthorId == MemberService.Current()?.Id)
         {
             postsclass += "_mine";
         }
 
-    <div class="card @postsclass mb-3 rounded-5">
+    <div class="card @postsclass mb-3 rounded-4">
         <div class="row g-3 p-2">
             <div class="col-2">
-                <span class="hidden-xs center authors p-2">
-                    <snitz-avatar src="~/Content/Avatar/@topic.Member.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="img-fluid rounded-circle" />
+                <span class="hidden-xs center authors p-2 profile-popup" data-id="@topic.MemberId">
+                    <snitz-avatar src="~/Content/Avatar/@topic.Member.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" data-id="@topic.MemberId" class="avatar rounded-circle profle-popup" />
                 </span>
                 <p class="card-text center">
-                    <a class="@rolecssAU" href="@Url.Action("UserProfile", "Account", new { id = topic.Member.Name })">
+                    <member-link text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }" member-id="@topic.MemberId" ></member-link>
+@*                     <a class="@rolecssAU" href="@Url.Action("UserProfile", "Account", new { id = topic.Member.Name })">
                         @topic.Member.Name
-                    </a>
+                    </a> *@
                 </p>
             </div>
             <div class="col-10">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <a href="@Url.Action("Index", "Forum", new {id = topic.ForumId, pagenum = 1})">@topic.Forum.Title</a>: <a href="@Url.Action("Posts", "Topic", new {id = topic.Id, pagenum = 1, archived = 0})" data-toggle="tooltip" class="topic-link" data-html="true" data-placement="auto" title='@topic.Title'>@topic.Title</a>&nbsp;
+                        <a href="@Url.Action("Index", "Forum", new { id = topic.ForumId, pagenum = 1 })" aria-label="Forum, @topic.Forum.Title">@topic.Forum.Title</a>: <a href="@Url.Action("Posts", "Topic", new { id = topic.Id, pagenum = 1, archived = 0 })" class="topic-link" data-html="true" data-placement="auto" aria-label='Topic, @topic.Title'>@Html.Raw(BbCodeProcessor.Subject(topic.Title))</a>&nbsp;
                         @if (topic.LastPostReplyId > 0)
                         {
-                            <a href="@Url.Action("Index", "Topic", new {id = topic.Id, pagenum = -1, archived = 0})#@topic.LastPostReplyId" data-toggle="tooltip" class="topic-link" data-placement="auto" title='@Localizer["tipLastPost"]'><i class="fa fa-chevron-right"></i></a>
-
+                            <a href="@Url.Action("Index", "Topic", new {id = topic.Id, pagenum = -1, archived = 0})#@topic.LastPostReplyId" data-toggle="tooltip" class="topic-link" data-placement="auto" title='@Localizer["tipLastPost"]'><i class="fa fa-chevron-right" aria-hidden="true"></i></a>
                         }
-                        <span class="small text-right">@Localizer["lblPostedBy"] @Html.ActionLink(" " + lpAuthor.Name, "UserProfile", "Account", new { id = lpAuthor.Name }, new { title = Localizer["tipViewProfile"].Value, data_toggle = "tooltip", @class = rolecssLP })</span>
+                        <span class="small text-right">@Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }" member-id="@lpAuthor.Id"></member-link> @* @Html.ActionLink(" " + lpAuthor.Name, "UserProfile", "Account", new { id = lpAuthor.Name }, new { title = Localizer["tipViewProfile"].Value, data_toggle = "tooltip", @class = rolecssLP }) *@</span>
                     </h5>
                     <div class="truncate-overflow" style="min-height: 100px;">
                         <p>@Html.Raw(BbCodeProcessor.Format(topic.Content))</p>
                     </div>
                     <ul class="list-inline list-unstyled mb-0 border-top border-1 p-1" >
-                        <li class="list-inline-item"><span ><i class="fa fa-calendar m-2"></i><snitz-datetime datetime="@topic.Created.FromForumDateStr()"></snitz-datetime></span></li>
+                        <li class="list-inline-item"><span><i class="fa fa-calendar m-2"></i><snitz-datetime datetime="@topic.Created.FromForumDateStr()"></snitz-datetime></span></li>
                         <li class="list-inline-item">|</li>
-                        <li class="list-inline-item" title="@topic.ViewCount @Localizer["lblViews"]">@topic.ViewCount</li>
+                        <li class="list-inline-item" aria-label="@topic.ViewCount @Localizer["lblViews"]">@topic.ViewCount</li>
                         <li class="list-inline-item">|</li>
-                    @*                 @if (allowrating && ViewBag.RatingSum > 0)
-                    {
-                    <li class="list-inline-item"><input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs"/></li><li>|</li>
-                    } *@
-                        <li class="list-inline-item hidden-xs">
+                    @*                 
+                        @if (allowrating && ViewBag.RatingSum > 0)
+                        {
+                            <li class="list-inline-item"><input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs"/></li><li>|</li>
+                        } 
+                        
+                    *@
+                        <li class="list-inline-item hidden-xs fs-4">
                             <vc:topic-buttons postid="@topic.Id"></vc:topic-buttons>
                             @* <partial name="_SocialMedia" /> *@
                         </li>
                     </ul>
                 </div>
-
             </div>
         </div>
     </div>
-
 }
 
 

@@ -1,5 +1,5 @@
 ﻿:root {
-    --primary-header: #888;
+    --primary-header: #7d7f66;
     --font-size: 14px;
     --spacing: 1rem;
     --bs-form-invalid-color: black;
@@ -9,6 +9,9 @@ html, body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-color: #f4f6e7 !important;
     color: var(--primary-header) !important;
+}
+.dropdown-menu {
+    --bs-dropdown-divider-bg: whitesmoke;
 }
 .btn-primary {
     --bs-btn-color: #fff;
@@ -55,8 +58,14 @@ html, body {
     --bs-tooltip-arrow-width: 0.8rem;
     --bs-tooltip-arrow-height: 0.4rem;
 }
-h4,.h4 {
-    font-size: 1.3em;
+.nav-tabs .nav-link {
+    color: black !important;
+}
+.table-primary, .table-primary a {
+    --bs-table-bg: #191970;
+    --bs-table-color: #fff;
+    background-color: var(--primary-header);
+    color: white;
 }
 .subforum-title, .subforum-column {
     border-bottom-left-radius: 0 !important;
@@ -74,7 +83,7 @@ h4,.h4 {
     color: white;
 }
 .bg-dark {
-    background-color: rgba(60,60,60,1) !important;
+    background-color: var(--primary-header) !important;
 }
 .navbar-custom .navbar-brand {
     color: #fff;
@@ -82,15 +91,17 @@ h4,.h4 {
 
 .navbar-custom .navbar-brand:hover, .navbar-custom .navbar-brand:focus {
     color: #fff;
+    text-decoration:none;
 }
 
 .navbar-custom .navbar-nav .nav-link {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 1);
 }
 
-.navbar-custom .navbar-nav .nav-link:hover, .navbar-custom .navbar-nav .nav-link:focus {
-    color: rgba(255, 255, 255, 0.75);
-}
+    .navbar-custom .navbar-nav .nav-link:hover, .navbar-custom .navbar-nav .nav-link:focus {
+        color: rgba(255, 255, 255, 0.75);
+        text-decoration: none;
+    }
 
 .navbar-custom .navbar-nav .nav-link.disabled {
     color: rgba(255, 255, 255, 0.25);
@@ -142,9 +153,8 @@ a:active,a:hover {
 .initial a:hover {
     color: #FF0000;
 }
-h1 {
-    font-size: 16px;
-    font-weight: bolder;
+.table-primary th a {
+    color:white;
 }
 .text-muted {
     color: #fefefe !important;
@@ -154,9 +164,10 @@ h1 {
 /*           Forums.html                       */
 /* ########################################### */
 
-.subforum-title, .subforum-title a {
+.subforum-title, .subforum-title a, .subforum-title a:active, .subforum-title a:hover, .subforum-title a:visited {
     background-color: #7d7f66 !important;
     color: #fff !important;
+    text-decoration: none;
 }
 
 .subforum-column {
@@ -205,14 +216,6 @@ h1 {
     padding: 3px;
 }
 
-/*.nav-item a {
-    color: darkslategrey;
-}
-
-    .nav-item a:hover {
-        color: white;
-    }
-*/
 .bar-icon {
     color: #fff;
 }
@@ -240,7 +243,13 @@ footer {
     font-weight: bold;
     color: #F5FFFA;
 }
+.table-head div {
+    margin: 0;
+}
 
+.table-head .rounded-2, .table-head .rounded-1 {
+    border-radius: 0 !important;
+}
 /* posts table's body  */
 
 .table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply, .table-row .subscribe {
@@ -288,7 +297,7 @@ footer {
 /* ########################################### */
 
 .head {
-    background-color: #bcbf97;
+    background-color: var(--primary-header);
     color: #fff;
 }
 
@@ -366,6 +375,7 @@ div.card-body .body.alt {
 
     .dropdown-menu a:hover {
         color: #000;
+        text-decoration:none;
     }
 .jumpto.dropdown-menu {
     background-color: whitesmoke !important;
@@ -393,12 +403,6 @@ div.card-body .body.alt {
     color: #fff;
 }
 
-
-
-/*.cell {
-    border: 1px solid gray;
-}*/
-
 h1.bg-dark, .btn-group.btn-dark {
     background-color: #eee !important;
 
@@ -412,7 +416,7 @@ tr.bg-dark, .card-header.bg-dark {
 }
 
 #theme-change {
-    background-color: rgba(60,60,60,1);
+    background-color: var(--primary-header);
     color: #fff;
 }
 .btn-secondary {
@@ -542,7 +546,7 @@ blockquote.newquote {
 }
     .image-gallery .footer {
         color: white !important;
-        background-color: black;
+        background-color: var(--primary-header);
         font-size: 18px;
         position: absolute;
         top: 80%;
@@ -589,6 +593,9 @@ a.latestpost-title {
 @media (max-width: 480px) {
     body {
         background-color: red;
+    }
+    .table-head div {
+        margin:0;
     }
 }
 
@@ -648,7 +655,7 @@ a.latestpost-title {
 }
 .accordion-button {
     color: #F5FFFA !important;
-    background-color: #7d7f66;
+    background-color: var(--primary-header);
     box-shadow: revert;
 }
 .newposts {

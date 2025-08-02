@@ -10,10 +10,18 @@
 
     if (Context.Request.Query.Keys.Contains("page"))
     {
-        page = Convert.ToInt32(Context.Request.Query["page"][0].ToString());
-        if(page == -1)
+        try
         {
-            page = pagecount;
+            var test = Context.Request.Query["page"].ToString();
+            page = Convert.ToInt32(test);
+            if(page == -1)
+            {
+                page = pagecount;
+            }
+        }
+        catch (Exception)
+        {
+
         }
     }
     var intLow = page - 1;

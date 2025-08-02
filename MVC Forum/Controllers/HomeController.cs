@@ -32,8 +32,10 @@ namespace MVCForum.Controllers
 
             try
             {
-                var model = BuildHomeIndexModel();
-                return View(model);
+                return View(new HomeIndexModel
+                {
+                    SearchQuery = ""
+                });
             }
             catch (Exception e)
             {
@@ -42,37 +44,6 @@ namespace MVCForum.Controllers
             }
         }
 
-        private HomeIndexModel BuildHomeIndexModel()
-        {
-            var latestPosts = _postService.GetLatestPosts(_config.GetIntValue("INTRECENTCOUNT",10))
-            .Select(post => new PostListingModel
-            {
-                Id = post.Id,
-                Topic = post,
-                Title = post.Title,
-                Message = post.Content,
-                AuthorName = post.Member?.Name ?? "Unknown",
-                AuthorId = post.Member!.Id,
-                //AuthorRating = post.User?.Rating ?? 0,
-                Created = post.Created.FromForumDateStr(),
-                LastPostDate = !string.IsNullOrEmpty(post.LastPostDate) ? post.LastPostDate.FromForumDateStr() : null,
-                //LastPostAuthorName = post.LastPostAuthorId != null ? _memberService.GetById(post.LastPostAuthorId!.Value)?.Name : "",
-                //Forum = GetForumListingForPost(post),
-                RepliesCount = post.ReplyCount,
-                ViewCount = post.ViewCount,
-                UnmoderatedReplies = post.UnmoderatedReplies,
-                IsSticky = post.IsSticky == 1,
-                Status = post.Status,
-                Answered = post.Answered,
-                //HasPoll = _postService.HasPoll(post.Id),
-            });
-
-            return new HomeIndexModel
-            {
-                LatestPosts = latestPosts,
-                SearchQuery = ""
-            };
-        }
         [Route("About")]
         public IActionResult About()
         {

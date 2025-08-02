@@ -5,7 +5,6 @@
 @using SnitzCore.Service.TagHelpers
 @using Microsoft.AspNetCore.Http
 @using Snitz.Events.Helpers
-@inject SignInManager<ForumUser> SignInManager
 @inject IEnumerable<ISnitzStartupService> pluginservices
 @section MetaData
 {
@@ -174,21 +173,22 @@
                     @{
                         ViewData["ActiveTopics"] = false;
                         ViewData["Archives"] = Model.Archives;
-                    }
 
-                    <!--Topics start here-->
-                    @foreach (var post in Model.Posts!){
-                        <partial name="BlogListing" model="post" view-data="ViewData" />
+                        <!--Topics start here-->
+                        foreach (var post in Model.Posts!)
+                        {
+                            <partial name="BlogListing" model="post" view-data="ViewData" />
+                        }
+                        if (Model.Forum.Topics == 0)
+                        {
+                            <p class="text-center p-4">@Localizer["lblNoForumTopics"]</p>
+                        }
+                        else if (Model.Posts == null || Model.Posts?.Count() == 0)
+                        {
+                            <p class="text-center p-4">@Localizer["lblNoTopicsToDisplay"]</p>
+                        }
+                        <!--ends here-->
                     }
-                    @if (Model.Forum.Topics == 0)
-                    {
-                        <p class="text-center p-4">@Localizer["lblNoForumTopics"]</p>
-                    }else if (Model.Posts == null || Model.Posts?.Count() == 0)
-                    {
-                        <p class="text-center p-4">@Localizer["lblNoTopicsToDisplay"]</p>
-                    }
-                    <!--ends here-->
-
                 </div>
                 <!--Pagination starts-->
                 <partial snitz-if="@(Model.PageCount > 1)" 
@@ -204,14 +204,7 @@
                                 })" />
                 <!--pagination ends-->
             </div>
-            <div class="d-none d-lg-block col-3">
-                <partial name="QuickSearch" />
-                @if(Model.Forum.ForumType == ForumType.BlogPosts){
-                    @await Component.InvokeAsync("Blog", new { template = "TagCloud", id = Model.Forum.Id })
-                    @await Component.InvokeAsync("Blog", new { template = "List", id = Model.Forum.Id })
-                }
-                @await Component.InvokeAsync("Members", new { template = "CategoryForumList" })
-            </div>
+            @await Component.InvokeAsync("Widgets", new { template = "sidebar", widgets = new[] { "search", "blog", "catlist" },forumid = Model.Forum.Id })
         </div>
     </div>
 }

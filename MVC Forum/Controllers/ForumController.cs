@@ -927,7 +927,7 @@ namespace MVCForum.Controllers
             MyTopicsViewModel vm = new MyTopicsViewModel
             {
                 Topics = result,
-                AllTopics = _forumService.FetchAllMyForumTopics(forumsubs),
+                //AllTopics = _forumService.FetchAllMyForumTopics(forumsubs),
                 ActiveSince = activesince
             };
 

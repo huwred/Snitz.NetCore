@@ -63,7 +63,6 @@
     <div class="btn-toolbar padding-sm" id="page-top">
         <vc:topic-buttons postid="@Model.Id" topic-email="@(@User.Identity.IsAuthenticated ? 1 : 0)" snitz-if="@User.Identity.IsAuthenticated"></vc:topic-buttons>
     </div>
-
     <hr class="title" />
     <div class="row">
         <div class="col-9">
@@ -100,18 +99,12 @@
                 }
             </div>    
         </div>
-        <div class="d-none d-lg-block col-3">
-            @await Component.InvokeAsync("Blog", new { template = "TagCloud", id = Model.ForumId })
-            @await Component.InvokeAsync("Blog", new { template = "List", id = Model.ForumId })
-            @await Component.InvokeAsync("Members", new { template = "CategoryForumList" })
-        </div>
+        @await Component.InvokeAsync("Widgets", new { template = "sidebar", widgets = new[] { "blog", "catlist" }, forumid = Model.ForumId })
     </div>
 
     if (Model.PageCount > 0)
     {
-        <div class="col-9">
-
-        </div>
+        <div class="col-9"></div>
         @if (Model.PageCount > 1)
         {
             <partial name="ListPaging" 
@@ -127,19 +120,18 @@
             <div class="mb3">&nbsp;</div>
         }
     }
-
 }
 
 @section Scripts
 {
-<script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
-<script type="text/javascript" src="~/js/postcontroller.min.js"></script>
-<script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
-<script type="text/javascript" src="~/js/initPostForm.js"></script>
-<script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
-<script type="text/javascript" src="~/js/topic.min.js"></script>
-<script src="~/js/star-rating.min.js"></script>
-<script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
+    <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script type="text/javascript" src="~/js/postcontroller.min.js"></script>
+    <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="~/js/initPostForm.js"></script>
+    <script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
+    <script type="text/javascript" src="~/js/topic.min.js"></script>
+    <script type="text/javascript" src="~/js/star-rating.min.js"></script>
+    <script type="text/javascript" src="~/js/krajee-svg/theme.js"></script>
     <script type="text/javascript">
 
         $(document).ready(function(){

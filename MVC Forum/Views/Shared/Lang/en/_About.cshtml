@@ -17,7 +17,7 @@
         <div class="contents clearfix body-page">
             <section class="about__header">
                 <div class="about__banner">
-                    <img class="about__banner-img" src="~/images/logo.png">
+                    <img class="about__banner-img" src="~/images/wizard.webp" >
                 </div>
                 <h3>@Html.Raw(SnitzConfig.ForumTitle)</h3>
                 <p class="short-description"></p>
@@ -60,9 +60,7 @@
                                 <div data-username="@member.Name" class="user-info small">
                                     <div class="user-image profile-popup" data-id="@member.Id">
                                         <div class="user-image-inner">
-                                            <a href="/Account/Detail/@member.Name" data-user-card="@member.Name" aria-hidden="true">
-                                                <snitz-avatar member-id="@member.Id" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle"></snitz-avatar>
-                                            </a>
+                                            <snitz-avatar member-id="@member.Id" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle"></snitz-avatar>
                                         </div>
                                     </div>
                                     <div class="user-detail">
@@ -93,9 +91,7 @@
                                 <div data-username="@member.Name" class="user-info small">
                                     <div class="user-image profile-popup" data-id="@member.Id">
                                         <div class="user-image-inner">
-                                            <a href="/Account/Detail/@member.Name" data-id="@member.Id" data-user-card="@member.Name" aria-hidden="true">
-                                                <snitz-avatar member-id="@member.Id" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle" title="@member.Firstname @member.Lastname"></snitz-avatar>
-                                            </a>
+                                            <snitz-avatar member-id="@member.Id" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle" title="@member.Firstname @member.Lastname"></snitz-avatar>
                                         </div>
                                     </div>
                                     <div class="user-detail">

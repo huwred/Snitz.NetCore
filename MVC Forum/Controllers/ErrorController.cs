@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace MVCForum.Controllers
 {
@@ -19,6 +20,15 @@ namespace MVCForum.Controllers
         [Route("error/{code}")]
         public IActionResult Index(int code)
         {
+            IExceptionHandlerPathFeature? feature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+            if (feature != null)
+            {
+                _logger.Error($"Error {code} occurred at path: {feature.Path}", feature.Error);
+            }
+            else
+            {
+                _logger.Error($"Error {code} occurred.");
+            }
             Response.Clear();
             Response.StatusCode = code;
             return View("_GenericError");    
@@ -31,7 +41,7 @@ namespace MVCForum.Controllers
             IExceptionHandlerPathFeature? feature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
             if (feature != null)
             {
-                _logger.Error(feature.Error.Message,feature.Error);
+                _logger.Error($"Error {feature.Error.Message} occurred at path: {feature.Path}",feature.Error);
                 return StatusCode(StatusCodes.Status500InternalServerError,feature?.Error);
             }
             return StatusCode(StatusCodes.Status500InternalServerError);

@@ -17,14 +17,6 @@
         <div class="col mt-3" >
             <partial name="HomeContent"/>
         </div>
-        <div class="d-none d-lg-block col-4 mt-3">
-            <partial name="QuickSearch"/>
-            <partial name="LatestPosts" model="@Model.LatestPosts" />
-            @if (SnitzConfig.GetIntValue("INTFEATUREDPHOTO") == 1)
-            {
-                @await Component.InvokeAsync("ImageAlbum", new { template = "Featured" })
-            }
-            <partial name="FeaturedPoll" />
-        </div>
+        @await Component.InvokeAsync("Widgets", new { template = "sidebar", width="col-4 mt-3", widgets = new[] { "search", "latest", "image", "poll" } })
     </div>
 </div>

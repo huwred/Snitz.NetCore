@@ -7,7 +7,7 @@
 @using MVCForum.ViewModels.User
 @using SnitzCore.Data.Models
 @using SnitzCore.Service.TagHelpers
-@inject SignInManager<ForumUser> SignInManager
+
 @{
     var cat = Context.Request.Query["id"];
     var routeid = Context.GetRouteValue("id");
@@ -27,12 +27,19 @@
         isAdministrator = User.IsInRole("Administrator");
     }
 }
+@section MetaData
+{
+    <meta name="title" content="@Config.Value.strForumTitle Categories" />
+    <meta name="description" content="@Config.Value.strForumDescription" />
+    <meta name="robots" content="index,follow" />
+
+}
 <partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
 <div class="pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
     <div class="row">
         <form id="goups-form" asp-action="Index" class="form-inline" method="get">
-            <partial snitz-if="@(SnitzConfig.GetIntValue("STRGROUPCATEGORIES") == 1)" name="CategoryFilter" />
+            <partial snitz-if="@(SnitzConfig.GetIntValue("STRGROUPCATEGORIES") == 1)" name="GroupFilter" />
         </form>
         @if (isAdministrator)
         {
@@ -40,9 +47,9 @@
             {
                 <form class="form-inline col-4 col-lg-6">
                     <div class="btn-group mb-2">
-                        <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" title=" @Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
-                        <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" title="@Localizer["tipEditCategory"]" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> @Localizer["tipEditCategory"]</span></button>
-                        <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@cat" href="~/Category/Delete/?id=" title="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
+                        <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" aria-label=" @Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
+                        <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" aria-label="@Localizer["tipEditCategory"]" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> @Localizer["tipEditCategory"]</span></button>
+                        <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@cat" href="~/Category/Delete/?id=" aria-label="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
                     </div>
                 </form>
             }
@@ -50,12 +57,13 @@
             {
                 <form class="form-inline col-4 col-lg-6">
                     <div class="btn-group mb-2">
-                        <button asp-controller="Category" type="submit" asp-action="Create" title="@Localizer["tipNewCategory"]" class="btn btn-outline-primary"><i class="fa fa-folder-o"></i><span class="d-none d-lg-inline"> @Localizer["tipNewCategory"]</span></button>
-                        <button asp-controller="Forum" type="submit" asp-action="Create" title="@Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-lg-inline"> @Localizer["tipNewForum"]</span></button>
+                        <button asp-controller="Category" type="submit" asp-action="Create" aria-label="@Localizer["tipNewCategory"]" class="btn btn-outline-primary"><i class="fa fa-folder-o"></i><span class="d-none d-lg-inline"> @Localizer["tipNewCategory"]</span></button>
+                        <button asp-controller="Forum" type="submit" asp-action="Create" aria-label="@Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-lg-inline"> @Localizer["tipNewForum"]</span></button>
                     </div>
                 </form>
             }
         }
+        
         <div class="col-8 d-lg-none"><partial name="QuickSearch" /></div>
     </div>
     <div class="row">
@@ -101,7 +109,7 @@
                                         @if (isAdministrator && forum.ForumType is ForumType.WebLink)
                                         {
                                             <br />
-                                            <i class="fa fa-trash weblink-del" title="Delete External link" data-id="@forum.Id"></i>
+                                            <i class="fa fa-trash weblink-del" aria-label="Delete External link" data-id="@forum.Id" aria-hidden="true"></i>
                                         }
                                     </div>
                                     <div class="subforum-description subforum-column">
@@ -111,12 +119,12 @@
                                         }
                                         else
                                         {
-                                            <h4><a href="~/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a>
+                                            <h4><a href="~/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" aria-label="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a>
                                             @if (forum.ArchivedCount > 0)
                                             {
                                                     <a href="~/Forum/Archived/@forum.Id/?defaultdays=@((int)forum.DefaultView)" title="@Localizer["tipViewArchive"] (@forum.ArchivedCount)"><i class="fa fa-archive text-secondary"></i></a>
-                                                
-                                            }</h4>
+                                            }
+                                            </h4>
                                         }
                                         <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
                                         @if (forum.ForumModeration != Moderation.UnModerated )
@@ -174,21 +182,7 @@
             @await Component.InvokeAsync("Members", new {max = 10,template = "wide"})
 
         </div>
-        <div class="d-none d-lg-block col-3">
-            <partial name="QuickSearch" />
-            <partial name="FeaturedPoll" />
-            <partial name="LatestPosts" model="@Model.LatestPosts"/>           
-            @if (SnitzConfig.GetIntValue("INTFEATUREDPHOTO") == 1)
-            {
-                @await Component.InvokeAsync("ImageAlbum", new { template = "Featured" })
-            }
-            @if (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALPUBLIC") == 1)
-            {
-                @await Component.InvokeAsync("Events", new { template = "UpcomingEvents" })
-            }
-
-        </div>
-
+        @await Component.InvokeAsync("Widgets", new { template = "sidebar", widgets = new[] { "search", "poll", "latest", "image", "events" } })
     </div>
 
 </div>
@@ -276,8 +270,6 @@
                     $("#" + value).addClass('hide');
                 });
             }
-
-            
         }
         //To set, which one will be opened
         $('.accordion .accordion-button').on('click', function(){ 
@@ -311,9 +303,7 @@
                     $('.accordion').find("[data-bs-target='#" + target + "'] i").removeClass('fa-plus');
                     $('.accordion').find("[data-bs-target='#" + target + "'] i").addClass('fa-minus');
                 }
-
             }
-
             //Save data to sessionStorage
             let string = JSON.stringify(retArray)
             localStorage.setItem('selectedCollapse', string);

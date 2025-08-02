@@ -1,7 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MVCForum.ViewModels.User.UserSignInModel
-@inject SignInManager<ForumUser> SignInManager
 @if (!SignInManager.IsSignedIn(User))
 {
     var returnurl = Context.Request.PathBase + Context.Request.Path;

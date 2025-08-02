@@ -1,5 +1,7 @@
 ﻿:root {
     --primary-header: #191970;
+    --primary-bg: #8199DA;
+    --primary-header-text: #F5FFFA;
     --font-size: 14px;
     --spacing: 1rem;
     --bs-dark-rgb: 25, 25, 112;
@@ -69,15 +71,14 @@ html, body {
     color: white;
 }
 
-
 .subforum-title, .subforum-column {
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
 }
  /* Navbar Styles */
 .nav-tabs .nav-item .nav-link.active {
-    background-color: #8199DA;
-    color: #FFF;
+    background-color: var(--primary-bg);
+    color: var(--primary-header);
 }
 
 .bg-dark {
@@ -153,13 +154,7 @@ a:active,a:hover {
 .table-primary th a {
     color:white;
 }
-/*h1 {
-    font-size: 16px;
-    font-weight: bolder;
-}
-h4, .h4 {
-    font-size: 1.3em;
-}*/
+
 .text-muted {
     color: #fefefe !important;
 }
@@ -168,9 +163,10 @@ h4, .h4 {
 /*           Forums.html                       */
 /* ########################################### */
 
-.subforum-title,.subforum-title a {
+.subforum-title, .subforum-title a, .subforum-title a:active, .subforum-title a:hover, .subforum-title a:visited {
     background-color: var(--primary-header); /*#6A5ACD;*/
-    color: #F5FFFA !important;
+    color: var(--primary-header-text) !important;
+    text-decoration: none;
 }
 
 .subforum-column {
@@ -200,7 +196,6 @@ h4, .h4 {
         border: 0;
         height: 1px;
         background-color: black;
-        /*background-image: linear-gradient(to right, rgba(190, 190, 190, 0), rgba(255, 255, 255, 0.75), rgba(190, 190, 190, 0));*/
     }
     .body {
         display: flex;
@@ -209,24 +204,12 @@ h4, .h4 {
     }
 }
 
-/*   Header Section    */
-
-/* Nav Bar styles */
-
 .navigate {
     background-color: #eee;
     color: #666;
     padding: 3px;
 }
 
-/*.nav-item a {
-    color: darkslategrey;
-}
-
-    .nav-item a:hover {
-        color: white;
-    }
-*/
 .bar-icon {
     color: #fff;
 }
@@ -234,7 +217,7 @@ h4, .h4 {
 /* forum info Styling */
 .forum-info {
     padding: 20px;
-    background-color: #8199DA;
+    background-color: var(--primary-bg);
 }
 
 /* Footer Styling */
@@ -252,7 +235,7 @@ footer {
 .table-head div {
     background-color: var(--primary-header);
     font-weight: bold;
-    color: #F5FFFA;
+    color: var(--primary-header-text);
 }
 .table-head div {
     margin: 0;
@@ -299,8 +282,7 @@ footer {
     background-color: #ddd;
 }
 .note {
-    background-color: #8199DA;
-    
+    background-color: var(--primary-bg);
 }
 
 /* ########################################### */
@@ -378,9 +360,14 @@ div.card-body .body.alt {
     border: var(--bs-dropdown-border-width) solid var(--bs-dropdown-border-color);
     border-radius: var(--bs-dropdown-border-radius);
 }
-.dropdown-menu a:visited{
-    color:white;
-}
+
+    .dropdown-menu a:visited {
+        color: white;
+    }
+
+    .dropdown-menu a:hover {
+        color: #000;
+    }
 .jumpto.dropdown-menu {
     background-color: whitesmoke !important;
     color: black;
@@ -394,10 +381,7 @@ div.card-body .body.alt {
 .jumpto  a.dropdown-item, .jumpto  a.dropdown-item:visited {
     color: black;
 }
-    .dropdown-menu a:hover {
-        color: #000;
-    }
-    .editor-buttons .dropdown-menu a, .editor-buttons .dropdown-menu a:visited {
+.editor-buttons .dropdown-menu a, .editor-buttons .dropdown-menu a:visited {
     color: #000;
 }
 /*Auto complete dropdown*/
@@ -426,10 +410,10 @@ tr.bg-dark, .card-header.bg-dark {
     color: #fff;
 }
 .btn-secondary {
-    background-color: #8199DA;
+    background-color: var(--primary-bg);
 }
 .bg-form {
-    background-color: #8199DA;
+    background-color: var(--primary-bg);
 }
     .bg-form h1.bg-dark {
         background-color: #6A5ACD !important;
@@ -651,7 +635,7 @@ a.latestpost-title {
 }
 
 .accordion-button:not(.collapsed) {
-    color: #F5FFFA !important;
+    color: var(--primary-header-text) !important;
     background-color: var(--primary-header);
     box-shadow: revert;
 }
@@ -662,7 +646,7 @@ a.latestpost-title {
     box-shadow: var(--bs-accordion-btn-focus-box-shadow);
 }
 .accordion-button {
-    color: #F5FFFA !important;
+    color: var(--primary-header-text) !important;
     background-color: var(--primary-header);
     box-shadow: revert;
 }
@@ -681,7 +665,9 @@ a.latestpost-title {
     content: "\f1fd\00a0";
     color: goldenrod !important
 }
-
+li.my-fc-row {
+    list-style-type: none;
+}
 .event-birthday span.fc-content span.fc-title {
     color: goldenrod !important
 }
@@ -695,7 +681,7 @@ a.latestpost-title {
     padding: .25rem !important;
 }
 .table-row .status .fa.fa-stack-1x {
-    color: #191970 !important;
+    color: var(--primary-header) !important;
 }
 
 .table-row .status .fa.fa-fire {

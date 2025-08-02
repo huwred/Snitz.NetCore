@@ -60,7 +60,7 @@
     width: 100%;
     height: auto;
     position: relative;
-    padding-top: 5%;
+    padding-top: 10%;
 }
 
 .about__banner-img {
@@ -160,4 +160,21 @@
 }
 .profile-popup {
     cursor: pointer;
+}
+.contact-card {
+    width: 70%;
+    margin: auto;
+    min-height: 200px;
+}
+@media (max-width: 47.999rem) {
+    .about__stats {
+        flex-direction: column;
+    }
+
+    .about__banner {
+        padding-top: 30%;
+    }
+    .contact-card {
+        width: 99%;
+    }
 }

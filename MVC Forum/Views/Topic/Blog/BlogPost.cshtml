@@ -20,9 +20,7 @@
         <h1>@BbCodeProcessor.Subject(Model.Title) </h1>
         <div class="author-info">
             <div class="author-details">
-                <a href="~/Account/Detail/@Model.Member.Name" title="@Model.Member.Name">
-                    <snitz-avatar src="~/Content/Avatar/@Model.Member.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle avatar-container mb-2" member="@Model.Member.Name" />
-                </a>
+                <snitz-avatar src="~/Content/Avatar/@Model.Member.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle avatar-container mb-2 profile-popup" member="@Model.Member.Name" data-id="@Model.MemberId"/>
                 <div class="info">
                     <h4>@Model.Member.Name</h4>
                     <span class="role">@Model.Member.Title</span>

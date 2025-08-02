@@ -19,6 +19,9 @@
 }
 @section MetaData
 {
+    <meta name="title" content="Latest Posts" />
+    <meta name="description" content="Listing of the latest posts on the Forum" />
+    <meta name="robots" content="index,follow" />
     @if (refresh > 0)
     {
         <meta http-equiv="refresh" content="@refresh">
@@ -43,7 +46,7 @@
                 <form id="defaultdays-form" asp-action="Active" class="form-inline" method="get">
                     <div class="row m-2">
                         <div class="col">
-                            <partial snitz-if="@(SnitzConfig.GetIntValue("STRGROUPCATEGORIES") == 1)" name="CategoryFilter" />
+                            <partial snitz-if="@(SnitzConfig.GetIntValue("STRGROUPCATEGORIES") == 1)" name="GroupFilter" />
                         </div>
                     </div>
                     <div class="row m-2">
@@ -99,17 +102,7 @@
             @await Component.InvokeAsync("Members", new { template = "CategoryForumJumpTo"})
             <partial name="IconInfo" />
         </div>
-        <div class="d-none d-xxl-block col-3">
-            <partial name="QuickSearch" />
-            @await Component.InvokeAsync("Members", new{max=10})
-            @if (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALPUBLIC") == 1)
-            {
-                @await Component.InvokeAsync("Events", new { template = "UpcomingEvents" })
-            }
-            <partial name="FeaturedPoll" />
-            @await Component.InvokeAsync("Members", new { template = "CategoryForumList" })
-        </div>
-
+        @await Component.InvokeAsync("Widgets", new { template = "sidebar", widgets = new[] { "search", "members", "events" } })
     </div>
 </div>
 

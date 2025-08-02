@@ -1,0 +1,36 @@
+﻿@using MVCForum.View_Components
+@model SidebarViewModel
+@{
+
+}
+<div class="d-none d-lg-block @Model.Width widget-sidebar">
+    <partial name="QuickSearch" snitz-if="@(Model.Options?.Contains("search"))" />
+    <partial name="FeaturedPoll" snitz-if="@(Model.Options?.Contains("poll"))" />
+    @if (Model.Options!.Contains("latest"))
+    {
+        <partial name="LatestPosts" model="@Model.LatestPosts" />
+    }
+    @if (SnitzConfig.GetIntValue("INTFEATUREDPHOTO") == 1 && Model.Options!.Contains("image"))
+    {
+        @await Component.InvokeAsync("ImageAlbum", new { template = "Featured" })
+    }
+    @if (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1
+        && SnitzConfig.GetIntValue("INTCALPUBLIC") == 1 && Model.Options!.Contains("events"))
+    {
+        @await Component.InvokeAsync("Events", new { template = "UpcomingEvents" })
+    }
+    @if (Model.Options!.Contains("blog"))
+    {
+        @await Component.InvokeAsync("Blog", new { template = "TagCloud", id = Model.ForumId })
+        @await Component.InvokeAsync("Blog", new { template = "List", id = Model.ForumId })
+    }
+    @if (Model.Options!.Contains("members"))
+    {
+        @await Component.InvokeAsync("Members", new { max = 10 })
+    }
+    @if (Model.Options!.Contains("catlist"))
+    {
+        @await Component.InvokeAsync("Members", new { template = "CategoryForumList" })
+    }
+</div>
+

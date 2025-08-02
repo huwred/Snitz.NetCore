@@ -6,9 +6,9 @@
 @using Snitz.Events.Helpers
 @using Snitz.PostThanks.Helpers
 @using SnitzCore.Data
+@using SnitzCore.Data.Extensions
 @using SnitzCore.Service.Extensions
 @using SnitzCore.Service.TagHelpers
-@inject SignInManager<ForumUser> SignInManager
 @inject IEnumerable<ISnitzStartupService> pluginservices
 @section MetaData
 {
@@ -163,6 +163,23 @@
     {
         TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.ForumId);
     }
+    // var tracked = SnitzCookie.Tracked(Model.Id.ToString());
+    // bool newPosts;
+    // if (tracked != null)
+    // {
+    //     var today = DateTime.UtcNow.ToString("yyyyMM");
+    //     newPosts = (today + tracked).FromForumDateStr() < Model.l.FromForumDateStr();
+    //     if ((DateTime)ViewData["LastVisitDateTime"] > Model.LastPostDate.FromForumDateStr())
+    //     {
+    //         SnitzCookie.ClearTracking(Model.Id.ToString());
+    //         newPosts = (DateTime)ViewData["LastVisitDateTime"] < Model.LastPostDate.FromForumDateStr();
+    //     }
+
+    // }
+    // else
+    // {
+    //     newPosts = (DateTime)ViewData["LastVisitDateTime"] < topic.LastPostDate.FromForumDateStr();
+    // }
 }
     @if (Model.AccessDenied)
     {

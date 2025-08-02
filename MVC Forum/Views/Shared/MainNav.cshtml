@@ -2,7 +2,6 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using SnitzCore.Service.TagHelpers
 @inject UserManager<ForumUser> UserManager
-@inject SignInManager<ForumUser> SignInManager
 
 @{
     var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? SnitzConfig.GetValueWithDefault("STRDEFAULTTHEME", "SnitzTheme");

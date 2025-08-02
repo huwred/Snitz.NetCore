@@ -6,21 +6,31 @@
             minLength: 3
         });
     });
+    if (SnitzVars.pending > 0) {
+        $('#forumAlert').modal('show');
+        setTimeout(function () {
+            $('#forumAlert').modal('hide');
+        }, 3000);
+    }
 });
 
 String.prototype.replaceAt=function(index, character) {
     return this.substr(0, index) + character + this.substr(index+character.length);
 }
+new bootstrap.Tooltip(document.body, {
+    selector: "[data-toggle='tooltip']"
+});
+const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+const appendAlert = (message, type) => {
+    const wrapper = document.createElement('div')
+    wrapper.innerHTML = [
+        `<div class="alert alert-${type} alert-dismissible position-absolute top-50 start-50 translate-middle" role="alert">`,
+        `   <div>${message}</div>`,
+        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+        '</div>'
+    ].join('')
 
-function bbcodeinsert(starttag, endtag, textareaid) {
-    var $txt = $("#" + textareaid);
-            
-    var textAreaTxt = $txt.val();
-    var startPos = $txt[0].selectionStart;
-    var endPos = $txt[0].selectionEnd;
-    var sel = $txt.val().substring(startPos, endPos);
-
-    $txt.val(textAreaTxt.replaceAt(startPos, starttag + sel + endtag) + textAreaTxt.substring(endPos));
+    alertPlaceholder.append(wrapper)
 }
 
 $(document).on("click",".insert-emote", function () {
@@ -34,6 +44,7 @@ $(document).on("click",".insert-emote", function () {
 $(document).on("click",".btn-postform", function () {
     bbcodeinsert($(this).data("first"), $(this).data("last"), "msg-text");
 });
+
 $(document).on("click", ".cat-change",
     function() {
         location.href = SnitzVars.baseUrl + "/Forum";
@@ -47,27 +58,7 @@ $(document).on("change", "#theme-change",
         });
     });
 
-function ValidateForms() {
-    // Get the forms we want to add validation styles to
 
-    var forms = document.getElementsByClassName('needs-validation');
-    // Loop over them and prevent submission
-    var validation = Array.prototype.filter.call(forms,
-        function(form) {
-            form.addEventListener('submit',
-                function(event) {
-                    if (form.checkValidity() === false) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-
-                    form.classList.add('was-validated');
-                },
-                false);
-        });
-
-
-}
 /*update the session topiclist if checkbox selected*/
 $(document).on('mouseup','.topic-select', function () {
     $.ajax({
@@ -87,6 +78,7 @@ $(document).on('change','.topic-select', function () {
     }
 
 });
+/* Merge Topics */
 $(document).on('click','.fa-object-group',function(e) {
     e.preventDefault();
     var selected = [];
@@ -116,7 +108,6 @@ $(document).on('click','.fa-object-group',function(e) {
             });
     });
 });
-
 /*update the session replylist if checkbox selected*/
 $(document).on('mouseup','.reply-select', function () {
 
@@ -136,3 +127,120 @@ $(document).on('change','.reply-select', function () {
     }
 
 });
+/* Restart confirmation */
+$(document).on('click', '.confirm-restart', function (e) {
+    e.preventDefault();
+    var href = $(this).attr('href');
+    $('#confirmRestart').data('url', href).modal('show');
+
+    $('#confirmRestart').on('click', '#btnRestartYes', function (e) {
+        e.preventDefault();
+        $.post(href, '',
+            function (data, status) {
+                if (!data) {
+                    appendAlert("There was a problem!", 'error');
+                } else {
+                    $('#confirmRestart .modal-body').html("<p>Application is restarting, please wait ...</p>");
+                    $('#btnRestartYes').hide();
+                    setTimeout(function () {
+                        $('#confirmRestart').modal('hide');
+                        location.reload(true);
+                    }, 25000);
+
+                }
+            });
+    });
+});
+/* Busy Indicator */
+$(document).on('submit', 'form', function () {
+    displayBusyIndicator();
+});
+$(window).on('beforeunload', function () {
+    displayBusyIndicator();
+});
+// Handle page reloads and back/forward navigation
+
+window.addEventListener("pageshow", function (event) {
+    var historyTraversal = event.persisted ||
+        (typeof window.performance != "undefined" &&
+            window.performance.navigation.type === 2);
+    if (historyTraversal) {
+        // Handle page restore.
+        window.location.reload();
+    }
+});
+
+$(document).ajaxComplete(function (event, xhr, settings) {
+    $('.loading').hide();
+});
+
+/* * Show the page load time in the footer
+ * This is only shown if the showPageTimer variable is set to 1
+ */
+if (SnitzVars.showPageTimer == '1') {
+    window.addEventListener('load', () => {
+        const [pageNav] = performance.getEntriesByType('navigation');
+        const footer = document.getElementById('loadTime');
+
+        let workerTime = 0;
+
+        if (pageNav.responseEnd > 0) {
+            workerTime = (pageNav.responseEnd - pageNav.workerStart) / 1000;
+
+            if (footer) {
+                var test = (workerTime).toLocaleString(
+                    undefined, // leave undefined to use the visitor's browser 
+                    // locale or a string like 'en-US' to override it.
+                    { minimumFractionDigits: 2 }
+                );
+                footer.textContent = `Page loaded in ${test} s`;
+            }
+
+        }
+    });
+}
+
+/* * Display a busy indicator when the page is loading */
+function displayBusyIndicator() {
+    $('.loading').show();
+}
+/* * Validate forms with the class 'needs-validation'
+ * This function prevents form submission if the form is invalid
+ */
+function ValidateForms() {
+    // Get the forms we want to add validation styles to
+
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms,
+        function (form) {
+            form.addEventListener('submit',
+                function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+
+                    form.classList.add('was-validated');
+                },
+                false);
+        });
+
+
+}
+
+/* * Insert BBCode tags around the selected text in the textarea
+ * @param {string} starttag - The opening BBCode tag
+ * @param {string} endtag - The closing BBCode tag
+ * @param {string} textareaid - The ID of the textarea to modify
+ */
+function bbcodeinsert(starttag, endtag, textareaid) {
+    var $txt = $("#" + textareaid);
+
+    var textAreaTxt = $txt.val();
+    var startPos = $txt[0].selectionStart;
+    var endPos = $txt[0].selectionEnd;
+    var sel = $txt.val().substring(startPos, endPos);
+
+    $txt.val(textAreaTxt.replaceAt(startPos, starttag + sel + endtag) + textAreaTxt.substring(endPos));
+}

@@ -39,7 +39,10 @@ a.btn:hover {
 
     border-radius: 5px;
 }
+    .subforum-title, .subforum-title a, .subforum-title a:active, .subforum-title a:hover, .subforum-title a:visited {
 
+        text-decoration: none;
+    }
 .subforum-row{
     display: grid;
     grid-template-columns: 7% 60% 15% 18%;
@@ -524,7 +527,12 @@ img.avatarsmall {
     max-width: 50px;
     max-height: 50px;
 }
-
+img.avatar {
+    margin: 2px;
+    width: auto;
+    max-width: 80px;
+    max-height: 80px;
+}
 /* The overlay effect (full height and width) - lays on top of the container and over the image */
 .overlay-delete {
     position: absolute;

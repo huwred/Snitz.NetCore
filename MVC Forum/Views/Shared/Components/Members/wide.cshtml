@@ -50,7 +50,7 @@
     <li>
         @foreach (var activemember in activemembers)
         {
-            <snitz-avatar src="~/Content/Avatar/@activemember!.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle" />
+            <snitz-avatar src="~/Content/Avatar/@activemember!.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle profile-popup" data-id="@activemember.Id" />
         }
     </li>
     <li><hr /></li>
