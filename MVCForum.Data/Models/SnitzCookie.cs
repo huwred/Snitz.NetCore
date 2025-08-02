@@ -115,6 +115,46 @@ namespace SnitzCore.Data.Models
         }
         #endregion
 
+        #region Topic read tracker
+        public void ClearTracking(string topicId)
+        {
+            IDictionary<string, string> cookie = GetMultipleUsingSingleKeyCookies("TopicTracking");
+            if (cookie.ContainsKey(topicId))
+            {
+                cookie.Remove(topicId);
+                SetMultipleUsingSingleKeyCookies("TopicTracking", cookie, true);
+            }
+
+            //SetMultipleUsingSingleKeyCookies("TopicTracking", cookie, true);
+        }
+
+        public void UpdateTopicTrack(string topicId)
+        {
+            IDictionary<string, string> cookie = GetMultipleUsingSingleKeyCookies("TopicTracking");
+            if (!cookie.ContainsKey(topicId))
+            {
+                cookie.Add(topicId, DateTime.UtcNow.ToString("ddHHmmss"));
+            }
+            else
+            {
+                cookie[topicId] = DateTime.UtcNow.ToString("ddHHmmss");
+            }
+
+            SetMultipleUsingSingleKeyCookies("TopicTracking", cookie, true);
+        }
+
+        public string? Tracked(string topicId)
+        {
+            var cookie = GetMultipleUsingSingleKeyCookies("TopicTracking");
+            string? lastvisit;
+            if (!cookie.TryGetValue(topicId, out lastvisit))
+                lastvisit = null;
+
+            return lastvisit;
+
+        }
+        #endregion
+
 
         #region Active Topic cookies
         public  string? GetActiveRefresh()

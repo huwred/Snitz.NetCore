@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.13.2" />
+    <PackageReference Include="Azure.Identity" Version="1.14.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.13" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
       <PrivateAssets>all</PrivateAssets>
@@ -27,7 +27,7 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.13" />
     <PackageReference Include="Microsoft.Maui.Graphics" Version="8.0.3" />
     <PackageReference Include="Microsoft.Maui.Graphics.Skia" Version="8.0.3" />
-    <PackageReference Include="MimeKit" Version="4.10.0" />
+    <PackageReference Include="MimeKit" Version="4.13.0" />
     <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.5.0" />
     <PackageReference Include="System.Runtime.Caching" Version="8.0.1" />

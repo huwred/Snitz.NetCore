@@ -47,5 +47,6 @@ namespace SnitzCore.Data.Interfaces
         void MoveReplies(int oldtopicid, Post newTopic);
         Post? SplitTopic(string[] ids, int forumId, string subject);
         Task<bool> MakeSticky(int id, short status = 0);
+        Task UpdateReplyTopic(Post post);
     }
 }
