@@ -95,6 +95,36 @@ namespace SnitzCore.Service
             return messageBody;
         }
 
+        public Task TopicMergeEmail(Post topic, Post mainTopic, Member author)
+        {
+            if (_config.GetIntValue("STREMAIL",0) != 1)
+                return Task.CompletedTask;
+            if(author.Email == null){
+                return Task.CompletedTask;
+            }
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;;
+            
+            EmailMessage emessage = new EmailMessage(new List<string>(){author.Email!}, _languageResource.GetString("MoveNotify"), 
+                ParseTemplate("mergetopic.html",_languageResource.GetString("tipMergeTopic"),author.Email!,author.Name, $"{_config.ForumUrl}Topic/Index/{mainTopic.Id}" , cultureInfo.Name));
+
+            var emailMessage = CreateEmailMessage(emessage);
+            return Send(emailMessage);
+
+        }
+
+        public void SendPMNotification(Member taggedmember)
+        {
+            if(taggedmember.Email == null){
+                return;
+            }
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;;
+            
+            EmailMessage emessage = new EmailMessage(new List<string>(){taggedmember.Email}, _languageResource.GetString("NewMessage"), 
+                ParseTemplate("pmnotify.html",_languageResource.GetString("NewMessage"),taggedmember.Email,taggedmember.Name, $"{_config.ForumUrl}PrivateMessage/Inbox" , cultureInfo.Name));
+
+            var emailMessage = CreateEmailMessage(emessage);
+            Send(emailMessage);
+        }
 
         public string ParseTemplate(string template,string subject, string toemail,string tousername, string callbackUrl, string? lang, string? Extras = null)
         {
@@ -152,6 +182,7 @@ namespace SnitzCore.Service
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = message.Content };
             return emailMessage;
         }
+
         private Task Send(MimeMessage mailMessage)
         {
             using (var client = new MailKit.Net.Smtp.SmtpClient())
@@ -190,35 +221,5 @@ namespace SnitzCore.Service
             return Task.CompletedTask;
         }
 
-        public Task TopicMergeEmail(Post topic, Post mainTopic, Member author)
-        {
-            if (_config.GetIntValue("STREMAIL",0) != 1)
-                return Task.CompletedTask;
-            if(author.Email == null){
-                return Task.CompletedTask;
-            }
-            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;;
-            
-            EmailMessage emessage = new EmailMessage(new List<string>(){author.Email!}, _languageResource.GetString("MoveNotify"), 
-                ParseTemplate("mergetopic.html",_languageResource.GetString("tipMergeTopic"),author.Email!,author.Name, $"{_config.ForumUrl}Topic/Index/{mainTopic.Id}" , cultureInfo.Name));
-
-            var emailMessage = CreateEmailMessage(emessage);
-            return Send(emailMessage);
-
-        }
-
-        public void SendPMNotification(Member taggedmember)
-        {
-            if(taggedmember.Email == null){
-                return;
-            }
-            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;;
-            
-            EmailMessage emessage = new EmailMessage(new List<string>(){taggedmember.Email}, _languageResource.GetString("NewMessage"), 
-                ParseTemplate("pmnotify.html",_languageResource.GetString("NewMessage"),taggedmember.Email,taggedmember.Name, $"{_config.ForumUrl}PrivateMessage/Inbox" , cultureInfo.Name));
-
-            var emailMessage = CreateEmailMessage(emessage);
-            Send(emailMessage);
-        }
     }
 }

@@ -48,8 +48,8 @@ namespace SnitzCore.Service
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
             {
-                var badwords = _dbContext.Badwords.AsNoTracking()
-                    .ToDictionary(t=>t.Word);
+                var badwords = CacheProvider.GetOrCreate("Badwords", () =>_dbContext.Badwords.AsNoTracking()
+                    .ToDictionary(t=>t.Word),TimeSpan.FromMinutes(15));
                 foreach (var badword in badwords)
                 {
                     post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
@@ -87,8 +87,8 @@ namespace SnitzCore.Service
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
             {
-                var badwords = _dbContext.Badwords.AsNoTracking()
-                    .ToDictionary(t=>t.Word);
+                var badwords = CacheProvider.GetOrCreate("Badwords", () =>_dbContext.Badwords.AsNoTracking()
+                    .ToDictionary(t=>t.Word),TimeSpan.FromMinutes(15));
                 foreach (var badword in badwords)
                 {
                     post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
@@ -253,33 +253,100 @@ namespace SnitzCore.Service
 
             }
         }
+        public async Task UpdateReplyTopic(Post post)
+        {
 
+            var postupdate = new Post()
+            {
+                Id          = post.Id,
+                IsSticky = post.IsSticky,
+                Status = post.Status,
+                ArchiveFlag = post.ArchiveFlag
+
+            };
+
+            _dbContext.Posts.Attach(postupdate);
+
+            _dbContext.Entry(postupdate).Property(x => x.IsSticky).IsModified = true;
+            _dbContext.Entry(postupdate).Property(x => x.Status).IsModified = true;
+            _dbContext.Entry(postupdate).Property(x => x.ArchiveFlag).IsModified = true;
+            await _dbContext.SaveChangesAsync();
+
+        }
         public async Task Update(Post post)
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
             {
-                var badwords = _dbContext.Badwords.AsNoTracking()
-                    .ToDictionary(t=>t.Word);
+                var badwords = CacheProvider.GetOrCreate("Badwords", () =>_dbContext.Badwords.AsNoTracking()
+                    .ToDictionary(t=>t.Word),TimeSpan.FromMinutes(15));
                 foreach (var badword in badwords)
                 {
                     post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
                 }
             }
-            _dbContext.Update(post);
+
+            var postupdate = new Post()
+            {
+                Id          = post.Id,
+                ForumId = post.ForumId,
+                CategoryId = post.CategoryId,
+                Content    = post.Content,
+                Title = post.Title,
+                IsSticky = post.IsSticky,
+                AllowRating = post.AllowRating,
+                Sig = post.Sig,
+                Status = post.Status,
+                ArchiveFlag = post.ArchiveFlag,
+                LastEdit = post.LastEdit,
+                LastEditby = post.LastEditby,
+            };
+
+            _dbContext.Posts.Attach(postupdate);
+
+            _dbContext.Entry(postupdate).Property(x => x.ForumId).IsModified = true;
+            _dbContext.Entry(postupdate).Property(x => x.CategoryId).IsModified = true;
+            _dbContext.Entry(postupdate).Property(x => x.Content).IsModified = true;
+            _dbContext.Entry(postupdate).Property(x => x.Title).IsModified = true;
+            _dbContext.Entry(postupdate).Property(x => x.IsSticky).IsModified = true;
+
+            _dbContext.Entry(postupdate).Property(x => x.AllowRating).IsModified = true;
+            _dbContext.Entry(postupdate).Property(x => x.Sig).IsModified = true;
+            _dbContext.Entry(postupdate).Property(x => x.Status).IsModified = true;
+            _dbContext.Entry(postupdate).Property(x => x.ArchiveFlag).IsModified = true;
+            _dbContext.Entry(postupdate).Property(x => x.LastEdit).IsModified = true;
+            _dbContext.Entry(postupdate).Property(x => x.LastEditby).IsModified = true;
             await _dbContext.SaveChangesAsync();
+
         }
         public async Task Update(PostReply post)
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
             {
-                var badwords = _dbContext.Badwords.AsNoTracking()
-                    .ToDictionary(t=>t.Word);
+                var badwords = CacheProvider.GetOrCreate("Badwords", () =>_dbContext.Badwords.AsNoTracking()
+                    .ToDictionary(t=>t.Word),TimeSpan.FromMinutes(15));
                 foreach (var badword in badwords)
                 {
                     post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
                 }
             }
-            _dbContext.Update(post);
+            var replyupdate = new PostReply()
+            {
+                Id          = post.Id,
+                Content    = post.Content,
+                Sig = post.Sig,
+                Status = post.Status,
+                LastEdited = post.LastEdited,
+                LastEditby = post.LastEditby,
+            };
+
+            _dbContext.Replies.Attach(replyupdate);
+
+            _dbContext.Entry(replyupdate).Property(x => x.Content).IsModified = true;
+            _dbContext.Entry(replyupdate).Property(x => x.Sig).IsModified = true;
+            _dbContext.Entry(replyupdate).Property(x => x.Status).IsModified = true;
+            _dbContext.Entry(replyupdate).Property(x => x.LastEdited).IsModified = true;
+            _dbContext.Entry(replyupdate).Property(x => x.LastEditby).IsModified = true;
+
             await _dbContext.SaveChangesAsync();
         }
         public async Task UpdateViewCount(int id)
@@ -342,7 +409,7 @@ namespace SnitzCore.Service
         }
         public IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize = 10, int pagenumber = 1)
         {
-            var replies = _dbContext.Replies.Where(p => p.PostId == topicid)
+            var replies = _dbContext.Replies.AsNoTracking().Where(p => p.PostId == topicid)
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Member).AsNoTracking()
                 .OrderByDescending(post => post.Created)
@@ -444,7 +511,7 @@ namespace SnitzCore.Service
                 totalcount = 0;
                 return new PagedList<Post>(Array.Empty<Post>(), 1, pagesize);
             }
-            var posts = _dbContext.Posts.Where(p=>p.Title.Contains(searchQuery) || p.Content.Contains(searchQuery));
+            var posts = _dbContext.Posts.AsNoTracking().Where(p=>p.Title.Contains(searchQuery) || p.Content.Contains(searchQuery));
 
             posts = posts.Include(p => p.Forum).OrderByDescending(p=>p.LastPostDate??p.Created);
             if (catid > 0)
@@ -603,12 +670,12 @@ namespace SnitzCore.Service
 
         public bool HasPoll(int id)
         {
-            return _dbContext.Polls.SingleOrDefault(p=>p.TopicId == id) != null;
+            return _dbContext.Polls.AsNoTracking().SingleOrDefault(p=>p.TopicId == id) != null;
         }
 
         public Poll? GetPoll(int topicid)
         {
-            return _dbContext.Polls.Include(p=>p.PollAnswers).SingleOrDefault(p=>p.TopicId ==topicid);
+            return _dbContext.Polls.AsNoTracking().Include(p=>p.PollAnswers).SingleOrDefault(p=>p.TopicId ==topicid);
         }
 
         public List<Post> GetById(int[] ids)

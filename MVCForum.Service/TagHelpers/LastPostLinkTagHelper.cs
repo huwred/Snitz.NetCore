@@ -40,12 +40,13 @@ namespace SnitzCore.Service.TagHelpers
             var link = new TagBuilder("a");
 
             link.Attributes.Add("rel", "index,follow");
+            link.Attributes.Add("data-toggle", "tooltip");
             link.Attributes.Add("href", $"{webrootpath}/Topic/{TopicId}/?replyid={ReplyId}");
             if (TextLocalizerDelegate != null) link.Attributes.Add("title", TextLocalizerDelegate("tipLastPost"));
             link.InnerHtml.AppendHtml(@"<i class=""fa fa-arrow-right""></i>");
 
             output.TagName = "span";
-            output.Content.AppendHtml($@"<time datetime=""{PostDate?.ToTimeagoDate()}"" class=""timeago"" aria-label=""Posted on {PostDate?.ToLocalTime()}"">{PostDate?.ToLocalTime().ToForumDisplay()}</time>&nbsp;");
+            output.Content.AppendHtml($@"<time data-toggle=""tooltip"" datetime=""{PostDate?.ToTimeagoDate()}"" class=""timeago"" aria-label=""Posted on {PostDate?.ToLocalTime()}"">{PostDate?.ToLocalTime().ToForumDisplay()}</time>&nbsp;");
             if ((bool)JumpTo!)
             {
                 output.Content.AppendHtml(link);

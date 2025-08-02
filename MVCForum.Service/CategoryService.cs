@@ -86,12 +86,12 @@ namespace SnitzCore.Service
 
         public IEnumerable<Group> GetGroups()
         {
-            return _dbContext.Groups.Include(g=>g.GroupName).Include(g=>g.Category).AsQueryable();
+            return _dbContext.Groups.AsNoTracking().Include(g=>g.GroupName).Include(g=>g.Category).AsQueryable();
         }
 
         public IEnumerable<GroupName> GetGroupNames()
         {
-            return _dbContext.GroupName.AsQueryable();
+            return _dbContext.GroupName.AsNoTracking().AsQueryable();
         }
 
         public async Task DeleteForums(int id)

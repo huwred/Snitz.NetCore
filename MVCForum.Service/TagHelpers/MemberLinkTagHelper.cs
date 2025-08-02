@@ -33,6 +33,7 @@ namespace SnitzCore.Service.TagHelpers
             if (webrootpath == null || webrootpath == "/") { webrootpath = ""; }
             output.TagName = "a";
             output.Attributes.Add("rel", "noopener noreferrer nofollow");
+            output.Attributes.Add("data-toggle","tooltip");
             if (TextLocalizerDelegate != null) output.Attributes.Add("title", TextLocalizerDelegate("tipViewProfile"));
             if (MemberName != null)
             {

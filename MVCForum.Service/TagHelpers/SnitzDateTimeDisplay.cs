@@ -36,6 +36,7 @@ namespace SnitzCore.Service.TagHelpers
             { output.AddClass("timeago", HtmlEncoder.Default); }
             output.Attributes.Add("datetime",SnitzDate?.ToTimeagoDate());
             output.Attributes.Add("aria-label", $"{SnitzDate?.ToLocalTime()}");
+            output.Attributes.Add("data-toggle","tooltip");
             if (!string.IsNullOrWhiteSpace(Format))
             {
                 output.PreContent.SetHtmlContent(SnitzDate?.ToLocalTime().ToCustomDisplay(Format));

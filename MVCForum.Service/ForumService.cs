@@ -150,7 +150,8 @@ namespace SnitzCore.Service
         }
         public Dictionary<int, string?> CategoryList()
         {
-            return _dbContext.Categories.AsNoTracking().OrderBy(c=>c.Sort).Select(c=> new {c.Id, value = c.Name}).ToDictionary(k=>k.Id,k=>k.value);
+            return CacheProvider.GetOrCreate("CatList", () => _dbContext.Categories.AsNoTracking().OrderBy(c=>c.Sort).Select(c=> new {c.Id, value = c.Name}).ToDictionary(k=>k.Id,k=>k.value), TimeSpan.FromMinutes(60));
+            //return _dbContext.Categories.AsNoTracking().OrderBy(c=>c.Sort).Select(c=> new {c.Id, value = c.Name}).ToDictionary(k=>k.Id,k=>k.value);
         }
         public Post? GetLatestPost(int forumId)
         {
@@ -194,9 +195,9 @@ namespace SnitzCore.Service
         {
             if (admin)
             {
-                return _dbContext.Forums.AsNoTracking().OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value);
+                return CacheProvider.GetOrCreate("ForumList", () => _dbContext.Forums.AsNoTracking().OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value),TimeSpan.FromDays(1));
             }
-            return _dbContext.Forums.AsNoTracking().Where(f=>f.Privateforums == ForumAuthType.All).OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value);
+            return CacheProvider.GetOrCreate("ForumList", () => _dbContext.Forums.AsNoTracking().Where(f=>f.Privateforums == ForumAuthType.All).OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value),TimeSpan.FromDays(1));
         }
         public Dictionary<int, string> ModeratedForums()
         {
@@ -206,7 +207,7 @@ namespace SnitzCore.Service
         {
             var id = rolename.ToUpperInvariant().Replace("FORUM_","");
             var result = 
-                _dbContext.Forums.OrderBy(f=>f.Id).FirstOrDefault(f => f.Id == Convert.ToInt32(id));
+                _dbContext.Forums.AsNoTracking().OrderBy(f=>f.Id).FirstOrDefault(f => f.Id == Convert.ToInt32(id));
 
             if (result != null) return result.Title;
             return "Forum no longer exists!";
@@ -296,7 +297,7 @@ namespace SnitzCore.Service
 
         public IEnumerable<string> GetTagStrings(List<int> list)
         {
-            return _dbContext.Posts.Where(f => EF.Constant(list).Contains(f.ForumId)).Select(p => p.Content);
+            return _dbContext.Posts.AsNoTracking().Where(f => EF.Constant(list).Contains(f.ForumId)).Select(p => p.Content);
 
         }
         public IEnumerable<MyViewTopic> FetchAllMyForumTopics(IEnumerable<int> forumids)
@@ -334,8 +335,8 @@ namespace SnitzCore.Service
 
         public Dictionary<int, string> AllowedUsers(int id)
         {
-            return _dbContext.ForumAllowedMembers.Include(am => am.Member).Where(am => am.ForumId == id)
-                .ToDictionary(u => u.MemberId, u => u.Member?.Name!);
+            return CacheProvider.GetOrCreate("AllowedUsers_" + id, () =>  _dbContext.ForumAllowedMembers.AsNoTracking().Include(am => am.Member).Where(am => am.ForumId == id)
+                .ToDictionary(u => u.MemberId, u => u.Member?.Name!),TimeSpan.FromHours(1));
 
         }
 
