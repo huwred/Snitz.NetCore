@@ -5,6 +5,7 @@ using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -82,6 +83,20 @@ namespace SnitzCore.BackOffice.Controllers
         {
             var vm = _memberService.UserNameFilter().ToList();
             return View(vm);
+        }
+        public IActionResult ManageAvatars()
+        {
+            var avatars = _dbcontext.Members
+                .AsNoTracking()
+                .Where(a => a.PhotoUrl != null && a.PhotoUrl != "")
+                .Select(a => new AvatarViewModel
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    Path = a.PhotoUrl
+                })
+                .ToList();
+            return PartialView(avatars);
         }
         [HttpGet]
         public IActionResult ManageSubscriptions(int id)
@@ -432,6 +447,30 @@ namespace SnitzCore.BackOffice.Controllers
             //return Json(new { result = true });
             return PartialView("ManageRoles",vm);
         }
+        public IActionResult DeleteAvatar(int id, string img)
+        {
+            var member = new Member
+            {
+                Id = id,
+                PhotoUrl = null
+            };
+            try
+            {
+                _dbcontext.Members.Attach(member);
+                _dbcontext.Entry(member).Property(m => m.PhotoUrl).IsModified = true;
+                _dbcontext.SaveChanges();
+                if (System.IO.File.Exists(_env.WebRootPath + @"\Content\Avatar\" + img))
+                {
+                    System.IO.File.Delete(_env.WebRootPath + @"Content\Avatar\" + img);
+                }
+                return Json(new{success=true});
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
+                return Json(new { success = false, responseText = e.Message });
+            }
+        }
 
         public async Task<IActionResult> DelMemberFromRole(string username, string role)
         {
@@ -457,8 +496,6 @@ namespace SnitzCore.BackOffice.Controllers
                 select s).ToList();
             return PartialView("ManageRoles",vm);
         }
-
-
 
         public IActionResult EmailConfigUpdate(AdminEmailServer model)
         {

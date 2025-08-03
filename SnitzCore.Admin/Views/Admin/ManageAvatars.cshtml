@@ -1,0 +1,21 @@
+﻿@using Microsoft.Extensions.FileProviders
+@using SnitzCore.BackOffice.ViewModels
+@model List<AvatarViewModel>
+
+<div class="container overflow-hidden py-6">
+    <div class="grid-wrapper col">
+        @foreach (var item in Model)
+        {
+            <div class="lc-block">
+                <figure>
+                    <snitz-avatar src="~/Content/Avatar/@item.Path" def-src="~/images/notfound.jpg" class="img-thumbnail" data-id="@item.Id" />
+                    <figcaption><i class="fa fa-trash fs-4 del-avatar" data-id="@item.Id" data-img="@item.Path"></i>@item.Name</figcaption>
+                </figure>
+
+            </div>
+        }
+    </div>
+</div>
+
+
+

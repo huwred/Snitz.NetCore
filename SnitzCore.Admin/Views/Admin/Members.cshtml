@@ -12,6 +12,48 @@
             flex: 0 1 50px;
         }
     </style>
+    <style>
+
+        /* Main CSS */
+        .grid-wrapper > div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .grid-wrapper > div > figure {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .grid-wrapper > div > img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .grid-wrapper {
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-auto-rows: 120px;
+            grid-auto-flow: dense;
+        }
+
+            .grid-wrapper .wide {
+                grid-column: span 2;
+            }
+
+            .grid-wrapper .tall {
+                grid-row: span 2;
+            }
+
+            .grid-wrapper .big {
+                grid-column: span 2;
+                grid-row: span 2;
+            }
+
+    </style>
 }
 
 <div class="m-3">
@@ -22,6 +64,7 @@
         <button class="nav-link" id="v-pills-subscriptions-tab" data-bs-toggle="pill" data-bs-target="#v-pills-subscriptions" type="button" role="tab" aria-controls="v-pills-subscriptions" aria-selected="false">Subscriptions</button>
         <button class="nav-link" id="v-pills-usernames-tab" data-bs-toggle="pill" data-bs-target="#v-pills-usernames" type="button" role="tab" aria-controls="v-pills-usernames" aria-selected="false">Username Filters</button>
         <button class="nav-link" id="v-pills-pending-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pending" type="button" role="tab" aria-controls="v-pills-pending" aria-selected="false">Pending Members</button>
+        <button class="nav-link" id="v-pills-avatars-tab" data-bs-toggle="pill" data-bs-target="#v-pills-avatars" type="button" role="tab" aria-controls="v-pills-avatars" aria-selected="false">Avatars</button>
     </div>
     <div class="tab-content bg-white p-4" id="v-pills-tabContent">
         <div class="tab-pane fade show active w-100" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
@@ -255,6 +298,9 @@
         <div class="tab-pane fade" id="v-pills-subscriptions" role="tabpanel" aria-labelledby="v-pills-subscriptions-tab">
             <div id="member-subscriptions"></div>
         </div>
+        <div class="tab-pane fade" id="v-pills-avatars" role="tabpanel" aria-labelledby="v-pills-avatars-tab">
+            <div id="member-avatars"></div>
+        </div>
         <div id="result"></div>
     </div>
 </div>
@@ -284,6 +330,9 @@
                         break;
                     case "v-pills-subscriptions-tab":
                         $('#member-subscriptions').load(SnitzVars.baseUrl + '/Admin/ManageSubscriptions/', function () { });
+                        break;
+                    case "v-pills-avatars-tab":
+                        $('#member-avatars').load(SnitzVars.baseUrl + '/Admin/ManageAvatars/', function () { });
                         break;
                 }
             });
@@ -381,6 +430,9 @@
                     case "v-pills-subscriptions-tab":
                         $('#member-subscriptions').load(SnitzVars.baseUrl + '/Admin/ManageSubscriptions/', function () { });
                         break;
+                    case "v-pills-avatars-tab":
+                        $('#member-avatars').load(SnitzVars.baseUrl + '/Admin/ManageAvatars/', function () { });
+                        break;
                 }
 
             }
@@ -436,5 +488,28 @@
                 $('#popContainer').html(data);
             });
         });
+
+        $(document).on('click', '.del-avatar', function () {
+            var id = $(this).data('id');
+            var img = $(this).data('img');
+            if (confirm('@Localizer["msgConfirmDeleteAvatar"]')) {
+                $.ajax({
+                    url: '@Url.Action("DeleteAvatar", "Admin")',
+                    type: 'POST',
+                    data: { id: id, img: img },
+                    success: function (response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert(error);
+                    }
+                });
+            }
+        });
+
     </script>
 }
