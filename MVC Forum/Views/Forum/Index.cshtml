@@ -74,6 +74,11 @@
         return;
     }
     var subscriptions = MemberService.Current()?.Subscriptions;
+    var formaction = "Index";
+    if(Model.Archives)
+    {
+        formaction = "Archived";
+    }
 }
 @if (!auth)
 {
@@ -82,7 +87,7 @@
         <div class="collapse" id="showFilters">
             <div class="d-flex bd-highlight  m-1">
                 <div class="d-flex bd-highlight">
-                    <form id="defaultdays-form" asp-action="Index" class="form-inline" method="get">
+                    <form id="defaultdays-form" asp-action="@formaction" class="form-inline" method="get">
                         <input type="number" value="@Model.Forum?.Id" name="id" style="display: none;" />
                         <input type="number" value="@pagenum" name="page" style="display: none;" />
                         <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
@@ -125,7 +130,7 @@
         </div>
         <div class="d-flex bd-highlight  m-1">
             <div class="flex-fill w-50">
-                <form asp-action="Index" class="form-inline" method="get">
+                <form asp-action="@formaction" class="form-inline" method="get">
                     <div class="input-group">
                         @if (User.Identity!.IsAuthenticated)
                         {
@@ -206,7 +211,15 @@
                     }
                     <!--Topics start here-->
                     @foreach (var post in Model.Posts!){
-                        <partial name="TopicListing" model="post" view-data="ViewData" />
+                        if(Model.Archives)
+                        {
+                            <partial name="ArchivedTopicListing" model="post" view-data="ViewData" />
+                        }
+                        else
+                        {
+                            <partial name="TopicListing" model="post" view-data="ViewData" />
+                        }
+                        
                     }
                     @if (Model.Forum.Topics == 0)
                     {
@@ -228,7 +241,8 @@
                                     PageSize = ViewBag.PageSize,
                                     OrderBy = Model.Forum!.OrderBy,
                                     SortDir = Model.Forum.SortDir,
-                                    DefaultDays = (int)Model.Forum.DefaultView
+                                    DefaultDays = (int)Model.Forum.DefaultView,
+                                    Archived = Model.Archives
                                 })" />
                 <!--pagination ends-->
                 @await Component.InvokeAsync("Members", new { template = "CategoryForumJumpTo"})

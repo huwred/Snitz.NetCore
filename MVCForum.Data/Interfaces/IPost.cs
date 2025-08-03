@@ -16,6 +16,7 @@ namespace SnitzCore.Data.Interfaces
         IEnumerable<Post> GetAllTopicsAndRelated();
         IPagedList<Post> GetFilteredPost(string searchQuery, out int totalcount, int pagesize, int page, int catid,int forumid);
         IPagedList<Post> Find(ForumSearch searchQuery, out int totalcount, int pagesize, int page);
+        IPagedList<ArchivedPost> FindArchived(ForumSearch searchQuery, out int totalcount, int pagesize, int page);
         Post GetLatestReply(int id);
         Task<int>  Create(Post post);
         Task DeleteTopic(int id);
@@ -48,5 +49,6 @@ namespace SnitzCore.Data.Interfaces
         Post? SplitTopic(string[] ids, int forumId, string subject);
         Task<bool> MakeSticky(int id, short status = 0);
         Task UpdateReplyTopic(Post post);
+        
     }
 }

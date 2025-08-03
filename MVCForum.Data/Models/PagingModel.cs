@@ -10,5 +10,7 @@
         public int PageCount { get; set; } = 0;
 
         public int DefaultDays { get; set; } = 30;
+
+        public bool Archived { get; set; } = false;
     }
 }

@@ -23,6 +23,8 @@ namespace SnitzCore.Service.TagHelpers
         /// Date of the last post
         /// </summary>
         public DateTime? PostDate { get; set; }
+
+        public bool Archived {get;set;} = false;
         /// <summary>
         /// Delegate function for language translation, should be set as
         /// delegate(string s) { return Localizer[s].Value; }
@@ -32,6 +34,7 @@ namespace SnitzCore.Service.TagHelpers
         public LastPostLinkTagHelper(IHttpContextAccessor httpContextAccessor)
         {
             webrootpath = httpContextAccessor.HttpContext?.Request.PathBase;
+
         }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -41,7 +44,15 @@ namespace SnitzCore.Service.TagHelpers
 
             link.Attributes.Add("rel", "index,follow");
             link.Attributes.Add("data-toggle", "tooltip");
-            link.Attributes.Add("href", $"{webrootpath}/Topic/{TopicId}/?replyid={ReplyId}");
+            if (Archived)
+            {
+                link.Attributes.Add("href", $"{webrootpath}/Topic/Archived/{TopicId}/?replyid={ReplyId}");
+            }
+            else
+            {
+                link.Attributes.Add("href", $"{webrootpath}/Topic/{TopicId}/?replyid={ReplyId}");
+            }
+            
             if (TextLocalizerDelegate != null) link.Attributes.Add("title", TextLocalizerDelegate("tipLastPost"));
             link.InnerHtml.AppendHtml(@"<i class=""fa fa-arrow-right""></i>");
 

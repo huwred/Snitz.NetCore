@@ -33,8 +33,7 @@ namespace SnitzCore.Service.TagHelpers
             if (webrootpath == null || webrootpath == "/") { webrootpath = ""; }
             output.TagName = "a";
             output.Attributes.Add("rel", "noopener noreferrer nofollow");
-            output.Attributes.Add("data-toggle","tooltip");
-            if (TextLocalizerDelegate != null) output.Attributes.Add("title", TextLocalizerDelegate("tipViewProfile"));
+            
             if (MemberName != null)
             {
                 output.Attributes.Add("href", $"{webrootpath}/Account/Detail/{Url.Encode(MemberName)}");
@@ -42,12 +41,23 @@ namespace SnitzCore.Service.TagHelpers
             }
             else
             {
-                var member = _member.GetById(MemberId);
-                if (member != null)
+                try
                 {
-                    output.Attributes.Add("href", $"{webrootpath}/Account/Detail/{Url.Encode(member.Name)}");
-                    output.Content.AppendHtml($"{member.Name}");
+                    var member = _member.GetById(MemberId);
+                    if (member != null)
+                    {
+                        if (TextLocalizerDelegate != null) output.Attributes.Add("title", TextLocalizerDelegate("tipViewProfile"));
+                        output.Attributes.Add("data-toggle","tooltip");
+                        output.Attributes.Add("href", $"{webrootpath}/Account/Detail/{Url.Encode(member.Name)}");
+                        output.Content.AppendHtml($"{member.Name}");
+                    }
                 }
+                catch (Exception)
+                {
+                    output.Attributes.Add("href", $"#");
+                    output.Content.AppendHtml($"Unknown");
+                }
+
             }
 
         }

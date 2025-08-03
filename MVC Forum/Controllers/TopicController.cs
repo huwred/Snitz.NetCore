@@ -287,8 +287,8 @@ namespace MVCForum.Controllers
 
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", post!.Category?.Name){ Parent = homePage,RouteValues = new{id=post.Category?.Id}};
-            var forumPage = new MvcBreadcrumbNode("Index", "Forum", post.Forum?.Title){ Parent = catPage,RouteValues = new{id=post.ForumId}};
-            var topicPage = new MvcBreadcrumbNode("Index", "Topic", post.Subject) { Parent = forumPage };
+            var forumPage = new MvcBreadcrumbNode("Archived", "Forum", post.Forum?.Title){ Parent = catPage,RouteValues = new{id=post.ForumId}};
+            var topicPage = new MvcBreadcrumbNode("Archived", "Topic", post.Subject) { Parent = forumPage };
             ViewData["BreadcrumbNode"] = topicPage;
             
             ViewData["Title"] = post.Subject;

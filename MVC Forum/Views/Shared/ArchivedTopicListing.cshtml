@@ -1,0 +1,113 @@
+﻿@using BbCodeFormatter
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Snitz.Events.Helpers
+@using Snitz.PostThanks.Helpers
+@using SnitzCore.Data
+@using SnitzCore.Service.TagHelpers
+@model MVCForum.ViewModels.Post.PostListingModel
+@inject IEnumerable<ISnitzStartupService> pluginservices
+@{
+    Layout = null;
+    var eventservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(CalEventsService));
+    var answeredClass = "";
+
+    if (Model.Answered)
+    {
+        answeredClass = "answered-overlay";
+    }
+    var subscriptions = MemberService.Current()?.Subscriptions;
+
+    bool archives = true;
+    bool allowrating = false;
+    var thanksservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(PostThanksService));
+    if (thanksservice != null)
+    {
+        TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.Forum.Id);
+    }
+}
+<div class="table-row @answeredClass rounded-2">
+
+    <div class="status" data-status="@Model.Status" style="z-index: 2">
+        @if (eventservice != null && eventservice.EnabledForTopic(Model.Id))
+        {
+            <snitz-topic-icon plugin-icon="fa-calendar" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+        }
+        else if (Model.HasPoll)
+        {
+            <snitz-topic-icon plugin-icon="fa-bar-chart" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+        }
+        else if (archives)
+        {
+            <snitz-topic-icon plugin-icon="fa-archive" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+        }
+        else
+        {
+            <snitz-topic-icon sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+        }
+        <span class="d-block d-md-none fs-4 bold" title="@Localizer["lblReplies"]">@Model?.RepliesCount</span>
+    </div>
+    <div class="subjects" style="z-index: 2">
+        <div class="d-lg-flex flex-row bd-highlight mb-1">
+            <div class="p-2 flex-grow-1 bd-highlight">
+                <a snitz-if="@archives" href="~/Topic/Archived/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a>
+                <a snitz-if="@(!archives)" href="~/Topic/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a><br />
+                <span>
+                    @Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model.AuthorId"></member-link>
+                    @if (ViewData["ActiveTopics"] != null && (bool)ViewData["ActiveTopics"]!)
+                    {
+                        @Localizer["lblin"]
+                        <a snitz-if="@(!archives)" href="~/Forum/@Model?.Forum?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Forum?.Title!))</a>
+                        <a snitz-if="@archives" href="~/Forum/Archived/@Model?.Forum?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Forum?.Title!))</a>
+                    }
+                    <snitz-datetime datetime="@Model?.Created"></snitz-datetime> .
+                </span>
+                @if (SnitzConfig.GetIntValue("STRSHOWPAGING") == 1)
+                {
+                    @if (Model?.RepliesCount > ViewBag.PageSize)
+                    {
+                        var paging = new PagingModel
+                        {
+                            PageCount = Model.RepliesCount / ViewBag.PageSize,
+                            PageSize = ViewBag.PageSize,
+                            Page = Model.Id
+                        };
+                        <partial name="QuickPaging" model="paging"/>
+                    }
+                }
+                @if (allowrating)
+                {
+                    <input name="input-name" type="number" class="rb-rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs">
+                }
+            </div>
+            <div class="d-none d-md-flex  p-2 bd-highlight fs-6 post-buttons">
+                @if (!archives)
+                {
+                    @await Component.InvokeAsync("PostControls", new { post = Model.Topic ,forlist = true})
+                }
+            </div>
+        </div>
+    </div>
+    <div class="replies">
+        @Model?.RepliesCount @Localizer["lblReplies"] <br/> @Model?.ViewCount @Localizer["lblViews"]
+    </div>
+    <div class="last-reply d-flex" style="z-index:2">
+        @if (Model?.LastPostDate != null)
+        {
+            <span class="d-flex-1">
+                <span class="d-sm-inline-flex d-md-none">@Localizer["lblLastPost"]</span>
+                <lastpost-link jump-to="@(SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1)" archived="true" post-date="@Model.LastPostDate" topic-id="@Model.Id" reply-id="@Model.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                <br class="d-none d-sm-inline-flex" />
+                <span class="ms-2">@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
+            </span>
+        }
+        <div class="d-sm-inline-flex d-md-none bd-highlight fs-6 post-buttons">
+            @if (!archives)
+            {
+                @await Component.InvokeAsync("PostControls", new { post = Model.Topic, forlist = true })
+            }
+        </div>
+    </div>
+    <div class="subscribe d-none d-sm-inline-flex">
+        <input snitz-if="@(User?.IsInRole("Administrator"))" type="checkbox" class="form-check-input topic-select" value="@Model?.Id" name="topicselected" />
+    </div>
+</div>

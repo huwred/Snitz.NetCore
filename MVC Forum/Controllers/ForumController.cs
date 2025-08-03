@@ -366,9 +366,7 @@ namespace MVCForum.Controllers
                     case -1 : //AllOpen 
                         forumPosts = forumPosts?.Where(f => f.Status == 1);
                         break;
-                    //case -99 : //Archived
-                    //    //TODO: Archived Topics                      
-                    //    break;
+
                     case -999: //NoReplies
                         forumPosts = forumPosts?.Where(f => f is { Status: 1, ReplyCount: 0 });
                         break;
@@ -391,9 +389,6 @@ namespace MVCForum.Controllers
                     case -1 : //AllOpen 
                         forumPosts = forumPosts?.Where(f => f.Status == 1);
                         break;
-                    //case -99 : //Archived
-                    //    //TODO: Archived Topics                      
-                    //    break;
                     case -999: //NoReplies
                         forumPosts = forumPosts?.Where(f => f is { Status: 0, ReplyCount: 0 });
                         break;
@@ -465,7 +460,7 @@ namespace MVCForum.Controllers
                     AllowRating = p.AllowRating,
                     ForumAllowRating = p.Forum.Rating,
 
-                });
+                }).ToList();
 
                 var model = new ForumTopicModel()
                 {
@@ -880,7 +875,35 @@ namespace MVCForum.Controllers
                     ViewData["Title"] = $"{searchmodel.UserName}'s Recent Posts";
                 }
             }
-            var posts = _postService.Find(searchmodel,out int totalcount,pagesize,page).Select(p => new PostListingModel()
+            int totalcount;
+
+            var posts = model.SearchArchives ? _postService.FindArchived(searchmodel,out totalcount,pagesize,page).Select(p => new PostListingModel()
+            {
+                Id = p.Id,
+                ArchivedTopic = p,
+                AuthorId = p.MemberId,
+                AuthorName = p.Member?.Name ?? "Unknown",
+                //AuthorRating = p.User?.Rating ?? 0,
+                Title = p.Subject,
+                Created = p.Created.FromForumDateStr(),
+                RepliesCount = p.ReplyCount,
+                ViewCount = p.ViewCount,
+
+                IsSticky = p.IsSticky == 1,
+                Status = p.Status,
+                Message = p.Message,
+                LastPostDate = !string.IsNullOrEmpty(p.LastPostDate) ? p.LastPostDate?.FromForumDateStr() : p.Created.FromForumDateStr(),
+                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
+                LatestReply = p.LastPostReplyId,
+                Forum = BuildForumListing(p),
+                Answered = false,
+                HasPoll = _postService.HasPoll(p.Id),
+                AllowRating = p.AllowRating,
+                ForumAllowRating = 0,
+                //Rating = p.GetTopicRating()
+            }).OrderByDescending(p=>p.LastPostDate) 
+            :
+            _postService.Find(searchmodel,out totalcount,pagesize,page).Select(p => new PostListingModel()
             {
                 Id = p.Id,
                 Topic = p,

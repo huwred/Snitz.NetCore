@@ -447,9 +447,9 @@ namespace SnitzCore.Service
         {
             var post = _dbContext.ArchivedTopics
                 .AsNoTracking()
-                .Include(p => p.Category).AsNoTracking()
-                .Include(p => p.Forum).AsNoTracking()
-                .Include(p => p.Member).AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Forum)
+                .Include(p => p.Member)
                 .SingleOrDefault(p => p.Id == id);
             return post;
         }
@@ -591,7 +591,70 @@ namespace SnitzCore.Service
             totalcount = posts.Count();
             return posts.OrderByDescending(p=>p.LastPostDate).ToPagedList(page, pagesize);
         }
+        public IPagedList<ArchivedPost> FindArchived(ForumSearch searchQuery, out int totalcount, int pagesize, int page)
+        {
 
+            var posts = _dbContext.ArchivedTopics                
+                .AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Forum)
+                .Include(p => p.Member)
+                .Include(p=>p.LastPostAuthor)
+                .Include(p=>p.Replies!).ThenInclude(r=>r.Member)
+                .AsQueryable();
+
+            if (searchQuery.SinceDate != SearchDate.AnyDate)
+            {
+                var lastvisit = DateTime.UtcNow.AddDays(-(int)searchQuery.SinceDate).ToForumDateStr();
+                posts = posts
+                    
+                .Where(f => string.Compare( f.LastPostDate , lastvisit) > 0)
+                .OrderByDescending(t=>t.LastPostDate).AsQueryable();
+            }
+            if (searchQuery.SearchCategory is > 0)
+            {
+                posts = posts.Where(p => p.CategoryId == searchQuery.SearchCategory);
+            }
+            if (searchQuery.SearchForums != null && searchQuery.SearchForums.Any())
+            {
+                posts = posts.Where(p => searchQuery.SearchForums.Contains(p.ForumId));
+            }
+            if (!string.IsNullOrWhiteSpace(searchQuery.UserName) && searchQuery.SearchMessage)
+            {
+                var p1 = posts.Where(p=> p.Replies.Any(r=>r.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower()))).ToList();
+
+                var p2 = posts.Where(p => p.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower())).ToList();
+
+                posts = p1.UnionBy(p2, x => x.Id).AsQueryable();
+            }
+            if (!string.IsNullOrWhiteSpace(searchQuery.UserName) && !searchQuery.SearchMessage)
+            {
+                posts = posts.Where(p => p.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower()));
+
+            }
+            if (searchQuery.Terms != null)
+            {
+                var terms = searchQuery.Terms.Split(' ');
+                switch (searchQuery.SearchFor)
+                {
+                    case SearchFor.AllTerms:
+                        posts = searchQuery.SearchMessage ? posts
+                            .Where(p => p.Subject.ContainsAll(terms) || p.Message.ContainsAll(terms)) : posts.Where(p => p.Subject.ContainsAll(terms));
+                        break;
+                    case SearchFor.AnyTerms :
+                        posts = searchQuery.SearchMessage ? posts
+                            .Where(p => p.Subject.ContainsAny(terms) || p.Message.ContainsAny(terms)) : posts.Where(p => p.Subject.ContainsAny(terms));
+                        break;
+                    case SearchFor.ExactPhrase :
+                        posts = searchQuery.SearchMessage ? posts.Where(p => p.Subject.Contains(searchQuery.Terms) || p.Message.Contains(searchQuery.Terms)) : posts.Where(p => p.Subject.Contains(searchQuery.Terms));
+                        break;
+                }
+            }
+
+
+            totalcount = posts.Count();
+            return posts.OrderByDescending(p=>p.LastPostDate).ToPagedList(page, pagesize);
+        }
         public Post GetLatestReply(int id)
         {
             throw new NotImplementedException();

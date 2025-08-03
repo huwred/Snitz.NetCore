@@ -6,7 +6,8 @@ namespace MVCForum.ViewModels.Post
     public class PostListingModel : PostBase
     {
         public string? Title { get; set; }
-        public SnitzCore.Data.Models.Post Topic { get; set; } = null!;
+        public SnitzCore.Data.Models.Post? Topic { get; set; } = null!;
+        public SnitzCore.Data.Models.ArchivedPost? ArchivedTopic { get; set; } = null!;
         public string Message { get; set; } = null!;
         public ForumListingModel? Forum { get; set; }
 

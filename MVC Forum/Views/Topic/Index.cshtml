@@ -163,6 +163,7 @@
     {
         TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.ForumId);
     }
+    var formaction = Model.Archived ? "Archived" : "Index";
     // var tracked = SnitzCookie.Tracked(Model.Id.ToString());
     // bool newPosts;
     // if (tracked != null)
@@ -290,7 +291,7 @@
             var firstpage = true;
             int replycounter = 1;
             <div class="collapse" id="showFilters">
-            <form id="defaultdays-form" asp-action="Index" class="form-inline">
+            <form id="defaultdays-form" asp-action="@formaction" class="form-inline">
                     <div class="row mt-2">
                         <div class="col-md-3">
                             <select class="form-select mb-2" id="sortdir" name="sortdir" title="Change sort direction">
@@ -377,6 +378,7 @@
                         PageSize = Model.PageSize,
                         Page = Model.PageNum,
                         OrderBy = "lpd",
+                        Archived = Model.Archived,    
                         SortDir = Model.SortDir})" />
         }
         else

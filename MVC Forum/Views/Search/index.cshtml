@@ -18,7 +18,7 @@
     {
         @if (SnitzConfig.GetValueWithDefault("STRSEARCHPAGESIZES", "") != "")
         {
-            <div class="input-group">
+            <div class="input-group mb-3">
                 <div class="radioBtn btn-group btn-group-sm" title="Page size" data-toggle="tooltip" data-original-title="Page size">
                     @foreach (var size in SnitzConfig.GetValueWithDefault("STRSEARCHPAGESIZES", "")!.Split(","))
                     {
@@ -30,7 +30,7 @@
             </div>
         }
         <!--Display posts table-->
-        <div class="posts-table">
+        <div class="posts-table mb-3">
             <partial name="TopicListingHeader" />
             @{
                 ViewData["ActiveTopics"] = true;
@@ -38,7 +38,15 @@
             <!--Topics start here-->
             @foreach (var post in Model.Results.Posts!)
             {
-                <partial name="TopicListing" model="post" view-data="ViewData" />
+                if (post.ArchivedTopic != null)
+                {
+                    <partial name="ArchivedTopicListing" model="post" view-data="ViewData" />
+                }
+                else if (post.Topic != null)
+                {
+                    <partial name="TopicListing" model="post" view-data="ViewData" />
+                }
+                
             }
             <!--ends here-->
         </div>
@@ -122,7 +130,7 @@
                 <div class="mb-3" >
                     <label class="form-label">@Localizer["Search_Archive"]</label>
                     <div class="form-check">
-                        <input asp-for="SearchArchives" id="SearchArchivesOn" type="radio" class="form-check-input" value="true" aria-describedby="radio1HelpBlock" disabled>
+                        <input asp-for="SearchArchives" id="SearchArchivesOn" type="radio" class="form-check-input" value="true" aria-describedby="radio1HelpBlock">
                         <label for="SearchArchivesOn" class="form-check-label">@Localizer["lblYes"]</label>
                     </div>
                     <div class="form-check">
