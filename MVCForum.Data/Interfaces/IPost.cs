@@ -11,6 +11,7 @@ namespace SnitzCore.Data.Interfaces
         Post GetTopicForUpdate(int id);
         Task<Post?> GetTopicWithRelated(int id);
         PostReply? GetReply(int id);
+        ArchivedReply? GetArchivedReply(int id);
         PostReply? GetReplyForUdate(int id);
         List<Post> GetById(int[] ids);
         IEnumerable<Post> GetAllTopicsAndRelated();
@@ -49,6 +50,7 @@ namespace SnitzCore.Data.Interfaces
         Post? SplitTopic(string[] ids, int forumId, string subject);
         Task<bool> MakeSticky(int id, short status = 0);
         Task UpdateReplyTopic(Post post);
-        
+        Task DeleteArchivedReply(int id);
+        Task DeleteArchivedTopic(int id);
     }
 }

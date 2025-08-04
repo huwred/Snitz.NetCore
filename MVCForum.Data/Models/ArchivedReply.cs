@@ -53,4 +53,5 @@ public partial class ArchivedReply
     public int Rating { get; set; }
 
     public virtual Member? Member { get; set; }
+    public virtual ArchivedPost? Topic { get; set; }
 }
