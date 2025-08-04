@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -9,6 +10,7 @@ using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using X.PagedList;
@@ -22,12 +24,15 @@ namespace SnitzCore.Service
         private readonly SnitzDbContext _dbContext;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly string? _tableprefix;
-        
+        private readonly log4net.ILog _logger;
+
         public ForumService(SnitzDbContext dbContext,RoleManager<IdentityRole> roleManager,IOptions<SnitzForums> config)
         {
             _dbContext = dbContext;
             _roleManager = roleManager;
             _tableprefix = config.Value.forumTablePrefix;
+            log4net.ILog _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
+
         }
 
         public async Task Create(Forum forum)
@@ -243,11 +248,13 @@ namespace SnitzCore.Service
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                _logger.Error("UpdateLastPost: Error fetching last topic", e);
             }
 
-            var forum = Get(forumid);
+            var forum = new Forum
+            {
+                Id = forumid
+            };// Get(forumid);
 
             if (lasttopic == null)
             {
@@ -270,13 +277,20 @@ namespace SnitzCore.Service
 
             try
             {
-                _dbContext.Forums.Update(forum);
+                _dbContext.Forums.Attach(forum);
+                _dbContext.Entry(forum).Property(x => x.TopicCount).IsModified = true;
+                _dbContext.Entry(forum).Property(x => x.ReplyCount).IsModified = true;
+                _dbContext.Entry(forum).Property(x => x.LatestTopicId).IsModified = true;
+                _dbContext.Entry(forum).Property(x => x.LatestReplyId).IsModified = true;
+                _dbContext.Entry(forum).Property(x => x.LastPost).IsModified = true;
+                _dbContext.Entry(forum).Property(x => x.LastPostAuthorId).IsModified = true;
+
                 await _dbContext.SaveChangesAsync();
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                _logger.Error("UpdateLastPost: Error updating last post in forum", e);
+
             }
 
             return forum;

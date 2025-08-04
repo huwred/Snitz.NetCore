@@ -1,6 +1,8 @@
 ﻿using log4net.Layout.Members;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -10,11 +12,13 @@ using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using X.PagedList;
 using X.PagedList.Extensions;
+using static Dapper.SqlMapper;
 using IMember = SnitzCore.Data.IMember;
 
 namespace SnitzCore.Service
@@ -28,6 +32,8 @@ namespace SnitzCore.Service
         private readonly IEmailSender _mailSender;
         private readonly string? _tableprefix;
         private readonly IPrincipal _user;
+        private readonly log4net.ILog _logger;
+
         public PostService(SnitzDbContext dbContext, IMember memberService,IForum forumservice,ISnitzConfig config,IEmailSender mailSender,IOptions<SnitzForums> options,IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
@@ -37,6 +43,7 @@ namespace SnitzCore.Service
             _mailSender = mailSender;
             _tableprefix = options.Value.forumTablePrefix;
             _user = httpContextAccessor.HttpContext.User;
+            log4net.ILog _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
         }
 
         /// <summary>
@@ -96,32 +103,24 @@ namespace SnitzCore.Service
             }
             _dbContext.Replies.Add(post);
             await _dbContext.SaveChangesAsync();
-            int? moderated = null;
-            //update topic stuff
-            if (post.Status == (short)Status.UnModerated)
-            {
-                moderated = 1;
-            }
-            await UpdateLastPost(post.PostId,moderated);
-            //update Forum
+
             var forum = await _forumservice.UpdateLastPost(post.ForumId);
             if (forum.CountMemberPosts == 1)
             {
                 await _memberService.UpdatePostCount(post.MemberId);
-            }else
+            }
+            else
             {
                 await _memberService.UpdateLastPost(post.MemberId);
             }
+
             var forumtotals = _dbContext.ForumTotal.OrderBy(t=>t.Id).First();
             forumtotals.PostCount += 1;
+            _dbContext.Update(forumtotals);
             await _dbContext.SaveChangesAsync();
             return post.Id;
         }
-        /// <summary>
-        /// Create a Reply
-        /// </summary>
-        /// <param name="post"></param>
-        /// <returns></returns>
+
         public int CreateForMerge(int[]? selected)
         {
             var topics = _dbContext.Posts.AsNoTracking().Include(t=>t.Member).Where(p => selected != null && EF.Constant(selected).Contains(p.Id)).OrderBy(t => t.Created).ToList();
@@ -229,6 +228,18 @@ namespace SnitzCore.Service
                 await _forumservice.UpdateLastPost(forumid);
             }
         }
+        public async Task DeleteArchivedTopic(int id)
+        {
+            var post = _dbContext.ArchivedTopics.Include(p=>p.Replies).SingleOrDefault(f => f.Id == id);
+            if (post != null)
+            {
+                var forumid = post.ForumId;
+                _dbContext.ArchivedTopics.Remove(post);
+                await _dbContext.SaveChangesAsync();
+
+                await _forumservice.UpdateLastPost(forumid);
+            }
+        }
         public async Task DeleteReply(int id)
         {
             var post = _dbContext.Replies.SingleOrDefault(f => f.Id == id);
@@ -248,31 +259,49 @@ namespace SnitzCore.Service
                 _dbContext.Replies.Remove(post);
                 await _dbContext.SaveChangesAsync();
 
-                await UpdateLastPost(topicid, moderated);
-                await _forumservice.UpdateLastPost(forumid);
+                //await UpdateLastPost(topicid, moderated);
+                //await _forumservice.UpdateLastPost(forumid);
+
+            }
+        }
+        public async Task DeleteArchivedReply(int id)
+        {
+            var post = _dbContext.ArchivedPosts.SingleOrDefault(f => f.Id == id);
+            if(post == null)
+            {
+                return;
+            }
+            int? moderated = null;
+            if (post.Status == (short)Status.UnModerated || post.Status == (short)Status.OnHold)
+            {
+                moderated = -1;
+            }
+            if (post != null)
+            {
+                //var topicid = post.PostId;
+                //var forumid = post.ForumId;
+                _dbContext.ArchivedPosts.Remove(post);
+                await _dbContext.SaveChangesAsync();
+
+                //await UpdateLastPost(topicid, moderated);
+                //await _forumservice.UpdateLastPost(forumid);
 
             }
         }
         public async Task UpdateReplyTopic(Post post)
         {
-
-            var postupdate = new Post()
+            try
             {
-                Id          = post.Id,
-                IsSticky = post.IsSticky,
-                Status = post.Status,
-                ArchiveFlag = post.ArchiveFlag
-
-            };
-
-            _dbContext.Posts.Attach(postupdate);
-
-            _dbContext.Entry(postupdate).Property(x => x.IsSticky).IsModified = true;
-            _dbContext.Entry(postupdate).Property(x => x.Status).IsModified = true;
-            _dbContext.Entry(postupdate).Property(x => x.ArchiveFlag).IsModified = true;
-            await _dbContext.SaveChangesAsync();
+                _dbContext.Posts.Update(post);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.Error("UpdateReplyTopic: Error updating post", e);
+            }
 
         }
+
         public async Task Update(Post post)
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
@@ -285,36 +314,20 @@ namespace SnitzCore.Service
                 }
             }
 
-            var postupdate = new Post()
-            {
-                Id          = post.Id,
-                ForumId = post.ForumId,
-                CategoryId = post.CategoryId,
-                Content    = post.Content,
-                Title = post.Title,
-                IsSticky = post.IsSticky,
-                AllowRating = post.AllowRating,
-                Sig = post.Sig,
-                Status = post.Status,
-                ArchiveFlag = post.ArchiveFlag,
-                LastEdit = post.LastEdit,
-                LastEditby = post.LastEditby,
-            };
+            _dbContext.Posts.Attach(post);
 
-            _dbContext.Posts.Attach(postupdate);
+            _dbContext.Entry(post).Property(x => x.ForumId).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.CategoryId).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.Content).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.Title).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.IsSticky).IsModified = true;
 
-            _dbContext.Entry(postupdate).Property(x => x.ForumId).IsModified = true;
-            _dbContext.Entry(postupdate).Property(x => x.CategoryId).IsModified = true;
-            _dbContext.Entry(postupdate).Property(x => x.Content).IsModified = true;
-            _dbContext.Entry(postupdate).Property(x => x.Title).IsModified = true;
-            _dbContext.Entry(postupdate).Property(x => x.IsSticky).IsModified = true;
-
-            _dbContext.Entry(postupdate).Property(x => x.AllowRating).IsModified = true;
-            _dbContext.Entry(postupdate).Property(x => x.Sig).IsModified = true;
-            _dbContext.Entry(postupdate).Property(x => x.Status).IsModified = true;
-            _dbContext.Entry(postupdate).Property(x => x.ArchiveFlag).IsModified = true;
-            _dbContext.Entry(postupdate).Property(x => x.LastEdit).IsModified = true;
-            _dbContext.Entry(postupdate).Property(x => x.LastEditby).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.AllowRating).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.Sig).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.Status).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.ArchiveFlag).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.LastEdit).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.LastEditby).IsModified = true;
             await _dbContext.SaveChangesAsync();
 
         }
@@ -329,23 +342,14 @@ namespace SnitzCore.Service
                     post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
                 }
             }
-            var replyupdate = new PostReply()
-            {
-                Id          = post.Id,
-                Content    = post.Content,
-                Sig = post.Sig,
-                Status = post.Status,
-                LastEdited = post.LastEdited,
-                LastEditby = post.LastEditby,
-            };
 
-            _dbContext.Replies.Attach(replyupdate);
+            _dbContext.Replies.Attach(post);
 
-            _dbContext.Entry(replyupdate).Property(x => x.Content).IsModified = true;
-            _dbContext.Entry(replyupdate).Property(x => x.Sig).IsModified = true;
-            _dbContext.Entry(replyupdate).Property(x => x.Status).IsModified = true;
-            _dbContext.Entry(replyupdate).Property(x => x.LastEdited).IsModified = true;
-            _dbContext.Entry(replyupdate).Property(x => x.LastEditby).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.Content).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.Sig).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.Status).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.LastEdited).IsModified = true;
+            _dbContext.Entry(post).Property(x => x.LastEditby).IsModified = true;
 
             await _dbContext.SaveChangesAsync();
         }
@@ -439,7 +443,7 @@ namespace SnitzCore.Service
         public Post GetTopicForUpdate(int id)
         {
             var post = _dbContext.Posts
-                .AsNoTrackingWithIdentityResolution()
+                //.AsNoTrackingWithIdentityResolution()
                 .Single(p => p.Id == id);
             return post; 
         }
@@ -488,6 +492,17 @@ namespace SnitzCore.Service
         {
 
             var post = _dbContext.Replies.Where(p => p.Id == id)
+                .AsNoTrackingWithIdentityResolution()
+                .Include(p => p.Member).AsNoTrackingWithIdentityResolution()
+                .Include(r => r.Topic).ThenInclude(t=>t!.Member).AsNoTracking()
+                .Single();
+
+            return post;
+        }
+        public ArchivedReply GetArchivedReply(int id)
+        {
+
+            var post = _dbContext.ArchivedPosts.Where(p => p.Id == id)
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Member).AsNoTrackingWithIdentityResolution()
                 .Include(r => r.Topic).ThenInclude(t=>t!.Member).AsNoTracking()
@@ -663,7 +678,7 @@ namespace SnitzCore.Service
         {
             var count = _dbContext.Replies.Count(r => r.PostId == topicid && r.Status < 2);
             var topic = GetTopicForUpdate(topicid);
-            var lastreply = _dbContext.Replies.AsNoTrackingWithIdentityResolution()
+            var lastreply = _dbContext.Replies.AsNoTracking()
                 .Where(t=>t.PostId == topicid && t.Status < 2)
                 .OrderByDescending(t=>t.Created)
                 .Select(p => new { LastPostId = p.Id, LastPostAuthorId = p.MemberId,LastPostDate = p.Created })
@@ -689,7 +704,9 @@ namespace SnitzCore.Service
                 topic.UnmoderatedReplies += moderatedcount.Value;
             }
             _dbContext.Update(topic);
-            await _dbContext.SaveChangesAsync();
+
+            _dbContext.SaveChanges();
+
         }
 
         public async Task<bool> Answer(int id)
