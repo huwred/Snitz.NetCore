@@ -355,18 +355,25 @@ namespace SnitzCore.Service
         }
         public async Task UpdateViewCount(int id)
         {
-            var topic = _dbContext.Posts.AsNoTracking().SingleOrDefault(x=>x.Id == id);
-            var views = topic.ViewCount += 1;
-            var itemInfoEntity = new Post()
+            try
             {
-                Id          = id,
-                ViewCount    = views
-            };
+                var topic = _dbContext.Posts.AsNoTracking().SingleOrDefault(x=>x.Id == id);
+                var views = topic.ViewCount += 1;
+                var itemInfoEntity = new Post()
+                {
+                    Id          = id,
+                    ViewCount    = views
+                };
 
-            _dbContext.Posts.Attach(itemInfoEntity);
-            _dbContext.Entry(itemInfoEntity).Property(x => x.Id).IsModified = true;
-            _dbContext.Entry(itemInfoEntity).Property(x => x.ViewCount).IsModified = true;
-            await _dbContext.SaveChangesAsync();
+                _dbContext.Posts.Attach(itemInfoEntity);
+                _dbContext.Entry(itemInfoEntity).Property(x => x.ViewCount).IsModified = true;
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("UpdateViewCount: Error updating view count", ex);
+            }
+
         }
         public async Task UpdateTopicContent(int id, string content)
         {
@@ -377,7 +384,6 @@ namespace SnitzCore.Service
             };
 
             _dbContext.Posts.Attach(itemInfoEntity);
-            _dbContext.Entry(itemInfoEntity).Property(x => x.Id).IsModified = true;
             _dbContext.Entry(itemInfoEntity).Property(x => x.Content).IsModified = true;
             await _dbContext.SaveChangesAsync();
         }
@@ -390,7 +396,6 @@ namespace SnitzCore.Service
             };
 
             _dbContext.Replies.Attach(itemInfoEntity);
-            _dbContext.Entry(itemInfoEntity).Property(x => x.Id).IsModified = true;
             _dbContext.Entry(itemInfoEntity).Property(x => x.Content).IsModified = true;
             await _dbContext.SaveChangesAsync();
         }

@@ -133,12 +133,11 @@ namespace MVCForum.Controllers
                 HttpContext.Session.SetInt32("TopicId_"+ id,1);
                 post!.ViewCount += 1;
                 _postService.UpdateViewCount(post.Id);
-
-
-
             }
             if(_memberService.Current() != null)
-            { _cookie.UpdateTopicTrack(post.Id.ToString()); }
+            { 
+                _cookie.UpdateTopicTrack(post.Id.ToString()); 
+            }
             if (HttpContext.Session.GetInt32("TopicPageSize") != null && pagesize == 0)
             {
                 pagesize = HttpContext.Session.GetInt32("TopicPageSize")!.Value;
