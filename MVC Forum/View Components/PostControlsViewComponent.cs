@@ -19,12 +19,20 @@ namespace MVCForum.View_Components
             TempData["List"] = forlist;
             if (post is PostReplyModel)
             {
-                //var reply = _postService.GetReply(post.Id);
+                if(post.Reply == null)
+                {
+                    return await Task.FromResult((IViewComponentResult)View("Reply",post.ArchivedReply));
+                }
                 return await Task.FromResult((IViewComponentResult)View("Reply",post.Reply));
             }else if (post is PostReply)
             {
                 //var reply = _postService.GetReply(post.Id);
                 return await Task.FromResult((IViewComponentResult)View("Reply",post));
+            }
+            else if (post is Post)
+            {
+                //var topic = await _postService.GetTopicAsync(post.Id);
+                return await Task.FromResult((IViewComponentResult)View("Topic",post));
             }
             else
             {

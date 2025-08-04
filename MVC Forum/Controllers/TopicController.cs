@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Post;
 using SmartBreadcrumbs.Nodes;
@@ -225,14 +226,14 @@ namespace MVCForum.Controllers
             }
 
         }
-        private string GetString(IHtmlContent content)
-        {
-            using (var writer = new System.IO.StringWriter())
-            {        
-                content.WriteTo(writer, HtmlEncoder.Default);
-                return writer.ToString();
-            } 
-        }  
+        //private string GetString(IHtmlContent content)
+        //{
+        //    using (var writer = new System.IO.StringWriter())
+        //    {        
+        //        content.WriteTo(writer, HtmlEncoder.Default);
+        //        return writer.ToString();
+        //    } 
+        //}  
         public IActionResult Archived(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
         {
             bool signedin = false;
@@ -319,6 +320,7 @@ namespace MVCForum.Controllers
             var model = new PostIndexModel()
             {
                 Id = post.Id,
+                ArchivedTopic = post,
                 Title = post.Subject,
                 Author = post.Member!,
                 AuthorId = post.Member!.Id,
@@ -375,8 +377,8 @@ namespace MVCForum.Controllers
                 UseSignature = member!.SigDefault == 1,
                 AllowRating = forum.Rating == 1,
                 IsAuthor = true,
-                Lock = false,
-                Sticky = false,
+                IsLocked = false,
+                IsSticky = false,
                 DoNotArchive = false,
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
@@ -417,8 +419,8 @@ namespace MVCForum.Controllers
                 IsPost = false,
                 AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 0,
-                Sticky = topic.IsSticky == 1,
+                IsLocked = topic.Status == 0,
+                IsSticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
@@ -449,8 +451,8 @@ namespace MVCForum.Controllers
                 Content = $"[quote]{topic.Content}[/quote=Originally posted by {topic.Member?.Name}]",
                 AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 0,
-                Sticky = topic.IsSticky == 1,
+                IsLocked = topic.Status == 0,
+                IsSticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
@@ -464,7 +466,7 @@ namespace MVCForum.Controllers
 
         }
         [Authorize]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, bool archived)
         {
 
             var member = await _memberService.GetById(User);
@@ -484,13 +486,14 @@ namespace MVCForum.Controllers
                 Content = topic.Content,
                 AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 0,
-                Sticky = topic.IsSticky == 1,
+                IsLocked = topic.Status == 0,
+                IsSticky = topic.IsSticky == 1,
                 AllowRating = topic.Forum.Rating == 1,
                 AllowTopicRating = topic.AllowRating == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = topic.Created.FromForumDateStr(),
-                IsAuthor = member!.Id == topic.MemberId
+                IsAuthor = member!.Id == topic.MemberId,
+                IsArchived = archived
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
@@ -535,8 +538,8 @@ namespace MVCForum.Controllers
                 Content = $"[quote]{reply.Content}[/quote=Originally posted by {reply.Member!.Name}]<br/>",
                 AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 0,
-                Sticky = topic.IsSticky == 1,
+                IsLocked = topic.Status == 0,
+                IsSticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = DateTime.UtcNow,
                 IsAuthor = User.Identity?.Name == member!.Name
@@ -552,7 +555,7 @@ namespace MVCForum.Controllers
 
         }
         [Authorize]
-        public async Task<IActionResult> EditReply(int id)
+        public async Task<IActionResult> EditReply(int id, bool archived)
         {
 
             var member = await _memberService.GetById(User);
@@ -569,11 +572,12 @@ namespace MVCForum.Controllers
                 Content = _bbcodeProcessor.CleanCode(reply.Content),
                 AuthorName = member!.Name,
                 UseSignature = member.SigDefault == 1,
-                Lock = topic.Status == 0,
-                Sticky = topic.IsSticky == 1,
+                IsLocked = topic.Status == 0,
+                IsSticky = topic.IsSticky == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = reply.Created.FromForumDateStr(),
-                IsAuthor = User.Identity?.Name == member!.Name
+                IsAuthor = User.Identity?.Name == member!.Name,
+                IsArchived = archived
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", topic.Category!.Name){ Parent = homePage,RouteValues = new{id=topic.Category.Id}};
@@ -598,6 +602,8 @@ namespace MVCForum.Controllers
             ModelState.Remove("Sticky");
             ModelState.Remove("Lock");
             ModelState.Remove("DoNotArchive");
+
+            //Check for flood control
             if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
             {
                 var member = await _memberService.GetById(User);
@@ -609,6 +615,7 @@ namespace MVCForum.Controllers
                     return View("Error");
                 }
             }
+            //Check for required fields
             if (!ModelState.IsValid)
             {
                 var errorList = ModelState
@@ -627,23 +634,19 @@ namespace MVCForum.Controllers
             var post = BuildPost(model, user!.MemberId);
             if (model.TopicId != 0)
             {
-                post.Title = model.Title;
-                post.IsSticky = (short)(model.Sticky ? 1 : 0);
-                post.AllowRating = (short)(model.AllowTopicRating ? 1 : 0);
-                post.Sig = (short)(model.UseSignature ? 1 : 0);
-                post.Status = (short)(model.Lock ? 0 : post.Status);
-                post.ArchiveFlag = model.DoNotArchive ? 1 : 0;
-                post.Content = model.Content;
+
+                post.Status = (short)(model.IsLocked ? 0 : post.Status);
                 post.LastEdit = DateTime.UtcNow.ToForumDateStr();
                 post.LastEditby = user.MemberId;
+                //We are moving the topic so need to update stuff
                 if (post.ForumId != model.ForumId)
                 {
-                    var forum = _snitzDbContext.Forums.AsNoTracking().OrderBy(f=>f.Id).First(f => f.Id == model.ForumId);
-                    var author = _memberService.GetById(post.MemberId);
+                    var forum = _forumService.Get(model.ForumId);// _snitzDbContext.Forums.AsNoTracking().OrderBy(f=>f.Id).First(f => f.Id == model.ForumId);
+                    
                     post.ForumId = model.ForumId;
                     post.CategoryId = forum.CategoryId;
                     await _postService.Update(post);
-                    //We are moving the topic so need to update the ForumId and CategoryId for the replies
+                    //Update the ForumId and CategoryId for the replies
                     var replies = _snitzDbContext.Replies.Where(r => r.PostId == model.TopicId);
                     await replies
                         .ExecuteUpdateAsync(s => s
@@ -652,6 +655,7 @@ namespace MVCForum.Controllers
                     await _forumService.UpdateLastPost(model.ForumId);
                     if (_config.GetIntValue("STRMOVENOTIFY") == 1)
                     {
+                        var author = _memberService.GetById(post.MemberId);
                         await _mailSender.MoveNotify(author!,post);
                     }
                 }
@@ -683,6 +687,7 @@ namespace MVCForum.Controllers
                                 break;
                         }
                     }
+                    //if we are sending PMs to users mentioned in the post
                     if (_config.GetIntValue("STRPMSTATUS") == 1)
                     {
                         MatchCollection matches = Regex.Matches(post.Content, @"(?:@""(?:[^""]+))|(?:@(?:[^\s^<]+))",RegexOptions.IgnoreCase);
@@ -709,6 +714,107 @@ namespace MVCForum.Controllers
             }
             return Json(new{url=Url.Action("Index", "Topic", new { id = post.Id }),id=post.Id});
         }
+
+        [HttpPost]
+        [Authorize]
+        [Route("AddReply/")]
+        public async Task<IActionResult> AddReply(NewPostModel model)
+        {
+            var member = _memberService.GetByUsername(User.Identity!.Name!);
+            if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
+            {
+                var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
+                if (member!.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
+                {
+                    
+                    TempData["Error"] = "floodcheck";
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return Json(new{err=_languageResource.GetString("FloodcheckErr", timeout),url=Url.Action("Index", "Topic", new { id = model.TopicId }),id=model.TopicId});
+                }
+            }
+            var reply = BuildReply(model, member!.Id);
+            if (model.Id != 0)
+            {
+                reply!.Content = model.Content;
+                reply.Sig = (short)(model.UseSignature ? 1 : 0);
+                reply.LastEdited = DateTime.UtcNow.ToForumDateStr();
+                reply.LastEditby = member.Id;
+                await _postService.Update(reply);
+            }
+            else
+            {
+                var replyid = await _postService.Create(reply!);
+                if (reply!.Status < 2) //not waiting to be moderated
+                {
+                    var forum = _forumService.Get(reply.ForumId);
+                    var sub = _config.GetIntValue("STRSUBSCRIPTION");
+                    //if we are sending out subscriptions
+                    if (sub != 0)
+                    {
+                        switch (forum.Category?.Subscription)
+                        {
+                            case 1 :
+                                BackgroundJob.Enqueue(() => _processSubscriptions.Reply(replyid));
+                                break;
+                        }
+                        switch (forum.Subscription)
+                        {
+                            case 1:
+                            case 2:
+                                BackgroundJob.Enqueue(() => _processSubscriptions.Reply(replyid));
+                                break;
+                        }
+                    }
+                    //if we are sending PMs to users mentioned in the post
+                    if (_config.GetIntValue("STRPMSTATUS") == 1)
+                    {
+                        MatchCollection matches = Regex.Matches(reply.Content, @"(?:@""(?:[^""]+))|(?:@(?:[^\s^<]+))",RegexOptions.IgnoreCase);
+                        foreach (Match match in matches)
+                        {
+                            var taggedmember = _memberService.GetByUsername(WebUtility.HtmlDecode(match.Value.Replace("@", "")));
+                            if (taggedmember != null && taggedmember.Id != reply.MemberId)
+                            {
+                                //user mentioned in post, send them a PM
+                                PrivateMessage msg = new PrivateMessage
+                                {
+                                    To = taggedmember.Id,
+                                    From = reply.MemberId,
+                                    Subject = _languageResource["MentionedInPostSubject"].Value,// "You were mentioned in a Post",
+                                    Message = _languageResource["MentionedMessage",member.Name, _config.ForumUrl?.Trim() ?? "",reply.PostId, reply.Id].Value,
+                                    SentDate = DateTime.UtcNow.ToForumDateStr(),
+                                    Read = 0,SaveSentMessage = 0
+                                };
+                                _pmService.Create(msg);
+
+                            }
+                        }
+                    }
+                }
+            }
+            int moderated = 0;
+            //update topic stuff
+            if (reply.Status == (short)Status.UnModerated)
+            {
+                moderated = 1;
+            }
+
+            var topic = _postService.GetTopicForUpdate(reply.PostId);
+            topic.UnmoderatedReplies += moderated;
+            topic.LastPostReplyId = reply.Id;
+            topic.LastPostDate = reply.Created;
+            topic.LastPostAuthorId = reply.MemberId;
+            topic.ReplyCount += (1 - moderated);
+            topic.Status = (short)(model.IsLocked ? 0 : 1);
+            topic.IsSticky = (short)(model.IsSticky ? 1 : 0);
+            topic.ArchiveFlag = (short)(model.DoNotArchive ? 1 : 0);
+
+            await _postService.UpdateReplyTopic(topic);
+
+            // TODO: Implement User Rating Management
+            return Json(new{url=Url.Action("Index", "Topic", new { id = reply.PostId }),id=reply.PostId});
+            //return RedirectToAction("Index", "Topic", new { id = reply.PostId });
+        }
+
         
         [HttpPost]
         [Route("AddPoll/")]
@@ -775,95 +881,11 @@ namespace MVCForum.Controllers
             return Json(new{url=Url.Action("Index", "Topic", new { id = poll.TopicId }),id = poll.TopicId});
         }
 
-        [HttpPost]
-        [Authorize]
-        [Route("AddReply/")]
-        public async Task<IActionResult> AddReply(NewPostModel model)
-        {
-            var member = _memberService.GetByUsername(User.Identity!.Name!);
-            if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
-            {
-                var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
-                if (member!.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
-                {
-                    
-                    TempData["Error"] = "floodcheck";
-                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return Json(new{err=_languageResource.GetString("FloodcheckErr", timeout),url=Url.Action("Index", "Topic", new { id = model.TopicId }),id=model.TopicId});
-                }
-            }
-            var reply = BuildReply(model, member!.Id);
-            if (model.Id != 0)
-            {
-                reply!.Content = model.Content;
-                reply.Sig = (short)(model.UseSignature ? 1 : 0);
-                reply.LastEdited = DateTime.UtcNow.ToForumDateStr();
-                reply.LastEditby = member.Id;
-                await _postService.Update(reply);
-            }
-            else
-            {
-                var replyid = await _postService.Create(reply!);
-                if (reply!.Status < 2) //not waiting to be moderated
-                {
-                    var forum = _forumService.GetWithPosts(reply.ForumId);
-                    var sub = _config.GetIntValue("STRSUBSCRIPTION");
-                    if (sub != 0)
-                    {
-                        switch (forum.Category?.Subscription)
-                        {
-                            case 1 :
-                                BackgroundJob.Enqueue(() => _processSubscriptions.Reply(replyid));
-                                break;
-                        }
-                        switch (forum.Subscription)
-                        {
-                            case 1:
-                            case 2:
-                                BackgroundJob.Enqueue(() => _processSubscriptions.Reply(replyid));
-                                break;
-                        }
-                    }
-                    if (_config.GetIntValue("STRPMSTATUS") == 1)
-                    {
-                        MatchCollection matches = Regex.Matches(reply.Content, @"(?:@""(?:[^""]+))|(?:@(?:[^\s^<]+))",RegexOptions.IgnoreCase);
-                        foreach (Match match in matches)
-                        {
-                            var taggedmember = _memberService.GetByUsername(WebUtility.HtmlDecode(match.Value.Replace("@", "")));
-                            if (taggedmember != null && taggedmember.Id != reply.MemberId)
-                            {
-                                //user mentioned in post, send them a PM
-                                PrivateMessage msg = new PrivateMessage
-                                {
-                                    To = taggedmember.Id,
-                                    From = reply.MemberId,
-                                    Subject = _languageResource["MentionedInPostSubject"].Value,// "You were mentioned in a Post",
-                                    Message = _languageResource["MentionedMessage",member.Name, _config.ForumUrl?.Trim() ?? "",reply.PostId, reply.Id].Value,
-                                    SentDate = DateTime.UtcNow.ToForumDateStr(),
-                                    Read = 0,SaveSentMessage = 0
-                                };
-                                _pmService.Create(msg);
 
-                            }
-                        }
-                    }
-                }
-
-            }
-            var topic = _postService.GetTopicForUpdate(reply.PostId);
-            topic.Status = (short)(model.Lock ? 0 : 1);
-            topic.IsSticky = (short)(model.Sticky ? 1 : 0);
-            topic.ArchiveFlag = (short)(model.DoNotArchive ? 1 : 0);
-            _postService?.UpdateReplyTopic(topic);
-
-            // TODO: Implement User Rating Management
-            return Json(new{url=Url.Action("Index", "Topic", new { id = reply.PostId }),id=reply.PostId});
-            //return RedirectToAction("Index", "Topic", new { id = reply.PostId });
-        }
         [HttpPost]
         [Authorize]
         [Route("Topic/DeleteReply/")]
-        public async Task<IActionResult> DeleteReply(int id)
+        public async Task<IActionResult> DeleteReply(int id, bool archived)
         {
 
             var member = _memberService.GetById(User).Result;
@@ -875,6 +897,17 @@ namespace MVCForum.Controllers
                 return Json(new { result = false, error = "Unable to delete this reply" });
 
             }
+            if(archived)
+            {
+                var archivedpost = _postService.GetArchivedReply(id);
+                if (archivedpost == null)
+                {
+                    ModelState.AddModelError("","Unable to delete this reply");
+                    return Json(new { result = false, error = "Unable to delete this reply" });
+                }
+                await _postService.DeleteArchivedReply(id);
+                return Json(new { result = true, data = archivedpost.Topic!.Id });
+            }
             await _postService.DeleteReply(id);
             return Json(new { result = true, data = post.Topic!.Id });
 
@@ -882,10 +915,27 @@ namespace MVCForum.Controllers
         [HttpPost]
         [Authorize]
         [Route("Topic/DeleteTopic/")]
-        public async Task<IActionResult> DeleteTopic(int id)
+        public async Task<IActionResult> DeleteTopic(int id, bool archived)
         {
             var member = _memberService.GetById(User).Result;
+            if (archived)
+            {
+                var archivedpost = _postService.GetArchivedTopic(id);
+                if (archivedpost == null)
+                {
+                    ModelState.AddModelError("","Unable to delete this topic");
+                    return Json(new { result = false, error = "Unable to delete this topic" });
+                }
+                if (member != null && (member.Roles.Contains("Administrator") || archivedpost.MemberId == member.Id))
+                {
+                    await _postService.DeleteArchivedTopic(id);
+                    return Json(new { result = true, url = Url.Action("Index", "Forum", new { id = archivedpost.ForumId }) });
+                }
+                ModelState.AddModelError("","Unable to delete this topic");
+                return Json(new { result = false, error = "Unable to delete this topic" });
+            }
             var post = _postService.GetTopicAsync(id).Result;
+
             if (member != null && (member.Roles.Contains("Administrator") || post!.MemberId == member.Id))
             {
                 await _postService.DeleteTopic(id);
@@ -1575,13 +1625,15 @@ namespace MVCForum.Controllers
         }
         private Post BuildPost(NewPostModel model, int memberid)
         {
+            Post? originaltopic = null;
             if (model.TopicId != 0)
             {
-                return _postService.GetTopicForUpdate(model.TopicId);
+                originaltopic = _postService.GetTopicForUpdate(model.TopicId);
             }
 
             var donotModerate = User.IsInRole("Administrator") || User.IsInRole("Forum_" + model.ForumId);
-            var forum = _forumService.GetWithPosts(model.ForumId);
+            var forum = _forumService.Get(model.ForumId);
+
             return new Post()
             {
                 Id = model.TopicId,
@@ -1589,11 +1641,10 @@ namespace MVCForum.Controllers
                 Content = model.Content,
                 Created = DateTime.UtcNow.ToForumDateStr(),
                 MemberId = memberid,
-                //Member = user,
-                ForumId = model.ForumId,
-                CategoryId = model.CatId,
-                AllowRating= (short)(model.AllowRating ? 1 : 0),
-                IsSticky = (short)(model.Sticky ? 1 : 0),
+                ForumId = originaltopic != null ? originaltopic.ForumId : model.ForumId,
+                CategoryId = originaltopic != null ? originaltopic.CategoryId : model.CatId,
+                AllowRating = (short)(model.AllowRating ? 1 : 0),
+                IsSticky = (short)(model.IsSticky ? 1 : 0),
                 ArchiveFlag = model.DoNotArchive ? 1 : 0,
                 Status = (forum.Moderation == Moderation.AllPosts || forum.Moderation == Moderation.Topics) && !(donotModerate)
                 ? (short)Status.UnModerated
@@ -1610,7 +1661,7 @@ namespace MVCForum.Controllers
             }
 
             var donotModerate = User.IsInRole("Administrator") || User.IsInRole("Forum_" + model.ForumId);
-            var forum = _forumService.GetWithPosts(model.ForumId);
+            var forum = _forumService.Get(model.ForumId);
             return new PostReply()
             {
                 Id = model.Id,
@@ -1622,7 +1673,7 @@ namespace MVCForum.Controllers
                 MemberId = memberid,
                 PostId = model.TopicId,
                 ForumId = model.ForumId,
-                CategoryId = model.CatId,
+                CategoryId = forum.CategoryId,
                 Sig = (short)(model.UseSignature ? 1 : 0),
                 Answer = model.Answer
             };
@@ -1634,6 +1685,7 @@ namespace MVCForum.Controllers
             {
                 Id = reply.Id,
                 Reply = reply,
+
                 AuthorId = reply.Member!.Id,
                 Author = reply.Member,
                 AuthorName = reply.Member.Name,
@@ -1649,12 +1701,13 @@ namespace MVCForum.Controllers
                 EditedBy = reply.LastEditby == null ? "" : _memberService.GetMemberName(reply.LastEditby.Value)
             });
         }
+
         private IEnumerable<PostReplyModel> BuildPostReplies(IEnumerable<ArchivedReply> replies)
         {
             return replies.Select(reply => new PostReplyModel()
             {
                 Id = reply.Id,
-
+                ArchivedReply = reply,
                 AuthorId = reply.Member!.Id,
                 Author = reply.Member,
                 AuthorName = reply.Member.Name,

@@ -260,7 +260,7 @@
                     @await Component.InvokeAsync("PostControls", new { post = Model.Topic })
 
                 }else{
-                    <span class="form-text">@Localizer["tipTopicArchived"]</span>
+                    @await Component.InvokeAsync("PostControls", new { post = Model.ArchivedTopic})
                 }
                 <div snitz-if="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1" class="footer"><a href="" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a class="form-control-plaintext text-end" href="" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
             </div>
@@ -358,12 +358,7 @@
                             </div>
                             <div snitz-if="@(isAuthenticated || (reply.Edited != null && !string.IsNullOrWhiteSpace(reply.EditedBy)))" class="card-footer text-dark">
                                 <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && reply.Edited != null && !string.IsNullOrWhiteSpace(reply.EditedBy))" class="form-text">@Localizer["lblEditedBy", reply.EditedBy!, reply.Edited?.ToLocalTime().ToForumDisplay()!]</span>
-                                @if(!Model.Archived)
-                                {
-                                    @await Component.InvokeAsync("PostControls", new { post = reply})         
-                                }else{
-                                    <span class="form-text">@Localizer["tipTopicArchived"]</span>
-                                }
+                                @await Component.InvokeAsync("PostControls", new { post = reply})
                             </div>
                         </div>
                     </div>

@@ -1,10 +1,11 @@
-﻿@model Post
+﻿@model dynamic
 @inject IBookmark Bookmarks
 
 @{
     bool isadmin = User.IsInRole("Administrator");
     bool ismoderator = User.IsInRole("Moderator");
     bool islocked = Model.Status == 0;
+    bool isArchived = Model is ArchivedPost;
     bool isauthor = User.Identity?.Name?.ToLowerInvariant() == Model.Member?.Name.ToLowerInvariant();
     var subscriptions = MemberService.Current()?.Subscriptions;
     bool allowThanks = (bool)TempData["allowThanks"];
@@ -27,7 +28,7 @@
             }
 
         }
-        else
+        else if(!isArchived)
         {
             <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" data-id="@Model.Id" data-toggle="tooltip"></i>
             <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-commenting m-1 post-quote" title="@Localizer["tipQuoteTopic"]" data-id="@Model.Id" data-toggle="tooltip"></i>
@@ -39,19 +40,19 @@
                 @await Component.InvokeAsync("PostThanks", new { template = "TopicSummary", topicid = Model.Id, id = 0, showcount = true })
             }
         }
-        @if (SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1)
+        @if (SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1 && !isArchived)
         {
             <i snitz-if="@Bookmarks.IsBookmarked(Model.Id)" class="fa fa-bookmark m-1 bookmark-del" title="@Localizer["tipRemoveBookmark"]" data-id="@Model.Id" data-toggle="tooltip"></i>
             <i snitz-if="@(!Bookmarks.IsBookmarked(Model.Id))" class="fa fa-bookmark-o m-1 bookmark-add" title="@Localizer["tipBookmarkPost"]" data-id="@Model.Id" data-toggle="tooltip"></i>
         }
         @if (isadmin || isauthor || ismoderator)
         {
-            <i snitz-if="@((!islocked && isauthor) || isadmin || ismoderator)" class="fa fa-pencil m-1 post-edit" title="@Localizer["tipEditTopic"]" data-id="@Model.Id" data-toggle="tooltip"></i>
-            <i class="fa fa-trash m-1 post-del" title="@Localizer["tipTopicDel"]" data-id="@Model.Id" data-toggle="tooltip"></i>
-            <i snitz-if="@(islocked && (isadmin || ismoderator))" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.Id" data-status="1" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && !islocked)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.Id" data-status="0" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 0)" class="fa fa-thumb-tack m-1 post-stick" title="@Localizer["tipMakeSticky"]" data-id="@Model.Id" data-status="1" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 1)" class="fa fa-thumb-tack fa-rotate-90 red m-1 post-stick" title="@Localizer["tipUnStick"]" data-id="@Model.Id" data-status="0" data-toggle="tooltip"></i>
+            <i snitz-if="@((!islocked && isauthor) || isadmin || ismoderator)" class="fa fa-pencil m-1 post-edit" title="@Localizer["tipEditTopic"]" data-id="@Model.Id" data-archived="@isArchived" data-toggle="tooltip"></i>
+            <i class="fa fa-trash m-1 post-del" title="@Localizer["tipTopicDel"]" data-id="@Model.Id" data-toggle="tooltip" data-archived="@isArchived"></i>
+            <i snitz-if="@(islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.Id" data-status="1" data-toggle="tooltip"></i>
+            <i snitz-if="@((isadmin || ismoderator) && !islocked && !isArchived)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.Id" data-status="0" data-toggle="tooltip"></i>
+            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 0 && !isArchived)" class="fa fa-thumb-tack m-1 post-stick" title="@Localizer["tipMakeSticky"]" data-id="@Model.Id" data-status="1" data-toggle="tooltip"></i>
+            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 1 && !isArchived)" class="fa fa-thumb-tack fa-rotate-90 red m-1 post-stick" title="@Localizer["tipUnStick"]" data-id="@Model.Id" data-status="0" data-toggle="tooltip"></i>
         }
     </div>
 }

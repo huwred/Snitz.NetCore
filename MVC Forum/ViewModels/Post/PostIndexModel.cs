@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SnitzCore.Data.Models;
+using System.Collections.Generic;
 
 namespace MVCForum.ViewModels.Post
 {
@@ -33,6 +34,7 @@ namespace MVCForum.ViewModels.Post
         public bool AllowTopicRating { get; internal set; }
         public decimal Rating { get; internal set; }
         public bool AccessDenied { get; internal set; }
+        public ArchivedPost ArchivedTopic { get; internal set; }
 
         public PostIndexModel()
         {

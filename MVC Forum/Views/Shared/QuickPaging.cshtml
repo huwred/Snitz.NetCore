@@ -42,7 +42,8 @@
     <ul class="pagination quicklink">
         @for (int i = intLow; i < intHigh + 1; i++)
         {
-            <li class="page-item"><a class="page-link" href="~/Topic/@Model.Page/?page=@i@(orderby)@(defaultdays)@(sortdir)@(pagesize)" title="Jump to page @i of the topic replies">@i</a></li>
+            <li snitz-if="@(Model.Archived)" class="page-item"><a class="page-link" href="~/Topic/Archived/@Model.Page/?page=@i@(orderby)@(defaultdays)@(sortdir)@(pagesize)" title="Jump to page @i of the topic replies">@i</a></li>
+            <li snitz-if="@(!Model.Archived)" class="page-item"><a class="page-link" href="~/Topic/@Model.Page/?page=@i@(orderby)@(defaultdays)@(sortdir)@(pagesize)" title="Jump to page @i of the topic replies">@i</a></li>
         }
     </ul>
 </nav>

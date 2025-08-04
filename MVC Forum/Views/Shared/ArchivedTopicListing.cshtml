@@ -69,7 +69,8 @@
                         {
                             PageCount = Model.RepliesCount / ViewBag.PageSize,
                             PageSize = ViewBag.PageSize,
-                            Page = Model.Id
+                            Page = Model.Id,
+                            Archived = archives,
                         };
                         <partial name="QuickPaging" model="paging"/>
                     }
@@ -80,9 +81,9 @@
                 }
             </div>
             <div class="d-none d-md-flex  p-2 bd-highlight fs-6 post-buttons">
-                @if (!archives)
+                @if (!archives || User.IsInRole("Administrator"))
                 {
-                    @await Component.InvokeAsync("PostControls", new { post = Model.Topic ,forlist = true})
+                    @await Component.InvokeAsync("PostControls", new { post = Model.ArchivedTopic ,forlist = true})
                 }
             </div>
         </div>
@@ -101,13 +102,13 @@
             </span>
         }
         <div class="d-sm-inline-flex d-md-none bd-highlight fs-6 post-buttons">
-            @if (!archives)
-            {
-                @await Component.InvokeAsync("PostControls", new { post = Model.Topic, forlist = true })
-            }
+                @if (!archives || User.IsInRole("Administrator"))
+                {
+                    @await Component.InvokeAsync("PostControls", new { post = Model.ArchivedTopic ,forlist = true})
+                }
         </div>
     </div>
-    <div class="subscribe d-none d-sm-inline-flex">
+    <div snitz-if="@(!archives)" class="subscribe d-none d-sm-inline-flex">
         <input snitz-if="@(User?.IsInRole("Administrator"))" type="checkbox" class="form-check-input topic-select" value="@Model?.Id" name="topicselected" />
     </div>
 </div>

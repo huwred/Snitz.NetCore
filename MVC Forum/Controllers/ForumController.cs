@@ -439,7 +439,7 @@ namespace MVCForum.Controllers
                 var postlistings = pagedTopics.Select(p => new PostListingModel()
                 {
                     Id = p.Id,
-
+                    ArchivedTopic = p,
                     AuthorId = p.MemberId,
                     AuthorName = p.Member?.Name ?? "Unknown",
                     //AuthorRating = p.User?.Rating ?? 0,

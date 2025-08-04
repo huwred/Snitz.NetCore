@@ -27,9 +27,11 @@ $(document).on("click",".reply-del", function() {
     let postid;
     if (confirm("Are you sure!") === true) {
         postid = $(this).data("id");
+        var archived = $(this).data("archived");
         $.post(SnitzVars.baseUrl + "/Topic/DeleteReply",
             {
-                id: postid
+                id: postid,
+                archived: archived
             },
             function(data, status){
                 if (!data.result) {
@@ -46,6 +48,7 @@ $(document).on("click",".post-del", function(e) {
     e.preventDefault();
     var postid = $(this).data("id");
     var href = $(this).attr('href');
+    var archived = $(this).data("archived");
     $('#confirmModal h4.text-bg-warning').html('Delete Post');
     $('#confirmModal #confirm-body').html('<p>You are about to Delete this Topic.</p><p>Do you wish to proceed?</p>');
     $('#confirmModal').data('id', postid).data('url', href).modal('show');
@@ -54,7 +57,8 @@ $(document).on("click",".post-del", function(e) {
         e.preventDefault();
         $.post(SnitzVars.baseUrl + "/Topic/DeleteTopic",
             {
-                id: postid
+                id: postid,
+                archived: archived
             },
             function(data, status){
             if (!data.result) {
@@ -238,7 +242,8 @@ $(document).on("click",".post-reply", function() {
 $(document).on("click",".reply-edit", function() {
 
     var postid = $(this).data("id");
-    location.href = SnitzVars.baseUrl + "/Topic/EditReply/" + postid;
+    archived = $(this).data("archived");
+    location.href = SnitzVars.baseUrl + "/Topic/EditReply/" + postid + "?archived=" + archived;
 });
 // Mark as Answer
 $(document).on('click', '.reply-answer', function (e) {
@@ -276,7 +281,8 @@ $(document).on('click', '.reply-answer', function (e) {
 $(document).on("click",".post-edit", function() {
 
     var postid = $(this).data("id");
-    location.href = SnitzVars.baseUrl + "/Topic/Edit/" + postid;
+    archived = $(this).data("archived");
+    location.href = SnitzVars.baseUrl + "/Topic/Edit/" + postid + "?archived=" + archived;
 
 });
 // Thumbs Up

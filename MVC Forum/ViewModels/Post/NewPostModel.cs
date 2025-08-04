@@ -23,10 +23,12 @@ namespace MVCForum.ViewModels.Post
 
         public bool IsPost { get; set; }
         public bool UseSignature { get; set; }
-        public bool Lock { get; set; }
-        public bool Sticky { get; set; }
+        public bool IsLocked { get; set; }
+        public bool IsSticky { get; set; }
         public bool DoNotArchive { get; set; }
         public bool Answer { get; internal set; }
+
+        public bool IsArchived { get; set; }
 
         public Dictionary<int, string>? Forums { get; set; }
     }
