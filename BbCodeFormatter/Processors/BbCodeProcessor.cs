@@ -272,7 +272,7 @@ public class BbCodeProcessor : ICodeProcessor
     {
         if (String.IsNullOrWhiteSpace(data))
             return data;
-        if (_config.GetIntValue("STRALLOWFORUMCODE") != 1)
+        if (_config.GetIntValue("STRALLOWFORUMCODE") == 0)
             return data;
 
         _useFullUrl = newsfeed;

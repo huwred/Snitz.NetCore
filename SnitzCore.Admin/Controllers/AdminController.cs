@@ -825,6 +825,12 @@ namespace SnitzCore.BackOffice.Controllers
             }
         }
 
+        public IActionResult ClearCache()
+        {
+            CacheProvider.Clear();
+            return Ok(true);
+        }
+
         public IActionResult Restart()
         {
             _appLifetime.StopApplication();

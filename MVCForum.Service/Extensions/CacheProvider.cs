@@ -25,5 +25,9 @@ namespace SnitzCore.Service.Extensions
         {
             _cache.Remove(key);
         }
+        public static void Clear()
+        {
+            _cache.Clear();
+        }
     }
 }

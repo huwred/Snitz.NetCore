@@ -57,7 +57,7 @@
                     {
                         @Localizer["lblin"]
                         <a snitz-if="@(!archives)" href="~/Forum/@Model?.Forum?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Forum?.Title!))</a>
-                        <a snitz-if="@archives" href="~/Forum/Archived/@Model?.Forum?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Forum?.Title!))</a>
+                        <a snitz-if="@archives" href="~/Forum/Archived/@Model?.Forum?.Id/?defaultdays=0">@Html.Raw(BbCodeProcessor.Subject(Model?.Forum?.Title!))</a>
                     }
                     <snitz-datetime datetime="@Model?.Created"></snitz-datetime> .
                 </span>

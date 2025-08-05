@@ -151,6 +151,30 @@ $(document).on('click', '.confirm-restart', function (e) {
             });
     });
 });
+$(document).on('click', '.confirm-clearcache', function (e) {
+    e.preventDefault();
+    var href = $(this).attr('href');
+    $('#confirmRestart').data('url', href).modal('show');
+
+    $('#confirmRestart').on('click', '#btnRestartYes', function (e) {
+        e.preventDefault();
+        $.post(href, '',
+            function (data, status) {
+                if (!data) {
+                    appendAlert("There was a problem!", 'error');
+                } else {
+                    $('#confirmRestart .modal-body').html("<p>Clearing Cache, please wait ...</p>");
+                    $('#btnRestartYes').hide();
+                    setTimeout(function () {
+                        $('#confirmRestart').modal('hide');
+                        location.reload(true);
+                    }, 25000);
+
+                }
+            });
+    });
+});
+
 /* Busy Indicator */
 $(document).on('submit', 'form', function () {
     displayBusyIndicator();
