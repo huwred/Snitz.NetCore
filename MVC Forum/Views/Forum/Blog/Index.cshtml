@@ -8,6 +8,8 @@
 @inject IEnumerable<ISnitzStartupService> pluginservices
 @section MetaData
 {
+        <title>Forum: @Model.Forum?.Title</title>
+
     <meta name="title" content="Forum: @Model.Forum?.Title" />
     <meta name="description" content="@Model.Forum?.Description" />
     <meta name="robots" content="index,nofollow" />

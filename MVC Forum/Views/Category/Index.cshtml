@@ -29,6 +29,12 @@
 }
 @section MetaData
 {
+    @if(Model.Categories.Count() == 1)
+    {
+        <title>@Config.Value.strForumTitle: Category - @Model.Categories.First().Name</title>
+    }else
+    {<title>@Config.Value.strForumTitle: All Forums</title>}
+
     <meta name="title" content="@Config.Value.strForumTitle Categories" />
     <meta name="description" content="@Config.Value.strForumDescription" />
     <meta name="robots" content="index,follow" />
@@ -106,6 +112,10 @@
                                 <div class="subforum-row @weblinkclass ">
                                     <div class="subforum-icon subforum-column text-center">
                                         <snitz-forum-icon lastpost="@forum.LastPostDateTime" is-administrator="@isAdministrator" forum-id="@forum.Id" status="@forum.Status" forumtype="@((int)forum.ForumType)" accesstype="@((int)forum.AccessType)"></snitz-forum-icon>
+                                        @if (forum.ArchivedCount > 0)
+                                        {
+                                            <a href="~/Forum/Archived/@forum.Id/?defaultdays=0" data-toggle="tooltip" title="@Localizer["tipViewArchive"] (@forum.ArchivedCount)"><i class="fa fa-archive text-secondary"></i></a>
+                                        }
                                         @if (isAdministrator && forum.ForumType is ForumType.WebLink)
                                         {
                                             <br />
@@ -120,10 +130,7 @@
                                         else
                                         {
                                             <h4><a href="~/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" aria-label="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a>
-                                            @if (forum.ArchivedCount > 0)
-                                            {
-                                                    <a href="~/Forum/Archived/@forum.Id/?defaultdays=0" title="@Localizer["tipViewArchive"] (@forum.ArchivedCount)"><i class="fa fa-archive text-secondary"></i></a>
-                                            }
+
                                             </h4>
                                         }
                                         <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
