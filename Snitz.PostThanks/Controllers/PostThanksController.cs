@@ -72,7 +72,7 @@ namespace Snitz.PostThanks.Controllers
         /// <param name="returnUrl">Url of calling page</param>
         /// <returns></returns>
         [Authorize]
-        public IActionResult Thank(int id, int replyid/*, string returnUrl*/)
+        public IActionResult Thank(int id, int replyid /*, string returnUrl*/)
         {
             thanksRepository.AddThanks(id, replyid);
 

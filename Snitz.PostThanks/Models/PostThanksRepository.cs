@@ -121,9 +121,20 @@ namespace PostThanks.Models
 
         }
 
-        internal bool IsAuthor(int id, int replyid)
+        internal bool IsAuthor(int id, int replyid, bool archived)
         {
-            if(replyid == 0)
+            if(archived)
+            {
+                if (replyid == 0)
+                {
+                    return _snitzContext.ArchivedTopics.Single(p=>p.Id == id).MemberId == _memberid;
+                }
+                else
+                {
+                    return _snitzContext.ArchivedPosts.Single(p=>p.Id == replyid).MemberId == _memberid;
+                }
+            }
+            if (replyid == 0)
             {
                 return _snitzContext.Posts.Single(p=>p.Id == id).MemberId == _memberid;
             }

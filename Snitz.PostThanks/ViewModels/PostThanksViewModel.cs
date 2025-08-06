@@ -10,6 +10,8 @@
         public bool ShowCount { get; set; }
         public bool Showlink { get; set; }
         public int ThanksCount { get; set; }
+
+        public bool IsArchived { get; set; } = false;
     }
 
     public class PostThanksProfile
