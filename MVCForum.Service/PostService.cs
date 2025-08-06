@@ -42,15 +42,21 @@ namespace SnitzCore.Service
             _config = config;
             _mailSender = mailSender;
             _tableprefix = options.Value.forumTablePrefix;
-            _user = httpContextAccessor.HttpContext.User;
+            _user = httpContextAccessor.HttpContext?.User;
             log4net.ILog _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
         }
 
         /// <summary>
-        /// Create a Topic
+        /// Creates a new post in the database and updates related forum and member statistics.
         /// </summary>
-        /// <param name="post"></param>
-        /// <returns></returns>
+        /// <remarks>This method performs several operations: <list type="bullet"> <item>Filters bad words
+        /// in the post content if the bad word filter is enabled in the configuration.</item> <item>Sets metadata for
+        /// the post, such as the last post date and author.</item> <item>Updates forum statistics, including the last
+        /// post and topic count.</item> <item>Updates member statistics, such as post count or last post
+        /// information.</item> </list> The method ensures that the post is properly added to the database and related
+        /// entities are updated.</remarks>
+        /// <param name="post">The post to be created. Must not be null and should contain valid content and metadata.</param>
+        /// <returns>The unique identifier of the newly created post.</returns>
         public async Task<int> Create(Post post)
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
@@ -86,10 +92,17 @@ namespace SnitzCore.Service
         }
 
         /// <summary>
-        /// Create a Reply
+        /// Creates a new reply to a post and updates related forum and member statistics.
         /// </summary>
-        /// <param name="post"></param>
-        /// <returns></returns>
+        /// <remarks>This method performs several operations: <list type="bullet"> <item>Filters the reply
+        /// content for inappropriate words if the bad word filter is enabled in the configuration.</item>
+        /// <item>Persists the reply to the database.</item> <item>Updates the forum's last post information and member
+        /// statistics, including post count or last post details.</item> <item>Increments the total post count for the
+        /// forum.</item> </list> The bad word filter is cached for performance optimization and refreshed every 15
+        /// minutes.</remarks>
+        /// <param name="post">The <see cref="PostReply"/> object representing the reply to be created. The <see cref="PostReply.Content"/>
+        /// property may be filtered for inappropriate words based on configuration.</param>
+        /// <returns>The unique identifier of the newly created reply.</returns>
         public async Task<int> Create(PostReply post)
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
@@ -121,6 +134,19 @@ namespace SnitzCore.Service
             return post.Id;
         }
 
+        /// <summary>
+        /// Merges multiple topics into a single main topic and updates related data such as replies, subscriptions, and
+        /// forum statistics.
+        /// </summary>
+        /// <remarks>This method performs the following operations: <list type="bullet"> <item>Identifies
+        /// the main topic based on the earliest creation date among the selected topics.</item> <item>Updates replies,
+        /// subscriptions, and other related data to associate them with the main topic.</item> <item>Removes the merged
+        /// topics from the database.</item> <item>Updates forum statistics and sends notification emails if
+        /// configured.</item> </list> Throws an exception if any of the selected topics belong to an invalid
+        /// forum.</remarks>
+        /// <param name="selected">An array of topic IDs to be merged. If <see langword="null"/> or empty, no topics will be merged.</param>
+        /// <returns>The ID of the main topic after the merge.</returns>
+        /// <exception cref="Exception">Thrown if a source forum ID associated with one of the topics is invalid.</exception>
         public int CreateForMerge(int[]? selected)
         {
             var topics = _dbContext.Posts.AsNoTracking().Include(t=>t.Member).Where(p => selected != null && EF.Constant(selected).Contains(p.Id)).OrderBy(t => t.Created).ToList();
@@ -192,6 +218,15 @@ namespace SnitzCore.Service
             _forumservice.UpdateLastPost(mainTopic.ForumId);
             return maintopicid;
         }
+
+        /// <summary>
+        /// Locks a topic by updating its status.
+        /// </summary>
+        /// <remarks>This method updates the status of the specified topic in the database and saves the
+        /// changes. If the topic with the given <paramref name="id"/> does not exist, no changes are made.</remarks>
+        /// <param name="id">The unique identifier of the topic to be locked.</param>
+        /// <param name="status">The status value to assign to the topic. Defaults to <see langword="0"/> if not specified.</param>
+        /// <returns><see langword="true"/> if the topic was successfully locked; otherwise, <see langword="false"/>.</returns>
         public async Task<bool> LockTopic(int id, short status = 0)
         {
             var topic = _dbContext.Posts.SingleOrDefault(f => f.Id == id);
@@ -204,6 +239,17 @@ namespace SnitzCore.Service
             var result = await _dbContext.SaveChangesAsync();
             return result > 0;
         }
+
+        /// <summary>
+        /// Updates the sticky status of a post identified by its ID.
+        /// </summary>
+        /// <remarks>This method retrieves the post by its ID, updates its sticky status, and saves the
+        /// changes to the database. If the post does not exist, no changes are made, and the method returns <see
+        /// langword="false"/>.</remarks>
+        /// <param name="id">The unique identifier of the post to update.</param>
+        /// <param name="status">The sticky status to apply to the post. Defaults to <see langword="0"/>. A value of <see langword="0"/>
+        /// typically indicates the post is not sticky, while other values may indicate sticky status.</param>
+        /// <returns><see langword="true"/> if the sticky status was successfully updated; otherwise, <see langword="false"/>.</returns>
         public async Task<bool> MakeSticky(int id, short status = 0)
         {
             var topic = _dbContext.Posts.SingleOrDefault(f => f.Id == id);
@@ -216,6 +262,14 @@ namespace SnitzCore.Service
             var result = await _dbContext.SaveChangesAsync();
             return result > 0;
         }
+
+        /// <summary>
+        /// Deletes a topic and its associated replies from the database.
+        /// </summary>
+        /// <remarks>If the topic exists, it is removed along with its replies, and the associated forum's
+        /// last post information is updated. If the topic does not exist, no action is taken.</remarks>
+        /// <param name="id">The unique identifier of the topic to delete. Must correspond to an existing topic.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task DeleteTopic(int id)
         {
             var post = _dbContext.Posts.Include(p=>p.Replies).SingleOrDefault(f => f.Id == id);
@@ -228,6 +282,15 @@ namespace SnitzCore.Service
                 await _forumservice.UpdateLastPost(forumid);
             }
         }
+
+        /// <summary>
+        /// Deletes an archived topic and its associated replies from the database.
+        /// </summary>
+        /// <remarks>If the specified topic exists, it is removed along with its replies, and the
+        /// associated forum's  last post information is updated. If the topic does not exist, no action is
+        /// taken.</remarks>
+        /// <param name="id">The unique identifier of the archived topic to delete.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task DeleteArchivedTopic(int id)
         {
             var post = _dbContext.ArchivedTopics.Include(p=>p.Replies).SingleOrDefault(f => f.Id == id);
@@ -240,6 +303,15 @@ namespace SnitzCore.Service
                 await _forumservice.UpdateLastPost(forumid);
             }
         }
+
+        /// <summary>
+        /// Deletes a reply with the specified ID from the database.
+        /// </summary>
+        /// <remarks>If the reply does not exist, the method completes without performing any action.
+        /// Replies with a status of <see cref="Status.UnModerated"/> or <see cref="Status.OnHold"/>  may affect
+        /// moderation-related data when deleted.</remarks>
+        /// <param name="id">The unique identifier of the reply to delete.</param>
+        /// <returns></returns>
         public async Task DeleteReply(int id)
         {
             var post = _dbContext.Replies.SingleOrDefault(f => f.Id == id);
@@ -264,6 +336,15 @@ namespace SnitzCore.Service
 
             }
         }
+
+        /// <summary>
+        /// Deletes an archived reply with the specified ID.
+        /// </summary>
+        /// <remarks>If the reply with the specified ID does not exist, the method completes without
+        /// performing any action. Replies with certain statuses may trigger additional moderation-related
+        /// updates.</remarks>
+        /// <param name="id">The unique identifier of the archived reply to delete.</param>
+        /// <returns></returns>
         public async Task DeleteArchivedReply(int id)
         {
             var post = _dbContext.ArchivedPosts.SingleOrDefault(f => f.Id == id);
@@ -288,6 +369,15 @@ namespace SnitzCore.Service
 
             }
         }
+
+        /// <summary>
+        /// Updates the reply topic for the specified post in the database.
+        /// </summary>
+        /// <remarks>This method updates the specified post in the database and commits the changes
+        /// asynchronously. If an error occurs during the update, the error is logged but no exception is
+        /// rethrown.</remarks>
+        /// <param name="post">The post object containing updated information to be saved.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task UpdateReplyTopic(Post post)
         {
             try
@@ -331,6 +421,7 @@ namespace SnitzCore.Service
             await _dbContext.SaveChangesAsync();
 
         }
+
         public async Task Update(PostReply post)
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
@@ -353,6 +444,7 @@ namespace SnitzCore.Service
 
             await _dbContext.SaveChangesAsync();
         }
+
         public async Task UpdateViewCount(int id)
         {
             try
@@ -375,30 +467,6 @@ namespace SnitzCore.Service
             }
 
         }
-        public async Task UpdateTopicContent(int id, string content)
-        {
-            var itemInfoEntity = new Post()
-            {
-                Id          = id,
-                Content    = content
-            };
-
-            _dbContext.Posts.Attach(itemInfoEntity);
-            _dbContext.Entry(itemInfoEntity).Property(x => x.Content).IsModified = true;
-            await _dbContext.SaveChangesAsync();
-        }
-        public async Task UpdateReplyContent(int id, string content)
-        {
-            var itemInfoEntity = new PostReply()
-            {
-                Id          = id,
-                Content    = content
-            };
-
-            _dbContext.Replies.Attach(itemInfoEntity);
-            _dbContext.Entry(itemInfoEntity).Property(x => x.Content).IsModified = true;
-            await _dbContext.SaveChangesAsync();
-        }
 
         public IEnumerable<Post> GetLatestPosts(int n)
         {
@@ -416,6 +484,8 @@ namespace SnitzCore.Service
 
             return posts.Take(n);
         }
+
+
         public IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize = 10, int pagenumber = 1)
         {
             var replies = _dbContext.Replies.AsNoTracking().Where(p => p.PostId == topicid)
@@ -425,6 +495,7 @@ namespace SnitzCore.Service
                 .Skip((pagenumber-1) * pagesize).Take(pagesize);
             return replies.ToPagedList(pagenumber, pagesize);
         }
+
         public IEnumerable<Post> GetAllTopicsAndRelated()
         {
             return _dbContext.Posts
@@ -445,6 +516,7 @@ namespace SnitzCore.Service
                 .SingleOrDefaultAsync(p => p.Id == id);
 
         }
+
         public Post GetTopicForUpdate(int id)
         {
             var post = _dbContext.Posts
@@ -452,6 +524,7 @@ namespace SnitzCore.Service
                 .Single(p => p.Id == id);
             return post; 
         }
+
         public ArchivedPost? GetArchivedTopic(int id)
         {
             var post = _dbContext.ArchivedTopics
@@ -462,6 +535,7 @@ namespace SnitzCore.Service
                 .SingleOrDefault(p => p.Id == id);
             return post;
         }
+
         public async Task<Post?> GetTopicWithRelated(int id)
         {
 
@@ -477,6 +551,7 @@ namespace SnitzCore.Service
                 .SingleOrDefaultAsync(p => p.Id == id);
 
         }
+
         public ArchivedPost? GetArchivedTopicWithRelated(int id)
         {
 
@@ -493,6 +568,7 @@ namespace SnitzCore.Service
 
             return post;
         }
+
         public PostReply GetReply(int id)
         {
 
@@ -504,6 +580,7 @@ namespace SnitzCore.Service
 
             return post;
         }
+
         public ArchivedReply GetArchivedReply(int id)
         {
 
@@ -515,6 +592,7 @@ namespace SnitzCore.Service
 
             return post;
         }
+
         public PostReply GetReplyForUdate(int id)
         {
 
@@ -524,6 +602,7 @@ namespace SnitzCore.Service
 
             return post;
         }
+
         public IPagedList<Post> GetFilteredPost(string? searchQuery,out int totalcount, int pagesize=25, int page=1,int catid=0,int forumid=0)
         {
             if (searchQuery == null)
@@ -611,6 +690,7 @@ namespace SnitzCore.Service
             totalcount = posts.Count();
             return posts.OrderByDescending(p=>p.LastPostDate).ToPagedList(page, pagesize);
         }
+
         public IPagedList<ArchivedPost> FindArchived(ForumSearch searchQuery, out int totalcount, int pagesize, int page)
         {
 
@@ -675,10 +755,12 @@ namespace SnitzCore.Service
             totalcount = posts.Count();
             return posts.OrderByDescending(p=>p.LastPostDate).ToPagedList(page, pagesize);
         }
+
         public Post GetLatestReply(int id)
         {
             throw new NotImplementedException();
         }
+
         public async Task UpdateLastPost(int topicid, int? moderatedcount)
         {
             var count = _dbContext.Replies.Count(r => r.PostId == topicid && r.Status < 2);
@@ -710,7 +792,7 @@ namespace SnitzCore.Service
             }
             _dbContext.Update(topic);
 
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
         }
 

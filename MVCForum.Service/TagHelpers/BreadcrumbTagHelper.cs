@@ -126,7 +126,7 @@ namespace SmartBreadcrumbs
             output.Content.AppendHtml(child);
                 if (ShowFilter)
                 {
-                output.Content.AppendHtml("<li class=\"filter-btn\" role=\"button\" data-bs-toggle=\"collapse\" title=\"Show page filters\" data-toggle=\"tooltip\" data-bs-target=\"#showFilters\" aria-expanded=\"true\" aria-controls=\"showFilters\"><i class=\"fa fa-sliders fs-3\"></i></li>");
+                output.Content.AppendHtml("<li class=\"filter-btn\"><i class=\" fa fa-sliders fs-3\" role=\"button\" data-bs-toggle=\"collapse\" title=\"Show page filters\" data-toggle=\"tooltip\" data-bs-target=\"#showFilters\" aria-expanded=\"true\" aria-controls=\"showFilters\"></i></li>");
 
                 }
             output.Content.AppendHtml("</ol>");
