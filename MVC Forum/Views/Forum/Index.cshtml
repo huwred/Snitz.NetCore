@@ -137,7 +137,10 @@
                     <div class="input-group">
                         @if (User.Identity!.IsAuthenticated)
                         {
-                            <button snitz-if="@Model.Forum?.Status == 1" asp-controller="Topic" asp-action="Create" asp-route-id="@Model.Forum?.Id" class="btn btn-outline-primary"><i class="fa fa-commenting-o"></i><span class="d-none d-lg-inline"> @Localizer["btnNewTopic"]</span></button>
+                            if (Model.Forum.PostAuth == PostAuthType.Anyone || (Model.Forum.PostAuth == PostAuthType.Moderators && User.IsInRole("Forum_" + Model.Forum.Id)) || User.IsInRole("Administrator"))
+                            {
+                                <button snitz-if="@Model.Forum?.Status == 1" asp-controller="Topic" asp-action="Create" asp-route-id="@Model.Forum?.Id" class="btn btn-outline-primary"><i class="fa fa-commenting-o"></i><span class="d-none d-lg-inline"> @Localizer["btnNewTopic"]</span></button>
+                            }
                             if (SnitzConfig.GetIntValue("INTPOLLS") == 1 && Model.Forum.Polls != (int)PollAuth.Disallow)
                             {
                                 if ((Model.Forum.Polls == (int)PollAuth.Members) || (Model.Forum.Polls == (int)PollAuth.AdminModerators && User.IsInRole("Forum_" + Model.Forum.Id)) || User.IsInRole("Administrator"))

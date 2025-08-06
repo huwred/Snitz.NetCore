@@ -395,7 +395,7 @@
             <div id="QRAlertPlaceholder"></div>
 
             <div snitz-if="@(!Model.IsLocked)" class="comment-area @replyClass mt-2" id="reply-area">
-                <form asp-controller="Topic" asp-action="AddReply" class="needs-validation" id="QuickReply" novalidate>
+                <form asp-controller="Reply" asp-action="AddReply" class="needs-validation" id="QuickReply" novalidate>
                     <textarea name="Content" id="msg-text" placeholder="reply here ... " class="form-control" required="required" rows="6"></textarea>
                     <div class="invalid-feedback text-danger-emphasis">@Localizer["MessageRequired"]</div>
                     <input name="TopicId" type="hidden" value="@Model.Id"/>

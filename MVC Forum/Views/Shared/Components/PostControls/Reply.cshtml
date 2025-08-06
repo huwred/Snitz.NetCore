@@ -13,20 +13,24 @@
 @if (User.Identity.IsAuthenticated)
 {
     <div class="post-control-btn">
-        <i snitz-if="@((!islocked || isadmin || ismoderator) && !isArchived)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" aria-label="@Localizer["tipTopicReply"]" data-id="@topicid" data-toggle="tooltip"></i>
-        <i snitz-if="@((!islocked || isadmin || ismoderator) && !isArchived)" class="fa fa-commenting m-1 reply-quote" title="@Localizer["tipQuoteReply"]" aria-label="@Localizer["tipTopicReply"]" data-id="@Model.Id" data-toggle="tooltip"></i>
-        @if (SnitzConfig.GetIntValue("STRTHANKS", 0) == 1 && !isArchived)
+        @if (Model.Topic.Forum.Replyauth == (int)PostAuthType.Anyone || (Model.Topic.Forum.Replyauth == (int)PostAuthType.Moderators && ismoderator) || isadmin)
+        {
+            <i snitz-if="@((!islocked || isadmin || ismoderator) && !isArchived)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" aria-label="@Localizer["tipTopicReply"]" data-id="@topicid" data-toggle="tooltip"></i>
+            <i snitz-if="@((!islocked || isadmin || ismoderator) && !isArchived)" class="fa fa-commenting m-1 reply-quote" title="@Localizer["tipQuoteReply"]" aria-label="@Localizer["tipTopicReply"]" data-id="@Model.Id" data-toggle="tooltip"></i>
+        }
+        @if (SnitzConfig.GetIntValue("STRTHANKS", 0) == 1)
         {
             if (allowThanks && User.Identity.IsAuthenticated)
             {
-                @await Component.InvokeAsync("PostThanks", new { template = "TopicSummary", topicid = topicid, id = Model.Id })
+                @await Component.InvokeAsync("PostThanks", new { template = "TopicSummary", topicid = topicid, id = Model.Id, archived = isArchived, showcount=true })
             }
         }
 
         @if (SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1 && !isArchived)
         {
-            <i snitz-if="@(Bookmarks.IsBookmarked(Model.PostId))" class="fa fa-bookmark m-1 bookmark-del" title="@Localizer["tipRemoveBookmark"]" aria-label="@Localizer["tipTopicReply"]" data-id="@topicid" data-toggle="tooltip"></i>
-            <i snitz-if="@(!Bookmarks.IsBookmarked(Model.PostId))" class="fa fa-bookmark-o m-1 bookmark-add" title="@Localizer["tipBookmarkPost"]" aria-label="@Localizer["tipTopicReply"]" data-id="@topicid" data-toggle="tooltip"></i>
+                <i snitz-if="@(Bookmarks.IsBookmarked(Model.PostId))" class="fa fa-bookmark m-1 bookmark-del" title="@Localizer["tipRemoveBookmark"]" aria-label="@Localizer["tipTopicReply"]" data-id="@topicid" data-toggle="tooltip"></i>
+                <i snitz-if="@(!Bookmarks.IsBookmarked(Model.PostId))" class="fa fa-bookmark-o m-1 bookmark-add" title="@Localizer["tipBookmarkPost"]" aria-label="@Localizer["tipTopicReply"]" data-id="@topicid" data-toggle="tooltip"></i>
+
         }
         <i snitz-if="@(!isArchived && !Model.Topic.Answered && (isauthor || isadmin) && !isArchived)" class="fa fa-flag-checkered m-1 reply-answer" title="@Localizer["tipAnswer"]" aria-label="@Localizer["tipTopicReply"]" data-id="@Model.Id" data-toggle="tooltip"></i>
         @if (isadmin || isauthor || ismoderator)

@@ -674,7 +674,9 @@ namespace MVCForum.Controllers
                         Moderation = model.Moderation,
                         Subscription = (int)model.Subscription,
                         Password = model.NewPassword,
-                        Rating = (short) model.AllowTopicRating
+                        Rating = (short) model.AllowTopicRating,
+                        Postauth = (int)model.PostAuth,
+                        Replyauth = (int)model.ReplyAuth,
                     };
                     if (model.ForumId != 0)
                     {
@@ -737,7 +739,9 @@ namespace MVCForum.Controllers
                 ForumId = id,
                 NewPassword = forum.Password,
                 AllowedMembers = _forumService.AllowedUsers(id),
-                AllowTopicRating = forum.Rating
+                AllowTopicRating = forum.Rating,
+                PostAuth = (PostAuthType)forum.Postauth,
+                ReplyAuth = (PostAuthType)forum.Replyauth
             };
             return View("Create",model);
         }
@@ -1074,9 +1078,10 @@ namespace MVCForum.Controllers
                 ForumSubscription = (ForumSubscription)forum.Subscription,
                 Polls = forum.Polls,
                 ArchivedCount = forum.ArchivedTopics,
-                AllowTopicRating = forum.Rating == 1
+                AllowTopicRating = forum.Rating == 1,
                 //ImageUrl = forum.ImageUrl
-
+                PostAuth = (PostAuthType)forum.Postauth,
+                ReplyAuth = (PostAuthType)forum.Replyauth,
             };
         }
         private ForumListingModel BuildForumListing(int? defaultdays, string orderby, string sortdir)
@@ -1105,8 +1110,10 @@ namespace MVCForum.Controllers
                 ForumModeration = forum.Moderation,
                 Polls = forum.Polls,
                 ArchivedCount = forum.ArchivedTopics,
-                AllowTopicRating = forum.Rating == 1
+                AllowTopicRating = forum.Rating == 1,
                 //ImageUrl = forum.ImageUrl
+                PostAuth = (PostAuthType)forum.Postauth,
+                ReplyAuth = (PostAuthType)forum.Replyauth,
             };
         }
         private bool CheckAuthorisation(ForumAuthType auth,bool signedin, bool ismoderator, bool isadministrator, ref bool passwordrequired)

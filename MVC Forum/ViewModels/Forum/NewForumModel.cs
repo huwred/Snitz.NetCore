@@ -37,5 +37,8 @@ namespace MVCForum.ViewModels.Forum
         public int ForumId { get; set; }
 
         public Dictionary<int, string>? AllowedMembers { get; set; }
+
+        public PostAuthType PostAuth { get; set; } = PostAuthType.Anyone;
+        public PostAuthType ReplyAuth { get; set; } = PostAuthType.Anyone;
     }
 }

@@ -30,14 +30,17 @@
         }
         else if(!isArchived)
         {
-            <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" data-id="@Model.Id" data-toggle="tooltip"></i>
-            <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-commenting m-1 post-quote" title="@Localizer["tipQuoteTopic"]" data-id="@Model.Id" data-toggle="tooltip"></i>
+            @if (Model.Forum.Replyauth == (int)PostAuthType.Anyone || (Model.Forum.Replyauth == (int)PostAuthType.Moderators && ismoderator) || isadmin)
+            {
+                <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" data-id="@Model.Id" data-toggle="tooltip"></i>
+                <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-commenting m-1 post-quote" title="@Localizer["tipQuoteTopic"]" data-id="@Model.Id" data-toggle="tooltip"></i>           
+            }
         }
         @if (SnitzConfig.GetIntValue("STRTHANKS", 0) == 1)
         {
             if (allowThanks && User.Identity.IsAuthenticated)
             {
-                @await Component.InvokeAsync("PostThanks", new { template = "TopicSummary", topicid = Model.Id, id = 0, showcount = true })
+                @await Component.InvokeAsync("PostThanks", new { template = "TopicSummary", topicid = Model.Id, id = 0, showcount = true, archived = isArchived  })
             }
         }
         @if (SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1 && !isArchived)

@@ -7,6 +7,15 @@
 @{
     var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
 }
+@section MetaData
+{
+    <title>@Localizer["mnuAbout"] @Config.Value.strForumTitle</title>
+    <meta name="title" content="@Localizer["mnuAbout"] @Config.Value.strForumTitle" />
+    <meta name="description" content="@Config.Value.strForumDescription" />
+    <meta name="robots" content="index,follow" />
+
+}
+
 @section Styles{
 <style>
     .nav-tabs {

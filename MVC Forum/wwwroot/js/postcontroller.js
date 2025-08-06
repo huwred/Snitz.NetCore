@@ -28,7 +28,7 @@ $(document).on("click",".reply-del", function() {
     if (confirm("Are you sure!") === true) {
         postid = $(this).data("id");
         var archived = $(this).data("archived");
-        $.post(SnitzVars.baseUrl + "/Topic/DeleteReply",
+        $.post(SnitzVars.baseUrl + "/Reply/Delete",
             {
                 id: postid,
                 archived: archived
@@ -55,7 +55,7 @@ $(document).on("click",".post-del", function(e) {
     $('#confirmModal').on('click','#btnYes',function(e) {
         // handle deletion here
         e.preventDefault();
-        $.post(SnitzVars.baseUrl + "/Topic/DeleteTopic",
+        $.post(SnitzVars.baseUrl + "/Topic/Delete",
             {
                 id: postid,
                 archived: archived
@@ -226,7 +226,7 @@ $(document).on('click', '.post-stick', function (e) {
 // Quote Reply
 $(document).on("click",".reply-quote", function() {
     var postid = $(this).data("id");
-    location.href = SnitzVars.baseUrl + "/Topic/QuoteReply/" + postid;
+    location.href = SnitzVars.baseUrl + "/Reply/Quote/" + postid;
 });
 // Quote Post
 $(document).on("click",".post-quote", function() {
@@ -236,14 +236,14 @@ $(document).on("click",".post-quote", function() {
 // Reply to Post
 $(document).on("click",".post-reply", function() {
     var postid = $(this).data("id");
-    location.href = SnitzVars.baseUrl + "/Topic/Reply/" + postid;
+    location.href = SnitzVars.baseUrl + "/Reply/Create/" + postid;
 });
 // Edit Reply
 $(document).on("click",".reply-edit", function() {
 
     var postid = $(this).data("id");
     archived = $(this).data("archived");
-    location.href = SnitzVars.baseUrl + "/Topic/EditReply/" + postid + "?archived=" + archived;
+    location.href = SnitzVars.baseUrl + "/Reply/Edit/" + postid + "?archived=" + archived;
 });
 // Mark as Answer
 $(document).on('click', '.reply-answer', function (e) {

@@ -18,28 +18,28 @@
             <span>@Model.Poll.Question @if (!Model.Poll.Question.Contains("?")) { @Html.Raw("?"); }</span>
             @if ( User.IsInRole("Administrator") )
             {
-                <span class="pull-right flip">
+                <span class="pull-right flip fs-5">
                     @if (SnitzConfig.GetIntValue("INTFEATUREDPOLLID") != Model.Poll.Id)
                     {
-                        <a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = Model.Poll.Id })" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a>
+                        <a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = Model.Poll.Id })" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart m-1"></i></a>
                     }
                     else
                     {
-                        <a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = 0 })" title="@Localizer["UnFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a>
+                        <a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = 0 })" title="@Localizer["UnFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart m-1"></i></a>
                     }
                     @if (Model.Poll.Topic == null)
                     {
-                        <a href="@Url.Action("Delete", "Polls", new { id = Model.Poll.Id })" title="Delete Poll" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                        <a href="@Url.Action("Delete", "Polls", new { id = Model.Poll.Id })" title="Delete Poll" data-toggle="tooltip"><i class="fa fa-trash m-1"></i></a>
                     }
                     else
                     {
                         if(Model.Poll.Topic.Status == 1)
                         {
-                            <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="Lock Poll" data-toggle="tooltip"><i class="fa fa-lock"></i></a>
+                            <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="Lock Poll" data-toggle="tooltip"><i class="fa fa-lock m-1"></i></a>
                         }
                         else
                         {
-                            <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="UnLock Poll" data-toggle="tooltip"><i class="fa fa-unlock"></i></a>
+                            <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="UnLock Poll" data-toggle="tooltip"><i class="fa fa-unlock m-1"></i></a>
                         }
                     }
                 </span>
@@ -47,14 +47,15 @@
 
         </div>
         <div class="card-body p-2">
-            <h5 class="text-danger">@Localizer["ResultTitle"]</h5>
+            <label class="h5 text-danger">@Localizer["ResultTitle"]</label>
             <hr class="title">
             @foreach (var ans in Model.Poll.PollAnswers.OrderBy(a => a.Order))
             {
                 var percent = (ans.Count / (double)totalvotes * 100);
-                <span>@ans.Label&nbsp;@Localizer["VoteCount", ans.Count]</span>
+                var label = "label_" + ans.Id;
+                <span id="@label">@ans.Label&nbsp;@Localizer["VoteCount", ans.Count]</span>
                 <div class="progress progress-striped active">
-                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="@percent.ToString("00.00",uk)" aria-valuemin="0" aria-valuemax="100" style="width: @percent.ToString("00.00",uk)%;">
+                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-labelledby="@label" aria-valuenow="@percent.ToString("00.00", uk)" aria-valuemin="0" aria-valuemax="100" style="width: @percent.ToString("00.00", uk)%">
                         <span class="sr-only">@Html.Raw(percent.ToString("00.00", uk) + "% Complete (success)")</span>
                     </div>
                 </div>

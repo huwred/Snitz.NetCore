@@ -75,7 +75,18 @@
                         <input name="NewPassword" type="password" class="form-control" value="@Model.NewPassword" />
                     </div>
                 </div>
-
+                <div class="mb-3 row">
+                    <label asp-for="PostAuth" class="form-label col-2">@Localizer["PostAuth"]</label>
+                    <div class="col-10 col-lg-5">
+                        <enum-select name="PostAuth" id="post-auth" enum-type="typeof(PostAuthType)" selected-value="(int)Model.PostAuth" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label asp-for="ReplyAuth" class="form-label col-2">@Localizer["ReplyAuth"]</label>
+                    <div class="col-10 col-lg-5">
+                        <enum-select name="ReplyAuth" id="reply-auth" enum-type="typeof(PostAuthType)" selected-value="(int)Model.ReplyAuth" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></enum-select>
+                    </div>
+                </div>
                 <div snitz-if="@(SnitzConfig.GetIntValue("INTTOPICRATING") == 1)" class="mb-3 row">
                     <label asp-for="AllowTopicRating" class="form-label col-2">@Localizer["forumAllowRating"]</label>
                     <div class="col-10 col-lg-5">

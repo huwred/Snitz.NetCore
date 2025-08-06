@@ -80,7 +80,7 @@
                 }
                 @if (allowrating)
                 {
-                    <input name="input-name" type="number" class="rb-rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs">
+                    <input name="input-name" type="number" class="rb-rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs" aria-label="Topic rating">
                 }
             </div>
             <div class="d-none d-md-flex  p-2 bd-highlight fs-6 post-buttons">
@@ -112,6 +112,6 @@
         </div>
     </div>
     <div class="subscribe d-none d-sm-inline-flex">
-        <input snitz-if="@(User?.IsInRole("Administrator"))" type="checkbox" class="form-check-input topic-select" value="@Model?.Id" name="topicselected" />
+        <input snitz-if="@(User?.IsInRole("Administrator"))" type="checkbox" class="form-check-input topic-select" value="@Model?.Id" name="topicselected" aria-label="Select Topic" />
     </div>
 </div>

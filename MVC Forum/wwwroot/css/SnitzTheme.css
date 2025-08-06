@@ -136,7 +136,7 @@ html, body {
 
 a {
     color: #00008B;
-    text-decoration: none;
+    text-decoration: underline;
 }
 a:visited {
     color: #0000FF;

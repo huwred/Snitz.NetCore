@@ -83,8 +83,9 @@ namespace MVCForum.Controllers
                 Order = forum.Order,
                 CategorySubscription = (CategorySubscription)forum.Category?.Subscription,
                 ForumSubscription = (ForumSubscription)forum.Subscription,
-                ArchivedCount = forum.ArchivedTopics
-                
+                ArchivedCount = forum.ArchivedTopics,
+                 PostAuth = (PostAuthType)forum.Postauth,
+                ReplyAuth = (PostAuthType)forum.Replyauth,               
             });            
             
             if(groupId > 1)
@@ -247,7 +248,9 @@ namespace MVCForum.Controllers
                 Status = forum.Status,
                 ForumModeration = forum.Moderation,
                 Polls = forum.Polls,
-                ArchivedCount = forum.ArchivedTopics
+                ArchivedCount = forum.ArchivedTopics,
+                PostAuth = (PostAuthType)forum.Postauth,
+                ReplyAuth = (PostAuthType)forum.Replyauth,
             };
         }
 

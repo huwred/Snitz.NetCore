@@ -142,7 +142,10 @@
                                         {
                                             <p class="form-text mt-2 fst-italic">@Localizer[$"Subscription_{forum.ForumSubscription}"]</p>
                                         }
-
+                                        @if (forum.ReplyAuth != PostAuthType.Anyone || forum.PostAuth != PostAuthType.Anyone)
+                                        {
+                                            <label class='small'>@Localizer["lblRestricted"], @Localizer[$"lblPostAuthType_{forum.PostAuth}"], @Localizer[$"lblReplyAuthType_{forum.ReplyAuth}"]</label>
+                                        }
                                     </div>
                                     @if (forum.ForumType != ForumType.WebLink)
                                     {

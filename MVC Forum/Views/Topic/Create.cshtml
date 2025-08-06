@@ -14,18 +14,21 @@
     var eventservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(CalEventsService));
 
     var formaction = "AddPost";
+    var controller = "Topic";
     if (!Model.IsPost)
     {
         formaction = "AddReply";
+        controller = "Reply";
     }
     Model.Content = BbCodeProcessor.Format(Model.Content)!;
     var addEvent = Context.Request.Query["isevent"];
     var addPoll = Context.Request.Query["ispoll"];
 }
+
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
     <div class="row">
-        <form asp-controller="Topic" asp-action="@formaction" method="post" id="addPostForm" class="needs-validation col col-md-10 offset-md-1 bg-form p-4 rounded" novalidate>
+        <form asp-controller="@controller" asp-action="@formaction" method="post" id="addPostForm" class="needs-validation col col-md-10 offset-md-1 bg-form p-4 rounded" novalidate>
             @if ((User.IsInRole("Administrator") || User.IsInRole("Forum_" + Model.ForumId)) && Model.IsPost)
             {
                 if (SnitzConfig.GetIntValue("STRMOVETOPICMODE") == 0 || User.IsInRole("Administrator"))

@@ -53,8 +53,8 @@
                     <div class="row m-2">
                         <div class="col">
                             <div class="input-group mb-3">
-                                <enum-select name="Since" id="default-days" last-visit="@lastvisit" enum-type="typeof(ActiveSince)" selected-value="(int)Model.Since" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
-                                <enum-select name="Refresh" id="active-refresh" enum-type="typeof(ActiveRefresh)" selected-value="(int)Model.Refresh" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                                <enum-select aria-label="date filter" name="Since" id="default-days" last-visit="@lastvisit" enum-type="typeof(ActiveSince)" selected-value="(int)Model.Since" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                                <enum-select aria-label="refresh page" name="Refresh" id="active-refresh" enum-type="typeof(ActiveRefresh)" selected-value="(int)Model.Refresh" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                                 <div snitz-if="@(SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "") != "")" class="radioBtn btn-group input-group-addon" role="group" aria-label="Select page size" title="Select page size">
                                     @{
                                         var ischecked = Model.PageSize;
@@ -68,9 +68,9 @@
                         </div>
                     </div>
                 </div>
-                <input type="number" value="@pagenum" name="page" style="display: none;" />
-                <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
-                <input type="hidden" name="fun" id="fun">
+                <input type="number" value="@pagenum" name="page" style="display: none;" aria-hidden="true" />
+                <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" aria-hidden="true"/>
+                <input type="hidden" name="fun" id="fun" aria-hidden="true">
             </form>
             </div>
             @if (Model.Posts!.Any())

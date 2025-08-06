@@ -12,6 +12,8 @@ namespace MVCForum.ViewModels.Forum
         public int Posts { get; set; }
         public int Status { get; set; }
         public ForumAuthType AccessType { get; set; }
+        public PostAuthType PostAuth { get; set; }
+        public PostAuthType ReplyAuth { get; set; }
         public Moderation ForumModeration { get; set; }
         public CategorySubscription? CategorySubscription { get; set; }
         public ForumSubscription? ForumSubscription { get; set; }
