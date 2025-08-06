@@ -107,7 +107,12 @@ namespace SnitzCore.Data.Models
         Reply
     }
 
-
+    public enum PostAuthType
+    {
+        Anyone = 0,
+        Admins,
+        Moderators
+    }
     public enum ActiveRefresh
     {
         [Display(Name="ActiveRefresh_None")]

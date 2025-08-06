@@ -277,5 +277,10 @@ public partial class Member
         get;
         set;
     }
-
+    [NotMapped]
+    public bool IsModerator
+    {
+        get;
+        set;
+    }
 }

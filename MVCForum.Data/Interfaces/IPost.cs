@@ -24,8 +24,7 @@ namespace SnitzCore.Data.Interfaces
         Task DeleteReply(int id);
         Task Update(Post post);
         Task Update(PostReply post);
-        Task UpdateTopicContent(int id, string content);
-        Task UpdateReplyContent(int id, string content);
+
         Task UpdateViewCount(int id);
         IEnumerable<Post> GetLatestPosts(int n);
         IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize, int pagenumber);
