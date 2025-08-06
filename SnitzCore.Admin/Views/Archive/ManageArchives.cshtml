@@ -58,8 +58,8 @@
                                                     <span snitz-if="@(forum.LastDelete.FromForumDateStr(true) != DateTime.MinValue)">@forum.LastDelete.FromForumDateStr(true).ToShortDateString()</span>
                                                 </td>
                                                 <td class="align-center">
-                                                    <link-confirm config-class="fa fa-archive" config-key="@forum.Id" href="@SnitzConfig.RootFolder?.TrimEnd('/')/Admin/ArchiveForum/" title="Archive posts in this forum"></link-confirm>
-                                                    <link-confirm config-class="fa fa-trash-o" config-key="@forum.Id" href="@SnitzConfig.RootFolder?.TrimEnd('/')/Admin/DeleteArchiveForum/" title="Delete archived posts in this forum?"></link-confirm>
+                                                    <link-confirm config-class="fa fa-archive" config-key="@forum.Id" href="@SnitzConfig.RootFolder?.TrimEnd('/')/Archive/ArchiveForum/" title="Archive posts in this forum"></link-confirm>
+                                                    <link-confirm config-class="fa fa-trash-o" config-key="@forum.Id" href="@SnitzConfig.RootFolder?.TrimEnd('/')/Archive/DeleteArchivedForum/" title="Delete archived posts in this forum?"></link-confirm>
 
                                                     <input type="hidden" name="Categories[@ii].Forums[@i].Id" id="@($"Categories_{@ii}_Forums_{i}_Id")" value="@forum.Id" />
                                                     <input type="checkbox" class="form-check-inline" id="check-@forum.Id" name="check-@forum.Id" />

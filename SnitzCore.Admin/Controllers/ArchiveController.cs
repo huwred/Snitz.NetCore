@@ -117,7 +117,7 @@ namespace SnitzCore.BackOffice.Controllers
             return PartialView("popArchiveForum", vm);
         }
         [HttpGet]
-        public IActionResult DeleteArchiveForum(int id)
+        public IActionResult DeleteArchivedForum(int id)
         {
 
             BackgroundJob.Enqueue(() => _forumservice.DeleteArchivedTopics(id));
@@ -130,8 +130,8 @@ namespace SnitzCore.BackOffice.Controllers
             var archiveDate = DateTime.UtcNow.AddMonths(-vm.MonthsOlder).ToForumDateStr();
             BackgroundJob.Enqueue(() => _forumservice.ArchiveTopics(vm.ForumId, archiveDate));
 
-            var avm = new ArchivesViewModel() { Categories = _dbcontext.Categories.Include(c=>c.Forums).ToList() };
-            return View("ManageArchives", avm);
+            //var avm = new ArchivesViewModel() { Categories = _dbcontext.Categories.Include(c=>c.Forums).ToList() };
+            return RedirectToAction("Forum","Admin");
         }
 
     }
