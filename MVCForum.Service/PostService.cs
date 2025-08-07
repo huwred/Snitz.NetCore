@@ -392,6 +392,7 @@ namespace SnitzCore.Service
 
         }
 
+
         public async Task Update(Post post)
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
@@ -445,21 +446,19 @@ namespace SnitzCore.Service
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateViewCount(int id)
+        public void UpdateViewCount(int id, int viewCount)
         {
             try
             {
-                var topic = _dbContext.Posts.AsNoTracking().SingleOrDefault(x=>x.Id == id);
-                var views = topic.ViewCount += 1;
                 var itemInfoEntity = new Post()
                 {
                     Id          = id,
-                    ViewCount    = views
+                    ViewCount    = viewCount
                 };
 
                 _dbContext.Posts.Attach(itemInfoEntity);
                 _dbContext.Entry(itemInfoEntity).Property(x => x.ViewCount).IsModified = true;
-                await _dbContext.SaveChangesAsync();
+                _dbContext.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -468,25 +467,23 @@ namespace SnitzCore.Service
 
         }
 
-        public async Task UpdateArchivedViewCount(int id)
+        public void UpdateArchivedViewCount(int id, int viewCount)
         {
             try
             {
-                var topic = _dbContext.ArchivedTopics.AsNoTracking().SingleOrDefault(x=>x.Id == id);
-                var views = topic.ViewCount += 1;
                 var itemInfoEntity = new ArchivedPost()
                 {
                     Id          = id,
-                    ViewCount    = views
+                    ViewCount    = viewCount
                 };
 
                 _dbContext.ArchivedTopics.Attach(itemInfoEntity);
                 _dbContext.Entry(itemInfoEntity).Property(x => x.ViewCount).IsModified = true;
-                await _dbContext.SaveChangesAsync();
+                _dbContext.SaveChanges();
             }
             catch (Exception ex)
             {
-                _logger.Error("UpdateArchivedTopicsViewCount: Error updating view count", ex);
+                _logger.Error("UpdateViewCount: Error updating archived view count", ex);
             }
 
         }

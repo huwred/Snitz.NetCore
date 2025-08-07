@@ -69,10 +69,6 @@ namespace MVCForum.Controllers
         [Route("Topic/Posts/{id}")]
         public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="", int? replyid = null)
         {
-            if(sortdir == "")
-            {
-                sortdir = _config.GetValueWithDefault("STRTOPICSORT","asc");
-            }
             if(TempData["Error"] != null)
             {
                 ViewBag.Error = TempData["Error"];
@@ -83,8 +79,11 @@ namespace MVCForum.Controllers
                 }
                 TempData["Error"] = null;
                 return View("Error");
-            }
-            var post = _postService.GetTopicAsync(id).Result;
+            }            
+            
+            bool passwordrequired = false;
+            bool notallowed = false;
+            bool isadministrator = User.IsInRole("Administrator");
             bool signedin = false;
             ViewBag.RequireAuth = false;
             if (User.Identity is { IsAuthenticated: true })
@@ -92,11 +91,24 @@ namespace MVCForum.Controllers
                 signedin = true;
             }
 
+            if(sortdir == "")
+            {
+                sortdir = _config.GetValueWithDefault("STRTOPICSORT","asc");
+            }
+
+            var haspoll = _postService.HasPoll(id);
+            var post = _postService.GetTopicAsync(id).Result;
+
             if(post == null)
             {
                 ViewBag.Error = "No Topic Found with that ID";
                 return View("Error");
-            }    
+            }  
+            if (!HttpContext.Session.Keys.Contains("TopicId_"+ id))
+            {
+                HttpContext.Session.SetInt32("TopicId_"+ id,1);
+                _postService.UpdateViewCount(id, post.ViewCount + 1);
+            }            
             //if we have a replyid, does it exist in ths topic?
             if (replyid.HasValue && post.Replies.Any())
             {
@@ -106,13 +118,7 @@ namespace MVCForum.Controllers
                     replyid = null;
                 }
             }
-            var haspoll = _postService.HasPoll(id);
-
-            bool passwordrequired = false;
-            bool notallowed = false;
             bool ismoderator = User.IsInRole($"Forum_{post.ForumId}");
-            bool isadministrator = User.IsInRole("Administrator");
-
             notallowed = CheckAuthorisation(post.Forum!.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
             if (!isadministrator && passwordrequired)
             {
@@ -127,12 +133,7 @@ namespace MVCForum.Controllers
             {
                 post = _postService.GetTopicWithRelated(id).Result;
             }
-            if (!HttpContext.Session.Keys.Contains("TopicId_"+ id))
-            {
-                HttpContext.Session.SetInt32("TopicId_"+ id,1);
-                post!.ViewCount += 1;
-                _postService.UpdateViewCount(post.Id);
-            }
+
             if(_memberService.Current() != null)
             { 
                 _cookie.UpdateTopicTrack(post.Id.ToString()); 
@@ -263,8 +264,8 @@ namespace MVCForum.Controllers
             if (!HttpContext.Session.Keys.Contains("TopicId_"+ id))
             {
                 HttpContext.Session.SetInt32("TopicId_"+ id,1);
-                post!.ViewCount += 1;
-                _postService.UpdateArchivedViewCount(post.Id);
+
+                _postService.UpdateArchivedViewCount(post.Id,post!.ViewCount + 1);
             }
 
             if (HttpContext.Session.GetInt32("TopicPageSize") != null && pagesize == 0)

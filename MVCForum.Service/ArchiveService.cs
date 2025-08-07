@@ -27,6 +27,8 @@ namespace SnitzCore.Service
             _tableprefix = config.Value.forumTablePrefix;
             _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
         }
+
+
         public async Task ArchiveTopics(int forumId, string? archiveDate)
         {
             IEnumerable<int> topics;
