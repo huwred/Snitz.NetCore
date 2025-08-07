@@ -26,6 +26,7 @@ namespace SnitzCore.Data.Interfaces
         Task Update(PostReply post);
 
         Task UpdateViewCount(int id);
+        Task UpdateArchivedViewCount(int id);
         IEnumerable<Post> GetLatestPosts(int n);
         IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize, int pagenumber);
         Task<int>  Create(PostReply post);

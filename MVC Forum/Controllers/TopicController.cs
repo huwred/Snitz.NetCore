@@ -264,7 +264,7 @@ namespace MVCForum.Controllers
             {
                 HttpContext.Session.SetInt32("TopicId_"+ id,1);
                 post!.ViewCount += 1;
-                _postService.UpdateViewCount(post.Id);
+                _postService.UpdateArchivedViewCount(post.Id);
             }
 
             if (HttpContext.Session.GetInt32("TopicPageSize") != null && pagesize == 0)

@@ -468,6 +468,29 @@ namespace SnitzCore.Service
 
         }
 
+        public async Task UpdateArchivedViewCount(int id)
+        {
+            try
+            {
+                var topic = _dbContext.ArchivedTopics.AsNoTracking().SingleOrDefault(x=>x.Id == id);
+                var views = topic.ViewCount += 1;
+                var itemInfoEntity = new ArchivedPost()
+                {
+                    Id          = id,
+                    ViewCount    = views
+                };
+
+                _dbContext.ArchivedTopics.Attach(itemInfoEntity);
+                _dbContext.Entry(itemInfoEntity).Property(x => x.ViewCount).IsModified = true;
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("UpdateArchivedTopicsViewCount: Error updating view count", ex);
+            }
+
+        }
+
         public IEnumerable<Post> GetLatestPosts(int n)
         {
                 var posts = GetAllTopicsAndRelated()
