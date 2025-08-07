@@ -40,7 +40,7 @@ namespace SnitzCore.Data.Interfaces
 
         int PollsAuth(int id);
         Dictionary<int, string> AllowedUsers(int id);
-        void ArchiveTopics(int forumId, string archiveDate);
+        //Task ArchiveTopics(int forumId, string archiveDate);
         IEnumerable<ArchivedPost>? ArchivedPosts(int id);
 
         Task DeleteArchivedTopics(int id);

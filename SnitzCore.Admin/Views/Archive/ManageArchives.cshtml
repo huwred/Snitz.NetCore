@@ -1,6 +1,7 @@
 ﻿@using SnitzCore.BackOffice.ViewModels
 @using SnitzCore.Data.Extensions
 @using SnitzCore.Data.Models
+@using SnitzCore.Service.Extensions
 @model SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel.ArchivesViewModel
 <legend>Manage Archives</legend>
 <hr/>
@@ -52,10 +53,10 @@
                                                 <td class="col-2 align-center"><input name="Categories[@ii].Forums[@i].ArchiveSched" id="@($"Categories_{@ii}_Forums_{i}_ArchiveSched")" value="@forum?.ArchiveSched" class="form-control" type="text" /></td>
                                                 <td class="col-2 align-center"><input name="Categories[@ii].Forums[@i].DeleteSched" id="@($"Categories_{@ii}_Forums_{i}_DeleteSched")" value="@forum?.DeleteSched" class="form-control" type="text" /></td>
                                                 <td class="col-2 align-center">
-                                                    <span snitz-if="@(forum!.LastArchived.FromForumDateStr(true) != DateTime.MinValue)">@forum!.LastArchived.FromForumDateStr(true).ToString()</span>
+                                                    <span snitz-if="@(forum!.LastArchived.FromForumDateStr(true) != DateTime.MinValue)">@forum!.LastArchived.FromForumDateStr(true).ToForumDateDisplay()</span>
                                                 </td>
                                                 <td class="col-2 align-center">
-                                                    <span snitz-if="@(forum.LastDelete.FromForumDateStr(true) != DateTime.MinValue)">@forum.LastDelete.FromForumDateStr(true).ToShortDateString()</span>
+                                                    <span snitz-if="@(forum.LastDelete.FromForumDateStr(true) != DateTime.MinValue)">@forum.LastDelete.FromForumDateStr(true).ToForumDateDisplay()</span>
                                                 </td>
                                                 <td class="align-center">
                                                     <link-confirm config-class="fa fa-archive" config-key="@forum.Id" href="@SnitzConfig.RootFolder?.TrimEnd('/')/Archive/ArchiveForum/" title="Archive posts in this forum"></link-confirm>

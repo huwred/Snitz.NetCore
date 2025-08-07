@@ -43,7 +43,7 @@ namespace SnitzCore.Service
             _mailSender = mailSender;
             _tableprefix = options.Value.forumTablePrefix;
             _user = httpContextAccessor.HttpContext?.User;
-            log4net.ILog _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
+            _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
         }
 
         /// <summary>

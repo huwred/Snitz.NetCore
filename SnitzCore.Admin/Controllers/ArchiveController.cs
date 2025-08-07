@@ -32,9 +32,12 @@ namespace SnitzCore.BackOffice.Controllers
         private readonly IOptionsSnapshot<EmailConfiguration> _emailconfig;
         private readonly IWebHostEnvironment _env;
         private IHostApplicationLifetime _appLifetime;
+        private IServiceProvider _serviceProvider;
+        private IOptions<SnitzForums> _optionsconfig;
 
         public ArchiveController(ISnitz config,IConfiguration configuration, ISnitzConfig snitzconfig,IForum forumservice,ICategory category,SnitzDbContext dbContext,RoleManager<IdentityRole> RoleManager,UserManager<ForumUser> userManager,
-            IMember memberService,IOptionsSnapshot<EmailConfiguration> emailconfig,IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
+            IMember memberService,IOptionsSnapshot<EmailConfiguration> emailconfig,IHostApplicationLifetime appLifetime, IWebHostEnvironment env,
+            IServiceProvider serviceProvider,IOptions<SnitzForums> optionsconfig)
         {
             _config = config;
             _forumservice = forumservice;
@@ -48,6 +51,8 @@ namespace SnitzCore.BackOffice.Controllers
             _emailconfig = emailconfig;
             _appLifetime = appLifetime;
             _env = env;
+            _serviceProvider = serviceProvider;
+            _optionsconfig = optionsconfig;
         }
         public IActionResult Index()
         {
@@ -128,9 +133,10 @@ namespace SnitzCore.BackOffice.Controllers
         public IActionResult ArchiveForum(ArchiveViewModel vm)
         {
             var archiveDate = DateTime.UtcNow.AddMonths(-vm.MonthsOlder).ToForumDateStr();
-            BackgroundJob.Enqueue(() => _forumservice.ArchiveTopics(vm.ForumId, archiveDate));
+            BackgroundJob.Enqueue(() => new ArchiveService(_serviceProvider, _optionsconfig).ArchiveTopics(vm.ForumId, archiveDate));
 
-            //var avm = new ArchivesViewModel() { Categories = _dbcontext.Categories.Include(c=>c.Forums).ToList() };
+            //BackgroundJob.Enqueue(() => _forumservice.ArchiveTopics(vm.ForumId, archiveDate));
+
             return RedirectToAction("Forum","Admin");
         }
 

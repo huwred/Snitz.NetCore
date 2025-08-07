@@ -168,7 +168,7 @@ $(document).on('click', '.confirm-clearcache', function (e) {
                     setTimeout(function () {
                         $('#confirmRestart').modal('hide');
                         location.reload(true);
-                    }, 25000);
+                    }, 5000);
 
                 }
             });
