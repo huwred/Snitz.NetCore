@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using SnitzCore.Service.Extensions;
+using System.Reflection;
 
 namespace SnitzCore.Service
 {
@@ -126,6 +127,7 @@ namespace SnitzCore.Service
             _config = config;
             _httpContextAccessor = httpContextAccessor;
             _env = env;
+            var test = ControllerExtensions.GetLinkerTimestampUtc(Assembly.GetExecutingAssembly());
         }
 
         public void RemoveFromCache(string key)
@@ -156,7 +158,8 @@ namespace SnitzCore.Service
 
         public string GetValue(string key)
         {
-            return _dbContext.SnitzConfig.SingleOrDefault(c=>c.Key == key)?.Value ?? "";
+            return GetValueWithDefault(key, "");
+            //return _dbContext.SnitzConfig.SingleOrDefault(c=>c.Key == key)?.Value ?? "";
         }
         public string GetValueWithDefault(string key, string? defVal = null)
         {

@@ -257,7 +257,7 @@ namespace MVCForum.Controllers
         {
             UserCreateModel user = new UserCreateModel
             {
-                RequiredFields = _config.GetRequiredMemberFields().ToList()
+                RequiredFields = _config.GetRequiredMemberFields().ToList(),
             };
 
             return View(user);
@@ -298,30 +298,64 @@ namespace MVCForum.Controllers
             {
                 for (int i = 0; i < user.RequiredFields.Count; i++)
                 {
+                    if(user.RequiredProperty[i] == "Dob")
+                    {
+                        //convert date to YYYYMMDD
+                        if (DateTime.TryParseExact(user.RequiredFields[i],"dd/mm/yyyy",CultureInfo.InvariantCulture,DateTimeStyles.None, out DateTime dob))
+                        {
+                            if (dob.Year > DateTime.UtcNow.Year - _config.GetIntValue("STRMINAGE",14))
+                            {
+                                ModelState.AddModelError("RequiredFields", "Invalid date of birth");
+                                return View(user);
+                            }
+                            else
+                            {
+                                required.Add(new KeyValuePair<string, object>(user.RequiredProperty[i],
+                                    user.RequiredFields[i]));
+                            }
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("RequiredFields", "Invalid date format");
+                            return View(user);
+                        }
+                    }
+                    else
                     if (user.RequiredProperty != null)
                         required.Add(new KeyValuePair<string, object>(user.RequiredProperty[i],
                             user.RequiredFields[i]));
                 }
             }
-
-            var newmember = _memberService.Create(forumMember, required);
             ForumUser appUser = new()
             {
                 UserName = user.Name,
                 Email = user.Email,
-                MemberId = newmember.Id,
                 MemberSince = DateTime.UtcNow,
                 LockoutEnabled = true,
                 LockoutEnd = DateTime.UtcNow.AddMonths(2),
                 EmailConfirmed = false,
-                
-            };
+            };            
+            
+            foreach(IPasswordValidator<ForumUser> passwordValidator in _userManager.PasswordValidators)
+            {
+                var test = await passwordValidator.ValidateAsync(_userManager, appUser, user.Password);
+
+                if(!test.Succeeded)
+                {
+                    foreach (IdentityError error in test.Errors)
+                        ModelState.AddModelError("Password", error.Description);
+                    return View(user);
+                }
+            }
+            var newmember = _memberService.Create(forumMember, required);
+            appUser.MemberId = newmember.Id;
+
             IdentityResult result = await _userManager.CreateAsync(appUser, user.Password);
             if (!result.Succeeded)
             {
                 _memberService.Delete(newmember);
                 foreach (IdentityError error in result.Errors)
-                    ModelState.AddModelError("", error.Description);
+                    ModelState.AddModelError("Password", error.Description);
                 return View(user);
             }
 

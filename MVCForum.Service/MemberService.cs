@@ -1,23 +1,24 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using X.PagedList;
-using Microsoft.Extensions.Options;
 using X.PagedList.Extensions;
-using Microsoft.Data.SqlClient;
-using SnitzCore.Service.Extensions;
 
 namespace SnitzCore.Service
 {
@@ -157,7 +158,7 @@ namespace SnitzCore.Service
             {
                 if (additionalField.Key.ToUpper() == "DOB")
                 {
-                    var date = DateTime.Parse(additionalField.Value.ToString()!).ToString("yyyyMMdd");
+                    var date = DateTime.ParseExact(additionalField.Value.ToString()!,"dd/mm/yyyy",CultureInfo.InvariantCulture).ToString("yyyyMMdd");
                     _dbContext.Database.ExecuteSqlRaw("UPDATE " + _memberprefix + "MEMBERS SET M_"+additionalField.Key.ToUpper()+"=@Dob WHERE MEMBER_ID=@MemberId",new SqlParameter("Dob", date),new SqlParameter("MemberId", member.Id));
                 }
                 else

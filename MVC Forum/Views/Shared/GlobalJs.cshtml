@@ -22,6 +22,7 @@
         showPageTimer: '@SnitzConfig.GetIntValue("INTPAGETIMER")',
         AdDuration: '@SnitzConfig.GetIntValue("INTADDURATION", 30)',
         userName: '@User.Identity?.Name',
+        minAge: '@SnitzConfig.GetIntValue("STRMINAGE", 14)',
         currentUserId: '@MemberService.Current()?.Id',
         currentlocation: '@Context.Request.Path',
         cookieDomain: '@Context.Request.Host',

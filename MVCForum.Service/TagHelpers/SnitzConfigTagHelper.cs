@@ -158,7 +158,7 @@ namespace SnitzCore.Service.TagHelpers
                         output.Content.AppendHtml($@"<div class=""input-group date"" data-provide=""datepicker"">");
                         output.Content.AppendHtml($@"<input name=""{Name ?? PropertyInfo?.Name}"" type=""text"" placeholder=""Choose Date"" class=""form-control"" id=""fecha2"" {required} {disabled}/>");
                         output.Content.AppendHtml($@"<span class=""input-group-addon btn btn-default-outline""><i class=""fa fa-calendar""></i></span></div>");
-                        output.Content.AppendHtml($@"<div class=""invalid-feedback"">You must select a value for {PropertyInfo?.Name}.</div>");
+                        output.Content.AppendHtml($@"<div class=""invalid-feedback"" id=""{PropertyInfo?.Name}_err"">You must select a value for {PropertyInfo?.Name}.</div>");
                     }
                     else
                     {
@@ -191,7 +191,7 @@ namespace SnitzCore.Service.TagHelpers
                     if (CanEdit)
                     {
                         output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{Name ?? PropertyInfo?.Name}"" id=""{PropertyInfo?.Name}"" value=""{Value}"" class=""form-control"" {required} {disabled}/>");
-                        output.Content.AppendHtml($@"<div class=""invalid-feedback"">You must provide a value for {PropertyInfo?.Name}.</div>");
+                        output.Content.AppendHtml($@"<div class=""invalid-feedback"" id=""{PropertyInfo?.Name}_err"">You must provide a value for {PropertyInfo?.Name}.</div>");
                     }
                     else
                     {
