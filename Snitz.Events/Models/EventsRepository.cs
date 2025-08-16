@@ -194,7 +194,7 @@ namespace Snitz.Events.Models
         }
         public List<EnricoCountry> GetCountries()
         {
-            return CacheProvider.GetOrCreate("cal.countries", FetchJsonCountries,TimeSpan.FromMinutes(600));
+            return CacheProvider.GetOrCreate("cal.countries", FetchJsonCountries,TimeSpan.FromMinutes(10));
         }
     public JsonResult GetClubCalendarEvents(string id,string old, int calendar = 0, string start = "", string end = "", string currmember = "")
     {

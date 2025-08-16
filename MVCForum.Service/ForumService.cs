@@ -155,7 +155,7 @@ namespace SnitzCore.Service
         }
         public Dictionary<int, string?> CategoryList()
         {
-            return CacheProvider.GetOrCreate("CatList", () => _dbContext.Categories.AsNoTracking().OrderBy(c=>c.Sort).Select(c=> new {c.Id, value = c.Name}).ToDictionary(k=>k.Id,k=>k.value), TimeSpan.FromMinutes(60));
+            return CacheProvider.GetOrCreate("CatList", () => _dbContext.Categories.AsNoTracking().OrderBy(c=>c.Sort).Select(c=> new {c.Id, value = c.Name}).ToDictionary(k=>k.Id,k=>k.value), TimeSpan.FromMinutes(10));
             //return _dbContext.Categories.AsNoTracking().OrderBy(c=>c.Sort).Select(c=> new {c.Id, value = c.Name}).ToDictionary(k=>k.Id,k=>k.value);
         }
         public Post? GetLatestPost(int forumId)
@@ -200,9 +200,9 @@ namespace SnitzCore.Service
         {
             if (admin)
             {
-                return CacheProvider.GetOrCreate("ForumList", () => _dbContext.Forums.AsNoTracking().OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value),TimeSpan.FromDays(1));
+                return CacheProvider.GetOrCreate("ForumList", () => _dbContext.Forums.AsNoTracking().OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value),TimeSpan.FromMinutes(5));
             }
-            return CacheProvider.GetOrCreate("ForumList", () => _dbContext.Forums.AsNoTracking().Where(f=>f.Privateforums == ForumAuthType.All).OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value),TimeSpan.FromDays(1));
+            return CacheProvider.GetOrCreate("ForumList", () => _dbContext.Forums.AsNoTracking().Where(f=>f.Privateforums == ForumAuthType.All).OrderBy(f=>f.Title).Select(c=> new {c.Id, value = c.Title}).ToDictionary(k=>k.Id,k=>k.value),TimeSpan.FromMinutes(5));
         }
         public Dictionary<int, string> ModeratedForums()
         {
@@ -353,7 +353,7 @@ namespace SnitzCore.Service
         public Dictionary<int, string> AllowedUsers(int id)
         {
             return CacheProvider.GetOrCreate("AllowedUsers_" + id, () =>  _dbContext.ForumAllowedMembers.AsNoTracking().Include(am => am.Member).Where(am => am.ForumId == id)
-                .ToDictionary(u => u.MemberId, u => u.Member?.Name!),TimeSpan.FromHours(1));
+                .ToDictionary(u => u.MemberId, u => u.Member?.Name!),TimeSpan.FromMinutes(5));
 
         }
 

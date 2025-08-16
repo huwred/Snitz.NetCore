@@ -120,7 +120,7 @@ namespace Snitz.Events.ViewComponents
 
         private List<EnricoCountry> GetCountries()
         {
-            return CacheProvider.GetOrCreate("cal.countries", FetchJsonCountries, TimeSpan.FromMinutes(600));
+            return CacheProvider.GetOrCreate("cal.countries", FetchJsonCountries, TimeSpan.FromMinutes(10));
         }
         private List<EnricoCountry> FetchJsonCountries()
         {

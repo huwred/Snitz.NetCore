@@ -58,7 +58,7 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     options.EnableDetailedErrors();
 
-},ServiceLifetime.Transient);
+},ServiceLifetime.Scoped);
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

@@ -136,9 +136,7 @@ namespace SnitzCore.Service
         }
         public int GetIntValue(string key, int defaultvalue = 0)
         {
-
-            var test = CacheProvider.GetOrCreate<int>("cfg_" + key,()=> CachedIntValue(key, defaultvalue),TimeSpan.MaxValue);
-            return test;
+            return CacheProvider.GetOrCreate<int>("cfg_" + key,()=> CachedIntValue(key, defaultvalue),TimeSpan.FromMinutes(5));
         }
 
         public IEnumerable<string> GetRequiredMemberFields()
@@ -163,7 +161,7 @@ namespace SnitzCore.Service
         }
         public string GetValueWithDefault(string key, string? defVal = null)
         {
-            return CacheProvider.GetOrCreate("cfg_" + key, () => CachedStringValue(key,defVal),TimeSpan.MaxValue);
+            return CacheProvider.GetOrCreate("cfg_" + key, () => CachedStringValue(key,defVal),TimeSpan.FromMinutes(5));
         }
 
         private string CachedStringValue(string key, string? defVal)
@@ -174,8 +172,7 @@ namespace SnitzCore.Service
 
         public bool TableExists(string tablename)
         {
-            bool exists = _dbContext.TableExists(tablename).Result;
-            return exists;
+            return _dbContext.TableExists(tablename).Result;
         }
 
         public IEnumerable<Badword> GetBadwords()

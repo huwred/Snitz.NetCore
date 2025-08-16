@@ -10,7 +10,12 @@
     <CopyRazorGenerateFilesToPublishDirectory>true</CopyRazorGenerateFilesToPublishDirectory>
     <SatelliteResourceLanguages>en-US;en;nb-NO;ar;ro</SatelliteResourceLanguages>
   </PropertyGroup>
-
+  
+  <PropertyGroup>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+  </PropertyGroup>
+  
   <ItemGroup>
     <Compile Remove="logs\**" />
     <Compile Remove="Views\Admin\**" />

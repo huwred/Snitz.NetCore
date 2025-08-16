@@ -18,12 +18,10 @@ namespace MVCForum.Controllers
     [DefaultBreadcrumb("mnuHome")]
     public class HomeController : SnitzBaseController
     {
-        private readonly IPost _postService;
         private readonly ISnitzCookie _snitzcookie;
 
-        public HomeController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, IPost postService,ISnitzCookie snitzcookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
+        public HomeController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, ISnitzCookie snitzcookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
-            _postService = postService;
             _snitzcookie = snitzcookie;
         }
 
