@@ -24,24 +24,27 @@ $(document).on("change",
 
 // Delete Reply
 $(document).on("click",".reply-del", function() {
-    let postid;
-    if (confirm("Are you sure!") === true) {
-        postid = $(this).data("id");
-        var archived = $(this).data("archived");
-        $.post(SnitzVars.baseUrl + "/Reply/Delete",
-            {
-                id: postid,
-                archived: archived
-            },
-            function(data, status){
-                if (!data.result) {
-                    appendAlert(data.error, 'error');
-                } else {
-                    location.reload(true);
+    var postid = $(this).data("id");
+    var archived = $(this).data("archived");
+    (async () => {
+        const result = await b_confirm(Snitzres.cnfDeleteReply)
+        if (result) {
+            $.post(SnitzVars.baseUrl + "/Reply/Delete",
+                {
+                    id: postid,
+                    archived: archived
+                },
+                function (data, status) {
+                    if (!data.result) {
+                        appendAlert(data.error, 'error');
+                    } else {
+                        location.reload(true);
+                    }
                 }
-            });
-        
-    } 
+            );
+        }
+    })();
+
 });
 // Delete Post
 $(document).on("click",".post-del", function(e) {

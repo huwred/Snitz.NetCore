@@ -692,8 +692,18 @@ li.my-fc-row {
 .table-row .status .fa.fa-stack-1x {
     color: #7d7f66 !important;
 }
-
-
+.table-row .status .fa.fa-rocket.fa-stack-1x {
+    color: goldenrod !important;
+}
+.table-row .status .fa.fa-thumb-tack.fa-stack-1x {
+    color: blue !important;
+}
+.table-row .status .fa.fa-lock.fa-stack-1x {
+    color: silver !important;
+}
+.table-row .status .fa.fa-frown-o.fa-stack-1x {
+    color: yellow !important;
+}
 .table-row .status .fa.fa-fire {
     color: red !important;
 }

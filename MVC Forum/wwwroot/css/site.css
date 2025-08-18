@@ -832,7 +832,14 @@ i.modstatus-2, i.modstatus-3 {
     text-align: center;
 }
 
-
+.bg-confirm {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-warning-rgb),var(--bs-bg-opacity)) !important;
+}
+.text-bg-confirm {
+    color: #000 !important;
+    background-color: rgba(var(--bs-warning-rgb),var(--bs-bg-opacity,1)) !important;
+}
 
 @media (max-width: 768px) {
     .navbar-collapse {

@@ -127,9 +127,9 @@ $(document).on("click", ".email-link", function(e) {
         e.preventDefault();
         var memberid = $(this).data("id");
         var href = $(this).data("url");
-        $('#modal-title').html('Send Email');
+        $('#memberModal .modal-title').html('Send Member an Email');
         $('#member-modal').load(href + "/" + memberid, function() {});
-        $('#memberModal #btnOk').hide();
+        $('#memberModal .modal-footer').show();
 
         $(document).on("click",
             "#send-email",
@@ -190,7 +190,7 @@ $(document).on("click", ".show-ip", function(e) {
         e.preventDefault();
         var memberid = $(this).data("id");
         var href = $(this).data("url");
-        $('#memberModal .modal-title').html('IP Address');
+        $('#memberModal .modal-title').html('Member\'s IP Address');
         $('#member-modal').load(href + "/" + memberid, function() {});
         $('#memberModal').data('id', memberid).modal('show');
         $('#memberModal .modal-footer').hide();

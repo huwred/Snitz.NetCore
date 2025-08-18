@@ -43,55 +43,68 @@
                     return false;
                 }
                 if ($(this).data("id")) {
-                    if(confirm("delete this Message? ")) {
+                    (async () => {
+                        const result = await b_confirm("delete this Message ")
+                        if (result) {
+                            $.post(SnitzVars.baseUrl + "/PrivateMessage/Delete", { pmid: $(this).data("id"), userid: $(this).data("user") }, function (data) {
+                                if (data.success) {
+                                    //alert(data.responseText);
+                                    location.reload();
+                                } else {
+                                    alert(data.responseText);
+                                }
+                            });
+                        }
+                    })();
 
-                        $.post(SnitzVars.baseUrl + "/PrivateMessage/Delete", { pmid: $(this).data("id"), userid: $(this).data("user") }, function (data) {
-                            if (data.success) {
-                                //alert(data.responseText);
-                                location.reload();
-                            } else {
-                                alert(data.responseText);
-                            }
-                        });
-                    }
                 } else {
-                        if (confirm("delete selected messages")) {
-                        $.post(SnitzVars.baseUrl + "/PrivateMessage/DeleteMany", $("#pm-form").closest('form').serialize(), function (data) {
-                            if (data.success) {
-                                //alert(data.responseText);
-                                location.reload();
-                            } else {
-                                alert(data.responseText);
-                            }
-                        });
-                    }
+                    (async () => {
+                        const result = await b_confirm("delete selected messages ")
+                        if (result) {
+                            $.post(SnitzVars.baseUrl + "/PrivateMessage/DeleteMany", $("#pm-form").closest('form').serialize(), function (data) {
+                                if (data.success) {
+                                    //alert(data.responseText);
+                                    location.reload();
+                                } else {
+                                    alert(data.responseText);
+                                }
+                            });
+                        }
+                    })();
+
                 }
             });
         $(".fa-trash").on("click",
             function() {
                 if ($(this).data("id")) {
-                    if(confirm("delete this Message? ")) {
+                    (async () => {
+                        const result = await b_confirm("delete this messages ")
+                        if (result) {
+                            $.post(SnitzVars.baseUrl + "/PrivateMessage/Delete", { pmid: $(this).data("id"), userid: $(this).data("user") }, function (data) {
+                                if (data.success) {
+                                    alert(data.responseText);
+                                    location.reload();
+                                } else {
+                                    alert(data.responseText);
+                                }
+                            });
+                        }
+                    })();
 
-                        $.post(SnitzVars.baseUrl + "/PrivateMessage/Delete", { pmid: $(this).data("id"), userid: $(this).data("user") }, function (data) {
-                            if (data.success) {
-                                alert(data.responseText);
-                                location.reload();
-                            } else {
-                                alert(data.responseText);
-                            }
-                        });
-                    }
                 } else {
-                        if (confirm("delete selected messages")) {
-                        $.post(SnitzVars.baseUrl + "/PrivateMessage/DeleteMany", $("#pm-form").closest('form').serialize(), function (data) {
-                            if (data.success) {
-                                alert(data.responseText);
-                                location.reload();
-                            } else {
-                                alert(data.responseText);
-                            }
-                        });
-                    }
+                    (async () => {
+                        const result = await b_confirm("delete selected messages ")
+                        if (result) {
+                            $.post(SnitzVars.baseUrl + "/PrivateMessage/DeleteMany", $("#pm-form").closest('form').serialize(), function (data) {
+                                if (data.success) {
+                                    //alert(data.responseText);
+                                    location.reload();
+                                } else {
+                                    alert(data.responseText);
+                                }
+                            });
+                        }
+                    })();
                 }
             });
         $(document).on('click', '#pm-find', function () {

@@ -291,7 +291,7 @@ async function b_confirm(msg) {
     modalElem.className = "modal"
     modalElem.innerHTML = `
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-              <div class="modal-content bg-warning text-bg-warning">
+              <div class="modal-content bg-confirm text-bg-confirm">
                 <div class="modal-body fs-6">
                   <p>${msg}</p>
                   <p>${Snitzres.Confirm}</p>
@@ -305,7 +305,7 @@ async function b_confirm(msg) {
           `
     const myModal = new bootstrap.Modal(modalElem, {
         keyboard: false,
-        backdrop: 'static'
+        //backdrop: 'static'
     })
     myModal.show()
 
@@ -319,7 +319,8 @@ async function b_confirm(msg) {
             else return
 
             document.body.removeEventListener('click', response)
-            document.body.querySelector('.modal-backdrop').remove()
+            myModal.hide()
+            //document.body.querySelector('.modal-backdrop').remove()
             modalElem.remove()
             resolve(bool)
         }
