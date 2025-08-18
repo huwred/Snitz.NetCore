@@ -42,7 +42,7 @@ namespace SnitzCore.Service.TagHelpers
             output.Attributes.SetAttribute("class", classNames);
 
             var size = Size == ModalSize.Small ? "modal-sm" : Size == ModalSize.Large ? "modal-lg" : string.Empty;
-            var template = $@"<div class='modal-dialog {size}' role='document'>
+            var template = $@"<div class='modal-dialog {size} modal-dialog-centered modal-dialog-scrollable' role='document'>
                 <div class='modal-content'>
                     <div class='modal-header bg-primary'>
                         <h4 class='modal-title text-bg-primary' id='Label_{context.UniqueId}'>{Title}</h4>
