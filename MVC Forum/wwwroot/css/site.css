@@ -269,17 +269,17 @@ footer{
     }
 
     .content {
-        flex: 75%;
-        max-width: 75%;
+        flex: 85%;
+        max-width: 85%;
         position: relative;
         padding:0.5em;
     }
     .content .author-sig {
-        width:99%;
-        border-top:1px dashed black;
+        width:100%;
+        border-top:1px solid #cccccc76;
         position: absolute;
         bottom: 0;
-        left: 0;
+        left: 3px;
     }
     .toolbar {
         flex: 5%;

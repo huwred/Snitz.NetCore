@@ -10,8 +10,16 @@
 }
 <form asp-action="AddEvent" asp-controller="Events">
 <fieldset>
-    <h5>@Localizer["AddEvent"]</h5>
-    <hr/>
+    
+        @if(Model.Id > 0)
+        {
+            <h5>@Localizer["TopicEventTitle"] <i class="fa fa-trash float-end delete-event" data-toggle="tooltip" title="@Localizer["lblDeleteEvent"]" data-id="@Model.Id"></i></h5>
+        }
+        else
+        {
+            <h5>@Localizer["AddEvent"]</h5>
+        }
+        <hr/>
     <input type="hidden" name="Id" value="@Model.Id" />
     <input type="hidden" name="AuthorId" value="@Model.AuthorId" />
     <input type="hidden" name="TopicId" id="event-topic" value="@Model.TopicId"/>
@@ -91,6 +99,23 @@
 <storecontent asp-key="topic-post">
     
     <script>
+        $(document).on('click', '.delete-event', function (e) {
+            e.preventDefault();
+            var postid = $(this).data('id');
+            var href = SnitzVars.baseUrl + "/Events/DeleteEvent";
+            (async() => {
+                const result = await b_confirm(Snitzres.cnfDelEvent )
+                if (result) {
+                    $.post(href,
+                        {
+                            id: postid
+                        },
+                        function (data) {
+                            location.reload();
+                        });
+                }
+                })()
+        });
             $(document).on('change', '#cal-recur', function (evt) {
             if ($(this).val() == '1') {
                 $('#cal-dow').show();

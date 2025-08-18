@@ -486,5 +486,20 @@ namespace Snitz.Events.Models
                 .ToList();
 
         }
+
+        public void DeleteEvent(int id)
+        {
+            var evt = _dbContext.EventItems.Find(id);
+            if(evt != null)
+            {
+                if(evt.ClubId != null && evt.ClubId > 0)
+                {
+                    _dbContext.Set<ClubCalendarSubscriptions>().Where(e=>e.ClubId == evt.ClubId).ExecuteDelete();
+                }
+                _dbContext.Remove(evt);
+                _dbContext.SaveChanges();
+            }
+
+        }
     }
 }

@@ -409,5 +409,20 @@ public class EventsController : Controller
             return Json("Problem removing list item");
         }
 
+    [HttpPost]
+    public IActionResult DeleteEvent(int id)
+    {
+        try
+        {
+            _eventsRepository.DeleteEvent(id);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            TempData["Error"] = e.Message;
+            return View("Error");
+        }
+
+    }
     #endregion
 }
