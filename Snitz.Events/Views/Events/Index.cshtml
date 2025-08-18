@@ -71,50 +71,7 @@
                     }
 
                 }
-@*                $('.del-event')
-                    .on('click',
-                        function (e) {
-                            e.preventDefault();
-                            var data = {};
-                            data.id = $(this).data("id");
 
-                            BootstrapDialog.confirm({
-                                title: '@Localizer["lblDeleteEvent"]',
-                                message: '@Localizer["msgDeleteEvent"]<br/>', callback: function (ok) {
-                                    if (ok) {
-                                        $.ajax({
-                                            url: window.SnitzVars.baseUrl + 'Events/RemoveEvent',
-                                            data: data,
-                                            type: "POST",
-                                            cache: false,
-                                            success: function (response) {
-
-                                                window.location.reload();
-                                            },
-                                            error: function (jqXHR, textStatus, errorThrown) {
-                                                BootstrapDialog.show({
-                                                    type: BootstrapDialog.TYPE_WARNING,
-                                                    title: textStatus,
-                                                    message: jqXHR.responseText
-                                                });
-
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-                    });
-
-                $('#cat-filter')
-                    .change(function() {
-                            alert('changed');
-                            //$(this).parent('form').submit();
-                            if ($('#old-new').val() === '-1') {
-                                ClubCalendar("@Url.Action("GetClubCalendarEvents",new{id=ViewBag.CatFilter,old=-1})", 'calendar', "@ViewBag.StartDate");
-                            } else {
-                                ClubCalendar("@Url.Action("GetClubCalendarEvents",new{id=ViewBag.CatFilter,old=0})", 'calendar','');
-                            }
-                        });*@
             });
         function filterClub() {
             alert($('#club-filter option:selected').text());
