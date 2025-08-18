@@ -28,7 +28,7 @@
                             <link-confirm snitz-if="@image.DoNotFeature" title="@Localizer["lblDoNotFeature"].Value" jq-selector="confirm-feature" href="~/PhotoAlbum/ToggleDoNotFeature/@image.Id/?state=false&memberid=@image.MemberId" config-class="fa fa-square-o p-1" config-key="@image.Id"></link-confirm>
                             <link-confirm snitz-if="@(!image.DoNotFeature)" title="@Localizer["imgFeature"].Value" jq-selector="confirm-feature" href="~/PhotoAlbum/ToggleDoNotFeature/@image.Id/?state=true&memberid=@image.MemberId" config-class="fa fa-picture-o p-1" config-key="@image.Id"></link-confirm>
                             <a href="@Url.Action("Edit", new { id = image.Id })" class="gallery-link" title="@Localizer["tipEditImage"].Value" data-toggle="tooltip"><i class="fa fa-pencil-square-o p-1"></i></a>
-                            <link-confirm title="@Localizer["tipDelImage"].Value" jq-selector="confirm-delete" href="~/PhotoAlbum/DeleteImage/@image.Id/?memberid=@image.MemberId" config-class="fa fa-trash-o p-1" config-key="@image.Id"></link-confirm>
+                            <link-confirm title="@Localizer["tipDelImage"].Value" jq-selector="confirm-delimage" href="~/PhotoAlbum/DeleteImage/@image.Id/?memberid=@image.MemberId" config-class="fa fa-trash-o p-1" config-key="@image.Id"></link-confirm>
                         </div>
                     </div>
                     <figcaption class="figure-caption form-text">@image.Description</figcaption>

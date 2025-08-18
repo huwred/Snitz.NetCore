@@ -179,7 +179,7 @@
             e.preventDefault();
             var href = $(this).attr('href');
             (async () => {
-                 const result = await b_confirm(Snitzres.cnfImagePrivacy)
+                 const result = await b_confirm(Snitzres.cnfImageFeature)
                 if (result) {
                  $.post(href,
                      function (data) {
@@ -195,11 +195,11 @@
             })();
 
         });
-        $(document).on('click', '.confirm-delete', function (e) {
+         $(document).on('click', '.confirm-delimage', function (e) {
             e.preventDefault();
             var href = $(this).attr('href');
              (async () => {
-                   const result = await b_confirm(cnfDeleteImage)
+                    const result = await b_confirm(Snitzres.cnfDeleteImage)
                  if (result) {
                      $.post(href.replace("~", SnitzVars.baseUrl),
                          function (data) {
