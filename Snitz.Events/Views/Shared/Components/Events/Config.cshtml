@@ -53,55 +53,38 @@
 
 }
 
-
-
-@{
-    var confModel = new ConfirmDialogViewModel()
-    {
-        Title = "Manage Event",
-        Message = @"<p></p>"
-    };
-    <partial name="ConfirmDialog" model="@confModel" />
-}
 <storecontent asp-key="events-admin" >
    
     <script>
             $(document).on('click', '.del-event-cat', function (e) {
-                e.preventDefault();
-                $('#confirmModal h4.text-bg-warning').html('Delete Category');
-                $('#confirmModal #confirm-body').html('<p>Are you sure you want to delete this Category?</p>');
-                $('#confirmModal').modal('show');
-                $('#confirmModal').on('click','#btnYes',function(e) {
-                    // handle deletion here
-                    e.preventDefault();
-                    var id = $('#cat-select').val();
-                    deleteListItem(id,'cat');
-                    
-                });
+                (async () => {
+                    const result = await b_confirm(Snitzres.cnfDeleteCategory)
+                    if (result) {
+                        var id = $('#cat-select').val();
+                        deleteListItem(id,'cat');
+                    }
+                })();
+
             });
             $('.del-event-club').on('click', function (e) {
-                e.preventDefault();
-                $('#confirmModal h4.text-bg-warning').html('Delete Club');
-                $('#confirmModal #confirm-body').html('<p>Are you sure you want to delete this Club?</p>');
-                $('#confirmModal').modal('show');
-                $('#confirmModal').on('click','#btnYes',function(e) {
-                    // handle deletion here
-                    e.preventDefault();
-                    var id = $('#club-select').val();
-                    deleteListItem(id,'club');
-                });
+                (async () => {
+                    const result = await b_confirm(Snitzres.cnfDeleteClub) //'You are about to delete this Club.'
+                    if (result) {
+                        var id = $('#club-select').val();
+                        deleteListItem(id,'club');
+                    }
+                })();
+
             });
             $('.del-event-loc').on('click', function (e) {
-                e.preventDefault();
-                $('#confirmModal h4.text-bg-warning').html('Delete Location');
-                $('#confirmModal #confirm-body').html('<p>Are you sure you want to delete this Location?</p>');
-                $('#confirmModal').modal('show');
-                $('#confirmModal').on('click','#btnYes',function(e) {
-                    // handle deletion here
-                    e.preventDefault();
-                    var id = $('#loc-select').val();
-                    deleteListItem(id,'loc');
-                });
+                (async () => {
+                    const result = await b_confirm(Snitzres.cnfDeleteLocation) //'You are about to delete this Location.'
+                    if (result) {
+                        var id = $('#loc-select').val();
+                        deleteListItem(id,'loc');
+                    }
+                })();
+
             });
 
             $('.add-event-cat').on('click', function (e) {
@@ -163,7 +146,6 @@
                     alert("error" + result);
                 }
             });
-            $('#confirmModal').modal('hide');
         }
 
         function showForm(title,data) {
