@@ -207,6 +207,7 @@ public class LanguageManagerController : Controller
                     if(itemToUpdate.Value != item.Value)
                     {
                         itemToUpdate.Value = item.Value;
+                        itemToUpdate.Type = itemToUpdate.Type ?? "string";
                         _dbcontext.LanguageResources.Update(itemToUpdate);
                     }
 
@@ -218,7 +219,8 @@ public class LanguageManagerController : Controller
                         Value = item.Value,
                         ResourceSet = data.ResourceId,
                         Name = data.ResourceSet!,
-                        Culture = item.Key
+                        Culture = item.Key,
+                        Type = "string"
                     };
                     _dbcontext.LanguageResources.Add(itemToUpdate);
                 }
@@ -241,6 +243,7 @@ public class LanguageManagerController : Controller
             if (itemToUpdate != null)
             {
                 itemToUpdate.Value = langres.Value;
+                itemToUpdate.Type = itemToUpdate.Type ?? "string";
                 _dbcontext.LanguageResources.Update(itemToUpdate);
             }
             else
@@ -250,7 +253,8 @@ public class LanguageManagerController : Controller
                     Culture = langres.Culture,
                     Name = langres.Name,
                     ResourceSet = langres.ResourceSet,
-                    Value = langres.Value
+                    Value = langres.Value,
+                    Type = langres.Type ?? "string"
                 };
                 _dbcontext.LanguageResources.Add(itemToUpdate);
             }

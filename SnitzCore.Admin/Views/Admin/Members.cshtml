@@ -492,23 +492,27 @@
         $(document).on('click', '.del-avatar', function () {
             var id = $(this).data('id');
             var img = $(this).data('img');
-            if (confirm('@Localizer["msgConfirmDeleteAvatar"]')) {
-                $.ajax({
-                    url: '@Url.Action("DeleteAvatar", "Admin")',
-                    type: 'POST',
-                    data: { id: id, img: img },
-                    success: function (response) {
-                        if (response.success) {
-                            location.reload();
-                        } else {
-                            alert(response.message);
+            (async () => {
+                const result = await b_confirm('@Localizer["msgConfirmDeleteAvatar"]')
+                if (result) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteAvatar", "Admin")',
+                        type: 'POST',
+                        data: { id: id, img: img },
+                        success: function (response) {
+                            if (response.success) {
+                                location.reload();
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            alert(error);
                         }
-                    },
-                    error: function (xhr, status, error) {
-                        alert(error);
-                    }
-                });
-            }
+                    });
+                }
+            })();
+
         });
 
     </script>
