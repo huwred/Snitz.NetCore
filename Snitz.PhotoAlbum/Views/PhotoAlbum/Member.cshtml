@@ -96,20 +96,10 @@
     </div>
     <div class="container mt-3" id="ImageContainer">
         <partial name="_MemberThumbs"/>
-
     </div>
 </div>
 <partial name="Modal\UploadModal" />
-@if (User.IsInRole("Administrator"))
-{
-    var confModel = new ConfirmDialogViewModel()
-    {
-        Title = Localizer["popManageImageTitle"].Value,
-        Message = @"<p></p>"
-    };
-    <partial name="ConfirmDialog" model="@confModel" />
 
-}
 @section Scripts
 {
 
@@ -167,69 +157,63 @@
 
         $(document).on('click', '.confirm-privacy', function (e) {
                 e.preventDefault();
-                var postid = $(this).data('id');
                 var href = $(this).attr('href');
-                $('#confirmModal #confirm-body').html('<p>You are about to toggle privacy for this image.</p><p>Do you wish to proceed?</p>');
-                $('#confirmModal').data('id', postid).data('url', href).modal('show');
+                 (async () => {
+                       const result = await b_confirm(Snitzres.cnfImagePrivacy)
+                     if (result) {
+                        $.post(href,
+                             function (data) {
+                                 if (!data) {
+                                     //appendAlert(data.error, 'error');;
+                                 } else {
 
-                $('#confirmModal').on('click', '#btnYes', function (e) {
-                    // handle deletion here
-                    e.preventDefault();
-                    $.post(href,
-                        function (data) {
-                            $('#confirmModal').modal('hide');
-                            if (!data) {
-                                //appendAlert(data.error, 'error');;
-                            } else {
+                                 $('#ImageContainer').html(data);
+                                 }
+                             }
+                         );
+                     }
+                 })();
 
-                            $('#ImageContainer').html(data);
-                            }
-                        });
-                });
             });
         $(document).on('click', '.confirm-feature', function (e) {
             e.preventDefault();
-            var postid = $(this).data('id');
             var href = $(this).attr('href');
-            $('#confirmModal #confirm-body').html('<p>You are about to toggle "doNotFeature" for this image.</p><p>Do you wish to proceed?</p>');
-            $('#confirmModal').data('id', postid).data('url', href).modal('show');
+            (async () => {
+                 const result = await b_confirm(Snitzres.cnfImagePrivacy)
+                if (result) {
+                 $.post(href,
+                     function (data) {
+                         if (!data) {
+                             //appendAlert(data.error, 'error');;
+                         } else {
 
-            $('#confirmModal').on('click', '#btnYes', function (e) {
-                // handle deletion here
-                e.preventDefault();
-                $.post(href,
-                    function (data) {
-                        $('#confirmModal').modal('hide');
-                        if (!data) {
-                            //appendAlert(data.error, 'error');;
-                        } else {
+                             $('#ImageContainer').html(data);
+                         }
+                     }
+                 );
+                }
+            })();
 
-                            $('#ImageContainer').html(data);
-                        }
-                    });
-            });
         });
         $(document).on('click', '.confirm-delete', function (e) {
             e.preventDefault();
-            var postid = $(this).data('id');
             var href = $(this).attr('href');
-            $('#confirmModal #confirm-body').html('<p>You are about to delete this image.</p><p>Do you wish to proceed?</p>');
-            $('#confirmModal').data('id', postid).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
+             (async () => {
+                   const result = await b_confirm(cnfDeleteImage)
+                 if (result) {
+                     $.post(href.replace("~", SnitzVars.baseUrl),
+                         function (data) {
+                             if (!data) {
+                                 //appendAlert(data.error, 'error');;
+                             } else {
 
-            $('#confirmModal').on('click', '#btnYes', function (e) {
-                // handle deletion here
-                e.preventDefault();
-                $.post(href.replace("~", SnitzVars.baseUrl),
-                    function (data) {
-                        $('#confirmModal').modal('hide');
-                        if (!data) {
-                            //appendAlert(data.error, 'error');;
-                        } else {
+                                 $('#ImageContainer').html(data);
+                             }
+                         }
+                     );
+                 }
+             })();
 
-                            $('#ImageContainer').html(data);
-                        }
-                    });
-            });
         });
 
 
