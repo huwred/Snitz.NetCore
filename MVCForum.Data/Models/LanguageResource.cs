@@ -23,7 +23,7 @@ public partial class LanguageResource
     public string Culture { get; set; } = null!;
 
     [StringLength(32)]
-    public string? Type { get; set; }
+    public string? Type { get; set; } = "string";
 
     [StringLength(256)]
     public string? ResourceSet { get; set; } = null!;
