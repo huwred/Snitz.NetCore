@@ -157,82 +157,67 @@
         </div>
     </div>
 </div>
-@if (User.IsInRole("Administrator"))
-{
-    var confModel = new ConfirmDialogViewModel()
-    {
-        Title = Localizer["popManageMemberTitle"].Value , //"Manage Member",
-        Message = @"<p></p>"
-    };
-    <partial name="ConfirmDialog" model="@confModel"/>
-}
 
 @section Scripts
-    {
-        <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
-        <script type="text/javascript">
+{
+<renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
+<script type="text/javascript">
 
-            $(document).on("change", "input[type=radio][name=pagesize]", function() {
-                $("#pagesize-form").submit();
-            });
+    $(document).on("change", "input[type=radio][name=pagesize]", function() {
+        $("#pagesize-form").submit();
+    });
 
-            $(document).on('click', '.confirm-lock', function (e) {
-                e.preventDefault();
-                var postid = $(this).data('id');
-                var href = $(this).attr('href');
-                $('#confirmModal #confirm-body').html('<p>You are about to lock this Member.</p><p>Do you wish to proceed?</p>');
-                $('#confirmModal').data('id', postid).data('url', href).modal('show');
+    $(document).on('click', '.confirm-lock', function (e) {
+        e.preventDefault();
+        var postid = $(this).data('id');
+        var href = $(this).attr('href');
+        (async() => {
+            const result = await b_confirm(Snitzres.cnfLockMember)
+            if (result) {
+                $.post(href,
+                    {
+                        id: postid
+                    },
+                    function(data, status) {
+                        if (!data.result) {
+                            appendAlert(data.error, 'error');
+                        } else {
+                            location.reload();
+                        }
+                    });
+            }
+            })()
 
-                $('#confirmModal').on('click','#btnYes',function(e) {
-                    // handle deletion here
-                    e.preventDefault();
-                    $.post(href,
-                        {
-                            id: postid
-                        },
-                        function(data, status) {
-                            if (!data.result) {
-                                appendAlert(data.error, 'error');
-                            } else {
-                                location.reload();
-                            }
-                        });
+    });
+    $(document).on('click', '.confirm-unlock', function (e) {
+        e.preventDefault();
+        var postid = $(this).data('id');
+        var href = $(this).attr('href');
+        (async() => {
+            const result = await b_confirm(Snitzres.cnfUnlockMember)
+            if (result) {
+                $.post(href,
+                {
+                    id: postid
+                },
+                function(data, status){
+
+                    if (!data.result) {
+                        appendAlert(data.error, 'error');
+                    } else {
+                        location.reload();
+                    }
                 });
-            });
-            $(document).on('click', '.confirm-unlock', function (e) {
-                e.preventDefault();
-                var postid = $(this).data('id');
-                var href = $(this).attr('href');
-                $('#confirmModal #confirm-body').html('<p>You are about to unlock this Member.</p><p>Do you wish to proceed?</p>');
-                $('#confirmModal').data('id', postid).data('url', href).modal('show');
-
-                $('#confirmModal').on('click','#btnYes',function(e) {
-                    // handle deletion here
-                    e.preventDefault();
-                    $.post(href,
-                        {
-                            id: postid
-                        },
-                        function(data, status){
-                    
-                            if (!data.result) {
-                                appendAlert(data.error, 'error');
-                            } else {
-                                location.reload();
-                            }
-                        });
-                });
-            });
-        $(document).on('click', '.confirm-delete', function (e) {
-            e.preventDefault();
-            var postid = $(this).data('id');
-            var href = $(this).attr('href');
-            $('#confirmModal #confirm-body').html('<p>You are about to Delete this Member\'s account.</p><p>Do you wish to proceed?</p>');
-            $('#confirmModal').data('id', postid).data('url', href).modal('show');
-
-            $('#confirmModal').on('click', '#btnYes', function (e) {
-                // handle deletion here
-                e.preventDefault();
+            }
+            })();
+    });
+    $(document).on('click', '.confirm-delete', function (e) {
+        e.preventDefault();
+        var postid = $(this).data('id');
+        var href = $(this).attr('href');
+        (async() => {
+                const result = await b_confirm(Snitzres.cnfDelMember )
+            if (result) {
                 $.post(href,
                     {
                         id: postid
@@ -245,33 +230,32 @@
                             location.reload();
                         }
                     });
-            });
-        });
-            $(document).on('click', '.confirm-zap', function (e) {
-                e.preventDefault();
-                var postid = $(this).data('id');
-                var href = $(this).attr('href');
-                $('#confirmModal #confirm-body').html('<p>You are about to Zap this Member\'s account.</p><p>Do you wish to proceed?</p>');
-                $('#confirmModal').data('id', postid).data('url', href).modal('show');
+            }
+            })()
+    });
+    $(document).on('click', '.confirm-zap', function (e) {
+        e.preventDefault();
+        var postid = $(this).data('id');
+        var href = $(this).attr('href');
+        (async() => {
+            const result = await b_confirm(Snitzres.cnfZapMember)
+            if (result) {
+                $.post(href,
+                    {
+                        id: postid
+                    },
+                    function(data, status){
 
-                $('#confirmModal').on('click','#btnYes',function(e) {
-                    // handle deletion here
-                    e.preventDefault();
-                    $.post(href,
-                        {
-                            id: postid
-                        },
-                        function(data, status){
-                    
-                            if (!data.result) {
-                                appendAlert(data, 'error');
-                            } else {
-                            location.reload();
-                            }
-                        });
+                        if (!data.result) {
+                            appendAlert(data, 'error');
+                        } else {
+                        location.reload();
+                        }
                 });
-            });
-        </script>
+            }
+            })();
+    });
+</script>
 
 }
 

@@ -58,9 +58,9 @@
                 @if (!Model.IsPopUp)
                 {
                     <button id="cancel-send-pm" type="button" class="btn btn-danger cancel" asp-action="Inbox" asp-controller="PrivateMessage">@Localizer["btnCancel"]</button>
+                    <button type="reset" class="btn btn-warning ">@Localizer["btnReset"]</button>
+                    <button id="send-pm" type="submit" class="btn btn-success ">@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
                 }
-                <button type="reset" class="btn btn-warning ">@Localizer["btnReset"]</button>
-                <button id="send-pm" type="submit" class="btn btn-success ">@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
             </div>
         </form>
     </div>

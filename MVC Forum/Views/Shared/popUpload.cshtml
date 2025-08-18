@@ -16,10 +16,10 @@
         <input asp-for="AlbumImage" class="form-control" accept="@allowedTypes" id="aFile_upload" />
         <span asp-validation-for="AlbumImage"></span>
     </div>
-    <div class="mb-3">
+@*     <div class="mb-3">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">@Localizer["btnCancel"]</button>
         <input name="submitUpload" type="button" id="submitUpload" value="@Localizer["btnUpload"]" class="btn btn-primary" />
-    </div>
+    </div> *@
     <input type="hidden" name="Controller" value="@Model.Controller" />
     <input type="hidden" name="Action" value="@Model.Action" />
     <input type="hidden" name="AllowedTypes" value="@Model.AllowedTypes" />

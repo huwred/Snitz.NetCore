@@ -88,25 +88,24 @@ $(document).on('click','.fa-object-group',function(e) {
     //remove default click event
     $(document).off('click', '#btnYes');
     var href = SnitzVars.baseUrl + '/Topic/Merge';
-    //
-    $('#confirmModal .text-bg-warning').html('Merge Topics');
-    $('#confirmModal #confirm-body').html('<p>You are about to Merge the select Topics.</p><p>Do you wish to proceed?</p>');
-    $('#confirmModal').data('id', 0).data('url', href).modal('show');
-    $('#confirmModal').one('click','#btnYes',function(e) {
-        // handle deletion here
-        e.preventDefault();
-        $.post(SnitzVars.baseUrl + '/Topic/Merge',
-            {
-                selected: selected
-            },
-            function(data) {
-                if (!data) {
-                    appendAlert(data.error, 'error');;
-                } else {
-                    location.reload();
+    (async () => {
+        const result = await b_confirm(Snitzres.cnfMergeTopic)
+        if (result) {
+            $.post(href,
+                {
+                    selected: selected
+                },
+                function (data) {
+                    if (!data) {
+                        appendAlert(data.error, 'error');;
+                    } else {
+                        location.reload();
+                    }
                 }
-            });
-    });
+            );
+        }
+    })();
+
 });
 /*update the session replylist if checkbox selected*/
 $(document).on('mouseup','.reply-select', function () {
@@ -154,7 +153,24 @@ $(document).on('click', '.confirm-restart', function (e) {
 $(document).on('click', '.confirm-clearcache', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
-    $('#confirmRestart').data('url', href).modal('show');
+    (async () => {
+        const result = await b_confirm('Clear the cache')
+        if (result) {
+            displayBusyIndicator();
+            $.post(href, '',
+                function (data, status) {
+                    if (!data) {
+                        appendAlert("There was a problem!", 'error');
+                    } else {
+                        displayBusyIndicator();
+                        setTimeout(function () {
+                            location.reload(true);
+                        }, 5000);
+                    }
+                }
+            );
+        }
+    })();
 
     $('#confirmRestart').on('click', '#btnRestartYes', function (e) {
         e.preventDefault();
@@ -267,4 +283,45 @@ function bbcodeinsert(starttag, endtag, textareaid) {
     var sel = $txt.val().substring(startPos, endPos);
 
     $txt.val(textAreaTxt.replaceAt(startPos, starttag + sel + endtag) + textAreaTxt.substring(endPos));
+}
+
+async function b_confirm(msg) {
+    const modalElem = document.createElement('div')
+    modalElem.id = "modal-confirm"
+    modalElem.className = "modal"
+    modalElem.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+              <div class="modal-content bg-warning text-bg-warning">
+                <div class="modal-body fs-6">
+                  <p>${msg}</p>
+                  <p>${Snitzres.Confirm}</p>
+              </div>    <!-- modal-body -->
+              <div class="modal-footer" style="border-top:0px">
+                <button id="modal-btn-cancel" type="button" class="btn btn-success">${Snitzres.btnCancel}</button>
+                <button id="modal-btn-accept" type="button" class="btn btn-danger">${Snitzres.btnAccept}</button>
+              </div>
+            </div>
+          </div>
+          `
+    const myModal = new bootstrap.Modal(modalElem, {
+        keyboard: false,
+        backdrop: 'static'
+    })
+    myModal.show()
+
+    return new Promise((resolve, reject) => {
+        document.body.addEventListener('click', response)
+
+        function response(e) {
+            let bool = false
+            if (e.target.id == 'modal-btn-cancel') bool = false
+            else if (e.target.id == 'modal-btn-accept') bool = true
+            else return
+
+            document.body.removeEventListener('click', response)
+            document.body.querySelector('.modal-backdrop').remove()
+            modalElem.remove()
+            resolve(bool)
+        }
+    })
 }

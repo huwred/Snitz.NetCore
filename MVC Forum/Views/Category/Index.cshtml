@@ -196,13 +196,7 @@
     </div>
 
 </div>
-@{
-    var confModel = new ConfirmDialogViewModel() { 
-        Title = Localizer["popDelCatTitle"].Value, // "Delete Category", 
-        Message = Localizer["popDelCatMessage"].Value /* @"<p>You are about to delete this Category.</p><p>Do you wish to proceed?</p>" */
-    };
-    <partial name="ConfirmDialog" model="@confModel" />
-}
+
 
 @functions
 {
@@ -252,7 +246,21 @@
 {
     <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
     <script>
-        
+        $(document).on('click','.confirm-delete', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            var href = $(this).attr('href');
+
+            (async () => {
+                const result = await b_confirm(Snitzres.cnfDeleteCategory)
+                if (result) {
+                    $.get(href.replace("~", SnitzVars.baseUrl) + id, function(result){
+                        window.location.replace(result.redirectToUrl);
+                    });
+                }
+            })();
+        });
+
         $(document).on("click", ".weblink-edit", function (e) {
             e.preventDefault();
             location.href = SnitzVars.baseUrl + "/Forum/Edit/" + $(this).data("id");

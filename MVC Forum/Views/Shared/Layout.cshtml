@@ -52,12 +52,10 @@
         <div class="container flex-grow-1">
             <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
             <main role="main" class="pb-3 mt-6">
-            <div id="liveAlertPlaceholder"></div>
-           
+            <div id="liveAlertPlaceholder"></div>     
                 @RenderBody()
             </main>
         </div>
-
         <partial name="Footer"/>
     </div>
     <div id="user-card" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true">
@@ -94,37 +92,21 @@
 
 @if (User.IsInRole("Administrator"))
 {
-    <div id="confirmRestart" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-warning">
-                    <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-danger">X</a>
-                    <h4 class="text-bg-warning">Application Restart!</h4>
-                </div>
-                <div class="modal-body">
-                    <p>You are about to Restart the Application.</p>
-                    <p>Do you wish to proceed?</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="#" id="btnRestartYes" class="btn btn-danger">@Localizer["btnOk"]</a>
-                    <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">@Localizer["btnCancel"]</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="forumAlert" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-warning">
-                    <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-danger">X</a>
-                    <h4 class="text-bg-warning">Alert!</h4>
-                </div>
-                <div class="modal-body">
-                    <p>There are pending member registrations.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <modal id="confirmRestart" title="Application Restart!">
+        <modal-body>
+            <p>You are about to Restart the Application.</p>
+            <p>Do you wish to proceed?</p>
+        </modal-body>
+        <modal-footer dismiss-text="Cancel">
+            <a href="#" id="btnRestartYes" class="btn btn-danger">@Localizer["btnOk"]</a>
+        </modal-footer>
+    </modal>
+    <modal id="forumAlert" title="Alert!">
+        <modal-body>
+            <p>There are pending member registrations.</p>
+        </modal-body>
+    </modal>
+
 }
 <script type="text/javascript">
 /* Show the user card popup when clicking on a profile link */

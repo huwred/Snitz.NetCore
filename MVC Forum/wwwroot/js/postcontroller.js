@@ -49,56 +49,50 @@ $(document).on("click",".post-del", function(e) {
     var postid = $(this).data("id");
     var href = $(this).attr('href');
     var archived = $(this).data("archived");
-    $('#confirmModal h4.text-bg-warning').html('Delete Post');
-    $('#confirmModal #confirm-body').html('<p>You are about to Delete this Topic.</p><p>Do you wish to proceed?</p>');
-    $('#confirmModal').data('id', postid).data('url', href).modal('show');
-    $('#confirmModal').on('click','#btnYes',function(e) {
-        // handle deletion here
-        e.preventDefault();
-        $.post(SnitzVars.baseUrl + "/Topic/Delete",
-            {
-                id: postid,
-                archived: archived
-            },
-            function(data, status){
-            if (!data.result) {
-                appendAlert(data.error, 'error');
-            } else {
-                location.href = data.url;
-            }
-        });
-    });
+    (async () => {
+        const result = await b_confirm(Snitzres.cnfDeleteTopic)
+        if (result) {
+            $.post(SnitzVars.baseUrl + "/Topic/Delete",
+                {
+                    id: postid,
+                    archived: archived
+                },
+                function (data, status) {
+                    if (!data.result) {
+                        appendAlert(data.error, 'error');
+                    } else {
+                        location.href = data.url;
+                    }
+                }
+            );
+        }
+    })();
 });
 // Lock Member
-$(document).on("click",
-    ".lock-member",
-    function(e) {
-        e.preventDefault();
-        var memberid = $(this).data("id");
-        var href = $(this).data("url");
-        $('#modal-title').html('Lock Member');
-        $('#member-modal').html('Toggle Member Status');
-        $('#memberModal').data('id', memberid).modal('show');
-        $('#memberModal #btnOk').show();
-        $('#memberModal').one('click',
-            '#btnOk',
-            function(e) {
-                // handle deletion here
-                e.preventDefault();
-                $.post(href,
-                    {
-                        id: memberid
-                    },
-                    function(data, status) {
+$(document).on("click",".lock-member", function(e) {
+    e.preventDefault();
+    var memberid = $(this).data("id");
+    var href = $(this).data("url");
+    (async () => {
+        const result = await b_confirm(Snitzres.cnfLockMember)
+        if (result) {
+            $.post(href,
+                {
+                    id: memberid
+                },
+                function (data, status) {
 
-                        if (!data.result) {
-                            appendAlert(data.error, 'error');
-                        } else {
-                            location.reload();
-                        }
-                    });
-            });
-    });
+                    if (!data.result) {
+                        appendAlert(data.error, 'error');
+                    } else {
+                        location.reload();
+                    }
+                }
+            );
+        }
+    })();
+
+});
 // Bookmark Post
 $(document).on('click',
     '.bookmark-add',
@@ -106,29 +100,25 @@ $(document).on('click',
         e.preventDefault();
         var href = $(this).attr('href');
         var postid = $(this).data("id");
-        //confirm-body
-        $('#confirmModal h4.text-bg-warning').html('Bookmark Post');
-        $('#confirmModal #confirm-body').html('<p>You are about to Bookmark this Topic.</p><p>Do you wish to proceed?</p>');
-        $('#confirmModal').data('id', postid).data('url', href).modal('show');
-        $('#confirmModal').on('click','#btnYes',function(e) {
-            // handle deletion here
-            e.preventDefault();
-            e.stopPropagation();
-            $.post(SnitzVars.baseUrl + "/Bookmark/Create",
-                {
-                    id: postid
-                },
-                function(data, status){
-                    $('#confirmModal').modal('hide');
-                    if (!data.result) {
-                        appendAlert(data.error, 'error');
-                    } else {
+        (async () => {
+            const result = await b_confirm(Snitzres.cnfBookmarkPost)
+            if (result) {
+                $.post(SnitzVars.baseUrl + "/Bookmark/Create",
+                    {
+                        id: postid
+                    },
+                    function (data, status) {
+                        if (!data.result) {
+                            appendAlert(data.error, 'error');
+                        } else {
 
-                        location.reload(true);
+                            location.reload(true);
+                        }
                     }
-                });
-                    
-    }); 
+                );
+            }
+        })();
+
 });
 // Delete Bookmark
 $(document).on('click',
@@ -137,60 +127,51 @@ $(document).on('click',
         e.preventDefault();
         var href = $(this).attr('href');
         var postid = $(this).data("id");
-        //confirm-body
-        $('#confirmModal h4.text-bg-warning').html('Delete Bookmark');
-        $('#confirmModal #confirm-body').html('<p>You are about to delete this Bookmark.</p><p>Do you wish to proceed?</p>');
-        $('#confirmModal').data('id', postid).data('url', href).modal('show');
-        $('#confirmModal').on('click','#btnYes',function(e) {
-            // handle deletion here
-            e.preventDefault();
-            $.post(SnitzVars.baseUrl + "/Bookmark/Delete",
+        (async () => {
+            const result = await b_confirm(Snitzres.cnfDeleteBookmark)
+            if (result) {
+                $.post(SnitzVars.baseUrl + "/Bookmark/Delete",
+                    {
+                        id: postid
+                    },
+                    function (data, status) {
+                        if (!data.result) {
+                            appendAlert(data.error, 'error');
+                        } else {
+
+                            location.reload(true);
+                        }
+                    }
+                );
+            }
+        })();
+ 
+    });
+// Lock Post
+$(document).on('click', '.post-lock', function (e) {
+    e.preventDefault();
+    var postid = $(this).data("id");
+    var poststatus = $(this).data("status");
+    (async () => {
+        const result = await b_confirm(Snitzres.cnfToggleStatus)
+        if (result) {
+            $.post(SnitzVars.baseUrl + "/Topic/LockTopic",
                 {
-                    id: postid
+                    id: postid,
+                    status: poststatus
                 },
-                function(data, status){
-                    $('#confirmModal').modal('hide');
+                function (data, status) {
                     if (!data.result) {
                         appendAlert(data.error, 'error');
                     } else {
 
                         location.reload(true);
                     }
-                });
-                    
-        }); 
-    });
-// Lock Post
-$(document).on('click', '.post-lock', function (e) {
-    e.preventDefault();
-
-    var href = $(this).attr('href');
-    var postid = $(this).data("id");
-    var poststatus = $(this).data("status");
-    //confirm-body
-    $('#confirmModal h4.text-bg-warning').html('Lock Post');
-    $('#confirmModal #confirm-body').html('<p>You are about to Lock this Topic.</p><p>Do you wish to proceed?</p>');
-    $('#confirmModal').data('id', postid).data('url', href).modal('show');
-    $('#confirmModal').on('click','#btnYes',function(e) {
-        // handle deletion here
-        e.preventDefault();
-        e.stopPropagation();
-        $.post(SnitzVars.baseUrl + "/Topic/LockTopic",
-            {
-                id: postid,
-                status: poststatus
-            },
-            function(data, status){
-                $('#confirmModal').modal('hide');
-                if (!data.result) {
-                    appendAlert(data.error, 'error');
-                } else {
-
-                    location.reload(true);
                 }
-            });
-                    
-    });        
+            );
+        }
+    })();
+        
 });
 // Stick Post
 $(document).on('click', '.post-stick', function (e) {
@@ -199,29 +180,26 @@ $(document).on('click', '.post-stick', function (e) {
     var href = $(this).attr('href');
     var postid = $(this).data("id");
     var poststatus = $(this).data("status");
-    //confirm-body
-    $('#confirmModal h4.text-bg-warning').html('Sticky Post');
-    $('#confirmModal #confirm-body').html('<p>Toggle stickiness.</p><p>Do you wish to proceed?</p>');
-    $('#confirmModal').data('id', postid).data('url', href).modal('show');
-    $('#confirmModal').on('click','#btnYes',function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $.post(SnitzVars.baseUrl + "/Topic/MakeSticky",
-            {
-                id: postid,
-                state: poststatus
-            },
-            function(data, status){
-                $('#confirmModal').modal('hide');
-                if (!data.result) {
-                    appendAlert(data.error, 'error');
-                } else {
+    (async () => {
+        const result = await b_confirm(Snitzres.cnfToggleSticky)
+        if (result) {
+            $.post(SnitzVars.baseUrl + "/Topic/MakeSticky",
+                {
+                    id: postid,
+                    state: poststatus
+                },
+                function (data, status) {
+                    if (!data.result) {
+                        appendAlert(data.error, 'error');
+                    } else {
 
-                    location.reload(true);
+                        location.reload(true);
+                    }
                 }
-            });
-                    
-    });        
+            );
+        }
+    })();
+       
 });
 // Quote Reply
 $(document).on("click",".reply-quote", function() {
@@ -252,30 +230,26 @@ $(document).on('click', '.reply-answer', function (e) {
     var href = $(this).attr('href');
     var postid = $(this).data("id");
     var poststatus = $(this).data("status");
-    //confirm-body
-    $('#confirmModal h4.text-bg-warning').html('Answer');
-    $('#confirmModal #confirm-body').html('<p>Mark as Answer?</p><p>Do you wish to proceed?</p>');
-    $('#confirmModal').data('id', postid).data('url', href).modal('show');
-    $('#confirmModal').on('click','#btnYes',function(e) {
-        // handle deletion here
-        e.preventDefault();
-        e.stopPropagation();
-        $.post(SnitzVars.baseUrl + "/Topic/Answered",
-            {
-                id: postid,
-                status: poststatus
-            },
-            function(data, status){
-                $('#confirmModal').modal('hide');
-                if (!data.result) {
-                    appendAlert(data.error, 'error');
-                } else {
+    (async () => {
+        const result = await b_confirm(Snitzres.cnfMarkAnswer)
+        if (result) {
+            $.post(SnitzVars.baseUrl + "/Topic/Answered",
+                {
+                    id: postid,
+                    status: poststatus
+                },
+                function (data, status) {
+                    if (!data.result) {
+                        appendAlert(data.error, 'error');
+                    } else {
 
-                    location.reload(true);
+                        location.reload(true);
+                    }
                 }
-            });
-                    
-    });        
+            );
+        }
+    })();
+        
 });
 // Edit Post
 $(document).on("click",".post-edit", function() {
@@ -298,7 +272,6 @@ $(document).on('click',
                     replyid:replyid
                 },
                 function(data, status){
-                    $('#confirmModal').modal('hide');
                     if (!data.result) {
                         appendAlert(data.error, 'error');
                     } else {
@@ -320,7 +293,6 @@ $(document).on('click',
                     replyid:replyid
                 },
                 function(data, status){
-                    $('#confirmModal').modal('hide');
                     if (!data.result) {
                         appendAlert(data.error, 'error');
                     } else {

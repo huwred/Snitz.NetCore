@@ -53,14 +53,14 @@ $('.send-email').on('click', function (e) {
 
     });
 });
-$('.sendpm-link').on('click', function () {
-    var username = $(this).data('id');
-    $.get(SnitzVars.baseUrl +  + '/PrivateMessage/SendMemberPm/' + username, function (data) {
-        $('#pmContainer').html(data);
-        $.validator.unobtrusive.parse($("#sendPMForm"));
-        $('#modal-sendpm').modal('show');
-    });
-});
+//$('.sendpm-link').on('click', function () {
+//    var username = $(this).data('id');
+//    $.get(SnitzVars.baseUrl +  + '/PrivateMessage/SendMemberPm/' + username, function (data) {
+//        $('#pmContainer').html(data);
+//        $.validator.unobtrusive.parse($("#sendPMForm"));
+//        $('#modal-sendpm').modal('show');
+//    });
+//});
 $(document).on("click","#PrintTopic",function(e) {
     e.preventDefault();
     var id = $(this).data('id');
@@ -158,9 +158,9 @@ $(document).on("click", ".sendpm-link", function(e) {
         e.preventDefault();
         var memberid = $(this).data("id");
         var href = $(this).data("url");
-        $('#modal-title').html('Send private message');
-        $('#member-modal').load(href + "/" + memberid, function() {});
-        $('#memberModal #btnOk').hide();
+        $('#pmModal .modal-title').html('Send private message');
+        $('#pm-modal').load(href + "/" + memberid, function() {});
+        //$('#memberModal #btnOk').hide();
 
         $(document).on("click",
             "#send-pm",
@@ -175,29 +175,27 @@ $(document).on("click", ".sendpm-link", function(e) {
                     data: form_data
                 }).done(function(response) {
                     if (response.result) {
-                        $('#memberModal').modal('hide');
+                        $('#pmModal').modal('hide');
                     } else {
                         //Dont close the modal, display the error
-                        $('#member-modal').html(response);
+                        $('#pm-modal').html(response);
                     }
                 });
 
             });
-        $('#memberModal').data('id', memberid).modal('show');
+        $('#pmModal').data('id', memberid).modal('show');
 
     });
 $(document).on("click", ".show-ip", function(e) {
         e.preventDefault();
         var memberid = $(this).data("id");
         var href = $(this).data("url");
-        $('#modal-title').html('IP Address');
+        $('#memberModal .modal-title').html('IP Address');
         $('#member-modal').load(href + "/" + memberid, function() {});
         $('#memberModal').data('id', memberid).modal('show');
+        $('#memberModal .modal-footer').hide();
     });
-$(document).on('click', '#btnOk', function() {
-        //just hide for now, needs to submit forms
-        $('#memberModal').modal('hide');
-    });
+
 
 $(document).on("change", "#aFile_upload", function (e) {
         var filesize = ((this.files[0].size / 1024) / 1024).toFixed(4); // MB

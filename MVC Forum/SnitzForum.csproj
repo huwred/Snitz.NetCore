@@ -293,9 +293,9 @@
 
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier2022" Version="2.9.11" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.20" />
-    <PackageReference Include="Hangfire.Core" Version="1.8.20" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.8.20" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.21" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.21" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.21" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.2" />
     <PackageReference Include="log4net" Version="3.1.0" />
     <PackageReference Include="log4net.Ext.Json" Version="3.0.3" />
@@ -322,8 +322,8 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.2.0" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="Snitz.Events" Version="1.0.1-rc48" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc18" />
+    <PackageReference Include="Snitz.Events" Version="1.0.1-rc49" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc19" />
     <PackageReference Include="Snitz.PostThanks" Version="1.0.3-rc03" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />

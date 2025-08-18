@@ -184,14 +184,6 @@
         </div>
     </div>
 </div>
-@{
-    var confModel = new ConfirmDialogViewModel()
-    {
-        Title = Localizer["popEmptyForumTitle"].Value, // "Empty Forum",
-        Message = Localizer["popEmptyForumMessage"].Value /* @"<p>You are about to Empty this Forum.</p>   <p>Do you wish to proceed?</p>" */
-    };
-    <partial name="ConfirmDialog" model="@confModel" />
-}
 
 @section Scripts
 {
@@ -200,6 +192,20 @@
     <script type="text/javascript" src="~/js/initPostForm.js"></script>
     <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
     <script type="text/javascript">
+        $(document).on('click','.confirm-delete', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            var href = $(this).attr('href');
+            (async () => {
+                const result = await b_confirm(Snitzres.cnfEmptyForum)
+                if (result) {
+                    $.get(href.replace("~", SnitzVars.baseUrl) + id, function(result){
+                        window.location.replace(result.redirectToUrl);
+                    });
+                }
+            })();
+        });
+
         $(document).ready(function() {
             var selected = $('#authtype').find(":selected").val();
             if (selected == 2 || selected == 3 || selected == 7) {

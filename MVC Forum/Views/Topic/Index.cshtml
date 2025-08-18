@@ -438,64 +438,57 @@
 
     </div>
 }
+<modal id="memberModal" title="Email Member">
+    <modal-body>
+        <div id="member-modal"></div>
+    </modal-body>
+    <modal-footer dismiss-text="Cancel">
+        <button id="send-email" form="sendemail-form" type="submit" class="btn btn-success">@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+        <button type="reset" form="sendemail-form" class="btn btn-warning ">@Localizer["btnReset"]</button>
+    </modal-footer>
+</modal>
+<modal id="pmModal" title="Message Member">
+    <modal-body>
+        <div id="pm-modal"></div>
+    </modal-body>
+    <modal-footer dismiss-text="Cancel">
+        <button id="send-email" form="sendpm-form" type="submit" class="btn btn-success">@Localizer["btnSend"]</button>
+        <button type="reset" form="sendpm-form" class="btn btn-warning ">@Localizer["btnReset"]</button>
+    </modal-footer>
+</modal>
+<modal id="moderateModal" title="Post Moderation">
+    <modal-body>
+        <div id="posModeration"></div>
+    </modal-body>
+    <modal-footer dismiss-text="Cancel">
+        <button id="send-email" form="moderateForm" type="submit" class="btn btn-success">@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+        <button type="reset" form="moderateForm" class="btn btn-warning ">@Localizer["btnReset"]</button>
+    </modal-footer>
+</modal>
 
-<div id="memberModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-bg-dark">
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline-light">X</a>
-                <h4 class="bg-dark text-bg-dark" id="modal-title"></h4>
-            </div>
-            <div class="modal-body">
-                <div id="member-modal"></div>
-            </div>
-            <div class="modal-footer">
-                <a href="#" id="btnOk" class="btn btn-danger">@Localizer["btnOk"]</a>
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">@Localizer["btnCancel"]</a>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="moderateModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="moderateModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content" id="posModeration"></div>
-    </div>
-</div>
-@{
-    var confModel = new ConfirmDialogViewModel()
-    {
-        Title = Localizer["popManageTopicTitle"].Value, // "Manage Topic",
-        Message = @"<p></p>"
-    };
-    <partial name="ConfirmDialog" model="@confModel" />
-}
 <partial name="Modal\UploadModal" />
 
 <!-- Send Topic Popup -->
 @if (SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1)
 {
-    <div id='modal-sendto' class='modal fade in' role="dialog" tabindex="-1" data-url='@Url.Action("SendTo", "Topic")' aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-primary" >
-                    <h5 class="modal-title text-bg-primary" id="uploadModalLabel">
-                        @Localizer["dlgSendTopic"]
-                    </h5> 
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div id='sendToContainer' class="modal-body">
-                    <div class="container text-center">
-                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-                        <span class="sr-only">Loading...</span>
-                    </div>
+    <modal id="modal-sendto" title="Send Topic">
+        <modal-body>
+            <div id='sendToContainer' class="modal-body">
+                <div class="container text-center">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
                 </div>
             </div>
-        </div>
-    </div>
+        </modal-body>
+        <modal-footer dismiss-text="Cancel">
+            <button type="submit" form="sendToForm" class="btn btn-success" >@Localizer["btnSend"]</button>
+            <button type="reset" form="sendToForm" class="btn btn-warning">Reset</button>
+        </modal-footer>
+    </modal>
 }
 <input type="text" style="display: none;" id="req-auth" value="@ViewBag.RequireAuth.ToString()" />
 <input type="text" style="display: none;" id="req-forumid" value="@Model.ForumId" />
-<partial name="PasswordDlg" model='new ConfirmDialogViewModel(){Title=Localizer["popPasswordRqdTitle"].Value,Message = Localizer["popPasswordRqdMessage"].Value}' />
+<partial name="Modal\PasswordDlg" model='new ConfirmDialogViewModel(){Title=Localizer["popPasswordRqdTitle"].Value,Message = Localizer["popPasswordRqdMessage"].Value}' />
 <div id="user-card" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

@@ -6,9 +6,12 @@
         <form id="sendemail-form" method="post" asp-controller="Account" asp-action="EmailMember" class="needs-validation p-2" novalidate>
             <input asp-for="To" type="hidden" />
             <div class="mb-3">
-                <label asp-for="Subject">@Localizer["Subject"]</label>
+                <label asp-for="Subject" class="form-label">@Localizer["Subject"]</label>
+                @Html.TextBoxFor(model => model.Subject, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Subject)
+@*                 <label asp-for="Subject">@Localizer["Subject"]</label>
                 <input asp-for="Subject" class="form-control" />
-                <span asp-validation-for="Subject"></span>
+                <span asp-validation-for="Subject"></span> *@
             </div>
             <div class="mb-3">
                 <label asp-for="Message">@Localizer["Message"]</label>
@@ -22,10 +25,7 @@
                     <label asp-for="IncludeSig"></label>
                 </label>
             </div> *@
-            <div class="mb-3 p-2">
-                <button type="reset" class="btn btn-warning ">@Localizer["btnReset"]</button>
-                <button id="send-email" type="submit" class="btn btn-success ">@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
-            </div>
+
         </form>
     </div>
 </div>

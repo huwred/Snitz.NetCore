@@ -118,26 +118,15 @@
         </div> 
     </div>
 </div>
-
-<div id="memberModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-bg-dark">
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline-light">X</a>
-                <h4 class="bg-dark text-bg-dark" id="modal-title"></h4>
-            </div>
-            <div class="modal-body">
-                <div id="member-modal"></div>
-            </div>
-            <div class="modal-footer">
-                <a href="#" id="btnOk" class="btn btn-danger">@Localizer["btnOk"]</a>
-                <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-secondary">@Localizer["btnCancel"]</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-
+<modal id="memberModal" title="Email Admin">
+    <modal-body>
+        <div id="member-modal"></div>
+    </modal-body>
+    <modal-footer dismiss-text="Cancel">
+        <button id="send-email" form="sendemail-form" type="submit" class="btn btn-success">@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+        <button type="reset" form="sendemail-form" class="btn btn-warning ">@Localizer["btnReset"]</button>
+    </modal-footer>
+</modal>
 
 @section Scripts{
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>

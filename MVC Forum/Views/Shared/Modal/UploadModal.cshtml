@@ -1,18 +1,11 @@
-﻿<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h4 class="modal-title text-bg-primary" id="uploadModalLabel">
-                    @Localizer["lblFileUpload"]
-                </h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="upload-content"></div>
-            </div>
-            <div class="modal-footer">
-                <p class="footer-title">If you're having problems uploading, try choosing a smaller image.</p>
-            </div>
-        </div>
-    </div>
-</div>
+﻿<modal id="uploadModal" title="@Localizer["lblFileUpload"].Value">
+    <modal-body>
+        <div id="upload-content"></div>
+        <p class="footer-title">If you're having problems uploading, try choosing a smaller image.</p>
+    </modal-body>
+    <modal-footer dismiss-text="Cancel">
+        <button id="submitUpload" form="upload-form" type="submit" class="btn btn-success">@Localizer["btnUpload"]</button>
+    </modal-footer>
+</modal>
+
+

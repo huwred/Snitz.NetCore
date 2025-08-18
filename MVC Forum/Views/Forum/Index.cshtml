@@ -261,17 +261,9 @@
     </div>
 }
 
-@{
-    var confModel = new ConfirmDialogViewModel()
-    {
-        Title = Localizer["popDelForumTitle"].Value, //"Delete Forum",
-        Message = Localizer["popDelForumMessage",Model.Forum!.Title!].Value /* $@"<p>You are about to delete the Forum {Model.Forum!.Title}</p>        <p>Do you wish to proceed?</p>" */
-    };
-    <partial name="ConfirmDialog" model="@confModel" />
-}
 <input type="text" style="display: none;" id="req-auth" value="@ViewBag.RequireAuth.ToString()" />
 <input type="text" style="display: none;" id="req-forumid" value="@Model.Forum.Id" />
-<partial name="PasswordDlg" model='new ConfirmDialogViewModel(){Title=Localizer["popPasswordRqdTitle"].Value,Message = Localizer["popPasswordRqdMessage"].Value}' />
+<partial name="Modal\PasswordDlg" model='new ConfirmDialogViewModel(){Title=Localizer["popPasswordRqdTitle"].Value,Message = Localizer["popPasswordRqdMessage"].Value}' />
 @section Scripts {
     <script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
 <script src="~/js/star-rating.min.js"></script>
@@ -279,6 +271,20 @@
 <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
 <script type="text/javascript" src="~/js/postcontroller.min.js" asp-append-version="true"></script>
 <script type="text/javascript">
+        $(document).on('click','.confirm-delete', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            var href = $(this).attr('href');
+
+            (async () => {
+                const result = await b_confirm(Snitzres.cnfDeleteForum)
+                if (result) {
+                    $.get(href.replace("~", SnitzVars.baseUrl) + id, function(result){
+                        window.location.replace(result.redirectToUrl);
+                    });
+                }
+            })();
+        });
     $(window).on("load",
         function(e) {
             $('.rb-rating').rating({
