@@ -36,7 +36,7 @@
         @if (isadmin || isauthor || ismoderator)
         {
             <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-pencil m-1 reply-edit" data-archived="@isArchived" title="@Localizer["tipEditReply"]" aria-label="@Localizer["tipTopicReply"]" data-id="@Model.Id" data-toggle="tooltip"></i>
-            <i class="fa fa-trash m-1 reply-del" title="@Localizer["tipDelReply"]" aria-label="@Localizer["tipTopicReply"]" data-archived="@isArchived" data-id="@Model.Id" data-toggle="tooltip"></i>
+            <i class="fa fa-trash m-1 reply-del" title="@Localizer["tipDelReply"]" aria-label="@Localizer["tipTopicReply"]" data-archived="@isArchived" data-id="@Model.Id" data-topicid="@topicid" data-toggle="tooltip"></i>
             <i snitz-if="@(islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" aria-label="@Localizer["tipTopicReply"]" data-id="@topicid" data-status="1" data-toggle="tooltip"></i>
             <i snitz-if="@(!islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" aria-label="@Localizer["tipTopicReply"]" data-id="@topicid" data-status="0" data-toggle="tooltip"></i>
         }

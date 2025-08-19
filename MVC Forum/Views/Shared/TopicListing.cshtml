@@ -69,9 +69,14 @@
                 {
                     @if (Model?.RepliesCount > ViewBag.PageSize)
                     {
+                        var pages = Model.RepliesCount / ViewBag.PageSize;
+                        if (ViewBag.PageSize * pages < Model.RepliesCount)
+                        {
+                            pages += 1;
+                        }
                         var paging = new PagingModel
                         {
-                            PageCount = Model.RepliesCount / ViewBag.PageSize,
+                            PageCount = pages,
                             PageSize = ViewBag.PageSize,
                             Page = Model.Id
                         };
