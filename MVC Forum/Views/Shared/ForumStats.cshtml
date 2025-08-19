@@ -15,7 +15,7 @@
         <i class="fa fa-bar-chart"></i>&nbsp;@Localizer["lblForumStats"]
     </div>
     <span>@Localizer["staMembers", Stats.ActiveMembers, Stats.UserCount, Stats.PostCount + Stats.TopicCount, SnitzService.ForumCount()]</span>
-    <span>@Localizer["ProfileLastPost"]: <b><lastpost-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" topic-id="@LastPost.LastTopic" post-date="@lastpostdate" reply-id="@LastPost?.LastReply"></lastpost-link></b> @Localizer["lblPostedBy"] <member-link member-id="@LastPost?.LastPostAuthor" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link></span>.<br />
+    <span>@Localizer["ProfileLastPost"]: <b><lastpost-link jump-to="true" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" topic-id="@LastPost.LastTopic" post-date="@lastpostdate" reply-id="@LastPost?.LastReply"></lastpost-link></b> @Localizer["lblPostedBy"] <member-link member-id="@LastPost?.LastPostAuthor" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link></span>.<br />
     <span>@Localizer["staTopics", Stats.TopicCount, SnitzService.ActiveSince(lastvisit)]</span><br />
     <span>@Localizer["staArchive", Stats.ArchivedPostCount, Stats.ArchivedTopicCount]</span><br />
     <span>@Localizer["staNewMember", "<a href=\"" + SnitzConfig.RootFolder + "/Account/Detail/" + newestmember + "\">" + newestmember + "</a>"]</span><br />

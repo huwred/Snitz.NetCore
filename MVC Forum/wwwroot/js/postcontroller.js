@@ -25,6 +25,7 @@ $(document).on("change",
 // Delete Reply
 $(document).on("click",".reply-del", function() {
     var postid = $(this).data("id");
+    var topicid = $(this).data("topicid");
     var archived = $(this).data("archived");
     (async () => {
         const result = await b_confirm(Snitzres.cnfDeleteReply)
@@ -38,7 +39,7 @@ $(document).on("click",".reply-del", function() {
                     if (!data.result) {
                         appendAlert(data.error, 'error');
                     } else {
-                        location.reload(true);
+                        location.href = SnitzVars.baseUrl + "/Topic/" + topicid+ "/?page=-1";
                     }
                 }
             );

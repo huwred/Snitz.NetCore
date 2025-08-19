@@ -29,11 +29,13 @@
 }
 @section MetaData
 {
-    @if(Model.Categories.Count() == 1)
+    @if (Model.Categories != null && Model.Categories.Count() == 1)
     {
         <title>@Config.Value.strForumTitle: Category - @Model.Categories.First().Name</title>
     }else
-    {<title>@Config.Value.strForumTitle: All Forums</title>}
+    {
+        <title>@Config.Value.strForumTitle: All Forums</title>
+    }
 
     <meta name="title" content="@Config.Value.strForumTitle Categories" />
     <meta name="description" content="@Config.Value.strForumDescription" />
@@ -161,7 +163,7 @@
                                                     <text>@Localizer["lblLastPost"] @Localizer["lblPostedBy"]</text>
                                                     <member-link member-id="@forum.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link>
                                                     <br class="d-none d-sm-block"/>
-                                                    <lastpost-link reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                                                    <lastpost-link jump-to="true" reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></lastpost-link>
                                                 }
                                             }
                                             else if (User.Identity!.IsAuthenticated && (forum.AccessType == ForumAuthType.Members ))
@@ -171,7 +173,7 @@
                                                     <text>@Localizer["lblLastPost"] @Localizer["lblPostedBy"]</text>
                                                     <member-link member-id="@forum.LastPostAuthorId" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></member-link>
                                                     <br class="d-none d-sm-block" />
-                                                    <lastpost-link reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                                                    <lastpost-link jump-to="true" reply-id="@forum.LastPostReplyId" post-date="@forum.LastPostDateTime" topic-id="@forum.LastPostTopicId.Value" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></lastpost-link>
                                                 }
                                             }
                                         </div>
