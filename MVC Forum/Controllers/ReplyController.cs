@@ -218,11 +218,13 @@ namespace MVCForum.Controllers
             topic.Status = (short)(model.IsLocked ? 0 : 1);
             topic.IsSticky = (short)(model.IsSticky ? 1 : 0);
             topic.ArchiveFlag = (short)(model.DoNotArchive ? 1 : 0);
+            await _snitzDbContext.SaveChangesAsync();
 
             await _postService.UpdateReplyTopic(topic);
 
+
             // TODO: Implement User Rating Management
-            return Json(new{url=Url.Action("Index", "Topic", new { id = reply.PostId }),id=reply.PostId});
+            return Json(new{url=Url.Action("Index", "Topic", new { id = reply.PostId,replyid=reply.Id}) });
             //return RedirectToAction("Index", "Topic", new { id = reply.PostId });
         }
 

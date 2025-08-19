@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using X.PagedList;
 using X.PagedList.Extensions;
 using static Azure.Core.HttpHeader;
+using static Dapper.SqlMapper;
 
 namespace SnitzCore.Service
 {
@@ -255,10 +256,11 @@ namespace SnitzCore.Service
                 _logger.Error("UpdateLastPost: Error fetching last topic", e);
             }
 
-            var forum = new Forum
+            var forum = _dbContext.Forums.Find(forumid) 
+            ?? new Forum
             {
                 Id = forumid
-            };// Get(forumid);
+            };
 
             if (lasttopic == null)
             {
@@ -281,7 +283,10 @@ namespace SnitzCore.Service
 
             try
             {
-                _dbContext.Forums.Attach(forum);
+                if (_dbContext.Entry(forum).State == EntityState.Detached)
+                {
+                    _dbContext.Forums.Attach(forum);
+                }
                 _dbContext.Entry(forum).Property(x => x.TopicCount).IsModified = true;
                 _dbContext.Entry(forum).Property(x => x.ReplyCount).IsModified = true;
                 _dbContext.Entry(forum).Property(x => x.LatestTopicId).IsModified = true;

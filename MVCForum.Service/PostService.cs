@@ -88,6 +88,7 @@ namespace SnitzCore.Service
             var forumtotals = _dbContext.ForumTotal.OrderBy(t=>t.Id).First();
             forumtotals.TopicCount += 1;
             await _dbContext.SaveChangesAsync();
+            CacheProvider.Remove("AllForums");
             return post.Id;
         }
 
@@ -114,9 +115,15 @@ namespace SnitzCore.Service
                     post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
                 }
             }
+            int? moderated = null;
+            if (post.Status == (short)Status.UnModerated || post.Status == (short)Status.OnHold)
+            {
+                moderated = -1;
+            }
             _dbContext.Replies.Add(post);
             await _dbContext.SaveChangesAsync();
 
+            await UpdateLastPost(post.PostId, moderated);
             var forum = await _forumservice.UpdateLastPost(post.ForumId);
             if (forum.CountMemberPosts == 1)
             {
@@ -280,6 +287,7 @@ namespace SnitzCore.Service
                 await _dbContext.SaveChangesAsync();
 
                 await _forumservice.UpdateLastPost(forumid);
+                CacheProvider.Remove("AllForums");
             }
         }
 
@@ -314,7 +322,7 @@ namespace SnitzCore.Service
         /// <returns></returns>
         public async Task DeleteReply(int id)
         {
-            var post = _dbContext.Replies.SingleOrDefault(f => f.Id == id);
+            var post = _dbContext.Replies.Find(id);
             if(post == null)
             {
                 return;
@@ -326,15 +334,86 @@ namespace SnitzCore.Service
             }
             if (post != null)
             {
-                var topicid = post.PostId;
-                var forumid = post.ForumId;
-                _dbContext.Replies.Remove(post);
-                await _dbContext.SaveChangesAsync();
+                try
+                {
+                    var topicid = post.PostId;
+                    var forumid = post.ForumId;
+                    _dbContext.Replies.Remove(post);
+                    _dbContext.SaveChanges();
 
-                //await UpdateLastPost(topicid, moderated);
-                //await _forumservice.UpdateLastPost(forumid);
+                    await UpdateLastPost(topicid, moderated);
+                    await UpdateForumLastPost(forumid);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error("DeleteReply: Error fetching last topic", e);
+                }
+
 
             }
+        }
+        private async Task UpdateForumLastPost(int forumid)
+        {
+            Post? lasttopic = null;
+            int topiccount = 0;
+            int replycount = 0;
+            try
+            {
+
+                lasttopic = _dbContext.Posts.AsNoTracking().Where(t=>t.ForumId == forumid && t.Status < 2).OrderByDescending(t => t.LastPostDate).FirstOrDefault();
+                topiccount = _dbContext.Posts.AsNoTracking().Count(t=>t.ForumId == forumid && t.Status <2);
+                replycount = _dbContext.Replies.AsNoTracking().Count(r=>r.ForumId == forumid && r.Status <2);
+            }
+            catch (Exception e)
+            {
+                _logger.Error("UpdateForumLastPost: Error fetching last topic", e);
+            }
+
+            var forum = _dbContext.Forums.Find(forumid) ??
+                new Forum
+                {
+                    Id = forumid
+                };
+
+            if (lasttopic == null)
+            {
+                forum.TopicCount = 0;
+                forum.ReplyCount = 0;
+                forum.LatestTopicId = 0;
+                forum.LatestReplyId = 0;
+                forum.LastPost = null;
+                forum.LastPostAuthorId = 0;
+            }
+            else
+            {
+                forum.LatestTopicId = lasttopic.Id;
+                forum.LatestReplyId = lasttopic.LastPostReplyId;
+                forum.LastPost = lasttopic.LastPostDate;
+                forum.LastPostAuthorId = lasttopic.LastPostAuthorId;
+                forum.TopicCount = topiccount;
+                forum.ReplyCount = replycount;
+            }
+
+            try
+            {
+                _dbContext.Forums.Attach(forum);
+                _dbContext.Entry(forum).Property(x => x.TopicCount).IsModified = true;
+                _dbContext.Entry(forum).Property(x => x.ReplyCount).IsModified = true;
+                _dbContext.Entry(forum).Property(x => x.LatestTopicId).IsModified = true;
+                _dbContext.Entry(forum).Property(x => x.LatestReplyId).IsModified = true;
+                _dbContext.Entry(forum).Property(x => x.LastPost).IsModified = true;
+                _dbContext.Entry(forum).Property(x => x.LastPostAuthorId).IsModified = true;
+
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.Error("UpdateForumLastPost: Error updating last post in forum", e);
+
+            }
+            CacheProvider.Remove("AllForums");
+            return;
+          
         }
 
         /// <summary>
@@ -382,14 +461,15 @@ namespace SnitzCore.Service
         {
             try
             {
-                _dbContext.Posts.Update(post);
-                await _dbContext.SaveChangesAsync();
+                //var updatedTopic = _dbContext.Posts.Update(post);
+                //await _dbContext.SaveChangesAsync();
+                await UpdateForumLastPost(post.ForumId);
             }
             catch (Exception e)
             {
                 _logger.Error("UpdateReplyTopic: Error updating post", e);
             }
-
+            
         }
 
 
@@ -784,12 +864,18 @@ namespace SnitzCore.Service
         public async Task UpdateLastPost(int topicid, int? moderatedcount)
         {
             var count = _dbContext.Replies.Count(r => r.PostId == topicid && r.Status < 2);
-            var topic = GetTopicForUpdate(topicid);
             var lastreply = _dbContext.Replies.AsNoTracking()
                 .Where(t=>t.PostId == topicid && t.Status < 2)
                 .OrderByDescending(t=>t.Created)
                 .Select(p => new { LastPostId = p.Id, LastPostAuthorId = p.MemberId,LastPostDate = p.Created })
                 .FirstOrDefault();
+
+            var topic = _dbContext.Posts.Find(topicid);// GetTopicForUpdate(topicid);
+            if(topic == null)
+            {
+                _logger.Error($"UpdateLastPost: Topic with ID {topicid} not found.");
+                return ;
+            }
 
             if (lastreply == null)
             {
@@ -810,9 +896,17 @@ namespace SnitzCore.Service
             {
                 topic.UnmoderatedReplies += moderatedcount.Value;
             }
-            _dbContext.Update(topic);
+            try
+            {
+                _dbContext.Update(topic);
 
-            await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"UpdateLastPost:", e);
+            }
+
 
         }
 
