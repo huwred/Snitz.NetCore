@@ -336,13 +336,8 @@
             });
         }
 
-        $(document).ready(function () {
-            $("#STRCALCOUNTRY").change(function () {
-                populateRegions($(this).val());
-            });
-            populateRegions($("#STRCALCOUNTRY").val());
-        });
         function populateRegions(country) {
+            console.log("populateRegions");
             var subItems="";
             $.getJSON(SnitzVars.baseUrl + "/Calendar/GetRegions/", { id: country }, function (data) {
                 subItems = "";
@@ -388,11 +383,18 @@
                         $('#plugin-accordion').on('show.bs.collapse', function (e) {
                             console.log(e.target.id)
                             localStorage.setItem('activePlugin', e.target.id);
+                            if(e.target.id == 'events-collapse'){
+                                $("#STRCALCOUNTRY").on('change',function () {
+                                    populateRegions($(this).val());
+                                });
+                                populateRegions($("#STRCALCOUNTRY").val());
+                            }
                         });
                         if(activePlugin){
                             $('#' + activePlugin).collapse('toggle');
                         }
                     break;
+                    
                 }
             }
         });

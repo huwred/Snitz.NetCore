@@ -16,7 +16,7 @@
 <form asp-action="ManageSubscriptions" method="post" data-ajax="true" data-ajax-update="#member-subscriptions">  
     <div class="input-group mb-3">  
         <span class="input-group-text">Show Subscriptions for</span>  
-        <select asp-for="Filter" id="filter-subs" asp-items="subscriptions" asp-sel class="form-select">  
+        <select asp-for="Filter" id="filter-subs" asp-items="subscriptions" class="form-select">  
             <option value="0">All</option>  
         </select>  
         <button class="btn btn-outline-danger" title="Delete All" type="submit"><i class="fa fa-trash fa-2x"></i></button>  

@@ -256,7 +256,7 @@
             </form>
         </div>
         <div class="tab-pane fade" id="v-pills-usernames" role="tabpanel" aria-labelledby="v-pills-usernames-tab">
-            <legend>Username Filter</legend>
+            <label class="h4">Username Filter</label>
             <hr />
             <form asp-action="SaveUsername" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-namefilters">
 
@@ -275,9 +275,9 @@
                     {
                         <li class="list-group-item filter_@i">
                             <div class="input-group">
-                                <input type="hidden" asp-for="@Model[i].Id" />
-                                <input type="hidden" asp-for="@Model[i].IsDeleted" />
-                                <input type="text" class="form-control" asp-for="@Model[i].Name" />
+                                <input type="hidden" asp-for="@Model[i].Id" id="@($"UserNamefilters_{i}__Id")" name="UserNamefilters[@i].Id" />
+                                <input style="display:none;" type="test" asp-for="@Model[i].IsDeleted" id="@($"UserNamefilters_{i}__IsDeleted")" name="UserNamefilters[@i].IsDeleted" />
+                                <input type="text" class="form-control" asp-for="@Model[i].Name" id="@($"UserNamefilters_{i}__Name")" name="UserNamefilters[@i].Name" />
                                 <button class="btn btn-outline-success ButtonType" type="submit" data-filter="@i"><i class="fa fa-trash"></i></button>
                             </div>
                         </li>
@@ -313,6 +313,13 @@
         $(document).on('click','.roleLink',function(e) {
             e.preventDefault();
             $('#member-roles').load($(this).attr('href'), function () {});
+        });
+        $(document).on("click",".ButtonType", function (e) {
+            e.preventDefault();
+            alert("click");
+            $("#UserNamefilters_" + $(this).data("filter") + "__IsDeleted").val("True");
+            $(".filter_" + $(this).data("filter")).hide();
+            $('#userfilterForm').submit();
         });
         $(document).on('shown.bs.tab',
             'button[data-bs-toggle="pill"]',
@@ -351,9 +358,30 @@
         })
         $(document).on('click','.confirm-delete', function(e) {
             e.preventDefault();
-            var id = $(this).data('id');
-            var href = $(this).attr('href');
-            $('#myModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
+            var postid = $(this).data('id');
+            var href = $(this).attr('href').replace("~", SnitzVars.baseUrl);
+            var title = $(this).attr('title');
+            //console.log(href);
+            (async() => {
+                    const result = await b_confirm(title)
+                if (result) {
+
+                    $.post(href,
+                        {
+                            id: postid
+                        },
+                        function (data, status) {
+                            //console.log(data);
+                            if (!data.result) {
+                                appendAlert(data, 'error');
+                            } else {
+                                location.reload();
+                            }
+                        }
+                    );
+                }
+                })();
+            //$('#myModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
         });
         $(document).on('click', '.lnkDelete', function (e) {
             e.preventDefault();
@@ -371,17 +399,17 @@
                 location.reload();
             });
         });
-        $(document).on('click','#btnYes',function(e) {
-            // handle deletion here
-            e.preventDefault();
-            var url = $('#myModal').data('url');
-            $.get(url, function(result) {
-                $('#member-roles').html('');
-                $('#member-roles').html(result);
-                $('#myModal').modal('hide');
-            });
-            $('#myModal').modal('hide');
-        });
+        // $(document).on('click','#btnYes',function(e) {
+        //     // handle deletion here
+        //     e.preventDefault();
+        //     var url = $('#myModal').data('url');
+        //     $.get(url, function(result) {
+        //         $('#member-roles').html('');
+        //         $('#member-roles').html(result);
+        //         $('#myModal').modal('hide');
+        //     });
+        //     $('#myModal').modal('hide');
+        // });
         //rank-image
         $(document).on('click','.rank-image', function(e) {
             //

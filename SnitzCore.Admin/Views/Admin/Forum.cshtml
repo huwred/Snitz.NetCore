@@ -86,37 +86,6 @@
                 <div id="result-spam"></div>
             </div>
 
-            <div class="tab-pane fade" id="v-pills-usernames" role="tabpanel" aria-labelledby="v-pills-usernames-tab">
-                <legend>Username Filter</legend>
-                <hr/>
-            <form asp-action="SaveUsername" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-namefilters">
-
-                    <div class="mb-3">
-                        <label class="form-label">Add name to disallow</label>
-                        <div class="input-group mb-3">
-                            <input type="text" name="Username" class="form-control" placeholder="Name to disallow" aria-label="Name to disallow" aria-describedby="button-addon2">
-                            <button class="btn btn-outline-warning" type="reset">Cancel</button>
-                            <button class="btn btn-outline-success" type="submit">Add</button>
-                        </div>
-                    </div>
-                </form>
-                <form asp-action="UpdateUsernameFilter" asp-controller="SnitzConfig" id="userfilterForm" method="POST" data-ajax="true" data-ajax-update="#result-namefilters">
-                    <ul class="list-group mb-3">
-                        @for (int i = 0; i < Model.UserNamefilters?.Count; i++)
-                        {
-                            <li class="list-group-item filter_@i">
-                                <div class="input-group">
-                                    <input type="hidden" asp-for="@Model.UserNamefilters[i].Id"/>
-                                    <input type="hidden" asp-for="@Model.UserNamefilters[i].IsDeleted" />
-                                    <input type="text" class="form-control" asp-for="@Model.UserNamefilters[i].Name"/>
-                                <button class="btn btn-outline-success ButtonType" type="submit" data-filter="@i" ><i class="fa fa-trash"></i></button>
-                                </div>
-                            </li>
-                        }
-                    </ul>
-                    <div id="result-namefilters"></div>
-                </form>
-            </div>
             <div class="tab-pane fade" id="v-pills-badwords" role="tabpanel" aria-labelledby="v-pills-badwords-tab">
                 <legend>Bad word Filter</legend>
                 <hr/>
@@ -142,7 +111,7 @@
                                         <input type="hidden" asp-for="@Model.Badwords[i].IsDeleted"/>
                                         <div class="col-5"><input type="text" class="form-control" asp-for="@Model.Badwords[i].Word"/></div>
                                         <div class="col-5"><input type="text" class="form-control" asp-for="@Model.Badwords[i].ReplaceWith"/></div>
-                                        <div class="col-1"><i class="fa fa-trash del-badword" data-id="@i" title="Flag for deletion"></i></div>
+                                        <div class="col-1"><i class="fa fa-trash del-badword" data-id="@i" title="Flag for deletion" data-toggle="tooltip"></i></div>
                                     </div>
                                 </div>
                         }
@@ -200,11 +169,13 @@
             $("#moderators-form")[0].reset();
             location.reload();
         });
-        $(document).ready(function(){
-            $('button[data-bs-toggle="pill"]').on('show.bs.tab', function (e) {
+            $(document).ready(function(){
+            $('button[data-bs-toggle="pill"]').on('shown.bs.tab', function (e) {
                 localStorage.setItem('activeTab', e.target.id);
-            });
+            });        
+
             var activeTab = localStorage.getItem('activeTab');
+            console.log(activeTab);
             if(activeTab) {
                 $("#v-pills-tab .nav-link.active").removeClass("active");
                 $("#v-pills-tabContent .tab-pane.active").removeClass("active").removeClass("show");
@@ -214,25 +185,7 @@
                 
                 switch (activeTab) {
                     case "v-pills-archive-tab" :
-                        $('#forum-archives').load(SnitzVars.baseUrl + '/Archive/Index/' + $(this).val(), function () {
-                            $(document).on('click', '#btnYes', function (e) {
-                                // handle deletion here
-                                e.preventDefault();
-                                var url = $('#myModal').data('url');
-                                var id = $('#myModal').data('id')
-                                $.get(url + id, function (result) {
-                                    debugger;
-                                    if(result.redirectToUrl){
-                                        $('#myModal').modal('hide');
-                                        window.location.replace(result.redirectToUrl);
-                                    }else{
-                                        $('#myModal .modal-content').html(result);
-                                    }
-                                    
-                                });
-
-                            });
-                        });
+                        $('#forum-archives').load(SnitzVars.baseUrl + '/Archive/Index/' + $(this).val(), function () { });
                     break;
                     case "v-pills-group-tab" :
                         $('#forum-groups').load(SnitzVars.baseUrl + '/Groups/ManageGroups/' + $(this).val(), function () { });
@@ -245,23 +198,11 @@
             function(e) {
                 $('[id^=result]').html('');
                 if (e.target.id === "v-pills-group-tab") {
-                    $('#forum-groups').load(SnitzVars.baseUrl + '/Groups/ManageGroups/' + $(this).val(), function () {
-                    });
+                    $('#forum-groups').load(SnitzVars.baseUrl + '/Groups/ManageGroups/' + $(this).val(), function () {});
                 }
                 if (e.target.id === "v-pills-archive-tab") {
-                    $('#forum-archives').load(SnitzVars.baseUrl + '/Archive/Index/' + $(this).val(), function () {
-                        $(document).on('click','#btnYes',function(e) {
-                            // handle deletion here
-                            e.preventDefault();
-                            var url = $('#myModal').data('url');
-                            var id = $('#myModal').data('id')
-                            $.get(url + id, function(result) {
-                                debugger;
-                                $('#myModal .modal-content').html(result);
-                            });
+                    $('#forum-archives').load(SnitzVars.baseUrl + '/Archive/Index/' + $(this).val(), function () {});
 
-                        });
-                    });
                 }
             });
         $(function() {
@@ -275,19 +216,40 @@
         });
         $(document).on('click','.confirm-delete', function(e) {
             e.preventDefault();
-            var id = $(this).data('id');
+            var postid = $(this).data('id');
             var href = $(this).attr('href');
-            $('#myModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
+            var title = $(this).attr('title');
+        (async() => {
+                const result = await b_confirm(title)
+            if (result) {
+                
+                $.post(href,
+                    {
+                        id: postid
+                    },
+                    function (data, status) {
+                        console.log(data);
+                        if (!data.result) {
+                            appendAlert(data, 'error');
+                        } else {
+                            location.reload();
+                        }
+                    });
+            }
+            })();
+
+            //$('#myModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
         });
 
         $("#admin-nav li a.nav-link.active").removeClass("active");
         $("#forum-options").addClass("active");
-        $(".ButtonType").on("click", function (e) {
-            e.preventDefault();
-            $("#UserNamefilters_" + $(this).data("filter") + "__IsDeleted").val("True");
-            $(".filter_" + $(this).data("filter")).hide();
-            $('#userfilterForm').submit();
-        });
+        // $(document).on("click",".ButtonType", function (e) {
+        //     e.preventDefault();
+        //     alert("click 2");
+        //     $("#UserNamefilters_" + $(this).data("filter") + "__IsDeleted").val("True");
+        //     $(".filter_" + $(this).data("filter")).hide();
+        //     $('#userfilterForm').submit();
+        // });
         $('.del-badword').on('click',function(e)
         {
             if ($("#Badwords_" + $(this).data("id") + "__IsDeleted").val() == "True") {
