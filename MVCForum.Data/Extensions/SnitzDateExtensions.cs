@@ -34,7 +34,7 @@ namespace SnitzCore.Data.Extensions
         }
         public static DateTime FromForumDateStr(this string? date, bool dateonly)
         {
-            if (date != null)
+            if (!string.IsNullOrWhiteSpace(date))
             {
                 if (date.Length == 8)
                 {
@@ -44,7 +44,7 @@ namespace SnitzCore.Data.Extensions
             }
             else
             {
-                return dateonly ? DateTime.UtcNow.Date : DateTime.UtcNow;
+                return dateonly ? DateTime.MinValue.Date : DateTime.MinValue;
             }
         }
         public static string ToForumDateStr(this DateTime date, bool dateonly = false)
