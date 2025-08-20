@@ -31,7 +31,7 @@ public class EventsController : Controller
     private readonly Dictionary<int, string> _categories = new();
 
     public EventsController(ISnitzConfig config,EventContext dbContext,ICodeProcessor BbCodeProcessor,
-        IMember memberService,IOptions<SnitzForums> options,SnitzDbContext snitzContext)
+        IMember memberService,IOptions<SnitzForums> options,SnitzDbContext snitzContext,IHttpClientFactory factory)
     {
         _config = config;
         _context = dbContext;
@@ -39,7 +39,7 @@ public class EventsController : Controller
         _memberService = memberService;
         _tableprefix = options.Value.forumTablePrefix;
         _snitzContext = snitzContext;
-        _eventsRepository = new EventsRepository(_context, _config, _snitzContext, _bbCodeProcessor);
+        _eventsRepository = new EventsRepository(_context, _config, _snitzContext, _bbCodeProcessor,factory);
 
         _locations = dbContext.Set<ClubCalendarLocation>().ToDictionary(t => t.Id, t => t.Name);
         _clubs = dbContext.Set<ClubCalendarClub>().ToDictionary(t => t.Id, t => t.ShortName);

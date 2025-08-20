@@ -20,15 +20,17 @@ public class CalendarController : Controller
     private readonly ICodeProcessor _bbCodeProcessor;
     private readonly SnitzDbContext _snitzContext;
     private readonly IMember _memberService;
+    private readonly IHttpClientFactory _httpClientFactory;
     protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
-    public CalendarController(ISnitzConfig config,EventContext dbContext,ICodeProcessor BbCodeProcessor,SnitzDbContext snitzContext,IMember memberservice)
+    public CalendarController(ISnitzConfig config,EventContext dbContext,ICodeProcessor BbCodeProcessor,SnitzDbContext snitzContext,IMember memberservice,IHttpClientFactory factory)
     {
         _config = config;
         _context = dbContext;
         _bbCodeProcessor = BbCodeProcessor;
         _snitzContext = snitzContext;
         _memberService = memberservice;
+        _httpClientFactory = factory;
     }
     // GET
     public IActionResult Index()
@@ -46,7 +48,7 @@ public class CalendarController : Controller
         
         try
         {
-            return new EventsRepository(_context,_config,_snitzContext,_bbCodeProcessor).GetCalendarEvents();
+            return new EventsRepository(_context,_config,_snitzContext,_bbCodeProcessor,_httpClientFactory).GetCalendarEvents();
 
         }catch(Exception ex)
         {
@@ -60,7 +62,7 @@ public class CalendarController : Controller
         var start = Request.Query["start"];
         var end = Request.Query["end"];
         
-        return new EventsRepository(_context,_config,_snitzContext,_bbCodeProcessor).GetBirthdays(User,start, end);
+        return new EventsRepository(_context,_config,_snitzContext,_bbCodeProcessor,_httpClientFactory).GetBirthdays(User,start, end);
     }
 
         public JsonResult GetUpcomingEvents(int count)
@@ -90,7 +92,7 @@ public class CalendarController : Controller
         {
             var start = Request.Query["start"];
             var end = Request.Query["end"];
-            return new EventsRepository(_context,_config,_snitzContext,_bbCodeProcessor).GetHolidays(start, end,country);
+            return new EventsRepository(_context,_config,_snitzContext,_bbCodeProcessor,_httpClientFactory).GetHolidaysAsync(start, end,country).Result;
 
         }
         catch (Exception)
@@ -106,7 +108,7 @@ public class CalendarController : Controller
         var ctry = id.Split('|')[0];
         try
         {
-            var country = new EventsRepository(_context,_config,_snitzContext, _bbCodeProcessor).GetCountries().SingleOrDefault(c => c.countryCode == ctry);
+            var country = new EventsRepository(_context,_config,_snitzContext, _bbCodeProcessor, _httpClientFactory).GetCountries().Result.SingleOrDefault(c => c.countryCode == ctry);
             if (country == null)
             {
                 throw new Exception("Invalid country code");

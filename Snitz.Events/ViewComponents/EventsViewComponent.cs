@@ -4,11 +4,7 @@ using Snitz.Events.Models;
 using Snitz.Events.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
-using SnitzCore.Data.Models;
-using SnitzCore.Data.Models;
 using SnitzCore.Service.Extensions;
-using System.Net;
-using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace Snitz.Events.ViewComponents
@@ -18,12 +14,14 @@ namespace Snitz.Events.ViewComponents
         private readonly SnitzDbContext _dbContext;
         private readonly ISnitzConfig _config;
         private readonly EventContext _eventContext;
+        private readonly IHttpClientFactory _factory;
 
-        public EventsViewComponent(SnitzDbContext dbContext, ISnitzConfig config,EventContext eventContext)
+        public EventsViewComponent(SnitzDbContext dbContext, ISnitzConfig config,EventContext eventContext, IHttpClientFactory factory)
         {
             _dbContext = dbContext;
             _config = config;
             _eventContext = eventContext;
+            _factory = factory;
         }
 
         public async Task<IViewComponentResult> InvokeAsync(string template,int id = 0,int? topicid = 0)
@@ -110,7 +108,7 @@ namespace Snitz.Events.ViewComponents
                     Region = _config.GetValue("STRCALREGION"),
                     IsPublic = _config.GetIntValue("INTCALPUBLIC") == 1,
                     Roles = _config.GetValue("STRRESTRICTROLES"),
-                    Countries = GetCountries()
+                    Countries = await GetCountries()
                 };
                 return await Task.FromResult((IViewComponentResult)View(template,vm));
             }
@@ -118,32 +116,34 @@ namespace Snitz.Events.ViewComponents
         }
         
 
-        private List<EnricoCountry> GetCountries()
+        private Task<List<EnricoCountry>> GetCountries()
         {
             return CacheProvider.GetOrCreate("cal.countries", FetchJsonCountries, TimeSpan.FromMinutes(10));
         }
-        private List<EnricoCountry> FetchJsonCountries()
+        private async Task<List<EnricoCountry>> FetchJsonCountries()
         {
 
             try
             {
-                using var client = new HttpClient();
-                using var httpClient = new HttpClient();
+
+                using var httpClient = _factory.CreateClient();
                 var request = new HttpRequestMessage(HttpMethod.Get,"https://kayaposoft.com/enrico/json/v1.0?action=getSupportedCountries");
-                var response = httpClient.Send(request);
-                using var reader = new StreamReader(response.Content.ReadAsStream());
+                var response = await httpClient.SendAsync(request);
+                using var reader = new StreamReader(await response.Content.ReadAsStreamAsync());
                 var responseBody = reader.ReadToEnd();
 
                 var result = JsonSerializer.Deserialize<EnricoCountry[]>(responseBody);
-                return result.ToList();
+                return result != null ? [.. result] : [];
 
             }
             catch (Exception ex)
             {
-                EnricoCountry ec = new EnricoCountry();
-                ec.countryCode = "eng";
-                ec.fullName = "Error: " + ex.InnerException.Message;
-                return new List<EnricoCountry>() { ec };
+                EnricoCountry ec = new EnricoCountry
+                {
+                    countryCode = "eng",
+                    fullName = "Error: " + ex.InnerException?.Message
+                };
+                return [ec];
 
             }
 

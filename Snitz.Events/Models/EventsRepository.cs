@@ -8,9 +8,6 @@ using System.Text.Json;
 using SnitzCore.Data;
 using System.Net;
 using BbCodeFormatter;
-using SkiaSharp;
-using SnitzCore.Service;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Snitz.Events.ViewModels;
 
 namespace Snitz.Events.Models
@@ -21,16 +18,17 @@ namespace Snitz.Events.Models
         private readonly ISnitzConfig _config;
         private readonly SnitzDbContext _snitzContext;
         private readonly ICodeProcessor _bbCodeProcessor;
-        //private readonly IMember _memberService;
+        private readonly IHttpClientFactory _factory;
 
         protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
-        public EventsRepository(EventContext dbContext,ISnitzConfig config,SnitzDbContext snitzContext,ICodeProcessor BbCodeProcessor)
+        public EventsRepository(EventContext dbContext,ISnitzConfig config,SnitzDbContext snitzContext,ICodeProcessor BbCodeProcessor,IHttpClientFactory factory)
         {
             _dbContext = dbContext;
             _config = config;
             _snitzContext = snitzContext;
             _bbCodeProcessor = BbCodeProcessor;
+            _factory = factory;
             //_memberService = memberservice;
         }
 
@@ -135,7 +133,7 @@ namespace Snitz.Events.Models
                 throw new Exception(ex.Message, ex.InnerException);
             }
         }
-        public JsonResult GetHolidays(string start, string end,string country = "")
+        public async Task<JsonResult> GetHolidaysAsync(string start, string end,string country = "")
         {
 
             List<PublicHoliday> holidays = new List<PublicHoliday>();
@@ -143,7 +141,7 @@ namespace Snitz.Events.Models
             {
                 if (country == "")
                     country = _config.GetValue("STRCALCOUNTRY");
-                holidays = FetchJsonHolidays(country.Split('|')[0], start, end);
+                holidays = await FetchJsonHolidays(country.Split('|')[0], start, end);
             }
 
             var eventList = from item in holidays
@@ -192,7 +190,7 @@ namespace Snitz.Events.Models
             }
 
         }
-        public List<EnricoCountry> GetCountries()
+        public Task<List<EnricoCountry>> GetCountries()
         {
             return CacheProvider.GetOrCreate("cal.countries", FetchJsonCountries,TimeSpan.FromMinutes(10));
         }
@@ -272,57 +270,54 @@ namespace Snitz.Events.Models
         }
         _dbContext.SaveChanges();
     }
-    private List<EnricoCountry> FetchJsonCountries()
+    private async Task<List<EnricoCountry>> FetchJsonCountries()
     {
+        EnricoCountry ec = new EnricoCountry
+        {
+            countryCode = "eng",
+            fullName = "England"
+        };
         try
         {
-            using var httpClient = new HttpClient();
+            using var httpClient = _factory.CreateClient();
             var request = new HttpRequestMessage(HttpMethod.Get, "https://kayaposoft.com/enrico/json/v1.0?action=getSupportedCountries");
-            var response = httpClient.Send(request);
-            using var reader = new StreamReader(response.Content.ReadAsStream());
+            var response = await httpClient.SendAsync(request);
+            using var reader = new StreamReader(await response.Content.ReadAsStreamAsync());
             var responseBody = reader.ReadToEnd();
             var countries = JsonSerializer.Deserialize<List<EnricoCountry>>(responseBody);
-            return countries;
+            return countries ?? [ec];
         }
         catch (Exception ex)
         {
-            EnricoCountry ec = new EnricoCountry();
-            ec.countryCode = "eng";
-            ec.fullName = "Error: " + ex.InnerException.Message;
-            return new List<EnricoCountry>() { ec };
-
+                _logger.Error("FetchJsonCountries", ex);
+                return [ec];
         }
 
     }
     private IEnumerable<BirthdayEventItem> MemberBirthdays(string start, string end)
     {
-        _logger.Info($"MemberBirthdays {start}:{end}");
         try
         {
             var sdate = DateTime.Parse(start.ToEnglishNumber());
             var edate = DateTime.Parse(end.ToEnglishNumber());
             if (edate - sdate > new TimeSpan(365, 0, 0, 0)) //don't show on year view
             {
-                _logger.Info($"return yearview");
-                return new List<BirthdayEventItem>();
+                return [];
             }
 
             var s = start.ToEnglishNumber().Replace("-", "").Replace("/", "");
             var e = end.ToEnglishNumber().Replace("-", "").Replace("/", "");
-
             var thisyear = DateTime.UtcNow.Year;
 
-            _logger.Info($"MemberBirthdays {s}:{e} - {thisyear}");
             var results = _snitzContext.Members.Where(m=>m.Status == 1 
                         && !string.IsNullOrWhiteSpace(m.Dob) 
                         && string.Compare(m.Dob.Replace(m.Dob.Substring(0,4),thisyear.ToString()),s) >= 0
-                        && string.Compare(m.Dob.Replace(m.Dob.Substring(0,4),thisyear.ToString()),e) <= 0);
-            _logger.Info("query: ");
-            _logger.Info(results.ToQueryString());
+                        && string.Compare(m.Dob.Replace(m.Dob.Substring(0,4),thisyear.ToString()),e) <= 0).ToList();
+
             return results.Select(m => new BirthdayEventItem()
                 {
                     MemberId = m.Id,
-                    Dob = m.Dob.Replace(m.Dob.Substring(0,4),thisyear.ToString()) + "120000",
+                    Dob = m.Dob!.Replace(m.Dob.Substring(0,4),thisyear.ToString()) + "120000",
                     Title = m.Name
                 });
 
@@ -330,10 +325,10 @@ namespace Snitz.Events.Models
         catch (Exception ex)
         {
             _logger.Error("MemberBirthdays",ex);
-            return new List<BirthdayEventItem>();
+            return [];
         }
     }
-    private List<PublicHoliday> FetchJsonHolidays(string country, string start, string end)
+    private async Task<List<PublicHoliday>> FetchJsonHolidays(string country, string start, string end)
     {
         string[] cReg = country.Split('|');
 
@@ -342,21 +337,23 @@ namespace Snitz.Events.Models
             var s = DateTime.Parse(start).ToString("dd-MM-yyyy");
             var e = DateTime.Parse(end).ToString("dd-MM-yyyy");
 
-            using var httpClient = new HttpClient();
+            using var httpClient = _factory.CreateClient();
             var request = new HttpRequestMessage(HttpMethod.Get,string.Format(
                 "https://kayaposoft.com/enrico/json/v1.0/index.php?action=getPublicHolidaysForDateRange&fromDate={0}&toDate={1}&country={2}&region={3}",
                 s, e, cReg[0], (cReg.Length > 1 ? cReg[1] : "")));
-            var response = httpClient.Send(request);
-            using var reader = new StreamReader(response.Content.ReadAsStream());
+
+            var response = await httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            using var reader = new StreamReader(await response.Content.ReadAsStreamAsync());
             var responseBody = reader.ReadToEnd();
 
             var result =  JsonSerializer.Deserialize<PublicHoliday[]>(responseBody);
-            return result.ToList();
+            return result != null ? [.. result] : [];
 
         }
         catch (Exception)
         {
-            return new List<PublicHoliday>();
+            return [];
         }
 
     }
@@ -457,15 +454,12 @@ namespace Snitz.Events.Models
 
         public string OldestEvent()
         {
-                string top = "TOP 1";
-                string limit = "";
-
-                var evnt = _dbContext.EventItems.OrderBy(e=>e.Start).First();
-                if (evnt != null)
-                {
-                    if (evnt.StartDate != null) return evnt.StartDate.Value.AddDays(-1).ToString("yyyy-MM-dd");
-                }
-            return null;
+            var evnt = _dbContext.EventItems.OrderBy(e=>e.Start).First();
+            if (evnt != null)
+            {
+                if (evnt.StartDate != null) return evnt.StartDate.Value.AddDays(-1).ToString("yyyy-MM-dd");
+            }
+            return string.Empty;
         }
 
         internal IEnumerable<int> GetSubsList(int memberid)

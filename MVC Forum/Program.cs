@@ -154,7 +154,7 @@ EmailConfiguration emailConfig = builder.Configuration
     .Get<EmailConfiguration>()!;
 builder.Services.AddSingleton(emailConfig);
 builder.Services.Configure<SnitzForums>(builder.Configuration.GetSection(SnitzForums.SectionName));
-
+builder.Services.AddHttpClient();
 builder.Logging.ClearProviders();
 builder.Logging.AddLog4Net("log4net.config");
 builder.Services.AddImageSharp(
