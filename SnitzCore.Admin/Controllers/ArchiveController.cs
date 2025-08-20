@@ -114,20 +114,21 @@ namespace SnitzCore.BackOffice.Controllers
             return PartialView("SaveResult", "Settings Updated");
 
         }
-        [HttpGet]
+        [HttpPost]
         public IActionResult ArchiveForum(int id)
         {
 
             ArchiveViewModel vm = new ArchiveViewModel {ForumId = id};
             return PartialView("popArchiveForum", vm);
         }
-        [HttpGet]
+
+        [HttpPost]
         public IActionResult DeleteArchivedForum(int id)
         {
 
-            BackgroundJob.Enqueue(() => _forumservice.DeleteArchivedTopics(id));
-
-            return Json(new { redirectToUrl = Url.Action("Forum", "Admin") });
+            //BackgroundJob.Enqueue(() => _forumservice.DeleteArchivedTopics(id));
+            BackgroundJob.Enqueue(() => new ArchiveService(_serviceProvider, _optionsconfig).DeleteArchivedTopics(id));
+            return Json(new { result = true, redirectToUrl = Url.Action("Forum", "Admin") });
         }
         [HttpPost]
         public IActionResult ArchiveForum(ArchiveViewModel vm)
