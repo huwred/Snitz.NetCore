@@ -90,25 +90,8 @@
 <renderstoredcontent asp-key="cookie-consent"></renderstoredcontent>
 <renderstoredcontent asp-key="password-toggle"></renderstoredcontent>
 
-@if (User.IsInRole("Administrator"))
-{
-    <modal id="confirmRestart" title="Application Restart!">
-        <modal-body>
-            <p>You are about to Restart the Application.</p>
-            <p>Do you wish to proceed?</p>
-        </modal-body>
-        <modal-footer dismiss-text="Cancel">
-            <a href="#" id="btnRestartYes" class="btn btn-danger">@Localizer["btnOk"]</a>
-        </modal-footer>
-    </modal>
-    <modal id="forumAlert" title="Alert!">
-        <modal-body>
-            <p>There are pending member registrations.</p>
-        </modal-body>
-    </modal>
-
-}
 <script type="text/javascript">
+
 /* Show the user card popup when clicking on a profile link */
 $(document).on("click", ".profile-popup", function (e) {
     e.preventDefault();

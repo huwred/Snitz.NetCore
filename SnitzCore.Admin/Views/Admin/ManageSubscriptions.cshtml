@@ -19,12 +19,16 @@
         <select asp-for="Filter" id="filter-subs" asp-items="subscriptions" class="form-select">  
             <option value="0">All</option>  
         </select>  
-        <button class="btn btn-outline-danger" title="Delete All" type="submit"><i class="fa fa-trash fa-2x"></i></button>  
+        <button class="btn btn-outline-danger" id="filter-subs-btn" title="Delete All subscriptions" type="button" data-toggle="tooltip"><i class="fa fa-trash fa-2x"></i></button>  
     </div>  
     @if (Model.Subscriptions != null && Model.Subscriptions.Any())  
     {  
-        <ul style="display: flex;flex-wrap: wrap;" class="list-unstyled bg-primary text-bg-dark rounded pb-3 pt-2">  
-            <li style="flex: 0 1 5%;display: flex;"><i class="fa fa-trash-o center px-2 pt-1" title="Delete Selected"></i></li>  
+        <ul style="display: flex;flex-wrap: wrap;" class="list-unstyled bg-primary text-bg-dark rounded pb-3 pt-2">
+            <li style="flex: 0 1 5%;display: flex;">
+                <button class="btn btn-link delete-subs disabled" title="Delete Selected subscriptions" type="button" data-toggle="tooltip">
+                    <i class="fa fa-trash-o center px-2 pt-1  fs-4 text-light" title="Delete Selected subscriptions" data-toggle="tooltip"></i>
+                </button>
+            </li>
             <li style="flex: 0 1 10%;display: flex;">Member</li>  
             <li style="flex: 1 0 18%;display: flex;">Category</li>  
             <li style="flex: 1 0 18%;display: flex;">Forum</li>  
@@ -32,8 +36,8 @@
         </ul>  
         @foreach (dynamic sub in Model.Subscriptions!)  
         {  
-            <ul style="display: flex;flex-wrap: wrap;" class="list-unstyled">  
-                <li style="flex: 0 1 5%;display: flex;"><input name="SubscriptionId" type="checkbox" value="@sub.SubscriptionId" /></li>  
+            <ul style="display: flex;flex-wrap: wrap;" class="list-unstyled">
+                <li style="flex: 0 1 5%;"><input class="selectsub" name="SubscriptionId" type="checkbox" value="@sub.SubscriptionId" /></li>
                 <li style="flex: 0 1 10%;display: flex;">@sub.MemberName</li>  
                 <li style="flex: 1 0 18%;display: flex;">@sub.CategoryName</li>  
                 <li style="flex: 1 0 18%;display: flex;">@sub.ForumName</li>  

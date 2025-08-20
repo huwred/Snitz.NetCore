@@ -246,7 +246,7 @@
                         <admin-config config-key="STRRECENTTOPICS" config-label="Recent Topics" config-val="@SnitzConfig.GetIntValue("STRRECENTTOPICS")" help-text="@Localizer["STRRECENTTOPICS"].Value"></admin-config>
                 </div>
                 <div class="col">
-                    <admin-config config-key="STRRECENTTOPICS" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRRECENTTOPICS")"></admin-config>
+                        <admin-config config-key="STRREQRECENTTOPICS" config-label="Required" config-val="@SnitzConfig.GetIntValue("STRREQRECENTTOPICS")"></admin-config>
                 </div>
             </div>
             <div class="mb-3">
@@ -316,7 +316,6 @@
         });
         $(document).on("click",".ButtonType", function (e) {
             e.preventDefault();
-            alert("click");
             $("#UserNamefilters_" + $(this).data("filter") + "__IsDeleted").val("True");
             $(".filter_" + $(this).data("filter")).hide();
             $('#userfilterForm').submit();
@@ -343,13 +342,37 @@
                         break;
                 }
             });
-        $('#myModal').on('show',
-            function() {
-                var id = $(this).data('id'),
-                    removeBtn = $(this).find('.danger');
-            });
+
         $(document).on("change", "#filter-subs", function() {
-            $('#member-subscriptions').load(SnitzVars.baseUrl + '/Admin/ManageSubscriptions/' + $(this).val(), function () { });
+            $('#member-subscriptions').load(SnitzVars.baseUrl + '/Admin/ManageSubscriptions/' + $(this).val(), function () {
+                var filtername = $("#filter-subs option:selected").text();
+                $("#filter-subs-btn").prop("title","Delete " + filtername + " subscriptions");
+            });
+        });
+        $(document).on('click','#filter-subs-btn',function () {
+            (async() => {
+                const result = await b_confirm('Are you sure you want to delete all the subscriptions');
+                if (result) {
+                    $('form').submit();
+                }
+            })();
+        });
+        $(document).on('click','.delete-subs',function () {
+            (async() => {
+                const result = await b_confirm('Are you sure you want to delete the selected subscriptions');
+                if (result) {
+                    $('form').submit();
+                }
+            })();
+        });
+        $(document).on('click','.selectsub',function () {
+            var $selectedsubs = $('input[name=SubscriptionId]:checked');
+            if($selectedsubs.length === 0){
+                $('.delete-subs').removeClass('disabled');
+                $('.delete-subs').addClass('disabled');
+            }else if($('.delete-subs').hasClass('disabled')){
+                $('.delete-subs').toggleClass('disabled');
+            }
         });
 
         $(document).on("change",".cpick",function(){
@@ -361,11 +384,9 @@
             var postid = $(this).data('id');
             var href = $(this).attr('href').replace("~", SnitzVars.baseUrl);
             var title = $(this).attr('title');
-            //console.log(href);
             (async() => {
-                    const result = await b_confirm(title)
+                const result = await b_confirm(title);
                 if (result) {
-
                     $.post(href,
                         {
                             id: postid
@@ -381,11 +402,9 @@
                     );
                 }
                 })();
-            //$('#myModal').data('id', id).data('url', href.replace("~", SnitzVars.baseUrl)).modal('show');
         });
         $(document).on('click', '.lnkDelete', function (e) {
-            e.preventDefault();
-            
+            e.preventDefault();      
             var href = $(this).attr('href');
             $.get(href.replace("~", SnitzVars.baseUrl), function (result) {
                 location.reload();
@@ -393,23 +412,12 @@
         });
         $(document).on('click', '.lnkApprove', function (e) {
             e.preventDefault();
-
             var href = $(this).attr('href');
             $.get(href.replace("~", SnitzVars.baseUrl), function (result) {
                 location.reload();
             });
         });
-        // $(document).on('click','#btnYes',function(e) {
-        //     // handle deletion here
-        //     e.preventDefault();
-        //     var url = $('#myModal').data('url');
-        //     $.get(url, function(result) {
-        //         $('#member-roles').html('');
-        //         $('#member-roles').html(result);
-        //         $('#myModal').modal('hide');
-        //     });
-        //     $('#myModal').modal('hide');
-        // });
+
         //rank-image
         $(document).on('click','.rank-image', function(e) {
             //
@@ -440,7 +448,6 @@
             });
             var activeTab = localStorage.getItem('activeMemberTab');
             if (activeTab) {
-
                 $("#v-pills-tab .nav-link.active").removeClass("active");
                 $("#v-pills-tabContent .tab-pane.active").removeClass("active").removeClass("show");
                 $("#v-pills-tab #" + activeTab).addClass("active");
@@ -462,7 +469,6 @@
                         $('#member-avatars').load(SnitzVars.baseUrl + '/Admin/ManageAvatars/', function () { });
                         break;
                 }
-
             }
 
             $("[data-role=submit]").click(function () {
@@ -480,9 +486,11 @@
 
             $(document).on('click', '.send-email',function () {
                 var userid = $(this).data('id');
+                var title = $(this).data("bs-original-title");
                 $.get(SnitzVars.baseUrl + '/Account/EmailMember/' + userid, function (data) {
                     $('#emailContainer').html(data);
-                    $.validator.unobtrusive.parse($("#emailMemberForm"));
+                    $.validator.unobtrusive.parse($("#sendemail-form"));
+                    $('#emailModal .modal-title').html(title);
                     $('#emailModal').modal('show');
                 });
             });
@@ -491,8 +499,9 @@
         $(document).on('click', '.stopForumSpam', function (evt) {
             //console.log("spam click");
             evt.preventDefault();
-            $('#popModalLabel').html('Stop Forum Spam lookup');
-            var content = "<div class=\"container text-center\"><i class=\"fa fa-spinner fa-pulse fa-3x fa-fw\" ></i><span class=\"sr-only\"> Loading...</span></div>";
+            $('#popModal .modal-title').html('Stop Forum Spam lookup');
+            //$('#popModalLabel').html('Stop Forum Spam lookup');
+            var content = "<div class=\"text-center\"><i class=\"fa fa-spinner fa-pulse fa-3x fa-fw\" ></i><span class=\"sr-only\"> Loading...</span></div>";
             $('#popContainer').html(content);
             $('#popModal').modal('show');
 
@@ -506,8 +515,9 @@
             return false;
         });
         $(document).on('click', '.showIPAddress', function () {
-            $('#popModalLabel').html('IP/Domain name');
-            var content = "<div class=\"container text-center\"><i class=\"fa fa-spinner fa-pulse fa-3x fa-fw\" ></i><span class=\"sr-only\"> Loading...</span></div>";
+            $('#popModal .modal-title').html('IP/Domain name')
+            //$('#popModalLabel').html('IP/Domain name');
+            var content = "<div class=\"text-center\"><i class=\"fa fa-spinner fa-pulse fa-3x fa-fw\" ></i><span class=\"sr-only\"> Loading...</span></div>";
             $('#popContainer').html(content);
             $('#popModal').modal('show');
 

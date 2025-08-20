@@ -7,9 +7,9 @@
         });
     });
     if (SnitzVars.pending > 0) {
-        $('#forumAlert').modal('show');
+        appendAlert("There are <a href=\"Admin/Members\" class=\"alert-link\">pending</a> member registrations.", 'warning');
         setTimeout(function () {
-            $('#forumAlert').modal('hide');
+            $("#alertmessage").slideUp(500);
         }, 3000);
     }
 });
@@ -24,10 +24,12 @@ const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
 const appendAlert = (message, type) => {
     const wrapper = document.createElement('div')
     wrapper.innerHTML = [
-        `<div class="alert alert-${type} alert-dismissible position-absolute top-50 start-50 translate-middle" role="alert">`,
+        `<div id="alertmessage">`,
+        `<div style="padding: 5px;">`,
+        `<div id="inner-message" class="alert alert-${type} alert-dismissible fade show" role="alert">`,
         `   <div>${message}</div>`,
         '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-        '</div>'
+        '</div></div></div>'
     ].join('')
 
     alertPlaceholder.append(wrapper)
@@ -130,65 +132,49 @@ $(document).on('change','.reply-select', function () {
 $(document).on('click', '.confirm-restart', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
-    $('#confirmRestart').data('url', href).modal('show');
-
-    $('#confirmRestart').on('click', '#btnRestartYes', function (e) {
-        e.preventDefault();
-        $.post(href, '',
-            function (data, status) {
-                if (!data) {
-                    appendAlert("There was a problem!", 'error');
-                } else {
-                    $('#confirmRestart .modal-body').html("<p>Application is restarting, please wait ...</p>");
-                    $('#btnRestartYes').hide();
-                    setTimeout(function () {
-                        $('#confirmRestart').modal('hide');
-                        location.reload(true);
-                    }, 25000);
-
+    (async () => {
+        const result = await b_confirm('You are about to Restart the Application')
+        if (result) {
+            appendAlert('Application is restarting, please wait ... <i class=\"fa fa-spinner fa-pulse fa-2x fa-fw\"></i>', "danger");
+            $.post(href, '',
+                function (data, status) {
+                    if (!data) {
+                        appendAlert("There was a problem!", 'error');
+                    } else {
+                        setTimeout(function () {
+                            $("#alertmessage .btn-close").click();
+                            location.reload(true);
+                        }, 25000);
+                    }
                 }
-            });
-    });
+            );
+        }
+    })();
 });
+
 $(document).on('click', '.confirm-clearcache', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
     (async () => {
         const result = await b_confirm('Clear the cache')
         if (result) {
-            displayBusyIndicator();
+                
+            appendAlert('Clearing the cache ... <i class=\"fa fa-spinner fa-pulse fa-2x fa-fw\"></i>', "warning");
             $.post(href, '',
                 function (data, status) {
                     if (!data) {
                         appendAlert("There was a problem!", 'error');
                     } else {
-                        displayBusyIndicator();
                         setTimeout(function () {
+                            $("#alertmessage .btn-close").click();
                             location.reload(true);
-                        }, 5000);
+                        }, 20000);
                     }
                 }
             );
         }
     })();
 
-    $('#confirmRestart').on('click', '#btnRestartYes', function (e) {
-        e.preventDefault();
-        $.post(href, '',
-            function (data, status) {
-                if (!data) {
-                    appendAlert("There was a problem!", 'error');
-                } else {
-                    $('#confirmRestart .modal-body').html("<p>Clearing Cache, please wait ...</p>");
-                    $('#btnRestartYes').hide();
-                    setTimeout(function () {
-                        $('#confirmRestart').modal('hide');
-                        location.reload(true);
-                    }, 5000);
-
-                }
-            });
-    });
 });
 
 /* Busy Indicator */
@@ -290,18 +276,18 @@ async function b_confirm(msg) {
     modalElem.id = "modal-confirm"
     modalElem.className = "modal"
     modalElem.innerHTML = `
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-              <div class="modal-content bg-confirm text-bg-confirm">
-                <div class="modal-body fs-6">
-                  <p>${msg}</p>
-                  <p>${Snitzres.Confirm}</p>
-              </div>    <!-- modal-body -->
-              <div class="modal-footer" style="border-top:0px">
-                <button id="modal-btn-cancel" type="button" class="btn btn-success">${Snitzres.btnCancel}</button>
-                <button id="modal-btn-accept" type="button" class="btn btn-danger">${Snitzres.btnAccept}</button>
-              </div>
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content bg-confirm text-bg-confirm">
+            <div class="modal-body fs-6">
+                <p>${msg}</p>
+                <p>${Snitzres.Confirm}</p>
             </div>
-          </div>
+            <div class="modal-footer" style="border-top:0px">
+            <button id="modal-btn-cancel" type="button" class="btn btn-success">${Snitzres.btnCancel}</button>
+            <button id="modal-btn-accept" type="button" class="btn btn-danger">${Snitzres.btnAccept}</button>
+            </div>
+        </div>
+        </div>
           `
     const myModal = new bootstrap.Modal(modalElem, {
         keyboard: false,

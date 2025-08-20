@@ -717,3 +717,10 @@ li.my-fc-row {
 .authors {
     border-right: 1px solid #c0c0c0;
 }
+
+.alert-danger {
+    --bs-bg-opacity: 1;
+    --bs-alert-bg: rgba(var(--bs-danger-rgb), var(--bs-bg-opacity)) !important;
+    --bs-alert-border-color: var(--bs-danger-border-subtle);
+    --bs-alert-link-color: var(--bs-danger-text-emphasis);
+}

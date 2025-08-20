@@ -840,7 +840,16 @@ i.modstatus-2, i.modstatus-3 {
     color: #000 !important;
     background-color: rgba(var(--bs-warning-rgb),var(--bs-bg-opacity,1)) !important;
 }
+#alertmessage {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
 
+#inner-message {
+    margin: 0 auto;
+}
 @media (max-width: 768px) {
     .navbar-collapse {
         position: fixed;

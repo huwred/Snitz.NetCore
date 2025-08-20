@@ -126,10 +126,8 @@ namespace SnitzCore.BackOffice.Controllers
                                 SubscriptionId = subscription.Id,
                                 MemberName = subscription.Member!.Name,
                             })
-
                         .ToList();
                     break;
-
                 case 2: //category
                     subs = _dbcontext.MemberSubscription
                         .Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId != 0)
@@ -142,7 +140,6 @@ namespace SnitzCore.BackOffice.Controllers
                         })
                         .ToList();
                     break;
-
                 case 3: //forum
                     subs = _dbcontext.MemberSubscription
                         .Where(ms=>ms.PostId == 0 && ms.ForumId != 0)
@@ -156,7 +153,6 @@ namespace SnitzCore.BackOffice.Controllers
                         })
                         .ToList();
                     break;
-
                 case 4: //topic
                     subs = _dbcontext.MemberSubscription
                         .Where(ms=>ms.PostId != 0)
@@ -171,7 +167,6 @@ namespace SnitzCore.BackOffice.Controllers
                         })
                         .ToList();
                     break;
-
             }
 
             var vm = new SubscriptionsViewModel()
@@ -186,28 +181,44 @@ namespace SnitzCore.BackOffice.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ManageSubscriptions(IFormCollection form)
         {
-            var filter = Convert.ToInt32(form["Filter"]);
-            switch (form["Filter"])
+            if(form.ContainsKey("SubscriptionId"))
             {
-                case "1" :  //board
-                     _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId == 0).ExecuteDeleteAsync();
-                    break;
-
-                case "2": //category
-                     _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId != 0).ExecuteDeleteAsync();
-                    break;
-
-                case "3": //forum
-                     _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId != 0).ExecuteDeleteAsync();
-                    break;
-
-                case "4": //topic
-                     _dbcontext.MemberSubscription.Where(ms=>ms.PostId != 0).ExecuteDeleteAsync();
-                    break;
-
+                //individual selections
+                var subscriptions = form["SubscriptionId"].ToArray();
+                if (subscriptions.Length > 0)
+                {
+                    foreach (var subscription in subscriptions)
+                    {
+                        var sub = _dbcontext.MemberSubscription.Find(Convert.ToInt32(subscription));
+                        if (sub != null)
+                        {
+                            _dbcontext.MemberSubscription.Remove(sub);
+                        }
+                    }
+                    _dbcontext.SaveChanges();
+                }
+                return RedirectToAction("ManageSubscriptions", new { id = 0 });
             }
-            return RedirectToAction("ManageSubscriptions",new{id=filter});
-
+            else
+            {
+                var filter = Convert.ToInt32(form["Filter"]);
+                switch (form["Filter"])
+                {
+                    case "1" :  //board
+                         _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId == 0).ExecuteDeleteAsync();
+                        break;
+                    case "2": //category
+                         _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId != 0).ExecuteDeleteAsync();
+                        break;
+                    case "3": //forum
+                         _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId != 0).ExecuteDeleteAsync();
+                        break;
+                    case "4": //topic
+                         _dbcontext.MemberSubscription.Where(ms=>ms.PostId != 0).ExecuteDeleteAsync();
+                        break;
+                }
+                return RedirectToAction("ManageSubscriptions",new{id=filter});
+            }
         }
 
         public ActionResult GetForumModerators(int id)

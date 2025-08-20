@@ -816,6 +816,18 @@ namespace MVCForum.Controllers
         [HttpGet]
         public IActionResult EmailMember(int? id)
         {
+            if(id == -1)
+            {
+                var adminmember = _memberService.GetByUsername(_config.GetValue("STRADMINUSER"));
+                if (adminmember?.Email != null)
+                {
+                    var vm = new EmailMemberViewModel
+                    {
+                        To = adminmember.Email
+                    };
+                    return PartialView(vm);
+                }
+            }
             var member = _memberService.GetById(id);
             if (member?.Email != null)
             {
