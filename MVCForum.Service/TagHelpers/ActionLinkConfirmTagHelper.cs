@@ -35,7 +35,7 @@ namespace SnitzCore.Service.TagHelpers
             output.Attributes.Add("rel","noopener noreferrer nofollow");
             output.Attributes.Add("href",Href!.Replace("~",_snitzConfig.RootFolder));
             //output.Attributes.Add("title","Delete Item");
-            output.Attributes.Add("data-bs-toggle","modal");
+            //output.Attributes.Add("data-bs-toggle","modal");
             if (Key != null)
             {
                 output.Attributes.Add("data-id",Key);
