@@ -365,14 +365,24 @@ namespace SnitzCore.Service
         public async Task DeleteArchivedTopics(int id)
         {
             await _dbContext.ArchivedTopics.Where(p => p.ForumId == id).Include(t => t.Replies).ExecuteDeleteAsync();
-            var forum = await _dbContext.Forums.FindAsync(id);
-            if (forum != null)
+            var forum = _dbContext.Forums.Find(id);
+            try
             {
-                forum.ArchivedTopics = 0;
-                forum.ArchivedCount = 0;
-                _dbContext.Forums.Update(forum);
-                await _dbContext.SaveChangesAsync();
+                if (forum != null)
+                {
+                    forum.ArchivedTopics = 0;
+                    forum.ArchivedCount = 0;
+                    forum.LastDelete = DateTime.UtcNow.ToForumDateStr();
+                    _dbContext.Forums.Update(forum);
+                    await _dbContext.SaveChangesAsync();
+                }
             }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
         }
 
         public IEnumerable<ArchivedPost>? ArchivedPosts(int id)

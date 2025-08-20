@@ -150,5 +150,30 @@ namespace SnitzCore.Service
 
         }
 
+        public void DeleteArchivedTopics(int id)
+        {
+            using (IServiceScope scope = _serviceProvider.CreateScope())
+            using (SnitzDbContext _dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
+            {
+                _dbContext.ArchivedTopics.Where(p => p.ForumId == id).Include(t => t.Replies).ExecuteDelete();
+                var forum = _dbContext.Forums.Find(id);
+                try
+                {
+                    if (forum != null)
+                    {
+                        forum.ArchivedTopics = 0;
+                        forum.ArchivedCount = 0;
+                        forum.LastDelete = DateTime.UtcNow.ToForumDateStr();
+                        _dbContext.Update(forum);
+
+                        _dbContext.SaveChanges();
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.Error("DeleteArchivedTopics: Error deleting archived topics", e);
+                }
+            }
+        }
     }
 }
