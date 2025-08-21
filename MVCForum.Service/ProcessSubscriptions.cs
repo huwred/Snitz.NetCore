@@ -34,7 +34,7 @@ namespace SnitzCore.Service
                 return;
             }
 
-            var subs = _dbContext.MemberSubscription.Include(s => s.Member)
+            var subs = _dbContext.MemberSubscriptions.Include(s => s.Member)
                 .Include(s => s.Forum)
                 .Include(s => s.Category)
                 .Where(s => s.CategoryId == topic.CategoryId || s.ForumId == topic.ForumId)
@@ -98,7 +98,7 @@ namespace SnitzCore.Service
                 return;
             }
 
-            var subs = _dbContext.MemberSubscription.Include(s => s.Member)
+            var subs = _dbContext.MemberSubscriptions.Include(s => s.Member)
                 .Include(s => s.Post)
                 .Include(s => s.Forum)
                 .Include(s => s.Category)

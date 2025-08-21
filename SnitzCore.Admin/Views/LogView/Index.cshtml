@@ -113,13 +113,13 @@
 
 @section Scripts{
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/2.1.4/js/dataTables.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
     <script src="https://cdn.datatables.net/plug-ins/1.10.25/sorting/datetime-moment.js"></script>
 
     <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/dataTables.fixedColumns.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/fixedColumns.dataTables.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/2.1.4/dataRender/ellipsis.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/2.3.3/dataRender/ellipsis.js"></script>
     <script type="text/javascript">
         var table;
         Object.assign(DataTable.defaults, {
@@ -131,12 +131,6 @@
 
         $.fn.dataTable.moment('"HH:mm:ss"');
         table = new DataTable('#log-table',{
-            // "proccessing": true,
-            // "serverSide": true,
-            // "ajax": {
-            //     url: "@Url.Action("CustomServerSideSearchAction", "LogView")",
-            //     type: 'POST'
-            // },
             orderCellsTop: true,
             order: [[0, 'desc']],
             layout: {

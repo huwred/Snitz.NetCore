@@ -87,7 +87,7 @@ namespace SnitzCore.Data
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupName> GroupName { get; set; }
         public DbSet<MemberNamefilter> MemberNamefilter { get; set; }
-        public DbSet<MemberSubscription> MemberSubscription { get; set; }
+        public DbSet<MemberSubscription> MemberSubscriptions { get; set; }
         public DbSet<SnitzConfig> SnitzConfig { get; set; }
         public DbSet<LanguageResource> LanguageResources { get; set; }
         public DbSet<SpamFilter> SpamFilter { get; set; }

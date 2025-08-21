@@ -142,7 +142,7 @@ namespace SnitzCore.BackOffice.Controllers
                             {
                                 _context.Remove(exists);
                             }
-                            else if (exists.Name != namefilter.Name)
+                            else if (!string.IsNullOrWhiteSpace(namefilter.Name) && exists.Name != namefilter.Name)
                             {
                                 exists.Name = namefilter.Name;
                                 _context.Update(exists);
@@ -151,8 +151,8 @@ namespace SnitzCore.BackOffice.Controllers
                     }
 
                 _context.SaveChanges();
-
-                return Content("<script>location.reload();</script>");
+                return PartialView("SaveResult", "UpdateUsernameFilter");
+                //return Content("<script>location.reload();</script>");
             }
             catch (Exception e)
             {

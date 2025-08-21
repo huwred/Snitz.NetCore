@@ -234,6 +234,7 @@ namespace SnitzCore.Data.Models
         Board,
         Category,
         Forum,
-        Topic
+        Topic,
+        Archived
     }
 }

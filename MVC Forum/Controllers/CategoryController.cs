@@ -208,7 +208,7 @@ namespace MVCForum.Controllers
             {
                 return Content("Error");
             }
-            _snitzDbContext.MemberSubscription.Add(new MemberSubscription()
+            _snitzDbContext.MemberSubscriptions.Add(new MemberSubscription()
             {
                 MemberId = member.Id,
                 CategoryId = category.Id,
@@ -228,7 +228,7 @@ namespace MVCForum.Controllers
             {
                 return Content("Error");
             }
-            _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member.Id && s.CategoryId == id && s.ForumId == 0)
+            _snitzDbContext.MemberSubscriptions.Where(s => s.MemberId == member.Id && s.CategoryId == id && s.ForumId == 0)
                 .ExecuteDelete();
             return Content("OK");
         }

@@ -1055,7 +1055,7 @@ namespace MVCForum.Controllers
         {
             var topic = _postService.GetTopicAsync(id).Result;
             var member = _memberService.Current();
-            _snitzDbContext.MemberSubscription.Add(new MemberSubscription()
+            _snitzDbContext.MemberSubscriptions.Add(new MemberSubscription()
             {
                 MemberId = member!.Id,
                 CategoryId = topic!.CategoryId,
@@ -1072,7 +1072,7 @@ namespace MVCForum.Controllers
         public IActionResult UnSubscribe(int id)
         {
             var member = _memberService.Current();
-            _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member!.Id && s.PostId == id).ExecuteDelete();
+            _snitzDbContext.MemberSubscriptions.Where(s => s.MemberId == member!.Id && s.PostId == id).ExecuteDelete();
             return Content("OK");
         }
 

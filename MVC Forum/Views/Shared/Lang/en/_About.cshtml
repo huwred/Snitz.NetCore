@@ -26,19 +26,19 @@
                 <div class="about__left-side">
                     <div class="about__stats">
                         <span class="about__stats-item members">
-                            <i class="fa fa-users"></i>
+                            <i class="fa fa-users fs-5"></i>
                             <span>@stats.UserCount Members</span>
                         </span>
                         <span class="about__stats-item admins">
-                            <i class="fa fa-shield"></i>
+                            <i class="fa fa-shield fs-5"></i>
                             <span>@admins.Count Admins</span>
                         </span>
                         <span class="about__stats-item moderators">
-                            <i class="fa fa-shield"></i>
+                            <i class="fa fa-shield fs-5"></i>
                             <span>@moderators.Count Moderators</span>
                         </span>
                         <span class="about__stats-item site-creation-date">
-                            <i class="fa fa-calendar"></i>
+                            <i class="fa fa-calendar fs-5"></i>
                             <span>Created 18 months ago</span>
                         </span>
                     </div>
@@ -119,35 +119,35 @@
                     <h4>Site activity</h4>
                     <div class="about__activities">
                         <div class="about__activities-item topics">
-                            <span class="about__activities-item-icon"><i class="fa fa-comments"><use href="#scroll"></use></i></span>
+                            <span class="about__activities-item-icon"><i class="fa fa-comments fs-4"><use href="#scroll"></use></i></span>
                             <span class="about__activities-item-type">
                                 <span class="about__activities-item-count">@SnitzService.ActiveSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) topics</span>
                                 <span class="about__activities-item-period">in the last 7 days</span>
                             </span>
                         </div>
                         <div class="about__activities-item posts">
-                            <span class="about__activities-item-icon"><i class="fa fa-pencil"><use href="#pencil"></use></i></span>
+                            <span class="about__activities-item-icon"><i class="fa fa-pencil fs-4"><use href="#pencil"></use></i></span>
                             <span class="about__activities-item-type">
                                 <span class="about__activities-item-count">@SnitzService.ActiveSince(DateTime.UtcNow.ToForumDateStr(true) + "000001") posts</span>
                                 <span class="about__activities-item-period">today</span>
                             </span>
                         </div>
                         <div class="about__activities-item active-users">
-                            <span class="about__activities-item-icon"><i class="fa fa-user"><use href="#user-group"></use></i></span>
+                            <span class="about__activities-item-icon"><i class="fa fa-user fs-4"><use href="#user-group"></use></i></span>
                             <span class="about__activities-item-type">
                                 <span class="about__activities-item-count">@SnitzService.MembersSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) active users</span>
                                 <span class="about__activities-item-period">in the last 7 days</span>
                             </span>
                         </div>
                         <div class="about__activities-item sign-ups">
-                            <span class="about__activities-item-icon"><i class="fa fa-user-plus"><use href="#user-plus"></use></i></span>
+                            <span class="about__activities-item-icon"><i class="fa fa-user-plus fs-4"><use href="#user-plus"></use></i></span>
                             <span class="about__activities-item-type">
                                 <span class="about__activities-item-count">@SnitzService.SignupsSince(DateTime.UtcNow.AddDays(-7).ToForumDateStr()) sign-ups</span>
                                 <span class="about__activities-item-period">in the last 7 days</span>
                             </span>
                         </div>
                         <div class="about__activities-item likes">
-                            <span class="about__activities-item-icon"><i class="fa fa-heart"><use href="#heart"></use></i></span>
+                            <span class="about__activities-item-icon"><i class="fa fa-heart fs-4"><use href="#heart"></use></i></span>
                             <span class="about__activities-item-type">
                                 <span class="about__activities-item-count">@(stats.PostCount + stats.ArchivedPostCount) posts</span>
                                 <span class="about__activities-item-period">all time</span>

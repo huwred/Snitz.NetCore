@@ -6,8 +6,7 @@
 @inject IFileProvider fileProvider
 
 @{
-    DateTimeOffset lastModifiedDate = fileProvider.GetFileInfo(@"Views\Home\Privacy.cshtml").LastModified;
-
+    DateTimeOffset lastModifiedDate = fileProvider.GetFileInfo(@"Views\SHared\Lang\en\_PrivacyPolicy.cshtml").LastModified;
 }
 <p>
     If we decide to change our privacy policy, we will post those changes on this page. It was last Updated: <snitz-datetime datetime="@lastModifiedDate.DateTime" freindly-time="false"></snitz-datetime>
@@ -16,68 +15,75 @@
     Your privacy is important for us and we want to lead by example, using the latest user privacy choice standards in our own production environment. This privacy policy describes our practices for management of your data collected by our web application.
 </p>
 <div class="privacy-policy">
-    <ol>
-    <li>
-        <i class="fa fa-info"></i> Information We Collect
-    </li>
-</ol>
+    <ul class="list-unstyled">
+        <li>
+            <i class="fa fa-info fs-4"></i> Information We Collect
+        </li>
+    </ul>
+<p>
+We collect information from you when you register on our site and gather data when you participate in the forum by reading, writing, and evaluating the content shared here.
+<p />
+<p>
+When registering on our site, you may be asked to enter your name and e-mail address. You may, however, visit our site without registering. Your e-mail address will be verified by an email containing a unique link. If that link is visited, we know that you control the e-mail address.
+<p />
+<p>
+When registered and posting, we record the IP address that the post originated from. We also may retain server logs which include the IP address of every request to our server.
+<p />
 <p>
     We collect information from you when you register on our site and gather data when you participate in the forum by reading, writing, and evaluating the content shared here.
-    <p />
-    <p>
-    When registering on our site, you may be asked to enter your name and e-mail address. You may, however, visit our site without registering. Your e-mail address will be verified by an email containing a unique link. If that link is visited, we know that you control the e-mail address.
-    <p />
-<p>
-    When registered and posting, we record the IP address that the post originated from. We also may retain server logs which include the IP address of every request to our server.
-    <p />
-<p>
-    We collect information from you when you register on our site and gather data when you participate in the forum by reading, writing, and evaluating the content shared here.
-<p /><em>Do we use cookies?:</em>
-</p>
+<p />
+<span class="fw-bolder">Do we use cookies?:</span>
 <p>
     Yes. Cookies are small files that a site or its service provider transfers to your computer’s hard drive through your Web browser (if you allow). These cookies enable the site to recognize your browser and, if you have a registered account, associate it with your registered account.
-</p><p>
+</p>
+<p>
     We use cookies to understand and save your preferences for future visits and compile aggregate data about site traffic and site interaction so that we can offer better site experiences and tools in the future.
-</p><p>
+</p>
+<p>
     We do not sell, trade, or otherwise transfer your personal, identifiable data to any outside parties.
 </p>
-<ol start="2">
+<ul class="list-unstyled">
     <li>
-        <i class="fa fa-cogs"></i> How Your Information Is Used<br />
-        Any of the information we collect from you may be used in one of the following ways:
+        <i class="fa fa-cogs fs-4"></i> How Your Information Is Used
     </li>
-</ol>
+</ul>
+<p>Any of the information we collect from you may be used in one of the following ways:</p>
 <p>
     To personalize your experience — your information helps us to better respond to your individual needs.
-</p><p>
+</p>
+<p>
     To improve our site — we continually strive to improve our site offerings based on the information and feedback we receive from you.
-</p><p>
+</p>
+<p>
     To improve customer service — your information helps us to more effectively respond to your customer service requests and support needs.
-</p><p>
+</p>
+<p>
     To send periodic emails — The email address you provide may be used to send you information, notifications that you request about changes to topics or in response to your user name, respond to inquiries, and/or other requests or questions.
 </p>
-<ol start="3">
+<ul class="list-unstyled">
     <li>
-        <i class="fa fa-shield"></i> Public Nature of Posts<br />
-        Please note:
+        <i class="fa fa-shield fs-4"></i> Public Nature of Posts
     </li>
-</ol>
+</ul>
+<p>Please note:</p>
 <p>
     All information that is disclosed in these areas becomes public information and you should exercise caution when deciding to share any of your personal details. 
 </p>
 <p>
     We have implemented various security measures to maintain the safety of your personal information when you enter, submit, or access your personal information.
-</p><p>
+</p>
+<p>
     Your personal information is contained behind secured networks and is only accessible by a limited number of persons who have special access rights to such systems, and are required to keep the information confidential. In addition, all sensitive/credit information you supply is encrypted via Transport Layer Security (TLS) technology.
-</p><p>
+</p>
+<p>
     We implement a variety of security measures to maintain the safety of your personal information when you enter, submit, or access your personal information.
 </p>
-<ol start="4">
+<ul class="list-unstyled">
     <li>
-        <i class="fa fa-ban"></i> Prohibited Content<br />
-        Users may not post:
+        <i class="fa fa-ban fs-4"></i> Prohibited Content
     </li>
-</ol>
+</ul>
+<p>Users may not post:</p>
 <p>
     Vulgar, harassing, hateful, or threatening material<br />
     Sexually explicit content<br />
@@ -85,36 +91,41 @@
     Anything that violates laws or invades privacy<br />
     Any user who finds material posted by another user objectionable is encouraged to contact us via e-mail. 
 </p>
-<ol start="5">
+<ul class="list-unstyled">
     <li>
-        <i class="fa fa-user-secret"></i> Moderation Rights<br />
-        We reserve the right to:
+        <i class="fa fa-user-secret fs-4"></i> Moderation Rights
     </li>
-</ol>
+</ul>
+<p>We reserve the right to:</p>
 <p>
-    Remove or modify any content that violates our policies<br />
-    Take action without prior notice if content is deemed inappropriate
+Remove or modify any content that violates our policies<br />
+Take action without prior notice if content is deemed inappropriate
 </p>
-<ol start="6">
+<ul class="list-unstyled">
     <li>
-        <i class="fa fa-globe"></i> External Links<br />
-        Our forums may contain links to third-party websites. We are not responsible for the content or privacy practices of these external sites.<br />
+        <i class="fa fa-globe fs-4"></i> External Links
     </li>
-</ol>
-<ol start="7">
+</ul>
+<p>
+Our forums may contain links to third-party websites. We are not responsible for the content or privacy practices of these external sites.<br />
+</p>
+<ul class="list-unstyled">
     <li>
-        <i class="fa fa-user"></i> Your Consent<br />
-        By using our site, you consent to our web site privacy policy.<br />
-        By using our forums, you confirm that you are @SnitzConfig.GetIntValue("STRMINAGE", 14) years of age or older.<br />
+        <i class="fa fa-user fs-4"></i> Your Consent<br />
     </li>
-</ol>
-<ol start="8">
+</ul>
+<p>
+By using our site, you consent to our web site privacy policy.<br />
+By using our forums, you confirm that you are @SnitzConfig.GetIntValue("STRMINAGE", 14) years of age or older.<br />
+</p>
+<ul class="list-unstyled">
     <li>
-        <i class="fa fa-envelope-o"></i> Contact Us<br />
-        For questions or concerns about this privacy policy, please contact the forum administrator at: <a href="#" title="Send administrator an Email" data-toggle="tooltip" class="email-link" data-url="/Account/EmailMember" data-id="1" data-original-title="Send administrator an Email"><i class="fa fa-envelope-o fs-4"></i></a>
+        <i class="fa fa-envelope-o fs-4"></i> Contact Us
     </li>
-</ol>
+</ul>
+<p>
+    For questions or concerns about this privacy policy, please contact the forum administrator at: <a href="#" title="Send administrator an Email" data-toggle="tooltip" class="email-link" data-url="/Account/EmailMember" data-id="-1" data-original-title="Send administrator an Email"><i class="fa fa-envelope-o fs-4"></i></a>
+</p>
 
-
-<h4 class="m-5">Snitz Forums and the Snitz Forums logo are properties of Snitz™ Forums 2000.</h4>
+<span class="h4 m-5">Snitz Forums and the Snitz Forums logo are properties of Snitz™ Forums 2000.</span>
 </div>

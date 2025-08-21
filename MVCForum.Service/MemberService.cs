@@ -439,7 +439,7 @@ namespace SnitzCore.Service
             if (memberid.HasValue)
             {
                 //return CacheProvider.GetOrCreate($"Subs_{memberid.Value}", ()=> GetForumSubscriptions(memberid.Value),TimeSpan.FromMinutes(10));
-                return _dbContext.MemberSubscription.Where(s => s.MemberId == memberid).Select(s => s.ForumId).Distinct().OrderBy(o=>o);
+                return _dbContext.MemberSubscriptions.Where(s => s.MemberId == memberid).Select(s => s.ForumId).Distinct().OrderBy(o=>o);
 
             }
 
@@ -447,7 +447,7 @@ namespace SnitzCore.Service
         }
         private IEnumerable<int> GetForumSubscriptions(int memberid)
         {
-            return _dbContext.MemberSubscription.Where(s => s.MemberId == memberid).Select(s => s.ForumId).Distinct().OrderBy(o=>o);
+            return _dbContext.MemberSubscriptions.Where(s => s.MemberId == memberid).Select(s => s.ForumId).Distinct().OrderBy(o=>o);
         }
 
         public IEnumerable<Member?> GetRecent(int max)

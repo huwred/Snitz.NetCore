@@ -763,13 +763,20 @@ namespace MVCForum.Controllers
         {
             var forum = _forumService.GetWithPosts(id);
             var member = _memberService.Current();
-            _snitzDbContext.MemberSubscription.Add(new MemberSubscription()
+            var existing = _snitzDbContext.MemberSubscriptions.FirstOrDefault(s => s.MemberId == member.Id && s.ForumId == id && s.PostId == 0);
+            if (existing != null)
+            {
+                // Already subscribed, do nothing
+                return Content("Already Subscribed");
+            }
+            var sub = new MemberSubscription()
             {
                 MemberId = member!.Id,
                 CategoryId = forum.CategoryId,
                 ForumId = forum.Id,
                 PostId = 0
-            });
+            };
+            _snitzDbContext.MemberSubscriptions.Add(sub);
             _snitzDbContext.SaveChanges();
             return Content("OK");
         }
@@ -780,7 +787,7 @@ namespace MVCForum.Controllers
         public IActionResult UnSubscribe(int id)
         {
             var member = _memberService.Current();
-            _snitzDbContext.MemberSubscription.Where(s => s.MemberId == member!.Id && s.ForumId == id && s.PostId == 0)
+            _snitzDbContext.MemberSubscriptions.Where(s => s.MemberId == member!.Id && s.ForumId == id && s.PostId == 0)
                 .ExecuteDelete();
             return Content("OK");
         }

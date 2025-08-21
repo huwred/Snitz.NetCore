@@ -4,34 +4,13 @@
 
 @{
     Layout = "AdminLayout";
- 
 }
 @section Styles{
     <style>
         .input-group > input.cpick {
             flex: 0 1 50px;
         }
-    </style>
-    <style>
-
-        /* Main CSS */
-        .grid-wrapper > div {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-            .grid-wrapper > div > figure {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-            .grid-wrapper > div > img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
+        /* avatar CSS */
         .grid-wrapper {
             display: grid;
             grid-gap: 10px;
@@ -39,21 +18,34 @@
             grid-auto-rows: 120px;
             grid-auto-flow: dense;
         }
-
-            .grid-wrapper .wide {
-                grid-column: span 2;
-            }
-
-            .grid-wrapper .tall {
-                grid-row: span 2;
-            }
-
-            .grid-wrapper .big {
-                grid-column: span 2;
-                grid-row: span 2;
-            }
-
+        .grid-wrapper > div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .grid-wrapper > div > figure {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .grid-wrapper > div > img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .grid-wrapper .wide {
+            grid-column: span 2;
+        }
+        .grid-wrapper .tall {
+            grid-row: span 2;
+        }
+        .grid-wrapper .big {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
     </style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/3.0.1/css/select.dataTables.css" />
 }
 
 <div class="m-3">
@@ -308,6 +300,10 @@
 @section Scripts {
 
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
+        
+    <script type="text/javascript" src="https://cdn.datatables.net/select/3.0.1/js/dataTables.select.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/select/3.0.1/js/select.dataTables.js"></script>
     <script type="text/javascript">
 
         $(document).on('click','.roleLink',function(e) {
@@ -315,9 +311,11 @@
             $('#member-roles').load($(this).attr('href'), function () {});
         });
         $(document).on("click",".ButtonType", function (e) {
+            console.log("ButtonType click");
             e.preventDefault();
             $("#UserNamefilters_" + $(this).data("filter") + "__IsDeleted").val("True");
             $(".filter_" + $(this).data("filter")).hide();
+            debugger;
             $('#userfilterForm').submit();
         });
         $(document).on('shown.bs.tab',
@@ -335,7 +333,11 @@
                         $('#member-pending').load(SnitzVars.baseUrl + '/Admin/PendingMembers/', function () { });
                         break;
                     case "v-pills-subscriptions-tab":
-                        $('#member-subscriptions').load(SnitzVars.baseUrl + '/Admin/ManageSubscriptions/', function () { });
+                        $('#member-subscriptions').load(SnitzVars.baseUrl + '/Admin/ManageSubscriptions/', function () {
+                            $('#subs-table').DataTable();
+
+                        });
+
                         break;
                     case "v-pills-avatars-tab":
                         $('#member-avatars').load(SnitzVars.baseUrl + '/Admin/ManageAvatars/', function () { });
@@ -353,7 +355,7 @@
             (async() => {
                 const result = await b_confirm('Are you sure you want to delete all the subscriptions');
                 if (result) {
-                    $('form').submit();
+                    $("#filter-subs-btn").closest("form").submit();
                 }
             })();
         });
@@ -361,11 +363,12 @@
             (async() => {
                 const result = await b_confirm('Are you sure you want to delete the selected subscriptions');
                 if (result) {
-                    $('form').submit();
+                    $('#manage-subs').closest("form").submit();
                 }
             })();
         });
-        $(document).on('click','.selectsub',function () {
+        $(document).on('click','.dt-select-checkbox',function () {
+
             var $selectedsubs = $('input[name=SubscriptionId]:checked');
             if($selectedsubs.length === 0){
                 $('.delete-subs').removeClass('disabled');
@@ -379,11 +382,13 @@
             var newcol = $(this).val();
             $(this).siblings().find(".fa-star").css({"color": newcol});
         })
+
         $(document).on('click','.confirm-delete', function(e) {
             e.preventDefault();
             var postid = $(this).data('id');
             var href = $(this).attr('href').replace("~", SnitzVars.baseUrl);
             var title = $(this).attr('title');
+
             (async() => {
                 const result = await b_confirm(title);
                 if (result) {
@@ -392,7 +397,6 @@
                             id: postid
                         },
                         function (data, status) {
-                            //console.log(data);
                             if (!data.result) {
                                 appendAlert(data, 'error');
                             } else {

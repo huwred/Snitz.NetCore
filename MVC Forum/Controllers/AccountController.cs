@@ -818,12 +818,12 @@ namespace MVCForum.Controllers
         {
             if(id == -1)
             {
-                var adminmember = _memberService.GetByUsername(_config.GetValue("STRADMINUSER"));
-                if (adminmember?.Email != null)
+                var adminmember = _config.GetValueWithDefault("STRCONTACTEMAIL",null);
+                if (adminmember != null)
                 {
                     var vm = new EmailMemberViewModel
                     {
-                        To = adminmember.Email
+                        To = adminmember
                     };
                     return PartialView(vm);
                 }

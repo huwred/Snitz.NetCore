@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Asn1.X509;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -102,70 +103,67 @@ namespace SnitzCore.BackOffice.Controllers
         public IActionResult ManageSubscriptions(int id)
         {
             var subs = new List<SubscriptionItemViewModel>();
+            var subsriptions = _dbcontext.MemberSubscriptions.ToList();
+            try
+            {
+                foreach (var subscription in subsriptions)
+                {
+                    _dbcontext.Entry(subscription).Reference(p => p.Member).Load();
+                    if (subscription.CategoryId != 0)
+                    {
+                        _dbcontext.Entry(subscription).Reference(p => p.Category).Load();
+                    }
+                    if (subscription.ForumId != 0)
+                    {
+                        _dbcontext.Entry(subscription).Reference(p => p.Forum).Load();
+                    }                    
+                    
+                    if(subscription.PostId != 0)
+                    {
+                        if (_dbcontext.Posts.Find(subscription.PostId) != null)
+                        {
+                            _dbcontext.Entry(subscription).Reference(p => p.Post).Load();
+                        }
+                        if (_dbcontext.ArchivedPosts.Find(subscription.PostId) != null)
+                        {
+                            //it was archived
+
+                        }
+                    }
+                    subs.Add(new SubscriptionItemViewModel
+                    {
+                        SubscriptionId = subscription.Id,
+                        MemberName = subscription.Member!.Name,
+                        CategoryName = subscription.Category != null ? subscription.Category.Name : "",
+                        ForumName = subscription.Forum != null ? subscription.Forum.Title : "",
+                        Topic = subscription.Post != null ? subscription.Post.Title : subscription.PostId != 0 ? subscription.PostId.ToString() + " (archived)" : "",
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                var test = ex.Message;
+            }
+
+
             switch (id)
             {
                 case 0 :
-                    subs = _dbcontext.MemberSubscription
-                        .AsNoTracking()
-                        .Select(subscription => new SubscriptionItemViewModel
-                        {
-                            SubscriptionId = subscription.Id,
-                            MemberName = subscription.Member!.Name,
-                            CategoryName = subscription.Category!.Name ?? "",
-                            ForumName = subscription.Forum!.Title ?? "",
-                            Topic = subscription.Post!.Title ?? ""
-                        })
-                        .ToList();
                     break;
                 case 1 :  //board
-                    subs = _dbcontext.MemberSubscription
-                            .Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId == 0)
-                            .AsNoTracking()
-                            .Select(subscription => new SubscriptionItemViewModel
-                            {
-                                SubscriptionId = subscription.Id,
-                                MemberName = subscription.Member!.Name,
-                            })
-                        .ToList();
+                    subs = subs.Where(ms=>ms.Topic == "" && ms.ForumName == "" && ms.CategoryName == "").ToList();
                     break;
                 case 2: //category
-                    subs = _dbcontext.MemberSubscription
-                        .Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId != 0)
-                        .AsNoTracking()
-                        .Select(subscription => new SubscriptionItemViewModel
-                        {
-                            SubscriptionId = subscription.Id,
-                            MemberName = subscription.Member!.Name,
-                            CategoryName = subscription.Category!.Name
-                        })
-                        .ToList();
+                    subs = subs.Where(ms=>ms.Topic == "" && ms.ForumName == "" && ms.CategoryName != "").ToList();
                     break;
                 case 3: //forum
-                    subs = _dbcontext.MemberSubscription
-                        .Where(ms=>ms.PostId == 0 && ms.ForumId != 0)
-                        .AsNoTracking()
-                        .Select(subscription => new SubscriptionItemViewModel
-                        {
-                            SubscriptionId = subscription.Id,
-                            MemberName = subscription.Member!.Name,
-                            CategoryName = subscription.Category!.Name,
-                            ForumName = subscription.Forum!.Title
-                        })
-                        .ToList();
+                    subs = subs.Where(ms=>ms.Topic == "" && ms.ForumName != "").ToList();
                     break;
                 case 4: //topic
-                    subs = _dbcontext.MemberSubscription
-                        .Where(ms=>ms.PostId != 0)
-                        .AsNoTracking()
-                        .Select(subscription => new SubscriptionItemViewModel
-                        {
-                            SubscriptionId = subscription.Id,
-                            MemberName = subscription.Member!.Name,
-                            CategoryName = subscription.Category!.Name,
-                            ForumName = subscription.Forum!.Title,
-                            Topic = subscription.Post!.Title
-                        })
-                        .ToList();
+                    subs = subs.Where(ms=>ms.Topic != "").ToList();
+                    break;
+                case 5: //archived
+                    subs = subs.Where(ms=>ms.Topic != null && ms.Topic.Contains("(archived)")).ToList();
                     break;
             }
 
@@ -189,10 +187,10 @@ namespace SnitzCore.BackOffice.Controllers
                 {
                     foreach (var subscription in subscriptions)
                     {
-                        var sub = _dbcontext.MemberSubscription.Find(Convert.ToInt32(subscription));
+                        var sub = _dbcontext.MemberSubscriptions.Find(Convert.ToInt32(subscription));
                         if (sub != null)
                         {
-                            _dbcontext.MemberSubscription.Remove(sub);
+                            _dbcontext.MemberSubscriptions.Remove(sub);
                         }
                     }
                     _dbcontext.SaveChanges();
@@ -205,16 +203,19 @@ namespace SnitzCore.BackOffice.Controllers
                 switch (form["Filter"])
                 {
                     case "1" :  //board
-                         _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId == 0).ExecuteDeleteAsync();
+                         _dbcontext.MemberSubscriptions.Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId == 0).ExecuteDeleteAsync();
                         break;
                     case "2": //category
-                         _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId != 0).ExecuteDeleteAsync();
+                         _dbcontext.MemberSubscriptions.Where(ms=>ms.PostId == 0 && ms.ForumId == 0 && ms.CategoryId != 0).ExecuteDeleteAsync();
                         break;
                     case "3": //forum
-                         _dbcontext.MemberSubscription.Where(ms=>ms.PostId == 0 && ms.ForumId != 0).ExecuteDeleteAsync();
+                         _dbcontext.MemberSubscriptions.Where(ms=>ms.PostId == 0 && ms.ForumId != 0).ExecuteDeleteAsync();
                         break;
                     case "4": //topic
-                         _dbcontext.MemberSubscription.Where(ms=>ms.PostId != 0).ExecuteDeleteAsync();
+                         _dbcontext.MemberSubscriptions.Where(ms=>ms.PostId != 0).ExecuteDeleteAsync();
+                        break;
+                    case "5": //archived
+                        //subs = subs.Where(ms=>ms.Topic != null && ms.Topic.Contains("(archived)")).ToList();
                         break;
                 }
                 return RedirectToAction("ManageSubscriptions",new{id=filter});

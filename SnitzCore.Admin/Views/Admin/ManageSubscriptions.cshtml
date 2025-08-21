@@ -13,7 +13,7 @@
 @{  
     var subscriptions = Html.GetEnumSelectList<SubscriptionLevel>().Where(s => Convert.ToInt32(s.Value) >= SnitzConfig.GetIntValue("STRSUBSCRIPTION"));  
 }  
-<form asp-action="ManageSubscriptions" method="post" data-ajax="true" data-ajax-update="#member-subscriptions">  
+<form asp-action="ManageSubscriptions" method="post" data-ajax="true" data-ajax-update="#member-subscriptions" id="manage-subs">  
     <div class="input-group mb-3">  
         <span class="input-group-text">Show Subscriptions for</span>  
         <select asp-for="Filter" id="filter-subs" asp-items="subscriptions" class="form-select">  
@@ -23,30 +23,83 @@
     </div>  
     @if (Model.Subscriptions != null && Model.Subscriptions.Any())  
     {  
-        <ul style="display: flex;flex-wrap: wrap;" class="list-unstyled bg-primary text-bg-dark rounded pb-3 pt-2">
-            <li style="flex: 0 1 5%;display: flex;">
-                <button class="btn btn-link delete-subs disabled" title="Delete Selected subscriptions" type="button" data-toggle="tooltip">
-                    <i class="fa fa-trash-o center px-2 pt-1  fs-4 text-light" title="Delete Selected subscriptions" data-toggle="tooltip"></i>
-                </button>
-            </li>
-            <li style="flex: 0 1 10%;display: flex;">Member</li>  
-            <li style="flex: 1 0 18%;display: flex;">Category</li>  
-            <li style="flex: 1 0 18%;display: flex;">Forum</li>  
-            <li style="flex: 1 0 25%;display: flex;">Topic</li>  
-        </ul>  
-        @foreach (dynamic sub in Model.Subscriptions!)  
-        {  
-            <ul style="display: flex;flex-wrap: wrap;" class="list-unstyled">
-                <li style="flex: 0 1 5%;"><input class="selectsub" name="SubscriptionId" type="checkbox" value="@sub.SubscriptionId" /></li>
-                <li style="flex: 0 1 10%;display: flex;">@sub.MemberName</li>  
-                <li style="flex: 1 0 18%;display: flex;">@sub.CategoryName</li>  
-                <li style="flex: 1 0 18%;display: flex;">@sub.ForumName</li>  
-                <li style="flex: 1 0 25%;display: flex;">@sub.Topic</li>  
-            </ul>  
-        }  
+        <table class="table" id="subs-table">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Id</th>
+                    <th scope="col">Member</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Forum</th>
+                    <th scope="col">Topic</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (dynamic sub in Model.Subscriptions!)
+                {
+                    <tr>
+                        <td></td>
+                        <td>@sub.SubscriptionId</td>
+                        <td>@sub.MemberName</td>
+                        <td>@sub.CategoryName</td>
+                        <td>@sub.ForumName</td>
+                        <td>@sub.Topic</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
     }  
     else  
     {  
-        <h5 class="center">No Subscriptions</h5>  
+        <label class="h5 center">No Subscriptions</label>  
     }  
+
 </form>
+<script>
+    ///
+    var subsTable = new DataTable('#subs-table',{
+        columnDefs: [
+            {
+                orderable: false,
+                render: DataTable.render.select('1', () => 'SubscriptionId'),
+                title: '<button class="btn btn-link delete-subs disabled" title="Delete Selected subscriptions" type="button" data-toggle="tooltip"><i class="fa fa-trash-o fs-5"></i></button>',
+                targets: 0,
+                width:20
+            },
+            {//hide the id column
+                target: 1,
+                visible: false
+            },
+        ],
+        select: {
+            style: 'os',
+            selector: 'td:first-child',
+        },
+        order: [[2, 'asc']]
+    });
+    subsTable.on("click", "th.dt-select-checkbox", function() {
+        if ($("th.dt-select-checkbox").hasClass("selected")) {
+            subsTable.rows().deselect();
+            $("th.dt-select-checkbox").removeClass("selected");
+            $('.delete-subs').removeClass('disabled');
+            $('.delete-subs').addClass('disabled');
+        } else {
+            subsTable.rows().select();
+            $('.delete-subs').removeClass('disabled');
+            $("th.dt-select-checkbox").addClass("selected");
+        }
+    }).on("select deselect", function() {
+        ("Some selection or deselection going on")
+        if (subsTable.rows({
+                selected: true
+            }).count() !== subsTable.rows().count()) {
+            $("th.dt-select-checkbox").removeClass("selected");
+            $('.delete-subs').removeClass('disabled');
+            $('.delete-subs').addClass('disabled');
+        } else {
+            $("th.dt-select-checkbox").addClass("selected");
+            $('.delete-subs').removeClass('disabled');
+        }
+    });
+</script>
