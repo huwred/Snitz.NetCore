@@ -27,6 +27,20 @@ namespace WebApplication1.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             SetParameters();
+                migrationBuilder.CreateTable(
+                    name: $"{_forumTablePrefix}RATINGS",
+                    columns: table => new
+                    {
+                        RATING = table.Column<int>(type: "INTEGER", nullable: false)
+                            .Annotation("Sqlite:Autoincrement", true),
+                        RATINGS_BYMEMBER_ID = table.Column<int>(type: "INTEGER", nullable: false),
+                        RATINGS_TOPIC_ID = table.Column<int>(type: "INTEGER", nullable: false)
+                    },
+                    constraints: table =>
+                    {
+                        table.PrimaryKey("PK_TOPIC_RATINGS", x => x.RATING);
+                    });
+
             migrationBuilder.AddColumn<int>(
                 name: "T_ALLOW_RATING",
                 table: $"{_forumTablePrefix}TOPICS",

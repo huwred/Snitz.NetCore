@@ -259,7 +259,7 @@ namespace Migrations
                         M_KEY = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
                         M_NEWEMAIL = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                         M_PWKEY = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
-                        M_SHA256 = table.Column<short>(type: "smallint", nullable: false),
+                        M_SHA256 = table.Column<short>(type: "smallint", nullable: true, defaultValue: 1),
                         M_LASTACTIVITY = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                         M_AIM = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
                         M_ICQ = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
@@ -433,21 +433,21 @@ namespace Migrations
                         F_LAST_POST_AUTHOR = table.Column<int>(type: "int", nullable: true),
                         F_LAST_POST_TOPIC_ID = table.Column<int>(type: "int", nullable: true),
                         F_LAST_POST_REPLY_ID = table.Column<int>(type: "int", nullable: true),
-                        F_A_TOPICS = table.Column<int>(type: "int", nullable: false),
-                        F_A_COUNT = table.Column<int>(type: "int", nullable: false),
-                        F_MODERATION = table.Column<int>(type: "int", nullable: false),
-                        F_SUBSCRIPTION = table.Column<int>(type: "int", nullable: false),
-                        F_ORDER = table.Column<int>(type: "int", nullable: false),
+                        F_A_TOPICS = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                        F_A_COUNT = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                        F_MODERATION = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                        F_SUBSCRIPTION = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                        F_ORDER = table.Column<int>(type: "int", nullable: false, defaultValue: 99),
                         F_DEFAULTDAYS = table.Column<int>(type: "int", nullable: false),
-                        F_COUNT_M_POSTS = table.Column<short>(type: "smallint", nullable: false),
+                        F_COUNT_M_POSTS = table.Column<short>(type: "smallint", nullable: false, defaultValue: 1),
                         F_L_ARCHIVE = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                        F_ARCHIVE_SCHED = table.Column<int>(type: "int", nullable: false),
+                        F_ARCHIVE_SCHED = table.Column<int>(type: "int", nullable: false, defaultValue: 60),
                         F_L_DELETE = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                        F_DELETE_SCHED = table.Column<int>(type: "int", nullable: false),
-                        F_POLLS = table.Column<int>(type: "int", nullable: false),
-                        F_RATING = table.Column<short>(type: "smallint", nullable: false),
-                        F_POSTAUTH = table.Column<int>(type: "int", nullable: false),
-                        F_REPLYAUTH = table.Column<int>(type: "int", nullable: false)
+                        F_DELETE_SCHED = table.Column<int>(type: "int", nullable: false, defaultValue: 365),
+                        F_POLLS = table.Column<int>(type: "int", nullable: true),
+                        F_RATING = table.Column<short>(type: "smallint", nullable: false, defaultValue: 0),
+                        F_POSTAUTH = table.Column<int>(type: "int", nullable: true),
+                        F_REPLYAUTH = table.Column<int>(type: "int", nullable: true)
                     },
                     constraints: table =>
                     {
@@ -689,25 +689,41 @@ namespace Migrations
                     table: "FORUM_TOPICS",
                     column: "T_LAST_POST_AUTHOR");
             }
-
-            if (!migrationBuilder.IndexExists("SELECT COUNT(*) FROM sys.indexes WHERE object_id = OBJECT_ID('AspNetUsers') AND name='IX_AspNetUsers_MemberId'"))
+            if (migrationBuilder.IsSqlite())
             {
-                migrationBuilder.CreateIndex(
-                    name: "IX_AspNetUsers_MemberId",
-                    table: "AspNetUsers",
-                    column: "MemberId");
+
+                if (!migrationBuilder.IndexExists("SELECT * FROM sqlite_master WHERE type= 'index' and tbl_name = 'AspNetUsers' and name = 'IX_AspNetUsers_MemberId'"))
+                {
+                    migrationBuilder.CreateIndex(
+                        name: "IX_AspNetUsers_MemberId",
+                        table: "AspNetUsers",
+                        column: "MemberId");
+                }
+
+            }
+            else
+            {
+                if (!migrationBuilder.IndexExists("SELECT COUNT(*) FROM sys.indexes WHERE object_id = OBJECT_ID('AspNetUsers') AND name='IX_AspNetUsers_MemberId'"))
+                {
+                    migrationBuilder.CreateIndex(
+                        name: "IX_AspNetUsers_MemberId",
+                        table: "AspNetUsers",
+                        column: "MemberId");
+                }
+                if (!migrationBuilder.IndexExists("SELECT COUNT(*) FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'FK_AspNetUsers_FORUM_MEMBERS_MemberId') AND parent_object_id = OBJECT_ID(N'AspNetUsers')"))
+                {
+                    migrationBuilder.AddForeignKey(
+                        name: "FK_AspNetUsers_FORUM_MEMBERS_MemberId",
+                        table: "AspNetUsers",
+                        column: "MemberId",
+                        principalTable: "FORUM_MEMBERS",
+                        principalColumn: "MEMBER_ID",
+                        onDelete: ReferentialAction.Cascade);
+                }
             }
 
-            if (!migrationBuilder.IndexExists("SELECT COUNT(*) FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'FK_AspNetUsers_FORUM_MEMBERS_MemberId') AND parent_object_id = OBJECT_ID(N'AspNetUsers')"))
-            {
-                migrationBuilder.AddForeignKey(
-                    name: "FK_AspNetUsers_FORUM_MEMBERS_MemberId",
-                    table: "AspNetUsers",
-                    column: "MemberId",
-                    principalTable: "FORUM_MEMBERS",
-                    principalColumn: "MEMBER_ID",
-                    onDelete: ReferentialAction.Cascade);
-            }
+
+
 
         }
 

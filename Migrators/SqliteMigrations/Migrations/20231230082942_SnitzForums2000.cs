@@ -170,9 +170,9 @@ namespace WebApplication1.Migrations
                     M_NAME = table.Column<string>(type: "TEXT", maxLength: 75, nullable: false),
                     M_EMAIL = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     M_TITLE = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
-                    M_LEVEL = table.Column<short>(type: "INTEGER", nullable: false),
-                    M_STATUS = table.Column<short>(type: "INTEGER", nullable: false),
-                    M_POSTS = table.Column<int>(type: "INTEGER", nullable: false),
+                    M_LEVEL = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: 1),
+                    M_STATUS = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: 1),
+                    M_POSTS = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
                     M_LastLogin = table.Column<string>(type: "TEXT", maxLength: 14, nullable: true),
                     M_LASTPOSTDATE = table.Column<string>(type: "TEXT", maxLength: 14, nullable: true),
                     M_DATE = table.Column<string>(type: "TEXT", maxLength: 14, nullable: false),
@@ -188,20 +188,20 @@ namespace WebApplication1.Migrations
                     M_OCCUPATION = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
                     M_HOMEPAGE = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
                     M_MARSTATUS = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
-                    M_DEFAULT_VIEW = table.Column<int>(type: "INTEGER", nullable: false),
+                    M_DEFAULT_VIEW = table.Column<int>(type: "INTEGER", nullable: false,defaultValue:0),
                     M_SIG = table.Column<string>(type: "TEXT", nullable: true),
-                    M_VIEW_SIG = table.Column<short>(type: "INTEGER", nullable: false),
-                    M_SIG_DEFAULT = table.Column<short>(type: "INTEGER", nullable: false),
-                    M_HIDE_EMAIL = table.Column<short>(type: "INTEGER", nullable: false),
-                    M_RECEIVE_EMAIL = table.Column<short>(type: "INTEGER", nullable: false),
+                    M_VIEW_SIG = table.Column<short>(type: "INTEGER", nullable: false,defaultValue:0),
+                    M_SIG_DEFAULT = table.Column<short>(type: "INTEGER", nullable: false,defaultValue:0),
+                    M_HIDE_EMAIL = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: 0),
+                    M_RECEIVE_EMAIL = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: 1),
                     M_LAST_IP = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
                     M_IP = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
-                    M_ALLOWEMAIL = table.Column<short>(type: "INTEGER", nullable: false),
-                    M_SUBSCRIPTION = table.Column<short>(type: "INTEGER", nullable: false),
+                    M_ALLOWEMAIL = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: 1),
+                    M_SUBSCRIPTION = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: 1),
                     M_KEY = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
                     M_NEWEMAIL = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
                     M_PWKEY = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
-                    M_SHA256 = table.Column<short>(type: "INTEGER", nullable: false),
+                    M_SHA256 = table.Column<short>(type: "INTEGER", nullable: true, defaultValue: 1),
                     M_AIM = table.Column<string>(type: "TEXT", maxLength: 150, nullable: true),
                     M_ICQ = table.Column<string>(type: "TEXT", maxLength: 150, nullable: true),
                     M_MSN = table.Column<string>(type: "TEXT", maxLength: 150, nullable: true),
@@ -301,17 +301,18 @@ namespace WebApplication1.Migrations
                     F_LAST_POST_AUTHOR = table.Column<int>(type: "INTEGER", nullable: true),
                     F_LAST_POST_TOPIC_ID = table.Column<int>(type: "INTEGER", nullable: true),
                     F_LAST_POST_REPLY_ID = table.Column<int>(type: "INTEGER", nullable: true),
-                    F_A_TOPICS = table.Column<int>(type: "INTEGER", nullable: false),
-                    F_A_COUNT = table.Column<int>(type: "INTEGER", nullable: false),
+                    F_A_TOPICS = table.Column<int>(type: "INTEGER", nullable: false,defaultValue:0),
+                    F_A_COUNT = table.Column<int>(type: "INTEGER", nullable: false,defaultValue:0),
                     F_MODERATION = table.Column<int>(type: "INTEGER", nullable: false),
                     F_SUBSCRIPTION = table.Column<int>(type: "INTEGER", nullable: false),
                     F_ORDER = table.Column<int>(type: "INTEGER", nullable: false),
                     F_DEFAULTDAYS = table.Column<int>(type: "INTEGER", nullable: false),
                     F_COUNT_M_POSTS = table.Column<short>(type: "INTEGER", nullable: false),
                     F_L_ARCHIVE = table.Column<string>(type: "TEXT", nullable: true),
-                    F_ARCHIVE_SCHED = table.Column<int>(type: "INTEGER", nullable: false),
+                    F_ARCHIVE_SCHED = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 60),
                     F_L_DELETE = table.Column<string>(type: "TEXT", nullable: true),
-                    F_DELETE_SCHED = table.Column<int>(type: "INTEGER", nullable: false)
+                    F_DELETE_SCHED = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 365),
+
                 },
                 constraints: table =>
                 {
@@ -433,30 +434,6 @@ namespace WebApplication1.Migrations
                         onDelete: ReferentialAction.NoAction);
                 });
 
-            migrationBuilder.InsertData(
-                table: $"{_forumTablePrefix}CATEGORY",
-                columns: new[] { "CAT_ID", "CAT_MODERATION", "CAT_NAME", "CAT_ORDER", "CAT_STATUS", "CAT_SUBSCRIPTION" },
-                values: new object[] { 1, 0, "General", 0, (short)1, null });
-
-            migrationBuilder.InsertData(
-                table: $"{_memberTablePrefix}MEMBERS",
-                columns: new[] { "MEMBER_ID", "M_AGE", "M_AIM", "M_ALLOWEMAIL", "M_BIO", "M_CITY", "M_COUNTRY", "M_DATE", "M_DEFAULT_VIEW", "M_DOB", "M_EMAIL", "M_FIRSTNAME", "M_HIDE_EMAIL", "M_HOBBIES", "M_HOMEPAGE", "M_ICQ", "M_IP", "M_KEY", "M_LAST_IP", "M_LastLogin", "M_LASTNAME", "M_LASTPOSTDATE", "M_LEVEL", "M_LINK1", "M_LINK2", "M_LNEWS", "M_MARSTATUS", "M_MSN", "M_NAME", "M_NEWEMAIL", "M_OCCUPATION", "M_PHOTO_URL", "M_POSTS", "M_PWKEY", "M_QUOTE", "M_RECEIVE_EMAIL", "M_SEX", "M_SHA256", "M_SIG_DEFAULT", "M_SIG", "M_STATE", "M_STATUS", "M_SUBSCRIPTION", "M_TITLE", "M_VIEW_SIG", "M_YAHOO" },
-                values: new object[] { 1, null, null, (short)0, null, null, null, "20231230082941", 0, null, "xxxx@example.com", null, (short)0, null, null, null, null, null, null, null, null, null, (short)3, null, null, null, null, null, "Administrator", null, null, null, 0, null, null, (short)0, null, (short)0, (short)0, null, null, (short)1, (short)0, null, (short)0, null });
-
-            migrationBuilder.InsertData(
-                table: $"{_forumTablePrefix}NAMEFILTER",
-                columns: new[] { "N_ID", "N_NAME" },
-                values: new object[] { 1, "Administrator" });
-
-            migrationBuilder.InsertData(
-                table: $"{_forumTablePrefix}TOTALS",
-                columns: new[] { "COUNT_ID", "P_A_COUNT", "T_A_COUNT", "P_COUNT", "T_COUNT", "U_COUNT" },
-                values: new object[] { (short)1, 0, 0, 1, 1, 0 });
-
-            migrationBuilder.InsertData(
-                table: $"{_forumTablePrefix}FORUM",
-                columns: new[] { $"{_forumTablePrefix}ID", "F_ARCHIVE_SCHED", "F_A_COUNT", "F_A_TOPICS", "CAT_ID", "F_COUNT_M_POSTS", "F_DEFAULTDAYS", "F_DELETE_SCHED", "F_DESCRIPTION", "F_IP", "F_L_ARCHIVE", "F_L_DELETE", "F_LAST_POST", "F_LAST_POST_AUTHOR", "F_LAST_POST_REPLY_ID", "F_LAST_POST_TOPIC_ID", "F_MAIL", "F_MODERATION", "F_ORDER", "F_PASSWORD_NEW", "F_PRIVATEFORUMS", "F_COUNT", "F_STATUS", "F_SUBSCRIPTION", "F_SUBJECT", "F_TOPICS", "F_TYPE", "F_URL" },
-                values: new object[] { 1, 0, 0, 0, 1, (short)1, 30, 0, "This forum gives you a chance to become more familiar with how this product responds to different features and keeps testing in one place instead of posting tests all over. Happy Posting! [:)]", null, null, null, null, null, null, null, (short)0, 0, 0, null, 0, 0, (short)1, 0, "Testing Forums", 0, (short)0, null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_FORUM_ALLOWED_MEMBERS_FORUM_ID",

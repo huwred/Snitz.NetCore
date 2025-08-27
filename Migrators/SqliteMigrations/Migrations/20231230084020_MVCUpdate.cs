@@ -1,6 +1,7 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
+using SnitzCore.Data.Extensions;
+using System;
 using System.Reflection;
 
 #nullable disable
@@ -55,6 +56,66 @@ namespace WebApplication1.Migrations
                 type: "INTEGER",
                 nullable: false,
                 defaultValue: (short)0);
+            if (!migrationBuilder.ColumnExists($"{_memberTablePrefix}MEMBERS", "M_LASTHEREDATE"))
+            {
+                migrationBuilder.AddColumn<bool>(
+                    name: "M_LASTHEREDATE",
+                    table: $"{_memberTablePrefix}MEMBERS",
+                    type: "TEXT",
+                    maxLength: 14,
+                    nullable: true);
+            }
+
+            migrationBuilder.CreateTable(
+                name: $"{_forumTablePrefix}POLLS",
+                columns: table => new
+                {
+                    POLL_ID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CAT_ID = table.Column<string>(type: "INTEGER", nullable: false),
+                    FORUM_ID = table.Column<int>(type: "INTEGER", nullable: false),
+                    TOPIC_ID = table.Column<int>(type: "INTEGER", nullable: false),
+                    P_WHOVOTES = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
+                    P_LASTVOTE = table.Column<string>(type: "TEXT", maxLength: 14, nullable: true),
+                    P_QUESTION = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FORUM_POLLS", x => x.POLL_ID);
+                });
+            migrationBuilder.CreateTable(
+                name: $"{_forumTablePrefix}POLL_ANSWERS",
+                columns: table => new
+                {
+                    POLLANSWER_ID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    POLL_ID = table.Column<string>(type: "INTEGER", nullable: false),
+                    POLLANSWER_ORDER = table.Column<int>(type: "INTEGER", nullable: false),
+                    POLLANSWER_COUNT = table.Column<int>(type: "INTEGER", nullable: false),
+                    POLLANSWER_LABEL = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FORUM_POLL_ANSWERS", x => x.POLLANSWER_ID);
+                });
+            migrationBuilder.CreateTable(
+                name: $"{_forumTablePrefix}POLL_VOTES",
+                columns: table => new
+                {
+                    POLLVOTES_ID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    POLL_ID = table.Column<string>(type: "INTEGER", nullable: false),
+                    CAT_ID = table.Column<string>(type: "INTEGER", nullable: true),
+                    FORUM_ID = table.Column<int>(type: "INTEGER", nullable: true),
+                    TOPIC_ID = table.Column<int>(type: "INTEGER", nullable: true),
+                    MEMBER_ID = table.Column<int>(type: "INTEGER", nullable: true),
+                    GUEST_VOTE = table.Column<int>(type: "INTEGER", nullable: true),
+
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FORUM_POLL_VOTES", x => x.POLLVOTES_ID);
+                });
 
             migrationBuilder.CreateTable(
                 name: $"{_forumTablePrefix}PM",
@@ -138,20 +199,6 @@ namespace WebApplication1.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LANGUAGE_RES", x => x.pk);
-                });
-
-            migrationBuilder.CreateTable(
-                name: $"{_forumTablePrefix}RATINGS",
-                columns: table => new
-                {
-                    RATING = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    RATINGS_BYMEMBER_ID = table.Column<int>(type: "INTEGER", nullable: false),
-                    RATINGS_TOPIC_ID = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TOPIC_RATINGS", x => x.RATING);
                 });
 
             migrationBuilder.CreateTable(

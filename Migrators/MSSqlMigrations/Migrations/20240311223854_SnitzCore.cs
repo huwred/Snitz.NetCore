@@ -77,7 +77,56 @@ namespace Migrations
                     table: "FORUM_BOOKMARKS",
                     column: "B_TOPICID");
             }
+            migrationBuilder.CreateTable(
+                name: $"FORUM_POLLS",
+                columns: table => new
+                {
+                    POLL_ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CAT_ID = table.Column<string>(type: "int", nullable: false),
+                    FORUM_ID = table.Column<int>(type: "int", nullable: false),
+                    TOPIC_ID = table.Column<int>(type: "int", nullable: false),
+                    P_WHOVOTES = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    P_LASTVOTE = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
+                    P_QUESTION = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FORUM_POLLS", x => x.POLL_ID);
+                });
+            migrationBuilder.CreateTable(
+                name: $"FORUM_POLL_ANSWERS",
+                columns: table => new
+                {
+                    POLLANSWER_ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    POLL_ID = table.Column<string>(type: "int", nullable: false),
+                    POLLANSWER_ORDER = table.Column<int>(type: "int", nullable: false),
+                    POLLANSWER_COUNT = table.Column<int>(type: "int", nullable: false),
+                    POLLANSWER_LABEL = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FORUM_POLL_ANSWERS", x => x.POLLANSWER_ID);
+                });
+            migrationBuilder.CreateTable(
+                name: $"FORUM_POLL_VOTES",
+                columns: table => new
+                {
+                    POLLVOTES_ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    POLL_ID = table.Column<string>(type: "int", nullable: false),
+                    CAT_ID = table.Column<string>(type: "int", nullable: true),
+                    FORUM_ID = table.Column<int>(type: "int", nullable: true),
+                    TOPIC_ID = table.Column<int>(type: "int", nullable: true),
+                    MEMBER_ID = table.Column<int>(type: "int", nullable: true),
+                    GUEST_VOTE = table.Column<int>(type: "int", nullable: true),
 
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FORUM_POLL_VOTES", x => x.POLLVOTES_ID);
+                });
             if (!migrationBuilder.TableExists("FORUM_IMAGES"))
             {
                 migrationBuilder.CreateTable(
