@@ -420,3 +420,8 @@ FodyWeavers.xsd
 /MVC Forum/wwwroot/ProtectedContent/PhotoAlbum
 /SnitzCore.Admin/ViewModels
 /MVC Forum/App_Data/export_en_ConfigStrings.csv
+/MVC Forum/App_Data/SnitzForums2000.sqlite.db
+/MVC Forum/App_Data/Hangfire.sqlite.db
+/MVC Forum/App_Data/SnitzForumsTest.sqlite.db
+/MVC Forum/App_Data/export_en (2).csv
+/MVC Forum/App_Data/export_en (3).csv
