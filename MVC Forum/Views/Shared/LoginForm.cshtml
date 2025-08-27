@@ -3,6 +3,7 @@
 @model MVCForum.ViewModels.User.UserSignInModel
 @if (!SignInManager.IsSignedIn(User))
 {
+    var hideme = ViewData["Error"] == null ? "display:none" : "";
     var returnurl = Context.Request.PathBase + Context.Request.Path;
     if (returnurl.ToString().Contains("Login"))
     {
@@ -17,10 +18,10 @@
             returnurl = Context.Request.Query["ReturnUrl"].ToString();
         }
     }
-    <div class="m-2 bg-form border border-dark rounded" style="display:none" id="login-form">
+    <div class="m-2 bg-form border border-dark rounded" style="@hideme" id="login-form">
         <div class="subforum">
             <h1 class="bg-dark text-white p-2">@Localizer["SignIn"]</h1>
-            <form method="post" asp-controller="Account" asp-action="Login" class="needs-validation p-2" novalidate>
+            <form method="post" asp-controller="Account" asp-action="Login" id="loginform" class="needs-validation p-2" novalidate>
                 @Html.AntiForgeryToken()
                 <div class="form-group">
                     <label asp-for="Username">@Localizer["Username"]</label>
@@ -54,6 +55,16 @@
 
 <storecontent asp-key="password-toggle">
     <script>
+
+        
+        $(document).on("keyup", '#loginform',function (e) {
+            var keyCode = (window.event) ? e.which : e.keyCode;
+            if (keyCode == 13) {
+                $("#loginform").submit();
+                e.preventDefault();
+                return false;
+            }
+        });
         $(".togglePassword").click(function (e) {
             e.preventDefault();
             var type = $(this).parent().parent().find(".password").attr("type");

@@ -270,7 +270,9 @@
     <None Include="wwwroot\js\tinymce\plugins\wordcount\plugin.min.js" />
     <None Include="wwwroot\js\tinymce\themes\mobile\theme.min.js" />
     <None Include="wwwroot\js\tinymce\themes\silver\theme.min.js" />
-    <None Include="wwwroot\js\tinymce\tinymce.min.js" />
+    <None Include="wwwroot\js\tinymce\tinymce.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="wwwroot\js\topic.js" />
     <None Include="wwwroot\lib\jquery\dist\jquery-ui.js" />
     <None Include="wwwroot\lib\jquery\jquery.timeago.js" />
@@ -321,10 +323,13 @@
     <PackageReference Include="NuGet.Protocol" Version="6.11.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.2.0" />
+    <PackageReference Include="SkiaSharp" Version="2.88.9" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.9" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="Snitz.Events" Version="1.0.1-rc61" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc22" />
-    <PackageReference Include="Snitz.PostThanks" Version="1.0.3-rc03" />
+    <PackageReference Include="Snitz.Events" Version="1.0.1-rc76" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc38" />
+    <PackageReference Include="Snitz.PostThanks" Version="1.0.3-rc09" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />

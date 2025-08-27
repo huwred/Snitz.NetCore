@@ -50,7 +50,7 @@
                 ValidateForms();
             }, false);
         })();
-        if ($('.img-fluid').attr("src") == "~/images/ninja-1027877_960_720.webp") {
+        if ($('.img-fluid').attr("src") == "/images/ninja-1027877_960_720.webp") {
             $(".icon").attr("title", "Add avatar");
             var el = document.querySelector('.fa-trash');
             el.classList.remove('fa-trash');
@@ -74,7 +74,7 @@
                 } else {
 
                     $('#upload-content').html('');
-                    $('#upload-content').load("~/Account/UploadForm/",function() {
+                    $('#upload-content').load(SnitzVars.baseUrl + "/Account/UploadForm/",function() {
                         $('#uploadModal').modal('show');
                     });
                 }
@@ -141,7 +141,7 @@
                     if (data.result) {
                         //alert(data.data);
                         $(".img-fluid").attr('src', data.data);
-                        location.href = "~/Account/Detail";
+                        location.href = SnitzVars.baseUrl + "/Account/Detail";
                     }
                 },
                 error: function (data) {

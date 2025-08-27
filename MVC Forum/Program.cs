@@ -31,6 +31,7 @@ using SnitzCore.Service.Hangfire;
 using SnitzCore.Service.MiddleWare;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -38,6 +39,7 @@ using System.Threading.Tasks;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var path = System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data");
 
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)       
@@ -66,6 +68,8 @@ builder.Services.AddDefaultIdentity<ForumUser>(options =>
     {
         options.User.RequireUniqueEmail = false;
         options.SignIn.RequireConfirmedEmail = true;
+        options.SignIn.RequireConfirmedPhoneNumber = false;
+
         options.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
         options.Lockout.AllowedForNewUsers = true;
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
@@ -128,7 +132,11 @@ builder.Services.ConfigureOptions<SnitzRequestLocalizationOptions>();
 builder.Services.AddMvc().AddViewLocalization();
 
 #endregion
-builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+var mvcBuilder = builder.Services.AddControllersWithViews();
+if (builder.Environment.IsDevelopment())
+{
+    mvcBuilder.AddRazorRuntimeCompilation();
+}
 builder.Services.AddResponseCaching();
 builder.Services.AddBreadcrumbs(Assembly.GetExecutingAssembly(), options =>
 {
@@ -186,14 +194,14 @@ builder.Services.AddImageSharp(
         };
     });
 builder.Services.AddTransient<ISyndicationXmlService, SyndicationXmlService>();
-builder.Services.RegisterPlugins(builder.Configuration);
+builder.Services.RegisterPlugins(builder.Configuration,path);
 
 
 builder.Services.AddHangfire(configuration => configuration
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_110)
     .UseSimpleAssemblyNameTypeSerializer()
     .UseRecommendedSerializerSettings()
-    .SetStorage(builder.Configuration.GetConnectionString("HangfireConnection"),builder.Configuration.GetConnectionString("DBProvider"))
+    .SetStorage(builder.Configuration.GetConnectionString("HangfireConnection").Replace("|DataDirectory|",path), builder.Configuration.GetConnectionString("DBProvider"))
     );
 builder.Services.AddHangfireServer();
 builder.Services.AddHsts(options =>
@@ -220,6 +228,10 @@ builder.Services.AddSingleton(builder.Environment.ContentRootFileProvider);
 var app = builder.Build();
 
 app.MigrateDatabase();
+app.AddPostThanks();
+app.AddEvents();
+app.AddImageAlbum();
+
 
 if (app.Environment.IsDevelopment())
 {

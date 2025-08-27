@@ -99,7 +99,7 @@
                                 <admin-config config-key="STRLOGONFORMAIL" config-label="Logon to send email" config-val="@SnitzConfig.GetIntValue("STRLOGONFORMAIL")" help-text="@Localizer["STRLOGONFORMAIL"].Value"></admin-config>
                             </div>
                             <div class="mb-3">
-                                <admin-config config-key="INTMAXPOSTSTOEMAIL" config-label="Number of posts to allow sending email" config-val="@SnitzConfig.GetIntValue("INTMAXPOSTSTOEMAIL")" help-text="@Localizer["INTMAXPOSTSTOEMAIL"].Value"></admin-config>
+                                <admin-config config-type="number" config-key="INTMAXPOSTSTOEMAIL" config-label="Number of posts to allow sending email" config-val="@SnitzConfig.GetIntValue("INTMAXPOSTSTOEMAIL")" help-text="@Localizer["INTMAXPOSTSTOEMAIL"].Value"></admin-config>
                                 <input type="text" id="emailadmin" name="emailadmin" value="1" style="display: none;"/>
                             </div>
                             <div class="mb-3">

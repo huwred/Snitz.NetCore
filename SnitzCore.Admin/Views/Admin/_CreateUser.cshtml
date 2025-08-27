@@ -1,0 +1,35 @@
+﻿<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+    <h4 class="modal-title">Create user account</h4>
+</div>
+<form id="createForm" method="post" asp-controller="Admin" asp-action="CreateUser" class="needs-validation p-2" novalidate data-ajax="true" data-ajax-update="#resultDiv" data-ajax-success="OnSuccess" data-ajax-failure="OnFailure">
+    <div class="modal-body">
+        <div class="tab-content row-fluid clearfix">
+            <div class="mb-3">
+                <label for="Username" class="form-label">Username</label>
+                <input id="Username" type="text" name="Username" value="" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email</label>
+                <input id="Email" type="text" name="Email" value="" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label for="Password" class="form-label">Password</label>
+                <input id="Password" type="password" name="Password" value="" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label for="Confirm" class="form-label">Confirm Password</label>
+                 <input id="Confirm" type="password" name="Confirm" value="" class="form-control" />
+            </div>
+        </div>
+        <div id="resultDiv"></div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">@Localizer["btnCancel"]</button>
+        <button type="button" id="approve-user-btn" class="btn btn-success">Create</button>
+    </div>
+</form>
+
+
+
+

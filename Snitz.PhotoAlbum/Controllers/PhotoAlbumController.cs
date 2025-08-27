@@ -16,6 +16,7 @@ using Microsoft.Extensions.FileProviders;
 using X.PagedList;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp;
+using SnitzCore.Service.Extensions;
 
 
 namespace Snitz.PhotoAlbum.Controllers
@@ -141,12 +142,12 @@ namespace Snitz.PhotoAlbum.Controllers
         public IActionResult GetPhoto(int? id)
         {
             var orgimage = _dbContext.Set<AlbumImage>().Find(id);
-            var folder = Combine(_config.ContentFolder, "PhotoAlbum");
+            var folder = StringExtensions.UrlCombine(_config.ContentFolder, "PhotoAlbum");
             if(orgimage != null)
             {
-                return File(Combine(folder,$"{orgimage.Timestamp}_{orgimage.Location}"),"image/jpeg");
+                return File(StringExtensions.UrlCombine(folder,$"{orgimage.Timestamp}_{orgimage.Location}"),"image/jpeg");
             }
-            return File(Combine(_config.ContentFolder, "notfound.jpg") ,"image/jpeg");
+            return File(StringExtensions.UrlCombine(_config.ContentFolder, "notfound.jpg") ,"image/jpeg");
         }
 
         /// <summary>
@@ -349,7 +350,9 @@ namespace Snitz.PhotoAlbum.Controllers
 
         public IActionResult Thumbnail(int id)
         {
-            var uploadFolder = Combine(_config.ContentFolder, "PhotoAlbum");
+            var sep = Path.DirectorySeparatorChar;
+
+            var uploadFolder = Path.Combine(_config.ContentFolder.Replace('\\',sep), "PhotoAlbum");
             var orgimage = _dbContext.Set<AlbumImage>().Find(id);
             if(orgimage == null)
             {
@@ -358,24 +361,24 @@ namespace Snitz.PhotoAlbum.Controllers
             try
             {
 
-                var resizedPath = Combine(uploadFolder,"thumbs");
+                var resizedPath = Path.Combine(uploadFolder,"thumbs");
 
-                var fileInfo = _fileProvider.GetFileInfo(Combine(uploadFolder,$"{orgimage.Timestamp}_{orgimage.Location}"));
+                var fileInfo = _fileProvider.GetFileInfo(StringExtensions.UrlCombine(uploadFolder,$"{orgimage.Timestamp}_{orgimage.Location}"));
                 if (!fileInfo.Exists)
                 {
                     return File("~/images/notfound.jpg", "image/jpeg");
                 }
 
                 // Create the destination folder tree if it doesn't already exist
-                if (!Directory.Exists(Path.Combine(_environment.WebRootPath, resizedPath.Replace("/","\\"))))
+                if (!Directory.Exists(Path.Combine(_environment.WebRootPath, resizedPath)))
                 {
-                    resizedPath = Path.Combine(_environment.WebRootPath, resizedPath.Replace("/","\\"));
+                    resizedPath = Path.Combine(_environment.WebRootPath, resizedPath);
                     Directory.CreateDirectory(resizedPath);
                 }
-                var uploads = Path.Combine(_environment.WebRootPath, resizedPath.Replace("/","\\"));
+                var uploads = Path.Combine(_environment.WebRootPath, resizedPath);
                 var filePath = Path.Combine(uploads, $"{orgimage.Timestamp}_{orgimage.Location}");
 
-                var resizedInfo = _fileProvider.GetFileInfo(Combine(resizedPath,$"{orgimage.Timestamp}_{orgimage.Location}"));
+                var resizedInfo = _fileProvider.GetFileInfo(Path.Combine(resizedPath,$"{orgimage.Timestamp}_{orgimage.Location}"));
                 if (!resizedInfo.Exists)
                 {
                     using var inputStream = fileInfo.CreateReadStream();
@@ -386,7 +389,7 @@ namespace Snitz.PhotoAlbum.Controllers
 
                 // resize the image and save it to the output stream
 
-                return File(Combine(Combine(uploadFolder,"thumbs"),$"{orgimage.Timestamp}_{orgimage.Location}"), "image/jpeg");
+                return File(StringExtensions.UrlCombine(StringExtensions.UrlCombine(uploadFolder,"thumbs"),$"{orgimage.Timestamp}_{orgimage.Location}"), "image/jpeg");
             }
             catch (Exception e)
             {
@@ -409,21 +412,26 @@ namespace Snitz.PhotoAlbum.Controllers
         [Route("PhotoAlbumUpload/")]
         public IActionResult Upload(AlbumUploadViewModel model)
         {
-            var uploadFolder = Combine(_config.ContentFolder, "PhotoAlbum");
+            var uploadFolder = StringExtensions.UrlCombine(_config.ContentFolder, "PhotoAlbum");
 
             var currentMember = _memberservice.Current();
-            var path = $"{uploadFolder}".Replace("/","\\");
+            //var path = $"{uploadFolder}".Replace("/","\\");
+
             if (ModelState.IsValid)
             {
                 var uniqueFileName = GetUniqueFileName(model.AlbumImage.FileName, out string timestamp);
-                var uploads = Path.Combine(_environment.WebRootPath, path);
+                var uploads = Path.Combine(_environment.WebRootPath, _config.ContentFolder, "PhotoAlbum");
+                if (!Directory.Exists(uploads))
+                {
+                    Directory.CreateDirectory(uploads);
+                }
                 var filePath = Path.Combine(uploads, uniqueFileName);
                 model.AlbumImage.CopyTo(new FileStream(filePath, FileMode.Create));
 
                 var newalbumImage = new AlbumImage()
                 {
                     Description = model.Description,
-                    CategoryId = 1,
+                    CategoryId = null,
                     IsPrivate = model.Private,
                     DoNotFeature = model.NotFeatured,
                     CommonName = model.CommonName ?? "",
@@ -436,8 +444,8 @@ namespace Snitz.PhotoAlbum.Controllers
                 _dbContext.Set<AlbumImage>().Add(newalbumImage);
                 _dbContext.SaveChanges();
                 model.GroupList = new SelectList(_dbContext.Set<AlbumGroup>().AsQueryable(), "Id", "Description");
-
-                return Json(new { result = true,id = newalbumImage.Id, data = Combine(uploadFolder,uniqueFileName),caption = model.Description });
+                var caption = model.ShowCaption ? model.Description : null;
+                return Json(new { result = true,id = newalbumImage.Id, data = StringExtensions.UrlCombine(uploadFolder,uniqueFileName),caption = caption });
 
             }
 
@@ -738,12 +746,7 @@ namespace Snitz.PhotoAlbum.Controllers
             return images.ToList();
 
         }
-        private static string Combine(string uri1, string uri2)
-        {
-            uri1 = uri1.TrimEnd('/');
-            uri2 = uri2.TrimStart('/');
-            return $"{uri1}/{uri2}";
-        }
+
         private static string GetUniqueFileName(string fileName, out string timestamp)
         {
             fileName = Path.GetFileName(fileName);

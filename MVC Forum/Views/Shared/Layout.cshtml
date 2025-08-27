@@ -53,6 +53,8 @@
             <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
             <main role="main" class="pb-3 mt-6">
             <div id="liveAlertPlaceholder"></div>     
+            <partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
+
                 @RenderBody()
             </main>
         </div>

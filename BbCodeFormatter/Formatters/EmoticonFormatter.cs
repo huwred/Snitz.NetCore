@@ -20,8 +20,11 @@ namespace BbCodeFormatter.Formatters
         var urlpath = Url.Combine(config.ForumUrl, "/images/emoticon/");
         if (_formatters == null)
         {
+            var path = System.IO.Path.Combine("App_Data", "emoticons.xml");
+            path = path.Replace("\\", System.IO.Path.DirectorySeparatorChar.ToString());
+
             _formatters = new List<IHtmlFormatter>();
-                XElement emoticons = XElement.Load(@"App_Data\emoticons.xml");
+                XElement emoticons = XElement.Load(path);
 
                 List<XElement> childList =
                     (from el in emoticons.Elements()

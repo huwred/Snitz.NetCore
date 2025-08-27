@@ -16,6 +16,7 @@ using MVCForum.ViewModels.Category;
 using MVCForum.ViewModels.Post;
 using System;
 using System.Collections.Generic;
+using SnitzCore.Service.Extensions;
 
 namespace MVCForum.Controllers
 {
@@ -81,7 +82,7 @@ namespace MVCForum.Controllers
                 Url = forum.Url,
                 Status = forum.Status,
                 Order = forum.Order,
-                CategorySubscription = (CategorySubscription)forum.Category?.Subscription,
+                CategorySubscription = forum.Category?.Subscription != null ? (CategorySubscription)forum.Category.Subscription : null,
                 ForumSubscription = (ForumSubscription)forum.Subscription,
                 ArchivedCount = forum.ArchivedTopics,
                  PostAuth = (PostAuthType)forum.Postauth,
@@ -184,6 +185,7 @@ namespace MVCForum.Controllers
                 {
                     _categoryService.Create(newCategory);
                 }
+                CacheProvider.Remove("CatList");
                 return RedirectToAction("Index","Category",new{id = newCategory.Id});
             }
 

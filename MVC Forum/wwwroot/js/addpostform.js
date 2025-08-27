@@ -111,6 +111,8 @@
                     processData: false,
                     success: function (data) {
                         if (data.result) {
+                            console.log(data);
+                            debugger;
                             if (!data.type) {
                                 var img = "[image=" + data.id + "]";
                                 if (data.caption) {

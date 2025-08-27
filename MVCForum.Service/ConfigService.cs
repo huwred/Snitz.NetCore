@@ -54,12 +54,18 @@ namespace SnitzCore.Service
         public IEnumerable<CaptchaOperator> CaptchaOperators {             
             get
             {
+                var stringCaptcha = GetValueWithDefault("STRCAPTCHAOPERATORS","");
+                char sep = ';';
+                if (stringCaptcha.Contains(","))
+                {
+                    sep = ',';
+                }
+
                 List<CaptchaOperator> operators = new List<CaptchaOperator>();
                 if (GetValueWithDefault("STRCAPTCHAOPERATORS","") != "")
                 {
-                    var stringCaptcha = GetValueWithDefault("STRCAPTCHAOPERATORS","").Split(new[] { ';' },
-                        StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string s in stringCaptcha)
+                    var arrCaptcha = stringCaptcha.Split(new[] { sep },StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string s in arrCaptcha)
                     {
                         operators.Add((CaptchaOperator)Enum.Parse(typeof(CaptchaOperator), s));
                     }

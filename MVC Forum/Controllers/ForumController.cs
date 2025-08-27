@@ -677,6 +677,8 @@ namespace MVCForum.Controllers
                         Rating = (short) model.AllowTopicRating,
                         Postauth = (int)model.PostAuth,
                         Replyauth = (int)model.ReplyAuth,
+                        ArchivedCount = 0,
+                        ArchivedTopics = 0
                     };
                     if (model.ForumId != 0)
                     {
@@ -751,7 +753,7 @@ namespace MVCForum.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var catid = _forumService.GetWithPosts(id).CategoryId;
+            var catid = _forumService.Get(id).CategoryId;
             await _forumService.Delete(id);
             return Json(new { redirectToUrl = Url.Action("Index", "Category",new{id = catid}) });
         }

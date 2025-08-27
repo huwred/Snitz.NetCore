@@ -1,6 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MVCForum.ViewModels.User.UserSignInModel
-
+@{
+    if (TempData["Error"] != null)
+    {
+        ViewData["Error"] = TempData["Error"];
+    }
+}
 @if (SnitzConfig.GetIntValue("STRREQUIREREG") == 1)
 {
     <div class="container pt-0">
@@ -17,9 +22,9 @@ else
     <div class="container pt-0">
         <div class="center">
             <div class="col-8 col-md-4">
-                <div id="captchaimage-div">@await Component.InvokeAsync("Captcha")</div>
-                
-                <partial name="LoginForm" model="Model" />
+                <div snitz-if="@(TempData["Error"] == null)" id="captchaimage-div">@await Component.InvokeAsync("Captcha")</div>
+
+                <partial name="LoginForm" model="Model" view-data="ViewData" />
             </div>
         </div>
     </div>

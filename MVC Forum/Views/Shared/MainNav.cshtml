@@ -22,7 +22,7 @@
                     <li><a class="dropdown-item" asp-controller="Forum" asp-action="Active">@Localizer["mnuForumActive"]</a></li>
                     <li><a class="dropdown-item" asp-controller="Account" asp-action="Index">@Localizer["mnuForumMembers"]</a></li>
                     <li><a class="dropdown-item" asp-controller="Forum" asp-action="Search">@Localizer["mnuForumSearch"]</a></li>
-                    <li><hr class="dropdown-divider" /></li>
+                    <li snitz-if="@(SnitzConfig.GetIntValue("INTPOLLS") == 1 || SnitzConfig.GetIntValue("INTCALEVENTS") == 1)"><hr class="dropdown-divider" /></li>
                     @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
                     @await Component.InvokeAsync("Events", new{template = "MenuItem"})
                     <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT",1) == 1)"><hr class="dropdown-divider" /></li>

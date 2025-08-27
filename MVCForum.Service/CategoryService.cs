@@ -41,7 +41,7 @@ namespace SnitzCore.Service
         {
             _dbContext.Categories.Add(category);
             await _dbContext.SaveChangesAsync();
-
+            CacheProvider.Remove("AllCats");
         }
 
         public async Task Delete(int categoryId)
@@ -49,6 +49,7 @@ namespace SnitzCore.Service
             try
             {
                 await _dbContext.Categories.Include(f=>f.Forums).Where(f => f.Id == categoryId).ExecuteDeleteAsync();
+                CacheProvider.Remove("AllCats");
             }
             catch (Exception e)
             {
@@ -79,7 +80,7 @@ namespace SnitzCore.Service
                 Console.WriteLine(e);
                 throw;
             }
-
+            CacheProvider.Remove("AllCats");
             await _dbContext.SaveChangesAsync();
 
         }

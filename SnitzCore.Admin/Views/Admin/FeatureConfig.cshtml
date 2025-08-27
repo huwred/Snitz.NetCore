@@ -163,7 +163,7 @@
                         </div>
                         <div class="col">
                             <fieldset @(SnitzConfig.GetIntValue("STRFLOODCHECK") == 0 ? "disabled" : "") id="FLOODCHECKENABLED">
-                                <admin-config config-key="STRFLOODCHECKTIME" config-label="Flood lockout (seconds)" config-val="@SnitzConfig.GetIntValue("STRFLOODCHECKTIME", 30)" help-text="@Localizer["STRFLOODCHECKTIME"].Value"></admin-config>
+                                <admin-config config-key="STRFLOODCHECKTIME" config-label="Flood lockout (seconds)" config-val="@SnitzConfig.GetIntValue("STRFLOODCHECKTIME", 30)"></admin-config>
                             </fieldset>
                         </div>
                     </div>
@@ -175,7 +175,7 @@
                     <fieldset @(SnitzConfig.GetIntValue("STRALLOWUPLOADS") == 0 ? "disabled" : "") id="UPLOADSENABLED">
                         <div class="row">
                             <div class="col">
-                                <admin-config config-key="INTMAXFILESIZE" config-label="Max File size (Mb)" config-val="@SnitzConfig.GetIntValue("INTMAXFILESIZE", 10)" help-text="@Localizer["INTMAXFILESIZE"].Value"></admin-config>
+                                <admin-config config-key="INTMAXFILESIZE" config-label="Max File size (MB)" config-val="@SnitzConfig.GetIntValue("INTMAXFILESIZE", 5)" help-text="@Localizer["INTMAXFILESIZE"].Value"></admin-config>
                             </div>
                             <div class="col">
                                 <admin-config config-key="STRFILETYPES" config-label="Allowed Extensions" config-val="@SnitzConfig.GetValueWithDefault("STRFILETYPES", ".txt,.pdf,.zip,.png,.jpg")" help-text="@Localizer["STRFILETYPES"].Value"></admin-config>
@@ -244,23 +244,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="rating-heading">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#rating-collapse" aria-expanded="false" aria-controls="rating-collapse">
-                            Topic Rating
-                        </button>
-                    </h2>
-                    <div id="rating-collapse" class="accordion-collapse collapse" aria-labelledby="rating-heading" data-bs-parent="#plugin-accordion">
-                        <div class="accordion-body">
-                            @if (SnitzConfig.TableExists("TOPIC_RATINGS"))
-                            {
+                @if (SnitzConfig.TableExists("TOPIC_RATINGS"))
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="rating-heading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#rating-collapse" aria-expanded="false" aria-controls="rating-collapse">
+                                Topic Rating
+                            </button>
+                        </h2>
+                        <div id="rating-collapse" class="accordion-collapse collapse" aria-labelledby="rating-heading" data-bs-parent="#plugin-accordion">
+                            <div class="accordion-body">
                                 <form id="rating-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
                                     <admin-config config-key="INTTOPICRATING" config-label="Enable Rating" config-val="@SnitzConfig.GetIntValue("INTTOPICRATING", 0)"></admin-config>
                                 </form>
-                            }
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
                 @await Component.InvokeAsync("ImageAlbum", "Config")
                 @await Component.InvokeAsync("Events", new { template = "Admin" })
                 @await Component.InvokeAsync("PostThanks", new { template = "Admin" })

@@ -3,12 +3,12 @@
     var title = SnitzConfig.GetValue("STRANNOUNCETITLE");
     var message = SnitzConfig.GetValue("STRANNOUNCE");
 }
-<!-- Hero -->
-<div class="container-fluid text-sm-center p-3 bg-info-subtle text-dark rounded-4 shadow-sm">
+<div class="alert alert-info alert-dismissible fade show text-sm-center" role="alert" id="alert-announce">
     <h2>@title</h2>
     <p>
         @Html.Raw(BbCodeProcessor.Format(message))
     </p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismiss-announce"></button>
 </div>
-<!-- Hero -->
+
 

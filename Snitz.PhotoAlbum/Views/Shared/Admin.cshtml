@@ -71,13 +71,13 @@
             <div class="mb-3">
                 <label for="INTMAXIMAGESIZE" class="form-label col-xs-4">Maximum image size (Mb)</label>
                 <div class="col-xs-2 col-lg-1">
-                    <input id="INTMAXIMAGESIZE" class="form-control" name="INTMAXIMAGESIZE" min="1" type="number" value="@SnitzConfig.GetIntValue("INTMAXIMAGESIZE")"/>
+                    <input id="INTMAXIMAGESIZE" class="form-control" name="INTMAXIMAGESIZE" min="0" type="number" value="@SnitzConfig.GetIntValue("INTMAXIMAGESIZE")"/>
                 </div>
             </div>
             <div class="mb-3">
                 <label for="INTMAXIMUMFILES" class="form-label col-xs-4">Maximum number of files</label>
                 <div class="col-xs-2 col-lg-1">
-                    <input id="INTMAXIMUMFILES" class="form-control" name="INTMAXIMUMFILES" min="1" type="number" value="@SnitzConfig.GetIntValue("INTMAXIMUMFILES")"/>
+                    <input id="INTMAXIMUMFILES" class="form-control" name="INTMAXIMUMFILES" min="0" type="number" value="@SnitzConfig.GetIntValue("INTMAXIMUMFILES")"/>
                 </div>
                 <div class="col-xs-5 col-lg-5">
                     <p class="form-text">Limit for a members album will be the lower of the two options, either @SnitzConfig.GetIntValue("INTMAXIMUMFILES") files or @SnitzConfig.GetIntValue("INTALBUMLIMIT")Mb.<br />0 means no limit</p>
@@ -86,7 +86,7 @@
             <div class="mb-3">
                 <label for="INTALBUMLIMIT" class="form-label col-xs-4">Maximum album size (Mb)</label>
                 <div class="col-xs-2 col-lg-1">
-                    <input id="INTALBUMLIMIT" class="form-control" name="INTALBUMLIMIT" min="1" type="number" value="@SnitzConfig.GetIntValue("INTALBUMLIMIT")"/>
+                    <input id="INTALBUMLIMIT" class="form-control" name="INTALBUMLIMIT" min="0" type="number" value="@SnitzConfig.GetIntValue("INTALBUMLIMIT")"/>
                 </div>
             </div>
             <div class="mb-3">

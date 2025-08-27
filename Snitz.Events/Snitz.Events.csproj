@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.1-rc61</Version>
+    <Version>1.0.1-rc76</Version>
     <Authors>Huw Reddick</Authors>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -13,6 +13,17 @@
 
   <ItemGroup>
     <None Include="wwwroot\**\*.*" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\Mssql\**" />
+    <Compile Remove="Migrations\Sqlite\**" />
+    <Content Remove="Migrations\Mssql\**" />
+    <Content Remove="Migrations\Sqlite\**" />
+    <EmbeddedResource Remove="Migrations\Mssql\**" />
+    <EmbeddedResource Remove="Migrations\Sqlite\**" />
+    <None Remove="Migrations\Mssql\**" />
+    <None Remove="Migrations\Sqlite\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +47,9 @@
     </PackageReference>
     <PackageReference Include="NetCore.AutoRegisterDi" Version="2.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SkiaSharp" Version="2.88.9" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.9" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
   </ItemGroup>
 
   <ItemGroup>
@@ -89,6 +103,10 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\Components\Events\ForumConfig.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 

@@ -7,16 +7,14 @@
     </h2>
     <div id="flush-collapsePolls" class="accordion-collapse collapse" aria-labelledby="flush-polls" data-bs-parent="#plugin-accordion">
         <div class="accordion-body">
-            <form id="polls-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
+            <form id="polls-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#pollcfg-result">
                 <admin-config config-key="INTPOLLS" config-label="Allow Polls" config-val="@SnitzConfig.GetIntValue("INTPOLLS", 0)"></admin-config>
                 <admin-config config-key="INTACTIVEPOLLS" config-label="Show active Polls" config-val="@SnitzConfig.GetIntValue("INTACTIVEPOLLS", 0)"></admin-config>
                 <admin-config config-key="INTFEATUREDPOLL" class="featured-poll" config-label="Show featured Poll" config-val="@SnitzConfig.GetIntValue("INTFEATUREDPOLL", 0)"></admin-config>
-                <div class="mb-3 featured-poll-settings">
+                <div class="mb-3 featured-poll-settings" style="display:none">
+                    <admin-config config-key="INTHIDEPOLL" config-label="Hide featured Poll after voting" config-val="@SnitzConfig.GetIntValue("INTHIDEPOLL", 0)"></admin-config>
                     <label for="INTFEATUREDPOLLID" class="form-label">Featured Poll ID:</label>
                     <input class="form-control" id="INTFEATUREDPOLLID" type="number" name="INTFEATUREDPOLLID" value="@SnitzConfig.GetIntValue("INTFEATUREDPOLLID")" />
-                </div>
-                <div class="mb-3 featured-poll-settings">
-                    <admin-config config-key="INTHIDEPOLL" config-label="Hide featured Poll after voting" config-val="@SnitzConfig.GetIntValue("INTHIDEPOLL", 0)"></admin-config>
                 </div>
                 <div class="mb-3">
                     <label for="intmaxvotes" class="form-label">Max. No of Poll answers:</label>
@@ -25,6 +23,7 @@
                 <div class="mb-3">
                     <button id="btnSubmit" type="submit" class="btn btn-success">Save Changes</button>
                 </div>
+                <div id="pollcfg-result"></div>
             </form>
         </div>
     </div>
@@ -32,10 +31,22 @@
 
 <storecontent asp-key="topic-poll-controls">
     <script>
+        jQuery(function($) {
+            if ($("#INTFEATUREDPOLL").is(":checked")) {
+                $(".featured-poll-settings").show();
+            } else {
+                $(".featured-poll-settings").hide();
+            }
+        });
         $(document).on("click",
             "#INTFEATUREDPOLL",
             function() {
-                $(".featured-poll-settings").toggle();
+                if ($(this).is(":checked")) {
+                    $(".featured-poll-settings").show();
+                } else {
+                    $(".featured-poll-settings").hide();
+                }
+               
             });
     </script>
 </storecontent>

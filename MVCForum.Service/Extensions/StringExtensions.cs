@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -10,6 +11,12 @@ namespace SnitzCore.Service.Extensions
 {
     public static class StringExtensions
     {
+        public static string UrlCombine(string uri1, string uri2)
+        {
+            uri1 = uri1.TrimEnd('/');
+            uri2 = uri2.TrimStart('/');
+            return $"{uri1}/{uri2}";
+        }
         public static bool Contains(this string source, string toCheck, StringComparison comp)
         {
             return source?.IndexOf(toCheck, comp) >= 0;

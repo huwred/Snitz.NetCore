@@ -76,7 +76,7 @@ public class LanguageManagerController : Controller
 
     public IActionResult Templates(string id)
     {
-        DirectoryInfo d = new DirectoryInfo(Path.Combine(_env.WebRootPath, "Templates\\en-GB\\"));
+        DirectoryInfo d = new DirectoryInfo(Path.Combine(_env.WebRootPath, "Templates","en-GB"));
         FileInfo[] Files = d.GetFiles("*.html"); // Get html files
 
 
@@ -90,14 +90,14 @@ public class LanguageManagerController : Controller
     {
         if (ModelState.IsValid)
         {
-            if (!Directory.Exists(Path.Combine(_env.WebRootPath, $"Templates\\{model.TemplateLang}\\")))
+            if (!Directory.Exists(Path.Combine(_env.WebRootPath, "Templates", $"{model.TemplateLang}")))
             {
-                Directory.CreateDirectory(Path.Combine(_env.WebRootPath, $"Templates\\{model.TemplateLang}\\"));
+                Directory.CreateDirectory(Path.Combine(_env.WebRootPath, "Templates", $"{model.TemplateLang}"));
             }
-            var filename = Path.Combine(_env.WebRootPath, $"Templates\\{model.TemplateLang}\\{model.TemplateFile}.html");
+            var filename = Path.Combine(_env.WebRootPath, "Templates", $"{model.TemplateLang}",$"{model.TemplateFile}.html");
             System.IO.File.WriteAllText(filename, model.TemplateHtml);
         }
-        DirectoryInfo d = new DirectoryInfo(Path.Combine(_env.WebRootPath, "Templates\\en-GB\\"));
+        DirectoryInfo d = new DirectoryInfo(Path.Combine(_env.WebRootPath, "Templates","en-GB"));
         FileInfo[] Files = d.GetFiles("*.html"); // Get html files
 
         model.Templates = Files.Select(f=>f.Name.Replace(".html","")).ToList();
@@ -352,7 +352,10 @@ public class LanguageManagerController : Controller
     [Authorize(Roles = "Administrator")]
     public async Task<JsonResult> UploadCSV()
     {
-        if (!Directory.Exists(_env.ContentRootPath + "\\App_Data\\"))
+            var path = System.IO.Path.Combine(_env.ContentRootPath, "App_Data");
+            path = path.Replace("\\", System.IO.Path.DirectorySeparatorChar.ToString());
+
+        if (!Directory.Exists(path))
         {
             return Json("error|App_Data folder is missing");
         }
@@ -395,13 +398,16 @@ public class LanguageManagerController : Controller
 
     private string GetPathAndFilename(string filename)
     {
-        return _env.ContentRootPath + "\\App_Data\\" + filename;
+
+        return Path.Combine(_env.ContentRootPath,"App_Data", filename);
     }
 
     private string EnsureCorrectFilename(string? filename)
     {
-        if (filename != null &&  filename.Contains("\\"))
-        filename = filename.Substring(filename.LastIndexOf("\\") + 1);
+        var check = Path.DirectorySeparatorChar;
+
+        if (filename != null &&  filename.Contains(check))
+        filename = filename.Substring(filename.LastIndexOf(check) + 1);
 
         return filename ?? String.Empty;
     }

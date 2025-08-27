@@ -1,19 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json.Linq;
-using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace SnitzCore.Service.TagHelpers
 {

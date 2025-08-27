@@ -20,6 +20,7 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service.Extensions;
 using System.Data;
+using System.Globalization;
 using static SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -40,8 +41,9 @@ namespace SnitzCore.BackOffice.Controllers
         private readonly IOptionsSnapshot<EmailConfiguration> _emailconfig;
         private readonly IWebHostEnvironment _env;
         private IHostApplicationLifetime _appLifetime;
+        private readonly IEmailSender _emailSender;
         public AdminController(ISnitz config,IConfiguration configuration, ISnitzConfig snitzconfig,IForum forumservice,ICategory category,SnitzDbContext dbContext,RoleManager<IdentityRole> RoleManager,UserManager<ForumUser> userManager,
-            IMember memberService,IOptionsSnapshot<EmailConfiguration> emailconfig,IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
+            IMember memberService,IOptionsSnapshot<EmailConfiguration> emailconfig,IEmailSender emailSender, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
         {
             _config = config;
             _forumservice = forumservice;
@@ -55,6 +57,7 @@ namespace SnitzCore.BackOffice.Controllers
             _emailconfig = emailconfig;
             _appLifetime = appLifetime;
             _env = env;
+            _emailSender = emailSender;
         }
 
         public IActionResult Index()
@@ -346,15 +349,24 @@ namespace SnitzCore.BackOffice.Controllers
                 {
                     if (model.Rolename != null)
                     {
-                        var result = await _userManager.AddToRoleAsync(user, model.Rolename);
-                        if (!result.Succeeded)
+                        try
                         {
-                            foreach (var error in result.Errors)
+                            var result = await _userManager.AddToRoleAsync(user, model.Rolename);
+                            if (!result.Succeeded)
                             {
-                                ModelState.AddModelError(model.Username,error.Description);
+                                foreach (var error in result.Errors)
+                                {
+                                    ModelState.AddModelError(model.Username,error.Description);
+                                }
+                                return PartialView("ManageRoles",model);
                             }
-                            return PartialView("ManageRoles",model);
                         }
+                        catch (Exception e)
+                        {
+
+                            throw;
+                        }
+
                     }
                 }
                 else
@@ -763,18 +775,56 @@ namespace SnitzCore.BackOffice.Controllers
             return PartialView(pending);
         }
         [Authorize(Roles = "Administrator")]
-        public IActionResult ApproveMember(string id)
+        public async Task<IActionResult> ApproveMember(string id)
         {
             var user = _userManager.FindByIdAsync(id).Result;
             if (user != null)
             {
                 user.EmailConfirmed = true;
-                var upd = _userManager.UpdateAsync(user).Result;
-                upd = _userManager.SetLockoutEndDateAsync(user,null).Result;
+                var upd = await _userManager.UpdateAsync(user);
+                upd = await _userManager.SetLockoutEndDateAsync(user,null);
+                var member = _memberService.GetByUsername(user.UserName);
+                if (member != null && member.Status == 0)
+                {
+                    member.Status = 1;
+                    _memberService.Update(member);
+                }
+
+                var message = new EmailMessage(new[] { user.Email }, 
+                    "Account approved", 
+                    _emailSender.ParseTemplate("approveMembership.html","Account approved",user.Email,user.UserName,"Login", "en"));
+            
+                await _emailSender.SendEmailAsync(message);
             }
 
             var pending = _userManager.Users.Include(u=>u.Member).Where(u => !u.EmailConfirmed || (u.LockoutEnabled && u.LockoutEnd != null));
             return PartialView("PendingMembers",pending);
+        }
+        [Authorize(Roles = "Administrator")]
+        public IActionResult CreateUser()
+        {
+            var vm = new AdminCreateUserViewModel();
+
+            return PartialView("_CreateUser",vm);
+        }
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult CreateUser(AdminCreateUserViewModel vm)
+        {
+            bool isSuccess = false;
+
+            if (ModelState.IsValid)
+            {
+                //string status;
+                //var user = MemberManager.RegisterUser(vm.Username, vm.Password, vm.Email, null, out status,true);
+                //if (user != null && status == "Success")
+                //{
+                //    isSuccess = true;
+                //}
+            }
+
+            return Json(new { result = isSuccess, responseText = "Something wrong!" });
+
         }
         [Authorize(Roles = "Administrator")]
         [HttpPost]
@@ -866,36 +916,45 @@ namespace SnitzCore.BackOffice.Controllers
         }
         public ActionResult StopForumSpamCheck(string id, string email, string userip)
         {
-            Client client = new Client(); //(apiKeyTextBox.Text)
-            CreativeMinds.StopForumSpam.Responses.Response response;
-            if (!string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(userip))
+            try
             {
-                response = client.CheckUsername(id);
+                Client client = new Client(); //(apiKeyTextBox.Text)
+                CreativeMinds.StopForumSpam.Responses.Response response;
+                if (!string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(userip))
+                {
+                    response = client.CheckUsername(id);
+                }
+                else if (string.IsNullOrWhiteSpace(id) && !string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(userip))
+                {
+                    response = client.CheckEmailAddress(email);
+                }
+                else if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(userip))
+                {
+                    response = client.CheckIPAddress(userip);
+                }
+                else
+                {
+                    response = client.Check(id, email, userip);
+                }
+
+                if (response.Success)
+                {
+                    ViewBag.Text = "Success:" + Environment.NewLine;
+
+                }
+                else
+                {
+                    ViewBag.Text = string.Format("Error: {0}", ((FailResponse)response).Error);
+                }
+
+                return PartialView(response.ResponseParts);
             }
-            else if (string.IsNullOrWhiteSpace(id) && !string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(userip))
+            catch (Exception)
             {
-                response = client.CheckEmailAddress(email);
-            }
-            else if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(userip))
-            {
-                response = client.CheckIPAddress(userip);
-            }
-            else
-            {
-                response = client.Check(id, email, userip);
+                ViewBag.Text = "Error: Unable to connect to Stop Forum Spam";
+                return PartialView(null);
             }
 
-            if (response.Success)
-            {
-                ViewBag.Text = "Success:" + Environment.NewLine;
-
-            }
-            else
-            {
-                ViewBag.Text = string.Format("Error: {0}", ((FailResponse)response).Error);
-            }
-
-            return PartialView(response.ResponseParts);
         }
         public IActionResult ListViews()
         {

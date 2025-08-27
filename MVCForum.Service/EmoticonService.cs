@@ -11,7 +11,10 @@ namespace SnitzCore.Service
         private readonly EmoticonList? _objects;
         public EmoticonService()
         {
-            _objects = XmlExtensions.DeserializeListFromXml<EmoticonList>("App_Data\\emoticons.xml");
+            var path = System.IO.Path.Combine("App_Data", "emoticons.xml");
+            path = path.Replace("\\", System.IO.Path.DirectorySeparatorChar.ToString());
+
+            _objects = XmlExtensions.DeserializeListFromXml<EmoticonList>(path);
         }
 
         public Emoticon? GetByName(string name)

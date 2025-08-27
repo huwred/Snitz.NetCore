@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BbCodeFormatter;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SnitzCore.Data.Extensions;
-using SnitzCore.Service.Extensions;
-using System.Security.Claims;
-using SnitzCore.Data.Interfaces;
-using System.Text.Json;
-using SnitzCore.Data;
-using System.Net;
-using BbCodeFormatter;
 using Snitz.Events.ViewModels;
+using SnitzCore.Data;
+using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Interfaces;
+using SnitzCore.Service.Extensions;
+using System.Net;
+using System.Runtime.CompilerServices;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace Snitz.Events.Models
 {
@@ -244,11 +245,11 @@ namespace Snitz.Events.Models
             }
     }
 
-    public void AllowEvents(int forumid, int allow,string tableprefix)
-    {
-        _dbContext.Database.ExecuteSql($"UPDATE {tableprefix}FORUM SET F_ALLOWEVENTS = {allow} WHERE FORUM_ID={forumid}");
-
-    }
+        public void AllowEvents(int forumid, int allow, string tableprefix)
+        {
+            var sql = $"UPDATE {tableprefix}FORUM SET F_ALLOWEVENTS = {allow} WHERE FORUM_ID={forumid}";
+            _dbContext.Database.ExecuteSqlInterpolated(FormattableStringFactory.Create(sql));
+        }
     public void AddEvent(CalendarEventItem model, IMember memberService)
     {
         var existingevent = _dbContext.EventItems.Find(model.Id);

@@ -92,13 +92,27 @@ namespace SnitzCore.Service
         public async Task DeleteMany(IEnumerable<int> todelete, int memberid)
         {
             var privatemsgs = _dbContext.PrivateMessages.Where(pm => EF.Constant(todelete).Contains(pm.Id));
+            try
+            {
+                _dbContext.RemoveRange(privatemsgs.Where(pm=>pm.To == memberid && pm.HideFrom == 1));
+                _dbContext.RemoveRange(privatemsgs.Where(pm=>pm.From == memberid && pm.HideTo == 1));
+                _dbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+
+            privatemsgs = _dbContext.PrivateMessages.Where(pm => EF.Constant(todelete).Contains(pm.Id));
+
             foreach (var privatemsg in privatemsgs)
             {
                 if (privatemsg.To == memberid)
                 {
                     if (privatemsg.HideFrom == 1)
                     {
-                        _dbContext.PrivateMessages.Remove(privatemsg);
+                        
+                        //_dbContext.PrivateMessages.Remove(privatemsg);
                     }
                     else
                     {
@@ -110,7 +124,7 @@ namespace SnitzCore.Service
                 {
                     if (privatemsg.HideTo == 1)
                     {
-                        _dbContext.PrivateMessages.Remove(privatemsg);
+                        //_dbContext.PrivateMessages.Remove(privatemsg);
                     }
                     else
                     {

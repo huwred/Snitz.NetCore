@@ -2,7 +2,7 @@
 @if (Model)
 {
     <div class="form-check form-switch mb-3">
-        <input type="checkbox" role="switch" name="INTCALEVENTS" id="INTCALEVENTS" value="1" class="form-check-input" checked="" style="transform: scale(1.4);">
+        <input type="checkbox" role="switch" name="INTCALEVENTS" id="INTCALEVENTS" value="1" class="form-check-input" onchange="$(this).closest('form').submit();" checked="" style="transform: scale(1.4);">
         <input type="checkbox" name="INTCALEVENTS" value="0" checked="" style="display: none">
         <label class="form-check-label" for="INTCALEVENTS">Enable Events</label>
     </div>

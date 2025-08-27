@@ -38,8 +38,17 @@ namespace SnitzCore.Service
 
         public async Task Create(Forum forum)
         {
-            _dbContext.Forums.Add(forum);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                _dbContext.Forums.Add(forum);
+                await _dbContext.SaveChangesAsync();
+                CacheProvider.Remove("AllForums");
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
 
             if (forum.Privateforums is not ForumAuthType.All)
             {
@@ -53,7 +62,7 @@ namespace SnitzCore.Service
             {
                 await _dbContext.Posts.Where(p=>p.ForumId == forumId).Include(t=>t.Replies).ExecuteDeleteAsync();
                 await _dbContext.Forums.Where(f => f.Id == forumId).ExecuteDeleteAsync();
-
+                CacheProvider.Remove("AllForums");
             }
             catch (Exception e)
             {
@@ -85,7 +94,7 @@ namespace SnitzCore.Service
             }
 
             await _dbContext.SaveChangesAsync();
-
+            CacheProvider.Remove("AllForums");
             if (_roleManager.RoleExistsAsync($"Forum_{forum.Id}").Result)
             {
                 if (forum.Privateforums is ForumAuthType.All)
@@ -146,12 +155,12 @@ namespace SnitzCore.Service
         {
             //var forums = _dbContext.Forums
             //    .AsNoTracking()
-            //    .Include(f=>f.Category)
-            //    .OrderBy(forum=>forum.Category!.Sort).ThenBy(forum=>forum.Order);
+            //    .Include(f => f.Category)
+            //    .OrderBy(forum => forum.Category!.Sort).ThenBy(forum => forum.Order);
             return CacheProvider.GetOrCreate("AllForums", () => _dbContext.Forums
                 .AsNoTracking()
-                .Include(f=>f.Category)
-                .OrderBy(forum=>forum.Category!.Sort).ThenBy(forum=>forum.Order).ToList(), TimeSpan.FromMinutes(10));
+                .Include(f => f.Category)
+                .OrderBy(forum => forum.Category!.Sort).ThenBy(forum => forum.Order).ToList(), TimeSpan.FromMinutes(10));
             //return forums;
         }
         public Dictionary<int, string?> CategoryList()
@@ -174,7 +183,7 @@ namespace SnitzCore.Service
             {
                 return  _dbContext.Forums.AsNoTracking().Include(f=>f.Category).Single(f=>f.Id==id);
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
                 throw new KeyNotFoundException($"Forum {id} not found");

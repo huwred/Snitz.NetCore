@@ -1,17 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SmartBreadcrumbs.Attributes;
-using SnitzCore.Data;
-using SnitzCore.Data.Extensions;
-using SnitzCore.Data.Interfaces;
-using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Home;
 using MVCForum.ViewModels.Post;
+using SmartBreadcrumbs.Attributes;
+using SnitzCore.Data;
+using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Interfaces;
+using SnitzCore.Data.Models;
+using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Security.Cryptography;
 
 namespace MVCForum.Controllers
 {
@@ -27,6 +31,16 @@ namespace MVCForum.Controllers
 
         public IActionResult Index()
         {            
+//        var passwordHasher = new PasswordHasher<IdentityUser>();
+
+//        // Create a dummy user (can be replaced with your actual user model)
+//        var user = new ForumUser();
+//            user.UserName = "Administrator";
+
+//            // Generate the hashed password
+//            string password = "Passw0rd!";
+//        string hashedPassword = passwordHasher.HashPassword(user, password);
+//_logger.Info($"Hashed: {hashedPassword}");
 
             try
             {

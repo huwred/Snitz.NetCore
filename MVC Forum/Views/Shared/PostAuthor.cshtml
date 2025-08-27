@@ -3,16 +3,17 @@
 @{
     Layout = null;
     var ranking = MemberService.GetRankings();
+    var rankType = SnitzConfig.GetIntValue("STRSHOWRANK", 0);
     bool showEmail = Model.ReceiveEmail == 1 && User.Identity!.IsAuthenticated && SnitzConfig.GetIntValue("STREMAIL") == 1;
     bool showPM = SnitzConfig.GetIntValue("STRPMSTATUS") == 1 && Model.Pmreceive == 1 && User.Identity!.IsAuthenticated;
     bool showHome = Model.Privateprofile != 1 && !string.IsNullOrWhiteSpace(Model.Homepage) && SnitzConfig.GetIntValue("STRHOMEPAGE") == 1;
 }
 <div class="authors flex-grow-0 flex-shrink-1">
     <div class="username"><a href="~/Account/Detail/@Model.Name" data-toggle="tooltip" aria-label="@Localizer["lblView"] @Localizer["ProfileDetails", Model.Name]">@Model.Name</a></div>
-    <div>@Html.MemberRankTitle(Model, ranking, Localizer,"span")</div>
+    <div snitz-if="@(rankType == 1 || rankType == 3)">@Html.MemberRankTitle(Model, ranking, Localizer, "span")</div>
     <snitz-avatar src="~/Content/Avatar/@Model.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle profile-popup" member="@Model.Name" data-id="@Model.Id" />
     <div><span class="post-count">@Localizer["lblPosts"]:</span> @Model.Posts</div>
-    <div><member-rank member="@Model" user="@User" ranking="@ranking" size="fs-5"></member-rank></div>
+    <div snitz-if="@(rankType > 1)"><member-rank member="@Model" user="@User" ranking="@ranking" size="fs-5"></member-rank></div>
     <div class="d-none d-lg-inline-flex">
         <ul class="list-group list-group-horizontal list-unstyled mb-0">
             <li snitz-if="@showEmail" class="p-1">

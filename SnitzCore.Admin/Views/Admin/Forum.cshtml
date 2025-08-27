@@ -69,22 +69,22 @@
                         <div class="mb-3">
                             <div class="col-5 col-sm-3 mb-3">
 
-                                <select asp-for="@SnitzConfig.CaptchaOperators"
+                            <select asp-for="@SnitzConfig.CaptchaOperators" name="STRCAPTCHAOPERATORS"
                                         asp-items="@Html.GetEnumSelectList<CaptchaOperator>()" class="form-select">
                                 </select>
                             </div>
                             <partial name="_FormButtons" />
                         </div>
-                        <span class="form-text">
-                            <legend>Example Captcha</legend><hr />
-                            <span class="border-1 rounded w-50">
-                                @await Component.InvokeAsync("Captcha")
-                            </span>
-                        </span>
+                    <div id="result-spam"></div>
                     </div>
                 </form>
-                <div id="result-spam"></div>
-            </div>
+                <div class="form-text">
+                    <label class="h4">Example Captcha</label><hr />
+                    <span class="border-1 rounded w-50">
+                        @await Component.InvokeAsync("Captcha")
+                    </span>
+                </div>
+        </div>
 
             <div class="tab-pane fade" id="v-pills-badwords" role="tabpanel" aria-labelledby="v-pills-badwords-tab">
                 <legend>Bad word Filter</legend>
@@ -130,8 +130,8 @@
                 <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-announce">
                 <admin-config config-key="STRSHOWANNOUNCE" config-label="Show Announcement" config-val="@SnitzConfig.GetIntValue("STRSHOWANNOUNCE")" help-text="@Localizer["STRSHOWANNOUNCE"].Value"></admin-config>
                     <fieldset @(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 0 ? "disabled" : "") id="ANNOUNCEENABLED" class="mb-3">
-                    <admin-config config-key="STRANNOUNCETITLE" config-label="Title" config-val="@SnitzConfig.GetValue("STRANNOUNCETITLE")" placeholder="Add a title, leave blank to use default" help-text="@Localizer["STRANNOUNCETITLE"].Value"></admin-config>
-                    <admin-config config-type="textarea" config-key="STRANNOUNCE" config-label="Message" config-val="@SnitzConfig.GetValue("STRANNOUNCE")" placeholder="Enter text for announcement" help-text="@Localizer["STRANNOUNCE"].Value"></admin-config>
+                    <admin-config config-key="STRANNOUNCETITLE" config-label="Title" config-val="@SnitzConfig.GetValue("STRANNOUNCETITLE")" placeholder="Add a title, leave blank to use default" ></admin-config>
+                    <admin-config config-type="textarea" config-key="STRANNOUNCE" config-label="Message" config-val="@SnitzConfig.GetValue("STRANNOUNCE")" placeholder="Enter text for announcement" ></admin-config>
                     </fieldset>
                     <partial name="_FormButtons" />
                 </form>

@@ -4766,7 +4766,12 @@ var DayGrid = Grid.extend({
 	computeCellDate: function(cell) {
 		var colCnt = this.colCnt;
 		var index = cell.row * colCnt + (this.view.isRTL ? colCnt - cell.col - 1 : cell.col);
-
+        try {
+			return this.cellDates[index].clone();
+		} catch (e) {
+			debugger;
+			alert(index + ":" + this.cellDates[index]);
+        }
 		return this.cellDates[index].clone();
 	},
 

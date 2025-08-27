@@ -64,7 +64,7 @@ public class BbCodeProcessor : ICodeProcessor
         _urlformatters.Add((new UrlFormatter(@"(?<start>\[urlpreview(?:\s*)\])(?!(?:https?/))(?<url>(?:.|\n)*?)(?<end>\[/urlpreview(?:\s*)\])", config.ForumUrl + "websitethumbnailhandler.ashx?url=${url}&tw=400&th=300")));
 
     #endregion
-        _formatters.Add(new RegexFormatter(@"(?:\[file((.|\n)*?)(?:\s*)])([^?#\[]*/)([^.?\[]+)/([^\[]+)(?:\[/file])", "<span class=\"file-attachment\">$5 <a href=\"$3$4/$5\" rel=\"noopener noreferrer nofollow\" title=\"Download file\" data-toggle=\"tooltip\" ><i class=\"fa  fa-download fa-1_5x\"></i></a>$1</span>"));
+        _formatters.Add(new RegexFormatter(@"(?:\[file((.|\n)*?)(?:\s*)])([^?#\[]*/)([^.?\[]+)/([^\[]+)(?:\[/file])", "<span class=\"file-attachment\">$5 <a href=\"$3$4/$5\" rel=\"noopener noreferrer nofollow\" title=\"Download file\" data-toggle=\"tooltip\" ><i class=\"fa  fa-download fa-1_5x\"></i> </a>$1</span>"));
 
         string embed = "<embed src=\"$1$2$3\" type=\"application/pdf\" class=\"object-pdf\" />";
         _formatters.Add(new RegexFormatter(@"(?:\[pdf])([^?#\[]*/)([^.?\[]+)([^\[]+)(?:\[/pdf])", embed));

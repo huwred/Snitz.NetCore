@@ -12,11 +12,11 @@
         <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/active">
     }
 }
-<partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
 <div class="container">
     <div class="row">
         <div class="col mt-3" >
-            <partial name="HomeContent"/>
+            <partial snitz-if="@(SnitzConfig.GetIntValue("INTFIRSTINSTALL", 1) == 1)" name="Startup" />
+            <partial snitz-if="@(SnitzConfig.GetIntValue("INTFIRSTINSTALL", 1) == 0)" name="HomeContent" />
         </div>
         @await Component.InvokeAsync("Widgets", new { template = "sidebar", width="col-4 mt-3", widgets = new[] { "search", "latest", "image", "poll" } })
     </div>

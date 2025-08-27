@@ -35,10 +35,9 @@
             var checkboxes = $(this).closest('form').find(':checkbox');
             checkboxes.prop('checked', $(this).is(':checked'));
         });
-        $(".pm-delete").on("click",
-            function(e) {
+        $(document).on("click", ".pm-delete",
+            function (e) {
                 if ($(this).attr('disabled')) {
-                    //console.log("disabled");
                     e.preventDefault();
                     return false;
                 }
@@ -48,44 +47,51 @@
                         if (result) {
                             $.post(SnitzVars.baseUrl + "/PrivateMessage/Delete", { pmid: $(this).data("id"), userid: $(this).data("user") }, function (data) {
                                 if (data.success) {
-                                    //alert(data.responseText);
-                                    location.reload();
+                                    appendAlert(data.responseText, "success");
+                                    setTimeout(function () {
+                                        $("#alertmessage .btn-close").click();
+                                        location.reload(true);
+                                    }, 3000);
                                 } else {
-                                    alert(data.responseText);
+                                    appendAlert(data.responseText, "warning");
                                 }
                             });
                         }
                     })();
-
                 } else {
                     (async () => {
                         const result = await b_confirm("delete selected messages ")
                         if (result) {
-                            $.post(SnitzVars.baseUrl + "/PrivateMessage/DeleteMany", $("#pm-form").closest('form').serialize(), function (data) {
+                            $.post(SnitzVars.baseUrl + "/PrivateMessage/DeleteMany", $("#pm-form").serialize(), function (data) {
                                 if (data.success) {
-                                    //alert(data.responseText);
-                                    location.reload();
+                                    appendAlert(data.responseText, "success");
+                                    setTimeout(function () {
+                                        $("#alertmessage .btn-close").click();
+                                        location.reload(true);
+                                    }, 3000);
                                 } else {
-                                    alert(data.responseText);
+                                    appendAlert(data.responseText, "warning");
                                 }
                             });
                         }
                     })();
-
                 }
             });
         $(".fa-trash").on("click",
-            function() {
+            function () {
                 if ($(this).data("id")) {
                     (async () => {
                         const result = await b_confirm("delete this messages ")
                         if (result) {
                             $.post(SnitzVars.baseUrl + "/PrivateMessage/Delete", { pmid: $(this).data("id"), userid: $(this).data("user") }, function (data) {
                                 if (data.success) {
-                                    alert(data.responseText);
-                                    location.reload();
+                                    appendAlert(data.responseText, "info");
+                                    setTimeout(function () {
+                                        $("#alertmessage .btn-close").click();
+                                        location.reload(true);
+                                    }, 3000);
                                 } else {
-                                    alert(data.responseText);
+                                    appendAlert(data.responseText, "warning");
                                 }
                             });
                         }
@@ -97,10 +103,13 @@
                         if (result) {
                             $.post(SnitzVars.baseUrl + "/PrivateMessage/DeleteMany", $("#pm-form").closest('form').serialize(), function (data) {
                                 if (data.success) {
-                                    //alert(data.responseText);
-                                    location.reload();
+                                    appendAlert(data.responseText, "info");
+                                    setTimeout(function () {
+                                        $("#alertmessage .btn-close").click();
+                                        location.reload(true);
+                                    }, 3000);
                                 } else {
-                                    alert(data.responseText);
+                                    appendAlert(data.responseText, "warning");
                                 }
                             });
                         }
@@ -118,7 +127,7 @@
                     $('#pm-message').hide();
                     $('.pm-delete').attr('disabled', false);
                 } else {
-                    alert(data);
+                    appendAlert(data, "warning");;
                 }
             });
         });

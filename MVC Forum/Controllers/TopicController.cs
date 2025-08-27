@@ -17,6 +17,7 @@ using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -1321,28 +1322,32 @@ namespace MVCForum.Controllers
         [Route("Topic/Upload/")]
         public IActionResult Upload(UploadViewModel model)
         {
-            var uploadFolder = Combine(_config.ContentFolder, "Members");
+            var uploadFolder = StringExtensions.UrlCombine(_config.ContentFolder, "Members");
             var currentMember = _memberService.Current();
             if (currentMember != null)
             {
-                uploadFolder = Combine(uploadFolder, currentMember.Id.ToString());
+                uploadFolder = StringExtensions.UrlCombine(uploadFolder, currentMember.Id.ToString());
             }
             else
             {
                 return View("Error");
             }
-            var path = $"{uploadFolder}".Replace("/","\\");
+            //var path = Path.Combine(_config.ContentFolder, "Members");// $"{uploadFolder}".Replace("/","\\");
             uploadFolder = _config.RootFolder + "/" + uploadFolder;
 
             if (ModelState.IsValid)
             {
                 var uniqueFileName = GetUniqueFileName(model.AlbumImage.FileName, out string timestamp);
-                var uploads = Path.Combine(_environment.WebRootPath, path);
+                var uploads = Path.Combine(_environment.WebRootPath, _config.ContentFolder, "Members", currentMember.Id.ToString());
+                if(!Directory.Exists(uploads))
+                {
+                    Directory.CreateDirectory(uploads);
+                }
                 var filePath = Path.Combine(uploads, uniqueFileName);
                 var fStream = new FileStream(filePath, FileMode.Create);
                 model.AlbumImage.CopyTo(fStream);
                 fStream.Flush();
-                return Json(new { result = true, data = Combine(uploadFolder,uniqueFileName),filesize= model.AlbumImage.Length/1024,type = Path.GetExtension(model.AlbumImage.FileName) });
+                return Json(new { result = true, data = StringExtensions.UrlCombine(uploadFolder,uniqueFileName),filesize= model.AlbumImage.Length/1024,type = Path.GetExtension(model.AlbumImage.FileName) });
                 //return Json(uniqueFileName + "|" + model.Description);
             }
 

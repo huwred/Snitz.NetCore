@@ -39,17 +39,24 @@
         }
     </div>
 </div>
-@foreach (var album in Model)
+@if(Model == null || !Model.Any())
 {
-    <div class="row p-1">
-        <div class="col-2">
-            @Html.ActionLink(album.Username, "Member", new { id = album.MemberId, sortby = "date", sortorder = "desc" })
-        </div>
-        <div class="col-2">@album.imgCount</div>
-        <div class="col-2"><snitz-datetime datetime="@album.imgLastUpload.FromForumDateStr()"></snitz-datetime></div>
-    </div>
-
+    <div class="alert alert-info mt-3">@Localizer["msgNoAlbums"]</div>
 }
+else
+{
+    foreach (var album in Model)
+    {
+        <div class="row p-1">
+            <div class="col-2">
+                @Html.ActionLink(album.Username, "Member", new { id = album.MemberId, sortby = "date", sortorder = "desc" })
+            </div>
+            <div class="col-2">@album.imgCount</div>
+            <div class="col-2"><snitz-datetime datetime="@album.imgLastUpload.FromForumDateStr()"></snitz-datetime></div>
+        </div>
+    }    
+}
+
 <!--Pagination starts-->
 @if (ViewBag.PageCount > 1)
 {

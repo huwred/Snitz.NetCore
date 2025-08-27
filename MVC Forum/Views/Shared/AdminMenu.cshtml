@@ -3,7 +3,7 @@
         @Localizer["mnuAdmin"]
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdminLink">
-        <li snitz-if="@User.IsInRole("SuperAdmin")"><a class="dropdown-item" asp-controller="Admin" asp-action="Index">@Localizer["mnuAdminMainConfig"]</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">@Localizer["mnuAdminMainConfig"]</a></li>
         <li><a class="dropdown-item" asp-controller="Admin" asp-action="EmailConfig" >Email Setup</a></li>
         <li><a class="dropdown-item" asp-controller="Admin" asp-action="Forum" >Forum Options</a></li>
         <li><a class="dropdown-item" asp-controller="Admin" asp-action="Features" >Features</a></li>

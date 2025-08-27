@@ -30,7 +30,7 @@ namespace SnitzCore.Data
 
             modelBuilder.Entity<IdentityUserRole<string>>();
 
-            modelBuilder.Entity<ForumAllowedMember>().HasNoKey();
+            modelBuilder.Entity<ForumAllowedMember>().HasKey(e => new { e.MemberId, e.ForumId });;
             modelBuilder.Entity<Badword>();
             modelBuilder.Entity<Group>();
             modelBuilder.Entity<GroupName>();

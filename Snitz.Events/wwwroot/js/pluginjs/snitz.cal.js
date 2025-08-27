@@ -1,85 +1,9 @@
-﻿//$('.date').datepicker({
-//    autoclose: true,
-//    format: {
-//        /*
-//         * Say our UI should display a week ahead,
-//         * but textbox should store the actual date.
-//         * This is useful if we need UI to select local dates,
-//         * but store in UTC
-//         */
-
-//        toDisplay: function (date, format, language) {
-//            var d = new Date(date);
-//            d.setDate(d.getDate());
-//            return d.toLocaleDateString();
-//        },
-//        toValue: function (date, format, language) {
-//            let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
-//            let lastFirst = date.replace(re, '$1-$2-$3');
-//            var d = new Date(lastFirst);
-//            d.setDate(d.getDate());
-//            return new Date(d);
-//        }
-//    }
-//});
-
+﻿
 if ($('.cal-dates').length >= 1) {
-
-    //$('#calendar-start-date').datepicker({
-    //    autoclose: true,
-    //    format: {
-    //        /*
-    //         * Say our UI should display a week ahead,
-    //         * but textbox should store the actual date.
-    //         * This is useful if we need UI to select local dates,
-    //         * but store in UTC
-    //         */
-
-    //        toDisplay: function (date, format, language) {
-    //            var d = new Date(date);
-    //            d.setDate(d.getDate());
-    //            return d.toLocaleDateString();
-    //        },
-    //        toValue: function (date, format, language) {
-    //            let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
-    //            let lastFirst = date.replace(re, '$1-$2-$3');
-    //            var d = new Date(lastFirst);
-    //            d.setDate(d.getDate());
-    //            return new Date(d);
-    //        }
-    //    }
-    //});
-
-    //$('#calendar-end-date').datepicker({
-    //    autoclose: true,
-    //    format: {
-    //        /*
-    //         * Say our UI should display a week ahead,
-    //         * but textbox should store the actual date.
-    //         * This is useful if we need UI to select local dates,
-    //         * but store in UTC
-    //         */
-
-    //        toDisplay: function (date, format, language) {
-    //            var d = new Date(date);
-    //            d.setDate(d.getDate());
-    //            return d.toLocaleDateString();
-    //        },
-    //        toValue: function (date, format, language) {
-    //            let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
-    //            let lastFirst = date.replace(re, '$1-$2-$3');
-    //            var d = new Date(lastFirst);
-    //            d.setDate(d.getDate());
-    //            return new Date(d);
-    //        }
-    //    }
-    //});
-
     if ($('#cal-recur').val() == 'EveryDay') {
         $('#cal-dow').show();
     }
     $(document).on('change', '#cal-recur', function (evt) {
-        console.log($(this).val());
         if ($(this).val() == 'EveryDay') {
             $('#cal-dow').show();
         } else {
@@ -87,7 +11,6 @@ if ($('.cal-dates').length >= 1) {
         }
     });
 }
-
 
 UpComingCalendar = function(url, divid) {
     var d = new Date();
@@ -119,7 +42,6 @@ UpComingCalendar = function(url, divid) {
                 { url: SnitzVars.baseUrl + "/Calendar/GetBirthDays" }
             ],
             loading: function(bool) {
-
                 if (bool) {
                     $("#calendar-list").css({ "visibility": "hidden" });
                     $("#calendar-list").css({ "height": "0px" });
@@ -128,18 +50,13 @@ UpComingCalendar = function(url, divid) {
                     $("#calendar-list").css({ "visibility": "visible" });
                     $('#cal-loading').hide();
                     $("#calendar-list").css({ "height": "auto" });
-
-
                 }
-
             },
             defaultDate: moment(date)
         });
 };
 
 FullCalendar = function(url, divid, firstday, country) {
-    //console.log("SnitzVars.baseUrl");
-    //console.log(SnitzVars.baseUrl);
     var view = $('#' + divid).fullCalendar('getView');
     if (country.length > 1) {
         $('#' + divid).fullCalendar('destroy');
@@ -169,24 +86,20 @@ FullCalendar = function(url, divid, firstday, country) {
                 { url: birthdayUrl }
             ],
             eventClick: function(calEvent, jsEvent, view) {
-
                 if (calEvent.className[0] === "event-birthday") {
                     alert(calEvent.title);
                 }
             }
-
         });
-    if (country.length > 1) {
-        var newview = $('#' + divid).fullCalendar('getView');
-        if (newview.name !== view.name) {
-            $('#' + divid).fullCalendar('changeView', view.name);
+        if (country.length > 1) {
+            var newview = $('#' + divid).fullCalendar('getView');
+            if (newview.name !== view.name) {
+                $('#' + divid).fullCalendar('changeView', view.name);
+            }
         }
-
-    }
 };
 
 ClubCalendar = function (url, divid, catfilter) {
-    console.log("ClubCal " + url);
     var d = new Date();
     var n = d.getDay();
     var fullweeks = 52;
@@ -227,15 +140,12 @@ ClubCalendar = function (url, divid, catfilter) {
             navLinks: false, // can click day/week names to navigate views
             editable: false,
             eventLimit: true // allow "more" link when too many events
-
         });
     if (catfilter.length > 1) {
-        //$('#' + divid).fullCalendar('changeView', 'disContinued');
         $('#' + divid).fullCalendar('gotoDate', catfilter);
     }
     if ($('.my-fc-list>span').is(':empty')) {
         $('.my-fc-list>span').html('No Events');
-
     }
 };
 

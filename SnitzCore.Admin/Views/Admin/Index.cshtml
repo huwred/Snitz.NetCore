@@ -12,11 +12,17 @@
 }
 
 <form asp-action="SaveSettings" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result" disabled readonly >
+
     <fieldset @disableme >
         <div class="bg-light m-3 rounded">
             <div class="mb-3 p-3 ">
                 <legend>Forum Details</legend>
                 <hr />
+                <div class="row">
+                    <div class="col">
+                        <admin-config config-key="INTFIRSTINSTALL" config-label="Toggle Startup page" config-val="@SnitzConfig.GetIntValue("INTFIRSTINSTALL")" help-text="@Localizer["INTFIRSTINSTALL"].Value"></admin-config>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col">
                         <admin-config config-key="STRFORUMTITLE" config-label="Forum Title" config-val="@SnitzConfig.GetValue("STRFORUMTITLE")" disabled="true" help-text="@Localizer["STRFORUMTITLE"].Value"></admin-config>
@@ -80,7 +86,7 @@
                     </div>
                 </div>
                 <div class="mb-3 p-3">
-                    <span class="form-text">If you use tracking cookies, this option may be required. It will display a cookie consent form at the bottom of the page.</span>
+                    <span class="form-text d-none">If you use tracking cookies, this option may be required. It will display a cookie consent form at the bottom of the page.</span>
                     <admin-config config-key="INTREQUIRECONSENT" config-label="Require Cookie consent" config-val="@SnitzConfig.GetIntValue("INTREQUIRECONSENT")" help-text="@Localizer["INTREQUIRECONSENT"].Value"></admin-config>
                 </div>
             </div>

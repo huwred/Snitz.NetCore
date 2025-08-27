@@ -151,26 +151,39 @@ namespace SnitzCore.Service
         }
         public Member Create(Member member,List<KeyValuePair<string,object>> additionalFields)
         {
-            var result = _dbContext.Members.Add(member);
-            _dbContext.SaveChanges();
-            _dbContext.Database.BeginTransaction();
-            foreach (var additionalField in additionalFields)
+            using var transaction = _dbContext.Database.BeginTransaction();
+            try
             {
-                if (additionalField.Key.ToUpper() == "DOB")
+                var result = _dbContext.Members.Add(member);
+                _dbContext.SaveChanges();
+                foreach (var additionalField in additionalFields)
                 {
-                    var date = DateTime.ParseExact(additionalField.Value.ToString()!,"dd/mm/yyyy",CultureInfo.InvariantCulture).ToString("yyyyMMdd");
-                    _dbContext.Database.ExecuteSqlRaw("UPDATE " + _memberprefix + "MEMBERS SET M_"+additionalField.Key.ToUpper()+"=@Dob WHERE MEMBER_ID=@MemberId",new SqlParameter("Dob", date),new SqlParameter("MemberId", member.Id));
+                    if (additionalField.Key.ToUpper() == "DOB")
+                    {
+                        var dob = DateTime.ParseExact(additionalField.Value.ToString()!,"dd/mm/yyyy",CultureInfo.InvariantCulture).ToString("yyyyMMdd");
+                        var memberid = member.Id;
+                        _dbContext.Database.ExecuteSqlRaw("UPDATE " + _memberprefix + "MEMBERS SET M_"+additionalField.Key.ToUpper()+$"={dob} WHERE MEMBER_ID={memberid}");
+                    }
+                    else
+                    {
+                        string? country = additionalField.Value?.ToString();
+                        var sql = "UPDATE " + _memberprefix + "MEMBERS SET M_"+additionalField.Key.ToUpper();
+                        var memberid = member.Id;
+                        _dbContext.Database.ExecuteSqlRaw(sql + "={0} WHERE MEMBER_ID={1} ",country,memberid);
+                    }
                 }
-                else
-                {
-                    _dbContext.Database.ExecuteSqlRaw("UPDATE " + _memberprefix + "MEMBERS SET M_"+additionalField.Key.ToUpper()+"=@FieldName WHERE MEMBER_ID=@MemberId ",new SqlParameter("FieldName", additionalField.Value),new SqlParameter("MemberId", member.Id));
-                }
+
+                _dbContext.Database.ExecuteSqlRaw($"UPDATE "+_tableprefix+"TOTALS SET U_COUNT = U_COUNT + 1;");
+                transaction.Commit();
+
+                return result.Entity;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
             }
 
-            _dbContext.Database.ExecuteSqlRaw($"UPDATE "+_tableprefix+"TOTALS SET U_COUNT = U_COUNT + 1;");
-            _dbContext.Database.CommitTransaction();
-
-            return result.Entity;
         }
         public Dictionary<int, MemberRanking>? GetRankings()
         {

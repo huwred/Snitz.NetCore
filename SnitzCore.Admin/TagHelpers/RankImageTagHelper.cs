@@ -35,7 +35,7 @@ namespace SnitzCore.BackOffice.TagHelpers
             
             if (Value != null && Value.Contains("."))
             {
-                var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, "images\\rankimages\\"), "*.gif");
+                var files = Directory.GetFiles(Path.Combine(_environment.WebRootPath, "images","rankimages"), "*.gif");
 
                 foreach (var file in files)
                 {

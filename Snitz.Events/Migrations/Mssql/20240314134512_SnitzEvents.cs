@@ -105,46 +105,47 @@ namespace Snitz.Events.Migrations
                         table.PrimaryKey("PK_EVENT_SUBSCRIPTIONS", x => x.SUB_ID);
                     });
             }
+                if (!migrationBuilder.IndexExists(
+                        migrationBuilder.IsSqlite() ? "SELECT * FROM sqlite_master WHERE type= 'index' and tbl_name = 'EVENT_LOCATION' and name = 'IX_EVENT_LOCATION_LOC_ID'" :
+                        "SELECT COUNT(*) FROM sys.indexes WHERE object_id = OBJECT_ID('EVENT_LOCATION') AND name='IX_EVENT_LOCATION_LOC_ID'"))
+                {
+                    migrationBuilder.CreateIndex(
+                        name: "IX_EVENT_LOCATION_LOC_ID",
+                        table: "EVENT_LOCATION",
+                        column: "LOC_ID",
+                        unique: true);
+                }
+                if (!migrationBuilder.IndexExists(
+                    migrationBuilder.IsSqlite() ? "SELECT * FROM sqlite_master WHERE type= 'index' and tbl_name = 'EVENT_CLUB' and name = 'IX_EVENT_CLUB_CLUB_ID'" :
+                        "SELECT COUNT(*) FROM sys.indexes WHERE object_id = OBJECT_ID('EVENT_CLUB') AND name='IX_EVENT_CLUB_CLUB_ID'"))
+                {
+                    migrationBuilder.CreateIndex(
+                        name: "IX_EVENT_CLUB_CLUB_ID",
+                        table: "EVENT_CLUB",
+                        column: "CLUB_ID",
+                        unique: true);
+                }
+                if (!migrationBuilder.IndexExists(
+                    migrationBuilder.IsSqlite() ? "SELECT * FROM sqlite_master WHERE type= 'index' and tbl_name = 'EVENT_CAT' and name = 'IX_EVENT_CAT_CAT_ID'" :
+                        "SELECT COUNT(*) FROM sys.indexes WHERE object_id = OBJECT_ID('EVENT_CAT') AND name='IX_EVENT_CAT_CAT_ID'"))
+                {
+                    migrationBuilder.CreateIndex(
+                        name: "IX_EVENT_CAT_CAT_ID",
+                        table: "EVENT_CAT",
+                        column: "CAT_ID",
+                        unique: true);
+                }
 
-            if (!migrationBuilder.IndexExists(
-                    "SELECT COUNT(*) FROM sys.indexes WHERE object_id = OBJECT_ID('EVENT_LOCATION') AND name='IX_EVENT_LOCATION_LOC_ID'"))
-            {
-                migrationBuilder.CreateIndex(
-                    name: "IX_EVENT_LOCATION_LOC_ID",
-                    table: "EVENT_LOCATION",
-                    column: "LOC_ID",
-                    unique: true);
-            }
-            if (!migrationBuilder.IndexExists(
-                    "SELECT COUNT(*) FROM sys.indexes WHERE object_id = OBJECT_ID('EVENT_CLUB') AND name='IX_EVENT_CLUB_CLUB_ID'"))
-            {
-                migrationBuilder.CreateIndex(
-                    name: "IX_EVENT_CLUB_CLUB_ID",
-                    table: "EVENT_CLUB",
-                    column: "CLUB_ID",
-                    unique: true);
-            }
-            if (!migrationBuilder.IndexExists(
-                    "SELECT COUNT(*) FROM sys.indexes WHERE object_id = OBJECT_ID('EVENT_CAT') AND name='IX_EVENT_CAT_CAT_ID'"))
-            {
-                migrationBuilder.CreateIndex(
-                    name: "IX_EVENT_CAT_CAT_ID",
-                    table: "EVENT_CAT",
-                    column: "CAT_ID",
-                    unique: true);
-            }
-
-
-
-            if (!migrationBuilder.IndexExists(
-                    "SELECT COUNT(*) FROM sys.indexes WHERE object_id = OBJECT_ID('CAL_EVENTS') AND name='IX_CAL_EVENTS_C_ID'"))
-            {
-                migrationBuilder.CreateIndex(
-                    name: "IX_CAL_EVENTS_C_ID",
-                    table: "CAL_EVENTS",
-                    column: "C_ID",
-                    unique: true);
-            }
+                if (!migrationBuilder.IndexExists(
+                    migrationBuilder.IsSqlite() ? "SELECT * FROM sqlite_master WHERE type= 'index' and tbl_name = 'CAL_EVENTS' and name = 'IX_CAL_EVENTS_C_ID'" :
+                        "SELECT COUNT(*) FROM sys.indexes WHERE object_id = OBJECT_ID('CAL_EVENTS') AND name='IX_CAL_EVENTS_C_ID'"))
+                {
+                    migrationBuilder.CreateIndex(
+                        name: "IX_CAL_EVENTS_C_ID",
+                        table: "CAL_EVENTS",
+                        column: "C_ID",
+                        unique: true);
+                }
 
         }
 

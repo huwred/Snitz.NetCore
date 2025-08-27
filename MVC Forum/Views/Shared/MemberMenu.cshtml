@@ -22,7 +22,7 @@
             <li snitz-if="@(SnitzConfig.TableExists("FORUM_IMAGES") && SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="">@Localizer["mnuMyAlbum"]</a></li>
             <li><hr class="dropdown-divider"> </li>
             <li><a class="dropdown-item" asp-controller="Account" asp-action="NewEmail" asp-route-id="">@Localizer["mnuChangeEmail"]</a></li>
-            <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangeUsername" asp-route-id="@member.Id">@Localizer["mnuChangeUsername"]</a></li>
+            <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangeUsername" asp-route-id="@member?.Id">@Localizer["mnuChangeUsername"]</a></li>
             <li><a class="dropdown-item" asp-controller="Account" asp-action="ResetPassword" asp-route-id="">@Localizer["mnuChangePassword"]</a></li>
             @if (User.IsInRole("LanguageEditor"))
             {

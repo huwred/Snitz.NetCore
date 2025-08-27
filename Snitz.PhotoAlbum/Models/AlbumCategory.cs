@@ -14,5 +14,5 @@ public class AlbumCategory
     [Column("MEMBER_ID")]
     public int MemberId { get; set; }
     [Column("CAT_DESC")]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 }

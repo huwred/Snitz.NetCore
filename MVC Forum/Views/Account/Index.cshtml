@@ -12,6 +12,7 @@
 
 @{
     var ranking = MemberService.GetRankings();
+    var rankType = SnitzConfig.GetIntValue("STRSHOWRANK", 0);
     ViewBag.PageCount = Model.PageCount;
     IList<string>? userroles = null;
     if (User.Identity!.IsAuthenticated)
@@ -85,7 +86,7 @@
                 <tr class="bg-dark text-white">
                     <th>&nbsp;</th>
                     <th><a href="?sortCol=name&sortOrder=@sortorder">@Localizer["UserName"]</a></th>
-                    <th>@Localizer["ProfileTitle"]</th>
+                    <th snitz-if="@(rankType > 0)">@Localizer["ProfileTitle"]</th>
                     <th><a href="?sortCol=posts&sortOrder=@sortorder">@Localizer["ProfilePosts"]</a></th>
                     <th><a href="?sortCol=lastpost&sortOrder=@sortorder">@Localizer["ProfileLastPost"]</a></th>
                     <th class="d-none d-md-table-cell"><a href="?sortCol=membersince&sortOrder=@sortorder">@Localizer["ProfileDate"]</a></th>
@@ -112,8 +113,9 @@
                         </td>
                         <td snitz-if="!showlink">@member.Member.Name</td>
                         <td snitz-if="showlink"><a href="~/Account/Detail/@Flurl.Url.Encode(member.Member.Name)" aria-label="@member.Member.Name, @Localizer[" tipViewProfile"]">@member.Member.Name</a></td>
-                        <td>@member.Title<br />
-                                <member-rank member="@member.Member" user="@User" ranking="@ranking" size="fs-5"></member-rank>
+                        <td snitz-if="@(rankType > 0)">
+                            <span snitz-if="@(rankType == 1 || rankType == 3)">@member.Title<br /></span>
+                            <member-rank snitz-if="@(rankType > 1)" member="@member.Member" user="@User" ranking="@ranking" size="fs-5"></member-rank>
                         </td>
                         <td>@member.Member.Posts</td>
                         <td><snitz-datetime datetime="@member.LastPost"></snitz-datetime></td>

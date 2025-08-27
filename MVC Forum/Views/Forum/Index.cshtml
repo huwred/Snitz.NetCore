@@ -170,7 +170,7 @@
                         @if (User.IsInRole("Administrator"))
                         {
                             <button asp-controller="Forum" asp-action="Edit" asp-route-id="@Model.Forum!.Id" aria-label="Edit Forum" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-lg-inline"> @Localizer["tipEditForum"]</span></button>
-                            <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Forum!.Id" href="@SnitzConfig.RootFolder/Forum/Delete/?id=" title="@Localizer["cnfDeleteForum"].Value"></button-confirm>
+                            <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Forum!.Id" href="@SnitzConfig.RootFolder/Forum/Delete/" title="@Localizer["cnfDeleteForum"].Value"></button-confirm>
                         }
                     </div>
                 </form>
@@ -204,9 +204,9 @@
                         ViewData["Archives"] = Model.Archives;
                     }
                     <!--Sticky Topics-->
-                    @if (Model.StickyPosts!.Any())
+                    @if (Model.StickyPosts != null)
                     {
-                        if (Model.StickyPosts != null)
+                        if (Model.StickyPosts.Any())
                         {
                             foreach (var post in Model.StickyPosts)
                             {
@@ -275,11 +275,11 @@
             e.preventDefault();
             var id = $(this).data('id');
             var href = $(this).attr('href');
-
+            console.log(href);
             (async () => {
                 const result = await b_confirm(Snitzres.cnfDeleteForum)
                 if (result) {
-                    $.get(href.replace("~", SnitzVars.baseUrl) + id, function(result){
+                    $.get(href.replace("~", SnitzVars.baseUrl), function(result){
                         window.location.replace(result.redirectToUrl);
                     });
                 }

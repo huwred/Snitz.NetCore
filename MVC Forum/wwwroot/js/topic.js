@@ -91,6 +91,8 @@ $(document).on('click', '#submitUpload', function(e) {
         success: function(data) {
             if (data.result) {
                 if (!data.type) {
+                    console.log(data);
+                    debugger;
                     var img = "[image=" + data.id + "]";
                     if (data.caption) {
                         img = "[cimage=" + data.id + "]";

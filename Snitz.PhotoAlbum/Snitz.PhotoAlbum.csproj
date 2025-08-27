@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Version>1.0.2-rc22</Version>
+    <Version>1.0.2-rc38</Version>
     <Nullable>enable</Nullable>
     <Authors>Huw Reddick</Authors>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -10,6 +10,17 @@
     <PackageOutputPath>E:\Umbraco-Dev\Nuget</PackageOutputPath>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\MsSql\**" />
+    <Compile Remove="Migrations\Sqlite\**" />
+    <Content Remove="Migrations\MsSql\**" />
+    <Content Remove="Migrations\Sqlite\**" />
+    <EmbeddedResource Remove="Migrations\MsSql\**" />
+    <EmbeddedResource Remove="Migrations\Sqlite\**" />
+    <None Remove="Migrations\MsSql\**" />
+    <None Remove="Migrations\Sqlite\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Helpers\Extensions.cs" />
@@ -31,6 +42,9 @@
     </PackageReference>
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.2.0" />
+    <PackageReference Include="SkiaSharp" Version="2.88.9" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.9" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
@@ -78,6 +92,10 @@
 
 <ItemGroup>
   <UpToDateCheckInput Remove="Views\PhotoAlbum\Edit.cshtml" />
+</ItemGroup>
+
+<ItemGroup>
+  <Folder Include="Migrations\" />
 </ItemGroup>
 
 </Project>

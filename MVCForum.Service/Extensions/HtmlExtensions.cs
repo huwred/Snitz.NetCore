@@ -44,7 +44,7 @@ namespace SnitzCore.Service.Extensions
             {
                 return new HtmlString(mTitle);
             }
-            TagBuilder title = new TagBuilder("span");
+            TagBuilder title = new TagBuilder(wrapper);
             title.AddCssClass("rank-label");
             if (mTitle != null) title.InnerHtml.AppendHtml(mTitle);
 

@@ -291,6 +291,7 @@ namespace MVCForum.Controllers
                 Status = 0,
                 Created = DateTime.UtcNow.ToForumDateStr(),
                 Ip = ipaddress,
+                Sha256 = 1
             };
             var required = new List<KeyValuePair<string, object>>();
 
@@ -360,25 +361,54 @@ namespace MVCForum.Controllers
             }
 
             CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
-            var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, username = user.Name }, Request.Scheme);
-            var message = new EmailMessage(new[] { user.Email }, 
-                _languageResource["Confirm"].Value, 
-                _emailSender.ParseTemplate("confirmEmail.html",_languageResource["Confirm"].Value,user.Email,user.Name, confirmationLink!, cultureInfo.Name));
+            if(_config.GetIntValue("STREMAILVAL") == 1)
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
+                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, username = user.Name }, Request.Scheme);
+                var message = new EmailMessage(new[] { user.Email }, 
+                    _languageResource["Confirm"].Value, 
+                    _emailSender.ParseTemplate("confirmEmail.html",_languageResource["Confirm"].Value,user.Email,user.Name, confirmationLink!, cultureInfo.Name));
             
-            await _emailSender.SendEmailAsync(message);
-            await _userManager.AddToRoleAsync(appUser, "Visitor");
+                await _emailSender.SendEmailAsync(message);
+                await _userManager.AddToRoleAsync(appUser, "Visitor");
+            }
+            if (_config.GetIntValue("STRRESTRICTREG") == 1)
+            {
+                //don't send email - TODO: need to send email after registration approved!
+                return RedirectToAction(nameof(ApproveRegistration));
+            }
+            if (_config.GetIntValue("STREMAILVAL") == 1 && _config.GetIntValue("STREMAIL") == 1)
+            {
+                return RedirectToAction(nameof(ConfirmRegEmail));
+            }
+            //No restrictions so log them in
+            //if (user != null)
+            //{
+            //    WebSecurity.Login(user.UserName, model.Password);
+            //    user.LastVisit = DateTime.UtcNow.ToSnitzDate();
+            //}
 
             return RedirectToAction(nameof(SuccessRegistration));
         }
-
+        [HttpGet]
+        public IActionResult ApproveRegistration()
+        {
+            return View();
+        }
         [HttpGet]
         public IActionResult SuccessRegistration()
         {
             return View();
         }
- 
+        [HttpGet]
+        public IActionResult ConfirmRegEmail()
+        {
+            return View();
+        } 
+
         [AllowAnonymous]
+        [Route("Login")]
+        [Route("[controller]/[action]")]
         public IActionResult Login(string returnUrl = "/")
         {
             UserSignInModel login = new()
@@ -417,6 +447,7 @@ namespace MVCForum.Controllers
                 catch (Exception e)
                 {
                     _logger.Error($"Multiple accounts with that email {login.Username}", e);
+                    TempData["Error"] = "Multiple accounts with that email, please login with your username";
                     //we will get an error if multiple accounds have the same email;
                     ModelState.AddModelError(nameof(login.Username), "Multiple accounts with that email, please login with your username");
                     return View(login);
@@ -460,12 +491,13 @@ namespace MVCForum.Controllers
                         $"Your account is locked out, to reset your password, please click this link: {forgotPassLink}";
                     var message = new EmailMessage(new[] { newIdentityUser.Email! }, "Locked out account information", content);
                     await _emailSender.SendEmailAsync(message);
-
+                    TempData["Error"] = "The account is locked out, an email has been sent with details on how to reset your password";
                     ModelState.AddModelError(nameof(login.Username), "The account is locked out");
                     return View(login);
                 }
+                TempData["Error"] = "Invalid Login Attempt";
                 ModelState.AddModelError(nameof(login.Username), "Invalid Login Attempt");
-                return View();
+                return View(login);
             }
             _logger.Info("No IdentityUser user, checking Member table");
             var member = _memberService.GetByUsername(login.Username);
@@ -958,23 +990,22 @@ namespace MVCForum.Controllers
         }
         public IActionResult UploadAvatar(ViewModels.UploadViewModel model)
         {
-            var uploadFolder = Combine(_config.ContentFolder, "Avatar");
+            var uploadFolder = StringExtensions.UrlCombine(_config.ContentFolder, "Avatar");
             var currentMember = _memberService.Current();
             if (currentMember == null)
             {
                 return View("Error");
             }
-
-            if (!Directory.Exists(_env.WebRootPath + uploadFolder))
-            {
-                Directory.CreateDirectory(_env.WebRootPath + uploadFolder);
-            }
-            var path = $"{uploadFolder}".Replace("/","\\");
+            //var path = $"{uploadFolder}".Replace("/","\\");
             //return Json(new { result = true, data = Combine(uploadFolder,model.AlbumImage.FileName) });
 
             if (ModelState.IsValid)
             {
-                var uploads = Path.Combine(_env.WebRootPath, path);
+                var uploads = Path.Combine(_env.WebRootPath, _config.ContentFolder, "Avatar");
+                if (!Directory.Exists(uploads))
+                {
+                    Directory.CreateDirectory(uploads);
+                }
                 var filePath = Path.Combine(uploads, model.AlbumImage.FileName);
                 var fStream = new FileStream(filePath, FileMode.Create);
                 model.AlbumImage.CopyTo(fStream);
@@ -983,11 +1014,11 @@ namespace MVCForum.Controllers
                 _snitzDbContext.Update(currentMember);
                 _snitzDbContext.SaveChanges();
 
-                return Json(new { result = true, data = "/" + Combine(uploadFolder,model.AlbumImage.FileName) });
+                return Json(new { result = true, data = "/" + StringExtensions.UrlCombine(uploadFolder,model.AlbumImage.FileName) });
 
             }
 
-            return PartialView("popUploadAvatar",model);
+            return PartialView("popUpload",model);
         }
 
         private bool IsValidEmail(string emailaddress)
@@ -1178,30 +1209,37 @@ namespace MVCForum.Controllers
         }
         private bool StopForumSpamCheck(string email, string name, string? userip)
         {
-            Client client = new Client(); //(apiKeyTextBox.Text)
-            CreativeMinds.StopForumSpam.Responses.Response response;
-            if (!String.IsNullOrWhiteSpace(name) && String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
-            {
-                response = client.CheckUsername(name);
-            }
-            else if (String.IsNullOrWhiteSpace(name) && !String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
-            {
-                response = client.CheckEmailAddress(email);
-            }
-            else if (String.IsNullOrWhiteSpace(name) && String.IsNullOrWhiteSpace(email) && !String.IsNullOrWhiteSpace(userip))
-            {
-                response = client.CheckIPAddress(userip);
-            }
-            else
-            {
-                response = client.Check(name, email, userip!);
-            }
             int freq = 0;
-     
-            foreach (ResponsePart part in response.ResponseParts)
+            try
             {
-                freq += part.Frequency;
+                Client client = new Client(); //(apiKeyTextBox.Text)
+                CreativeMinds.StopForumSpam.Responses.Response response;
+                if (!String.IsNullOrWhiteSpace(name) && String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
+                {
+                    response = client.CheckUsername(name);
+                }
+                else if (String.IsNullOrWhiteSpace(name) && !String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
+                {
+                    response = client.CheckEmailAddress(email);
+                }
+                else if (String.IsNullOrWhiteSpace(name) && String.IsNullOrWhiteSpace(email) && !String.IsNullOrWhiteSpace(userip))
+                {
+                    response = client.CheckIPAddress(userip);
+                }
+                else
+                {
+                    response = client.Check(name, email, userip!);
+                }
+                foreach (ResponsePart part in response.ResponseParts)
+                {
+                    freq += part.Frequency;
+                }
             }
+            catch (Exception)
+            {
+                _logger.Warn("Error connecting to StopForumSpam");
+            }
+
             return freq < 10;
         }
 

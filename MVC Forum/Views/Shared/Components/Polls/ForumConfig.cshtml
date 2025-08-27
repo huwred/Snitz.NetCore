@@ -23,7 +23,7 @@
         $(document).ready(function() {
             $(document).on('change', '#PollsAuth', function () {
                 var $form = $(this).closest('form');
-                $.post("~/Polls/SaveForum", $(this).closest('form').serialize(), function (data) {
+                $.post(SnitzVars.baseUrl + "/Polls/SaveForum", $(this).closest('form').serialize(), function (data) {
                     if (data) {
                         $('#poll-result').html(data);
                     } else {

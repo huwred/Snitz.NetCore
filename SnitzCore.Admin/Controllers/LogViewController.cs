@@ -21,7 +21,7 @@ namespace SnitzCore.BackOffice.Controllers
             _env = env;
             _logger = logger;
 
-            logFilePath = Path.Combine(_env.ContentRootPath, "logs");
+            logFilePath = Path.Combine(_env.ContentRootPath, "Logs");
 
 
         }

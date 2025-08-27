@@ -29,7 +29,7 @@ public class ButtonConfirmTagHelper : TagHelper
         output.Attributes.Add("href",Href + Key);
         output.Attributes.Add("id",tagid);
         output.Attributes.Add("title",Title);
-        output.Attributes.Add("data-bs-toggle","modal");
+        //output.Attributes.Add("data-bs-toggle","modal");
         output.Attributes.Add("data-id",Key);
         output.Attributes.Add("rel","noopener noreferrer nofollow");
         output.AddClass("btn",HtmlEncoder.Default);

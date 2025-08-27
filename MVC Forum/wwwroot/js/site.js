@@ -6,33 +6,43 @@
             minLength: 3
         });
     });
-    if (SnitzVars.pending > 0) {
+    if (SnitzVars.pending > 0 && SnitzVars.hidePendingNotice == '0') {
         appendAlert("There are <a href=\"Admin/Members\" class=\"alert-link\">pending</a> member registrations.", 'warning');
         setTimeout(function () {
             $("#alertmessage").slideUp(500);
         }, 3000);
     }
 });
-
+window._link_was_clicked = false;
 String.prototype.replaceAt=function(index, character) {
     return this.substr(0, index) + character + this.substr(index+character.length);
 }
 new bootstrap.Tooltip(document.body, {
     selector: "[data-toggle='tooltip']"
 });
-const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+if ($.cookie("HideAnnounce")) {
+    $("#alert-announce").hide();
+}
+$(document).on("click", "", function () {
+    $.cookie('HideAnnounce', 'yes', {
+        expires: 1
+    });
+});
+const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+    
+
 const appendAlert = (message, type) => {
+    console.log("alert called");
     const wrapper = document.createElement('div')
     wrapper.innerHTML = [
-        `<div id="alertmessage">`,
-        `<div style="padding: 5px;">`,
-        `<div id="inner-message" class="alert alert-${type} alert-dismissible fade show" role="alert">`,
-        `   <div>${message}</div>`,
-        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-        '</div></div></div>'
-    ].join('')
-
-    alertPlaceholder.append(wrapper)
+        `<div id="alertmessage" class="alert alert-${type} alert-dismissible fade show" role="alert">`,
+        `   <div style="padding: 5px;">`,
+        `       <div>${message}!!</div>`,
+        '       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+        '   </div>',
+        '</div>'
+    ].join('');
+    alertPlaceholder.append(wrapper);
 }
 
 $(document).on("click",".insert-emote", function () {
@@ -174,17 +184,37 @@ $(document).on('click', '.confirm-clearcache', function (e) {
             );
         }
     })();
-
 });
 
 /* Busy Indicator */
 $(document).on('submit', 'form', function () {
+    console.log('form submit');
     displayBusyIndicator();
 });
-$(window).on('beforeunload', function () {
+
+window.onbeforeunload = function (event) {
+
+    if (window._link_was_clicked) {
+        return; // abort beforeunload
+    }
     displayBusyIndicator();
+};
+
+jQuery(document).on('click', 'a', function (event) {
+    if ($(this).attr("rel")) {
+        window._link_was_clicked = true;
+    }
 });
+
 // Handle page reloads and back/forward navigation
+$(document).ajaxComplete(function (event, xhr, settings) {
+    console.log('ajax complete');
+    $('.loading').hide();
+});
+/* * Display a busy indicator when the page is loading */
+function displayBusyIndicator() {
+    $('.loading').show();
+}
 
 window.addEventListener("pageshow", function (event) {
     var historyTraversal = event.persisted ||
@@ -196,9 +226,7 @@ window.addEventListener("pageshow", function (event) {
     }
 });
 
-$(document).ajaxComplete(function (event, xhr, settings) {
-    $('.loading').hide();
-});
+
 
 /* * Show the page load time in the footer
  * This is only shown if the showPageTimer variable is set to 1
@@ -226,10 +254,7 @@ if (SnitzVars.showPageTimer == '1') {
     });
 }
 
-/* * Display a busy indicator when the page is loading */
-function displayBusyIndicator() {
-    $('.loading').show();
-}
+
 /* * Validate forms with the class 'needs-validation'
  * This function prevents form submission if the form is invalid
  */

@@ -57,7 +57,12 @@ namespace SnitzCore.BackOffice.Controllers
         {
             return PartialView("SaveResult",SaveForm(form));
         }
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SaveCaptcha(IFormCollection form)
+        {
+            return PartialView("SaveResult",SaveForm(form));
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult SaveBadword(IFormCollection form)
@@ -241,6 +246,9 @@ namespace SnitzCore.BackOffice.Controllers
                 foreach (var formKey in form.Keys.Where(k => !k.StartsWith("_") && !k.StartsWith("X-")))
                 {
                     var val = form[formKey][0];
+                    if(formKey == "STRCAPTCHAOPERATORS"){
+                        val = form[formKey].ToString().Replace(" ","");
+                    }
                     var conf = _context.SnitzConfig.FirstOrDefault(f => f.Key == formKey);
                     if (conf != null)
                     {
