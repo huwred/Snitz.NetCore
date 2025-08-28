@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.PrivateMessage;
+using NuGet.Protocol.Plugins;
 using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -38,9 +39,9 @@ namespace MVCForum.Controllers
                 Description = pm.Message,
                 Sent = pm.SentDate.FromForumDateStr(),
                 Read = pm.Read == 1,
-                FromMemberId = pm.From,
+                FromMemberId = pm.FromId,
                 ToMemberId = pm.To,
-                FromMemberName = _memberService.GetMemberName(pm.From) ?? pm.From.ToString()
+                FromMemberName = pm.From.Name// _memberService.GetMemberName(pm.From) ?? pm.From.ToString()
             });
             var profilePage = new MvcBreadcrumbNode("Index", "PrivateMessage", "mnuAccountPM");;
             ViewData["BreadcrumbNode"] = profilePage;
@@ -67,9 +68,9 @@ namespace MVCForum.Controllers
                 Description = pm.Message,
                 Sent = pm.SentDate.FromForumDateStr(),
                 Read = pm.Read == 1,
-                FromMemberId = pm.From,
+                FromMemberId = pm.FromId,
                 ToMemberId = pm.To,
-                FromMemberName = _memberService.GetMemberName(pm.From) ?? pm.From.ToString()
+                FromMemberName = pm.From.Name// _memberService.GetMemberName(pm.From) ?? pm.From.ToString()
             });
 
             var model = new PrivateMessageIndexModel()
@@ -93,7 +94,7 @@ namespace MVCForum.Controllers
                 Sent = pm.SentDate.FromForumDateStr(),
                 Read = pm.Read == 1,
                 ToMemberId = pm.To,
-                FromMemberId = pm.From,
+                FromMemberId = pm.FromId,
                 ToMemberName = _memberService.GetMemberName(pm.To) ?? pm.To.ToString()
             });
             var model = new PrivateMessageIndexModel()
@@ -149,12 +150,12 @@ namespace MVCForum.Controllers
                 Description = message.Message,
                 Sent = message.SentDate.FromForumDateStr(),
                 Read = message.Read == 1,
-                FromMemberId = message.From,
-                FromMemberName = _memberService.GetMemberName(message.From) ?? message.From.ToString()
+                FromMemberId = message.FromId,
+                FromMemberName = message.From.Name //_memberService.GetMemberName(message.From) ?? message.From.ToString()
             };
             message.Read = 1;
             _pmService.Update(message);
-
+            
             return PartialView(pm);
         }
 
@@ -183,6 +184,7 @@ namespace MVCForum.Controllers
                 _member.Pmreceive = settings.RecievePM ? 1 : 0;
                 _member.Pmsavesent = (short)(settings.SaveSentMessages ? 1 : 0);
                 _memberService.Update(_member);
+
             }
             var inbox = _pmService.GetInbox(_member!.Id).Select(pm => new PrivateMessageListingModel()
             {
@@ -191,9 +193,9 @@ namespace MVCForum.Controllers
                 Description = pm.Message,
                 Sent = pm.SentDate.FromForumDateStr(),
                 Read = pm.Read == 1,
-                FromMemberId = pm.From,
+                FromMemberId = pm.FromId,
                 ToMemberId = pm.To,
-                FromMemberName = _memberService.GetMemberName(pm.From) ?? pm.From.ToString()
+                FromMemberName = pm.From.Name // _memberService.GetMemberName(pm.FromId) ?? pm.From.ToString()
             });
             settings = new PrivateMessageSettingsModel
             {
@@ -237,7 +239,7 @@ namespace MVCForum.Controllers
                 SaveToSent = _member?.Pmsavesent == 1, 
                 Subject = "RE:" + message.Subject,
                 Message = $"{header}\r\n {message.Message}",
-                To = _memberService.GetMemberName(message.From)!,
+                To = message.From.Name, //_memberService.GetMemberName(message.From)!,
                 IsReply = true
             };
             return PartialView("Create",model);
@@ -248,7 +250,7 @@ namespace MVCForum.Controllers
             var message = _pmService.GetById(id);
             var msgSent = message.SentDate.FromForumDateStr();
             _member = _memberService.GetMember(User)!;
-            var header = $"\r\n\r\n\r\n----- Original Message -----\r\nFrom: {_memberService.GetMemberName(message.From)}\r\nSent: {msgSent.ToForumDisplay()} UTC\r\n";            
+            var header = $"\r\n\r\n\r\n----- Original Message -----\r\nFrom: {message.From.Name}\r\nSent: {msgSent.ToForumDisplay()} UTC\r\n";            
             var model = new PrivateMessagePostModel()
             {
                 SaveToSent = _member.Pmsavesent == 1, 
@@ -291,7 +293,7 @@ namespace MVCForum.Controllers
                     var tomember = _memberService.GetByUsername(postmodel.To);
                     _pmService.Create(new PrivateMessage()
                     {
-                        From = _member.Id,
+                        FromId = _member.Id,
                         To = tomember!.Id,
                         Message = postmodel.Message,
                         Subject = postmodel.Subject,
@@ -321,7 +323,7 @@ namespace MVCForum.Controllers
                 Sent = pm.SentDate.FromForumDateStr(),
                 Read = pm.Read == 1,
                 ToMemberId = pm.To,
-                FromMemberId = pm.From,
+                FromMemberId = pm.FromId,
                 ToMemberName = _memberService.GetMemberName(pm.To) ?? pm.To.ToString()
             });
 
@@ -345,9 +347,9 @@ namespace MVCForum.Controllers
                 Description = pm.Message,
                 Sent = pm.SentDate.FromForumDateStr(),
                 Read = pm.Read == 1,
-                FromMemberId = pm.From,
+                FromMemberId = pm.FromId,
                 ToMemberId = pm.To,
-                FromMemberName = _memberService.GetMemberName(pm.From) ?? pm.From.ToString()
+                FromMemberName = pm.From.Name ?? pm.FromId.ToString()
             });
             var settings = new PrivateMessageSettingsModel
             {

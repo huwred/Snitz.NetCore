@@ -18,7 +18,7 @@ public partial class PrivateMessage
     public string Subject { get; set; } = null!;
 
     [Column("M_FROM")]
-    public int From { get; set; }
+    public int FromId { get; set; }
 
     [Column("M_TO")]
     public int To { get; set; }
@@ -50,6 +50,8 @@ public partial class PrivateMessage
 
     [Column("PM_DEL_TO")]
     public int HideTo { get; set; }
+
+    public virtual Member From { get; set; }
 
 }
 

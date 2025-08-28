@@ -1,6 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MVCForum.ViewModels.PrivateMessage.PrivateMessagePostModel
-
+@{
+    //
+}
 <div class="card">
     @if (!Model.IsPopUp)
     {
@@ -13,7 +15,7 @@
         <form id="sendpm-form" method="post" asp-controller="PrivateMessage" asp-action="Send" class="needs-validation p-2" novalidate>
             <div class="mb-3">
                 <label asp-for="To">@Localizer["To"]</label>
-                <input asp-for="To" disabled="@(Model.IsReply || Model.IsPopUp)" class="form-control" data-autocomplete-url="@Url.Action("AutoCompleteUsername")"/>
+                <input asp-for="To" readonly="@(Model.IsReply || Model.IsPopUp)" class="form-control disabled" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" />
                 @if (Model.IsPopUp)
                 {
                     <input asp-for="To" type="hidden"/>

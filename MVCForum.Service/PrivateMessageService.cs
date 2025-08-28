@@ -26,7 +26,7 @@ namespace SnitzCore.Service
         }
         public PrivateMessage? GetById(int id)
         {
-            return _dbContext.PrivateMessages.OrderBy(m=>m.Id).FirstOrDefault(pm=>pm.Id == id);
+            return _dbContext.PrivateMessages.Include(p=>p.From).AsNoTracking().OrderBy(m=>m.Id).FirstOrDefault(pm=>pm.Id == id);
         }
 
         public IEnumerable<PrivateMessage> GetAll()
@@ -36,19 +36,19 @@ namespace SnitzCore.Service
 
         public IEnumerable<PrivateMessage> GetAll(int memberid)
         {
-            return _dbContext.PrivateMessages.Where(pm=> (pm.From == memberid && pm.HideFrom == 0) || (pm.To == memberid && pm.HideTo == 0)).OrderByDescending(pm=>pm.SentDate);;
+            return _dbContext.PrivateMessages.Where(pm=> (pm.FromId == memberid && pm.HideFrom == 0) || (pm.To == memberid && pm.HideTo == 0)).OrderByDescending(pm=>pm.SentDate);;
         }
 
         public IEnumerable<PrivateMessage> GetInbox(int memberid)
         {
             var blocked = GetBlockedMembers(memberid);
 
-            return _dbContext.PrivateMessages.Where(pm=>pm.To == memberid && pm.HideTo == 0 && !EF.Constant(blocked).Contains(pm.To)).OrderByDescending(pm=>pm.SentDate);
+            return _dbContext.PrivateMessages.Include(p=>p.From).Where(pm=>pm.To == memberid && pm.HideTo == 0 && !EF.Constant(blocked).Contains(pm.To)).OrderByDescending(pm=>pm.SentDate);
         }
 
         public IEnumerable<PrivateMessage> GetOutbox(int memberid)
         {
-            return _dbContext.PrivateMessages.Where(pm=>pm.From == memberid && pm.HideFrom == 0).OrderByDescending(pm=>pm.SentDate);;
+            return _dbContext.PrivateMessages.Where(pm=>pm.FromId == memberid && pm.HideFrom == 0).OrderByDescending(pm=>pm.SentDate);;
         }
 
         public async Task Send(PrivateMessage pm)
@@ -74,7 +74,7 @@ namespace SnitzCore.Service
                         privatemsg.HideTo = 1;
                     }
                 }
-                else if (privatemsg.From == memberid)
+                else if (privatemsg.FromId == memberid)
                 {
                     if (privatemsg.HideTo == 1)
                     {
@@ -95,7 +95,7 @@ namespace SnitzCore.Service
             try
             {
                 _dbContext.RemoveRange(privatemsgs.Where(pm=>pm.To == memberid && pm.HideFrom == 1));
-                _dbContext.RemoveRange(privatemsgs.Where(pm=>pm.From == memberid && pm.HideTo == 1));
+                _dbContext.RemoveRange(privatemsgs.Where(pm=>pm.FromId == memberid && pm.HideTo == 1));
                 _dbContext.SaveChanges();
             }
             catch (Exception e)
@@ -120,7 +120,7 @@ namespace SnitzCore.Service
                         _dbContext.PrivateMessages.Update(privatemsg);
                     }
                 }
-                else if (privatemsg.From == memberid)
+                else if (privatemsg.FromId == memberid)
                 {
                     if (privatemsg.HideTo == 1)
                     {
@@ -217,9 +217,9 @@ namespace SnitzCore.Service
         public IEnumerable<PrivateMessageListingModel> Find(int? curruser, string term, SearchIn searchIn, SearchFor phraseType, SearchDate searchByDays, int? memberId)
         {
             var messages = from pm in _dbContext.PrivateMessages
-                join mfrom in _dbContext.Members on pm.From equals mfrom.Id 
+                join mfrom in _dbContext.Members on pm.FromId equals mfrom.Id 
                 join mto in _dbContext.Members on pm.To equals mto.Id 
-                where (pm.From == curruser || pm.To == curruser)
+                where (pm.FromId == curruser || pm.To == curruser)
                 select new PrivateMessageListingModel()
                 {
                     Id = pm.Id,
@@ -227,7 +227,7 @@ namespace SnitzCore.Service
                     Description = pm.Message,
                     Sent = pm.SentDate.FromForumDateStr(),
                     Read = pm.Read == 1,
-                    FromMemberId = pm.From,
+                    FromMemberId = pm.FromId,
                     ToMemberId = pm.To,
                     FromMemberName = mfrom == null ? "" : mfrom.Name,
                     ToMemberName = mto == null ? "" : mto.Name,
