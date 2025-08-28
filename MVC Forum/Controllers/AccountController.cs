@@ -407,8 +407,6 @@ namespace MVCForum.Controllers
         } 
 
         [AllowAnonymous]
-        [Route("Login")]
-        [Route("[controller]/[action]")]
         public IActionResult Login(string returnUrl = "/")
         {
             UserSignInModel login = new()
