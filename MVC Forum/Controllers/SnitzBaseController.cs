@@ -37,6 +37,9 @@ namespace MVCForum.Controllers
 
             return Json(result);
         }
-
+        public IActionResult Error()
+        {
+            return View();
+        }
     }
 }

@@ -11,6 +11,7 @@ using BbCodeFormatter;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Localization;
 using System.Threading;
+using System.Diagnostics;
 
 
 namespace SnitzCore.Service
@@ -151,23 +152,16 @@ namespace SnitzCore.Service
 
         private string TemplateFile(string template, string? lang)
         {
+            var langtemplate = template;
             if (lang != null)
             {
-                template = lang + Path.DirectorySeparatorChar + template;
+                langtemplate = Path.Combine(lang,template);
             }
-            var pathToFile = _env.WebRootPath  
-                             + Path.DirectorySeparatorChar  
-                             + "Templates"  
-                             + Path.DirectorySeparatorChar  
-                             + template;
+            var pathToFile = Path.Combine(_env.WebRootPath,"Templates",langtemplate);
+
             if (!File.Exists(pathToFile)) //fallback to english
             {
-                template = "en-GB" + Path.DirectorySeparatorChar + template.Replace("en\\","");
-                pathToFile = _env.WebRootPath  
-                             + Path.DirectorySeparatorChar  
-                             + "Templates"  
-                             + Path.DirectorySeparatorChar  
-                             + template;
+                pathToFile = Path.Combine(_env.WebRootPath,"Templates","en-GB",template);
             }
 
             return pathToFile;
@@ -204,7 +198,8 @@ namespace SnitzCore.Service
                     {
                         client.Authenticate(_emailConfig.UserName, _emailConfig.Password);
                     }
-                    client.Send(mailMessage);
+                    var response = client.Send(mailMessage);
+                    Debug.WriteLine(response);
                 }
                 catch
                 {

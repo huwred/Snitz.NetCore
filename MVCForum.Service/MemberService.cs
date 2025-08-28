@@ -209,7 +209,7 @@ namespace SnitzCore.Service
         }
         public Member? GetMember(ClaimsPrincipal user)
         {
-            return _dbContext.Members.SingleOrDefault(m=>m.Name == user.Identity!.Name);
+            return _dbContext.Members.AsNoTracking().SingleOrDefault(m=>m.Name == user.Identity!.Name);
         }
 
         public IEnumerable<MemberNamefilter> UserNameFilter()
@@ -223,7 +223,12 @@ namespace SnitzCore.Service
             {
                 return;
             }
-            var member = _dbContext.Members.SingleOrDefault(m=>m.Name == user.Identity.Name);
+            var trackedEntity = _dbContext.ChangeTracker.Entries<Member>()
+                .FirstOrDefault(e => e.Entity.Name == user.Identity.Name);
+            if (trackedEntity != null)
+                trackedEntity.State = EntityState.Detached;
+
+            var member = _dbContext.Members.AsNoTracking().SingleOrDefault(m=>m.Name == user.Identity.Name);
             if (member == null)
             {
                 return;
@@ -354,8 +359,8 @@ namespace SnitzCore.Service
         public void Update(Member member)
         {
 
-            _dbContext.Attach(member);
-            _dbContext.Update(member);
+            _dbContext.Attach(member).State = EntityState.Modified;
+            //_dbContext.Update(member);
             _dbContext.SaveChanges(true);
         }
 

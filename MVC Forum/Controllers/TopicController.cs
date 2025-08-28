@@ -346,6 +346,7 @@ namespace MVCForum.Controllers
         [Authorize]
         public async Task<IActionResult> Create(int id)
         {
+
             var member = await _memberService.GetById(User);
             if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
             {
@@ -400,7 +401,7 @@ namespace MVCForum.Controllers
             {
                 return View("Bug/Create", model);
             }
-            return View(model);
+            return await Task.Run(() => View(model));
         }
 
         [Authorize]
@@ -484,7 +485,7 @@ namespace MVCForum.Controllers
         [HttpPost]
         [Authorize]
         [Route("AddPost/")]
-        public async Task<IActionResult> AddPost(NewPostModel model)
+        public IActionResult AddPost(NewPostModel model)
         {
             ModelState.Remove("ForumName");
             ModelState.Remove("AuthorName");
@@ -492,18 +493,21 @@ namespace MVCForum.Controllers
             ModelState.Remove("AuthorTitle");
             ModelState.Remove("Sticky");
             ModelState.Remove("Lock");
+            ModelState.Remove("IsSticky");
+            ModelState.Remove("IsLocked");
             ModelState.Remove("DoNotArchive");
 
             //Check for flood control
             if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
             {
-                var member = await _memberService.GetById(User);
+                var member = _memberService.GetById(User).Result;
                 var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
                 if (member!.Lastpostdate.FromForumDateStr() > DateTime.UtcNow.AddSeconds(-timeout))
                 {
                     TempData["Error"] = "floodcheck";
                     ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
                     return View("Error");
+
                 }
             }
             //Check for required fields
@@ -516,11 +520,13 @@ namespace MVCForum.Controllers
                         kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
                     );
 
-                TempData["Error"] = string.Join(Environment.NewLine, errorList);
-                return View("Error");
+                //TempData["Error"] = string.Join(Environment.NewLine, errorList);
+                //ViewBag.Error = string.Join(Environment.NewLine, errorList);
+                return Content(string.Join(Environment.NewLine, errorList));
+                //return View("Error");
             }
             var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId!);
+            var user =  _userManager.FindByIdAsync(userId!).Result;
 
             var post = BuildPost(model, user!.MemberId);
             if (model.TopicId != 0)
@@ -536,29 +542,29 @@ namespace MVCForum.Controllers
                     
                     post.ForumId = model.ForumId;
                     post.CategoryId = forum.CategoryId;
-                    await _postService.Update(post);
+                     _postService.Update(post);
                     //Update the ForumId and CategoryId for the replies
                     var replies = _snitzDbContext.Replies.Where(r => r.PostId == model.TopicId);
-                    await replies
+                    replies
                         .ExecuteUpdateAsync(s => s
                             .SetProperty(e => e.ForumId, forum.Id)
                             .SetProperty(e => e.CategoryId, forum.CategoryId));
-                    await _forumService.UpdateLastPost(model.ForumId);
+                     _forumService.UpdateLastPost(model.ForumId);
                     if (_config.GetIntValue("STRMOVENOTIFY") == 1)
                     {
                         var author = _memberService.GetById(post.MemberId);
-                        await _mailSender.MoveNotify(author!,post);
+                         _mailSender.MoveNotify(author!,post);
                     }
                 }
                 else
                 {
-                    await _postService.Update(post);
+                     _postService.Update(post);
                 }
             }
             else
             {
                 post.Created = DateTime.UtcNow.ToForumDateStr();
-                var topicid = await _postService.Create(post);
+                var topicid =  _postService.Create(post).Result;
                 if (post.Status < 2) //not waiting to be moderated
                 {
                     var sub = _config.GetIntValue("STRSUBSCRIPTION");
@@ -591,7 +597,7 @@ namespace MVCForum.Controllers
                                 PrivateMessage msg = new PrivateMessage
                                 {
                                     To = taggedmember.Id,
-                                    From = post.MemberId,
+                                    From = post.Member,
                                     Subject = _languageResource["MentionedInPostSubject"].Value,// "You were mentioned in a Post",
                                     Message = _languageResource["MentionedMessage",taggedmember.Name, _config.ForumUrl?.Trim() ?? "", post.Id,""].Value,                                    SentDate = DateTime.UtcNow.ToForumDateStr(),
                                     Read = 0,

@@ -1,32 +1,11 @@
-﻿        //$('.date').datepicker({
-        //    autoclose: true,
-        //    format: {
-        //        /*
-        //         * Say our UI should display a week ahead,
-        //         * but textbox should store the actual date.
-        //         * This is useful if we need UI to select local dates,
-        //         * but store in UTC
-        //         */
-                    
-        //        toDisplay: function (date, format, language) {
-        //            var d = new Date(date);
-        //            d.setDate(d.getDate());
-        //            return d.toLocaleDateString();
-        //        },
-        //        toValue: function (date, format, language) {
-        //            let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
-        //            let lastFirst = date.replace(re, '$1-$2-$3');
-        //            var d = new Date(lastFirst);
-        //            d.setDate(d.getDate());
-        //            return new Date(d);
-        //        }
-        //    }
-        //});
+﻿
         $(document).on("submit", "#addPostForm", function (e) {
             e.preventDefault();
             tinyMCE.get("msg-text").save();
             var form = $("#addPostForm");
             var formData = new FormData(form[0]);
+            console.log($(this).attr("action"));
+            debugger;
             $.ajax({
                 url: $(this).attr("action"),
                 type: "POST",
@@ -34,6 +13,7 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
+                    debugger;
                     if ($('#event-form').length > 0) {
                         var evtform = $('#event-form').find('form');
 
@@ -74,7 +54,13 @@
                             }
                         }); 
                     } else {
-                        location.href = data.url;
+                        if (data.url) {
+                            location.href = data.url;
+                            return false;
+                        }
+
+                        appendAlert(data, 'warning');
+                        //location.href = data.url;
                     };
 
                 },

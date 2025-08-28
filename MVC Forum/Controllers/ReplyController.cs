@@ -189,7 +189,7 @@ namespace MVCForum.Controllers
                                 PrivateMessage msg = new PrivateMessage
                                 {
                                     To = taggedmember.Id,
-                                    From = reply.MemberId,
+                                    From = reply?.Member,
                                     Subject = _languageResource["MentionedInPostSubject"].Value,// "You were mentioned in a Post",
                                     Message = _languageResource["MentionedMessage",member.Name, _config.ForumUrl?.Trim() ?? "",reply.PostId, reply.Id].Value,
                                     SentDate = DateTime.UtcNow.ToForumDateStr(),
