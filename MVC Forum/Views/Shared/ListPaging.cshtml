@@ -7,7 +7,11 @@
     var orderby = "";
     var defaultdays = "";
     var sortdir = "";
-
+    var initial = "";
+    if(Model.Initial != null)
+    {
+        initial = "&initial=" + Model.Initial;
+    }
     if (Context.Request.Query.Keys.Contains("page"))
     {
         try

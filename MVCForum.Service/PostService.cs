@@ -474,20 +474,24 @@ namespace SnitzCore.Service
         }
 
 
-        public async Task Update(Post post)
+        public void Update(Post post)
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
             {
-                var badwords = CacheProvider.GetOrCreate("Badwords", () =>_dbContext.Badwords.AsNoTracking()
-                    .ToDictionary(t=>t.Word),TimeSpan.FromMinutes(15));
+                var badwords = CacheProvider.GetOrCreate("Badwords", () => _dbContext.Badwords.AsNoTracking()
+                    .ToDictionary(t => t.Word), TimeSpan.FromMinutes(15));
                 foreach (var badword in badwords)
                 {
                     post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
                 }
             }
+
             try
             {
-                _dbContext.Posts.Attach(post);
+                if (_dbContext.Entry(post).State == EntityState.Detached)
+                {
+                    _dbContext.Posts.Attach(post);
+                }
 
                 _dbContext.Entry(post).Property(x => x.ForumId).IsModified = true;
                 _dbContext.Entry(post).Property(x => x.CategoryId).IsModified = true;
@@ -501,13 +505,12 @@ namespace SnitzCore.Service
                 _dbContext.Entry(post).Property(x => x.ArchiveFlag).IsModified = true;
                 _dbContext.Entry(post).Property(x => x.LastEdit).IsModified = true;
                 _dbContext.Entry(post).Property(x => x.LastEditby).IsModified = true;
-                await _dbContext.SaveChangesAsync();
+                _dbContext.SaveChanges();
             }
             catch (Exception e)
             {
                 _logger.Error("UpdateTopic: Error updating post", e);
             }
-
 
         }
 

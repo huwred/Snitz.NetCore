@@ -27,9 +27,9 @@
     }
     var initials = Localizer["memberSearchInitials"].Value.ToCharArray();
     var sortorder = "asc";
-    if (Context.Request.Query.ContainsKey("sortOrder"))
+    if (Context.Request.Query.ContainsKey("sortdir"))
     {
-        var qval = Context.Request.Query["sortOrder"];
+        var qval = Context.Request.Query["sortdir"];
         if (qval == "asc")
         {
             sortorder = "desc";
@@ -85,12 +85,12 @@
                 <thead class=" bg-dark text-white table-primary">
                 <tr class="bg-dark text-white">
                     <th>&nbsp;</th>
-                    <th><a href="?sortCol=name&sortOrder=@sortorder">@Localizer["UserName"]</a></th>
+                    <th><a href="?orderby=name&sortdir=@sortorder">@Localizer["UserName"]</a></th>
                     <th snitz-if="@(rankType > 0)">@Localizer["ProfileTitle"]</th>
-                    <th><a href="?sortCol=posts&sortOrder=@sortorder">@Localizer["ProfilePosts"]</a></th>
-                    <th><a href="?sortCol=lastpost&sortOrder=@sortorder">@Localizer["ProfileLastPost"]</a></th>
-                    <th class="d-none d-md-table-cell"><a href="?sortCol=membersince&sortOrder=@sortorder">@Localizer["ProfileDate"]</a></th>
-                    <th class="d-none d-md-table-cell"><a href="?sortCol=lastvisit&sortOrder=@sortorder">@Localizer["ProfileLastVisit"]</a></th>
+                    <th><a href="?orderby=posts&sortdir=@sortorder">@Localizer["ProfilePosts"]</a></th>
+                    <th><a href="?orderby=lastpost&sortdir=@sortorder">@Localizer["ProfileLastPost"]</a></th>
+                    <th class="d-none d-md-table-cell"><a href="?orderby=membersince&sortdir=@sortorder">@Localizer["ProfileDate"]</a></th>
+                    <th class="d-none d-md-table-cell"><a href="?orderby=lastvisit&sortdir=@sortorder">@Localizer["ProfileLastVisit"]</a></th>
                     <th snitz-if="@(userroles != null && userroles.Contains("Administrator"))" class="d-none d-md-table-cell">@Localizer["Email"]</th>
                     <th class="d-none d-md-table-cell">@Localizer["ProfileCountry"]</th>
                     <th snitz-if="@(userroles != null && userroles.Contains("Administrator"))" class="d-none d-md-table-cell"></th>
@@ -152,7 +152,10 @@
                 {
                     PageCount = Model.PageCount,
                     PageSize = Model.PageSize,
-                    Page = Model.PageNum
+                    Page = Model.PageNum,
+                    OrderBy = Model.SortCol,
+                    SortDir = Model.SortDir,
+                    Initial = Model.Initial
                 };
                 <partial name="ListPaging" model="paging" />
             }

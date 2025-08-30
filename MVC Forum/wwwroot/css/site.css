@@ -1061,3 +1061,6 @@ i.modstatus-2, i.modstatus-3 {
         content: "\f1fd";
         color: white;
     }
+.public-holiday .fc-list-event-graphic  {
+    display:none;
+}

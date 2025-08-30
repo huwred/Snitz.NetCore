@@ -72,52 +72,12 @@ UpComingCalendar = function(url, divid) {
     calendar.render();
 };
 
-FullCalendar = function(url, divid, firstday, country) {
-    var view = $('#' + divid).fullCalendar('getView');
-    if (country.length > 1) {
-        $('#' + divid).fullCalendar('destroy');
-    }
-    var holidayUrl = SnitzVars.baseUrl + "/Calendar/GetHolidays/" + country;
-    var eventsUrl = SnitzVars.baseUrl + "/Events/GetClubCalendarEvents/-1?old=0&calendar=1";
-    var birthdayUrl = SnitzVars.baseUrl + "/Calendar/GetBirthDays";
-
-    $('#' + divid)
-        .fullCalendar({
-            header: {
-                left: 'basicWeek,month,year',
-                center: 'title',
-                right: 'prev,next,today'
-            },
-            defaultView: 'year',
-            lang: SnitzVars.forumlang,
-            isJalaali: SnitzVars.forumlang === 'fa',
-            isRTL: SnitzVars.forumlang === 'fa',
-            firstDay: parseInt(firstday),
-            dateFormat: 'dd/MM/yy',
-            timeFormat: 'HH:mm',
-            eventSources: [
-                { url: url },
-                { url: eventsUrl },
-                { url: holidayUrl },
-                { url: birthdayUrl }
-            ],
-            eventClick: function(calEvent, jsEvent, view) {
-                if (calEvent.className[0] === "event-birthday") {
-                    alert(calEvent.title);
-                }
-            }
-        });
-        if (country.length > 1) {
-            var newview = $('#' + divid).fullCalendar('getView');
-            if (newview.name !== view.name) {
-                $('#' + divid).fullCalendar('changeView', view.name);
-            }
-        }
-};
-
 ClubCalendar = function (url, divid, catfilter) {
     var d = new Date();
-    var n = d.getDay();
+    var day = d.getDate();
+    var month = d.getMonth() + 1;
+    var year = d.getFullYear();
+
     var fullweeks = 52;
 
     if (catfilter.length > 1) {
@@ -127,6 +87,15 @@ ClubCalendar = function (url, divid, catfilter) {
     if (catfilter.length > 1) {
         view = 'disContinued';
     }
+    if (view === "disContinued") {
+        console.log(view);
+        month = month - 6;
+        if (month < 0) {
+            month = 12 + month;
+            year = year - 1;
+        }
+    }
+    var date = '' + year + '-' + (month <= 9 ? '0' + month : month) + '-' + (day <= 9 ? '0' + day : day);
     var calendarEl = document.getElementById(divid);
     var calendar = new FullCalendar.Calendar(calendarEl, {
         headerToolbar: {
@@ -137,17 +106,18 @@ ClubCalendar = function (url, divid, catfilter) {
             views: {
                 upComing: {
                     type: 'list',
-                    duration: { weeks: 52 },
+                    duration: { months: 2 },
                     //titleFormat: upComingEventsTitle,
                 },
                 disContinued: {
                     type: 'list',
-                    duration: { weeks: fullweeks },
+                    duration: { months: 6 },
                     //titleFormat: pastEventsTitle,
                 }
             },
-            initialView: view,
-            firstDay: n,
+        initialView: view,
+        initialDate: date,
+        //firstDay: n,
             //dateFormat: 'DD/MM/YY',
             //timeFormat: 'HH:mm',
             eventSources: [url],

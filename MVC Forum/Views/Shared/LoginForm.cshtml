@@ -20,7 +20,7 @@
     }
     <div class="m-2 bg-form border border-dark rounded" style="@hideme" id="login-form">
         <div class="subforum">
-            <h1 class="bg-dark text-white p-2">@Localizer["SignIn"]</h1>
+            <h1 class="bg-dark text-bg-dark p-2">@Localizer["SignIn"]</h1>
             <form method="post" asp-controller="Account" asp-action="Login" id="loginform" class="needs-validation p-2" novalidate>
                 @Html.AntiForgeryToken()
                 <div class="form-group">

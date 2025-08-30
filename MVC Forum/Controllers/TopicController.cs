@@ -542,7 +542,6 @@ namespace MVCForum.Controllers
                     
                     post.ForumId = model.ForumId;
                     post.CategoryId = forum.CategoryId;
-                     _postService.Update(post);
                     //Update the ForumId and CategoryId for the replies
                     var replies = _snitzDbContext.Replies.Where(r => r.PostId == model.TopicId);
                     replies
@@ -555,6 +554,7 @@ namespace MVCForum.Controllers
                         var author = _memberService.GetById(post.MemberId);
                          _mailSender.MoveNotify(author!,post);
                     }
+                     _postService.Update(post);
                 }
                 else
                 {

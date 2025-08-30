@@ -23,7 +23,7 @@ namespace SnitzCore.Data.Interfaces
         Task<int>  Create(Post post);
         Task DeleteTopic(int id);
         Task DeleteReply(int id);
-        Task Update(Post post);
+        void Update(Post post);
         Task Update(PostReply post);
 
         void UpdateViewCount(int id, int viewCount);

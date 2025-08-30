@@ -12,5 +12,7 @@
         public int DefaultDays { get; set; } = 30;
 
         public bool Archived { get; set; } = false;
+
+        public string? Initial {get;set;}
     }
 }

@@ -85,7 +85,7 @@ namespace MVCForum.Controllers
             return false;
         }
 
-        public IActionResult Index(int pagesize,string? sortOrder,string? sortCol,string? initial, int page=1)
+        public IActionResult Index(int pagesize,string? sortdir,string? orderby,string? initial, int page=1)
         {
 
             if (pagesize == 0)
@@ -95,13 +95,13 @@ namespace MVCForum.Controllers
                     pagesize = _pageSize;
                 }
             }
-            if(sortOrder == null)
+            if(sortdir == null)
             {
-                sortOrder = "asc";
+                sortdir = "asc";
             }
             var admin = User.IsInRole("Administrator");
             var totalCount = _memberService.GetAll(admin).Count();
-            IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(admin, pagesize, page,sortCol,sortOrder);
+            IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(admin, pagesize, page,orderby,sortdir);
             var pageCount = (int)Math.Ceiling((double)totalCount / pagesize);
 
             var memberPage = new MvcBreadcrumbNode("Index", "Account", "lblMembers");
@@ -127,7 +127,10 @@ namespace MVCForum.Controllers
                 PageCount = pageCount,
                 PageNum = page,
                 PageSize = pagesize,
-                MemberList = members
+                MemberList = members,
+                SortCol = orderby,
+                SortDir = sortdir,
+                Initial = initial
             };
             return View(model);
         }
