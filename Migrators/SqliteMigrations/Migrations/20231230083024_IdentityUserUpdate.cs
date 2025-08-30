@@ -3,28 +3,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using System.Reflection;
+using SnitzCore.Data.Models;
 
 #nullable disable
 
 namespace WebApplication1.Migrations
 {
     /// <inheritdoc />
-    public partial class IdentityUserUpdate : Migration
+    public partial class IdentityUserUpdate : SnitzMigration
     {
-        public string _forumTablePrefix;
-        public string _memberTablePrefix;
-        private void SetParameters()
-        {
-            var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(path)
-                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
-            var config = builder.Build();
 
-            _forumTablePrefix = config.GetSection("SnitzForums").GetSection("forumTablePrefix").Value;
-            _memberTablePrefix = config.GetSection("SnitzForums").GetSection("memberTablePrefix").Value;
-
-        }
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {

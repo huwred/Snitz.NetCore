@@ -1,22 +1,26 @@
-﻿using System;
-using System.Configuration;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Models;
+using System;
+using System.Configuration;
+using System.Reflection;
 
 #nullable disable
 
 namespace Migrations
 {
     /// <inheritdoc />
-    public partial class SnitzMVC : Migration
+    public partial class SnitzMVC : SnitzMigration
     {
 
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            SetParameters();
+
             if (!migrationBuilder.ColumnExists("AspNetUsers", "Discriminator"))
             {
             migrationBuilder.AddColumn<string>(
@@ -91,11 +95,11 @@ namespace Migrations
             }
 
 
-            if (!migrationBuilder.TableExists("FORUM_FORUM"))
+            if (!migrationBuilder.TableExists($"{_forumTablePrefix}FORUM"))
             {
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_A_REPLY",
+                    name: $"{_forumTablePrefix}A_REPLY",
                     columns: table => new
                     {
                         REPLY_ID = table.Column<int>(type: "int", nullable: false)
@@ -120,7 +124,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_A_TOPICS",
+                    name: $"{_forumTablePrefix}A_TOPICS",
                     columns: table => new
                     {
                         TOPIC_ID = table.Column<int>(type: "int", nullable: false)
@@ -158,7 +162,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_BADWORDS",
+                    name: $"{_forumTablePrefix}BADWORDS",
                     columns: table => new
                     {
                         B_ID = table.Column<int>(type: "int", nullable: false)
@@ -172,7 +176,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_CATEGORY",
+                    name: $"{_forumTablePrefix}CATEGORY",
                     columns: table => new
                     {
                         CAT_ID = table.Column<int>(type: "int", nullable: false)
@@ -189,7 +193,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_CONFIG_NEW",
+                    name: $"{_forumTablePrefix}CONFIG_NEW",
                     columns: table => new
                     {
                         ID = table.Column<int>(type: "int", nullable: false)
@@ -200,10 +204,11 @@ namespace Migrations
                     constraints: table =>
                     {
                         table.PrimaryKey("PK_FORUM_CONFIG_NEW", x => x.ID);
+                        table.UniqueConstraint("AK_FORUM_CONFIG_NEW_VALUE", x => x.C_VARIABLE);
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_GROUP_NAMES",
+                    name: $"{_forumTablePrefix}GROUP_NAMES",
                     columns: table => new
                     {
                         GROUP_ID = table.Column<int>(type: "int", nullable: false)
@@ -219,7 +224,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_MEMBERS",
+                    name: $"{_memberTablePrefix}MEMBERS",
                     columns: table => new
                     {
                         MEMBER_ID = table.Column<int>(type: "int", nullable: false)
@@ -281,7 +286,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_NAMEFILTER",
+                    name: $"{_forumTablePrefix}NAMEFILTER",
                     columns: table => new
                     {
                         N_ID = table.Column<int>(type: "int", nullable: false)
@@ -294,7 +299,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_PM",
+                    name: $"{_forumTablePrefix}PM",
                     columns: table => new
                     {
                         M_ID = table.Column<int>(type: "int", nullable: false)
@@ -317,7 +322,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_PM_BLOCKLIST",
+                    name: $"{_forumTablePrefix}PM_BLOCKLIST",
                     columns: table => new
                     {
                         BL_ID = table.Column<int>(type: "int", nullable: false)
@@ -332,7 +337,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_RANKING",
+                    name: $"{_forumTablePrefix}RANKING",
                     columns: table => new
                     {
                         RANK_ID = table.Column<int>(type: "int", nullable: false)
@@ -348,7 +353,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_SUBSCRIPTIONS",
+                    name: $"{_forumTablePrefix}SUBSCRIPTIONS",
                     columns: table => new
                     {
                         SUBSCRIPTION_ID = table.Column<int>(type: "int", nullable: false)
@@ -364,7 +369,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_TOTALS",
+                    name: $"{_forumTablePrefix}TOTALS",
                     columns: table => new
                     {
                         COUNT_ID = table.Column<short>(type: "smallint", nullable: false)
@@ -412,7 +417,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_FORUM",
+                    name: $"{_forumTablePrefix}FORUM",
                     columns: table => new
                     {
                         FORUM_ID = table.Column<int>(type: "int", nullable: false)
@@ -455,13 +460,13 @@ namespace Migrations
                         table.ForeignKey(
                             name: "FK_FORUM_FORUM_FORUM_CATEGORY_CAT_ID",
                             column: x => x.CAT_ID,
-                            principalTable: "FORUM_CATEGORY",
+                            principalTable: $"{_forumTablePrefix}CATEGORY",
                             principalColumn: "CAT_ID",
                             onDelete: ReferentialAction.Cascade);
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_GROUPS",
+                    name: $"{_forumTablePrefix}GROUPS",
                     columns: table => new
                     {
                         GROUP_KEY = table.Column<int>(type: "int", nullable: false)
@@ -475,18 +480,18 @@ namespace Migrations
                         table.ForeignKey(
                             name: "FK_FORUM_GROUPS_FORUM_CATEGORY_GROUP_CATID",
                             column: x => x.GROUP_CATID,
-                            principalTable: "FORUM_CATEGORY",
+                            principalTable: $"{_forumTablePrefix}CATEGORY",
                             principalColumn: "CAT_ID",
                             onDelete: ReferentialAction.Cascade);
                         table.ForeignKey(
                             name: "FK_FORUM_GROUPS_FORUM_GROUP_NAMES_GROUP_ID",
                             column: x => x.GROUP_ID,
-                            principalTable: "FORUM_GROUP_NAMES",
+                            principalTable: $"{_forumTablePrefix}GROUP_NAMES",
                             principalColumn: "GROUP_ID");
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_ALLOWED_MEMBERS",
+                    name: $"{_forumTablePrefix}ALLOWED_MEMBERS",
                     columns: table => new
                     {
                         MEMBER_ID = table.Column<int>(type: "int", nullable: false),
@@ -497,13 +502,13 @@ namespace Migrations
                         table.ForeignKey(
                             name: "FK_FORUM_ALLOWED_MEMBERS_FORUM_FORUM_FORUM_ID",
                             column: x => x.FORUM_ID,
-                            principalTable: "FORUM_FORUM",
+                            principalTable: $"{_forumTablePrefix}FORUM",
                             principalColumn: "FORUM_ID",
                             onDelete: ReferentialAction.Cascade);
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_MODERATOR",
+                    name: $"{_forumTablePrefix}MODERATOR",
                     columns: table => new
                     {
                         MOD_ID = table.Column<int>(type: "int", nullable: false)
@@ -518,19 +523,19 @@ namespace Migrations
                         table.ForeignKey(
                             name: "FK_FORUM_MODERATOR_FORUM_FORUM_FORUM_ID",
                             column: x => x.FORUM_ID,
-                            principalTable: "FORUM_FORUM",
+                            principalTable: $"{_forumTablePrefix}FORUM",
                             principalColumn: "FORUM_ID",
                             onDelete: ReferentialAction.Cascade);
                         table.ForeignKey(
                             name: "FK_FORUM_MODERATOR_FORUM_MEMBERS_MEMBER_ID",
                             column: x => x.MEMBER_ID,
-                            principalTable: "FORUM_MEMBERS",
+                            principalTable: $"{_memberTablePrefix}MEMBERS",
                             principalColumn: "MEMBER_ID",
                             onDelete: ReferentialAction.Cascade);
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_TOPICS",
+                    name: $"{_forumTablePrefix}TOPICS",
                     columns: table => new
                     {
                         TOPIC_ID = table.Column<int>(type: "int", nullable: false)
@@ -568,30 +573,30 @@ namespace Migrations
                         table.ForeignKey(
                             name: "FK_FORUM_TOPICS_FORUM_CATEGORY_CAT_ID",
                             column: x => x.CAT_ID,
-                            principalTable: "FORUM_CATEGORY",
+                            principalTable: $"{_forumTablePrefix}CATEGORY",
                             principalColumn: "CAT_ID",
                             onDelete: ReferentialAction.Cascade);
                         table.ForeignKey(
                             name: "FK_FORUM_TOPICS_FORUM_FORUM_FORUM_ID",
                             column: x => x.FORUM_ID,
-                            principalTable: "FORUM_FORUM",
+                            principalTable: $"{_forumTablePrefix}FORUM",
                             principalColumn: "FORUM_ID",
                             onDelete: ReferentialAction.Cascade);
                         table.ForeignKey(
                             name: "FK_FORUM_TOPICS_FORUM_MEMBERS_T_AUTHOR",
                             column: x => x.T_AUTHOR,
-                            principalTable: "FORUM_MEMBERS",
+                            principalTable: $"{_memberTablePrefix}MEMBERS",
                             principalColumn: "MEMBER_ID",
                             onDelete: ReferentialAction.Cascade);
                         table.ForeignKey(
                             name: "FK_FORUM_TOPICS_FORUM_MEMBERS_T_LAST_POST_AUTHOR",
                             column: x => x.T_LAST_POST_AUTHOR,
-                            principalTable: "FORUM_MEMBERS",
+                            principalTable: $"{_memberTablePrefix}MEMBERS",
                             principalColumn: "MEMBER_ID");
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_REPLY",
+                    name: $"{_forumTablePrefix}REPLY",
                     columns: table => new
                     {
                         REPLY_ID = table.Column<int>(type: "int", nullable: false)
@@ -616,13 +621,13 @@ namespace Migrations
                         table.ForeignKey(
                             name: "FK_FORUM_REPLY_FORUM_MEMBERS_R_AUTHOR",
                             column: x => x.R_AUTHOR,
-                            principalTable: "FORUM_MEMBERS",
+                            principalTable: $"{_memberTablePrefix}MEMBERS",
                             principalColumn: "MEMBER_ID",
                             onDelete: ReferentialAction.Cascade);
                         table.ForeignKey(
                             name: "FK_FORUM_REPLY_FORUM_TOPICS_TOPIC_ID",
                             column: x => x.TOPIC_ID,
-                            principalTable: "FORUM_TOPICS",
+                            principalTable: $"{_forumTablePrefix}TOPICS",
                             principalColumn: "TOPIC_ID",
                             onDelete: ReferentialAction.Cascade);
                     });
@@ -631,62 +636,62 @@ namespace Migrations
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_ALLOWED_MEMBERS_FORUM_ID",
-                    table: "FORUM_ALLOWED_MEMBERS",
+                    table: $"{_forumTablePrefix}ALLOWED_MEMBERS",
                     column: "FORUM_ID");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_FORUM_CAT_ID",
-                    table: "FORUM_FORUM",
+                    table: $"{_forumTablePrefix}FORUM",
                     column: "CAT_ID");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_GROUPS_GROUP_CATID",
-                    table: "FORUM_GROUPS",
+                    table: $"{_forumTablePrefix}GROUPS",
                     column: "GROUP_CATID");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_GROUPS_GROUP_ID",
-                    table: "FORUM_GROUPS",
+                    table: $"{_forumTablePrefix}GROUPS",
                     column: "GROUP_ID");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_MODERATOR_FORUM_ID",
-                    table: "FORUM_MODERATOR",
+                    table: $"{_forumTablePrefix}MODERATOR",
                     column: "FORUM_ID");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_MODERATOR_MEMBER_ID",
-                    table: "FORUM_MODERATOR",
+                    table: $"{_forumTablePrefix}MODERATOR",
                     column: "MEMBER_ID");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_REPLY_R_AUTHOR",
-                    table: "FORUM_REPLY",
+                    table: $"{_forumTablePrefix}REPLY",
                     column: "R_AUTHOR");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_REPLY_TOPIC_ID",
-                    table: "FORUM_REPLY",
+                    table: $"{_forumTablePrefix}EPLY",
                     column: "TOPIC_ID");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_TOPICS_CAT_ID",
-                    table: "FORUM_TOPICS",
+                    table: $"{_forumTablePrefix}TOPICS",
                     column: "CAT_ID");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_TOPICS_FORUM_ID",
-                    table: "FORUM_TOPICS",
+                    table: $"{_forumTablePrefix}TOPICS",
                     column: "FORUM_ID");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_TOPICS_T_AUTHOR",
-                    table: "FORUM_TOPICS",
+                    table: $"{_forumTablePrefix}TOPICS",
                     column: "T_AUTHOR");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_TOPICS_T_LAST_POST_AUTHOR",
-                    table: "FORUM_TOPICS",
+                    table: $"{_forumTablePrefix}TOPICS",
                     column: "T_LAST_POST_AUTHOR");
             }
             if (migrationBuilder.IsSqlite())
@@ -716,7 +721,7 @@ namespace Migrations
                         name: "FK_AspNetUsers_FORUM_MEMBERS_MemberId",
                         table: "AspNetUsers",
                         column: "MemberId",
-                        principalTable: "FORUM_MEMBERS",
+                        principalTable: $"{_memberTablePrefix}MEMBERS",
                         principalColumn: "MEMBER_ID",
                         onDelete: ReferentialAction.Cascade);
                 }

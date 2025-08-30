@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SnitzCore.Data.Models;
+using SnitzCore.Data.Extensions;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -8,11 +9,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebApplication1.Migrations
 {
     /// <inheritdoc />
-    public partial class AdminUser : Migration
+    public partial class AdminUser : SnitzMigration
     {
+       
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            SetParameters();
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -24,19 +27,22 @@ namespace WebApplication1.Migrations
                     { "1F55ACDD-212C-4824-96B5-F10A05FE6563", null, "Visitor", "VISITOR" },
                     { "E5EA0F7E-62A5-4870-B90F-B62965EA075E", null, "SuperAdmin", "SUPERADMIN" }
                 });
+            if(!migrationBuilder.IndexExists($"SELECT COUNT(MEMBER_ID) FROM {_memberTablePrefix}MEMBERS"))
+            {
+                migrationBuilder.InsertData( // Admin User with password Passw0rd!
+                    table: "AspNetUsers",
+                    columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Discriminator", "Email", "EmailConfirmed", "IsActive", "IsAdmin", "LockoutEnabled", "LockoutEnd", "MemberId", "MemberSince", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfileImageUrl", "Rating", "SecurityStamp", "TwoFactorEnabled", "UserDescription", "UserName" },
+                    values: new object[] { "8e445865-a24d-4543-a6c6-9443d048cdb9", 0, null, "ForumUser", "xxxx@example.com", true, false, true, false, null, 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "XXXX@EXAMPLE.COM", "ADMINISTRATOR", "AQAAAAIAAYagAAAAEGhGQ8XcU+/GeShLZcARJtfYaIxYhK1lwlajwWCVmUJd1fOAdBhW0GhasV0QmAfCqw==", "+111111111111", true, null, 0, "6efdd0a9-6c20-44ea-8a4d-dec3ebd2240b", false, null, "Administrator" });
 
-            migrationBuilder.InsertData( // Admin User with password Passw0rd!
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Discriminator", "Email", "EmailConfirmed", "IsActive", "IsAdmin", "LockoutEnabled", "LockoutEnd", "MemberId", "MemberSince", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfileImageUrl", "Rating", "SecurityStamp", "TwoFactorEnabled", "UserDescription", "UserName" },
-                values: new object[] { "8e445865-a24d-4543-a6c6-9443d048cdb9", 0, null, "ForumUser", "xxxx@example.com", true, false, true, false, null, 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "XXXX@EXAMPLE.COM", "ADMINISTRATOR", "AQAAAAIAAYagAAAAEGhGQ8XcU+/GeShLZcARJtfYaIxYhK1lwlajwWCVmUJd1fOAdBhW0GhasV0QmAfCqw==", "+111111111111", true, null, 0, "6efdd0a9-6c20-44ea-8a4d-dec3ebd2240b", false, null, "Administrator" });
+                migrationBuilder.InsertData(
+                    table: "AspNetUserRoles",
+                    columns: new[] { "RoleId", "UserId" },
+                    values: new object[,] {
+                        { "2c5e174e-3b0e-446f-86af-483d56fd7210", "8e445865-a24d-4543-a6c6-9443d048cdb9" },
+                        { "E5EA0F7E-62A5-4870-B90F-B62965EA075E", "8e445865-a24d-4543-a6c6-9443d048cdb9" },
+                    });
+            }
 
-            migrationBuilder.InsertData(
-                table: "AspNetUserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[,] {
-                    { "2c5e174e-3b0e-446f-86af-483d56fd7210", "8e445865-a24d-4543-a6c6-9443d048cdb9" },
-                    { "E5EA0F7E-62A5-4870-B90F-B62965EA075E", "8e445865-a24d-4543-a6c6-9443d048cdb9" },
-                });
         }
 
         /// <inheritdoc />

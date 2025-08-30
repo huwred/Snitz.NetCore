@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using SnitzCore.Data.Models;
 
 #nullable disable
 
@@ -11,6 +12,7 @@ namespace WebApplication1.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new

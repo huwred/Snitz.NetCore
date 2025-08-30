@@ -13,7 +13,7 @@ using SnitzCore.Data;
 namespace Migrations
 {
     [DbContext(typeof(SnitzDbContext))]
-    [Migration("20240311173505_InitialCreate")]
+    [Migration("20230311173505_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

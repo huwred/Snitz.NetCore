@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Models;
 using System;
 using System.Reflection;
 
@@ -9,22 +10,9 @@ using System.Reflection;
 namespace WebApplication1.Migrations
 {
     /// <inheritdoc />
-    public partial class MVCUpdate : Migration
+    public partial class MVCUpdate : SnitzMigration
     {
-        public string _forumTablePrefix;
-        public string _memberTablePrefix;
-        private void SetParameters()
-        {
-            var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(path)
-                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
-            var config = builder.Build();
 
-            _forumTablePrefix = config.GetSection("SnitzForums").GetSection("forumTablePrefix").Value;
-            _memberTablePrefix = config.GetSection("SnitzForums").GetSection("memberTablePrefix").Value;
-
-        }
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {

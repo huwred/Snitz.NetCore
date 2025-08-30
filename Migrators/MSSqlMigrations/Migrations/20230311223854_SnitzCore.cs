@@ -1,49 +1,51 @@
-﻿using System;
-using System.Configuration;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Models;
+using System;
+using System.Configuration;
+using System.Reflection;
 
 #nullable disable
 
 namespace Migrations
 {
     /// <inheritdoc />
-    public partial class SnitzCore : Migration
+    public partial class SnitzCore : SnitzMigration
     {
- 
 
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            if (!migrationBuilder.ColumnExists("FORUM_TOPICS", "T_ANSWERED"))
+            SetParameters();
+            if (!migrationBuilder.ColumnExists($"{_forumTablePrefix}TOPICS", "T_ANSWERED"))
             {
             migrationBuilder.AddColumn<bool>(
                 name: "T_ANSWERED",
-                table: "FORUM_TOPICS",
+                table: $"{_forumTablePrefix}TOPICS",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
             }
 
-            if (!migrationBuilder.ColumnExists("FORUM_REPLY", "R_ANSWER"))
+            if (!migrationBuilder.ColumnExists($"{_forumTablePrefix}REPLY", "R_ANSWER"))
             {
             migrationBuilder.AddColumn<bool>(
                 name: "R_ANSWER",
-                table: "FORUM_REPLY",
+                table: $"{_forumTablePrefix}REPLY",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
             }
 
 
-            if (!migrationBuilder.TableExists("FORUM_BOOKMARKS"))
+            if (!migrationBuilder.TableExists($"{_forumTablePrefix}BOOKMARKS"))
             {
                 migrationBuilder.CreateTable(
-                    name: "FORUM_BOOKMARKS",
+                    name: $"{_forumTablePrefix}BOOKMARKS",
                     columns: table => new
                     {
                         BOOKMARK_ID = table.Column<int>(type: "int", nullable: false)
@@ -57,80 +59,83 @@ namespace Migrations
                         table.ForeignKey(
                             name: "FK_FORUM_BOOKMARKS_FORUM_MEMBERS_B_MEMBERID",
                             column: x => x.B_MEMBERID,
-                            principalTable: "FORUM_MEMBERS",
+                            principalTable: $"{_memberTablePrefix}MEMBERS",
                             principalColumn: "MEMBER_ID",
                             onDelete: ReferentialAction.Cascade);
                         table.ForeignKey(
                             name: "FK_FORUM_BOOKMARKS_FORUM_TOPICS_B_TOPICID",
                             column: x => x.B_TOPICID,
-                            principalTable: "FORUM_TOPICS",
+                            principalTable: $"{_forumTablePrefix}TOPICS",
                             principalColumn: "TOPIC_ID",
                             onDelete: ReferentialAction.Cascade);
                     });
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_BOOKMARKS_B_MEMBERID",
-                    table: "FORUM_BOOKMARKS",
+                    table: $"{_forumTablePrefix}BOOKMARKS",
                     column: "B_MEMBERID");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_BOOKMARKS_B_TOPICID",
-                    table: "FORUM_BOOKMARKS",
+                    table: $"{_forumTablePrefix}BOOKMARKS",
                     column: "B_TOPICID");
             }
-            migrationBuilder.CreateTable(
-                name: $"FORUM_POLLS",
-                columns: table => new
-                {
-                    POLL_ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CAT_ID = table.Column<string>(type: "int", nullable: false),
-                    FORUM_ID = table.Column<int>(type: "int", nullable: false),
-                    TOPIC_ID = table.Column<int>(type: "int", nullable: false),
-                    P_WHOVOTES = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    P_LASTVOTE = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
-                    P_QUESTION = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FORUM_POLLS", x => x.POLL_ID);
-                });
-            migrationBuilder.CreateTable(
-                name: $"FORUM_POLL_ANSWERS",
-                columns: table => new
-                {
-                    POLLANSWER_ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    POLL_ID = table.Column<string>(type: "int", nullable: false),
-                    POLLANSWER_ORDER = table.Column<int>(type: "int", nullable: false),
-                    POLLANSWER_COUNT = table.Column<int>(type: "int", nullable: false),
-                    POLLANSWER_LABEL = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FORUM_POLL_ANSWERS", x => x.POLLANSWER_ID);
-                });
-            migrationBuilder.CreateTable(
-                name: $"FORUM_POLL_VOTES",
-                columns: table => new
-                {
-                    POLLVOTES_ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    POLL_ID = table.Column<string>(type: "int", nullable: false),
-                    CAT_ID = table.Column<string>(type: "int", nullable: true),
-                    FORUM_ID = table.Column<int>(type: "int", nullable: true),
-                    TOPIC_ID = table.Column<int>(type: "int", nullable: true),
-                    MEMBER_ID = table.Column<int>(type: "int", nullable: true),
-                    GUEST_VOTE = table.Column<int>(type: "int", nullable: true),
+            if(!migrationBuilder.TableExists($"{_forumTablePrefix}POLLS")){
+                migrationBuilder.CreateTable(
+                    name: $"{_forumTablePrefix}POLLS",
+                    columns: table => new
+                    {
+                        POLL_ID = table.Column<int>(type: "int", nullable: false)
+                            .Annotation("SqlServer:Identity", "1, 1"),
+                        CAT_ID = table.Column<string>(type: "int", nullable: false),
+                        FORUM_ID = table.Column<int>(type: "int", nullable: false),
+                        TOPIC_ID = table.Column<int>(type: "int", nullable: false),
+                        P_WHOVOTES = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                        P_LASTVOTE = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
+                        P_QUESTION = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    },
+                    constraints: table =>
+                    {
+                        table.PrimaryKey("PK_FORUM_POLLS", x => x.POLL_ID);
+                    });
+                migrationBuilder.CreateTable(
+                    name: $"{_forumTablePrefix}POLL_ANSWERS",
+                    columns: table => new
+                    {
+                        POLLANSWER_ID = table.Column<int>(type: "int", nullable: false)
+                            .Annotation("SqlServer:Identity", "1, 1"),
+                        POLL_ID = table.Column<string>(type: "int", nullable: false),
+                        POLLANSWER_ORDER = table.Column<int>(type: "int", nullable: false),
+                        POLLANSWER_COUNT = table.Column<int>(type: "int", nullable: false),
+                        POLLANSWER_LABEL = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    },
+                    constraints: table =>
+                    {
+                        table.PrimaryKey("PK_FORUM_POLL_ANSWERS", x => x.POLLANSWER_ID);
+                    });
+                migrationBuilder.CreateTable(
+                    name: $"{_forumTablePrefix}POLL_VOTES",
+                    columns: table => new
+                    {
+                        POLLVOTES_ID = table.Column<int>(type: "int", nullable: false)
+                            .Annotation("SqlServer:Identity", "1, 1"),
+                        POLL_ID = table.Column<string>(type: "int", nullable: false),
+                        CAT_ID = table.Column<string>(type: "int", nullable: true),
+                        FORUM_ID = table.Column<int>(type: "int", nullable: true),
+                        TOPIC_ID = table.Column<int>(type: "int", nullable: true),
+                        MEMBER_ID = table.Column<int>(type: "int", nullable: true),
+                        GUEST_VOTE = table.Column<int>(type: "int", nullable: true),
 
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FORUM_POLL_VOTES", x => x.POLLVOTES_ID);
-                });
-            if (!migrationBuilder.TableExists("FORUM_IMAGES"))
+                    },
+                    constraints: table =>
+                    {
+                        table.PrimaryKey("PK_FORUM_POLL_VOTES", x => x.POLLVOTES_ID);
+                    });                
+            }
+
+            if (!migrationBuilder.TableExists($"{_forumTablePrefix}IMAGES"))
             {
                 migrationBuilder.CreateTable(
-                    name: "FORUM_IMAGE_CAT",
+                    name: $"{_forumTablePrefix}IMAGE_CAT",
                     columns: table => new
                     {
                         CAT_ID = table.Column<int>(type: "int", nullable: false)
@@ -144,7 +149,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_ORG_GROUP",
+                    name: $"{_forumTablePrefix}ORG_GROUP",
                     columns: table => new
                     {
                         O_GROUP_ID = table.Column<int>(type: "int", nullable: false)
@@ -158,7 +163,7 @@ namespace Migrations
                     });
 
                 migrationBuilder.CreateTable(
-                    name: "FORUM_IMAGES",
+                    name: $"{_forumTablePrefix}IMAGES",
                     columns: table => new
                     {
                         I_ID = table.Column<int>(type: "int", nullable: false)
@@ -185,12 +190,12 @@ namespace Migrations
                         table.ForeignKey(
                             name: "FK_FORUM_IMAGES_FORUM_IMAGE_CAT_I_CAT",
                             column: x => x.I_CAT,
-                            principalTable: "FORUM_IMAGE_CAT",
+                            principalTable: $"{_forumTablePrefix}IMAGE_CAT",
                             principalColumn: "CAT_ID");
                         table.ForeignKey(
                             name: "FK_FORUM_IMAGES_FORUM_MEMBERS_I_MID",
                             column: x => x.I_MID,
-                            principalTable: "FORUM_MEMBERS",
+                            principalTable: $"{_memberTablePrefix}MEMBERS",
                             principalColumn: "MEMBER_ID",
                             onDelete: ReferentialAction.Cascade);
                         table.ForeignKey(
@@ -203,30 +208,30 @@ namespace Migrations
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_IMAGES_I_CAT",
-                    table: "FORUM_IMAGES",
+                    table: $"{_forumTablePrefix}IMAGES",
                     column: "I_CAT");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_IMAGES_I_GROUP_ID",
-                    table: "FORUM_IMAGES",
+                    table: $"{_forumTablePrefix}IMAGES",
                     column: "I_GROUP_ID");
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_IMAGES_I_ID",
-                    table: "FORUM_IMAGES",
+                    table: $"{_forumTablePrefix}IMAGES",
                     column: "I_ID",
                     unique: true);
 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_IMAGES_I_MID",
-                    table: "FORUM_IMAGES",
+                    table: $"{_forumTablePrefix}IMAGES",
                     column: "I_MID");
             }
 
-            if (!migrationBuilder.TableExists("FORUM_SPAM_MAIL"))
+            if (!migrationBuilder.TableExists($"{_forumTablePrefix}SPAM_MAIL"))
             {
                 migrationBuilder.CreateTable(
-                    name: "FORUM_SPAM_MAIL",
+                    name: $"{_forumTablePrefix}SPAM_MAIL",
                     columns: table => new
                     {
                         SPAM_ID = table.Column<int>(type: "int", nullable: false)

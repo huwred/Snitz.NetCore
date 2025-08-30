@@ -127,7 +127,7 @@ namespace PostThanks.Models
             {
                 if (replyid == 0)
                 {
-                    return _snitzContext.ArchivedTopics.Single(p=>p.Id == id).MemberId == _memberid;
+                    return _snitzContext.ArchivedTopics.Single(p=>p.ArchivedPostId == id).MemberId == _memberid;
                 }
                 else
                 {

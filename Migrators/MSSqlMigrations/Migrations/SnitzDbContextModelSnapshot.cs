@@ -533,12 +533,12 @@ namespace Migrations
 
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ArchivedPostId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("TOPIC_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ArchivedPostId"));
 
                     b.Property<int>("AllowRating")
                         .HasColumnType("int")
@@ -648,7 +648,7 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("T_VIEW_COUNT");
 
-                    b.HasKey("Id");
+                    b.HasKey("ArchivedPostId");
 
                     b.HasIndex("CategoryId");
 
@@ -711,7 +711,7 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("R_AUTHOR");
 
-                    b.Property<int>("PostId")
+                    b.Property<int>("ArchivedPostId")
                         .HasColumnType("int")
                         .HasColumnName("TOPIC_ID");
 
@@ -2189,6 +2189,10 @@ namespace Migrations
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                    //b.HasMany("SnitzCore.Data.Models.ArchivedReply","ArchivedReplies")
+                    //    .WithOne("ArchivedPost")
+                    //    .HasForeignKey("ArchivedPostId")
+                    //    .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Category");
 
@@ -2197,6 +2201,8 @@ namespace Migrations
                     b.Navigation("LastPostAuthor");
 
                     b.Navigation("Member");
+
+                    //b.Navigation("ArchivedReplies");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedReply", b =>
@@ -2444,10 +2450,10 @@ namespace Migrations
                     b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
-                {
-                    b.Navigation("Replies");
-                });
+            //modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
+            //    {
+            //        b.Navigation("ArchivedReplies");
+            //    });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Category", b =>
                 {

@@ -50,7 +50,7 @@ namespace WebApplication1.Migrations
                         {
                             Id = "2c5e174e-3b0e-446f-86af-483d56fd7210",
                             Name = "Administrator",
-                            NormalizedName = "ADMIN"
+                            NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
@@ -299,7 +299,7 @@ namespace WebApplication1.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("R_AUTHOR");
 
-                    b.Property<int>("PostId")
+                    b.Property<int>("ArchivedPostId")
                         .HasColumnType("INTEGER")
                         .HasColumnName("TOPIC_ID");
 
@@ -322,7 +322,7 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ArchivedPostId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("TOPIC_ID");
@@ -438,7 +438,7 @@ namespace WebApplication1.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("T_VIEW_COUNT");
 
-                    b.HasKey("Id");
+                    b.HasKey("ArchivedPostId");
 
                     b.ToTable("FORUM_A_TOPICS");
                 });

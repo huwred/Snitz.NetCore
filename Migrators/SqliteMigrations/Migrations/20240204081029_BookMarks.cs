@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using SnitzCore.Data.Models;
 
 #nullable disable
 
@@ -7,14 +8,14 @@
 namespace WebApplication1.Migrations
 {
     /// <inheritdoc />
-    public partial class BookMarks : Migration
+    public partial class BookMarks : SnitzMigration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
+            SetParameters();
             migrationBuilder.CreateTable(
-                name: "FORUM_BOOKMARKS",
+                name: $"{_forumTablePrefix}BOOKMARKS",
                 columns: table => new
                 {
                     BOOKMARK_ID = table.Column<int>(type: "INTEGER", nullable: false)
@@ -30,36 +31,36 @@ namespace WebApplication1.Migrations
                     table.ForeignKey(
                         name: "FK_FORUM_BOOKMARKS_FORUM_FORUM_ForumId",
                         column: x => x.ForumId,
-                        principalTable: "FORUM_FORUM",
+                        principalTable: $"{_forumTablePrefix}FORUM",
                         principalColumn: "FORUM_ID",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_FORUM_BOOKMARKS_FORUM_MEMBERS_AuthorId",
                         column: x => x.AuthorId,
-                        principalTable: "FORUM_MEMBERS",
+                        principalTable: $"{_memberTablePrefix}MEMBERS",
                         principalColumn: "MEMBER_ID",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_FORUM_BOOKMARKS_FORUM_TOPICS_B_TOPICID",
                         column: x => x.B_TOPICID,
-                        principalTable: "FORUM_TOPICS",
+                        principalTable: $"{_forumTablePrefix}TOPICS",
                         principalColumn: "TOPIC_ID",
                         onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_FORUM_BOOKMARKS_AuthorId",
-                table: "FORUM_BOOKMARKS",
+                table: $"{_forumTablePrefix}BOOKMARKS",
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FORUM_BOOKMARKS_B_TOPICID",
-                table: "FORUM_BOOKMARKS",
+                table: $"{_forumTablePrefix}BOOKMARKS",
                 column: "B_TOPICID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FORUM_BOOKMARKS_ForumId",
-                table: "FORUM_BOOKMARKS",
+                table: $"{_forumTablePrefix}BOOKMARKS",
                 column: "ForumId");
 
         }

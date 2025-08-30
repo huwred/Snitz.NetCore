@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Models;
 using System;
 
 #nullable disable
@@ -9,26 +10,27 @@ using System;
 namespace WebApplication1.Migrations
 {
     /// <inheritdoc />
-    public partial class latestchages : Migration
+    public partial class Answered : SnitzMigration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            if (!migrationBuilder.ColumnExists("FORUM_TOPICS", "T_ANSWERED"))
+            SetParameters();
+            if (!migrationBuilder.ColumnExists($"{_forumTablePrefix}TOPICS", "T_ANSWERED"))
             {
             migrationBuilder.AddColumn<bool>(
                 name: "T_ANSWERED",
-                table: "FORUM_TOPICS",
+                table: $"{_forumTablePrefix}TOPICS",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
             }
 
-            if (!migrationBuilder.ColumnExists("FORUM_REPLY", "R_ANSWER"))
+            if (!migrationBuilder.ColumnExists($"{_forumTablePrefix}REPLY", "R_ANSWER"))
             {
             migrationBuilder.AddColumn<bool>(
                 name: "R_ANSWER",
-                table: "FORUM_REPLY",
+                table: $"{_forumTablePrefix}REPLY",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);

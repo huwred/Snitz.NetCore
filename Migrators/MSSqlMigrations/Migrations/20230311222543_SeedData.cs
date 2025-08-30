@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
+using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Models;
 using System.Reflection;
 
 #nullable disable
@@ -9,80 +11,82 @@ using System.Reflection;
 namespace WebApplication1.Migrations
 {
     /// <inheritdoc />
-    public partial class SeedData : Migration
+    public partial class SeedData : SnitzMigration
     {
-        public string _forumTablePrefix;
-        public string _memberTablePrefix;
-        private void SetParameters()
-        {
-            var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(path)
-                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
-            var config = builder.Build();
 
-            _forumTablePrefix = config.GetSection("SnitzForums").GetSection("forumTablePrefix").Value;
-            _memberTablePrefix = config.GetSection("SnitzForums").GetSection("memberTablePrefix").Value;
-
-        }
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             SetParameters();
+            if(!migrationBuilder.IndexExists($"SELECT COUNT(ID) FROM {_forumTablePrefix}CONFIG_NEW"))
+            {
+                migrationBuilder.InsertData(
+                    table: $"{_forumTablePrefix}CONFIG_NEW",
+                    columns: new[] { "ID", "C_VARIABLE", "C_VALUE" },
+                    values: new object[,]
+                    {
+                        { 1, "STRICONS", "1" },
+                        { 2, "STRALLOWFORUMCODE", "1" },
+                        { 3, "STRPHOTOALBUM", "1" },
+                        { 4, "STRBADWORDFILTER", "1" },
+                        { 5, "STRIMGINPOSTS", "1" },
+                        { 6, "INTHOTTOPICNUM", "25" },
+                        { 7, "STRPAGESIZE", "15" },
+                        { 8, "STRPAGENUMBERSIZE", "10" },
+                        { 9, "STRMARSTATUS", "1" },
+                        { 10, "STRFULLNAME", "1" },
+                        { 11, "STRPICTURE", "1" },
+                        { 12, "STRSEX", "1" },
+                        { 13, "STRCITY", "1" },
+                        { 14, "STRSTATE", "1" },
+                        { 15, "STRAGE", "0" },
+                        { 16, "STRAGEDOB", "1" },
+                        { 17, "STRMINAGE", "14" },
+                        { 18, "STRCOUNTRY", "1" },
+                        { 19, "STROCCUPATION", "1" },
+                        { 20, "STRFAVLINKS", "1" },
+                        { 21, "STRBIO", "1" },
+                        { 22, "STRHOBBIES", "1" },
+                        { 23, "STRLNEWS", "1" },
+                        { 24, "STRQUOTE", "1" },
+                        { 25, "STRHOMEPAGE", "1" },
+                        { 26, "INTMAXFILESIZE", "5" },
+                        { 27, "INTFIRSTINSTALL", "1" }
+                    });
 
-            migrationBuilder.InsertData(
-                table: $"{_forumTablePrefix}CONFIG_NEW",
-                columns: new[] { "ID", "C_VARIABLE", "C_VALUE" },
-                values: new object[,]
-                {
-                    { 1, "STRICONS", "1" },
-                    { 2, "STRALLOWFORUMCODE", "1" },
-                    { 3, "STRPHOTOALBUM", "1" },
-                    { 4, "STRBADWORDFILTER", "1" },
-                    { 5, "STRIMGINPOSTS", "1" },
-                    { 6, "INTHOTTOPICNUM", "25" },
-                    { 7, "STRPAGESIZE", "15" },
-                    { 8, "STRPAGENUMBERSIZE", "10" },
-                    { 9, "STRMARSTATUS", "1" },
-                    { 10, "STRFULLNAME", "1" },
-                    { 11, "STRPICTURE", "1" },
-                    { 12, "STRSEX", "1" },
-                    { 13, "STRCITY", "1" },
-                    { 14, "STRSTATE", "1" },
-                    { 15, "STRAGE", "0" },
-                    { 16, "STRAGEDOB", "1" },
-                    { 17, "STRMINAGE", "14" },
-                    { 18, "STRCOUNTRY", "1" },
-                    { 19, "STROCCUPATION", "1" },
-                    { 20, "STRFAVLINKS", "1" },
-                    { 21, "STRBIO", "1" },
-                    { 22, "STRHOBBIES", "1" },
-                    { 23, "STRLNEWS", "1" },
-                    { 24, "STRQUOTE", "1" },
-                    { 25, "STRHOMEPAGE", "1" },
-                    { 25, "INTMAXFILESIZE", "5" }
-                });
+            }else{
+                migrationBuilder.InsertData(
+                    table: $"{_forumTablePrefix}CONFIG_NEW",
+                    columns: new[] { "C_VARIABLE", "C_VALUE" },
+                    values: new object[,]
+                    {
+                        { "INTFIRSTINSTALL", "0" }
+                    });                
+            }
+            if(!migrationBuilder.IndexExists($"SELECT COUNT(*) FROM {_forumTablePrefix}RANKING")){
+                // Already seeded
+                migrationBuilder.InsertData(
+                    table: $"{_forumTablePrefix}RANKING",
+                    columns: new[] { "RANK_ID", "R_IMAGE", "R_IMG_REPEAT", "R_POSTS", "R_TITLE" },
+                    values: new object[,]
+                    {
+                        { 0, "gold", 5, 0, "Administrator" },
+                        { 1, "silver", 5, 0, "Moderator" },
+                        { 2, "bronze", 0, 0, "Starting Member" },
+                        { 3, "green", 1, 5, "Newbie" },
+                        { 4, "cyan", 2, 50, "Junior" },
+                        { 5, "blue", 3, 250, "Average Member" },
+                        { 6, "purple", 4, 500, "Knowitall" },
+                        { 7, "bronze", 5, 2000, "Forum Guru" }
+                    });
+            }
 
-            migrationBuilder.InsertData(
-                table: $"{_forumTablePrefix}RANKING",
-                columns: new[] { "RANK_ID", "R_IMAGE", "R_IMG_REPEAT", "R_POSTS", "R_TITLE" },
-                values: new object[,]
-                {
-                    { 0, "gold", 5, 0, "Administrator" },
-                    { 1, "silver", 5, 0, "Moderator" },
-                    { 2, "bronze", 0, 0, "Starting Member" },
-                    { 3, "green", 1, 5, "Newbie" },
-                    { 4, "cyan", 2, 50, "Junior" },
-                    { 5, "blue", 3, 250, "Average Member" },
-                    { 6, "purple", 4, 500, "Knowitall" },
-                    { 7, "bronze", 5, 2000, "Forum Guru" }
-                });
-
-            migrationBuilder.InsertData(
-                table: $"{_memberTablePrefix}MEMBERS",
-                columns: new[] { "MEMBER_ID", "M_AGE", "M_AIM", "M_ALLOWEMAIL", "M_BIO", "M_CITY", "M_COUNTRY", "M_DATE", "M_DEFAULT_VIEW", "M_DOB", "M_EMAIL", "M_FIRSTNAME", "M_HIDE_EMAIL", "M_HOBBIES", "M_HOMEPAGE", "M_ICQ", "M_IP", "M_KEY", "M_LAST_IP", "M_LastLogin", "M_LASTNAME", "M_LASTPOSTDATE", "M_LEVEL", "M_LINK1", "M_LINK2", "M_LNEWS", "M_MARSTATUS", "M_MSN", "M_NAME", "M_NEWEMAIL", "M_OCCUPATION", "M_PHOTO_URL", "M_POSTS", "M_PWKEY", "M_QUOTE", "M_RECEIVE_EMAIL", "M_SEX", "M_SHA256", "M_SIG_DEFAULT", "M_SIG", "M_STATE", "M_STATUS", "M_SUBSCRIPTION", "M_TITLE", "M_VIEW_SIG", "M_YAHOO" },
-                values: new object[] { 1, null, null, (short)0, null, null, null, "20231230082941", 0, null, "xxxx@example.com", null, (short)0, null, null, null, null, null, null, null, null, null, (short)3, null, null, null, null, null, "Administrator", null, null, null, 0, null, null, (short)0, null, (short)0, (short)0, null, null, (short)1, (short)0, null, (short)0, null });
-
+            if(!migrationBuilder.IndexExists($"SELECT COUNT(MEMBER_ID) FROM {_memberTablePrefix}MEMBERS"))
+            {
+                migrationBuilder.InsertData(
+                    table: $"{_memberTablePrefix}MEMBERS",
+                    columns: new[] { "MEMBER_ID", "M_AGE", "M_AIM", "M_ALLOWEMAIL", "M_BIO", "M_CITY", "M_COUNTRY", "M_DATE", "M_DEFAULT_VIEW", "M_DOB", "M_EMAIL", "M_FIRSTNAME", "M_HIDE_EMAIL", "M_HOBBIES", "M_HOMEPAGE", "M_ICQ", "M_IP", "M_KEY", "M_LAST_IP", "M_LastLogin", "M_LASTNAME", "M_LASTPOSTDATE", "M_LEVEL", "M_LINK1", "M_LINK2", "M_LNEWS", "M_MARSTATUS", "M_MSN", "M_NAME", "M_NEWEMAIL", "M_OCCUPATION", "M_PHOTO_URL", "M_POSTS", "M_PWKEY", "M_QUOTE", "M_RECEIVE_EMAIL", "M_SEX", "M_SHA256", "M_SIG_DEFAULT", "M_SIG", "M_STATE", "M_STATUS", "M_SUBSCRIPTION", "M_TITLE", "M_VIEW_SIG", "M_YAHOO" },
+                    values: new object[] { 1, null, null, (short)0, null, null, null, "20231230082941", 0, null, "xxxx@example.com", null, (short)0, null, null, null, null, null, null, null, null, null, (short)3, null, null, null, null, null, "Administrator", null, null, null, 0, null, null, (short)0, null, (short)0, (short)0, null, null, (short)1, (short)0, null, (short)0, null });
             migrationBuilder.InsertData(
                 table: $"{_forumTablePrefix}CATEGORY",
                 columns: new[] { "CAT_ID", "CAT_MODERATION", "CAT_NAME", "CAT_ORDER", "CAT_STATUS", "CAT_SUBSCRIPTION" },
@@ -102,6 +106,9 @@ namespace WebApplication1.Migrations
                 table: $"{_forumTablePrefix}TOTALS",
                 columns: new[] { "COUNT_ID", "P_A_COUNT", "T_A_COUNT", "P_COUNT", "T_COUNT", "U_COUNT" },
                 values: new object[] { (short)1, 0, 0, 1, 1, 0 });
+            }
+
+
 
 
         }

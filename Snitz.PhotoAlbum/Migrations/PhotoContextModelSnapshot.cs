@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Snitz.PhotoAlbum.Models;
 
@@ -15,22 +16,28 @@ namespace Snitz.PhotoAlbum.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.13");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "7.0.7")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Snitz.PhotoAlbum.Models.AlbumCategory", b =>
                 {
                     b.Property<int>("CatId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("CAT_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CatId"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("CAT_DESC");
 
                     b.Property<int>("MemberId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("MEMBER_ID");
 
                     b.HasKey("CatId");
@@ -42,15 +49,17 @@ namespace Snitz.PhotoAlbum.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("O_GROUP_ID");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("O_GROUP_NAME");
 
                     b.Property<int>("Order")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("O_GROUP_ORDER");
 
                     b.HasKey("Id");
@@ -62,67 +71,69 @@ namespace Snitz.PhotoAlbum.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("I_ID");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int?>("CategoryId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("I_CAT");
 
                     b.Property<string>("CommonName")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_NORWEGIANNAME");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_DESC");
 
                     b.Property<bool>("DoNotFeature")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("bit")
                         .HasColumnName("I_NOTFEATURED");
 
                     b.Property<int?>("GroupId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("I_GROUP_ID");
 
                     b.Property<int?>("Height")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("I_HEIGHT");
 
                     b.Property<bool>("IsPrivate")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("bit")
                         .HasColumnName("I_PRIVATE");
 
                     b.Property<string>("Location")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_LOC");
 
                     b.Property<int>("MemberId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("I_MID");
 
                     b.Property<string>("Mime")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_TYPE");
 
                     b.Property<string>("ScientificName")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_SCIENTIFICNAME");
 
                     b.Property<int>("Size")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("I_SIZE");
 
                     b.Property<string>("Timestamp")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_DATE");
 
                     b.Property<int?>("Views")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("I_VIEWS");
 
                     b.Property<int?>("Width")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("I_WIDTH");
 
                     b.HasKey("Id");
@@ -140,115 +151,117 @@ namespace Snitz.PhotoAlbum.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("TOPIC_ID");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("AllowRating")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_ALLOW_RATING");
 
                     b.Property<int?>("ArchiveFlag")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_ARCHIVE_FLAG");
 
                     b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_DATE");
 
                     b.Property<int>("ForumId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("FORUM_ID");
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("T_IP");
 
                     b.Property<short>("IsSticky")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_STICKY");
 
                     b.Property<short>("Ispoll")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_ISPOLL");
 
                     b.Property<string>("LastEdit")
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_LAST_EDIT");
 
                     b.Property<int?>("LastEditby")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_LAST_EDITBY");
 
                     b.Property<int?>("LastPostAuthorId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_LAST_POST_AUTHOR");
 
                     b.Property<string>("LastPostDate")
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_LAST_POST");
 
                     b.Property<int?>("LastPostReplyId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_LAST_POST_REPLY_ID");
 
                     b.Property<short>("Mail")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_MAIL");
 
                     b.Property<int>("MemberId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_AUTHOR");
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("T_MESSAGE");
 
                     b.Property<short>("Pollstatus")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_POLLSTATUS");
 
                     b.Property<int>("RatingTotal")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_RATING_TOTAL");
 
                     b.Property<int>("RatingTotalCount")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_RATING_TOTAL_COUNT");
 
                     b.Property<int>("ReplyCount")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_REPLIES");
 
                     b.Property<short>("Sig")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_SIG");
 
                     b.Property<short>("Status")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_STATUS");
 
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("T_SUBJECT");
 
                     b.Property<int>("UnmoderatedReplies")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_UREPLIES");
 
                     b.Property<int>("ViewCount")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_VIEW_COUNT");
 
                     b.HasKey("Id");
@@ -268,69 +281,69 @@ namespace Snitz.PhotoAlbum.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("REPLY_ID");
 
-                    b.Property<int>("ArchivedPostId")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("TOPIC_ID");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("R_MESSAGE");
 
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("R_DATE");
 
                     b.Property<int>("ForumId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("FORUM_ID");
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("R_IP");
 
                     b.Property<int?>("LastEditby")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("R_LAST_EDITBY");
 
                     b.Property<string>("LastEdited")
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("R_LAST_EDIT");
 
                     b.Property<short>("Mail")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("R_MAIL");
 
                     b.Property<int>("MemberId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("R_AUTHOR");
 
+                    b.Property<int>("PostId")
+                        .HasColumnType("int")
+                        .HasColumnName("TOPIC_ID");
+
                     b.Property<int>("Rating")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("R_RATING");
 
                     b.Property<short>("Sig")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("R_SIG");
 
                     b.Property<short>("Status")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("R_STATUS");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ArchivedPostId");
 
                     b.HasIndex("MemberId");
 
@@ -341,27 +354,29 @@ namespace Snitz.PhotoAlbum.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int?>("Moderation")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("CAT_MODERATION");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("CAT_NAME");
 
                     b.Property<int>("Sort")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("CAT_ORDER");
 
                     b.Property<short?>("Status")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("CAT_STATUS");
 
                     b.Property<int?>("Subscription")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("CAT_SUBSCRIPTION");
 
                     b.HasKey("Id");
@@ -373,143 +388,143 @@ namespace Snitz.PhotoAlbum.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("FORUM_ID");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("ArchiveSched")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_ARCHIVE_SCHED");
 
                     b.Property<int?>("ArchivedCount")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_A_COUNT");
 
                     b.Property<int>("ArchivedTopics")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_A_TOPICS");
 
                     b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
                     b.Property<short>("CountMemberPosts")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("F_COUNT_M_POSTS");
 
                     b.Property<int>("Defaultdays")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_DEFAULTDAYS");
 
                     b.Property<int>("DeleteSched")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_DELETE_SCHED");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("F_DESCRIPTION");
 
                     b.Property<string>("Ip")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("F_IP");
 
                     b.Property<string>("LastArchived")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("F_L_ARCHIVE");
 
                     b.Property<string>("LastDelete")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("F_L_DELETE");
 
                     b.Property<string>("LastPost")
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("F_LAST_POST");
 
                     b.Property<int?>("LastPostAuthorId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_LAST_POST_AUTHOR");
 
                     b.Property<int?>("LatestReplyId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_LAST_POST_REPLY_ID");
 
                     b.Property<int?>("LatestTopicId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_LAST_POST_TOPIC_ID");
 
                     b.Property<short>("Mail")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("F_MAIL");
 
                     b.Property<int>("Moderation")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_MODERATION");
 
                     b.Property<int>("Order")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_ORDER");
 
                     b.Property<string>("Password")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("F_PASSWORD_NEW");
 
                     b.Property<int>("Polls")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_POLLS");
 
                     b.Property<int>("Postauth")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_POSTAUTH");
 
                     b.Property<int>("Privateforums")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_PRIVATEFORUMS");
 
                     b.Property<short>("Rating")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("F_RATING");
 
                     b.Property<int>("ReplyCount")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_COUNT");
 
                     b.Property<int>("Replyauth")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_REPLYAUTH");
 
                     b.Property<short>("Status")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("F_STATUS");
 
                     b.Property<int>("Subscription")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_SUBSCRIPTION");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("F_SUBJECT");
 
                     b.Property<int>("TopicCount")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("F_TOPICS");
 
                     b.Property<short>("Type")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("F_TYPE");
 
                     b.Property<string>("Url")
                         .HasMaxLength(255)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("F_URL");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("LastPostAuthorId");
 
                     b.ToTable("FORUM_FORUM");
                 });
@@ -518,19 +533,21 @@ namespace Snitz.PhotoAlbum.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("MOD_ID");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("ForumId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("FORUM_ID");
 
                     b.Property<int>("MemberId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("MEMBER_ID");
 
                     b.Property<short?>("Type")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("MOD_TYPE");
 
                     b.HasKey("Id");
@@ -546,239 +563,241 @@ namespace Snitz.PhotoAlbum.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("MEMBER_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Age")
                         .HasMaxLength(10)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(10)")
                         .HasColumnName("M_AGE");
 
                     b.Property<string>("Aim")
                         .HasMaxLength(150)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("M_AIM");
 
                     b.Property<short>("Allowemail")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("M_ALLOWEMAIL");
 
                     b.Property<string>("Bio")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("M_BIO");
 
                     b.Property<string>("City")
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("M_CITY");
 
                     b.Property<string>("Country")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_COUNTRY");
 
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("M_DATE");
 
                     b.Property<int>("DefaultView")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("M_DEFAULT_VIEW");
 
                     b.Property<string>("Dob")
                         .HasMaxLength(8)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("M_DOB");
 
                     b.Property<string>("Email")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_EMAIL");
 
                     b.Property<string>("Firstname")
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("M_FIRSTNAME");
 
                     b.Property<short>("HideEmail")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("M_HIDE_EMAIL");
 
                     b.Property<string>("Hobbies")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("M_HOBBIES");
 
                     b.Property<string>("Homepage")
                         .HasMaxLength(255)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("M_HOMEPAGE");
 
                     b.Property<string>("Icq")
                         .HasMaxLength(150)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("M_ICQ");
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_IP");
 
                     b.Property<string>("Key")
                         .HasMaxLength(32)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("M_KEY");
 
                     b.Property<string>("LastIp")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_LAST_IP");
 
                     b.Property<string>("LastLogin")
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("M_LASTHEREDATE");
 
                     b.Property<string>("Lastactivity")
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("M_LASTACTIVITY");
 
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("M_LASTNAME");
 
                     b.Property<string>("Lastpostdate")
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("M_LASTPOSTDATE");
 
                     b.Property<short>("Level")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("M_LEVEL");
 
                     b.Property<string>("Link1")
                         .HasMaxLength(255)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("M_LINK1");
 
                     b.Property<string>("Link2")
                         .HasMaxLength(255)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("M_LINK2");
 
                     b.Property<string>("Lnews")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("M_LNEWS");
 
                     b.Property<string>("Marstatus")
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("M_MARSTATUS");
 
                     b.Property<string>("Msn")
                         .HasMaxLength(150)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("M_MSN");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(75)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(75)")
                         .HasColumnName("M_NAME");
 
                     b.Property<string>("Newemail")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_NEWEMAIL");
 
                     b.Property<string>("Occupation")
                         .HasMaxLength(255)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("M_OCCUPATION");
 
                     b.Property<string>("PhotoUrl")
                         .HasMaxLength(255)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("M_PHOTO_URL");
 
                     b.Property<int>("Pmemail")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("M_PMEMAIL");
 
                     b.Property<int>("Pmreceive")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("M_PMRECEIVE");
 
                     b.Property<short>("Pmsavesent")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("M_PMSAVESENT");
 
                     b.Property<int>("Posts")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("M_POSTS");
 
                     b.Property<short>("Privateprofile")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("M_PRIVATEPROFILE");
 
                     b.Property<string>("Pwkey")
                         .HasMaxLength(32)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("M_PWKEY");
 
                     b.Property<string>("Quote")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("M_QUOTE");
 
                     b.Property<short>("ReceiveEmail")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("M_RECEIVE_EMAIL");
 
                     b.Property<string>("Sex")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_SEX");
 
                     b.Property<short?>("Sha256")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("M_SHA256");
 
                     b.Property<short>("SigDefault")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("M_SIG_DEFAULT");
 
                     b.Property<string>("Signature")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("M_SIG");
 
                     b.Property<string>("State")
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("M_STATE");
 
                     b.Property<short>("Status")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("M_STATUS");
 
                     b.Property<short>("Subscription")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("M_SUBSCRIPTION");
 
                     b.Property<string>("Title")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_TITLE");
 
                     b.Property<short>("ViewSig")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("M_VIEW_SIG");
 
                     b.Property<string>("Yahoo")
                         .HasMaxLength(150)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("M_YAHOO");
 
                     b.HasKey("Id");
@@ -790,23 +809,25 @@ namespace Snitz.PhotoAlbum.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("SUBSCRIPTION_ID");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
                     b.Property<int>("ForumId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("FORUM_ID");
 
                     b.Property<int>("MemberId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("MEMBER_ID");
 
                     b.Property<int>("PostId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("TOPIC_ID");
 
                     b.HasKey("Id");
@@ -826,119 +847,121 @@ namespace Snitz.PhotoAlbum.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("TOPIC_ID");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("AllowRating")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_ALLOW_RATING");
 
                     b.Property<bool>("Answered")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("bit")
                         .HasColumnName("T_ANSWERED");
 
                     b.Property<int?>("ArchiveFlag")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_ARCHIVE_FLAG");
 
                     b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("T_MESSAGE");
 
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_DATE");
 
                     b.Property<int>("ForumId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("FORUM_ID");
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("T_IP");
 
                     b.Property<short>("IsSticky")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_STICKY");
 
                     b.Property<short>("Ispoll")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_ISPOLL");
 
                     b.Property<string>("LastEdit")
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_LAST_EDIT");
 
                     b.Property<int?>("LastEditby")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_LAST_EDITBY");
 
                     b.Property<int?>("LastPostAuthorId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_LAST_POST_AUTHOR");
 
                     b.Property<string>("LastPostDate")
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_LAST_POST");
 
                     b.Property<int?>("LastPostReplyId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_LAST_POST_REPLY_ID");
 
                     b.Property<short>("Mail")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_MAIL");
 
                     b.Property<int>("MemberId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_AUTHOR");
 
                     b.Property<short>("Pollstatus")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_POLLSTATUS");
 
                     b.Property<int>("RatingTotal")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_RATING_TOTAL");
 
                     b.Property<int>("RatingTotalCount")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_RATING_TOTAL_COUNT");
 
                     b.Property<int>("ReplyCount")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_REPLIES");
 
                     b.Property<short>("Sig")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_SIG");
 
                     b.Property<short>("Status")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("T_STATUS");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("T_SUBJECT");
 
                     b.Property<int>("UnmoderatedReplies")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_UREPLIES");
 
                     b.Property<int>("ViewCount")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("T_VIEW_COUNT");
 
                     b.HasKey("Id");
@@ -958,68 +981,70 @@ namespace Snitz.PhotoAlbum.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("REPLY_ID");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<bool>("Answer")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("bit")
                         .HasColumnName("R_ANSWER");
 
                     b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("R_MESSAGE");
 
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("R_DATE");
 
                     b.Property<int>("ForumId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("FORUM_ID");
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("R_IP");
 
                     b.Property<int?>("LastEditby")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("R_LAST_EDITBY");
 
                     b.Property<string>("LastEdited")
                         .HasMaxLength(14)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("R_LAST_EDIT");
 
                     b.Property<short>("Mail")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("R_MAIL");
 
                     b.Property<int>("MemberId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("R_AUTHOR");
 
                     b.Property<int>("PostId")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("TOPIC_ID");
 
                     b.Property<int>("Rating")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("R_RATING");
 
                     b.Property<short>("Sig")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("R_SIG");
 
                     b.Property<short>("Status")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("smallint")
                         .HasColumnName("R_STATUS");
 
                     b.HasKey("Id");
@@ -1089,11 +1114,6 @@ namespace Snitz.PhotoAlbum.Migrations
 
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedReply", b =>
                 {
-                    b.HasOne("SnitzCore.Data.Models.ArchivedPost", "Topic")
-                        .WithMany("Replies")
-                        .HasForeignKey("ArchivedPostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("SnitzCore.Data.Models.Member", "Member")
                         .WithMany()
@@ -1102,8 +1122,6 @@ namespace Snitz.PhotoAlbum.Migrations
                         .IsRequired();
 
                     b.Navigation("Member");
-
-                    b.Navigation("Topic");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Forum", b =>
@@ -1114,13 +1132,7 @@ namespace Snitz.PhotoAlbum.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SnitzCore.Data.Models.Member", "LastPostAuthor")
-                        .WithMany()
-                        .HasForeignKey("LastPostAuthorId");
-
                     b.Navigation("Category");
-
-                    b.Navigation("LastPostAuthor");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ForumModerator", b =>
