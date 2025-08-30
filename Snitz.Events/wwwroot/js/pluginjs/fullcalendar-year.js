@@ -4765,11 +4765,11 @@ var DayGrid = Grid.extend({
 	// Given a cell object, generates its start date. Returns a reference-free copy.
 	computeCellDate: function(cell) {
 		var colCnt = this.colCnt;
+			debugger;
 		var index = cell.row * colCnt + (this.view.isRTL ? colCnt - cell.col - 1 : cell.col);
         try {
 			return this.cellDates[index].clone();
 		} catch (e) {
-			debugger;
 			alert(index + ":" + this.cellDates[index]);
         }
 		return this.cellDates[index].clone();

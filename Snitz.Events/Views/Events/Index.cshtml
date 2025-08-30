@@ -22,8 +22,8 @@
 }
 @section Styles {
     <link rel="stylesheet" href="~/_content/Snitz.Events/css/jquery-ui-timepicker-addon.min.css">
-    <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar.min.css">
-    <link snitz-if="@(isRighToLeft)" rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar-rtl.css">
+@*     <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar.min.css">
+    <link snitz-if="@(isRighToLeft)" rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar-rtl.css"> *@
 }
 <div class="pt-0">
     <snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
@@ -45,16 +45,15 @@
         var pastEventsTitle = '[@Localizer["upPastEventsTitle"]]';
 
     </script>
-    <script type="text/javascript" src="~/_content/Snitz.Events/js/moment.min.js"></script>
 
-    @if (clang == "fa")
-    {
-        <script type="text/javascript" src="~/_content/Snitz.Events/js/moment-jalaali.min.js"></script>
-    }
-
-    <script type="text/javascript" src="~/_content/Snitz.Events/js/pluginjs/fullcalendar-year.min.js"></script>
-    <script type="text/javascript" src="~/_content/Snitz.Events/js/lang/@langscript"></script>
-    <script type="text/javascript" src="~/_content/Snitz.Events/js/pluginjs/snitz.cal.min.js"></script>
+    <environment include="Development">
+        <script src="~/js/pluginjs/snitz.cal.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/pluginjs/snitz.cal.min.js"></script>
+    </environment>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script src="~/_content/Snitz.Events/js/locales-all.global.min.js"></script>
 
 
     <script type="text/javascript">

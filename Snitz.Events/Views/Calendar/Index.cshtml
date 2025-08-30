@@ -23,13 +23,13 @@
     bool isRighToLeft = rtlLangs.Contains(clang);
 
 
-    clang = clang + ".js";
+    clang = clang + ".global.min.js";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar.min.css">
+    @* <link rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar.min.css"> *@
     <link rel="stylesheet" href="~/_content/Snitz.Events/css/jquery-ui-timepicker-addon.min.css">
-    <link rel="stylesheet" href="~/css/fullcalendar.css">
-    <link snitz-if="@(isRighToLeft)" rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar-rtl.css">
+@*     <link rel="stylesheet" href="~/css/fullcalendar.css">
+    <link snitz-if="@(isRighToLeft)" rel="stylesheet" href="~/_content/Snitz.Events/css/plugincss/fullcalendar-rtl.css"> *@
 
 }
 <div class="chunk-main">
@@ -37,6 +37,10 @@
     <h5>@Localizer["calTitle"]</h5>
     <hr class="title" />
     <div class="row-fluid">
+        <select id="locale-selector"></select>
+    </div>
+    <div class="row-fluid">
+
         <div id="calendar"></div>
     </div>
     <div class="row-fluid"></div>
@@ -45,37 +49,34 @@
     <script type="text/javascript">
         var upComingEventsTitle = '[@Localizer["upComingEventTitle"]]';
         var pastEventsTitle = '[@Localizer["upPastEventsTitle"]]';
-
     </script>
-    <script src="~/_content/Snitz.Events/js/moment.min.js"></script>
-
-    @if (isRighToLeft)
-    {
-        <script src="~/_content/Snitz.Events/js/moment-jalaali.min.js"></script>
-    }
-
-    <script src="~/_content/Snitz.Events/js/pluginjs/fullcalendar-year.min.js" ></script>
-    <script src="~/_content/Snitz.Events/js/lang/@clang" ></script>
-    <script src="~/_content/Snitz.Events/js/pluginjs/snitz.cal.min.js" ></script>
-
+    <environment include="Development">
+        <script src="~/js/pluginjs/snitz.cal.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/pluginjs/snitz.cal.min.js"></script>
+    </environment>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script src="~/_content/Snitz.Events/js/locales-all.global.min.js"></script>
     <script type="text/javascript">
+
         $(document)
             .ready(function () {
 
                 $('#countryRegion').change(function () {
                     var val = $('#change-holidays').val() + '|' + $(this).val();
-                    FullCalendar("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', '?country=' + val);
+                    FullCalendar("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', val);
                 });
 
                 $('#change-holidays')
                     .change(function () {
                         var val = $(this).val();
                         populateRegions(val);
-                    FullCalendar("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', '?country=' + val);
+                    FullCalendar("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', val);
 
                     });
 
-                FullCalendar("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', '');
+                FullCalendarNew("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', 'gbr');
                 @* populateRegions($('#change-holidays').val()); *@
             });
         function populateRegions(country) {

@@ -18,22 +18,37 @@ UpComingCalendar = function(url, divid) {
     var month = d.getMonth() + 1;
     var year = d.getFullYear();
     var date = '' + year + '-' + (month <= 9 ? '0' + month : month) + '-' + (day <= 9 ? '0' + day : day);
+    var calendarEl = document.getElementById(divid);
 
-    $('#' + divid)
-        .fullCalendar({
-            header: {
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
                 left: 'title',
                 center: '',
                 right: ''
             },
             duration: { weeks: 5 },
-            defaultView: 'upComing',
-            lang: SnitzVars.forumlang,
-            isJalaali: SnitzVars.forumlang === 'fa',
-            isRTL: SnitzVars.forumlang === 'fa',
+        initialView: 'listWeek',
+        initialDate: date,
+        locale: SnitzVars.forumlang,
+        dayMaxEvents: true,
+            //isJalaali: SnitzVars.forumlang === 'fa',
+            //isRTL: SnitzVars.forumlang === 'fa',
+            views: {
+                month: { // name of view
+                    titleFormat: 'DD/MM/YY'
+                    // other view-specific options here
+                },
+                listWeek: { buttonText: 'list week' },
+                listMonth: { buttonText: 'list month' },
+                customListView: {
+                    type: 'list',
+                    duration: { days: 14 },
+                    buttonText: 'Custom List'
+                  }
+            },
             allDayText: 'all-day',
-            dateFormat: 'DD/MM/YY',
-            timeFormat: 'HH:mm',
+
+            //timeFormat: 'HH:mm',
             //titleFormat: 'Upcoming Events', //TODO
             height: 560,
             eventSources: [
@@ -52,8 +67,9 @@ UpComingCalendar = function(url, divid) {
                     $("#calendar-list").css({ "height": "auto" });
                 }
             },
-            defaultDate: moment(date)
-        });
+            //defaultDate: moment(date)
+    });
+    calendar.render();
 };
 
 FullCalendar = function(url, divid, firstday, country) {
@@ -72,7 +88,7 @@ FullCalendar = function(url, divid, firstday, country) {
                 center: 'title',
                 right: 'prev,next,today'
             },
-            defaultView: 'month',
+            defaultView: 'year',
             lang: SnitzVars.forumlang,
             isJalaali: SnitzVars.forumlang === 'fa',
             isRTL: SnitzVars.forumlang === 'fa',
@@ -213,3 +229,56 @@ setForumEventsAuth = function(event) {
     });
 };
 
+FullCalendarNew = function (url, divid, firstday, country) {
+    var calendarEl = document.getElementById('calendar');
+    var localeSelectorEl = document.getElementById('locale-selector');
+
+    var url = SnitzVars.baseUrl + "/Calendar/GetCalendarEvents/"
+    var holidayUrl = SnitzVars.baseUrl + "/Calendar/GetHolidays/" + country;
+    var eventsUrl = SnitzVars.baseUrl + "/Events/GetClubCalendarEvents/-1?old=0&calendar=1";
+    var birthdayUrl = SnitzVars.baseUrl + "/Calendar/GetBirthDays";
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'multiMonthYear,dayGridMonth,timeGridWeek'
+        },
+
+        //initialView: 'month',
+        locale: SnitzVars.forumlang,
+        //initialDate: '2023-01-12',
+        editable: true,
+        selectable: true,
+        dayMaxEvents: true, // allow "more" link when too many events
+        // multiMonthMaxColumns: 1, // guarantee single column
+        // showNonCurrentDates: true,
+        // fixedWeekCount: false,
+        // businessHours: true,
+        // weekends: false,
+
+        //timeFormat: 'HH:mm',
+        eventSources: [
+            { url: url },
+            { url: eventsUrl },
+            { url: holidayUrl },
+            { url: birthdayUrl }
+        ]
+    });
+
+    calendar.render();
+    // build the locale selector's options
+    calendar.getAvailableLocaleCodes().forEach(function (localeCode) {
+        var optionEl = document.createElement('option');
+        optionEl.value = localeCode;
+        optionEl.selected = localeCode == SnitzVars.forumlang;
+        optionEl.innerText = localeCode;
+        localeSelectorEl.appendChild(optionEl);
+    });
+
+    // when the selected option changes, dynamically change the calendar option
+    localeSelectorEl.addEventListener('change', function () {
+        if (this.value) {
+            calendar.setOption('locale', this.value);
+        }
+    });
+}

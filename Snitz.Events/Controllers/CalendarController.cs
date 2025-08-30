@@ -36,7 +36,7 @@ public class CalendarController : Controller
     public IActionResult Index()
     {
         ViewData["BreadcrumbNode"] = new MvcBreadcrumbNode("Index", "Calendar", "calTitle");
-        return View();
+        return View(); //"IndexNew"
     }
     [HttpPost]
     public IActionResult SaveFeatures(IFormCollection form)

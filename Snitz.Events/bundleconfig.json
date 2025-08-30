@@ -10,5 +10,17 @@
     "inputFiles": [
       "wwwroot/js/pluginjs/fullcalendar-year.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/locales-all.global.min.js",
+    "inputFiles": [
+      "wwwroot/js/locales-all.global.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/moment.index.global.min.js",
+    "inputFiles": [
+      "wwwroot/js/moment.index.global.js"
+    ]
   }
 ]
