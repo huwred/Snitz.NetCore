@@ -9,7 +9,7 @@ namespace SnitzCore.Data.Models;
 public partial class ArchivedPost
 {
     [Column("TOPIC_ID")]
-    public int Id { get; set; }
+    public int ArchivedPostId { get; set; }
 
     [Column("CAT_ID")]
     public int CategoryId { get; set; }
@@ -97,10 +97,11 @@ public partial class ArchivedPost
     public virtual Member? LastPostAuthor { get; set; }
     public virtual Forum? Forum { get; set; }
     public virtual Category? Category { get; set; }
-    public virtual IEnumerable<ArchivedReply> Replies { get; set; }
+    //[NotMapped]
+    public virtual IEnumerable<ArchivedReply> ArchivedReplies { get; set; }
 
     public ArchivedPost()
     {
-        Replies = new List<ArchivedReply>();
+        ArchivedReplies = new List<ArchivedReply>();
     }
 }

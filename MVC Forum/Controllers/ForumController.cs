@@ -438,7 +438,7 @@ namespace MVCForum.Controllers
 
                 var postlistings = pagedTopics.Select(p => new PostListingModel()
                 {
-                    Id = p.Id,
+                    Id = p.ArchivedPostId,
                     ArchivedTopic = p,
                     AuthorId = p.MemberId,
                     AuthorName = p.Member?.Name ?? "Unknown",
@@ -456,7 +456,7 @@ namespace MVCForum.Controllers
                     LatestReply = p.LastPostReplyId,
                     Forum = BuildForumListing(p),
                     Answered = false,
-                    HasPoll = _postService.HasPoll(p.Id),
+                    HasPoll = _postService.HasPoll(p.ArchivedPostId),
                     AllowRating = p.AllowRating,
                     ForumAllowRating = p.Forum.Rating,
 
@@ -892,7 +892,7 @@ namespace MVCForum.Controllers
 
             var posts = model.SearchArchives ? _postService.FindArchived(searchmodel,out totalcount,pagesize,page).Select(p => new PostListingModel()
             {
-                Id = p.Id,
+                Id = p.ArchivedPostId,
                 ArchivedTopic = p,
                 AuthorId = p.MemberId,
                 AuthorName = p.Member?.Name ?? "Unknown",
@@ -910,7 +910,7 @@ namespace MVCForum.Controllers
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p),
                 Answered = false,
-                HasPoll = _postService.HasPoll(p.Id),
+                HasPoll = _postService.HasPoll(p.ArchivedPostId),
                 AllowRating = p.AllowRating,
                 ForumAllowRating = 0,
                 //Rating = p.GetTopicRating()
@@ -1171,6 +1171,8 @@ namespace MVCForum.Controllers
                         passwordrequired = true;
                         break;
                     }
+
+                    passwordrequired = true;
                     notallowed = true;
                     break;
                 default:

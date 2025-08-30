@@ -3,6 +3,7 @@
                 e.preventDefault();
                 $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Read/" + $(this).data("id"), function () {
                     $("#msg-list").hide();
+                    $('#pm-message').show();
                 });
             });
         $(".pm-settings").on("click",

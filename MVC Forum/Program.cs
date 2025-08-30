@@ -73,8 +73,8 @@ builder.Services.AddDefaultIdentity<ForumUser>(options =>
 
         options.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
         options.Lockout.AllowedForNewUsers = true;
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-        options.Lockout.MaxFailedAccessAttempts = 3;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        options.Lockout.MaxFailedAccessAttempts = 4;
 
     })
     .AddRoles<IdentityRole>()
@@ -127,6 +127,8 @@ builder.Services.AddTransient<ICodeProcessor, BbCodeProcessor>();
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IHtmlLocalizerFactory, EFStringLocalizerFactory>();
+builder.Services.AddTransient<IPasswordPolicyService, PasswordPolicyService>();
+
 #region localization
 
 builder.Services.ConfigureOptions<SnitzRequestLocalizationOptions>();

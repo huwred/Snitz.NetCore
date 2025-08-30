@@ -310,7 +310,7 @@ namespace MVCForum.Controllers
                     return Json(new { result = false, error = "Unable to delete this reply" });
                 }
                 await _postService.DeleteArchivedReply(id);
-                return Json(new { result = true, data = archivedpost.Topic!.Id });
+                return Json(new { result = true, data = archivedpost.Topic!.ArchivedPostId });
             }
             await _postService.DeleteReply(id);
             return Json(new { result = true, data = post.Topic!.Id });

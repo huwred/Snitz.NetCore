@@ -266,7 +266,7 @@ namespace MVCForum.Controllers
             {
                 HttpContext.Session.SetInt32("TopicId_"+ id,1);
 
-                _postService.UpdateArchivedViewCount(post.Id,post!.ViewCount + 1);
+                _postService.UpdateArchivedViewCount(post.ArchivedPostId,post!.ViewCount + 1);
             }
 
             if (HttpContext.Session.GetInt32("TopicPageSize") != null && pagesize == 0)
@@ -286,7 +286,7 @@ namespace MVCForum.Controllers
             ViewData["BreadcrumbNode"] = topicPage;
             
             ViewData["Title"] = post.Subject;
-            var totalCount = post.Replies.Count();
+            var totalCount = post.ArchivedReplies.Count();
             var pageCount = 1;
             if (totalCount > 0)
             {
@@ -312,7 +312,7 @@ namespace MVCForum.Controllers
             }
             var model = new PostIndexModel()
             {
-                Id = post.Id,
+                Id = post.ArchivedPostId,
                 ArchivedTopic = post,
                 Title = post.Subject,
                 Author = post.Member!,
@@ -791,7 +791,7 @@ namespace MVCForum.Controllers
                     ViewBag.Error = "Error loading data";
                     return View("Error");
                 }
-                em.ReturnUrl = topic!.Id.ToString();
+                em.ReturnUrl = topic!.ArchivedPostId.ToString();
                 
                 em.Subject = _languageResource["sendtoSubject", from.Name].Value;
                 
@@ -799,7 +799,7 @@ namespace MVCForum.Controllers
                     String.Format(
                         _languageResource["sendtoMessage"].Value,
                         _config.ForumTitle, _config.ForumUrl,
-                        topic.Id, Request.Query["archived"], topic.Subject);
+                        topic.ArchivedPostId, Request.Query["archived"], topic.Subject);
                 ViewBag.TopicTitle = topic.Subject;
                 
                 ViewBag.Sent = false;
@@ -877,7 +877,7 @@ namespace MVCForum.Controllers
                 PagedList<ArchivedReply>? pagedReplies = PagedReplies(1, 100, "desc", topic!);
                 model = new PostIndexModel()
                 {
-                    Id = topic!.Id,
+                    Id = topic!.ArchivedPostId,
                     Title = topic.Subject,
                     Author = topic.Member!,
                     AuthorId = topic.Member!.Id,
@@ -886,7 +886,7 @@ namespace MVCForum.Controllers
                     Status = topic.Status,
                     IsLocked = topic.Status == 0 || topic.Forum?.Status == 0,
                     IsSticky = topic.IsSticky == 1,
-                    HasPoll = _postService.HasPoll(topic.Id),
+                    HasPoll = _postService.HasPoll(topic.ArchivedPostId),
                     //AuthorRating = post.User?.Rating ?? 0,
                     AuthorName = topic.Member?.Name ?? "Unknown",
                     Created = topic.Created.FromForumDateStr(),
@@ -1417,7 +1417,7 @@ namespace MVCForum.Controllers
             Post? originaltopic = null;
             if (model.TopicId != 0)
             {
-                originaltopic = _postService.GetTopicForUpdate(model.TopicId);
+                originaltopic = _postService.GetTopic(model.TopicId);
             }
 
             var donotModerate = User.IsInRole("Administrator") || User.IsInRole("Forum_" + model.ForumId);
@@ -1494,11 +1494,11 @@ namespace MVCForum.Controllers
         private PagedList<ArchivedReply>? PagedReplies(int page, int pagesize, string sortdir, ArchivedPost post)
         {
             if(post.ReplyCount < 1) return null;
-            if(!post.Replies.Any()) return null;
+            if(!post.ArchivedReplies.Any()) return null;
 
             var pagedReplies = sortdir == "asc"
-                ? new PagedList<ArchivedReply>(post.Replies.OrderBy(r => r.Created), page, pagesize)
-                : new PagedList<ArchivedReply>(post.Replies.OrderByDescending(r => r.Created), page, pagesize);
+                ? new PagedList<ArchivedReply>(post.ArchivedReplies.OrderBy(r => r.Created), page, pagesize)
+                : new PagedList<ArchivedReply>(post.ArchivedReplies.OrderByDescending(r => r.Created), page, pagesize);
             return pagedReplies;
         }
         private string GetUniqueFileName(string fileName, out string timestamp)

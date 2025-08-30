@@ -301,7 +301,8 @@ namespace SnitzCore.Service
         /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task DeleteArchivedTopic(int id)
         {
-            var post = _dbContext.ArchivedTopics.Include(p=>p.Replies).SingleOrDefault(f => f.Id == id);
+            //
+            var post = _dbContext.ArchivedTopics.Include(p=>p.ArchivedReplies).SingleOrDefault(f => f.ArchivedPostId == id);
             if (post != null)
             {
                 var forumid = post.ForumId;
@@ -484,22 +485,29 @@ namespace SnitzCore.Service
                     post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
                 }
             }
+            try
+            {
+                _dbContext.Posts.Attach(post);
 
-            _dbContext.Posts.Attach(post);
+                _dbContext.Entry(post).Property(x => x.ForumId).IsModified = true;
+                _dbContext.Entry(post).Property(x => x.CategoryId).IsModified = true;
+                _dbContext.Entry(post).Property(x => x.Content).IsModified = true;
+                _dbContext.Entry(post).Property(x => x.Title).IsModified = true;
+                _dbContext.Entry(post).Property(x => x.IsSticky).IsModified = true;
 
-            _dbContext.Entry(post).Property(x => x.ForumId).IsModified = true;
-            _dbContext.Entry(post).Property(x => x.CategoryId).IsModified = true;
-            _dbContext.Entry(post).Property(x => x.Content).IsModified = true;
-            _dbContext.Entry(post).Property(x => x.Title).IsModified = true;
-            _dbContext.Entry(post).Property(x => x.IsSticky).IsModified = true;
+                _dbContext.Entry(post).Property(x => x.AllowRating).IsModified = true;
+                _dbContext.Entry(post).Property(x => x.Sig).IsModified = true;
+                _dbContext.Entry(post).Property(x => x.Status).IsModified = true;
+                _dbContext.Entry(post).Property(x => x.ArchiveFlag).IsModified = true;
+                _dbContext.Entry(post).Property(x => x.LastEdit).IsModified = true;
+                _dbContext.Entry(post).Property(x => x.LastEditby).IsModified = true;
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.Error("UpdateTopic: Error updating post", e);
+            }
 
-            _dbContext.Entry(post).Property(x => x.AllowRating).IsModified = true;
-            _dbContext.Entry(post).Property(x => x.Sig).IsModified = true;
-            _dbContext.Entry(post).Property(x => x.Status).IsModified = true;
-            _dbContext.Entry(post).Property(x => x.ArchiveFlag).IsModified = true;
-            _dbContext.Entry(post).Property(x => x.LastEdit).IsModified = true;
-            _dbContext.Entry(post).Property(x => x.LastEditby).IsModified = true;
-            await _dbContext.SaveChangesAsync();
 
         }
 
@@ -553,7 +561,7 @@ namespace SnitzCore.Service
             {
                 var itemInfoEntity = new ArchivedPost()
                 {
-                    Id          = id,
+                    ArchivedPostId          = id,
                     ViewCount    = viewCount
                 };
 
@@ -632,7 +640,7 @@ namespace SnitzCore.Service
                 .Include(p => p.Category)
                 .Include(p => p.Forum)
                 .Include(p => p.Member)
-                .SingleOrDefault(p => p.Id == id);
+                .SingleOrDefault(p => p.ArchivedPostId == id);
             return post;
         }
 
@@ -655,13 +663,13 @@ namespace SnitzCore.Service
         public ArchivedPost? GetArchivedTopicWithRelated(int id)
         {
 
-            var post = _dbContext.ArchivedTopics.Where(p => p.Id == id)
+            var post = _dbContext.ArchivedTopics.Where(p => p.ArchivedPostId == id)
                 .AsNoTracking()
                 .Include(p => p.Member).AsNoTracking()
                 .Include(p => p.LastPostAuthor).AsNoTracking()
                 .Include(p => p.Category).AsNoTracking()
                 .Include(p => p.Forum).AsNoTracking()
-                .Include(p => p.Replies.OrderByDescending(r => r.Created))
+                .Include(p => p.ArchivedReplies.OrderByDescending(r => r.Created))
                 .ThenInclude(r => r.Member).AsNoTracking()
                 //.AsSplitQuery()
                 .Single();
@@ -800,7 +808,7 @@ namespace SnitzCore.Service
                 .Include(p => p.Forum)
                 .Include(p => p.Member)
                 .Include(p=>p.LastPostAuthor)
-                .Include(p=>p.Replies!).ThenInclude(r=>r.Member)
+                //.Include(p=>p.ArchivedReplies!).ThenInclude(r=>r.Member)
                 .AsQueryable();
 
             if (searchQuery.SinceDate != SearchDate.AnyDate)
@@ -821,11 +829,11 @@ namespace SnitzCore.Service
             }
             if (!string.IsNullOrWhiteSpace(searchQuery.UserName) && searchQuery.SearchMessage)
             {
-                var p1 = posts.Where(p=> p.Replies.Any(r=>r.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower()))).ToList();
+                var p1 = posts.Where(p=> p.ArchivedReplies.Any(r=>r.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower()))).ToList();
 
                 var p2 = posts.Where(p => p.Member!.Name.ToLower().StartsWith(searchQuery.UserName.ToLower())).ToList();
 
-                posts = p1.UnionBy(p2, x => x.Id).AsQueryable();
+                posts = p1.UnionBy(p2, x => x.ArchivedPostId).AsQueryable();
             }
             if (!string.IsNullOrWhiteSpace(searchQuery.UserName) && !searchQuery.SearchMessage)
             {
@@ -1095,6 +1103,12 @@ namespace SnitzCore.Service
                 rating = (ratingSum / ratingCount);
             }
             return decimal.Parse(rating.ToString());
+        }
+
+        public Post? GetTopic(int id)
+        {
+            return _dbContext.Posts.AsNoTracking().FirstOrDefault(p => p.Id == id);
+
         }
     }
 }

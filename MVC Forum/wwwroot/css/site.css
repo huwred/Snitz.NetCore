@@ -1,4 +1,4 @@
-/* ########################################### */
+﻿/* ########################################### */
 /*                 Global                      */
 /* ########################################### */
 :root {
@@ -1022,3 +1022,42 @@ i.modstatus-2, i.modstatus-3 {
     content: attr(data-mce-placeholder);
     position: relative !important;
 }
+.fc .fc-multimonth-multicol .fc-multimonth-month {
+    padding: 0px 0.6em 0.6em;
+}
+.fc .fc-multimonth-title {
+    padding: .5em 0px !important;
+}
+.fc .fc-toolbar-title{
+    font-size:1.5em;
+}
+
+.event-birthday .fc-list-event-time{
+    display:none;
+}
+.event-birthday .fc-list-event-graphic .fc-list-event-dot {
+    border:hidden;
+    margin-right:.5rem;
+}
+
+.event-birthday .fc-list-event-graphic .fc-list-event-dot:before {
+    font-family: FontAwesome;
+    content: "\f1fd";
+    color: rgb(218, 165, 32) !important;
+}
+.event-birthday .fc-list-event-title {
+    color: rgb(218, 165, 32) !important;
+}
+.event-birthday .fc-list-event-graphic .fc-list-event-dot:after {
+    content: "\00a0";
+}
+.event-birthday.fc-h-event {
+    background-color: rgb(218, 165, 32);
+    border: 1px solid rgb(218, 165, 32);
+    display: block;
+}
+    .event-birthday.fc-h-event .fc-event-title:before {
+        font-family: FontAwesome;
+        content: "\f1fd";
+        color: white;
+    }

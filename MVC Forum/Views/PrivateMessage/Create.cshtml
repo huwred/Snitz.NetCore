@@ -69,6 +69,7 @@
 </div>
 @if (!Model.IsPopUp)
 {
+    <script src="~/js/addpostform.min.js" type="text/javascript"></script>
     <script type="text/javascript" >
         //cancel-send-pm
         $(document).on('click', '#cancel-send-pm', function () {
@@ -89,10 +90,25 @@
             plugins: 'code emoticons codesample',
             branding: false,
             statusbar: false,
-            toolbar: 'undo redo | bold italic underline emoticons codesample | code ',
+            toolbar: SnitzVars.pmtoolbardef,
             emoticons_database: 'emojiimages',
             emoticons_images_url: SnitzVars.baseUrl + '/images/emoticon/',
-            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+        setup: function(editor) {
+            if (SnitzVars.pmAttach) {
+                editor.ui.registry.addButton('snitzAttach',
+                    {
+                        icon: 'new-document',
+                        tooltip: SnitzVars.toolTips.fileBtn + '\n(' + SnitzVars.allowedfiles + ')',
+                        onAction: function(_) {
+                            $('#upload-content').html('');
+                            $('#upload-content').load(SnitzVars.baseUrl + "/Topic/UploadForm/",function() {
+                                $('#uploadModal').modal('show');
+                            });
+                        }
+                    });
+            }
+        }
         });
     </script>
 }

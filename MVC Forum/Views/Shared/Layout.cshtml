@@ -38,9 +38,15 @@
     }
     
     <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="~/css/site.min.css">
-    <link rel="stylesheet" href="~/css/about.min.css">
-    <link rel="stylesheet" href="~/css/busy.min.css">
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/site.css">
+        <link rel="stylesheet" href="~/css/about.css">
+        <link rel="stylesheet" href="~/css/busy.css">
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/site.min.css" />
+    </environment>
+
     @await Component.InvokeAsync("SnitzThemeCss")
     @await RenderSectionAsync("Styles", required: false)
 
@@ -71,16 +77,27 @@
             </div>
         </div>
     </div>
+    <environment include="Development">
+        <script type="text/javascript" src="~/js/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="~/js/jquery.min.js"></script>
+        <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js"></script>
+        <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
+        <partial name="GlobalJs" />
+        <partial name="ValidationScriptsPartial" />
+        <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script type="text/javascript" src="~/js/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="~/js/jquery.min.js"></script>
+        <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js"></script>
+        <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
+        <partial name="GlobalJs" />
+        <partial name="ValidationScriptsPartial" />
+        <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
 
-    <script type="text/javascript" src="~/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="~/js/jquery.min.js"></script>
-    <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js"></script>
-    <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
-
-    <partial name="GlobalJs" />
-    <partial name="ValidationScriptsPartial" />
-    <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
 
 @if (!clang.Contains("en"))
 {

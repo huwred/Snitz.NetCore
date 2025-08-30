@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Member;
 using MVCForum.ViewModels.User;
+using NuGet.Common;
 using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -570,7 +571,13 @@ namespace MVCForum.Controllers
             var model = new ResetPasswordModel { Token = token, Username = email! };
             return View(model);
         }
-        
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult MigratePassword(string token, string email)
+        {
+            var model = new ResetPasswordModel { Token = token, Username = email! };
+            return View(model);
+        }       
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
@@ -1162,10 +1169,10 @@ namespace MVCForum.Controllers
                     var currroles = _snitzDbContext.Set<OldUserInRole>()
                         .Include(u => u.Role).AsNoTracking()
                         .Include(u => u.User).AsNoTracking()
-                        .Where(r => r.UserId == member.Id);
+                        .Where(r => r.UserId == member.Id).ToList();
                     foreach (var userInRole in currroles)
                     {
-                        var exists = _roleManager.Roles.OrderBy(r => r.Name).FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
+                        var exists = _roleManager.Roles.AsNoTracking().OrderBy(r => r.Name).FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
                         if (exists == null)
                         {
                             await _roleManager.CreateAsync(new IdentityRole(userInRole.Role.RoleName));
@@ -1174,7 +1181,10 @@ namespace MVCForum.Controllers
                     }
                     if (!validpwd)
                     {
-                        return LocalRedirect("~/Account/ForgotPassword");
+                        var token = _userManager.GeneratePasswordResetTokenAsync(existingUser).Result;
+                        TempData["token"] = token;
+                        TempData["username"] = existingUser.UserName;
+                        return RedirectToAction("MigratePassword",new {token,existingUser.UserName});
                     }
                     await _signInManager.SignInAsync(existingUser, login.RememberMe);
                     //_logger.Warn("ReturnUrl2:" + returnUrl);

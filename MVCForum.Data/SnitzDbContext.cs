@@ -40,7 +40,7 @@ namespace SnitzCore.Data
             modelBuilder.Entity<PostReply>();
             modelBuilder.Entity<MemberSubscription>();
             modelBuilder.Entity<ArchivedPost>();
-            modelBuilder.Entity<ArchivedReply>();
+            modelBuilder.Entity<ArchivedReply>().HasOne(r=>r.Topic);
 
             modelBuilder.Entity<Member>();
             modelBuilder.Entity<Category>();//.HasData(new Category { Id = 1, Status = 1, Sort = 0, Name = "General", Moderation = 0 });
@@ -48,7 +48,8 @@ namespace SnitzCore.Data
                         .HasOne(f => f.LatestTopic);
                         //.WithOne()
                         //.HasForeignKey<Post>(p => p.Id);
-            modelBuilder.Entity<SnitzConfig>();
+            modelBuilder.Entity<SnitzConfig>().HasIndex(p => new { p.Key })
+            .IsUnique(true);;
             modelBuilder.Entity<PrivateMessage>();
             modelBuilder.Entity<PrivateMessageBlocklist>();
             modelBuilder.Entity<BookmarkEntry>();

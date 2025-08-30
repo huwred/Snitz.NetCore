@@ -77,14 +77,19 @@
             });
         },
         attach : '@SnitzConfig.GetIntValue("STRALLOWUPLOADS")' === '1',
+        pmAttach : '@SnitzConfig.GetIntValue("STRPMATTACH")' === '1',
         photoalbum : '@SnitzConfig.GetIntValue("STRPHOTOALBUM")' === '1',
         favmenu : {
             favs: {title: 'My Favourites', items: 'code | searchreplace | emoticons'}
         },
+        pmtoolbardef:'undo redo | bold italic underline emoticons codesample | code',
         toolbardef :
             'snitzAttach snitzImage | undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist | link emoticons media | code codesample',
         menudef : 'favs edit insert format table help'
     };
+    if(SnitzVars.pmAttach){
+        SnitzVars.pmtoolbardef = 'snitzAttach  | undo redo | bold italic underline emoticons codesample | code';
+    }
     if(!SnitzVars.attach) {
         SnitzVars.toolbardef =
             ' undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist | link emoticons media | code codesample';

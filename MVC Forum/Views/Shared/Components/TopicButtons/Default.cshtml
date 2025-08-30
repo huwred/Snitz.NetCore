@@ -11,7 +11,7 @@
         {
             <a href="~/Topic/Print/@Model" id="print-topic" title="@Localizer["tipPrintTopic"]" data-id="@Model" rel="noopener noreferrer nofollow" target="_blank" data-toggle="tooltip" aria-label="@Localizer["tipPrintTopic"]"><i class="fa fa-print fa-2x" aria-hidden="true"></i></a>
         }
-        @if (SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 && User.Identity.IsAuthenticated)
+        @if (SnitzConfig.GetIntValue("STREMAIL") == 1 && SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 && User.Identity.IsAuthenticated)
         {
             <a href="~/Topic/SendTo/@Model" id="SendTopic" class="sendto-link" type="button" data-id="@Model" data-href="~/Topic/SendTo" title="@Localizer["tipSendTopic"]" aria-label="@Localizer["tipSendTopic"]" rel="noopener noreferrer nofollow" target="_blank" data-toggle="tooltip"><i class="fa fa-envelope fa-2x" aria-hidden="true"></i></a>
         }

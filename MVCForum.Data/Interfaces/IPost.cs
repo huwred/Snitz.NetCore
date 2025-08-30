@@ -7,6 +7,7 @@ namespace SnitzCore.Data.Interfaces
 {
     public interface IPost
     {
+        Post? GetTopic(int id);
         Task<Post?> GetTopicAsync(int id);
         Post GetTopicForUpdate(int id);
         Task<Post?> GetTopicWithRelated(int id);

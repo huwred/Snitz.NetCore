@@ -16,13 +16,13 @@
             <tbody>
                 @foreach (var pm in Model!)
                 {
-                    <tr class="pmread_@pm.Read" data-id="@pm.Id">
-                        <td>
+                    <tr data-id="@pm.Id">
+                        <td class ="pmread_@pm.Read" data-id="@pm.Id">
                             <a asp-controller="PrivateMessage" asp-action="read" asp-route-id="@pm.Id" class="pmread_@pm.Read">@pm.Title</a>
                         </td>
-                        <td>@pm.FromMemberName</td>
-                        <td>@pm.ToMemberName</td>
-                        <td>@pm.Sent?.ToString("dd MMM, yyyy HH:mm", CultureInfo.CurrentCulture)</td>
+                        <td class="pmread_@pm.Read" data-id="@pm.Id">@pm.FromMemberName</td>
+                        <td class="pmread_@pm.Read" data-id="@pm.Id">@pm.ToMemberName</td>
+                        <td class="pmread_@pm.Read" data-id="@pm.Id">@pm.Sent?.ToString("dd MMM, yyyy HH:mm", CultureInfo.CurrentCulture)</td>
                         <td><i class="fa fa-reply mr-2" aria-hidden="true" title="Reply to message" data-id="@pm.Id"></i> <i class="fa fa-trash mr-2" data-id="@pm.Id" data-user="@pm.ToMemberId" title="Delete Message"></i> </td>
                     </tr>
                 }
@@ -30,4 +30,3 @@
         </table>
     </div>
 </form>
-

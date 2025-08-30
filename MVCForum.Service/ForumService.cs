@@ -373,7 +373,8 @@ namespace SnitzCore.Service
 
         public async Task DeleteArchivedTopics(int id)
         {
-            await _dbContext.ArchivedTopics.Where(p => p.ForumId == id).Include(t => t.Replies).ExecuteDeleteAsync();
+            //
+            await _dbContext.ArchivedTopics.Include(t => t.ArchivedReplies).Where(p => p.ForumId == id).ExecuteDeleteAsync();
             var forum = _dbContext.Forums.Find(id);
             try
             {

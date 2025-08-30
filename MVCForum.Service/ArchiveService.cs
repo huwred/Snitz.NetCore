@@ -155,7 +155,8 @@ namespace SnitzCore.Service
             using (IServiceScope scope = _serviceProvider.CreateScope())
             using (SnitzDbContext _dbContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>())
             {
-                _dbContext.ArchivedTopics.Where(p => p.ForumId == id).Include(t => t.Replies).ExecuteDelete();
+                //
+                _dbContext.ArchivedTopics.Include(t => t.ArchivedReplies).Where(p => p.ForumId == id).ExecuteDelete();
                 var forum = _dbContext.Forums.Find(id);
                 try
                 {
