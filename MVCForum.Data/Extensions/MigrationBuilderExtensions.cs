@@ -4,19 +4,21 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SnitzCore.Data.Extensions
 {
     public static class MigrationBuilderExtensions
     {
+        //E:\GitHub\Snitz.NetCore\MVC Forum\App_Data
         public static bool TableExists(this MigrationBuilder migrationBuilder, string table)
         {
             var connstring = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["SnitzConnection"];
              
             if (migrationBuilder.IsSqlite())
             {
-                var path = System.IO.Path.Combine( System.Text.RegularExpressions.Regex.Replace(AppDomain.CurrentDomain.BaseDirectory, @"\\bin$", String.Empty, System.Text.RegularExpressions.RegexOptions.IgnoreCase) ,  "App_Data");
+                var path = Path.Combine(Regex.Replace(AppDomain.CurrentDomain.BaseDirectory, @"\\bin\\.*$", string.Empty, RegexOptions.IgnoreCase) ,  "App_Data");
                 using var conn = new SqliteConnection();
                 conn.ConnectionString = connstring?.Replace("|DataDirectory|",path);
                 conn.Open();
@@ -44,7 +46,7 @@ namespace SnitzCore.Data.Extensions
 
             if (migrationBuilder.IsSqlite())
             {
-            var path = System.IO.Path.Combine( System.Text.RegularExpressions.Regex.Replace(AppDomain.CurrentDomain.BaseDirectory, @"\\bin$", String.Empty, System.Text.RegularExpressions.RegexOptions.IgnoreCase) ,  "App_Data");
+                var path = Path.Combine(Regex.Replace(AppDomain.CurrentDomain.BaseDirectory, @"\\bin\\.*$", string.Empty, RegexOptions.IgnoreCase) ,  "App_Data");
                 using var conn = new SqliteConnection();
                 conn.ConnectionString = connstring?.Replace("|DataDirectory|",path);
                 conn.Open();
@@ -83,7 +85,7 @@ namespace SnitzCore.Data.Extensions
 
             if (migrationBuilder.IsSqlite())
             {
-            var path = System.IO.Path.Combine( System.Text.RegularExpressions.Regex.Replace(AppDomain.CurrentDomain.BaseDirectory, @"\\bin$", String.Empty, System.Text.RegularExpressions.RegexOptions.IgnoreCase) ,  "App_Data");
+                var path = Path.Combine( Regex.Replace(AppDomain.CurrentDomain.BaseDirectory, @"\\bin\\.*$", string.Empty, RegexOptions.IgnoreCase) ,  "App_Data");
                 using var conn = new SqliteConnection();
                 conn.ConnectionString = connstring?.Replace("|DataDirectory|",path);
                 conn.Open();
@@ -92,7 +94,7 @@ namespace SnitzCore.Data.Extensions
                 cmd.CommandText = query;
                 var count = cmd.ExecuteScalar();
                 conn.Close();
-                return count != null ? (int)count > 0 : false;
+                return count != null && (int)count > 0;
             }
             else if (migrationBuilder.IsSqlServer())
             {
