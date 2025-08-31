@@ -13,20 +13,22 @@
 @{
     var ranking = MemberService.GetRankings();
     var rankType = SnitzConfig.GetIntValue("STRSHOWRANK", 0);
+    int colspan = 9;
+    var initials = Localizer["memberSearchInitials"].Value.ToCharArray();
+    var sortorder = "asc";
     ViewBag.PageCount = Model.PageCount;
     IList<string>? userroles = null;
+    var queryparams = $"sortdir={sortorder}&pagesize={Model.PageSize}";
+
     if (User.Identity!.IsAuthenticated)
     {
         var curruser = UserManager.GetUserAsync(User).Result;
         userroles = UserManager.GetRolesAsync(curruser!).Result;
     }
-    int colspan = 9;
     if (userroles != null && userroles.Contains("Administrator"))
     {
         colspan = 10;
     }
-    var initials = Localizer["memberSearchInitials"].Value.ToCharArray();
-    var sortorder = "asc";
     if (Context.Request.Query.ContainsKey("sortdir"))
     {
         var qval = Context.Request.Query["sortdir"];
@@ -67,7 +69,7 @@
                         <form asp-action="Index" id="pagesize-form">
                         <span class="form-text mb-2">&nbsp;@Localizer["lblPageSize"]&nbsp;</span>
                         <div class="radioBtn btn-group" role="group" aria-label="Select page size" title="Select page size">
-                                @foreach (var size in sizes)
+                            @foreach (var size in sizes)
                             {
                                     <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (Model.PageSize == Convert.ToInt32(size))
                                     {
@@ -85,12 +87,57 @@
                 <thead class=" bg-dark text-white table-primary">
                 <tr class="bg-dark text-white">
                     <th>&nbsp;</th>
-                    <th><a href="?orderby=name&sortdir=@sortorder">@Localizer["UserName"]</a></th>
+                    <th>
+                        @{
+                            if (Model.SortCol == "name" && Model.SortDir == "asc")
+                            {
+                                    queryparams = queryparams.Replace("asc","desc");
+                            }else{
+                                queryparams = queryparams.Replace("desc","asc");
+                            }
+                        }
+                        <a href="?orderby=name&@queryparams&initial=@Model.Initial">@Localizer["UserName"]</a></th>
                     <th snitz-if="@(rankType > 0)">@Localizer["ProfileTitle"]</th>
-                    <th><a href="?orderby=posts&sortdir=@sortorder">@Localizer["ProfilePosts"]</a></th>
-                    <th><a href="?orderby=lastpost&sortdir=@sortorder">@Localizer["ProfileLastPost"]</a></th>
-                    <th class="d-none d-md-table-cell"><a href="?orderby=membersince&sortdir=@sortorder">@Localizer["ProfileDate"]</a></th>
-                    <th class="d-none d-md-table-cell"><a href="?orderby=lastvisit&sortdir=@sortorder">@Localizer["ProfileLastVisit"]</a></th>
+                    <th>
+                        @{
+                            if (Model.SortCol == "posts" && Model.SortDir == "asc")
+                            {
+                                    queryparams = queryparams.Replace("asc","desc");
+                            }else{
+                                queryparams = queryparams.Replace("desc","asc");
+                            }
+                        }
+                        <a href="?orderby=posts&@queryparams&initial=@Model.Initial">@Localizer["ProfilePosts"]</a></th>
+                    <th>
+                        @{
+                            if (Model.SortCol == "lastpost" && Model.SortDir == "asc")
+                            {
+                                    queryparams = queryparams.Replace("asc","desc");
+                            }else{
+                                queryparams = queryparams.Replace("desc","asc");
+                            }
+                        }
+                        <a href="?orderby=lastpost&@queryparams&initial=@Model.Initial">@Localizer["ProfileLastPost"]</a></th>
+                    <th class="d-none d-md-table-cell">
+                        @{
+                            if (Model.SortCol == "membersince" && Model.SortDir == "asc")
+                            {
+                                    queryparams = queryparams.Replace("asc","desc");
+                            }else{
+                                queryparams = queryparams.Replace("desc","asc");
+                            }
+                        }
+                        <a href="?orderby=membersince&@queryparams&initial=@Model.Initial">@Localizer["ProfileDate"]</a></th>
+                    <th class="d-none d-md-table-cell">
+                        @{
+                            if (Model.SortCol == "lastvisit" && Model.SortDir == "asc")
+                            {
+                                    queryparams = queryparams.Replace("asc","desc");
+                            }else{
+                                queryparams = queryparams.Replace("desc","asc");
+                            }
+                        }
+                        <a href="?orderby=lastvisit&@queryparams&initial=@Model.Initial">@Localizer["ProfileLastVisit"]</a></th>
                     <th snitz-if="@(userroles != null && userroles.Contains("Administrator"))" class="d-none d-md-table-cell">@Localizer["Email"]</th>
                     <th class="d-none d-md-table-cell">@Localizer["ProfileCountry"]</th>
                     <th snitz-if="@(userroles != null && userroles.Contains("Administrator"))" class="d-none d-md-table-cell"></th>
@@ -136,10 +183,10 @@
                 <tr>
                     <td colspan="@colspan" class="text-center d-none d-md-table-cell">
                         <ul class="list-inline list-unstyled h4 initial">
-                            <li class="list-inline-item"><a href="?initial=">@Localizer["Search_All"]</a></li>
+                            <li class="list-inline-item"><a href="?initial=&@queryparams&orderby=@Model.SortCol">@Localizer["Search_All"]</a></li>
                             @foreach (var letter in initials)
                             {
-                                <li class="list-inline-item"><a href="?initial=@letter">@letter</a></li>
+                                <li class="list-inline-item"><a href="?initial=@letter&@queryparams&orderby=@Model.SortCol">@letter</a></li>
                             }
                         </ul>
                     </td>

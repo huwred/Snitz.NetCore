@@ -16,7 +16,7 @@ namespace SnitzCore.Data
         string? GetMemberName(int id);
         IEnumerable<Member?> GetByEmail(string email);
         Member? GetByUsername(string username);
-        IPagedList<Member?> GetByInitial(string initial,out int totalcount,int pagesize = 20, int page = 1);
+        IPagedList<Member?> GetByInitial(bool isadmin,string initial,out int totalcount,int pagesize, int page,string? sortcol,string? dir);
         IEnumerable<Member?>? GetFilteredMembers(string searchQuery, string searchField);
         Member? GetMember(ClaimsPrincipal user);
         IEnumerable<MemberNamefilter> UserNameFilter();

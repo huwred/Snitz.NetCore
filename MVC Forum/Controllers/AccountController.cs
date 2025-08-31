@@ -48,11 +48,12 @@ namespace MVCForum.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IOptions<IdentityOptions> _configuration;
         private readonly HttpContext _httpcontext;
+        private readonly IPasswordPolicyService _passwordPolicy;
 
         public AccountController(SnitzCore.Data.IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             UserManager<ForumUser> usrMgr, SignInManager<ForumUser> signinMgr,
             ISnitzCookie snitzcookie,IWebHostEnvironment env,IEmailSender mailSender,
-            RoleManager<IdentityRole> roleManager,IOptions<IdentityOptions> configuration) : base(memberService, config, localizerFactory, dbContext,httpContextAccessor)
+            RoleManager<IdentityRole> roleManager,IOptions<IdentityOptions> configuration,IPasswordPolicyService passwordPolicy) : base(memberService, config, localizerFactory, dbContext,httpContextAccessor)
         {
             _userManager = usrMgr;
             _signInManager = signinMgr;
@@ -64,6 +65,7 @@ namespace MVCForum.Controllers
             _roleManager = roleManager;
             _configuration = configuration;
             _httpcontext = httpContextAccessor!.HttpContext!;
+            _passwordPolicy = passwordPolicy;
         }
 
         [Route("captchacheck/{id?}")]
@@ -101,7 +103,7 @@ namespace MVCForum.Controllers
             }
             var admin = User.IsInRole("Administrator");
             var totalCount = _memberService.GetAll(admin).Count();
-            IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial($"{initial}",out totalCount) : _memberService.GetPagedMembers(admin, pagesize, page,orderby,sortdir);
+            IPagedList<Member?> memberListingModel = !string.IsNullOrWhiteSpace(initial) ? _memberService.GetByInitial(admin,$"{initial}",out totalCount,pagesize, page,orderby,sortdir) : _memberService.GetPagedMembers(admin, pagesize, page,orderby,sortdir);
             var pageCount = (int)Math.Ceiling((double)totalCount / pagesize);
 
             var memberPage = new MvcBreadcrumbNode("Index", "Account", "lblMembers");
@@ -1070,55 +1072,6 @@ namespace MVCForum.Controllers
             
             return rankInfoHelper.Title;
         }
-        private string GeneratePassword()
-        {
-            var test = _configuration.Value; // here 
-            var opts = new PasswordOptions()
-            {
-                RequiredLength = test.Password.RequiredLength,
-                RequiredUniqueChars = test.Password.RequiredUniqueChars,
-                RequireDigit = test.Password.RequireDigit,
-                RequireLowercase = test.Password.RequireLowercase,
-                RequireNonAlphanumeric = test.Password.RequireNonAlphanumeric,
-                RequireUppercase = test.Password.RequireUppercase
-            };
-
-            string[] randomChars = new[] {
-                "ABCDEFGHJKLMNOPQRSTUVWXYZ",    // uppercase 
-                "abcdefghijkmnopqrstuvwxyz",    // lowercase
-                "0123456789",                   // digits
-                "!@$?_-^"                        // non-alphanumeric
-            };
-
-            Random rand = new Random(Environment.TickCount);
-            List<char> chars = new List<char>();
-
-            if (opts.RequireUppercase)
-                chars.Insert(rand.Next(0, chars.Count),
-                    randomChars[0][rand.Next(0, randomChars[0].Length)]);
-
-            if (opts.RequireLowercase)
-                chars.Insert(rand.Next(0, chars.Count),
-                    randomChars[1][rand.Next(0, randomChars[1].Length)]);
-
-            if (opts.RequireDigit)
-                chars.Insert(rand.Next(0, chars.Count),
-                    randomChars[2][rand.Next(0, randomChars[2].Length)]);
-
-            if (opts.RequireNonAlphanumeric)
-                chars.Insert(rand.Next(0, chars.Count),
-                    randomChars[3][rand.Next(0, randomChars[3].Length)]);
-
-            for (int i = chars.Count; i < opts.RequiredLength
-                                      || chars.Distinct().Count() < opts.RequiredUniqueChars; i++)
-            {
-                string rcs = randomChars[rand.Next(0, randomChars.Length)];
-                chars.Insert(rand.Next(0, chars.Count),
-                    rcs[rand.Next(0, rcs.Length)]);
-            }
-
-            return new string(chars.ToArray());
-        }
         private async Task<IActionResult> MigrateMember(UserSignInModel login, Member member, string returnUrl)
         {
             #region Migrate Member
@@ -1163,7 +1116,7 @@ namespace MVCForum.Controllers
                 };
                 if (!validpwd)
                 {
-                    login.Password = GeneratePassword();
+                    login.Password = _passwordPolicy.GeneratePassword();
                 }
                 _logger.Info($"Create new Identity user {member.Name} - {login.Password}");
                 IdentityResult result = await _userManager.CreateAsync(existingUser, login.Password);

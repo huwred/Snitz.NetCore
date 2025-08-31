@@ -328,10 +328,62 @@ namespace SnitzCore.Service
                 .FirstOrDefault(m=>m.Name == username);
         }
 
-        public IPagedList<Member> GetByInitial(string initial,out int totalcount,int pagesize = 20, int page = 1)
+        public IPagedList<Member> GetByInitial(bool isadmin, string initial,out int totalcount,int pagesize, int page,string? sortcol,string? dir)
         {
-            var members = _dbContext.Members.Where(m=>m.Name.ToLower().StartsWith(initial.ToLower()));
+            var members = _dbContext.Members.Where(m=>m.Name.ToLower().StartsWith(initial.ToLower())).ToList();
+            if (!isadmin)
+            {
+                members = members.Where(m=>m.Status == 1).ToList();
+            }
             totalcount = members.Count();
+
+            if (sortcol != null)
+            {
+                switch (sortcol)
+                {
+                    case "name" :
+                        switch (dir)
+                        {
+                            case "asc" :
+                                return members.OrderBy(p => p.Name).ToPagedList(page, pagesize);
+                            default :
+                                return members.OrderByDescending(p => p.Name).ToPagedList(page, pagesize);
+                        }
+                    case "lastpost" :
+                        switch (dir)
+                        {
+                            case "asc" :
+                                return members.OrderBy(p => p.Lastpostdate).ToPagedList(page, pagesize);
+                            default :
+                                return members.OrderByDescending(p => p.Lastpostdate).ToPagedList(page, pagesize);
+                        }
+                    case "lastvisit" :
+                        switch (dir)
+                        {
+                            case "asc" :
+                                return members.OrderBy(p => p.LastLogin).ToPagedList(page, pagesize);
+                            default :
+                                return members.OrderByDescending(p => p.LastLogin).ToPagedList(page, pagesize);
+                        }
+                    case "membersince" :
+                        switch (dir)
+                        {
+                            case "asc" :
+                                return members.OrderBy(p => p.Created).ToPagedList(page, pagesize);
+                            default :
+                                return members.OrderByDescending(p => p.Created).ToPagedList(page, pagesize);
+                        }
+                    case "posts" :
+                        switch (dir)
+                        {
+                            case "asc" :
+                                return members.OrderBy(p => p.Posts).ToPagedList(page, pagesize);
+                            default :
+                                return members.OrderByDescending(p => p.Posts).ToPagedList(page, pagesize);
+                        }
+                }
+            }
+            
             return members.ToPagedList(page, pagesize);
         }
 
