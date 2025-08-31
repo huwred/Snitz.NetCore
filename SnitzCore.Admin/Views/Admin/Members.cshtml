@@ -57,6 +57,7 @@
         <button class="nav-link" id="v-pills-usernames-tab" data-bs-toggle="pill" data-bs-target="#v-pills-usernames" type="button" role="tab" aria-controls="v-pills-usernames" aria-selected="false">Username Filters</button>
         <button class="nav-link" id="v-pills-pending-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pending" type="button" role="tab" aria-controls="v-pills-pending" aria-selected="false">Pending Members</button>
         <button class="nav-link" id="v-pills-avatars-tab" data-bs-toggle="pill" data-bs-target="#v-pills-avatars" type="button" role="tab" aria-controls="v-pills-avatars" aria-selected="false">Avatars</button>
+        <button class="nav-link" id="v-pills-newuser-tab" data-bs-toggle="pill" data-bs-target="#v-pills-newuser" type="button" role="tab" aria-controls="v-pills-newuser" aria-selected="false">Create Member</button>
     </div>
     <div class="tab-content bg-white p-4" id="v-pills-tabContent">
         <div class="tab-pane fade show active w-100" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
@@ -293,6 +294,9 @@
         <div class="tab-pane fade" id="v-pills-avatars" role="tabpanel" aria-labelledby="v-pills-avatars-tab">
             <div id="member-avatars"></div>
         </div>
+        <div class="tab-pane fade" id="v-pills-newuser" role="tabpanel" aria-labelledby="v-pills-newuser-tab">
+            <div id="member-newuser"></div>
+        </div>
         <div id="result"></div>
     </div>
 </div>
@@ -301,10 +305,10 @@
 
     <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
-        
     <script type="text/javascript" src="https://cdn.datatables.net/select/3.0.1/js/dataTables.select.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/select/3.0.1/js/select.dataTables.js"></script>
     <script type="text/javascript">
+
 
         $(document).on('click','.roleLink',function(e) {
             e.preventDefault();
@@ -341,6 +345,9 @@
                         break;
                     case "v-pills-avatars-tab":
                         $('#member-avatars').load(SnitzVars.baseUrl + '/Admin/ManageAvatars/', function () { });
+                        break;
+                    case "v-pills-newuser-tab":
+                        $('#member-newuser').load(SnitzVars.baseUrl + '/Admin/CreateUser/', function () { });
                         break;
                 }
             });
@@ -472,6 +479,9 @@
                     case "v-pills-avatars-tab":
                         $('#member-avatars').load(SnitzVars.baseUrl + '/Admin/ManageAvatars/', function () { });
                         break;
+                    case "v-pills-newuser-tab":
+                        $('#member-newuser').load(SnitzVars.baseUrl + '/Admin/CreateUser/', function () { });
+                        break;
                 }
             }
 
@@ -558,4 +568,6 @@
         });
 
     </script>
+
+    @* <renderstoredcontent asp-key="create-user"></renderstoredcontent> *@
 }

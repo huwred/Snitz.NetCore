@@ -815,15 +815,40 @@ namespace SnitzCore.BackOffice.Controllers
 
             if (ModelState.IsValid)
             {
-                //string status;
-                //var user = MemberManager.RegisterUser(vm.Username, vm.Password, vm.Email, null, out status,true);
-                //if (user != null && status == "Success")
-                //{
-                //    isSuccess = true;
-                //}
-            }
+                Member forumMember = new()
+                {
+                    Email = vm.Email, 
+                    Name = vm.Username, 
+                    Level = 1, 
+                    Status = 0,
+                    Created = DateTime.UtcNow.ToForumDateStr(),
+                    Ip = "0.0.0.0",
+                    Sha256 = 1
+                };
+                ForumUser appUser = new()
+                {
+                    UserName = vm.Username,
+                    Email = vm.Email,
+                    MemberSince = DateTime.UtcNow,
+                    LockoutEnabled = false,
+                    EmailConfirmed = true,
+                }; 
+                var required = new List<KeyValuePair<string, object>>();
+                var newmember = _memberService.Create(forumMember, required);
+                appUser.MemberId = newmember.Id;
 
-            return Json(new { result = isSuccess, responseText = "Something wrong!" });
+                IdentityResult result = _userManager.CreateAsync(appUser, vm.Password).Result;
+                if (!result.Succeeded)
+                {
+                    _memberService.Delete(newmember);
+                    foreach (IdentityError error in result.Errors)
+                        ModelState.AddModelError("Password", error.Description);
+                    return PartialView("_CreateUser",vm);
+                }
+
+            }
+            return PartialView("_CreateUser",vm);
+            //return Json(new { result = isSuccess, responseText = "Something wrong!" });
 
         }
         [Authorize(Roles = "Administrator")]

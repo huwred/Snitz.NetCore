@@ -1,35 +1,63 @@
-﻿<div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
-    <h4 class="modal-title">Create user account</h4>
-</div>
-<form id="createForm" method="post" asp-controller="Admin" asp-action="CreateUser" class="needs-validation p-2" novalidate data-ajax="true" data-ajax-update="#resultDiv" data-ajax-success="OnSuccess" data-ajax-failure="OnFailure">
-    <div class="modal-body">
-        <div class="tab-content row-fluid clearfix">
-            <div class="mb-3">
-                <label for="Username" class="form-label">Username</label>
-                <input id="Username" type="text" name="Username" value="" class="form-control" />
-            </div>
-            <div class="mb-3">
-                <label for="Email" class="form-label">Email</label>
-                <input id="Email" type="text" name="Email" value="" class="form-control" />
-            </div>
-            <div class="mb-3">
-                <label for="Password" class="form-label">Password</label>
-                <input id="Password" type="password" name="Password" value="" class="form-control" />
-            </div>
-            <div class="mb-3">
-                <label for="Confirm" class="form-label">Confirm Password</label>
-                 <input id="Confirm" type="password" name="Confirm" value="" class="form-control" />
-            </div>
-        </div>
-        <div id="resultDiv"></div>
+﻿@using SnitzCore.BackOffice.ViewModels
+@model AdminCreateUserViewModel
+
+<form asp-controller="Admin" asp-action="CreateUser" class="needs-validation p-2" novalidate >
+
+    <div class="mb-3">
+        <label asp-for="Username" class="form-label">Username</label>
+        <input type="text" asp-for="Username" value="" class="form-control" />
+        <div class="invalid-feedback">@Localizer["UsernameRequired"]</div>
     </div>
-    <div class="modal-footer">
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email</label>
+        <input type="text" asp-for="Email" value="" class="form-control" />
+        <span class="invalid-feedback">@Localizer["PropertyRequired", Localizer["prompt_email_url"].Value]</span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">Password</label>
+        <input type="password" asp-for="Password" value="" class="form-control" />
+        <div class="invalid-feedback">@Localizer["dlgPasswordMsg"]</div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Confirm" class="form-label">Confirm Password</label>
+        <input type="password" asp-for="Confirm" value="" class="form-control" />
+        <div class="invalid-feedback">@Localizer["compPassword", Localizer["Password"].Value, Localizer["ConfirmPassword"].Value]</div>
+    </div>
+
+    <div class="mb-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" asp-for="InviteEmail">
+            <label class="form-check-label" asp-for="InviteEmail">
+                Send Email Invite with logi details.
+            </label>
+        </div>
+    </div>
+    <div id="resultDiv"></div>
+    <div class="mb-3">
         <button type="button" class="btn btn-danger" data-dismiss="modal">@Localizer["btnCancel"]</button>
-        <button type="button" id="approve-user-btn" class="btn btn-success">Create</button>
+        <button type="submit" id="approve-user-btn" class="btn btn-success">Create</button>
     </div>
 </form>
+<script>
+        (() => {
+      'use strict'
 
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      const forms = document.querySelectorAll('.needs-validation')
+
+      // Loop over them and prevent submission
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+
+          form.classList.add('was-validated')
+        }, false)
+      })
+    })();
+</script>
 
 
 
