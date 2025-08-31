@@ -12,7 +12,7 @@ using Snitz.PhotoAlbum.Models;
 namespace Snitz.PhotoAlbum.Migrations
 {
     [DbContext(typeof(PhotoContext))]
-    [Migration("20240207142731_PhotoAlbum")]
+    [Migration("20250823171930_PhotoAlbum")]
     partial class PhotoAlbum
     {
         /// <inheritdoc />

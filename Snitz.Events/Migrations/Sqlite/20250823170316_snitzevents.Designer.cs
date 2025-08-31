@@ -11,7 +11,7 @@ using Snitz.Events.Models;
 namespace Snitz.Events.Migrations
 {
     [DbContext(typeof(EventContext))]
-    [Migration("20250823170316_snitzevents")]
+    [Migration("20250823170316_SnitzEvents")]
     partial class newmigration
     {
         /// <inheritdoc />
