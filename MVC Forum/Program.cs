@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MVCForum.Extensions;
@@ -31,9 +30,7 @@ using SnitzCore.Service.Hangfire;
 using SnitzCore.Service.MiddleWare;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -62,7 +59,6 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
     options.EnableDetailedErrors();
 
 },ServiceLifetime.Scoped);
-
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ForumUser>(options =>
@@ -244,6 +240,7 @@ else
 {
     app.UseExceptionHandler();
 }
+//Pi doesn't like this, could be newt!
 app.UseHttpsRedirection();
 
 app.UseRequestLocalization(app.Services.GetRequiredService < IOptions < RequestLocalizationOptions >> ().Value);
