@@ -9,5 +9,7 @@ namespace SnitzCore.Data.Interfaces
     public interface IPasswordPolicyService
     {
         List<string> GetPasswordRequirements();
+
+        string GeneratePassword();
     }
 }
