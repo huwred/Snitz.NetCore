@@ -20,7 +20,7 @@
                 <hr />
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="INTFIRSTINSTALL" config-label="Toggle Startup page" config-val="@SnitzConfig.GetIntValue("INTFIRSTINSTALL")" help-text="@Localizer["INTFIRSTINSTALL"].Value"></admin-config>
+                        <admin-config config-key="INTFIRSTINSTALL" config-label="Toggle Startup page" config-val="@SnitzConfig.GetIntValue("INTFIRSTINSTALL")" help-text="@Localizer["INTFIRSTINSTALL"].Value" disabled="@(@SnitzConfig.GetIntValue("INTFIRSTINSTALL") == 0)"></admin-config>
                     </div>
                 </div>
                 <div class="row">

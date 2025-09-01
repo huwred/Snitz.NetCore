@@ -42,8 +42,11 @@ namespace SnitzCore.BackOffice.Controllers
         private readonly IWebHostEnvironment _env;
         private IHostApplicationLifetime _appLifetime;
         private readonly IEmailSender _emailSender;
-        public AdminController(ISnitz config,IConfiguration configuration, ISnitzConfig snitzconfig,IForum forumservice,ICategory category,SnitzDbContext dbContext,RoleManager<IdentityRole> RoleManager,UserManager<ForumUser> userManager,
-            IMember memberService,IOptionsSnapshot<EmailConfiguration> emailconfig,IEmailSender emailSender, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
+        private readonly IPasswordPolicyService _passwordPolicyService;
+        public AdminController(ISnitz config,IConfiguration configuration, ISnitzConfig snitzconfig,IForum forumservice,
+            ICategory category,SnitzDbContext dbContext,RoleManager<IdentityRole> RoleManager,UserManager<ForumUser> userManager,
+            IMember memberService,IOptionsSnapshot<EmailConfiguration> emailconfig,IEmailSender emailSender, 
+            IHostApplicationLifetime appLifetime, IWebHostEnvironment env,IPasswordPolicyService passwordPolicyService)
         {
             _config = config;
             _forumservice = forumservice;
@@ -58,6 +61,7 @@ namespace SnitzCore.BackOffice.Controllers
             _appLifetime = appLifetime;
             _env = env;
             _emailSender = emailSender;
+            _passwordPolicyService = passwordPolicyService;
         }
 
         public IActionResult Index()
@@ -327,7 +331,7 @@ namespace SnitzCore.BackOffice.Controllers
                 IdentityRole? Role = await _roleManager.FindByNameAsync(role!);
                 if (Role != null)
                 {
-                    foreach (var user in _userManager.Users)
+                    foreach (var user in _userManager.Users.ToList())
                     {
                         if (_userManager.IsInRoleAsync(user, Role.Name!).Result)
                             names.Add(user.UserName!);
@@ -832,23 +836,43 @@ namespace SnitzCore.BackOffice.Controllers
                     MemberSince = DateTime.UtcNow,
                     LockoutEnabled = false,
                     EmailConfirmed = true,
-                }; 
-                var required = new List<KeyValuePair<string, object>>();
-                var newmember = _memberService.Create(forumMember, required);
-                appUser.MemberId = newmember.Id;
-
-                IdentityResult result = _userManager.CreateAsync(appUser, vm.Password).Result;
-                if (!result.Succeeded)
+                };
+                try
                 {
-                    _memberService.Delete(newmember);
-                    foreach (IdentityError error in result.Errors)
-                        ModelState.AddModelError("Password", error.Description);
-                    return PartialView("_CreateUser",vm);
-                }
+                    //var required = new List<KeyValuePair<string, object>>();
+                    //var newmember = _memberService.Create(forumMember, required);
+                    //appUser.MemberId = newmember.Id;
 
+                    //IdentityResult result = _userManager.CreateAsync(appUser, vm.Password).Result;
+                    //if (!result.Succeeded)
+                    //{
+                    //    var errors = "";
+                    //    _memberService.Delete(newmember);
+                    //    foreach (IdentityError error in result.Errors)
+                    //    {
+                    //        ModelState.AddModelError("Password", error.Description);
+                    //        errors += $" {error.Description},";
+                    //    }
+                    //    return Content("Something wrong!" + errors);
+
+                    //}
+                }
+                catch (Exception e)
+                {
+                    return Content("Something wrong! " + e.Message);
+                }
+                //do we need to send an email?
+                if (vm.InviteEmail)
+                {
+                    var message = new EmailMessage(new[] { vm.Email }, 
+                        "New Membership", 
+                        _emailSender.ParseTemplate("newMembership.html","Account created",vm.Email,vm.Username,"/Login", vm.EmailLang ?? "en",vm.Password));
+            
+                    _emailSender.SendEmailAsync(message);
+                }
+                    return Content("Member created successfully");
             }
-            return PartialView("_CreateUser",vm);
-            //return Json(new { result = isSuccess, responseText = "Something wrong!" });
+            return Content("Something wrong!");
 
         }
         [Authorize(Roles = "Administrator")]

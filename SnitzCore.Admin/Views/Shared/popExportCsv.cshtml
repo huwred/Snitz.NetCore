@@ -10,13 +10,7 @@
 @{
     Layout = null;
 
-    var supportedCultures = new List<CultureInfo>
-    {
-        new CultureInfo("en"),
-        new CultureInfo("no"),
-        new CultureInfo("fa")
-    };
-
+    var supportedCultures = LocOptions.Value.SupportedUICultures;
     var requestCulture = CultureInfo.CurrentUICulture;
     var cultureItems = supportedCultures
         .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })

@@ -1,7 +1,10 @@
-﻿@using SnitzCore.BackOffice.ViewModels
+﻿@using Microsoft.AspNetCore.Builder
+@using SnitzCore.BackOffice.ViewModels
+@using System.Globalization
 @model AdminCreateUserViewModel
+@inject IOptions<RequestLocalizationOptions> LocOptions
 
-<form asp-controller="Admin" asp-action="CreateUser" class="needs-validation p-2" novalidate >
+<form asp-controller="Admin" asp-action="CreateUser" class="needs-validation p-2" novalidate data-ajax="true" data-ajax-update="#createuser-result">
 
     <div class="mb-3">
         <label asp-for="Username" class="form-label">Username</label>
@@ -15,7 +18,10 @@
     </div>
     <div class="mb-3">
         <label asp-for="Password" class="form-label">Password</label>
-        <input type="password" asp-for="Password" value="" class="form-control" />
+        <div class="input-group">
+            <input type="password" asp-for="Password" value="" class="form-control" />
+            <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
+        </div>
         <div class="invalid-feedback">@Localizer["dlgPasswordMsg"]</div>
     </div>
     <div class="mb-3">
@@ -25,19 +31,42 @@
     </div>
 
     <div class="mb-3">
-        <div class="form-check">
+        <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" asp-for="InviteEmail">
             <label class="form-check-label" asp-for="InviteEmail">
-                Send Email Invite with logi details.
+                Send Email Invite with login details.
             </label>
         </div>
+        @{
+            var supportedCultures = LocOptions.Value.SupportedUICultures;
+            var requestCulture = CultureInfo.CurrentUICulture;
+            var cultureItems = supportedCultures
+            .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
+            .ToList();
+            var returnUrl = $"{Context.Request.PathBase}{Context.Request.Path.Value}";
+            string clang = requestCulture?.TwoLetterISOLanguageName ?? "";
+        }
+        <!-- Split dropdown button -->
+        <div class="mb-3">
+            <label class="form-label" asp-for="EmailLang">
+                Select a language to use in the email.
+            </label>
+            <select class="form-select" name="EmailLang" id="EmailLang">
+                <option selected>Choose language</option>
+                @foreach (var culture in cultureItems)
+                {
+                    <option value="@culture.Value">@culture.Text</option>
+                }
+            </select>
+        </div>
     </div>
-    <div id="resultDiv"></div>
+    <div id="createuser-result" class="mb-3"></div>
     <div class="mb-3">
         <button type="button" class="btn btn-danger" data-dismiss="modal">@Localizer["btnCancel"]</button>
         <button type="submit" id="approve-user-btn" class="btn btn-success">Create</button>
     </div>
 </form>
+
 <script>
         (() => {
       'use strict'
