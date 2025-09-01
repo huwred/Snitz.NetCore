@@ -436,3 +436,9 @@ FodyWeavers.xsd
 /Snitz.PhotoAlbum/Migrations/PhotoThanksDbContextModelSnapshot.cs
 /Snitz.Events/Migrations/EventDbContextModelSnapshot.cs
 /Snitz.PostThanks/Migrations/PostThanksDbContextModelSnapshot.cs
+/Snitz.Events/Migrations/20250823170316_SnitzEvents.cs
+/Snitz.Events/Migrations/EventContextModelSnapshot.cs
+/Snitz.PhotoAlbum/Migrations/20250823171930_PhotoAlbum.cs
+/Snitz.PhotoAlbum/Migrations/PhotoContextModelSnapshot.cs
+/Snitz.PostThanks/Migrations/20250823171855_PostThanks.cs
+/Snitz.PostThanks/Migrations/PostThanksContextModelSnapshot.cs
