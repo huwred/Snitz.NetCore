@@ -1,25 +1,37 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NetCore.AutoRegisterDi;
 using Snitz.Events.Models;
 using SnitzCore.Data;
-using NetCore.AutoRegisterDi;
 using SnitzCore.Data.Interfaces;
+using SnitzCore.Data.Models;
 
 namespace Snitz.Events.Helpers
 {
-    [RegisterAsScoped]
+    //[RegisterAsScoped]
     public class CalEventsService : ISnitzStartupService
     {
-        private readonly EventContext _dbContext;
+        //private readonly EventContext _dbContext;
         private readonly SnitzDbContext _snitzDbContext;
 
-        public CalEventsService(EventContext dbContext, SnitzDbContext snitzDbContext)
+        public CalEventsService(/*EventContext dbContext,*/ SnitzDbContext snitzDbContext)
         {
-            _dbContext = dbContext;
+            //_dbContext = dbContext;
             _snitzDbContext = snitzDbContext;
         }
         public bool EnabledForTopic(int topicid)
         {
-            return _dbContext.EventItems.SingleOrDefault(e=>e.TopicId == topicid) != null;
+            //throw new NotImplementedException();
+            try
+            {
+                //    return _dbContext.EventItems.SingleOrDefault(e=>e.TopicId == topicid) != null;
+                var auth = _snitzDbContext.Database.SqlQuery<int>(
+                    $"SELECT C_ID AS Value FROM CAL_EVENTS WHERE TOPIC_ID={topicid}").Single();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
         }
 
@@ -40,21 +52,31 @@ namespace Snitz.Events.Helpers
 
         public IEnumerable<object> Get(int id)
         {
-            return _dbContext.EventItems.AsNoTracking().Where(e=>e.TopicId == id).AsEnumerable();
+            throw new NotImplementedException();
+            //try
+            //{
+            //    return _dbContext.EventItems.AsNoTracking().Where(e=>e.TopicId == id).AsEnumerable();
+
+            //}
+            //catch (Exception)
+            //{
+
+            //    throw;
+            //}
         }
 
         public async Task<bool> AddItemAsync(object item)
         {
             return true;
-            try
-            {
-                _dbContext.EventItems.Add((CalendarEventItem)item);
-                return await _dbContext.SaveChangesAsync() > 0;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
+            //try
+            //{
+            //    _dbContext.EventItems.Add((CalendarEventItem)item);
+            //    return await _dbContext.SaveChangesAsync() > 0;
+            //}
+            //catch (Exception e)
+            //{
+            //    return false;
+            //}
             
         }
     }

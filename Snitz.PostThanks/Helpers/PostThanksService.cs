@@ -6,15 +6,13 @@ using Snitz.PostThanks.Models;
 
 namespace Snitz.PostThanks.Helpers
 {
-    [RegisterAsScoped]
+    //[RegisterAsScoped]
     public class PostThanksService : ISnitzStartupService
     {
-        private readonly PostThanksContext _dbContext;
         private readonly SnitzDbContext _snitzDbContext;
 
-        public PostThanksService(PostThanksContext dbContext, SnitzDbContext snitzDbContext)
+        public PostThanksService(SnitzDbContext snitzDbContext)
         {
-            _dbContext = dbContext;
             _snitzDbContext = snitzDbContext;
         }
         public Task<bool> AddItemAsync(object item)
@@ -36,7 +34,8 @@ namespace Snitz.PostThanks.Helpers
 
         public IEnumerable<object> Get(int id)
         {
-            return _dbContext.PostThanks.AsNoTracking().Where(e=>e.TopicId == id).AsEnumerable();
+            throw new NotImplementedException();
+            //return _dbContext.PostThanks.AsNoTracking().Where(e=>e.TopicId == id).AsEnumerable();
         }
     }
 }

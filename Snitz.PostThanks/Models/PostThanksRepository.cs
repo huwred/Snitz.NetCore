@@ -31,6 +31,17 @@ namespace PostThanks.Models
 
         }
 
+        public bool EnabledForTopic(int topicid)
+        {
+                var test =  _snitzContext.Forums
+                .FromSqlInterpolated($"SELECT * FROM FORUM_FORUM WHERE F_ALLOWTHANKS=1");
+            return test.Any(f=>f.Id == topicid);
+        }
+
+        public IEnumerable<object> Get(int id)
+        {
+            return _dbContext.PostThanks.AsNoTracking().Where(e=>e.TopicId == id).AsEnumerable();
+        }
 
         public void AddThanks(int topicid, int replyid = 0)
         {

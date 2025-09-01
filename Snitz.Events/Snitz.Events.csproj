@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.2-rc10</Version>
+    <Version>1.0.2-rc19</Version>
     <Authors>Huw Reddick</Authors>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <Compile Remove="Helpers\Extensions.cs" />
-    <Compile Remove="Helpers\ICalEventsService.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -107,10 +106,6 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\Components\Events\ForumConfig.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 

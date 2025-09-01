@@ -37,6 +37,63 @@ namespace Snitz.Events.Models
         {
 
         }
+        public bool EnabledForTopic(int topicid)
+        {
+            try
+            {
+                return _dbContext.EventItems.SingleOrDefault(e => e.TopicId == topicid) != null;
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
+
+        public int AuthLevel(int forumid)
+        {
+            try
+            {
+                var auth = _snitzContext.Database.SqlQuery<int>(
+                    $"SELECT F_ALLOWEVENTS AS Value FROM FORUM_FORUM WHERE FORUM_ID={forumid}").Single();
+                return auth;
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+
+        }
+
+        public IEnumerable<object> Get(int id)
+        {
+            try
+            {
+                return _dbContext.EventItems.AsNoTracking().Where(e => e.TopicId == id).AsEnumerable();
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<bool> AddItemAsync(object item)
+        {
+            try
+            {
+                _dbContext.EventItems.Add((CalendarEventItem)item);
+                return await _dbContext.SaveChangesAsync() > 0;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+        }
+
         public CalendarEventItem? GetById(int id)
         {
             return _dbContext.EventItems.Include(e=>e.Topic).FirstOrDefault(e=>e.Id == id);

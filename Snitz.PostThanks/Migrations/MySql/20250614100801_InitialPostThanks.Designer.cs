@@ -3,204 +3,45 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Snitz.Events.Models;
+using Snitz.PostThanks.Models;
 
 #nullable disable
 
-namespace Snitz.Events.Migrations
+namespace Snitz.PostThanks.Migrations
 {
-    [DbContext(typeof(EventContext))]
-    partial class EventContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(PostThanksContext))]
+    [Migration("20250614100801_InitialPostThanks")]
+    partial class InitialPostThanks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.7")
+                .HasAnnotation("ProductVersion", "8.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Snitz.Events.Models.CalendarEventItem", b =>
+            modelBuilder.Entity("Snitz.PostThanks.Models.PostThanksEntry", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("MemberId")
                         .HasColumnType("int")
-                        .HasColumnName("C_ID");
+                        .HasColumnName("MEMBER_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AuthorId")
+                    b.Property<int>("ReplyId")
                         .HasColumnType("int")
-                        .HasColumnName("AUTHOR_ID");
-
-                    b.Property<int?>("CatId")
-                        .HasColumnType("int")
-                        .HasColumnName("CAT_ID");
-
-                    b.Property<int?>("ClubId")
-                        .HasColumnType("int")
-                        .HasColumnName("CLUB_ID");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("EVENT_DETAILS");
-
-                    b.Property<string>("End")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("EVENT_ENDDATE");
-
-                    b.Property<bool>("IsAllDayEvent")
-                        .HasColumnType("bit")
-                        .HasColumnName("EVENT_ALLDAY");
-
-                    b.Property<int?>("LocId")
-                        .HasColumnType("int")
-                        .HasColumnName("LOC_ID");
-
-                    b.Property<string>("Posted")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("DATE_ADDED");
-
-                    b.Property<string>("RecurDays")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("EVENT_DAYS");
-
-                    b.Property<int>("Recurs")
-                        .HasColumnType("int")
-                        .HasColumnName("EVENT_RECURS");
-
-                    b.Property<string>("Start")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("EVENT_DATE");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("EVENT_TITLE");
+                        .HasColumnName("REPLY_ID");
 
                     b.Property<int>("TopicId")
                         .HasColumnType("int")
                         .HasColumnName("TOPIC_ID");
 
-                    b.HasKey("Id");
+                    b.HasIndex("MemberId");
 
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("CatId");
-
-                    b.HasIndex("ClubId");
-
-                    b.HasIndex("LocId");
-
-                    b.HasIndex("TopicId");
-
-                    b.ToTable("CAL_EVENTS");
-                });
-
-            modelBuilder.Entity("Snitz.Events.Models.ClubCalendarCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("CAT_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CAT_NAME");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int")
-                        .HasColumnName("CAT_ORDER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EVENT_CAT");
-                });
-
-            modelBuilder.Entity("Snitz.Events.Models.ClubCalendarClub", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("CLUB_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Abbreviation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CLUB_ABBR");
-
-                    b.Property<int>("DefLocId")
-                        .HasColumnType("int")
-                        .HasColumnName("CLUB_DEF_LOC");
-
-                    b.Property<string>("LongName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CLUB_L_NAME");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int")
-                        .HasColumnName("CLUB_ORDER");
-
-                    b.Property<string>("ShortName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CLUB_S_NAME");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EVENT_CLUB");
-                });
-
-            modelBuilder.Entity("Snitz.Events.Models.ClubCalendarLocation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("LOC_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("LOC_NAME");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int")
-                        .HasColumnName("LOC_ORDER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EVENT_LOCATION");
-                });
-
-            modelBuilder.Entity("Snitz.Events.Models.ClubCalendarSubscriptions", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("SUB_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClubId")
-                        .HasColumnType("int")
-                        .HasColumnName("CLUB_ID");
-
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int")
-                        .HasColumnName("MEMBER_ID");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EVENT_SUBSCRIPTIONS");
+                    b.ToTable("FORUM_THANKS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
@@ -342,6 +183,10 @@ namespace Snitz.Events.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ArchivedPostId")
+                        .HasColumnType("int")
+                        .HasColumnName("TOPIC_ID");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("int")
                         .HasColumnName("CAT_ID");
@@ -383,10 +228,6 @@ namespace Snitz.Events.Migrations
                         .HasColumnType("int")
                         .HasColumnName("R_AUTHOR");
 
-                    b.Property<int>("PostId")
-                        .HasColumnType("int")
-                        .HasColumnName("TOPIC_ID");
-
                     b.Property<int>("Rating")
                         .HasColumnType("int")
                         .HasColumnName("R_RATING");
@@ -400,6 +241,8 @@ namespace Snitz.Events.Migrations
                         .HasColumnName("R_STATUS");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ArchivedPostId");
 
                     b.HasIndex("MemberId");
 
@@ -1112,39 +955,15 @@ namespace Snitz.Events.Migrations
                     b.ToTable("FORUM_REPLY");
                 });
 
-            modelBuilder.Entity("Snitz.Events.Models.CalendarEventItem", b =>
+            modelBuilder.Entity("Snitz.PostThanks.Models.PostThanksEntry", b =>
                 {
-                    b.HasOne("SnitzCore.Data.Models.Member", "Author")
+                    b.HasOne("SnitzCore.Data.Models.Member", "Member")
                         .WithMany()
-                        .HasForeignKey("AuthorId");
-
-                    b.HasOne("Snitz.Events.Models.ClubCalendarCategory", "Cat")
-                        .WithMany()
-                        .HasForeignKey("CatId");
-
-                    b.HasOne("Snitz.Events.Models.ClubCalendarClub", "Club")
-                        .WithMany()
-                        .HasForeignKey("ClubId");
-
-                    b.HasOne("Snitz.Events.Models.ClubCalendarLocation", "Loc")
-                        .WithMany()
-                        .HasForeignKey("LocId");
-
-                    b.HasOne("SnitzCore.Data.Models.Post", "Topic")
-                        .WithMany()
-                        .HasForeignKey("TopicId")
+                        .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Author");
-
-                    b.Navigation("Cat");
-
-                    b.Navigation("Club");
-
-                    b.Navigation("Loc");
-
-                    b.Navigation("Topic");
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
@@ -1182,6 +1001,11 @@ namespace Snitz.Events.Migrations
 
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedReply", b =>
                 {
+                    b.HasOne("SnitzCore.Data.Models.ArchivedPost", null)
+                        .WithMany("Replies")
+                        .HasForeignKey("ArchivedPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SnitzCore.Data.Models.Member", "Member")
                         .WithMany()
