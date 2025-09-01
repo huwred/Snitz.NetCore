@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.2-rc19</Version>
+    <Version>1.0.2-rc20</Version>
     <Authors>Huw Reddick</Authors>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -17,12 +17,16 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\Mssql\**" />
+    <Compile Remove="Migrations\MySql\**" />
     <Compile Remove="Migrations\Sqlite\**" />
     <Content Remove="Migrations\Mssql\**" />
+    <Content Remove="Migrations\MySql\**" />
     <Content Remove="Migrations\Sqlite\**" />
     <EmbeddedResource Remove="Migrations\Mssql\**" />
+    <EmbeddedResource Remove="Migrations\MySql\**" />
     <EmbeddedResource Remove="Migrations\Sqlite\**" />
     <None Remove="Migrations\Mssql\**" />
+    <None Remove="Migrations\MySql\**" />
     <None Remove="Migrations\Sqlite\**" />
   </ItemGroup>
 

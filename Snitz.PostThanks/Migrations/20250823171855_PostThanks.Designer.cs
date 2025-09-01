@@ -12,7 +12,7 @@ using Snitz.PostThanks.Models;
 namespace Snitz.PostThanks.Migrations
 {
     [DbContext(typeof(PostThanksContext))]
-    [Migration("20250614100801_InitialPostThanks")]
+    [Migration("20250823171855_PostThanks")]
     partial class InitialPostThanks
     {
         /// <inheritdoc />

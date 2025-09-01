@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <Version>1.0.3-rc28</Version>
+    <Version>1.0.3-rc29</Version>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -13,12 +13,16 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\MsSql\**" />
+    <Compile Remove="Migrations\MySql\**" />
     <Compile Remove="Migrations\sqlite\**" />
     <Content Remove="Migrations\MsSql\**" />
+    <Content Remove="Migrations\MySql\**" />
     <Content Remove="Migrations\sqlite\**" />
     <EmbeddedResource Remove="Migrations\MsSql\**" />
+    <EmbeddedResource Remove="Migrations\MySql\**" />
     <EmbeddedResource Remove="Migrations\sqlite\**" />
     <None Remove="Migrations\MsSql\**" />
+    <None Remove="Migrations\MySql\**" />
     <None Remove="Migrations\sqlite\**" />
   </ItemGroup>
 

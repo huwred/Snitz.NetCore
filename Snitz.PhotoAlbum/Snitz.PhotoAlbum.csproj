@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Version>1.0.2-rc49</Version>
+    <Version>1.0.2-rc50</Version>
     <Nullable>enable</Nullable>
     <Authors>Huw Reddick</Authors>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -13,12 +13,16 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\MsSql\**" />
+    <Compile Remove="Migrations\Mysql\**" />
     <Compile Remove="Migrations\Sqlite\**" />
     <Content Remove="Migrations\MsSql\**" />
+    <Content Remove="Migrations\Mysql\**" />
     <Content Remove="Migrations\Sqlite\**" />
     <EmbeddedResource Remove="Migrations\MsSql\**" />
+    <EmbeddedResource Remove="Migrations\Mysql\**" />
     <EmbeddedResource Remove="Migrations\Sqlite\**" />
     <None Remove="Migrations\MsSql\**" />
+    <None Remove="Migrations\Mysql\**" />
     <None Remove="Migrations\Sqlite\**" />
   </ItemGroup>
 

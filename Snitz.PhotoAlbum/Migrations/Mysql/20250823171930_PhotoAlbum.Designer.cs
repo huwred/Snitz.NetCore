@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Snitz.Events.Models;
+using Snitz.PhotoAlbum.Models;
 
 #nullable disable
 
-namespace Snitz.Events.Migrations
+namespace Snitz.PhotoAlbum.Migrations
 {
-    [DbContext(typeof(EventContext))]
-    [Migration("20240314134512_SnitzEvents")]
-    partial class SnitzEvents
+    [DbContext(typeof(PhotoContext))]
+    [Migration("20250823171930_PhotoAlbum")]
+    partial class PhotoAlbum
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,26 @@ namespace Snitz.Events.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "2c5e174e-3b0e-446f-86af-483d56fd7210",
+                            Name = "Administrator",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "0D1F96F3-A8BD-4348-AFA4-61B931BB3553",
+                            Name = "Moderator",
+                            NormalizedName = "MODERATOR"
+                        },
+                        new
+                        {
+                            Id = "467DF002-6D82-4109-979A-76F01FA9D4CF",
+                            Name = "ForumMember",
+                            NormalizedName = "FORUMMEMBER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -210,6 +230,13 @@ namespace Snitz.Events.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "8e445865-a24d-4543-a6c6-9443d048cdb9",
+                            RoleId = "2c5e174e-3b0e-446f-86af-483d56fd7210"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -285,15 +312,17 @@ namespace Snitz.Events.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int")
                         .HasColumnName("I_CAT");
 
                     b.Property<string>("CommonName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_NORWEGIANNAME");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_DESC");
 
@@ -301,11 +330,11 @@ namespace Snitz.Events.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("I_NOTFEATURED");
 
-                    b.Property<int?>("GroupId")
+                    b.Property<int>("GroupId")
                         .HasColumnType("int")
                         .HasColumnName("I_GROUP_ID");
 
-                    b.Property<int?>("Height")
+                    b.Property<int>("Height")
                         .HasColumnType("int")
                         .HasColumnName("I_HEIGHT");
 
@@ -314,6 +343,7 @@ namespace Snitz.Events.Migrations
                         .HasColumnName("I_PRIVATE");
 
                     b.Property<string>("Location")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_LOC");
 
@@ -322,10 +352,12 @@ namespace Snitz.Events.Migrations
                         .HasColumnName("I_MID");
 
                     b.Property<string>("Mime")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_TYPE");
 
                     b.Property<string>("ScientificName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_SCIENTIFICNAME");
 
@@ -334,14 +366,15 @@ namespace Snitz.Events.Migrations
                         .HasColumnName("I_SIZE");
 
                     b.Property<string>("Timestamp")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_DATE");
 
-                    b.Property<int?>("Views")
+                    b.Property<int>("Views")
                         .HasColumnType("int")
                         .HasColumnName("I_VIEWS");
 
-                    b.Property<int?>("Width")
+                    b.Property<int>("Width")
                         .HasColumnType("int")
                         .HasColumnName("I_WIDTH");
 
@@ -635,6 +668,16 @@ namespace Snitz.Events.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_CATEGORY");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Moderation = 0,
+                            Name = "General",
+                            Sort = 0,
+                            Status = (short)1
+                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Forum", b =>
@@ -650,7 +693,7 @@ namespace Snitz.Events.Migrations
                         .HasColumnType("int")
                         .HasColumnName("F_ARCHIVE_SCHED");
 
-                    b.Property<int?>("ArchivedCount")
+                    b.Property<int>("ArchivedCount")
                         .HasColumnType("int")
                         .HasColumnName("F_A_COUNT");
 
@@ -780,6 +823,34 @@ namespace Snitz.Events.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("FORUM_FORUM");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ArchiveSched = 0,
+                            ArchivedCount = 0,
+                            ArchivedTopics = 0,
+                            CategoryId = 1,
+                            CountMemberPosts = (short)1,
+                            Defaultdays = 30,
+                            DeleteSched = 0,
+                            Description = "This forum gives you a chance to become more familiar with how this product responds to different features and keeps testing in one place instead of posting tests all over. Happy Posting! [:)]",
+                            Mail = (short)0,
+                            Moderation = 0,
+                            Order = 0,
+                            Polls = 0,
+                            Postauth = 0,
+                            Privateforums = 0,
+                            Rating = (short)0,
+                            ReplyCount = 0,
+                            Replyauth = 0,
+                            Status = (short)1,
+                            Subscription = 0,
+                            Title = "Testing Forums",
+                            TopicCount = 0,
+                            Type = (short)0
+                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ForumAllowedMember", b =>
@@ -1006,12 +1077,17 @@ namespace Snitz.Events.Migrations
                         .HasColumnType("int")
                         .HasColumnName("M_DEFAULT_VIEW");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Dob")
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)")
                         .HasColumnName("M_DOB");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_EMAIL");
@@ -1161,7 +1237,7 @@ namespace Snitz.Events.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_SEX");
 
-                    b.Property<short?>("Sha256")
+                    b.Property<short>("Sha256")
                         .HasColumnType("smallint")
                         .HasColumnName("M_SHA256");
 
@@ -1203,6 +1279,34 @@ namespace Snitz.Events.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_MEMBERS");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Member");
+
+                    b.UseTphMappingStrategy();
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Allowemail = (short)0,
+                            Created = "20240207142730",
+                            DefaultView = 0,
+                            Email = "xxxx@example.com",
+                            HideEmail = (short)0,
+                            Level = (short)3,
+                            Name = "Administrator",
+                            Pmemail = 0,
+                            Pmreceive = 0,
+                            Pmsavesent = (short)0,
+                            Posts = 0,
+                            Privateprofile = (short)0,
+                            ReceiveEmail = (short)0,
+                            Sha256 = (short)0,
+                            SigDefault = (short)0,
+                            Status = (short)1,
+                            Subscription = (short)0,
+                            ViewSig = (short)0
+                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.MemberNamefilter", b =>
@@ -1223,6 +1327,13 @@ namespace Snitz.Events.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_NAMEFILTER");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Administrator"
+                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.MemberRanking", b =>
@@ -1313,38 +1424,6 @@ namespace Snitz.Events.Migrations
                     b.ToTable("webpages_Membership");
                 });
 
-            modelBuilder.Entity("SnitzCore.Data.Models.OldRole", b =>
-                {
-                    b.Property<int>("RoleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("RoleId");
-
-                    b.ToTable("webpages_Roles");
-                });
-
-            modelBuilder.Entity("SnitzCore.Data.Models.OldUserInRole", b =>
-                {
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("webpages_UsersInRoles");
-                });
-
             modelBuilder.Entity("SnitzCore.Data.Models.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -1357,10 +1436,6 @@ namespace Snitz.Events.Migrations
                     b.Property<int>("AllowRating")
                         .HasColumnType("int")
                         .HasColumnName("T_ALLOW_RATING");
-
-                    b.Property<bool>("Answered")
-                        .HasColumnType("bit")
-                        .HasColumnName("T_ANSWERED");
 
                     b.Property<int?>("ArchiveFlag")
                         .HasColumnType("int")
@@ -1487,10 +1562,6 @@ namespace Snitz.Events.Migrations
                         .HasColumnName("REPLY_ID");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Answer")
-                        .HasColumnType("bit")
-                        .HasColumnName("R_ANSWER");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int")
@@ -1673,6 +1744,158 @@ namespace Snitz.Events.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_CONFIG_NEW");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Key = "STRICONS",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Key = "STRALLOWFORUMCODE",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Key = "STRPHOTOALBUM",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Key = "STRBADWORDFILTER",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Key = "STRIMGINPOSTS",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Key = "INTHOTTOPICNUM",
+                            Value = "25"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Key = "STRPAGESIZE",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Key = "STRPAGENUMBERSIZE",
+                            Value = "10"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Key = "STRMARSTATUS",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Key = "STRFULLNAME",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Key = "STRPICTURE",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Key = "STRSEX",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Key = "STRCITY",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Key = "STRSTATE",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Key = "STRAGE",
+                            Value = "0"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Key = "STRAGEDOB",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Key = "STRMINAGE",
+                            Value = "14"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Key = "STRCOUNTRY",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Key = "STROCCUPATION",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Key = "STRFAVLINKS",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Key = "STRBIO",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Key = "STRHOBBIES",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Key = "STRLNEWS",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Key = "STRQUOTE",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Key = "STRHOMEPAGE",
+                            Value = "1"
+                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.SpamFilter", b =>
@@ -1717,175 +1940,6 @@ namespace Snitz.Events.Migrations
                     b.ToTable("TOPIC_RATINGS");
                 });
 
-            modelBuilder.Entity("SnitzEvents.Models.CalendarEventItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("C_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Author")
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("End")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("EVENT_ENDDATE");
-
-                    b.Property<DateTime?>("EndDate")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsAllDayEvent")
-                        .HasColumnType("bit")
-                        .HasColumnName("EVENT_ALLDAY");
-
-                    b.Property<string>("RecurDays")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("EVENT_DAYS");
-
-                    b.Property<int>("Recurs")
-                        .HasColumnType("int")
-                        .HasColumnName("EVENT_RECURS");
-
-                    b.Property<string>("Start")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("EVENT_DATE");
-
-                    b.Property<DateTime?>("StartDate")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TopicId")
-                        .HasColumnType("int")
-                        .HasColumnName("TOPIC_ID");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CAL_EVENTS");
-                });
-
-            modelBuilder.Entity("SnitzEvents.Models.ClubCalendarCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("CAT_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CAT_NAME");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int")
-                        .HasColumnName("CAT_ORDER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EVENT_CAT");
-                });
-
-            modelBuilder.Entity("SnitzEvents.Models.ClubCalendarClub", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("CLUB_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Abbreviation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CLUB_ABBR");
-
-                    b.Property<int>("DefLocId")
-                        .HasColumnType("int")
-                        .HasColumnName("CLUB_DEF_LOC");
-
-                    b.Property<string>("LongName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CLUB_L_NAME");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int")
-                        .HasColumnName("CLUB_ORDER");
-
-                    b.Property<string>("ShortName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CLUB_S_NAME");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EVENT_CLUB");
-                });
-
-            modelBuilder.Entity("SnitzEvents.Models.ClubCalendarLocation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("LOC_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("LOC_NAME");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int")
-                        .HasColumnName("LOC_ORDER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EVENT_LOCATION");
-                });
-
-            modelBuilder.Entity("SnitzEvents.Models.ClubCalendarSubscriptions", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("SUB_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClubId")
-                        .HasColumnType("int")
-                        .HasColumnName("CLUB_ID");
-
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int")
-                        .HasColumnName("MEMBER_ID");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EVENT_SUBSCRIPTIONS");
-                });
-
             modelBuilder.Entity("SnitzCore.Data.Models.ForumUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
@@ -1914,6 +1968,39 @@ namespace Snitz.Events.Migrations
                     b.HasIndex("MemberId");
 
                     b.HasDiscriminator().HasValue("ForumUser");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "bda41e97-0b56-45f0-b65b-77a3c77f79ae",
+                            Email = "xxxx@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "XXXX@EXAMPLE.COM",
+                            NormalizedUserName = "ADMINISTRATOR",
+                            PasswordHash = "AQAAAAIAAYagAAAAECPZSF9Q/Y2EX5ytoVNk8kRqeN1JQVpgAdWRlrLhafLwfuojFDouvlsbiTb+0KzXHA==",
+                            PhoneNumber = "+111111111111",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "dc142587-4b35-4bf6-9f4a-f8c6cecca72e",
+                            TwoFactorEnabled = false,
+                            UserName = "Adminstrator",
+                            IsActive = false,
+                            IsAdmin = true,
+                            MemberId = 1,
+                            MemberSince = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 0
+                        });
+                });
+
+            modelBuilder.Entity("Snitz.PhotoAlbum.Models.ExtendedMember", b =>
+                {
+                    b.HasBaseType("SnitzCore.Data.Models.Member");
+
+                    b.ToTable("FORUM_MEMBERS");
+
+                    b.HasDiscriminator().HasValue("ExtendedMember");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1971,14 +2058,18 @@ namespace Snitz.Events.Migrations
                 {
                     b.HasOne("Snitz.PhotoAlbum.Models.AlbumCategory", "Category")
                         .WithMany()
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Snitz.PhotoAlbum.Models.AlbumGroup", "Group")
                         .WithMany()
-                        .HasForeignKey("GroupId");
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("SnitzCore.Data.Models.Member", "Member")
-                        .WithMany()
+                    b.HasOne("Snitz.PhotoAlbum.Models.ExtendedMember", "Member")
+                        .WithMany("Images")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1992,7 +2083,7 @@ namespace Snitz.Events.Migrations
 
             modelBuilder.Entity("SnitzCore.Data.Models.BookmarkEntry", b =>
                 {
-                    b.HasOne("SnitzCore.Data.Models.Member", "Member")
+                    b.HasOne("SnitzCore.Data.Models.Member", "Author")
                         .WithMany()
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2004,7 +2095,7 @@ namespace Snitz.Events.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Member");
+                    b.Navigation("Author");
 
                     b.Navigation("Topic");
                 });
@@ -2063,25 +2154,6 @@ namespace Snitz.Events.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("GroupName");
-                });
-
-            modelBuilder.Entity("SnitzCore.Data.Models.OldUserInRole", b =>
-                {
-                    b.HasOne("SnitzCore.Data.Models.OldRole", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SnitzCore.Data.Models.Member", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Post", b =>
@@ -2162,6 +2234,11 @@ namespace Snitz.Events.Migrations
             modelBuilder.Entity("SnitzCore.Data.Models.Post", b =>
                 {
                     b.Navigation("Replies");
+                });
+
+            modelBuilder.Entity("Snitz.PhotoAlbum.Models.ExtendedMember", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }
