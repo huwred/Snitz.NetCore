@@ -21,37 +21,37 @@ namespace WebApplication1.Migrations
             {
             migrationBuilder.InsertData(
                 table: $"{_forumTablePrefix}CONFIG_NEW",
-                columns: new[] { "ID", "C_VARIABLE", "C_VALUE" },
-                columnTypes: new[] { "INTEGER", "TEXT", "TEXT" },
+                columns: new[] { "C_VARIABLE", "C_VALUE" },
+                columnTypes: new[] { "TEXT", "TEXT" },
                 values: new object[,]
                 {
-                    { 1, "STRICONS", "1" },
-                    { 2, "STRALLOWFORUMCODE", "1" },
-                    { 3, "STRPHOTOALBUM", "1" },
-                    { 4, "STRBADWORDFILTER", "1" },
-                    { 5, "STRIMGINPOSTS", "1" },
-                    { 6, "INTHOTTOPICNUM", "25" },
-                    { 7, "STRPAGESIZE", "15" },
-                    { 8, "STRPAGENUMBERSIZE", "10" },
-                    { 9, "STRMARSTATUS", "1" },
-                    { 10, "STRFULLNAME", "1" },
-                    { 11, "STRPICTURE", "1" },
-                    { 12, "STRSEX", "1" },
-                    { 13, "STRCITY", "1" },
-                    { 14, "STRSTATE", "1" },
-                    { 15, "STRAGE", "0" },
-                    { 16, "STRAGEDOB", "1" },
-                    { 17, "STRMINAGE", "14" },
-                    { 18, "STRCOUNTRY", "1" },
-                    { 19, "STROCCUPATION", "1" },
-                    { 20, "STRFAVLINKS", "1" },
-                    { 21, "STRBIO", "1" },
-                    { 22, "STRHOBBIES", "1" },
-                    { 23, "STRLNEWS", "1" },
-                    { 24, "STRQUOTE", "1" },
-                    { 25, "STRHOMEPAGE", "1" },
-                    { 26, "INTMAXFILESIZE", "5" },
-                    { 27, "INTMAXFILESIZE", "5" }
+                    {"STRICONS", "1" },
+                    {"STRALLOWFORUMCODE", "1" },
+                    {"STRPHOTOALBUM", "1" },
+                    {"STRBADWORDFILTER", "1" },
+                    {"STRIMGINPOSTS", "1" },
+                    {"INTHOTTOPICNUM", "25" },
+                    {"STRPAGESIZE", "15" },
+                    {"STRPAGENUMBERSIZE", "10" },
+                    {"STRMARSTATUS", "1" },
+                    { "STRFULLNAME", "1" },
+                    { "STRPICTURE", "1" },
+                    { "STRSEX", "1" },
+                    { "STRCITY", "1" },
+                    { "STRSTATE", "1" },
+                    { "STRAGE", "0" },
+                    { "STRAGEDOB", "1" },
+                    { "STRMINAGE", "14" },
+                    { "STRCOUNTRY", "1" },
+                    { "STROCCUPATION", "1" },
+                    { "STRFAVLINKS", "1" },
+                    { "STRBIO", "1" },
+                    { "STRHOBBIES", "1" },
+                    { "STRLNEWS", "1" },
+                    { "STRQUOTE", "1" },
+                    { "STRHOMEPAGE", "1" },
+                    { "INTMAXFILESIZE", "5" },
+                    { "INTFIRSTINSTALL", "1" }
                 });
             }
             else
@@ -61,7 +61,7 @@ namespace WebApplication1.Migrations
                     columns: new[] { "C_VARIABLE", "C_VALUE" },
                     values: new object[,]
                     {
-                        { "INTFIRSTINSTALL", "0" }
+                        { "INTFIRSTINSTALL", "2" }
                     });
             }
 
