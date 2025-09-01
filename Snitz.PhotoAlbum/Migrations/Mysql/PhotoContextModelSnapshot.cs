@@ -9,10 +9,10 @@ using System;
 
 #nullable disable
 
-namespace Snitz.PostThanks.Migrations
+namespace Snitz.PhotoAlbum.Migrations
 {
     [DbContext(typeof(PhotoContext))]
-    partial class PhotoThanksDbContextModelSnapshot : ModelSnapshot
+    partial class PhotoContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

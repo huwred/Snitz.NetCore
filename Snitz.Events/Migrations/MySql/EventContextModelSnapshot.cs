@@ -3,16 +3,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Snitz.PostThanks.Models;
+using Snitz.Events.Models;
 using SnitzCore.Data;
 using System;
 
 #nullable disable
 
-namespace Snitz.PostThanks.Migrations
+namespace Snitz.Events.Migrations
 {
-    [DbContext(typeof(PostThanksContext))]
-    partial class PostThanksDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(EventContext))]
+    partial class EventContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
