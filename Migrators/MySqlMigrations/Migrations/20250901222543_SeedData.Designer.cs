@@ -8,17 +8,21 @@ using SnitzCore.Data;
 
 #nullable disable
 
-namespace WebApplication1.Migrations
+namespace MySqlMigrations.Migrations
 {
     [DbContext(typeof(SnitzDbContext))]
-    [Migration("20231230100025_AdminUser")]
-    partial class AdminUser
+    [Migration("20250901222543_SeedData")]
+    partial class SeedData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.7");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.13")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -1098,7 +1102,7 @@ namespace WebApplication1.Migrations
                         {
                             Id = 1,
                             Allowemail = (short)0,
-                            Created = "20231230100025",
+                            Created = "20231230105325",
                             DefaultView = 0,
                             Email = "xxxx@example.com",
                             HideEmail = (short)0,
@@ -1173,6 +1177,72 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_RANKING");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Image = "gold",
+                            ImgRepeat = 5,
+                            Posts = 0,
+                            Title = "Administrator"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Image = "silver",
+                            ImgRepeat = 5,
+                            Posts = 0,
+                            Title = "Moderator"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Image = "bronze",
+                            ImgRepeat = 0,
+                            Posts = 0,
+                            Title = "Starting Member"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Image = "green",
+                            ImgRepeat = 1,
+                            Posts = 5,
+                            Title = "Newbie"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Image = "cyan",
+                            ImgRepeat = 2,
+                            Posts = 50,
+                            Title = "Junior"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Image = "blue",
+                            ImgRepeat = 3,
+                            Posts = 250,
+                            Title = "Average Member"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Image = "purple",
+                            ImgRepeat = 4,
+                            Posts = 500,
+                            Title = "Knowitall"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Image = "bronze",
+                            ImgRepeat = 5,
+                            Posts = 2000,
+                            Title = "Forum Guru"
+                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.MemberSubscription", b =>
@@ -1538,6 +1608,158 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FORUM_CONFIG_NEW");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Key = "STRICONS",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Key = "STRALLOWFORUMCODE",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Key = "STRPHOTOALBUM",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Key = "STRBADWORDFILTER",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Key = "STRIMGINPOSTS",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Key = "INTHOTTOPICNUM",
+                            Value = "25"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Key = "STRPAGESIZE",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Key = "STRPAGENUMBERSIZE",
+                            Value = "10"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Key = "STRMARSTATUS",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Key = "STRFULLNAME",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Key = "STRPICTURE",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Key = "STRSEX",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Key = "STRCITY",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Key = "STRSTATE",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Key = "STRAGE",
+                            Value = "0"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Key = "STRAGEDOB",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Key = "STRMINAGE",
+                            Value = "14"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Key = "STRCOUNTRY",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Key = "STROCCUPATION",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Key = "STRFAVLINKS",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Key = "STRBIO",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Key = "STRHOBBIES",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Key = "STRLNEWS",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Key = "STRQUOTE",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Key = "STRHOMEPAGE",
+                            Value = "1"
+                        });
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.SpamFilter", b =>
@@ -1612,16 +1834,16 @@ namespace WebApplication1.Migrations
                         {
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "29c97079-9e3f-4e2c-a92d-748fbc19cadd",
+                            ConcurrencyStamp = "5b9d430b-3b6d-49e1-88ba-058fb91ea5f0",
                             Email = "xxxx@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "XXXX@EXAMPLE.COM",
                             NormalizedUserName = "ADMINISTRATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAKKzb1/o7lXOxswnPwUc2D7fveBPHAti1fcyyWFjHUh49Tga2IpfkuAB7BTaiYmjg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDpJ7OCmCWQoo5vWLBKEQd7FmcPMQT2GiDY+68IcM0ybn+Up3tsoEK6y6oQiY2DUbw==",
                             PhoneNumber = "+111111111111",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "6efdd0a9-6c20-44ea-8a4d-dec3ebd2240b",
+                            SecurityStamp = "9b7f7d0e-fed1-44c2-bb3b-ebe4b34bf17f",
                             TwoFactorEnabled = false,
                             UserName = "Adminstrator",
                             IsActive = false,

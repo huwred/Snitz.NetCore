@@ -9,45 +9,44 @@ using SnitzCore.Data;
 
 #nullable disable
 
-namespace Migrations
+namespace MySqlMigrations.Migrations
 {
     [DbContext(typeof(SnitzDbContext))]
-    [Migration("20230311223854_SnitzCore")]
-    partial class SnitzCore
+    [Migration("20250801103052_Test")]
+    partial class Test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "8.0.13")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
                 });
@@ -58,17 +57,17 @@ namespace Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -80,58 +79,59 @@ namespace Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(13)
+                        .HasColumnType("varchar(13)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.HasKey("Id");
 
@@ -140,12 +140,11 @@ namespace Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
+                    b.HasDiscriminator().HasValue("IdentityUser");
 
                     b.UseTphMappingStrategy();
                 });
@@ -156,17 +155,17 @@ namespace Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -179,18 +178,18 @@ namespace Migrations
                 {
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("ProviderKey")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -202,10 +201,10 @@ namespace Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -217,22 +216,193 @@ namespace Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Snitz.Events.Models.CalendarEventItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("C_ID");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("int")
+                        .HasColumnName("AUTHOR_ID");
+
+                    b.Property<int?>("CatId")
+                        .HasColumnType("int")
+                        .HasColumnName("CAT_ID");
+
+                    b.Property<int?>("ClubId")
+                        .HasColumnType("int")
+                        .HasColumnName("CLUB_ID");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext")
+                        .HasColumnName("EVENT_DETAILS");
+
+                    b.Property<string>("End")
+                        .HasColumnType("longtext")
+                        .HasColumnName("EVENT_ENDDATE");
+
+                    b.Property<bool>("IsAllDayEvent")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("EVENT_ALLDAY");
+
+                    b.Property<int?>("LocId")
+                        .HasColumnType("int")
+                        .HasColumnName("LOC_ID");
+
+                    b.Property<string>("Posted")
+                        .HasColumnType("longtext")
+                        .HasColumnName("DATE_ADDED");
+
+                    b.Property<string>("RecurDays")
+                        .HasColumnType("longtext")
+                        .HasColumnName("EVENT_DAYS");
+
+                    b.Property<int>("Recurs")
+                        .HasColumnType("int")
+                        .HasColumnName("EVENT_RECURS");
+
+                    b.Property<string>("Start")
+                        .HasColumnType("longtext")
+                        .HasColumnName("EVENT_DATE");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("longtext")
+                        .HasColumnName("EVENT_TITLE");
+
+                    b.Property<int>("TopicId")
+                        .HasColumnType("int")
+                        .HasColumnName("TOPIC_ID");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("CatId");
+
+                    b.HasIndex("ClubId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("LocId");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("CAL_EVENTS");
+                });
+
+            modelBuilder.Entity("Snitz.Events.Models.ClubCalendarCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("CAT_ID");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("CAT_NAME");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int")
+                        .HasColumnName("CAT_ORDER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("EVENT_CAT");
+                });
+
+            modelBuilder.Entity("Snitz.Events.Models.ClubCalendarClub", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("CLUB_ID");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Abbreviation")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("CLUB_ABBR");
+
+                    b.Property<int>("DefLocId")
+                        .HasColumnType("int")
+                        .HasColumnName("CLUB_DEF_LOC");
+
+                    b.Property<string>("LongName")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("CLUB_L_NAME");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int")
+                        .HasColumnName("CLUB_ORDER");
+
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("CLUB_S_NAME");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("EVENT_CLUB");
+                });
+
+            modelBuilder.Entity("Snitz.Events.Models.ClubCalendarLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("LOC_ID");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("LOC_NAME");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int")
+                        .HasColumnName("LOC_ORDER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("EVENT_LOCATION");
                 });
 
             modelBuilder.Entity("Snitz.PhotoAlbum.Models.AlbumCategory", b =>
@@ -242,11 +412,10 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CatId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CatId"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("CAT_DESC");
 
                     b.Property<int>("MemberId")
@@ -265,10 +434,10 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("O_GROUP_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("O_GROUP_NAME");
 
                     b.Property<int>("Order")
@@ -287,22 +456,22 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("I_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int")
                         .HasColumnName("I_CAT");
 
                     b.Property<string>("CommonName")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("I_NORWEGIANNAME");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("I_DESC");
 
                     b.Property<bool>("DoNotFeature")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasColumnName("I_NOTFEATURED");
 
                     b.Property<int?>("GroupId")
@@ -314,11 +483,11 @@ namespace Migrations
                         .HasColumnName("I_HEIGHT");
 
                     b.Property<bool>("IsPrivate")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasColumnName("I_PRIVATE");
 
                     b.Property<string>("Location")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("I_LOC");
 
                     b.Property<int>("MemberId")
@@ -326,11 +495,11 @@ namespace Migrations
                         .HasColumnName("I_MID");
 
                     b.Property<string>("Mime")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("I_TYPE");
 
                     b.Property<string>("ScientificName")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("I_SCIENTIFICNAME");
 
                     b.Property<int>("Size")
@@ -338,7 +507,7 @@ namespace Migrations
                         .HasColumnName("I_SIZE");
 
                     b.Property<string>("Timestamp")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("I_DATE");
 
                     b.Property<int?>("Views")
@@ -363,77 +532,6 @@ namespace Migrations
                     b.ToTable("FORUM_IMAGES");
                 });
 
-            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedReply", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("REPLY_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int")
-                        .HasColumnName("CAT_ID");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("R_MESSAGE");
-
-                    b.Property<string>("Created")
-                        .IsRequired()
-                        .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
-                        .HasColumnName("R_DATE");
-
-                    b.Property<int>("ForumId")
-                        .HasColumnType("int")
-                        .HasColumnName("FORUM_ID");
-
-                    b.Property<string>("Ip")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("R_IP");
-
-                    b.Property<int?>("LastEditby")
-                        .HasColumnType("int")
-                        .HasColumnName("R_LAST_EDITBY");
-
-                    b.Property<string>("LastEdited")
-                        .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
-                        .HasColumnName("R_LAST_EDIT");
-
-                    b.Property<short>("Mail")
-                        .HasColumnType("smallint")
-                        .HasColumnName("R_MAIL");
-
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int")
-                        .HasColumnName("R_AUTHOR");
-
-                    b.Property<int>("ArchivedPostId")
-                        .HasColumnType("int")
-                        .HasColumnName("TOPIC_ID");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int")
-                        .HasColumnName("R_RATING");
-
-                    b.Property<short>("Sig")
-                        .HasColumnType("smallint")
-                        .HasColumnName("R_SIG");
-
-                    b.Property<short>("Status")
-                        .HasColumnType("smallint")
-                        .HasColumnName("R_STATUS");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FORUM_A_REPLY");
-                });
-
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
                 {
                     b.Property<int>("ArchivedPostId")
@@ -441,7 +539,7 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("TOPIC_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ArchivedPostId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ArchivedPostId"));
 
                     b.Property<int>("AllowRating")
                         .HasColumnType("int")
@@ -455,10 +553,10 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
-                    b.Property<string>("Date")
+                    b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
+                        .HasColumnType("varchar(14)")
                         .HasColumnName("T_DATE");
 
                     b.Property<int>("ForumId")
@@ -467,7 +565,7 @@ namespace Migrations
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("T_IP");
 
                     b.Property<short>("IsSticky")
@@ -480,21 +578,21 @@ namespace Migrations
 
                     b.Property<string>("LastEdit")
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
+                        .HasColumnType("varchar(14)")
                         .HasColumnName("T_LAST_EDIT");
 
                     b.Property<int?>("LastEditby")
                         .HasColumnType("int")
                         .HasColumnName("T_LAST_EDITBY");
 
-                    b.Property<string>("LastPost")
-                        .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
-                        .HasColumnName("T_LAST_POST");
-
                     b.Property<int?>("LastPostAuthorId")
                         .HasColumnType("int")
                         .HasColumnName("T_LAST_POST_AUTHOR");
+
+                    b.Property<string>("LastPostDate")
+                        .HasMaxLength(14)
+                        .HasColumnType("varchar(14)")
+                        .HasColumnName("T_LAST_POST");
 
                     b.Property<int?>("LastPostReplyId")
                         .HasColumnType("int")
@@ -510,7 +608,7 @@ namespace Migrations
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("T_MESSAGE");
 
                     b.Property<short>("Pollstatus")
@@ -540,7 +638,7 @@ namespace Migrations
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("T_SUBJECT");
 
                     b.Property<int>("UnmoderatedReplies")
@@ -553,7 +651,90 @@ namespace Migrations
 
                     b.HasKey("ArchivedPostId");
 
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ForumId");
+
+                    b.HasIndex("LastPostAuthorId");
+
+                    b.HasIndex("MemberId");
+
                     b.ToTable("FORUM_A_TOPICS");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedReply", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("REPLY_ID");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ArchivedPostId")
+                        .HasColumnType("int")
+                        .HasColumnName("TOPIC_ID");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int")
+                        .HasColumnName("CAT_ID");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("R_MESSAGE");
+
+                    b.Property<string>("Created")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("varchar(14)")
+                        .HasColumnName("R_DATE");
+
+                    b.Property<int>("ForumId")
+                        .HasColumnType("int")
+                        .HasColumnName("FORUM_ID");
+
+                    b.Property<string>("Ip")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("R_IP");
+
+                    b.Property<int?>("LastEditby")
+                        .HasColumnType("int")
+                        .HasColumnName("R_LAST_EDITBY");
+
+                    b.Property<string>("LastEdited")
+                        .HasMaxLength(14)
+                        .HasColumnType("varchar(14)")
+                        .HasColumnName("R_LAST_EDIT");
+
+                    b.Property<short>("Mail")
+                        .HasColumnType("smallint")
+                        .HasColumnName("R_MAIL");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int")
+                        .HasColumnName("R_AUTHOR");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int")
+                        .HasColumnName("R_RATING");
+
+                    b.Property<short>("Sig")
+                        .HasColumnType("smallint")
+                        .HasColumnName("R_SIG");
+
+                    b.Property<short>("Status")
+                        .HasColumnType("smallint")
+                        .HasColumnName("R_STATUS");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArchivedPostId");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("FORUM_A_REPLY");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Badword", b =>
@@ -563,17 +744,17 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("B_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ReplaceWith")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("B_REPLACE");
 
                     b.Property<string>("Word")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("B_BADWORD");
 
                     b.HasKey("Id");
@@ -588,7 +769,7 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("BOOKMARK_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("MemberId")
                         .HasColumnType("int")
@@ -614,14 +795,14 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("Moderation")
                         .HasColumnType("int")
                         .HasColumnName("CAT_MODERATION");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("CAT_NAME");
 
                     b.Property<int>("Sort")
@@ -648,17 +829,17 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("FORUM_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ArchiveSched")
                         .HasColumnType("int")
                         .HasColumnName("F_ARCHIVE_SCHED");
 
-                    b.Property<int>("ArchivedCount")
+                    b.Property<int?>("ArchivedCount")
                         .HasColumnType("int")
                         .HasColumnName("F_A_COUNT");
 
-                    b.Property<int>("ArchivedTopics")
+                    b.Property<int?>("ArchivedTopics")
                         .HasColumnType("int")
                         .HasColumnName("F_A_TOPICS");
 
@@ -680,24 +861,24 @@ namespace Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("F_DESCRIPTION");
 
                     b.Property<string>("Ip")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("F_IP");
 
                     b.Property<string>("LastArchived")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("F_L_ARCHIVE");
 
                     b.Property<string>("LastDelete")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("F_L_DELETE");
 
                     b.Property<string>("LastPost")
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
+                        .HasColumnType("varchar(14)")
                         .HasColumnName("F_LAST_POST");
 
                     b.Property<int?>("LastPostAuthorId")
@@ -725,14 +906,14 @@ namespace Migrations
                         .HasColumnName("F_ORDER");
 
                     b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("F_PASSWORD_NEW");
 
-                    b.Property<int>("Polls")
+                    b.Property<int?>("Polls")
                         .HasColumnType("int")
                         .HasColumnName("F_POLLS");
 
-                    b.Property<int>("Postauth")
+                    b.Property<int?>("Postauth")
                         .HasColumnType("int")
                         .HasColumnName("F_POSTAUTH");
 
@@ -740,7 +921,7 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("F_PRIVATEFORUMS");
 
-                    b.Property<short>("Rating")
+                    b.Property<short?>("Rating")
                         .HasColumnType("smallint")
                         .HasColumnName("F_RATING");
 
@@ -748,7 +929,7 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("F_COUNT");
 
-                    b.Property<int>("Replyauth")
+                    b.Property<int?>("Replyauth")
                         .HasColumnType("int")
                         .HasColumnName("F_REPLYAUTH");
 
@@ -763,7 +944,7 @@ namespace Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("F_SUBJECT");
 
                     b.Property<int>("TopicCount")
@@ -776,25 +957,31 @@ namespace Migrations
 
                     b.Property<string>("Url")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("F_URL");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("LastPostAuthorId");
+
+                    b.HasIndex("LatestTopicId");
+
                     b.ToTable("FORUM_FORUM");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ForumAllowedMember", b =>
                 {
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int")
+                        .HasColumnName("MEMBER_ID");
+
                     b.Property<int>("ForumId")
                         .HasColumnType("int")
                         .HasColumnName("FORUM_ID");
 
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int")
-                        .HasColumnName("MEMBER_ID");
+                    b.HasKey("MemberId", "ForumId");
 
                     b.HasIndex("ForumId");
 
@@ -808,7 +995,7 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("MOD_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ForumId")
                         .HasColumnType("int")
@@ -838,13 +1025,13 @@ namespace Migrations
                         .HasColumnType("smallint")
                         .HasColumnName("COUNT_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<short>("Id"));
 
-                    b.Property<int>("ArchivedPostCount")
+                    b.Property<int?>("ArchivedPostCount")
                         .HasColumnType("int")
                         .HasColumnName("P_A_COUNT");
 
-                    b.Property<int>("ArchivedTopicCount")
+                    b.Property<int?>("ArchivedTopicCount")
                         .HasColumnType("int")
                         .HasColumnName("T_A_COUNT");
 
@@ -872,7 +1059,7 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("GROUP_KEY");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int")
@@ -898,27 +1085,27 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("GROUP_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("GROUP_DESCRIPTION");
 
                     b.Property<string>("Icon")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("GROUP_ICON");
 
                     b.Property<string>("Image")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("GROUP_IMAGE");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("GROUP_NAME");
 
                     b.HasKey("Id");
@@ -933,30 +1120,29 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("pk");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Culture")
                         .IsRequired()
                         .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasColumnType("varchar(6)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("ResourceId");
 
                     b.Property<string>("ResourceSet")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("Type")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("varchar(32)");
 
                     b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -970,16 +1156,16 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("MEMBER_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Age")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
+                        .HasColumnType("varchar(10)")
                         .HasColumnName("M_AGE");
 
                     b.Property<string>("Aim")
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)")
+                        .HasColumnType("varchar(150)")
                         .HasColumnName("M_AIM");
 
                     b.Property<short>("Allowemail")
@@ -987,23 +1173,23 @@ namespace Migrations
                         .HasColumnName("M_ALLOWEMAIL");
 
                     b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("M_BIO");
 
                     b.Property<string>("City")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("M_CITY");
 
                     b.Property<string>("Country")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("M_COUNTRY");
 
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
+                        .HasColumnType("varchar(14)")
                         .HasColumnName("M_DATE");
 
                     b.Property<int>("DefaultView")
@@ -1012,18 +1198,17 @@ namespace Migrations
 
                     b.Property<string>("Dob")
                         .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)")
+                        .HasColumnType("varchar(8)")
                         .HasColumnName("M_DOB");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("M_EMAIL");
 
                     b.Property<string>("Firstname")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("M_FIRSTNAME");
 
                     b.Property<short>("HideEmail")
@@ -1031,52 +1216,52 @@ namespace Migrations
                         .HasColumnName("M_HIDE_EMAIL");
 
                     b.Property<string>("Hobbies")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("M_HOBBIES");
 
                     b.Property<string>("Homepage")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("M_HOMEPAGE");
 
                     b.Property<string>("Icq")
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)")
+                        .HasColumnType("varchar(150)")
                         .HasColumnName("M_ICQ");
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("M_IP");
 
                     b.Property<string>("Key")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
+                        .HasColumnType("varchar(32)")
                         .HasColumnName("M_KEY");
 
                     b.Property<string>("LastIp")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("M_LAST_IP");
-
-                    b.Property<string>("Lastactivity")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("M_LASTACTIVITY");
 
                     b.Property<string>("LastLogin")
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
-                        .HasColumnName("M_LastLogin");
+                        .HasColumnType("varchar(14)")
+                        .HasColumnName("M_LASTHEREDATE");
+
+                    b.Property<string>("Lastactivity")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("M_LASTACTIVITY");
 
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("M_LASTNAME");
 
                     b.Property<string>("Lastpostdate")
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
+                        .HasColumnType("varchar(14)")
                         .HasColumnName("M_LASTPOSTDATE");
 
                     b.Property<short>("Level")
@@ -1085,58 +1270,58 @@ namespace Migrations
 
                     b.Property<string>("Link1")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("M_LINK1");
 
                     b.Property<string>("Link2")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("M_LINK2");
 
                     b.Property<string>("Lnews")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("M_LNEWS");
 
                     b.Property<string>("Marstatus")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("M_MARSTATUS");
 
                     b.Property<string>("Msn")
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)")
+                        .HasColumnType("varchar(150)")
                         .HasColumnName("M_MSN");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(75)
-                        .HasColumnType("nvarchar(75)")
+                        .HasColumnType("varchar(75)")
                         .HasColumnName("M_NAME");
 
                     b.Property<string>("Newemail")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("M_NEWEMAIL");
 
                     b.Property<string>("Occupation")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("M_OCCUPATION");
 
                     b.Property<string>("PhotoUrl")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("M_PHOTO_URL");
 
-                    b.Property<int>("Pmemail")
+                    b.Property<int?>("Pmemail")
                         .HasColumnType("int")
                         .HasColumnName("M_PMEMAIL");
 
-                    b.Property<int>("Pmreceive")
+                    b.Property<int?>("Pmreceive")
                         .HasColumnType("int")
                         .HasColumnName("M_PMRECEIVE");
 
-                    b.Property<short>("Pmsavesent")
+                    b.Property<short?>("Pmsavesent")
                         .HasColumnType("smallint")
                         .HasColumnName("M_PMSAVESENT");
 
@@ -1144,17 +1329,17 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("M_POSTS");
 
-                    b.Property<short>("Privateprofile")
+                    b.Property<short?>("Privateprofile")
                         .HasColumnType("smallint")
                         .HasColumnName("M_PRIVATEPROFILE");
 
                     b.Property<string>("Pwkey")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
+                        .HasColumnType("varchar(32)")
                         .HasColumnName("M_PWKEY");
 
                     b.Property<string>("Quote")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("M_QUOTE");
 
                     b.Property<short>("ReceiveEmail")
@@ -1163,10 +1348,10 @@ namespace Migrations
 
                     b.Property<string>("Sex")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("M_SEX");
 
-                    b.Property<short>("Sha256")
+                    b.Property<short?>("Sha256")
                         .HasColumnType("smallint")
                         .HasColumnName("M_SHA256");
 
@@ -1175,12 +1360,12 @@ namespace Migrations
                         .HasColumnName("M_SIG_DEFAULT");
 
                     b.Property<string>("Signature")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("M_SIG");
 
                     b.Property<string>("State")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("M_STATE");
 
                     b.Property<short>("Status")
@@ -1193,7 +1378,7 @@ namespace Migrations
 
                     b.Property<string>("Title")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("M_TITLE");
 
                     b.Property<short>("ViewSig")
@@ -1202,7 +1387,7 @@ namespace Migrations
 
                     b.Property<string>("Yahoo")
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)")
+                        .HasColumnType("varchar(150)")
                         .HasColumnName("M_YAHOO");
 
                     b.HasKey("Id");
@@ -1217,12 +1402,12 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("N_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(75)
-                        .HasColumnType("nvarchar(75)")
+                        .HasColumnType("varchar(75)")
                         .HasColumnName("N_NAME");
 
                     b.HasKey("Id");
@@ -1235,14 +1420,17 @@ namespace Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("RANK_ID");
+                        .HasColumnName("RANK_ID")
+                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
+                        .HasAnnotation("SqlServer:IdentitySeed", 0L)
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("R_IMAGE");
 
                     b.Property<int>("ImgRepeat")
@@ -1256,7 +1444,7 @@ namespace Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("R_TITLE");
 
                     b.HasKey("Id");
@@ -1271,7 +1459,7 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("SUBSCRIPTION_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int")
@@ -1291,6 +1479,14 @@ namespace Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ForumId");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("PostId");
+
                     b.ToTable("FORUM_SUBSCRIPTIONS");
                 });
 
@@ -1301,16 +1497,16 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("UserId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("CreateDate");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(75)
-                        .HasColumnType("nvarchar(75)")
+                        .HasColumnType("varchar(75)")
                         .HasColumnName("Password");
 
                     b.HasKey("Id");
@@ -1324,11 +1520,11 @@ namespace Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("RoleId"));
 
                     b.Property<string>("RoleName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("RoleId");
 
@@ -1350,6 +1546,124 @@ namespace Migrations
                     b.ToTable("webpages_UsersInRoles");
                 });
 
+            modelBuilder.Entity("SnitzCore.Data.Models.Poll", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("POLL_ID");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CatId")
+                        .HasColumnType("int")
+                        .HasColumnName("CAT_ID");
+
+                    b.Property<int>("ForumId")
+                        .HasColumnType("int")
+                        .HasColumnName("FORUM_ID");
+
+                    b.Property<string>("Lastvote")
+                        .HasMaxLength(14)
+                        .HasColumnType("varchar(14)")
+                        .HasColumnName("P_LASTVOTE");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("P_QUESTION");
+
+                    b.Property<int>("TopicId")
+                        .HasColumnType("int")
+                        .HasColumnName("TOPIC_ID");
+
+                    b.Property<string>("Whovotes")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("P_WHOVOTES");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("FORUM_POLLS");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.PollAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("POLLANSWER_ID");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int")
+                        .HasColumnName("POLLANSWER_COUNT");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("POLLANSWER_LABEL");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int")
+                        .HasColumnName("POLLANSWER_ORDER");
+
+                    b.Property<int>("PollId")
+                        .HasColumnType("int")
+                        .HasColumnName("POLL_ID");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PollId");
+
+                    b.ToTable("FORUM_POLL_ANSWERS");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.PollVote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("POLLVOTES_ID");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int")
+                        .HasColumnName("CAT_ID");
+
+                    b.Property<int>("ForumId")
+                        .HasColumnType("int")
+                        .HasColumnName("FORUM_ID");
+
+                    b.Property<int>("GuestVote")
+                        .HasColumnType("int")
+                        .HasColumnName("GUEST_VOTE");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int")
+                        .HasColumnName("MEMBER_ID");
+
+                    b.Property<int>("PollId")
+                        .HasColumnType("int")
+                        .HasColumnName("POLL_ID");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int")
+                        .HasColumnName("TOPIC_ID");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PollId");
+
+                    b.ToTable("FORUM_POLL_VOTES");
+                });
+
             modelBuilder.Entity("SnitzCore.Data.Models.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -1357,14 +1671,14 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("TOPIC_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AllowRating")
+                    b.Property<int?>("AllowRating")
                         .HasColumnType("int")
                         .HasColumnName("T_ALLOW_RATING");
 
                     b.Property<bool>("Answered")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasColumnName("T_ANSWERED");
 
                     b.Property<int?>("ArchiveFlag")
@@ -1377,13 +1691,13 @@ namespace Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("T_MESSAGE");
 
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
+                        .HasColumnType("varchar(14)")
                         .HasColumnName("T_DATE");
 
                     b.Property<int>("ForumId")
@@ -1392,20 +1706,20 @@ namespace Migrations
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("T_IP");
 
                     b.Property<short>("IsSticky")
                         .HasColumnType("smallint")
                         .HasColumnName("T_STICKY");
 
-                    b.Property<short>("Ispoll")
+                    b.Property<short?>("Ispoll")
                         .HasColumnType("smallint")
                         .HasColumnName("T_ISPOLL");
 
                     b.Property<string>("LastEdit")
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
+                        .HasColumnType("varchar(14)")
                         .HasColumnName("T_LAST_EDIT");
 
                     b.Property<int?>("LastEditby")
@@ -1418,7 +1732,7 @@ namespace Migrations
 
                     b.Property<string>("LastPostDate")
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
+                        .HasColumnType("varchar(14)")
                         .HasColumnName("T_LAST_POST");
 
                     b.Property<int?>("LastPostReplyId")
@@ -1433,15 +1747,15 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("T_AUTHOR");
 
-                    b.Property<short>("Pollstatus")
+                    b.Property<short?>("Pollstatus")
                         .HasColumnType("smallint")
                         .HasColumnName("T_POLLSTATUS");
 
-                    b.Property<int>("RatingTotal")
+                    b.Property<int?>("RatingTotal")
                         .HasColumnType("int")
                         .HasColumnName("T_RATING_TOTAL");
 
-                    b.Property<int>("RatingTotalCount")
+                    b.Property<int?>("RatingTotalCount")
                         .HasColumnType("int")
                         .HasColumnName("T_RATING_TOTAL_COUNT");
 
@@ -1460,7 +1774,7 @@ namespace Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("T_SUBJECT");
 
                     b.Property<int>("UnmoderatedReplies")
@@ -1491,10 +1805,10 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("REPLY_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("Answer")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasColumnName("R_ANSWER");
 
                     b.Property<int>("CategoryId")
@@ -1503,13 +1817,13 @@ namespace Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("R_MESSAGE");
 
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
+                        .HasColumnType("varchar(14)")
                         .HasColumnName("R_DATE");
 
                     b.Property<int>("ForumId")
@@ -1518,7 +1832,7 @@ namespace Migrations
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("R_IP");
 
                     b.Property<int?>("LastEditby")
@@ -1527,7 +1841,7 @@ namespace Migrations
 
                     b.Property<string>("LastEdited")
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
+                        .HasColumnType("varchar(14)")
                         .HasColumnName("R_LAST_EDIT");
 
                     b.Property<short>("Mail")
@@ -1570,9 +1884,9 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("M_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("From")
+                    b.Property<int>("FromId")
                         .HasColumnType("int")
                         .HasColumnName("M_FROM");
 
@@ -1586,17 +1900,17 @@ namespace Migrations
 
                     b.Property<string>("Mail")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("M_MAIL");
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("M_MESSAGE");
 
                     b.Property<string>("Pmcount")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("M_PMCOUNT");
 
                     b.Property<int>("Read")
@@ -1609,13 +1923,13 @@ namespace Migrations
 
                     b.Property<string>("SentDate")
                         .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
+                        .HasColumnType("varchar(14)")
                         .HasColumnName("M_SENT");
 
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("M_SUBJECT");
 
                     b.Property<int>("To")
@@ -1623,6 +1937,8 @@ namespace Migrations
                         .HasColumnName("M_TO");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FromId");
 
                     b.ToTable("FORUM_PM");
                 });
@@ -1634,7 +1950,7 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("BL_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BlockedId")
                         .HasColumnType("int")
@@ -1643,7 +1959,7 @@ namespace Migrations
                     b.Property<string>("BlockedName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("BL_BLOCKED_NAME");
 
                     b.Property<int>("MemberId")
@@ -1662,20 +1978,23 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("C_VARIABLE");
 
                     b.Property<string>("Value")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("C_VALUE");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
 
                     b.ToTable("FORUM_CONFIG_NEW");
                 });
@@ -1687,12 +2006,12 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("SPAM_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Server")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("SPAM_SERVER");
 
                     b.HasKey("Id");
@@ -1707,7 +2026,7 @@ namespace Migrations
                         .HasColumnType("int")
                         .HasColumnName("RATING");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("RatingsBymemberId")
                         .HasColumnType("int")
@@ -1727,25 +2046,25 @@ namespace Migrations
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int>("MemberId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("MemberSince")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("ProfileImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
                     b.Property<string>("UserDescription")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.HasIndex("MemberId");
 
@@ -1803,6 +2122,41 @@ namespace Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Snitz.Events.Models.CalendarEventItem", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.Member", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("Snitz.Events.Models.ClubCalendarCategory", "Cat")
+                        .WithMany()
+                        .HasForeignKey("CatId");
+
+                    b.HasOne("Snitz.Events.Models.ClubCalendarClub", "Club")
+                        .WithMany()
+                        .HasForeignKey("ClubId");
+
+                    b.HasOne("Snitz.Events.Models.ClubCalendarLocation", "Loc")
+                        .WithMany()
+                        .HasForeignKey("LocId");
+
+                    b.HasOne("SnitzCore.Data.Models.Post", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Cat");
+
+                    b.Navigation("Club");
+
+                    b.Navigation("Loc");
+
+                    b.Navigation("Topic");
+                });
+
             modelBuilder.Entity("Snitz.PhotoAlbum.Models.AlbumImage", b =>
                 {
                     b.HasOne("Snitz.PhotoAlbum.Models.AlbumCategory", "Category")
@@ -1824,6 +2178,58 @@ namespace Migrations
                     b.Navigation("Group");
 
                     b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Forum", "Forum")
+                        .WithMany("ArchivedPosts")
+                        .HasForeignKey("ForumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Member", "LastPostAuthor")
+                        .WithMany()
+                        .HasForeignKey("LastPostAuthorId");
+
+                    b.HasOne("SnitzCore.Data.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Forum");
+
+                    b.Navigation("LastPostAuthor");
+
+                    b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedReply", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.ArchivedPost", "Topic")
+                        .WithMany("ArchivedReplies")
+                        .HasForeignKey("ArchivedPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Topic");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.BookmarkEntry", b =>
@@ -1853,7 +2259,19 @@ namespace Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SnitzCore.Data.Models.Member", "LastPostAuthor")
+                        .WithMany()
+                        .HasForeignKey("LastPostAuthorId");
+
+                    b.HasOne("SnitzCore.Data.Models.Post", "LatestTopic")
+                        .WithMany()
+                        .HasForeignKey("LatestTopicId");
+
                     b.Navigation("Category");
+
+                    b.Navigation("LastPostAuthor");
+
+                    b.Navigation("LatestTopic");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ForumAllowedMember", b =>
@@ -1864,7 +2282,15 @@ namespace Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SnitzCore.Data.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Forum");
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ForumModerator", b =>
@@ -1893,12 +2319,47 @@ namespace Migrations
                         .IsRequired();
 
                     b.HasOne("SnitzCore.Data.Models.GroupName", "GroupName")
-                        .WithMany()
+                        .WithMany("Groups")
                         .HasForeignKey("GroupNameId");
 
                     b.Navigation("Category");
 
                     b.Navigation("GroupName");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.MemberSubscription", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Forum", "Forum")
+                        .WithMany()
+                        .HasForeignKey("ForumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Member", "Member")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SnitzCore.Data.Models.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Forum");
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.OldUserInRole", b =>
@@ -1918,6 +2379,39 @@ namespace Migrations
                     b.Navigation("Role");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.Poll", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.Post", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.PollAnswer", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.Poll", "Poll")
+                        .WithMany("PollAnswers")
+                        .HasForeignKey("PollId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Poll");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.PollVote", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.Poll", "Poll")
+                        .WithMany("PollVotes")
+                        .HasForeignKey("PollId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Poll");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Post", b =>
@@ -1972,6 +2466,17 @@ namespace Migrations
                     b.Navigation("Topic");
                 });
 
+            modelBuilder.Entity("SnitzCore.Data.Models.PrivateMessage", b =>
+                {
+                    b.HasOne("SnitzCore.Data.Models.Member", "From")
+                        .WithMany()
+                        .HasForeignKey("FromId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("From");
+                });
+
             modelBuilder.Entity("SnitzCore.Data.Models.ForumUser", b =>
                 {
                     b.HasOne("SnitzCore.Data.Models.Member", "Member")
@@ -1983,6 +2488,11 @@ namespace Migrations
                     b.Navigation("Member");
                 });
 
+            modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
+                {
+                    b.Navigation("ArchivedReplies");
+                });
+
             modelBuilder.Entity("SnitzCore.Data.Models.Category", b =>
                 {
                     b.Navigation("Forums");
@@ -1990,9 +2500,28 @@ namespace Migrations
 
             modelBuilder.Entity("SnitzCore.Data.Models.Forum", b =>
                 {
+                    b.Navigation("ArchivedPosts");
+
                     b.Navigation("ForumModerators");
 
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.GroupName", b =>
+                {
+                    b.Navigation("Groups");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.Member", b =>
+                {
+                    b.Navigation("Subscriptions");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.Poll", b =>
+                {
+                    b.Navigation("PollAnswers");
+
+                    b.Navigation("PollVotes");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Post", b =>
