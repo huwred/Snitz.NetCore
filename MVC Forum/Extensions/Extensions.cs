@@ -24,7 +24,7 @@ namespace MVCForum.Extensions
             var results = serviceCollection.RegisterAssemblyPublicNonGenericClasses(assemblies)
                 .Where(c => c.Name.EndsWith("Service"))
                 .AsPublicImplementedInterfaces();
-            //.Replace("|DataDirectory|",datapath)
+
             serviceCollection.AddEventsServices(configuration,datapath);
             serviceCollection.AddAlbumServices(configuration,datapath);
             serviceCollection.AddPostThanksServices(configuration,datapath);
@@ -45,6 +45,11 @@ namespace MVCForum.Extensions
                             options => options.UseSqlite(connectionString?.Replace("|DataDirectory|",datapath),o => {o.MigrationsAssembly("Snitz.PhotoAlbum");}),ServiceLifetime.Transient
                         );
                     break;
+                case "mysql" :
+                        serviceCollection.AddDbContext<PhotoContext>(
+                            options => options.UseMySql(connectionString,ServerVersion.AutoDetect(connectionString),o => {o.MigrationsAssembly("Snitz.PhotoAlbum");}),ServiceLifetime.Transient
+                        );
+                    break;
             }
         }
         public static void AddEventsServices(this IServiceCollection serviceCollection,ConfigurationManager configuration, string datapath)
@@ -61,6 +66,11 @@ namespace MVCForum.Extensions
                     case "sqlite":
                         serviceCollection.AddDbContext<EventContext>(
                             options => options.UseSqlite(connectionString?.Replace("|DataDirectory|",datapath),o => {o.MigrationsAssembly("Snitz.Events");}),ServiceLifetime.Transient
+                        );
+                    break;
+                case "mysql" :
+                        serviceCollection.AddDbContext<EventContext>(
+                            options => options.UseMySql(connectionString,ServerVersion.AutoDetect(connectionString),o => {o.MigrationsAssembly("Snitz.Events");}),ServiceLifetime.Transient
                         );
                     break;
             }
@@ -82,23 +92,16 @@ namespace MVCForum.Extensions
                             options => options.UseSqlite(connectionString?.Replace("|DataDirectory|", datapath),o => {o.MigrationsAssembly("Snitz.PostThanks");}),ServiceLifetime.Transient
                         );
                     break;
+                case "mysql" :
+                        serviceCollection.AddDbContext<PostThanksContext>(
+                            options => options.UseMySql(connectionString,ServerVersion.AutoDetect(connectionString),o => {o.MigrationsAssembly("Snitz.PostThanks");}),ServiceLifetime.Transient
+                        );
+                    break;
             }
-
-            //using (var scope = serviceCollection.BuildServiceProvider().CreateScope())
-            //{
-            //    using (var dbContext = scope.ServiceProvider.GetRequiredService<PostThanksContext>())
-            //    {
-            //        if (dbContext.Database.GetPendingMigrations().Any())
-            //        {
-            //            dbContext.Database.Migrate();
-            //        }
-            //    }
-            //}
         }
 
         public static WebApplication AddImageAlbum(this WebApplication webApp)
         {
-            //webApp.Configuration.GetSection("").GetChildren("");
             using var scope = webApp.Services.CreateScope();
             using var appContext = scope.ServiceProvider.GetRequiredService<PhotoContext>();
             try
@@ -118,7 +121,6 @@ namespace MVCForum.Extensions
         }
         public static WebApplication AddEvents(this WebApplication webApp)
         {
-            //webApp.Configuration.GetSection("").GetChildren("");
             using var scope = webApp.Services.CreateScope();
             using var appContext = scope.ServiceProvider.GetRequiredService<EventContext>();
             try
@@ -138,7 +140,6 @@ namespace MVCForum.Extensions
         }
         public static WebApplication AddPostThanks(this WebApplication webApp)
         {
-            //webApp.Configuration.GetSection("").GetChildren("");
             using var scope = webApp.Services.CreateScope();
             using var appContext = scope.ServiceProvider.GetRequiredService<PostThanksContext>();
             try

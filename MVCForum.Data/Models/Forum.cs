@@ -66,7 +66,7 @@ public class Forum
     public int? LatestReplyId { get; set; }
 
     [Column("F_A_TOPICS")]
-    public int ArchivedTopics { get; set; }
+    public int? ArchivedTopics { get; set; } = 0;
 
     [Column("F_A_COUNT")]
     public int? ArchivedCount { get; set; }
@@ -99,16 +99,16 @@ public class Forum
     public int DeleteSched { get; set; }
 
     [Column("F_POLLS")]
-    public int Polls { get; set; }
+    public int? Polls { get; set; } = 0;
 
     [Column("F_RATING")]
-    public short Rating { get; set; }
+    public short? Rating { get; set; } = 0;
 
     [Column("F_POSTAUTH")]
-    public int Postauth { get; set; }
+    public int? Postauth { get; set; } = 0;
 
     [Column("F_REPLYAUTH")]
-    public int Replyauth { get; set; }
+    public int? Replyauth { get; set; } = 0;
 
     public virtual IEnumerable<Post>? Posts { get; set; }
     public virtual Category? Category { get; set; }

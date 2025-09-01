@@ -1084,8 +1084,8 @@ namespace SnitzCore.Service
             decimal rating = 0;
             if (ratings.RatingTotal > 0)
             {
-                decimal ratingSum = Decimal.Divide(ratings.RatingTotal,10);
-                var ratingCount = ratings.RatingTotalCount;
+                decimal ratingSum = Decimal.Divide((decimal)ratings.RatingTotal, 10);
+                var ratingCount = (decimal)ratings.RatingTotalCount;
                 rating = (ratingSum / ratingCount);
             }
             return decimal.Parse(rating.ToString());

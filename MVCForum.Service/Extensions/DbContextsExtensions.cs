@@ -50,6 +50,9 @@ namespace SnitzCore.Service.Extensions
                 case "Microsoft.EntityFrameworkCore.Sqlite" :
                     command.CommandText = $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';";
                     break;
+                case "Pomelo.EntityFrameworkCore.MySql":
+                    command.CommandText = $"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = '{tableName}';";
+                    break;
                 default:
                     command.CommandText = $"SELECT COUNT(*) FROM sys.tables WHERE name = '{tableName}'";
                     break;

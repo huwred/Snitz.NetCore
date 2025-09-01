@@ -109,10 +109,21 @@ namespace SnitzCore.Service
             return curruser != null ? _userManager.GetRolesAsync(curruser).Result : new List<string>();
         }
 
-        [Obsolete("Obsolete")]
+        //[Obsolete("Obsolete")]
         public bool ValidateMember(Member member, string password)
         {
             OldMembership? result = _dbContext.OldMemberships.OrderBy(m=>m.Id).FirstOrDefault(m => m.Id == member.Id);
+            if(result == null)
+            {
+                //no old .net membership so must be using Member.Password
+                var memberid = member.Id;
+                var oldpass = _dbContext.Database.SqlQuery<string>($"SELECT M_PASSWORD FROM FORUM_MEMBERS WHERE MEMBER_ID = {memberid}");
+                var strencoded = SHA256Hash(password);
+                if (oldpass != null && oldpass.Count() > 0)
+                {
+                    return strencoded == oldpass.First();
+                }
+            }
             return result != null && CustomPasswordHasher.VerifyHashedPassword(result.Password,password);
         }
 
@@ -141,7 +152,6 @@ namespace SnitzCore.Service
                 await _dbContext.SaveChangesAsync();
             }
         }
-
 
         public Member Create(Member member)
         {

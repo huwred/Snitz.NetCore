@@ -12,4 +12,10 @@
         public string? Password { get; set; }
         public string? SecureSocketOptions { get; set; }
     }
+    public class LanguageConfiguration 
+    {
+        public const string SectionName = "Languages";
+        public string[]? SupportLanguages { get; set; }
+
+    }
 }

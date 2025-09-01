@@ -12,6 +12,8 @@
         public string? strUniqueId { get; set; }
         public string? LanguageConnectionString { get; set;}
         public string? strVersion { get; set;}
+
+        public string[]? SupportedLanguages { get; set; }
     }
 
 }

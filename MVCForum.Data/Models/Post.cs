@@ -83,19 +83,19 @@ public partial class Post
     public short Sig { get; set; }
 
     [Column("T_ISPOLL")]
-    public short Ispoll { get; set; }
+    public short? Ispoll { get; set; } = 0;
 
     [Column("T_POLLSTATUS")]
-    public short Pollstatus { get; set; }
+    public short? Pollstatus { get; set; } = 0;
 
     [Column("T_RATING_TOTAL_COUNT")]
-    public int RatingTotalCount { get; set; }
+    public int? RatingTotalCount { get; set; } = 0;
 
     [Column("T_RATING_TOTAL")]
-    public int RatingTotal { get; set; }
+    public int? RatingTotal { get; set; } = 0;
 
     [Column("T_ALLOW_RATING")]
-    public int AllowRating { get; set; }
+    public int? AllowRating { get; set; } = 0;
     [Column("T_ANSWERED")]
     public bool Answered { get; set; }
     public virtual Member? Member { get; set; }
@@ -109,10 +109,10 @@ public partial class Post
         {
             //var ratings = repo.First<Topic>("WHERE TOPIC_ID=@0", this.Id);
             decimal rating = 0;
-            if (this.RatingTotal > 0)
+            if (this.RatingTotal != null && this.RatingTotal > 0)
             {
-                decimal ratingSum = Decimal.Divide(this.RatingTotal,10);
-                var ratingCount = this.RatingTotalCount;
+                decimal ratingSum = Decimal.Divide((decimal)this.RatingTotal!, 10);
+                var ratingCount = (decimal)this.RatingTotalCount;
                 rating = (ratingSum / ratingCount);
             }
             return decimal.Parse(rating.ToString());

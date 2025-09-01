@@ -1,12 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Configuration;
 
 namespace MVCForum.Extensions
 {
     public static class DbContextOptionsBuilderExtensions
     {
         const string Mssql = "mssql";
+        const string Mysql = "mysql";
         const string Sqlite = "sqlite";
         const string Npgsql = "npgsql";
 
@@ -27,7 +29,10 @@ namespace MVCForum.Extensions
                 {
                     opt.MigrationsAssembly("SqliteMigrations");
                 }),
-
+                Mysql => builder.UseMySql(connectionstring,ServerVersion.AutoDetect(connectionstring), opt => 
+                {
+                    opt.MigrationsAssembly("MySqlMigrations");
+                }),
                 //Npgsql => builder.UseNpgsql(connectionstring, opt => 
                 //{
                 //    opt.MigrationsAssembly("NpgsqlMigrations");

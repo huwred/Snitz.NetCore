@@ -13,13 +13,13 @@ public partial class ForumTotal
     public int PostCount { get; set; }
 
     [Column("P_A_COUNT")]
-    public int ArchivedPostCount { get; set; }
+    public int? ArchivedPostCount { get; set; } = 0;
 
     [Column("T_COUNT")]
     public int TopicCount { get; set; }
 
     [Column("T_A_COUNT")]
-    public int ArchivedTopicCount { get; set; }
+    public int? ArchivedTopicCount { get; set; } = 0;
 
     [Column("U_COUNT")]
     public int UserCount { get; set; }

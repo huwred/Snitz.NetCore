@@ -2,6 +2,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
+using MySqlConnector;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -37,6 +38,20 @@ namespace SnitzCore.Data.Extensions
                 var count = cmd.ExecuteScalar();
                 conn.Close();
                 return count != null ? (int)count > 0 : false;
+            }else if (migrationBuilder.IsMySql())
+            {
+                MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder(connstring);
+
+                string databaseName = builder.Database; 
+
+                using var conn = new MySqlConnection();
+                conn.ConnectionString = connstring;
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = $"SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '{databaseName}' AND TABLE_NAME = '{table}'";
+                var count = cmd.ExecuteScalar();
+                conn.Close();
+                return count != null ? (long)count > 0 : false;
             }
             return false;
         }
@@ -77,6 +92,19 @@ namespace SnitzCore.Data.Extensions
                 conn.Close();
                 return count > 0;
             }
+            else if (migrationBuilder.IsMySql())
+            {
+                using var conn = new MySqlConnection();
+                conn.ConnectionString = connstring;
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();;
+                cmd.CommandText = $"SELECT COUNT(*) as col_coun FROM information_schema.COLUMNS WHERE  TABLE_SCHEMA = DATABASE() AND  TABLE_NAME = '{tableName}' AND  COLUMN_NAME = '{column}';";
+
+                var count = (long)cmd.ExecuteScalar();
+                conn.Close();
+                return count > 0;
+            }
             return false;
         }
         public static bool IndexExists(this MigrationBuilder migrationBuilder, string query)
@@ -104,9 +132,23 @@ namespace SnitzCore.Data.Extensions
 
                 using var cmd = conn.CreateCommand();
                 cmd.CommandText = query;
-                int count = (int)cmd.ExecuteScalar();
+                var res = cmd.ExecuteScalar();
+                int count = res != null ? (int)res : 0;
                 conn.Close();
                 return count > 0;
+            }
+            else if (migrationBuilder.IsMySql())
+            {
+                using var conn = new MySqlConnection();
+                conn.ConnectionString = connstring;
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = query;
+                var res = cmd.ExecuteScalar();
+                var count = res != null ? res : 0;
+                conn.Close();
+                return (long)count > 0;
             }
             return false;
         }

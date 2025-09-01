@@ -242,19 +242,19 @@ public partial class Member
 
     [Column("M_PMEMAIL")]
     [ProfileDisplay("ProfilePMNotify", Order = 25, FieldType = "checkbox")]
-    public int Pmemail { get; set; }
+    public int? Pmemail { get; set; } = 0;
 
     [Column("M_PMRECEIVE")]
     [ProfileDisplay("ProfilePMReceive", Order = 26, FieldType = "checkbox")]
-    public int Pmreceive { get; set; }
+    public int? Pmreceive { get; set; } = 0;
 
     [Column("M_PMSAVESENT")]
     [ProfileDisplay("ProfilePMSentItems", Order = 27, FieldType = "checkbox")]
-    public short Pmsavesent { get; set; }
+    public short? Pmsavesent { get; set; } = 0;
 
     [Column("M_PRIVATEPROFILE")]
     [ProfileDisplay("ProfilePrivate", Order = 28, FieldType = "checkbox")]
-    public short Privateprofile { get; set; }
+    public short? Privateprofile { get; set; } = 0;
 
     [Column("M_LASTACTIVITY")]
     [StringLength(20)]
