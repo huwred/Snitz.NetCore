@@ -62,7 +62,9 @@ namespace MVCForum.Controllers
 
             var categories = _categoryService.GetAll().OrderBy(c=>c.Sort).ToList();
 
-            var forums = _forumService.GetAll().Select(forum => new ForumListingModel()
+            var test = _forumService.GetAll().ToList();
+
+            var forums = test.Select(forum => new ForumListingModel()
             {
                 Id = forum.Id,
                 Title = forum.Title,
@@ -85,8 +87,8 @@ namespace MVCForum.Controllers
                 CategorySubscription = forum.Category?.Subscription != null ? (CategorySubscription)forum.Category.Subscription : null,
                 ForumSubscription = (ForumSubscription)forum.Subscription,
                 ArchivedCount = forum.ArchivedTopics,
-                 PostAuth = (PostAuthType)forum.Postauth,
-                ReplyAuth = (PostAuthType)forum.Replyauth,               
+                PostAuth = forum.Postauth != null ? (PostAuthType)forum.Postauth : PostAuthType.Anyone,
+                ReplyAuth = forum.Replyauth != null ? (PostAuthType)forum.Replyauth : PostAuthType.Anyone,               
             });            
             
             if(groupId > 1)
@@ -155,7 +157,7 @@ namespace MVCForum.Controllers
             var topicPage = new MvcBreadcrumbNode("", "Category", _languageResource.GetString("tipNewCategory")) { Parent = forumPage};
 
             ViewData["BreadcrumbNode"] = topicPage;
-            return View("CreateEdit",new CategoryViewModel());
+            return View("CreateEdit",new CategoryViewModel(){Status = Status.Closed});
         }
         [HttpPost]
         [Authorize(Roles = "Administrator")]
@@ -249,7 +251,7 @@ namespace MVCForum.Controllers
                 CategoryId = forum.CategoryId,
                 Status = forum.Status,
                 ForumModeration = forum.Moderation,
-                Polls = forum.Polls,
+                Polls = forum.Polls ?? 0,
                 ArchivedCount = forum.ArchivedTopics,
                 PostAuth = (PostAuthType)forum.Postauth,
                 ReplyAuth = (PostAuthType)forum.Replyauth,

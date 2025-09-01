@@ -1064,3 +1064,7 @@ i.modstatus-2, i.modstatus-3 {
 .public-holiday .fc-list-event-graphic  {
     display:none;
 }
+.form-switch .form-check-input {
+    margin-right:1rem;
+}
+

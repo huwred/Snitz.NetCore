@@ -26,8 +26,8 @@ namespace MVCForum.ViewModels.Post
         public bool Answered { get; set; }
         public bool HasPoll { get; set; }
 
-        public int ForumAllowRating {get;set;}
-        public int AllowRating {get;set;}
+        public int? ForumAllowRating {get;set;} = 0;
+        public int? AllowRating {get;set;} = 0;
 
         public decimal Rating {get;set;}
     }

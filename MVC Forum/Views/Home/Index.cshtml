@@ -7,7 +7,7 @@
     <meta name="title" content="@Config.Value.strForumTitle" />
     <meta name="description" content="@Config.Value.strForumDescription" />
     <meta name="robots" content="index,follow" />
-    @if (SnitzConfig.GetIntValue("INTFORUMRSS") == 1)
+    @if (SnitzConfig.GetIntValue("INTFORUMRSS") == 1 && SnitzConfig.GetIntValue("INTFIRSTINSTALL", 1) == 0)
     {
         <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/active">
     }
@@ -16,6 +16,7 @@
     <div class="row">
         <div class="col mt-3" >
             <partial snitz-if="@(SnitzConfig.GetIntValue("INTFIRSTINSTALL", 1) == 1)" name="Startup" />
+            <partial snitz-if="@(SnitzConfig.GetIntValue("INTFIRSTINSTALL", 1) == 2)" name="Upgrade" />
             <partial snitz-if="@(SnitzConfig.GetIntValue("INTFIRSTINSTALL", 1) == 0)" name="HomeContent" />
         </div>
         @await Component.InvokeAsync("Widgets", new { template = "sidebar", width="col-4 mt-3", widgets = new[] { "search", "latest", "image", "poll" } })

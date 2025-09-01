@@ -509,10 +509,12 @@ namespace MVCForum.Controllers
             {
                 //not a member so redirect to the register page
                 _logger.Info("Not a member so redirect to the register page");
+
                 return RedirectToActionPermanent("Register");
             }
 
             _logger.Info("Member found, migrate account");
+            ModelState.Clear();
             return await MigrateMember(login,member, returnUrl);
             
         }
@@ -581,6 +583,7 @@ namespace MVCForum.Controllers
         public IActionResult MigratePassword(string token, string email)
         {
             var model = new ResetPasswordModel { Token = token, Username = email! };
+            ModelState.Clear();
             return View(model);
         }       
         [HttpPost]
@@ -1126,21 +1129,37 @@ namespace MVCForum.Controllers
                         .Include(u => u.Role).AsNoTracking()
                         .Include(u => u.User).AsNoTracking()
                         .Where(r => r.UserId == member.Id).ToList();
-                    foreach (var userInRole in currroles)
+                    if(currroles == null || currroles.Count < 1)
                     {
-                        var exists = _roleManager.Roles.AsNoTracking().OrderBy(r => r.Name).FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
-                        if (exists == null)
+                        if(member.Level == 3)
                         {
-                            await _roleManager.CreateAsync(new IdentityRole(userInRole.Role.RoleName));
+                            await _userManager.AddToRoleAsync(existingUser, "Administrator");
                         }
-                        await _userManager.AddToRoleAsync(existingUser, userInRole.Role.RoleName);
+                        if(member.Level == 2)
+                        {
+                            await _userManager.AddToRoleAsync(existingUser, "Moderator");
+                        }
                     }
+                    else
+                    {
+                        foreach (var userInRole in currroles)
+                        {
+                            var exists = _roleManager.Roles.AsNoTracking().OrderBy(r => r.Name).FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
+                            if (exists == null)
+                            {
+                                await _roleManager.CreateAsync(new IdentityRole(userInRole.Role.RoleName));
+                            }
+                            await _userManager.AddToRoleAsync(existingUser, userInRole.Role.RoleName);
+                        }
+                    }
+
                     if (!validpwd)
                     {
                         var token = _userManager.GeneratePasswordResetTokenAsync(existingUser).Result;
                         TempData["token"] = token;
                         TempData["username"] = existingUser.UserName;
-                        return RedirectToAction("MigratePassword",new {token,existingUser.UserName});
+                        var email = existingUser.UserName;
+                        return RedirectToAction("MigratePassword",new {token,email});
                     }
                     await _signInManager.SignInAsync(existingUser, login.RememberMe);
                     //_logger.Warn("ReturnUrl2:" + returnUrl);

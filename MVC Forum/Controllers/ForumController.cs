@@ -741,7 +741,7 @@ namespace MVCForum.Controllers
                 ForumId = id,
                 NewPassword = forum.Password,
                 AllowedMembers = _forumService.AllowedUsers(id),
-                AllowTopicRating = forum.Rating,
+                AllowTopicRating = forum.Rating ?? 0,
                 PostAuth = (PostAuthType)forum.Postauth,
                 ReplyAuth = (PostAuthType)forum.Replyauth
             };
@@ -1085,12 +1085,12 @@ namespace MVCForum.Controllers
                 Posts = forum.ReplyCount,
                 ForumModeration = forum.Moderation,
                 ForumSubscription = (ForumSubscription)forum.Subscription,
-                Polls = forum.Polls,
+                Polls = forum.Polls ?? 0,
                 ArchivedCount = forum.ArchivedTopics,
                 AllowTopicRating = forum.Rating == 1,
                 //ImageUrl = forum.ImageUrl
-                PostAuth = (PostAuthType)forum.Postauth,
-                ReplyAuth = (PostAuthType)forum.Replyauth,
+                PostAuth = forum.Postauth != null ? (PostAuthType)forum.Postauth : PostAuthType.Anyone,
+                ReplyAuth = forum.Replyauth != null ? (PostAuthType)forum.Replyauth : PostAuthType.Anyone,
             };
         }
         private ForumListingModel BuildForumListing(int? defaultdays, string orderby, string sortdir)
@@ -1117,7 +1117,7 @@ namespace MVCForum.Controllers
                 CategoryId = forum.CategoryId,
                 Status = forum.Status,
                 ForumModeration = forum.Moderation,
-                Polls = forum.Polls,
+                Polls = forum.Polls ?? 0,
                 ArchivedCount = forum.ArchivedTopics,
                 AllowTopicRating = forum.Rating == 1,
                 //ImageUrl = forum.ImageUrl

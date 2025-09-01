@@ -359,11 +359,12 @@ namespace MVCForum.Controllers
                 }
             }
             var forum = _forumService.GetWithPosts(id);
-            if(forum.Postauth != (int)PostAuthType.Anyone)
+            var forumAuth = forum.Postauth ?? 0;
+            if(forumAuth != (int)PostAuthType.Anyone)
             {
                 var moderator = User.IsInRole("Forum_" + id);
                 var admin = User.IsInRole("Administrator");
-                ViewBag.Error = _languageResource.GetString($"lblPostAuthType_{(PostAuthType)forum.Postauth} in this Forum");
+                ViewBag.Error = _languageResource.GetString($"lblPostAuthType_{(PostAuthType)forumAuth} in this Forum");
 
                 if (!(admin || moderator))
                 {

@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Email from [FORUM] [SUBJECT] [DATE]</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        .card {
+            margin: 0 auto; /* Added */
+            float: none; /* Added */
+            margin-bottom: 10px; /* Added */
+        }
+    </style>
+</head>
+<body>
+    <div class="card mt-2" style="width: 600px; border-top-left-radius: 5%; border-top-right-radius: 5% ">
+        <div class="row no-gutters pb-4">
+            <div class="col-auto">
+                <img src="[SERVER]/Templates/images/Weak_Password.gif" class="img-fluid" alt="">
+            </div>
+            <div class="col">
+                <div class="card-block px-2">
+                    <h4 class="card-title">New Membership</h4>
+                    <p class="card-text">
+                        Dear [USER],<br />
+                        <br />
+                        An Administrator at [FORUM] has created you an account, you can login using the link below.
+                        [URL].
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer w-100 text-muted" style="border-bottom-left-radius: 5%; border-bottom-right-radius: 5% ">
+            <p>
+                <b>Please keep your credentials confidential for future use. </b>
+            </p>
+            <p>
+                <b>Email :</b> [EMAIL]
+                <br />
+                <b>Username :</b> [USER]
+                <br />
+                <b>Password :</b> [EXTRATEXT]
+            </p>
+            <p>
+                <b>Update your password now.</b>
+            </p>
+            <p>
+                Weak passwords get stolen and lead to hacked accounts. Celebrate World Password Day with a new, strong password.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

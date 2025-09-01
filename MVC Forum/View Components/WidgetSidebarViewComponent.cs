@@ -53,6 +53,7 @@ namespace MVCForum.View_Components
                     IsSticky = post.IsSticky == 1,
                     Status = post.Status,
                     Answered = post.Answered,
+                    AllowRating = post.AllowRating != null ? post.AllowRating : 0
                 });
             }
             return await Task.FromResult((IViewComponentResult)View(template,vm));

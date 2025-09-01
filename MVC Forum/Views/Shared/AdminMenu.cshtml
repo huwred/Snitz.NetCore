@@ -16,6 +16,7 @@
         <li snitz-if="@User.IsInRole("SuperAdmin")"><a class="dropdown-item" asp-controller="Admin" asp-action="ListViews">Page Templates</a></li>
         <li><a class="dropdown-item" asp-controller="LogView" asp-action="Index">Logs</a></li>
         <li><hr class="dropdown-divider" /></li>
+        @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
         <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">@Localizer["tipNewCategory"]</a></li>
         <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">@Localizer["tipNewForum"]</a></li>
         @if (User.IsInRole("SuperAdmin"))

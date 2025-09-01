@@ -737,3 +737,29 @@ li.my-fc-row {
 .fc{
     background-color:white;
 }
+
+.new-pm, .new-pm + .fa-stack-1x {
+    color: gold;
+    -webkit-animation: fadeinout 4s infinite;
+    animation: fadeinout 4s infinite;
+}
+
+@-webkit-keyframes fadeinout {
+    0%,100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeinout {
+    0%,100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}

@@ -125,16 +125,15 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IHtmlLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IPasswordPolicyService, PasswordPolicyService>();
 
-#region localization
-
-builder.Services.ConfigureOptions<SnitzRequestLocalizationOptions>();
 builder.Services.AddMvc().AddViewLocalization();
 
-#endregion
-var mvcBuilder = builder.Services.AddControllersWithViews();
 if (builder.Environment.IsDevelopment())
 {
-    mvcBuilder.AddRazorRuntimeCompilation();
+    builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+}
+else
+{
+    builder.Services.AddControllersWithViews();
 }
 builder.Services.AddResponseCaching();
 builder.Services.AddBreadcrumbs(Assembly.GetExecutingAssembly(), options =>
@@ -156,10 +155,8 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
-EmailConfiguration emailConfig = builder.Configuration
-    .GetSection("MailSettings")
-    .Get<EmailConfiguration>()!;
-builder.Services.AddSingleton(emailConfig);
+
+builder.Services.AddSingleton(builder.Configuration.GetSection("MailSettings").Get<EmailConfiguration>()!);
 builder.Services.Configure<SnitzForums>(builder.Configuration.GetSection(SnitzForums.SectionName));
 builder.Services.AddHttpClient();
 builder.Logging.ClearProviders();
@@ -209,27 +206,28 @@ builder.Services.AddHsts(options =>
     options.MaxAge = TimeSpan.FromDays(160);
 
 });
-    builder.Services.Configure<KestrelServerOptions>(options =>
-    {
-        options.AllowSynchronousIO = true;
-    });
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.AllowSynchronousIO = true;
+});
 
-    // If using IIS:
-    builder.Services.Configure<IISServerOptions>(options =>
-    {
-        options.AllowSynchronousIO = true;
-    });
+// If using IIS:
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.AllowSynchronousIO = true;
+});
+
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton(builder.Environment.ContentRootFileProvider);
 
 var app = builder.Build();
-
 app.MigrateDatabase();
 app.AddPostThanks();
 app.AddEvents();
 app.AddImageAlbum();
+app.UseMultiLanguages(builder.Configuration.GetSection(SnitzForums.SectionName),app.Services.GetRequiredService <IOptions<RequestLocalizationOptions>>().Value);
 
 
 if (app.Environment.IsDevelopment())
@@ -243,7 +241,6 @@ else
 //Pi doesn't like this, could be newt!
 app.UseHttpsRedirection();
 
-app.UseRequestLocalization(app.Services.GetRequiredService < IOptions < RequestLocalizationOptions >> ().Value);
 app.UseImageSharp();
 
 app.UseStaticFiles();

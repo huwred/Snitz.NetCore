@@ -36,8 +36,8 @@
                     <label asp-for="Status" class="form-label col-12">&nbsp;</label>
                     <div class="col-10 col-lg-4">
                         <div class="form-check form-switch mb-3">
-                            <input type="checkbox" role="switch" name="Status" id="Status" value="1" class="form-check-input" checked="" style="transform: scale(1.4);">
-                            <input type="checkbox" name="Status" value="0" checked="" style="display:none">
+                            <input type="checkbox" role="switch" name="Status" id="Status" value="1" class="form-check-input" checked="@(Model.Status == Status.Open)" style="transform: scale(1.4);">
+                            <input type="checkbox" name="Status" value="0" checked="@(Model.Status != Status.Open)" style="display:none">
                             <label class="form-check-label" asp-for="Status"> <span snitz-if="@(Model.Status == Status.Open)">@Localizer["Active"]</span><span snitz-if="@(Model.Status != Status.Open)">@Localizer["Locked"]</span></label>
                         </div>
                     </div>
@@ -60,6 +60,14 @@
 {
     <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
     <script type="text/javascript">
+        $(document).on("change","#Status",function(){
+          if (this.checked) {
+
+            $(this).nextAll('.form-check-label:first').text(' Active');
+          } else {
+            $(this).nextAll('.form-check-label:first').text(' Locked');
+          }
+        });
         $(document).on('click','.confirm-delete', function(e) {
             e.preventDefault();
             var id = $(this).data('id');
