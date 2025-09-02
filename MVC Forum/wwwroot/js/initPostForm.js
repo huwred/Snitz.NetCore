@@ -58,6 +58,15 @@ tinymce.init({
     content_css_cors: true,
     content_style: `body { font-family:Helvetica,Arial,sans-serif; font-size:14px; padding:1rem;} 
     .mce-content-body img {max-width: 99% !important;height: auto;} `,
+    codesample_languages: [
+        { text: 'C#', value: 'csharp' },
+        { text: 'Bash', value: 'bash' },
+        { text: 'CSS', value: 'css' },
+        { text: 'HTML/XML', value: 'markup' },
+        { text: 'JavaScript', value: 'javascript' },
+        { text: 'SQL', value: 'sql' },
+        { text: 'TypeScript', value: 'typescript' }
+    ],
     setup: function(editor) {
         if (SnitzVars.attach) {
             editor.ui.registry.addButton('snitzAttach',
