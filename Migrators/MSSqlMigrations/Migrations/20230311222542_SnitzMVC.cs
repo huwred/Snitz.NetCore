@@ -284,6 +284,7 @@ namespace Migrations
                     {
                         table.PrimaryKey("PK_FORUM_NAMEFILTER", x => x.N_ID);
                     });
+
                 migrationBuilder.CreateTable(
                     name: $"{_forumTablePrefix}ORG_GROUP",
                     columns: table => new
@@ -606,85 +607,85 @@ namespace Migrations
             }
             else
             {
-            migrationBuilder.AddColumn<short>(
-                name: "T_ISPOLL",
-                table: $"{_forumTablePrefix}TOPICS",
-                type: "int",
-                nullable: true);
-            migrationBuilder.AddColumn<short>(
-                name: "T_POLLSTATUS",
-                table: $"{_forumTablePrefix}TOPICS",
-                type: "int",
-                nullable: true);
-            migrationBuilder.AddColumn<int>(
-                name: "T_RATING_TOTAL_COUNT",
-                table: $"{_forumTablePrefix}TOPICS",
-                type: "int",
-                nullable: true);
-            migrationBuilder.AddColumn<int>(
-                name: "T_RATING_TOTAL",
-                table: $"{_forumTablePrefix}TOPICS",
-                type: "int",
-                nullable: true);
-            migrationBuilder.AddColumn<int>(
-                name: "T_ALLOW_RATING",
-                table: $"{_forumTablePrefix}TOPICS",
-                type: "int",
-                nullable: true);
+                migrationBuilder.AddColumn<short>(
+                    name: "T_ISPOLL",
+                    table: $"{_forumTablePrefix}TOPICS",
+                    type: "int",
+                    nullable: true);
+                migrationBuilder.AddColumn<short>(
+                    name: "T_POLLSTATUS",
+                    table: $"{_forumTablePrefix}TOPICS",
+                    type: "int",
+                    nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "T_RATING_TOTAL_COUNT",
+                    table: $"{_forumTablePrefix}TOPICS",
+                    type: "int",
+                    nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "T_RATING_TOTAL",
+                    table: $"{_forumTablePrefix}TOPICS",
+                    type: "int",
+                    nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "T_ALLOW_RATING",
+                    table: $"{_forumTablePrefix}TOPICS",
+                    type: "int",
+                    nullable: true);
 
-            migrationBuilder.AddColumn<int>(
-                name: "F_POLLS",
-                table: $"{_forumTablePrefix}FORUM",
-                type: "int",
-                nullable: true);
-            migrationBuilder.AddColumn<int>(
-                name: "F_RATING",
-                table: $"{_forumTablePrefix}FORUM",
-                type: "smallint",
-                nullable: true);
-            migrationBuilder.AddColumn<int>(
-                name: "F_POSTAUTH",
-                table: $"{_forumTablePrefix}FORUM",
-                type: "int",
-                defaultValue: 0,
-                nullable: true);
-            migrationBuilder.AddColumn<int>(
-                name: "F_REPLYAUTH",
-                table: $"{_forumTablePrefix}FORUM",
-                type: "int",
-                nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "F_POLLS",
+                    table: $"{_forumTablePrefix}FORUM",
+                    type: "int",
+                    nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "F_RATING",
+                    table: $"{_forumTablePrefix}FORUM",
+                    type: "smallint",
+                    nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "F_POSTAUTH",
+                    table: $"{_forumTablePrefix}FORUM",
+                    type: "int",
+                    defaultValue: 0,
+                    nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "F_REPLYAUTH",
+                    table: $"{_forumTablePrefix}FORUM",
+                    type: "int",
+                    nullable: true);
 
-            migrationBuilder.AddColumn<int>(
-                name: "M_PRIVATEPROFILE",
-                table: $"{_memberTablePrefix}MEMBERS",
-                type: "smallint",
-                nullable: true);
-            migrationBuilder.AddColumn<int>(
-                name: "M_PMEMAIL",
-                table: $"{_memberTablePrefix}MEMBERS",
-                type: "int",
-                nullable: true);
-            migrationBuilder.AddColumn<int>(
-                name: "M_PMRECEIVE",
-                table: $"{_memberTablePrefix}MEMBERS",
-                type: "int",
-                nullable: true);
-            migrationBuilder.AddColumn<int>(
-                name: "M_PMSAVESENT",
-                table: $"{_memberTablePrefix}MEMBERS",
-                type: "smallint",
-                nullable: true);
-            migrationBuilder.AddColumn<int>(
-                name: "M_LASTACTIVITY",
-                table: $"{_memberTablePrefix}MEMBERS",
-                type: "varchar(20)",
-                nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "M_PRIVATEPROFILE",
+                    table: $"{_memberTablePrefix}MEMBERS",
+                    type: "smallint",
+                    nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "M_PMEMAIL",
+                    table: $"{_memberTablePrefix}MEMBERS",
+                    type: "int",
+                    nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "M_PMRECEIVE",
+                    table: $"{_memberTablePrefix}MEMBERS",
+                    type: "int",
+                    nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "M_PMSAVESENT",
+                    table: $"{_memberTablePrefix}MEMBERS",
+                    type: "smallint",
+                    nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "M_LASTACTIVITY",
+                    table: $"{_memberTablePrefix}MEMBERS",
+                    type: "varchar(20)",
+                    nullable: true);
 
-            migrationBuilder.AddColumn<int>(
-                name: "R_RATING",
-                table: $"{_memberTablePrefix}REPLY",
-                type: "int",
-                nullable: true);
+                migrationBuilder.AddColumn<int>(
+                    name: "R_RATING",
+                    table: $"{_memberTablePrefix}REPLY",
+                    type: "int",
+                    nullable: true);
 
             }
             if (!migrationBuilder.TableExists($"LANGUAGE_RES"))
@@ -723,7 +724,6 @@ namespace Migrations
                         table.PrimaryKey("PK_TOPIC_RATINGS", x => x.RATING);
                     });
             }
-
 
             if (!migrationBuilder.TableExists($"{_forumTablePrefix}PM"))
             {
@@ -766,6 +766,7 @@ namespace Migrations
                     });
 
             }
+
             if (!migrationBuilder.TableExists($"{_forumTablePrefix}RANKING"))
             {
                 migrationBuilder.CreateTable(
@@ -784,7 +785,6 @@ namespace Migrations
                         table.PrimaryKey("PK_FORUM_RANKING", x => x.RANK_ID);
                     });
             }
-
 
             if (migrationBuilder.IsSqlite())
             {
@@ -818,9 +818,6 @@ namespace Migrations
                         onDelete: ReferentialAction.Cascade);
                 }
             }
-
-
-
 
         }
 
