@@ -52,7 +52,8 @@ public partial class PrivateMessage
     public int HideTo { get; set; }
 
     public virtual Member From { get; set; }
-
+    [NotMapped]
+    public virtual int? Notify { get; set; }
 }
 
 public enum SearchIn
