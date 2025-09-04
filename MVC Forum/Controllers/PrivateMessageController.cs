@@ -282,7 +282,7 @@ namespace MVCForum.Controllers
             _member = _memberService.GetMember(User);
             if (ModelState.IsValid)
             {
-                //var recipients = postmodel.To.Split(";");
+                var recipients = postmodel.To.Split(";");
                 if (postmodel.IncludeSig && !string.IsNullOrWhiteSpace(_member?.Signature))
                 {
                     postmodel.Message += $"<br/><span>{_member.Signature}</span>";
@@ -290,16 +290,26 @@ namespace MVCForum.Controllers
 
                 if (_member != null)
                 {
-                    var tomember = _memberService.GetByUsername(postmodel.To);
-                    _pmService.Create(new PrivateMessage()
+                    foreach (var to in recipients)
                     {
-                        FromId = _member.Id,
-                        To = tomember!.Id,
-                        Message = postmodel.Message,
-                        Subject = postmodel.Subject,
-                        SentDate = DateTime.UtcNow.ToForumDateStr(),
-                        SaveSentMessage = (short)(postmodel.SaveToSent ? 1 : 0),
-                    });
+                        var tomember = _memberService.GetByUsername(to.Trim());
+                        if (tomember != null && tomember.Pmreceive == 1)
+                        {
+                            _pmService.Create(new PrivateMessage()
+                            {
+                                FromId = _member.Id,
+                                To = tomember!.Id,
+                                Message = postmodel.Message,
+                                Subject = postmodel.Subject,
+                                SentDate = DateTime.UtcNow.ToForumDateStr(),
+                                SaveSentMessage = (short)(postmodel.SaveToSent ? 1 : 0),
+                                Notify = tomember.Pmemail
+                            });
+                        }
+
+                    }
+
+
 
                 }
                 if (postmodel.IsPopUp)

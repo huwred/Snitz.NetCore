@@ -2,7 +2,9 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
 @model MVCForum.ViewModels.Category.CategoryViewModel
-
+@{
+    var toplevelsubs = (SubscriptionLevel)SnitzConfig.GetIntValue("STRSUBSCRIPTION");
+}
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
     <div class="row">
@@ -14,13 +16,13 @@
                     <input asp-for="@Model.Name" type="text" class="form-control"/>
                     <div class="invalid-feedback">@Localizer["PropertyRequired",Localizer["catName"]]</div>
                 </div>
-                <div class="mb-3 row">
+                <div snitz-if="@(toplevelsubs != SubscriptionLevel.None)" class="mb-3 row">
                     <label asp-for="Subscription" class="form-label col-12">@Localizer["catSubscription"]</label>
                     <div class="col-10 col-lg-7">
-                        <enum-select name="Subscription" enum-type="typeof(CategorySubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                        <enum-select name="Subscription" enum-min="@SnitzConfig.GetIntValue("STRSUBSCRIPTION")" enum-type="typeof(CategorySubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
                 </div>
-                <div class="mb-3 row">
+                <div snitz-if="@(SnitzConfig.IsEnabled("STRMODERATION"))" class="mb-3 row">
                     <label asp-for="Moderation" class="form-label col-12">@Localizer["catModeration"]</label>
                     <div class="col-10 col-lg-6">
                         <enum-select name="Moderation" enum-type="typeof(ModerationLevel)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>

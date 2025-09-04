@@ -10,14 +10,17 @@
     {
         <partial name="LatestPosts" model="@Model.LatestPosts" />
     }
-    @if (SnitzConfig.GetIntValue("INTFEATUREDPHOTO") == 1 && Model.Options!.Contains("image"))
+    @if (SnitzConfig.IsEnabled("INTFEATUREDPHOTO") && Model.Options!.Contains("image"))
     {
         @await Component.InvokeAsync("ImageAlbum", new { template = "Featured" })
     }
     @if (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1
-        && SnitzConfig.GetIntValue("INTCALPUBLIC") == 1 && Model.Options!.Contains("events"))
+        && Model.Options!.Contains("events"))
     {
-        @await Component.InvokeAsync("Events", new { template = "UpcomingEvents" })
+        if ((!SnitzConfig.IsEnabled("INTCALPUBLIC") && User.Identity.IsAuthenticated) || SnitzConfig.IsEnabled("INTCALPUBLIC"))
+        {
+            @await Component.InvokeAsync("Events", new { template = "UpcomingEvents" })
+        }
     }
     @if (Model.Options!.Contains("blog"))
     {

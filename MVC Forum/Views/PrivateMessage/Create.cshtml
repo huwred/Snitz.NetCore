@@ -16,6 +16,7 @@
             <div class="mb-3">
                 <label asp-for="To">@Localizer["To"]</label>
                 <input asp-for="To" readonly="@(Model.IsReply || Model.IsPopUp)" class="form-control disabled" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" />
+                <div snitz-if="@(!Model.IsPopUp)" id="toHelp" class="form-text">@Localizer["RecipientSeparator"]</div>
                 @if (Model.IsPopUp)
                 {
                     <input asp-for="To" type="hidden"/>

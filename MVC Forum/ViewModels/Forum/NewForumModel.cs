@@ -40,5 +40,7 @@ namespace MVCForum.ViewModels.Forum
 
         public PostAuthType PostAuth { get; set; } = PostAuthType.Anyone;
         public PostAuthType ReplyAuth { get; set; } = PostAuthType.Anyone;
+
+        public int? CategorySubs { get; set; }
     }
 }

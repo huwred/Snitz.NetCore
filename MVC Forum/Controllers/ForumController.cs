@@ -29,13 +29,14 @@ namespace MVCForum.Controllers
     {
         private readonly IForum _forumService;
         private readonly IPost _postService;
+        private readonly ICategory _categoryService;
         private readonly ISnitzCookie _cookie;
         private readonly SignInManager<ForumUser> _signInManager;
         private readonly HttpContext? _httpcontext;
         private readonly IGroups _groupservice;
 
         public ForumController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
-            IForum forumService,IPost postService,ISnitzCookie snitzCookie,SignInManager<ForumUser> SignInManager,IGroups groups) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
+            IForum forumService,IPost postService,ICategory categoryService, ISnitzCookie snitzCookie,SignInManager<ForumUser> SignInManager,IGroups groups) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _forumService = forumService;
             _postService = postService;
@@ -43,6 +44,7 @@ namespace MVCForum.Controllers
             _signInManager = SignInManager;
             _httpcontext = httpContextAccessor.HttpContext;
             _groupservice = groups;
+            _categoryService = categoryService;
         }
         
         [Route("Forum/{id:int}")]
@@ -643,10 +645,10 @@ namespace MVCForum.Controllers
                 var catPage = new MvcBreadcrumbNode("", "Category", _languageResource.GetString("tipNewForum")) { Parent = forumPage};
                 ViewData["BreadcrumbNode"] = catPage;
             }
-                
+             var catsub = _categoryService.GetById(id);
 
 
-            var model = new NewForumModel { CategoryList = catlist,Category = id,ForumId = 0};
+            var model = new NewForumModel { CategoryList = catlist,Category = id,ForumId = 0,CategorySubs = catsub?.Subscription};
             return View(model);
         }
 

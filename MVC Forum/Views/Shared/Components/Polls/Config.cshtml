@@ -8,11 +8,11 @@
     <div id="flush-collapsePolls" class="accordion-collapse collapse" aria-labelledby="flush-polls" data-bs-parent="#plugin-accordion">
         <div class="accordion-body">
             <form id="polls-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#pollcfg-result">
-                <admin-config config-key="INTPOLLS" config-label="Allow Polls" config-val="@SnitzConfig.GetIntValue("INTPOLLS", 0)"></admin-config>
-                <admin-config config-key="INTACTIVEPOLLS" config-label="Show active Polls" config-val="@SnitzConfig.GetIntValue("INTACTIVEPOLLS", 0)"></admin-config>
-                <admin-config config-key="INTFEATUREDPOLL" class="featured-poll" config-label="Show featured Poll" config-val="@SnitzConfig.GetIntValue("INTFEATUREDPOLL", 0)"></admin-config>
+                <admin-config config-key="INTPOLLS" config-label="Allow Polls" config-val="@SnitzConfig.GetIntValue("INTPOLLS")"></admin-config>
+                <admin-config config-key="INTACTIVEPOLLS" config-label="Show active Polls" config-val="@SnitzConfig.GetIntValue("INTACTIVEPOLLS")"></admin-config>
+                <admin-config config-key="INTFEATUREDPOLL" class="featured-poll" config-label="Show featured Poll" config-val="@SnitzConfig.GetIntValue("INTFEATUREDPOLL")"></admin-config>
                 <div class="mb-3 featured-poll-settings" style="display:none">
-                    <admin-config config-key="INTHIDEPOLL" config-label="Hide featured Poll after voting" config-val="@SnitzConfig.GetIntValue("INTHIDEPOLL", 0)"></admin-config>
+                    <admin-config config-key="INTHIDEPOLL" config-label="Hide featured Poll after voting" config-val="@SnitzConfig.GetIntValue("INTHIDEPOLL")"></admin-config>
                     <label for="INTFEATUREDPOLLID" class="form-label">Featured Poll ID:</label>
                     <input class="form-control" id="INTFEATUREDPOLLID" type="number" name="INTFEATUREDPOLLID" value="@SnitzConfig.GetIntValue("INTFEATUREDPOLLID")" />
                 </div>

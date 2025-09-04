@@ -22,7 +22,8 @@
                     <li><a class="dropdown-item" asp-controller="Forum" asp-action="Active">@Localizer["mnuForumActive"]</a></li>
                     <li><a class="dropdown-item" asp-controller="Account" asp-action="Index">@Localizer["mnuForumMembers"]</a></li>
                     <li><a class="dropdown-item" asp-controller="Forum" asp-action="Search">@Localizer["mnuForumSearch"]</a></li>
-                    <li snitz-if="@(SnitzConfig.GetIntValue("INTPOLLS") == 1 || SnitzConfig.GetIntValue("INTCALEVENTS") == 1)"><hr class="dropdown-divider" /></li>
+                    <li snitz-if="@((SnitzConfig.GetIntValue("INTPOLLS") == 1 && SnitzConfig.GetIntValue("INTACTIVEPOLLS") == 1 && User.Identity.IsAuthenticated)
+                    || (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && (SnitzConfig.GetIntValue("INTPUBLICEVENTS") == 1 && User.Identity.IsAuthenticated)))"><hr class="dropdown-divider" /></li>
                     @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
                     @await Component.InvokeAsync("Events", new{template = "MenuItem"})
                     <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT",1) == 1)"><hr class="dropdown-divider" /></li>
@@ -37,7 +38,7 @@
                     </li>
                 </ul>
             </li>
-            <li class="nav-item dropdown" snitz-if="@(SnitzConfig.TableExists("FORUM_IMAGES") && SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)">
+            <li class="nav-item dropdown" snitz-if="@(SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)">
                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownAlbumLink">@Localizer["mnuAlbums"]</a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownAlbumLink">
                     <li><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Index" asp-route-id="">@Localizer["mnuMemberAlbums"]</a></li>

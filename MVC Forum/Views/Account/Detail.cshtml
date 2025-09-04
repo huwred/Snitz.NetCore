@@ -60,7 +60,7 @@
             function(e) {
                 e.preventDefault();
                 if ($(".icon > i").hasClass("fa-trash")) {
-                    $.get($(this).data("url") + $(this).data("id"),
+                    $.get(SnitzVars.baseUrl + $(this).data("url") + $(this).data("id"),
                         function(data) {
                             $(".img-fluid").attr('src', 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==');
                             $(".img-fluid").attr("width","100");
@@ -69,7 +69,7 @@
                             var el = document.querySelector('.fa-trash');
                             el.classList.remove('fa-trash');
                             el.classList.add('fa-upload');
-                            location.href = "~/Account/Detail";
+                            location.href = SnitzVars.baseUrl + "/Account/Detail";
                         });
                 } else {
 

@@ -310,6 +310,7 @@
     <PackageReference Include="BuildBundlerMinifier2022" Version="2.9.11" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.21" />
     <PackageReference Include="Hangfire.Core" Version="1.8.21" />
+    <PackageReference Include="Hangfire.MySql.Core_MySql.Data" Version="2.1.10" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.21" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.2" />
     <PackageReference Include="log4net" Version="3.1.0" />
@@ -340,9 +341,9 @@
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.9" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="Snitz.Events" Version="1.0.2-rc20" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc50" />
-    <PackageReference Include="Snitz.PostThanks" Version="1.0.3-rc29" />
+    <PackageReference Include="Snitz.Events" Version="1.0.2-rc26" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc55" />
+    <PackageReference Include="Snitz.PostThanks" Version="1.0.3-rc40" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />

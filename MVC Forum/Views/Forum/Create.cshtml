@@ -5,7 +5,9 @@
 @using SnitzCore.Service.TagHelpers
 @using Microsoft.AspNetCore.Identity
 @model MVCForum.ViewModels.Forum.NewForumModel
-
+@{
+    var toplevelsubs = Model.CategorySubs;
+}
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
     <div class="row bg-form p-4 rounded">
@@ -87,7 +89,7 @@
                         <enum-select name="ReplyAuth" id="reply-auth" enum-type="typeof(PostAuthType)" selected-value="(int)Model.ReplyAuth" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
                 </div>
-                <div snitz-if="@(SnitzConfig.GetIntValue("INTTOPICRATING") == 1)" class="mb-3 row">
+                <div snitz-if="@(SnitzConfig.IsEnabled("INTTOPICRATING"))" class="mb-3 row">
                     <label asp-for="AllowTopicRating" class="form-label col-2">@Localizer["forumAllowRating"]</label>
                     <div class="col-10 col-lg-5">
                         <div class="form-check form-switch mb-3">
@@ -96,16 +98,16 @@
                         </div>
                     </div>
                 </div>
-                <div snitz-if="@(SnitzConfig.GetIntValue("STRMODERATION") == 1)" class="mb-3 row">
+                <div snitz-if="@(SnitzConfig.IsEnabled("STRMODERATION"))" class="mb-3 row">
                     <label asp-for="Moderation" class="form-label col-2">@Localizer["forumModeration"]</label>
                     <div class="col-10 col-lg-5">
                         <enum-select name="Moderation" enum-type="typeof(Moderation)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
                 </div>
-                <div class="mb-3 row">
+                <div snitz-if="@(toplevelsubs == null || (CategorySubscription)toplevelsubs != CategorySubscription.None)" class="mb-3 row">
                     <label asp-for="Subscription" class="form-label col-2">@Localizer["forumSubscription"]</label>
                     <div class="col-10 col-lg-6">
-                        <enum-select name="Subscription" enum-type="typeof(ForumSubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                        <enum-select name="Subscription" enum-min="@Model.CategorySubs" enum-type="typeof(ForumSubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
                 </div>
 
@@ -165,22 +167,22 @@
                     }
                 </div>
             </fieldset>
-            <fieldset>
-                <legend>Plugins</legend>
-                @if (Model.ForumId == 0)
-                {
-                    <h5 class="text-warning text-center">Forum needs to be saved before plugins can be configured</h5>
-                }
-                else
-                {
-                    <div class="mb-3 bg-primary text-bg-primary p-3 rounded">
-                        @await Component.InvokeAsync("Events", new { template = "ForumConfig", id = Model.ForumId, topicid = 0 })
-                    </div>
-                    @await Component.InvokeAsync("Polls", new { template = "ForumConfig", forumid = Model.ForumId })
-                    @await Component.InvokeAsync("PostThanks", new { template = "ForumConfig", id = Model.ForumId, topicid = 0 })
-
-                }
-            </fieldset>
+            @if (SnitzConfig.IsEnabled("INTPOLLS") || SnitzConfig.IsEnabled("INTCALEVENTS") || SnitzConfig.IsEnabled("STRTHANKS"))
+            {
+                <fieldset>
+                    <legend>Plugins</legend>
+                    @if (Model.ForumId == 0)
+                    {
+                        <h5 class="text-warning text-center">The Forum needs to be saved before plugins can be configured</h5>
+                    }
+                    else
+                    {
+                        @await Component.InvokeAsync("Events",      new { template = "ForumConfig", id = Model.ForumId, topicid = 0 })
+                        @await Component.InvokeAsync("Polls",       new { template = "ForumConfig", forumid = Model.ForumId })
+                        @await Component.InvokeAsync("PostThanks",  new { template = "ForumConfig", id = Model.ForumId, topicid = 0 })
+                    }
+                </fieldset>                
+            }
         </div>
     </div>
 </div>
