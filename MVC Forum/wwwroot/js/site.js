@@ -24,8 +24,10 @@ if ($.cookie("HideAnnounce")) {
     $("#alert-announce").hide();
 }
 $(document).on("click", "", function () {
+    var date = new Date();
+    date.setTime(date.getTime() + (10 * 60 * 1000));
     $.cookie('HideAnnounce', 'yes', {
-        expires: 1
+        expires: date
     });
 });
 const alertPlaceholder = document.getElementById('liveAlertPlaceholder');

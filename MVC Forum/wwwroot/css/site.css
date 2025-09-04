@@ -463,6 +463,7 @@ img.flag {
 
 }
 
+
 @-webkit-keyframes spin {
     0% {
         -webkit-transform: rotate(0deg);
@@ -564,6 +565,17 @@ img.avatar {
     text-align: center;
 }
 
+#cal-loading {
+    margin: auto;
+    width: 20px;
+    height: 20px;
+    /*border: solid black;*/
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0
+}
 /* When you move the mouse over the icon, change color */
 .fa-trash:hover {
     color: #eee;

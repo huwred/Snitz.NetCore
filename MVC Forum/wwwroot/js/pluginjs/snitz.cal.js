@@ -50,7 +50,7 @@ UpComingCalendar = function(url, divid) {
 
             //timeFormat: 'HH:mm',
             //titleFormat: 'Upcoming Events', //TODO
-            height: 560,
+            height: 400,
             eventSources: [
                 { url: url },
                 { url: SnitzVars.baseUrl + "/Calendar/GetHolidays" },

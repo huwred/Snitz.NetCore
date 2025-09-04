@@ -3,6 +3,7 @@
     --font-size: 14px;
     --spacing: 1rem;
     --bs-form-invalid-color: red;
+
 }
 html, body {
     font-size: var(--font-size);
@@ -84,6 +85,14 @@ html, body {
 }
 .bg-dark {
     background-color: var(--primary-header) !important;
+}
+.bg-plugin {
+    --bs-bg-opacity: 1;
+    background-color: #d3d6a9 !important;
+}
+
+.text-bg-plugin {
+    color: var(--primary-header) !important;
 }
 .navbar-custom .navbar-brand {
     color: #fff;
