@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.2-rc20</Version>
+    <Version>1.0.2-rc27</Version>
     <Authors>Huw Reddick</Authors>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -37,7 +37,12 @@
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
     <Content Remove="wwwroot\js\dist\multimonth-view.html" />
+    <Content Remove="wwwroot\js\lang\langs.zip" />
     <Content Remove="wwwroot\js\locales-all.global.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="wwwroot\js\lang\langs.zip" />
   </ItemGroup>
 
   <ItemGroup>

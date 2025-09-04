@@ -70,7 +70,7 @@ namespace Snitz.Events.ViewComponents
             }
             if (template == "MenuItem")
             {
-                var showcalendar = _config.TableExists("CAL_EVENTS") && _config.GetIntValue("INTCALPUBLIC") == 1 && !(_config.GetIntValue("INTCALPUBLICHOLIDAYS", -1) == -1);
+                var showcalendar = _config.TableExists("CAL_EVENTS") && _config.GetIntValue("INTCALEVENTS") == 1;
 
                 return await Task.FromResult((IViewComponentResult)View(template,showcalendar));
             }

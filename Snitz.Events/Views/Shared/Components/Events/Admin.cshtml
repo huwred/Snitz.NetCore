@@ -12,7 +12,7 @@
         </h2>
         <div id="events-collapse" class="accordion-collapse collapse " aria-labelledby="events-heading" data-bs-parent="#plugin-accordion">
             <div class="accordion-body">
-                <form id="events-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#event-result">
+                <form id="events-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
                     @await Component.InvokeAsync("Events", new {template="EnableButton"})
                 </form> 
                 <div id="result"></div>

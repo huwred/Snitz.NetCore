@@ -4,7 +4,10 @@
 @{
 
     var showcalendar = Model;
-    showcalendar = showcalendar || SignInManager.IsSignedIn(User);
+    showcalendar = showcalendar || (SignInManager.IsSignedIn(User) && SnitzConfig.GetIntValue("INTCALPUBLIC") == 1);
+
+    if (!SignInManager.IsSignedIn(User) && SnitzConfig.GetIntValue("INTCALPUBLIC", 0) == 0)
+        return;
 
 }
 @if (showcalendar)

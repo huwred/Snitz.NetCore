@@ -1,11 +1,23 @@
 ﻿@model bool
 @if (Model)
 {
+    <form asp-action="SaveSettings" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#thanks-result" >
+
     <div class="form-check form-switch mb-3">
-        <input type="checkbox" role="switch" name="STRTHANKS" id="STRTHANKS" value="1" class="form-check-input" checked="" style="transform: scale(1.4);">
+        <input type="checkbox" role="switch" name="STRTHANKS" id="STRTHANKS" value="1" class="form-check-input" checked="@(SnitzConfig.IsEnabled("STRTHANKS"))" style="transform: scale(1.4);">
         <input type="checkbox" name="STRTHANKS" value="0" checked="" style="display: none">
         <label class="form-check-label" for="STRTHANKS">Enable Post Thanks</label>
     </div>
+    </form>
+    <div id="thanks-result"></div>
 }
 
-
+<storecontent asp-key="forum-plugins">
+    <script>
+        $(document).on("click",
+            "#STRTHANKS",
+            function() {
+                $(this).closest("form").submit();
+            });
+    </script>
+</storecontent>

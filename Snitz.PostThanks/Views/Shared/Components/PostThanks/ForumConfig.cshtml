@@ -1,41 +1,43 @@
 ﻿
 @model Forum?
-
-<div class="mb-3 bg-primary text-bg-primary p-3 rounded">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <label>@Localizer["ForumSettingTitle"]</label>
-            <div class="form-group">
-                <label for="strThanks" class="control-label col-xs-6">
-                    <input id="strThanks" type="checkbox" name="strThanks" data-size="mini" data-id="@ViewBag.ForumId" checked="@ViewBag.IsAllowed" />
-                    @Localizer["ForumSetting"]
-                </label>
+@if (SnitzConfig.IsEnabled("STRTHANKS")){
+    <div class="mb-3 bg-plugin text-bg-plugin p-3 rounded">
+        <div class="panel">
+            <div class="panel-heading">@Localizer["ForumSettingTitle"]<hr /></div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="strThanks" class="control-label col-xs-6">
+                        <input id="strThanks" type="checkbox" name="strThanks" data-size="mini" data-id="@ViewBag.ForumId" checked="@ViewBag.IsAllowed" />
+                        @Localizer["ForumSetting"]
+                    </label>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<storecontent asp-key="forum-plugins">
-    <script>
-        $(document)
-            .ready(function () {
+    <storecontent asp-key="forum-plugins">
+        <script>
+            $(document)
+                .ready(function () {
 
-                $('#strThanks').change(function () {
-                    var id = $(this).data('id');
-                    $.ajax(
-                        {
-                            url: SnitzVars.baseUrl + '/PostThanks/ForumSettings/' + id + '?check=' + this.checked,
-                            async: false,
-                            success: function (response) {
-                                //alert('saved');
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                appendAlert(errorThrown, 'warning');
+                    $('#strThanks').change(function () {
+                        var id = $(this).data('id');
+                        $.ajax(
+                            {
+                                url: SnitzVars.baseUrl + '/PostThanks/ForumSettings/' + id + '?check=' + this.checked,
+                                async: false,
+                                success: function (response) {
+                                    //alert('saved');
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    appendAlert(errorThrown, 'warning');
 
-                            }
-                        });
+                                }
+                            });
+                    });
+
                 });
+        </script>
+    </storecontent>
+}
 
-            });
-    </script>
-</storecontent>
 

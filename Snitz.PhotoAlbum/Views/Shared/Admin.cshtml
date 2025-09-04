@@ -27,17 +27,17 @@
 <h5>Album plugin Settings</h5>
     <label class="form-text" snitz-if="@(SnitzConfig.GetIntValue("INTALLOWUPLOADS") == 0)">You must enable File Attachments in Posting section</label>
 <hr class="title"/>
-<div class="row-fluid">
-    <div class="mb-3">
-        <div class="form-check form-switch mb-3">
-            <input type="checkbox" role="switch" name="STRPHOTOALBUM" id="STRPHOTOALBUM" value="1" class="form-check-input" checked="" style="transform: scale(1.4);">
-            <input type="checkbox" name="STRPHOTOALBUM" value="0" checked="" style="display: none">
-            <label class="form-check-label" for="STRPHOTOALBUM">Enable Photo Albums</label>
+
+    <form asp-action="SaveSettings" asp-controller="SnitzConfig" id="limitsForm" data-ajax="true" data-ajax-update="#pa-results" disabled="@disabled" aria-disabled="@disabled">
+    <div class="row-fluid">
+        <div class="mb-3">
+            <div class="form-check form-switch mb-3">
+                    <input type="checkbox" role="switch" name="STRPHOTOALBUM" id="STRPHOTOALBUM" value="1" class="form-check-input" checked="@(SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)" style="transform: scale(1.4);">
+                <input type="checkbox" name="STRPHOTOALBUM" value="0" checked="" style="display: none">
+                <label class="form-check-label" for="STRPHOTOALBUM">Enable Photo Albums</label>
+            </div>
         </div>
     </div>
-</div>
-    <form asp-action="SaveSettings" asp-controller="SnitzConfig" id="limitsForm" data-ajax="true" data-ajax-update="#pa-results" disabled="@disabled" aria-disabled="@disabled">
-
     <div class="mb-3">
         <div class="form-check form-switch mb-3">
             <input type="checkbox" role="switch" name="INTCOMMONALBUM" id="INTCOMMONALBUM" value="1" class="form-check-input" checked="@(SnitzConfig.GetIntValue("INTCOMMONALBUM")==1)" style="transform: scale(1.4);">
