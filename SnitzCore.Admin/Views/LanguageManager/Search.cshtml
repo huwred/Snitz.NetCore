@@ -75,7 +75,7 @@
                                     langres.ResourceSet = res.Value.First().ResourceSet;
                                 }
 
-                                <form asp-action="UpdateResource" data-ajax="true" data-ajax-update="#result_@langres.Name" class="row">
+                                <form asp-action="UpdateResource" data-ajax="true" data-ajax-update="#result_@langres.Name" data-ajax-complete="ResourceUpdated" class="row">
                                     <div class="mb-3 row">
                                         <label for="@langres.Name" class="col-sm-3 col-form-label">@culture.Text</label>
                                         <div class="lang_@culture.Value col-6">
@@ -92,6 +92,7 @@
                                         </div>
                                     </div>
                                 </form>
+                                
                             }
                         </li>
                     </ul>
@@ -143,5 +144,12 @@
                 location.reload();
             });
         });
+
+        function ResourceUpdated(xhr, status){
+            setTimeout(function() {
+                $('.loading').hide();
+            }, 2000); // <-- time in milliseconds
+        };
+
     </script>
 }

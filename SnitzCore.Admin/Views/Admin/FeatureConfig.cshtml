@@ -9,46 +9,14 @@
 }
 <div class="m-3">
     <div class="nav nav-tabs me-3" id="v-pills-tab" role="tablist">
-        <button class="nav-link active" id="v-pills-general-tab" data-bs-toggle="pill" data-bs-target="#v-pills-general" type="button" role="tab" aria-controls="v-pills-general" aria-selected="true">General</button>
-        <button class="nav-link" id="v-pills-forum-tab" data-bs-toggle="pill" data-bs-target="#v-pills-forum" type="button" role="tab" aria-controls="v-pills-forum" aria-selected="false">@Localizer["mnuAdminForum"]</button>
+        <button class="nav-link active" id="v-pills-forum-tab" data-bs-toggle="pill" data-bs-target="#v-pills-forum" type="button" role="tab" aria-controls="v-pills-forum" aria-selected="false">@Localizer["mnuAdminForum"]</button>
         <button class="nav-link" id="v-pills-topic-tab" data-bs-toggle="pill" data-bs-target="#v-pills-topic" type="button" role="tab" aria-controls="v-pills-topic" aria-selected="false">Topic</button>
         <button class="nav-link" id="v-pills-posting-tab" data-bs-toggle="pill" data-bs-target="#v-pills-posting" type="button" role="tab" aria-controls="v-pills-posting" aria-selected="false">Posting</button>
         <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">@Localizer["mnuAccountPM"]</button>
         <button class="nav-link" id="v-pills-plugin-tab" data-bs-toggle="pill" data-bs-target="#v-pills-plugin" type="button" role="tab" aria-controls="v-pills-plugin" aria-selected="false">@Localizer["mnuAdminMODS"]</button>
     </div>
     <div class="tab-content bg-white p-4" id="v-pills-tabContent">
-        <div class="tab-pane fade show active w-100" id="v-pills-general" role="tabpanel" aria-labelledby="feature-tab">
-            <h4>General</h4>
-            <hr/>
-            <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
-                <admin-config config-key="STRIPLOGGING" config-label="IP Logging" config-val="@SnitzConfig.GetIntValue("STRIPLOGGING")" help-text="@Localizer["STRIPLOGGING"].Value"></admin-config>
-                <fieldset @(SnitzConfig.GetIntValue("STRIPLOGGING") == 0 ? "disabled" : "") id="IPLOGENABLED">
-                    <div class="row">
-                        <div class="col">
-                            <admin-config config-key="STRIPLOOKUP" config-label="third party IP lookup service" config-val="@SnitzConfig.GetValue("STRIPLOOKUP")" placeholder="URL to third party lookup service" help-text="@Localizer["STRIPLOOKUP"].Value"></admin-config>
-                        </div>
-                        <div class="col"></div>
-                    </div>
-                    <div class="form-text mb-3">use [IP] to indicate where the IP should be passed in the url<br/>e.g. http://www.ripe.net/whois?form_type=simple&full_query_string=&searchtext=[IP]</div>
-                </fieldset>
-                <admin-config config-key="INTFULLTEXT" config-label="Use Fulltext search" config-val="@SnitzConfig.GetIntValue("INTFULLTEXT")" help-text="@Localizer["INTFULLTEXT"].Value"></admin-config>
-                <admin-config name="STRSUBSCRIPTION" config-type="select-subs" config-key="STRSUBSCRIPTION" config-label="Highest level of Subscription" config-val="@SnitzConfig.GetIntValue("STRSUBSCRIPTION")" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }" help-text="@Localizer["STRSUBSCRIPTION"].Value"></admin-config>
-                <admin-config config-key="INTPROTECTCONTENT" config-label="Protected Content" config-val="@SnitzConfig.GetIntValue("INTPROTECTCONTENT")" help-text="@Localizer["INTPROTECTCONTENT"].Value"></admin-config>
-                <admin-config config-key="INTALLOWHIDEONLINE" config-label="Allow members to hide from Online" config-val="@SnitzConfig.GetIntValue("INTALLOWHIDEONLINE")" help-text="@Localizer["INTALLOWHIDEONLINE"].Value"></admin-config>
-                <admin-config config-key="STREXCLUDEBOTS" config-label="Bots to exclude from counter" config-val="@SnitzConfig.GetValue("STREXCLUDEBOTS")" help-text="@Localizer["STREXCLUDEBOTS"].Value"></admin-config>
-                <hr class="title" />
-                <div class="row mb-3">
-                    <div class="col">
-                        <admin-config config-key="STRPAGESIZE" config-label="Default page size" config-val="@SnitzConfig.GetValue("STRPAGESIZE")" help-text="@Localizer["STRPAGESIZE"].Value"></admin-config>
-                    </div>
-                    <div class="col">
-                        <admin-config config-key="STRACCOUNTPAGESIZES" config-label="Members Page size" config-val="@SnitzConfig.GetValue("STRACCOUNTPAGESIZES")"></admin-config>
-                    </div>
-                </div>
-                <partial name="_FormButtons"/>
-            </form>
-        </div>
-        <div class="tab-pane fade w-100" id="v-pills-forum" role="tabpanel" aria-labelledby="forum-tab">
+        <div class="tab-pane fade show active w-100" id="v-pills-forum" role="tabpanel" aria-labelledby="forum-tab">
             <h4>Forum Settings</h4>
             <hr/>
             <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-forum">
@@ -93,7 +61,8 @@
             <hr/>
             <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-topic">
                 <div class="mb-3">
-                    @* <admin-config config-key="INTTOPICRATING" config-label="Allow Topic rating" config-val="@SnitzConfig.GetIntValue("INTTOPICRATING")" help-text="@Localizer["INTTOPICRATING"].Value"></admin-config> *@
+                    <admin-config config-key="INTTOPICDISPLAY" config-label="Show Topic on all pages" config-val="@SnitzConfig.GetIntValue("INTTOPICDISPLAY")" help-text="@Localizer["INTTOPICDISPLAY"].Value"></admin-config>
+                    <admin-config config-key="STRSHOWQUICKREPLY" config-label="Show Quick Reply" config-val="@SnitzConfig.GetIntValue("STRSHOWQUICKREPLY")" help-text="@Localizer["STRSHOWQUICKREPLY"].Value"></admin-config>
 
                     <admin-config config-key="STRSTICKYTOPIC" config-label="Allow Sticky Topics" config-val="@SnitzConfig.GetIntValue("STRSTICKYTOPIC")" help-text="@Localizer["STRSTICKYTOPIC"].Value"></admin-config>
                     <admin-config config-key="STRHOTTOPIC" config-label="Hot Topics" config-val="@SnitzConfig.GetIntValue("STRHOTTOPIC")" help-text="@Localizer["STRHOTTOPIC"].Value"></admin-config>
@@ -111,27 +80,11 @@
                     <admin-config config-key="STRSHOWSENDTOFRIEND" config-label="Show send Topic to a friend link" config-val="@SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND")" help-text="@Localizer["STRSHOWSENDTOFRIEND"].Value"></admin-config>
                     <admin-config config-key="STRSHOWPRINTERFRIENDLY" config-label="Show printer friendly link" config-val="@SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY")" help-text="@Localizer["STRSHOWPRINTERFRIENDLY"].Value"></admin-config>
                     <admin-config config-key="STRSOCIALSHARE" config-label="Social Media links" config-val="@SnitzConfig.GetIntValue("STRSOCIALSHARE")" help-text="@Localizer["STRSOCIALSHARE"].Value"></admin-config>
-                    <admin-config config-key="INTTOPICDISPLAY" config-label="Show Topic on all pages" config-val="@SnitzConfig.GetIntValue("INTTOPICDISPLAY")" help-text="@Localizer["INTTOPICDISPLAY"].Value"></admin-config>
-                    <div class="row">
-                        <div class="col">
-                            <admin-config config-key="STRTOPICPAGESIZES" config-label="Topic Replies Page size" config-val="@SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "10,25,50,100")" help-text="@Localizer["STRTOPICPAGESIZES"].Value"></admin-config>
-                        </div>
-                        <div class="col">
-                            <admin-config config-key="STRACTIVEPAGESIZES" config-label="Active Topics page size" config-val="@SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "10,20,50")" help-text="@Localizer["STRACTIVEPAGESIZES"].Value"></admin-config>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col">
-                            <admin-config config-key="INTRECENTCOUNT" config-label="Recent Topics list" config-val="@SnitzConfig.GetIntValue("INTRECENTCOUNT", 5)" help-text="@Localizer["INTRECENTCOUNT"].Value"></admin-config>
-                        </div>
-                        <div class="col">
-                        </div>
-                    </div>
+                    <hr/>
                     <div class="row">
                         <div class="col-md-3">
                             <select class="form-select mb-2" id="sortdir" name="STRTOPICSORT" title="@Localizer["STRTOPICSORT"].Value" data-bs-toggle="tooltip" data-bs-html="true">
-                                @if (SnitzConfig.GetValueWithDefault("STRTOPICSORT","asc") == "asc")
+                                @if (SnitzConfig.GetValueWithDefault("STRTOPICSORT", "asc") == "asc")
                                 {
                                     <option value="des">@Localizer["optDesc"]</option>
                                     <option value="asc" selected>@Localizer["optAsc"]</option>
@@ -145,6 +98,23 @@
                         </div>
                         <div class="col"><span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span></div>
                     </div>
+                    <div class="row">
+                        <div class="col">
+                            <admin-config config-key="STRTOPICPAGESIZES" config-label="Topic Replies Page size" config-val="@SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "10,25,50,100")" help-text="@Localizer["STRTOPICPAGESIZES"].Value"></admin-config>
+                        </div>
+                        <div class="col">
+                            <admin-config config-key="STRACTIVEPAGESIZES" config-label="Active Topics page size" config-val="@SnitzConfig.GetValueWithDefault("STRACTIVEPAGESIZES", "10,20,50")" help-text="@Localizer["STRACTIVEPAGESIZES"].Value"></admin-config>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="row">
+                        <div class="col">
+                            <admin-config config-key="INTRECENTCOUNT" config-label="Recent Topics list" config-val="@SnitzConfig.GetIntValue("INTRECENTCOUNT", 5)" help-text="@Localizer["INTRECENTCOUNT"].Value"></admin-config>
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+
                 </div>
                 <button type="reset" class="btn btn-outline-warning">Cancel</button>
                 <button type="submit" class="btn btn-outline-success">Save</button>
@@ -188,11 +158,6 @@
                         <div class="col">
                             <admin-config config-key="STRSIGNATURES" config-label="Allow Signatures" config-val="@SnitzConfig.GetIntValue("STRSIGNATURES")" help-text="@Localizer["STRSIGNATURES"].Value"></admin-config>
                         </div>
-                        <div class="col">
-                            <admin-config config-key="STRSHOWQUICKREPLY" config-label="Show Quick Reply" config-val="@SnitzConfig.GetIntValue("STRSHOWQUICKREPLY")" help-text="@Localizer["STRSHOWQUICKREPLY"].Value"></admin-config>
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col">
                             <admin-config config-key="STRDSIGNATURES" config-label="Dynamic Signatures" config-val="@SnitzConfig.GetIntValue("STRDSIGNATURES")" help-text="@Localizer["STRDSIGNATURES"].Value"></admin-config>
                         </div>
@@ -402,6 +367,6 @@
     <renderstoredcontent asp-key="album-groups"></renderstoredcontent>
     <renderstoredcontent asp-key="topic-poll-controls"></renderstoredcontent>
     <renderstoredcontent asp-key="events-admin"></renderstoredcontent>
-
+    <renderstoredcontent asp-key="forum-plugins"></renderstoredcontent>
 }
 

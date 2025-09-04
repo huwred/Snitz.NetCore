@@ -11,7 +11,9 @@
 
     <div class="m-3">
         <div class="nav nav-tabs me-3" id="v-pills-tab" role="tablist" >
-            <button class="nav-link active" id="v-pills-group-tab" data-bs-toggle="pill" data-bs-target="#v-pills-group" type="button" role="tab" aria-controls="v-pills-group" aria-selected="true">Groups</button>
+        <button class="nav-link active" id="v-pills-general-tab" data-bs-toggle="pill" data-bs-target="#v-pills-general" type="button" role="tab" aria-controls="v-pills-general" aria-selected="true">General</button>
+
+            <button class="nav-link" id="v-pills-group-tab" data-bs-toggle="pill" data-bs-target="#v-pills-group" type="button" role="tab" aria-controls="v-pills-group" aria-selected="true">Groups</button>
             <button class="nav-link" id="v-pills-moderators-tab" data-bs-toggle="pill" data-bs-target="#v-pills-moderators" type="button" role="tab" aria-controls="v-pills-moderators" aria-selected="false">Moderators</button>
             <button class="nav-link" id="v-pills-spam-tab" data-bs-toggle="pill" data-bs-target="#v-pills-spam" type="button" role="tab" aria-controls="v-pills-spam" aria-selected="false">Anti-Spam</button>
             <button class="nav-link" id="v-pills-badwords-tab" data-bs-toggle="pill" data-bs-target="#v-pills-badwords" type="button" role="tab" aria-controls="v-pills-badwords" aria-selected="false">Badwords</button>
@@ -19,7 +21,39 @@
         <button class="nav-link" id="v-pills-announce-tab" data-bs-toggle="pill" data-bs-target="#v-pills-announce" type="button" role="tab" aria-controls="v-pills-announce" aria-selected="false">Announcement</button>
     </div>
         <div class="tab-content bg-white p-4" id="v-pills-tabContent">
-            <div class="tab-pane fade show active" id="v-pills-group" role="tabpanel" aria-labelledby="v-pills-group-tab">
+        <div class="tab-pane fade show active w-100" id="v-pills-general" role="tabpanel" aria-labelledby="feature-tab">
+            <h4>General</h4>
+            <hr />
+            <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result">
+                <admin-config config-key="STRIPLOGGING" config-label="IP Logging" config-val="@SnitzConfig.GetIntValue("STRIPLOGGING")" help-text="@Localizer["STRIPLOGGING"].Value"></admin-config>
+                <fieldset @(SnitzConfig.GetIntValue("STRIPLOGGING") == 0 ? "disabled" : "") id="IPLOGENABLED">
+                    <div class="row">
+                        <div class="col">
+                            <admin-config config-key="STRIPLOOKUP" config-label="third party IP lookup service" config-val="@SnitzConfig.GetValue("STRIPLOOKUP")" placeholder="URL to third party lookup service" help-text="@Localizer["STRIPLOOKUP"].Value"></admin-config>
+                        </div>
+                        <div class="col"></div>
+                    </div>
+                    <div class="form-text mb-3">use [IP] to indicate where the IP should be passed in the url<br />e.g. http://www.ripe.net/whois?form_type=simple&full_query_string=&searchtext=[IP]</div>
+                </fieldset>
+                <admin-config config-key="INTFULLTEXT" config-label="Use Fulltext search" config-val="@SnitzConfig.GetIntValue("INTFULLTEXT")" help-text="@Localizer["INTFULLTEXT"].Value"></admin-config>
+                <admin-config name="STRSUBSCRIPTION" config-type="select-subs" config-key="STRSUBSCRIPTION" config-label="Highest level of Subscription" config-val="@SnitzConfig.GetIntValue("STRSUBSCRIPTION")" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }" help-text="@Localizer["STRSUBSCRIPTION"].Value"></admin-config>
+                <admin-config config-key="INTPROTECTCONTENT" config-label="Protected Content" config-val="@SnitzConfig.GetIntValue("INTPROTECTCONTENT")" help-text="@Localizer["INTPROTECTCONTENT"].Value"></admin-config>
+                <admin-config config-key="INTALLOWHIDEONLINE" config-label="Allow members to hide from Online" config-val="@SnitzConfig.GetIntValue("INTALLOWHIDEONLINE")" help-text="@Localizer["INTALLOWHIDEONLINE"].Value"></admin-config>
+                <admin-config config-key="STREXCLUDEBOTS" config-label="Bots to exclude from counter" config-val="@SnitzConfig.GetValue("STREXCLUDEBOTS")" help-text="@Localizer["STREXCLUDEBOTS"].Value"></admin-config>
+                <hr class="title" />
+                <div class="row mb-3">
+                    <div class="col">
+                        <admin-config config-key="STRPAGESIZE" config-label="Default page size" config-val="@SnitzConfig.GetValue("STRPAGESIZE")" help-text="@Localizer["STRPAGESIZE"].Value"></admin-config>
+                    </div>
+                    <div class="col">
+                        <admin-config config-key="STRACCOUNTPAGESIZES" config-label="Members Page size" config-val="@SnitzConfig.GetValue("STRACCOUNTPAGESIZES")"></admin-config>
+                    </div>
+                </div>
+                <partial name="_FormButtons" />
+            </form>
+        </div>
+
+            <div class="tab-pane fade" id="v-pills-group" role="tabpanel" aria-labelledby="v-pills-group-tab">
                 <div class="mb-3" id="forum-groups"></div>
             </div>
             <div class="tab-pane fade" id="v-pills-moderators" role="tabpanel" aria-labelledby="v-pills-moderators-tab">
@@ -129,7 +163,7 @@
                 <hr />
                 <form asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result-announce">
                 <admin-config config-key="STRSHOWANNOUNCE" config-label="Show Announcement" config-val="@SnitzConfig.GetIntValue("STRSHOWANNOUNCE")" help-text="@Localizer["STRSHOWANNOUNCE"].Value"></admin-config>
-                    <fieldset @(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 0 ? "disabled" : "") id="ANNOUNCEENABLED" class="mb-3">
+                    <fieldset class="mb-3">
                     <admin-config config-key="STRANNOUNCETITLE" config-label="Title" config-val="@SnitzConfig.GetValue("STRANNOUNCETITLE")" placeholder="Add a title, leave blank to use default" ></admin-config>
                     <admin-config config-type="textarea" config-key="STRANNOUNCE" config-label="Message" config-val="@SnitzConfig.GetValue("STRANNOUNCE")" placeholder="Enter text for announcement" ></admin-config>
                     </fieldset>
@@ -151,9 +185,9 @@
             $(document).on("click", "#STRGROUPCATEGORIES", function (e) {
                 $("#groups-enable").submit();
             });
-            $(document).on("click", "#STRSHOWANNOUNCE", function (e) {
-                $("#ANNOUNCEENABLED").prop('disabled', !this.checked);
-            });
+            // $(document).on("click", "#STRSHOWANNOUNCE", function (e) {
+            //     $("#ANNOUNCEENABLED").prop('disabled', !this.checked);
+            // });
             // document.querySelector('#STRSHOWANNOUNCE').addEventListener('click', (e) => {
             //     document.querySelector('#ANNOUNCEENABLED').disabled = !e.target.checked;
             // });
