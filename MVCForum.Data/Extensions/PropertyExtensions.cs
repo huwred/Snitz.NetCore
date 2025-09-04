@@ -20,6 +20,18 @@ namespace SnitzCore.Data.Extensions
             }
             return value.All(char.IsNumber);
         }
+        public static bool IsBoolean(this string value)
+        {
+            Boolean parsedValue;
+            if (Boolean.TryParse(value, out parsedValue))
+            {
+                  if (parsedValue)
+                  {
+                     return true;
+                  }
+            }
+            return false;
+        }
         public static T? GetAttribute<T>(this MemberInfo member, bool isRequired)
             where T : Attribute
         {
