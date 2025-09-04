@@ -2,16 +2,14 @@
 using Hangfire.SQLite;
 using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using SnitzCore.Data;
 using SnitzCore.Data.Models;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Hangfire.MySql.Core;
 
 namespace SnitzCore.Service.Extensions
 {
@@ -30,6 +28,9 @@ namespace SnitzCore.Service.Extensions
                 case "sqlite":
 
                     return configuration.UseStorage(new SQLiteStorage(nameOrConnectionString));
+                case "mysql":
+
+                    return configuration.UseStorage(new MySqlStorage(nameOrConnectionString));
                 default:
 
                     return configuration.UseStorage(new SqlServerStorage(nameOrConnectionString));
