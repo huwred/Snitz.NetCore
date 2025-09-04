@@ -25,6 +25,8 @@ namespace SnitzCore.Service.TagHelpers
         /// </summary>
         public Type EnumType { get; set; } = null!;
 
+        public int? EnumMin { get; set; }
+
         /// <summary>
         /// A delegate function for getting locaized value.
         /// </summary>
@@ -42,6 +44,8 @@ namespace SnitzCore.Service.TagHelpers
 
             foreach (int e in Enum.GetValues(EnumType))
             {
+                if(EnumMin != null && e > EnumMin) continue;
+
                 var op = new TagBuilder("option");
 
 

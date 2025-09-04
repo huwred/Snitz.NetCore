@@ -63,6 +63,10 @@ namespace SnitzCore.Services.TagHelpers
                     // ignored
                 }
             }
+            if (Value.IsBoolean())
+            {
+                valtype = "checkbox";
+            }
 
             if (!String.IsNullOrWhiteSpace(ControlType))
             {
