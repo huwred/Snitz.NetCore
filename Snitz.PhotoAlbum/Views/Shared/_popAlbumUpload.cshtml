@@ -10,7 +10,7 @@
     @Localizer["maxFileSize", Model.MaxSize]<br />
     @Localizer["allowedFiles", Model.AllowedTypes]
 </p>
-<form action="/PhotoAlbumUpload/" method="post" enctype="multipart/form-data" role="form" id="upload-form">
+<form action="@SnitzConfig.RootFolder/PhotoAlbum/Upload/" method="post" enctype="multipart/form-data" role="form" id="upload-form">
     <div class="mb-3">
         <label asp-for="Description" class="form-label">@Localizer["lblDescription"]</label>
         <input asp-for="Description" class="form-control" />

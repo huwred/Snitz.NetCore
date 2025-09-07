@@ -409,7 +409,7 @@ namespace Snitz.PhotoAlbum.Controllers
 
             return Json("");
         }
-        [Route("PhotoAlbumUpload/")]
+        //[Route("PhotoAlbumUpload/")]
         public IActionResult Upload(AlbumUploadViewModel model)
         {
             var uploadFolder = StringExtensions.UrlCombine(_config.ContentFolder, "PhotoAlbum");
@@ -431,7 +431,6 @@ namespace Snitz.PhotoAlbum.Controllers
                 var newalbumImage = new AlbumImage()
                 {
                     Description = model.Description,
-                    CategoryId = null,
                     IsPrivate = model.Private,
                     DoNotFeature = model.NotFeatured,
                     CommonName = model.CommonName ?? "",
