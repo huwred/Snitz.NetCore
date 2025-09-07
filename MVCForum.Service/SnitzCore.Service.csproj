@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Hangfire.MySql.Core_MySql.Data" Version="2.1.10" />
     <PackageReference Include="Hangfire.SQLite.Core" Version="1.0.2" />
     <PackageReference Include="log4net" Version="3.1.0" />
     <PackageReference Include="log4net.Ext.Json" Version="3.0.3" />

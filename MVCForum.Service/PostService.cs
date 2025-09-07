@@ -627,7 +627,16 @@ namespace SnitzCore.Service
                 .SingleOrDefaultAsync(p => p.Id == id);
 
         }
+        public async Task<Post?> GetTopicAsync(string title)
+        {
+            return await _dbContext.Posts
+                .AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Forum)
+                .Include(p => p.Member)
+                .SingleOrDefaultAsync(p => p.Title == title.Replace("-"," "));
 
+        }
         public Post GetTopicForUpdate(int id)
         {
             var post = _dbContext.Posts
@@ -989,8 +998,8 @@ namespace SnitzCore.Service
 
         public Post? SplitTopic(string[] ids, int forumId, string subject)
         {
-            var forum = (from forums in _dbContext.Forums
-                    select forums).OrderBy(t=>t.Id).First(f => f.Id == forumId);
+            var forum = _dbContext.Forums.AsNoTracking().FirstOrDefault(f=>f.Id == forumId);
+
             int replycount = 0;
             int originaltopicid = 0;
             Post? topic = null;
@@ -1001,8 +1010,7 @@ namespace SnitzCore.Service
                 foreach (string id in ids.OrderBy(s => s))
                 {
                     //fetch the reply
-                    var reply = (from replies in _dbContext.Replies
-                        select replies).SingleOrDefault(r=>r.Id == Convert.ToInt32(id));
+                    var reply = _dbContext.Replies.SingleOrDefault(r=>r.Id == Convert.ToInt32(id));
 
                     if (first && reply != null)
                     {
@@ -1021,7 +1029,8 @@ namespace SnitzCore.Service
                             LastPostReplyId = reply.Id,
                             Status =(short)Status.Open,
                             LastPostDate = reply.Created,
-                            ReplyCount = 0
+                            ReplyCount = 0,
+                            UnmoderatedReplies = 0
                         };
 
                         _dbContext.Add(topic);
@@ -1050,10 +1059,10 @@ namespace SnitzCore.Service
                     _dbContext.SaveChanges();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _logger.Error("SplitTopic: Error splitting topic, rolling back",e);
                 _dbContext.Database.RollbackTransaction();
-                throw;
             }        
             finally
             {
@@ -1061,7 +1070,7 @@ namespace SnitzCore.Service
             }
             if(topic != null)
             {
-                _ = UpdateLastPost(topic.Id, replycount);
+                _ = UpdateLastPost(topic.Id, null);
                 _forumservice.UpdateLastPost(topic.ForumId);
             }
 

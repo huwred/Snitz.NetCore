@@ -110,7 +110,29 @@ namespace SnitzCore.Service.TagHelpers
                 output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
                 mainTag.AddClass("fa", HtmlEncoder.Default);
                 mainTag.AddClass(PluginIcon, HtmlEncoder.Default);
+                mainTag.AddClass("fa-2x", HtmlEncoder.Default);
+            }
+            else if (Status == "2") //unmoderated
+            {
+                output.Attributes.Add("title", _languageResource.GetString($"{icon}_unread_topic-unmoderated"));
+                mainTag.AddClass("fa", HtmlEncoder.Default);
+                mainTag.AddClass("fa-exclamation-triangle", HtmlEncoder.Default);
+                mainTag.AddClass("fa-2x", HtmlEncoder.Default);
+
+                output.Attributes.Add("data-toggle","tooltip");
+                output.Content.AppendHtml(mainTag);
+                return;
+            }
+            else if (Status == "3") //OnHold
+            {
+                output.Attributes.Add("title", _languageResource.GetString($"{icon}_unread_topic-onhold"));
+                mainTag.AddClass("fa", HtmlEncoder.Default);
+                mainTag.AddClass("fa-pause-circle-o", HtmlEncoder.Default);
                 mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+
+                output.Attributes.Add("data-toggle","tooltip");
+                output.Content.AppendHtml(mainTag);
+                return;
             }
             else if (newclass)
             {
@@ -133,6 +155,7 @@ namespace SnitzCore.Service.TagHelpers
                 mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
                 output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
             }
+
             if (Sticky && _config.GetIntValue("STRSTICKYTOPIC") == 1)
             {
                 icon = "ico_sticky";

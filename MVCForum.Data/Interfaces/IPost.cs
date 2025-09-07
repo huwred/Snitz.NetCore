@@ -9,6 +9,8 @@ namespace SnitzCore.Data.Interfaces
     {
         Post? GetTopic(int id);
         Task<Post?> GetTopicAsync(int id);
+        Task<Post?> GetTopicAsync(string title);
+
         Post GetTopicForUpdate(int id);
         Task<Post?> GetTopicWithRelated(int id);
         PostReply? GetReply(int id);

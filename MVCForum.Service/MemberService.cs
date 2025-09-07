@@ -48,7 +48,7 @@ namespace SnitzCore.Service
         {
             var usersInRole = new List<Member>();
 
-            foreach (var user in _userManager.Users)
+            foreach (var user in _userManager.Users.ToList())
             {
                 if (await _userManager.IsInRoleAsync(user, roleName))
                 {
@@ -211,8 +211,9 @@ namespace SnitzCore.Service
                         rankings.Add(rank.Id, rank);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 //Supress any errors
             }
             return rankings;

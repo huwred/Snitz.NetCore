@@ -23,6 +23,9 @@ namespace SnitzCore.Service.TagHelpers
         /// Date of the last post
         /// </summary>
         public DateTime? PostDate { get; set; }
+        public string? BlogTitle {get;set;}
+
+        public bool? IsBlog {get;set;}
 
         public bool Archived {get;set;} = false;
         /// <summary>
@@ -44,7 +47,11 @@ namespace SnitzCore.Service.TagHelpers
 
             link.Attributes.Add("rel", "index,follow");
             link.Attributes.Add("data-toggle", "tooltip");
-            if (Archived)
+            if (IsBlog.HasValue && IsBlog.Value)
+            {
+                link.Attributes.Add("href", $"{webrootpath}/Blog/{BlogTitle}/?replyid={ReplyId}");
+            }
+            else if (Archived)
             {
                 link.Attributes.Add("href", $"{webrootpath}/Topic/Archived/{TopicId}/?replyid={ReplyId}");
             }

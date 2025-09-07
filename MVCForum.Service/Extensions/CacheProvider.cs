@@ -21,6 +21,15 @@ namespace SnitzCore.Service.Extensions
             }
             return value;
         }
+        public static T Get<T>(string key)
+        {
+            if (!_cache.TryGetValue(key, out T value))
+            {
+                value = default;
+            }
+            return value;
+        }
+
         public static void Remove(string key)
         {
             _cache.Remove(key);

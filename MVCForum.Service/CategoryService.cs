@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using SkiaSharp;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
@@ -8,6 +6,7 @@ using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
@@ -16,14 +15,16 @@ namespace SnitzCore.Service
     public class CategoryService : ICategory
     {
         private readonly SnitzDbContext _dbContext;
+        private readonly log4net.ILog _logger;
 
         public CategoryService(SnitzDbContext dbContext)
         {
             _dbContext = dbContext;
+            _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
         }
         public Category? GetById(int id)
         {
-            var category = _dbContext.Categories
+            var category = _dbContext.Categories.AsNoTracking()
                 .Include(f => f.Forums)
                 .SingleOrDefault(f => f.Id == id);
 
@@ -37,11 +38,19 @@ namespace SnitzCore.Service
 
         }
 
-        public async Task Create(Category category)
+        public void Create(Category category)
         {
-            _dbContext.Categories.Add(category);
-            await _dbContext.SaveChangesAsync();
-            CacheProvider.Remove("AllCats");
+            try
+            {
+                _dbContext.Categories.Add(category);
+                _dbContext.SaveChanges();
+                CacheProvider.Remove("AllCats");
+
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Error creating category",e);
+            }
         }
 
         public async Task Delete(int categoryId)
@@ -59,7 +68,7 @@ namespace SnitzCore.Service
 
         }
 
-        public async Task Update(Category category)
+        public void Update(Category category)
         {
             try
             {
@@ -81,7 +90,7 @@ namespace SnitzCore.Service
                 throw;
             }
             CacheProvider.Remove("AllCats");
-            await _dbContext.SaveChangesAsync();
+            _dbContext.SaveChanges();
 
         }
 

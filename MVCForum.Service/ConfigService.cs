@@ -144,7 +144,11 @@ namespace SnitzCore.Service
         {
             return CacheProvider.GetOrCreate<int>("cfg_" + key,()=> CachedIntValue(key, defaultvalue),TimeSpan.FromMinutes(5));
         }
-
+        public bool IsEnabled(string key)
+        {
+            var keyvalue = CacheProvider.GetOrCreate<int>("cfg_" + key,()=> CachedIntValue(key, 0),TimeSpan.FromMinutes(5));
+            return keyvalue == 1;
+        }
         public IEnumerable<string> GetRequiredMemberFields()
         {
             return _dbContext.SnitzConfig.Where(c => c.Key.StartsWith("STRREQ") && c.Value == "1").Select(c=>c.Key);

@@ -44,7 +44,8 @@ namespace SnitzCore.Service.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             var urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccesor.ActionContext!);
-            if(!File.Exists(_env.WebRootPath + $@"\{contentfolder}\PhotoAlbum\{Src}"))
+            var path = Path.Combine(_env.WebRootPath, contentfolder, "PhotoAlbum", Src ?? "");
+            if (!File.Exists(path))
             {
                 Src = null;
             }

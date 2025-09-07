@@ -62,15 +62,17 @@ public class MemberImageTagHelper : TagHelper
             {
                 SourceFile = "~/Content/Avatar/" + member.PhotoUrl;
             }
+            var path = Path.Combine(_env.WebRootPath, _config.ContentFolder , "Avatar",member.PhotoUrl);
+            if (!File.Exists(_env.WebRootPath + SourceFile?.Replace("/", @"\").Replace("~", "")))
+            {
+                SourceFile = null;
+            }
         }
         if (_config.ContentFolder != "Content")
         {
             SourceFile = SourceFile?.Replace("/Content/", "/" + _config.ContentFolder + "/");
         }
-        if (!File.Exists(_env.WebRootPath + SourceFile?.Replace("/", @"\").Replace("~", "")))
-        {
-            SourceFile = null;
-        }
+
         base.Process(context, output);
         output.TagMode = TagMode.StartTagAndEndTag;
         output.TagName = "img";

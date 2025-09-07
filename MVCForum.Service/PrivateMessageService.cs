@@ -200,10 +200,10 @@ namespace SnitzCore.Service
         {
             _dbContext.PrivateMessages.Add(postmodel);
             _dbContext.SaveChanges();
-            var tomember = _memberService.GetById(postmodel.To);
 
-            if (tomember?.Pmemail == 1  && (_config.GetIntValue("STREMAIL",0) == 1))
+            if (postmodel?.Notify == 1  && (_config.GetIntValue("STREMAIL",0) == 1))
             {
+                var tomember = _memberService.GetById(postmodel.To);
                 BackgroundJob.Enqueue(() => _mailSender.SendPMNotification(tomember));
             }
         }
