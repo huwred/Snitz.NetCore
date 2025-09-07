@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AdCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Advertisements>
+    <Advert>
+      <ID>f1a2b3c4-d5e6-7f8a-9b0c-d1e2f3a4b5c6</ID>
+      <Impressions>162</Impressions>
+      <Width>340</Width>
+      <Height>280</Height>
+      <ImageUrl>340x280.png</ImageUrl>
+      <NavigateUrl>https://anotherexample.com</NavigateUrl>
+      <AlternateText>Another Example Ad</AlternateText>
+      <Keyword>side</Keyword>
+      <Weight>2</Weight>
+      <Clicks>2</Clicks>
+    </Advert>
+    <Advert>
+      <ID>8bfed910-df49-493f-9cb8-15a0e8b7dfab</ID>
+      <Impressions>164</Impressions>
+      <Width>300</Width>
+      <Height>600</Height>
+      <ImageUrl>300x600.png</ImageUrl>
+      <NavigateUrl>https://anotherexample.com</NavigateUrl>
+      <AlternateText>Another Example Ad</AlternateText>
+      <Keyword>side</Keyword>
+      <Weight>2</Weight>
+      <Clicks>0</Clicks>
+    </Advert>
+    <Advert>
+      <ID>09b1fc7d-754f-4bd4-85b9-b977323756fd</ID>
+      <Impressions>12</Impressions>
+      <Width>720</Width>
+      <Height>200</Height>
+      <ImageUrl>720x200.png</ImageUrl>
+      <NavigateUrl>https://carp-uk.net</NavigateUrl>
+      <AlternateText>Carpfishing UK website</AlternateText>
+      <Keyword>top</Keyword>
+      <Weight>5</Weight>
+      <Clicks>0</Clicks>
+    </Advert>
+    <Advert>
+      <ID>c8e2f3e1-4f3b-4d6b-8f7a-5e2b6c9f7a1b</ID>
+      <Impressions>314</Impressions>
+      <Width>320</Width>
+      <Height>60</Height>
+      <ImageUrl>320x60.png</ImageUrl>
+      <NavigateUrl>https://example.com</NavigateUrl>
+      <AlternateText>Example Ad</AlternateText>
+      <Keyword>side</Keyword>
+      <Weight>3</Weight>
+      <Clicks>0</Clicks>
+    </Advert>
+    <Advert>
+      <ID>648daf9d-32d0-4635-a9d7-315d5be52de4</ID>
+      <Impressions>546</Impressions>
+      <Width>468</Width>
+      <Height>60</Height>
+      <ImageUrl>730x90.png</ImageUrl>
+      <NavigateUrl>https://carp-uk.net</NavigateUrl>
+      <AlternateText>Carpfishing UK website</AlternateText>
+      <Keyword>top</Keyword>
+      <Weight>5</Weight>
+      <Clicks>0</Clicks>
+    </Advert>
+  </Advertisements>
+</AdCollection>
