@@ -37,7 +37,7 @@
                                                     @foreach (var topic in month.OrderBy(t => t.Created))
                                                     {
                                                         <li class="list-item">
-                                                            @topic.Created!.Substring(6, 2) - <a title="@topic.Title" class="blog-link" href="@Url.Action("Index", "Topic", new { id = topic.Id, pagenum = 1 })" data-bs-toggle="tooltip">@topic.Title</a>
+                                                            @topic.Created!.Substring(6, 2) - <a title="@topic.Title" class="blog-link" href="~/Blog/@topic.Title.Replace(" ","-")" data-bs-toggle="tooltip">@topic.Title</a>
                                                         </li>
                                                     }
                                                 </ul>

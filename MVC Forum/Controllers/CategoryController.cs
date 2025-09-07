@@ -190,6 +190,10 @@ namespace MVCForum.Controllers
                 CacheProvider.Remove("CatList");
                 return RedirectToAction("Index","Category",new{id = newCategory.Id});
             }
+            else
+            {
+                _logger.Error("Validation errors creating/editing category");
+            }
 
 
             return View("CreateEdit",model);

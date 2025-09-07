@@ -29,6 +29,7 @@
     {
         TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.Forum.Id);
     }
+    var isblog = Model.Topic?.Forum?.Type == (int)ForumType.BlogPosts;
 }
 <div class="table-row @answeredClass rounded-2 @moderatedClass">
 
@@ -54,8 +55,9 @@
     <div class="subjects" style="z-index: 2">
         <div class="d-lg-flex flex-row bd-highlight mb-1">
             <div class="p-2 flex-grow-1 bd-highlight">
-                <a snitz-if="@archives" href="~/Topic/Archived/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a>
-                <a snitz-if="@(!archives)" href="~/Topic/@Model.Id">@Html.Raw(BbCodeProcessor.Subject(Model.Title!))</a><br />
+                <a snitz-if="@isblog" href="~/Blog/@Model?.Title?.Replace(" ","-")">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a>
+                <a snitz-if="@(archives && !isblog)" href="~/Topic/Archived/@Model?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a>
+                <a snitz-if="@(!archives && !isblog)" href="~/Topic/@Model?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a><br />
                 <span>
                     @Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model.AuthorId"></member-link>
                     @if (ViewData["ActiveTopics"] != null && (bool)ViewData["ActiveTopics"]!)
@@ -85,7 +87,7 @@
                 }
                 @if (allowrating)
                 {
-                    <input name="input-name" type="number" class="rb-rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs" aria-label="Topic rating">
+                    <input name="input-name" type="number" class="rb-rating" value="@(Model?.Rating ?? 0)" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs" aria-label="Topic rating">
                 }
             </div>
             <div class="d-none d-md-flex  p-2 bd-highlight fs-6 post-buttons">
@@ -104,7 +106,7 @@
         {
             <span class="d-flex-1">
                 <span class="d-sm-inline-flex d-md-none">@Localizer["lblLastPost"]</span>
-                <lastpost-link jump-to="@(SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1)" post-date="@Model.LastPostDate" topic-id="@Model.Id" reply-id="@Model.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                <lastpost-link is-blog="@isblog" blog-title="@Model?.Title?.Replace(" ","-")" jump-to="@(SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1)" post-date="@Model.LastPostDate" topic-id="@Model.Id" reply-id="@Model.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
                 <br class="d-none d-sm-inline-flex" />
                 <span class="ms-2">@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
             </span>

@@ -47,6 +47,7 @@ namespace MVCForum.View_Components
                     Created = post.Created.FromForumDateStr(),
                     LastPostDate = !string.IsNullOrEmpty(post.LastPostDate) ? post.LastPostDate.FromForumDateStr() : null,
                     LatestReply = post.LastPostReplyId,
+                    LastPostAuthorName = post.LastPostAuthor?.Name,
                     RepliesCount = post.ReplyCount,
                     ViewCount = post.ViewCount,
                     UnmoderatedReplies = post.UnmoderatedReplies,

@@ -58,6 +58,10 @@
         <div class="container flex-grow-1">
             <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
             <main role="main" class="pb-3 mt-6">
+            @if (SnitzConfig.IsEnabled("INTTOPBANNER"))
+            {
+                @await Component.InvokeAsync("AdRotator", new { template = "top" })
+            }
             <div id="liveAlertPlaceholder"></div>     
             <partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.EntityFrameworkCore;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Home;
 using MVCForum.ViewModels.Post;
@@ -11,11 +12,13 @@ using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service;
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace MVCForum.Controllers
 {
@@ -23,10 +26,14 @@ namespace MVCForum.Controllers
     public class HomeController : SnitzBaseController
     {
         private readonly ISnitzCookie _snitzcookie;
+        private readonly IPost _postService;
+        private readonly IAdRotator _banner;
 
-        public HomeController(IMember memberService, ISnitzConfig config,IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, ISnitzCookie snitzcookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
+        public HomeController(IMember memberService, IAdRotator banner, ISnitzConfig config,IPost postservice, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, ISnitzCookie snitzcookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _snitzcookie = snitzcookie;
+            _postService = postservice;
+            _banner = banner;
         }
 
         public IActionResult Index()
@@ -65,6 +72,11 @@ namespace MVCForum.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        public PartialViewResult RefreshRecentTopics(int id = 0, int forumid= 0, bool sidebar=false)
+        {
+            return PartialView("_RecentTopics", _postService.GetAllTopicsAndRelated()
+                .OrderByDescending(t=>t.LastPostDate).Take(5).ToList());
         }
 
         public IActionResult SetLanguage(string? lang, string? returnUrl)
@@ -108,5 +120,26 @@ namespace MVCForum.Controllers
             return LocalRedirect("~/");
         }
 
+        public ActionResult RecordClick(string id)
+        {
+            // ..
+            // log what you need here
+            // ..
+            var thisUrl = "/";
+
+            var ads = _banner.GetAds("Admin");
+            if (ads != null)
+            {
+                var singleOrDefault = ads.Adverts.SingleOrDefault(a => a.Id.ToString() == id);
+                if (singleOrDefault != null)
+                {
+                    singleOrDefault.Clicks += 1;
+                    thisUrl = singleOrDefault.Url;
+                    _banner.Save(ads);
+                }
+            }
+            // finally redirect to the link URL
+            return Redirect(thisUrl);
+        }
     }
 }

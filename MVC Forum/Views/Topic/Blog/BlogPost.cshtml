@@ -8,6 +8,14 @@
 @model Post
 
 @{
+    var currmember = MemberService.Current();
+    bool allowrating = Model.AllowRating == 1 && !MemberService.HasRatedTopic(Model.Id, currmember?.Id);
+    
+    var moderatedClass = $"modstatus-{Model.Status}";
+    if (Model.UnmoderatedReplies > 0 && User.IsInRole("Administrator"))
+    {
+        moderatedClass = "modstatus-2";
+    }
     DateTime date = Model.Created.FromForumDateStr();
     var thanksservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(PostThanksService));
     if (thanksservice != null)
@@ -15,9 +23,29 @@
         TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.Forum.Id);
     }
 }
-<div class="blog-container clearfix">
+<div class="blog-container clearfix @moderatedClass">
     <div class="content-header">
-        <h1>@BbCodeProcessor.Subject(Model.Title) </h1>
+        <h1>@BbCodeProcessor.Subject(Model.Title) 
+            @if (allowrating && Model.Member.Name != User.Identity.Name)
+            {
+                <form asp-action="SaveRating" id="save-rating" asp-controller="Topic" method="POST" data-ajax="true" data-ajax-update="#topic_rating" data-ajax-complete="TopicRated">
+                    <div class="padding-md mb-3" dir="ltr" style="margin-left: 4px;">
+                        <input type="number" name="TopicId" value="@Model.Id" style="display:none" />
+                        <input type="number" name="MemberId" value="@currmember?.Id" style="display:none" />
+                        <div class="input-group" id="rating-grp">
+                            <span class="input-group-text">@Localizer["lblRateMe"]</span>
+                            <input id="rating-id" name="PostRating" type="number" class="rating" value="@(Decimal.Divide(Model.RatingTotal??0 , 10))" data-show-caption="true" data-min=0 data-max=5 data-step=0.5 data-size="sm">
+                        </div>
+                    </div>
+                    <div id="topic_rating"></div>
+                </form>
+            }
+            else 
+            {
+                <input snitz-if="@(Model.AllowRating == 1)" disabled name="PostRating" type="number" class="rating" value="@Model.GetTopicRating()" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="sm"/>
+                
+            }
+        </h1>
         <div class="author-info">
             <div class="author-details">
                 <snitz-avatar src="~/Content/Avatar/@Model.Member.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle avatar-container mb-2 profile-popup" member="@Model.Member.Name" data-id="@Model.MemberId"/>

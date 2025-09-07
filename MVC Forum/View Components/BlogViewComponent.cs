@@ -102,7 +102,7 @@ namespace MVCForum.View_Components
             }
 
             var path = Path.Combine(_environment.ContentRootPath, "App_Data","stopwords-" + culture + ".txt");
-            path = path.Replace("\\", System.IO.Path.DirectorySeparatorChar.ToString());
+            //path = path.Replace("\\", System.IO.Path.DirectorySeparatorChar.ToString());
             string logFile = "";
             if (System.IO.File.Exists(path))
             {

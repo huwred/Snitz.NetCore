@@ -22,11 +22,17 @@
                         <enum-select name="Subscription" enum-min="@SnitzConfig.GetIntValue("STRSUBSCRIPTION")" enum-type="typeof(CategorySubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
                 </div>
+                <div snitz-if="@(toplevelsubs == SubscriptionLevel.None)">
+                    <input type="hidden" asp-for="@Model.Subscription" />
+                </div>
                 <div snitz-if="@(SnitzConfig.IsEnabled("STRMODERATION"))" class="mb-3 row">
                     <label asp-for="Moderation" class="form-label col-12">@Localizer["catModeration"]</label>
                     <div class="col-10 col-lg-6">
                         <enum-select name="Moderation" enum-type="typeof(ModerationLevel)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
+                </div>
+                <div snitz-if="@(!SnitzConfig.IsEnabled("STRMODERATION"))">
+                    <input type="hidden" asp-for="@Model.Moderation" />
                 </div>
                 <div class="mb-3 row">
                     <label asp-for="Sort" class="form-label col-12">@Localizer["catOrder"]</label>

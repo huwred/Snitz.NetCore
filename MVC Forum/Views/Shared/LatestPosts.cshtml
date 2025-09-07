@@ -17,43 +17,50 @@
         @Localizer["lblRecentActivity"]
     </div>
     <div class="card-body p-0 latest-posts">
-    <ul class="list-group">
-        @foreach (var p in posts)
-        {
-            var moderatedClass = $"modstatus-{p.Status}";
-            if (p.UnmoderatedReplies > 0 && User.IsInRole("Administrator"))
+        <ul class="list-group">
+            @foreach (var p in posts)
             {
-                moderatedClass = "modstatus-2";
-            }
-            <li class="list-group-item @moderatedClass">
-                <div class="forumLogo" style="background-image: url(@p.Forum?.ImageUrl); background-size: 100%"></div>
-                <div class="postTitle">
-                    <a class="latestpost-title" asp-controller="Topic" asp-action="Index" asp-route-id="@p.Id" title="@p.Title">@Html.Raw(BbCodeProcessor.Subject(p.Title))</a>
-                    @Localizer["lblPostedBy"] <a asp-controller="Account" asp-action="Detail" asp-route-id="@p.AuthorName">@p.AuthorName</a>
-                </div>
-                <div class="postSubtitle">
-                    @switch (p.RepliesCount)
-                    {
-                        case 1:
-                            <span>@p.RepliesCount @Localizer["lblReply"]<text>, </text></span>
-                            break;
-                        case 0:
-                            <span>@Localizer["lblNoReplies"]<text>, </text></span>
-                            break;
-                        default:
-                            <span>@p.RepliesCount @Localizer["lblReplies"]<text>, </text></span>
-                            break;
-                    }
-                    <span class="postUser">
-                        @if (p.LastPostDate != null)
+                var isblog = p.Topic.Forum.Type == (int)ForumType.BlogPosts;
+                var moderatedClass = $"modstatus-{p.Status}";
+                if (p.UnmoderatedReplies > 0 && User.IsInRole("Administrator"))
+                {
+                    moderatedClass = "modstatus-2";
+                }
+                <li class="list-group-item @moderatedClass">
+                    <div class="forumLogo" style="background-image: url(@p.Forum?.ImageUrl); background-size: 100%"></div>
+                    <div class="postTitle">
+                        @if(isblog)
                         {
-                            @Localizer["lblLastPost"] <lastpost-link jump-to="@(SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1)" post-date="@p.LastPostDate" topic-id="@p.Id" reply-id="@p.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                            <a class="latestpost-title" href="~/Blog/@p.Title.Replace(" ","-")" title="@p.Title">@Html.Raw(BbCodeProcessor.Subject(p.Title))</a>
                         }
-                    </span>
-                </div>
-            </li>
-        }
-    </ul>
+                        else{
+                            <a class="latestpost-title" asp-controller="Topic" asp-action="Index" asp-route-id="@p.Id" title="@p.Title">@Html.Raw(BbCodeProcessor.Subject(p.Title))</a>
+                        }
+                        @Localizer["lblPostedBy"] <a asp-controller="Account" asp-action="Detail" asp-route-id="@p.AuthorName">@p.AuthorName</a>
+                    </div>
+                    <div class="postSubtitle">
+                        @switch (p.RepliesCount)
+                        {
+                            case 1:
+                                <span>@p.RepliesCount @Localizer["lblReply"]<text>, </text></span>
+                                break;
+                            case 0:
+                                <span>@Localizer["lblNoReplies"]<text>, </text></span>
+                                break;
+                            default:
+                                <span>@p.RepliesCount @Localizer["lblReplies"]<text>, </text></span>
+                                break;
+                        }
+                        <span class="postUser">
+                            @if (p.LastPostDate != null)
+                            {
+                                @Localizer["lblLastPost"] <lastpost-link is-blog="@isblog" blog-title="@p.Title.Replace(" ","-")" jump-to="@(SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1)" post-date="@p.LastPostDate" topic-id="@p.Id" reply-id="@p.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                            }
+                        </span>
+                    </div>
+                </li>
+            }
+        </ul>
     </div>
 </div>
 

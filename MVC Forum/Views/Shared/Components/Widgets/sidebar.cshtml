@@ -4,6 +4,10 @@
 
 }
 <div class="d-none d-lg-block @Model.Width widget-sidebar">
+    @if (SnitzConfig.IsEnabled("INTSIDEBANNER"))
+    {
+        @await Component.InvokeAsync("AdRotator", new { template = "side" })
+    }
     <partial name="QuickSearch" snitz-if="@(Model.Options?.Contains("search"))" />
     <partial name="FeaturedPoll" snitz-if="@(Model.Options?.Contains("poll"))" />
     @if (Model.Options!.Contains("latest"))
@@ -14,7 +18,7 @@
     {
         @await Component.InvokeAsync("ImageAlbum", new { template = "Featured" })
     }
-    @if (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && SnitzConfig.GetIntValue("INTCALUPCOMINGEVENTS") == 1
+    @if (SnitzConfig.IsEnabled("INTCALEVENTS") && SnitzConfig.IsEnabled("INTCALUPCOMINGEVENTS")
         && Model.Options!.Contains("events"))
     {
         if ((!SnitzConfig.IsEnabled("INTCALPUBLIC") && User.Identity.IsAuthenticated) || SnitzConfig.IsEnabled("INTCALPUBLIC"))

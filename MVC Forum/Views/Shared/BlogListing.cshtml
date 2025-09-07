@@ -35,7 +35,7 @@
     <div class="blog-container @moderatedClass">
         <div class="text ellipsis">
             <div class="content-header">
-                <h2><a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" class="topic-link" aria-label='@Localizer["lblView"] Topic, @BbCodeProcessor.Format(Model.Title, false)'>@BbCodeProcessor.Format(Model.Title, false)</a></h2>
+                <h2><a href="~/Blog/@Model.Title.Replace(" ", "-")" class="topic-link" aria-label='@Localizer["lblView"] Blog, @BbCodeProcessor.Format(Model.Title, false)'>@BbCodeProcessor.Format(Model.Title, false)</a></h2>
                 <div class="author-info">
                     <div class="author-details">
                         <snitz-avatar src="~/Content/Avatar/@Model.AuthorImageUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle avatarsmall profile-popup" data-id="@Model.AuthorId" member="@Model.AuthorName" />
@@ -57,6 +57,6 @@
             </div>
             <div class="text-concat p-2 mt-1">@Html.Raw(BbCodeProcessor.Format(Model.Message))</div>
        </div>
-        <a href="@Url.Action("Posts", "Topic", new { id = Model.Id, pagenum = 1, archived = 0 })" data-toggle="tooltip" title='@Localizer["lblView"] Topic, @BbCodeProcessor.Subject(Model.Title)'>@Localizer["blogMore"] ... </a><br />
+        <a href="~/Blog/@Model.Title.Replace(" ", "-")" data-toggle="tooltip" title='@Localizer["lblView"] Topic, @BbCodeProcessor.Subject(Model.Title)'>@Localizer["blogMore"] ... </a><br />
     </div>
 </div>

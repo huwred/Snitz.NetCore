@@ -124,6 +124,7 @@ builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IHtmlLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IPasswordPolicyService, PasswordPolicyService>();
+builder.Services.AddTransient<IAdRotator, BannerService>();
 
 builder.Services.AddMvc().AddViewLocalization();
 

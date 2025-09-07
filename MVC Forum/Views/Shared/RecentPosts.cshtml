@@ -1,0 +1,44 @@
+﻿@using MVCForum.ViewModels.Post
+@using SnitzCore.Data.Extensions
+@model IEnumerable<MVCForum.ViewModels.Post.PostListingModel>
+
+<div class="card mb-2">
+    <div class="card-header  subforum-title">
+        @Localizer["lblRecentActivity"]
+    </div>
+    <div id="recent-topics" class="card-body p-0 latest-posts">
+        <div class="side-block p-2">
+            <div id="sidebar-recent-posts" class="side-block-body">
+                <ul id="recent-ticker" class="list-unstyled">
+                    @foreach (var item in Model)
+                    {
+                        @if (item.Status != (int)Status.Draft || (item.Status == (int)Status.Draft && item.AuthorId == MemberService.Current().Id))
+                        {
+                            <li style="">
+                                <a class="sidebar-recent-title" href="~/Topic/@item.Id">@Html.Raw(BbCodeProcessor.Subject(item.Title!))</a><br />
+                                @if (item?.LastPostDate != null)
+                                {
+                                    <span class="sidebar-recent-author">
+                                        <span>@Localizer["lblLastPost"]</span>
+                                        <lastpost-link jump-to="@(SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1)" post-date="@item.LastPostDate" topic-id="@item.Id" reply-id="@item.LatestReply" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></lastpost-link>
+
+                                        <span class="ms-2">@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }" member-name="@item.LastPostAuthorName"></member-link></b></span>
+                                    </span>
+                                }
+                                <hr class="mb-1"/>
+                                <span class="sidebar-recent-content truncate-overflow">@Html.Raw(BbCodeProcessor.Format(item.Message))</span>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    setInterval(function(){ tick () }, 6000);
+        function tick(){
+        $('#recent-ticker li:first').slideUp( function () { $(this).appendTo($('#recent-ticker')).slideDown(); });
+    }
+</script>

@@ -91,7 +91,6 @@
     <Content Remove="wwwroot\css\LightTheme.css" />
     <Content Remove="wwwroot\css\OrangeTheme.css" />
     <Content Remove="wwwroot\css\print.css" />
-    <Content Remove="wwwroot\css\prism.css" />
     <Content Remove="wwwroot\css\site.css" />
     <Content Remove="wwwroot\css\SnitzTheme.css" />
     <Content Remove="wwwroot\css\VellumTheme.css" />
@@ -210,7 +209,6 @@
     <None Include="wwwroot\css\LightTheme.css" />
     <None Include="wwwroot\css\OrangeTheme.css" />
     <None Include="wwwroot\css\print.css" />
-    <None Include="wwwroot\css\prism.css" />
     <None Include="wwwroot\css\site.css" />
     <None Include="wwwroot\css\CarpyTheme.css" />
     <None Include="wwwroot\css\VellumTheme.css" />
@@ -342,8 +340,8 @@
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
     <PackageReference Include="Snitz.Events" Version="1.0.2-rc26" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc55" />
-    <PackageReference Include="Snitz.PostThanks" Version="1.0.3-rc40" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc59" />
+    <PackageReference Include="Snitz.PostThanks" Version="1.0.3-rc42" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
@@ -365,6 +363,21 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Update="wwwroot\Content\BannerAds\300x600.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Content\BannerAds\320x60.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Content\BannerAds\340x280.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Content\BannerAds\720x200.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Content\BannerAds\730x90.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\js\timeago\timeago.fa.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -384,6 +397,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Update="App_Data\adrotator.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="App_Data\emoticons.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

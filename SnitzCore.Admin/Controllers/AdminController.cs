@@ -487,9 +487,10 @@ namespace SnitzCore.BackOffice.Controllers
                 _dbcontext.Members.Attach(member);
                 _dbcontext.Entry(member).Property(m => m.PhotoUrl).IsModified = true;
                 _dbcontext.SaveChanges();
-                if (System.IO.File.Exists(_env.WebRootPath + @"\Content\Avatar\" + img))
+                var path = Path.Combine(_env.WebRootPath, "Content", "Avatar", img);
+                if (System.IO.File.Exists(path))
                 {
-                    System.IO.File.Delete(_env.WebRootPath + @"Content\Avatar\" + img);
+                    System.IO.File.Delete(path);
                 }
                 return Json(new{success=true});
             }
@@ -824,7 +825,7 @@ namespace SnitzCore.BackOffice.Controllers
                     Email = vm.Email, 
                     Name = vm.Username, 
                     Level = 1, 
-                    Status = 0,
+                    Status = 1,
                     Created = DateTime.UtcNow.ToForumDateStr(),
                     Ip = "0.0.0.0",
                     Sha256 = 1
@@ -839,23 +840,23 @@ namespace SnitzCore.BackOffice.Controllers
                 };
                 try
                 {
-                    //var required = new List<KeyValuePair<string, object>>();
-                    //var newmember = _memberService.Create(forumMember, required);
-                    //appUser.MemberId = newmember.Id;
+                    var required = new List<KeyValuePair<string, object>>();
+                    var newmember = _memberService.Create(forumMember, required);
+                    appUser.MemberId = newmember.Id;
 
-                    //IdentityResult result = _userManager.CreateAsync(appUser, vm.Password).Result;
-                    //if (!result.Succeeded)
-                    //{
-                    //    var errors = "";
-                    //    _memberService.Delete(newmember);
-                    //    foreach (IdentityError error in result.Errors)
-                    //    {
-                    //        ModelState.AddModelError("Password", error.Description);
-                    //        errors += $" {error.Description},";
-                    //    }
-                    //    return Content("Something wrong!" + errors);
+                    IdentityResult result = _userManager.CreateAsync(appUser, vm.Password).Result;
+                    if (!result.Succeeded)
+                    {
+                        var errors = "";
+                        _memberService.Delete(newmember);
+                        foreach (IdentityError error in result.Errors)
+                        {
+                            ModelState.AddModelError("Password", error.Description);
+                            errors += $" {error.Description},";
+                        }
+                        return Content("Something wrong!" + errors);
 
-                    //}
+                    }
                 }
                 catch (Exception e)
                 {
@@ -945,6 +946,11 @@ namespace SnitzCore.BackOffice.Controllers
         public IActionResult Restart()
         {
             _appLifetime.StopApplication();
+            return Ok(true);
+        }
+        public IActionResult UpdateCounts()
+        {
+            _dbcontext.Database.ExecuteSqlRawAsync("EXEC snitz_updateCounts");
             return Ok(true);
         }
         public IActionResult DeleteSpamDomain(IFormCollection form)

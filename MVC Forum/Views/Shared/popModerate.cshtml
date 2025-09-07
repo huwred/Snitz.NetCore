@@ -1,43 +1,40 @@
-﻿
-@model MVCForum.ViewModels.Post.ApproveTopicViewModal
+﻿@model MVCForum.ViewModels.Post.ApproveTopicViewModal
 @{
-    var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
-
+    var test = Model.PostStatus;
 }
-@* <div class="modal-header">
-    <button type="button" class="btn btn-outline-danger close" data-bs-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-    <h5 class="modal-title" id="moderateModalLabel">Post Moderation</h5>
-</div> *@
 <div class="container" id="approvalForm">
-    @using (Html.BeginForm("ModeratePost", controllerName, FormMethod.Post, new { id = "moderateForm" }))
-    {
+    <form id="moderateForm" asp-controller="Topic" asp-action="ModeratePost" data-ajax="true" class="needs-validation" novalidate data-toggle="validator">
         @Html.HiddenFor(m => m.Id)
         <div class="form-horizontal">
-            <div class="form-group">
-                <label class="checkbox-inline"> @Html.CheckBoxFor(m => m.EmailAuthor, new { id = "emailAuthor" }) <b>Send email to Author</b> </label>
+            <div class="mb-3">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" asp-for="EmailAuthor" type="checkbox" name="EmailAuthor" id="emailAuthor">
+                    <label class="form-check-label" for="emailAuthor">Send email to Author</label>
+                </div>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <textarea disabled class="form-control" rows="4" name="ApprovalMessage" id="approvalMessage" placeholder="Add an extra message to the email">@Model.ApprovalMessage</textarea>
             </div>
-            <div class="form-group">
-                <label class="text-inline"><b>Action:</b> </label>
-                <label class="radio-inline">
-                    @Html.RadioButtonFor(m => m.PostStatus, "Approve", new { id = "inlineRadio1" }) Approve
-                </label>
-                <label class="radio-inline">
-                    @Html.RadioButtonFor(m => m.PostStatus, "Reject", new { id = "inlineRadio2" }) Reject
-                </label>
-                <label class="radio-inline">
-                    @Html.RadioButtonFor(m => m.PostStatus, "Hold", new { id = "inlineRadio3" }) Hold
-                </label>
-                <label class="text-inline">@Html.ValidationMessageFor(m => m.PostStatus, null, new { @class = "text-warning" })</label>
+            <div class="mb-3 has-validation position-relative">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="PostStatus" id="inlineRadio1" value="Approve" required>
+                    <label class="form-check-label" for="inlineRadio1">Approve</label> 
+                    <div class="invalid-tooltip">Please select at least one</div>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="PostStatus" id="inlineRadio2" value="Reject" required>
+                    <label class="form-check-label" for="inlineRadio2">Reject</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="PostStatus" id="inlineRadio3" value="OnHold" checked="@(Model.PostStatus=="OnHold")" required>
+                    <label class="form-check-label" for="inlineRadio3">Hold</label>
+                </div>
+
             </div>
-@*             <div class="form-group pull-right flip">
-                <button type="button" class="btn btn-sm btn-warning" data-bs-dismiss="modal">@Localizer["btnCancel"]</button>
-                <button type="submit" class="btn btn-sm btn-primary">Save</button>
-            </div> *@
+
         </div>
-    }
+    </form>
+
     <script type="text/javascript">
         $(document).ready(function () {
             $.validator.unobtrusive.parse('#approvalForm');

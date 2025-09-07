@@ -105,7 +105,15 @@
         @await Component.InvokeAsync("Widgets", new { template = "sidebar", widgets = new[] { "search", "members", "events" } })
     </div>
 </div>
-
+<modal id="moderateModal" title="Post Moderation">
+    <modal-body>
+        <div id="postModeration"></div>
+    </modal-body>
+    <modal-footer dismiss-text="Cancel">
+        <button id="send-email" form="moderateForm" type="submit" class="btn btn-success">@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+        <button type="reset" form="moderateForm" class="btn btn-warning ">@Localizer["btnReset"]</button>
+    </modal-footer>
+</modal>
 @section Scripts{
     <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
 <script type="text/javascript" src="~/js/postcontroller.min.js"></script>

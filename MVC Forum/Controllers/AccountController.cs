@@ -182,7 +182,7 @@ namespace MVCForum.Controllers
                 }
             }
             var memberPage = new MvcBreadcrumbNode("Index", "Account", "lblMembers");
-            var myPage = new MvcBreadcrumbNode("Index", "Account", "lblProfile"){ Parent = memberPage };
+            var myPage = new MvcBreadcrumbNode("Index", "Account", _languageResource["ProfileDetails",member.Name].Value){ Parent = memberPage };
             ViewData["BreadcrumbNode"] = myPage;  
             try
             {

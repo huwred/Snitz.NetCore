@@ -187,7 +187,8 @@ namespace MVCForum.Controllers
                 switch (forum.Defaultdays)
                 {
                     case -1 : //AllOpen 
-                        forumPosts = forumPosts?.Where(f => f.Status == 1);
+                        if (!(isadministrator || ismoderator))
+                        { forumPosts = forumPosts?.Where(f => f.Status == 1); }
                         break;
                     //case -99 : //Archived
                     //    //TODO: Archived Topics                      
@@ -287,6 +288,8 @@ namespace MVCForum.Controllers
             }
             return View("Index");
         }
+
+        
 
         public IActionResult Archived(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 0)
         {

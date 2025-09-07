@@ -104,13 +104,18 @@
                         <enum-select name="Moderation" enum-type="typeof(Moderation)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
                 </div>
+                <div snitz-if="@(!SnitzConfig.IsEnabled("STRMODERATION"))">
+                    <input type="hidden" asp-for="@Model.Moderation" />
+                </div>
                 <div snitz-if="@(toplevelsubs == null || (CategorySubscription)toplevelsubs != CategorySubscription.None)" class="mb-3 row">
                     <label asp-for="Subscription" class="form-label col-2">@Localizer["forumSubscription"]</label>
                     <div class="col-10 col-lg-6">
                         <enum-select name="Subscription" enum-min="@Model.CategorySubs" enum-type="typeof(ForumSubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
                 </div>
-
+                <div snitz-if="@(toplevelsubs != null && (CategorySubscription)toplevelsubs == CategorySubscription.None)">
+                    <input type="hidden" asp-for="@Model.Subscription" />
+                </div>
                 <div class="mb-3 form-check">
                     @Html.CheckBoxFor(m => m.IncrementMemberPosts, new { @class = "form-check-input" })
                     <label asp-for="IncrementMemberPosts" class="form-check-label">@Localizer["forumPostCount"]</label>

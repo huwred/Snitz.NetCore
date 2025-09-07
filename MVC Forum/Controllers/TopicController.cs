@@ -226,6 +226,166 @@ namespace MVCForum.Controllers
             }
 
         }
+
+        [Route("Blog/{id}")]
+        public IActionResult Index(string id,int page = 1, int pagesize = 0, string sortdir="", int? replyid = null)
+        {
+            if(TempData["Error"] != null)
+            {
+                ViewBag.Error = TempData["Error"];
+                if((string)TempData["Error"]! == "floodcheck")
+                {
+                    var timeout = _config.GetIntValue("STRFLOODCHECKTIME", 30);
+                    ViewBag.Error = _languageResource.GetString("FloodcheckErr", timeout);
+                }
+                TempData["Error"] = null;
+                return View("Error");
+            }            
+            
+            bool passwordrequired = false;
+            bool notallowed = false;
+            bool isadministrator = User.IsInRole("Administrator");
+            bool signedin = false;
+            ViewBag.RequireAuth = false;
+            if (User.Identity is { IsAuthenticated: true })
+            {
+                signedin = true;
+            }
+
+            if(sortdir == "")
+            {
+                sortdir = _config.GetValueWithDefault("STRTOPICSORT","asc");
+            }
+
+            var haspoll = false;
+            var post = _postService.GetTopicAsync(id).Result;
+
+            if(post == null)
+            {
+                ViewBag.Error = "No Topic Found with that ID";
+                return View("Error");
+            }  
+            if (!HttpContext.Session.Keys.Contains("TopicId_"+ id))
+            {
+                HttpContext.Session.SetInt32("TopicId_"+ id,1);
+                _postService.UpdateViewCount(post.Id, post.ViewCount + 1);
+            }            
+            //if we have a replyid, does it exist in ths topic?
+            if (replyid.HasValue && post.Replies.Any())
+            {
+                //no reply in that topic, so reset the jumpto replyid
+                if (!post.Replies.Any(r => r.Id == replyid))
+                {
+                    replyid = null;
+                }
+            }
+            bool ismoderator = User.IsInRole($"Forum_{post.ForumId}");
+            notallowed = CheckAuthorisation(post.Forum!.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
+            if (!isadministrator && passwordrequired)
+            {
+                var auth = _httpcontext!.Session.GetString("Pforum_" + post.ForumId) == null ? "" : _httpcontext.Session.GetString("Pforum_" + post.ForumId);
+                if (auth != post.Forum.Password)
+                {
+                    ViewBag.RequireAuth = true;
+                }
+            }
+
+            if (post.ReplyCount > 0 || post.UnmoderatedReplies > 0)
+            {
+                post = _postService.GetTopicWithRelated(post.Id).Result;
+            }
+
+            if(_memberService.Current() != null)
+            { 
+                _cookie.UpdateTopicTrack(post.Id.ToString()); 
+            }
+            if (HttpContext.Session.GetInt32("TopicPageSize") != null && pagesize == 0)
+            {
+                pagesize = HttpContext.Session.GetInt32("TopicPageSize")!.Value;
+            }
+            else if (pagesize == 0)
+            {
+                pagesize = 10;
+            }
+            HttpContext.Session.SetInt32("TopicPageSize",pagesize);
+
+            var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
+            var catPage = new MvcBreadcrumbNode("", "Category", post!.Category?.Name){ Parent = homePage,RouteValues = new{id=post.Category?.Id}};
+            var forumPage = new MvcBreadcrumbNode("Index", "Forum", post.Forum?.Title){ Parent = catPage,RouteValues = new{id=post.ForumId}};
+            var topicPage = new MvcBreadcrumbNode("", "Blog", post.Title) { Parent = forumPage };
+            ViewData["BreadcrumbNode"] = topicPage;
+            
+            ViewData["Title"] = post.Title;
+            var totalCount = post.Replies.Count();
+            var pageCount = 1;
+            if (totalCount > 0)
+            {
+                pageCount = (int)Math.Ceiling((double)totalCount! / pagesize);
+            }
+            if(page == -1)
+            {
+                page = pageCount;
+                //pagedReplies = PagedReplies(page, pagesize, sortdir, post); 
+            }
+            PagedList<PostReply>? pagedReplies = PagedReplies(page, pagesize, sortdir, post);
+            //we have a replyid, is it in the current set, otherwise skip forwards
+            if (replyid.HasValue && totalCount > 1)
+            {
+                while (pagedReplies != null && pagedReplies.All(p => p.Id != replyid))
+                {
+                    page += 1;
+                    pagedReplies = PagedReplies(page, pagesize, sortdir, post);                    
+                }
+            } 
+
+            IEnumerable<PostReplyModel> replies = new HashSet<PostReplyModel>();
+            if (pagedReplies != null)
+            {
+                replies = BuildPostReplies(pagedReplies);
+
+            }
+            var model = new PostIndexModel()
+            {
+                Id = post.Id,
+                Topic = post,
+                Title = post.Title,
+                Author = post.Member!,
+                AuthorId = post.Member!.Id,
+                ShowSig = post.Sig == 1,
+                Views = post.ViewCount,
+                Status = post.Status,
+                IsLocked = post.Status == 0 || post.Forum?.Status == 0,
+                IsSticky = post.IsSticky == 1,
+                HasPoll = haspoll,
+                Answered = post.Answered,
+                //AuthorRating = post.User?.Rating ?? 0,
+                AuthorName = post.Member?.Name ?? "Unknown",
+                Created = post.Created.FromForumDateStr(),
+                Content = post.Content,
+                Replies = replies,
+                ForumId = post.Forum!.Id,
+                ForumName = post.Forum.Title,
+                PageNum = page,
+                PageCount = pageCount,
+                PageSize = pagesize,
+                SortDir = sortdir,
+                Edited = post.LastEdit?.FromForumDateStr(),
+                EditedBy = post.LastEditby == null ? "" : _memberService.GetMemberName(post.LastEditby.Value),
+                AllowTopicRating = post.AllowRating == 1 && _config.GetIntValue("INTTOPICRATING")==1 ,
+                AllowRating = post.Forum.Rating==1 && _config.GetIntValue("INTTOPICRATING")==1 && !_memberService.HasRatedTopic(post.Id,_memberService.Current()?.Id),
+                Rating = post.GetTopicRating(),
+                AccessDenied = notallowed,
+            };
+            if(post.Forum.Type == (int)ForumType.BlogPosts)
+            {
+                return View("Blog/Index",model);
+            }
+            else
+            {
+                return View(model);
+            }
+
+        }
  
         public IActionResult Archived(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
         {
@@ -978,9 +1138,9 @@ namespace MVCForum.Controllers
 
             if (ModelState.IsValid)
             {
-                var topic = _postService.GetTopicForUpdate(vm.Id);
+                var topic = _postService.GetTopicAsync(vm.Id).Result;
                 var author = _memberService.GetById(topic.MemberId);
-                var forum = _forumService.GetWithPosts(topic.ForumId);
+                var forum = _forumService.Get(topic.ForumId);
                 var subject = "";
                 var message = "";
                 
@@ -989,10 +1149,8 @@ namespace MVCForum.Controllers
                 switch (vm.PostStatus)
                 {
                     case "Approve" :
-                        topic.Status = 1;
-                        _snitzDbContext.Update(topic);
-                        await _snitzDbContext.SaveChangesAsync();
-                        await _postService.UpdateLastPost(vm.Id,null);
+                        await _postService.SetStatus(vm.Id, Status.Open);
+                        await _postService.UpdateLastPost(vm.Id,-1);
                         //update Forum
                         forum = await _forumService.UpdateLastPost(topic.ForumId);
                         if (forum.CountMemberPosts == 1)
@@ -1024,7 +1182,7 @@ namespace MVCForum.Controllers
                             _mailSender.ParseTemplate("rejectPost.html",_languageResource["tipRejectTopic"].Value,author?.Email!,author?.Name!, "", cultureInfo.Name,vm.ApprovalMessage);
 
                         break;
-                    case "Hold":
+                    case "OnHold":
                         await _postService.SetStatus(vm.Id, Status.OnHold);
                         //Send email
                             subject = _config.ForumTitle + ": Topic placed on Hold";
@@ -1037,8 +1195,8 @@ namespace MVCForum.Controllers
                 {
                     _mailSender.ModerationEmail(author, subject, message, forum, topic);
                 }
-                
-                return RedirectToAction("Index", "Forum", new { id=topic.ForumId});
+                return Json(new { result = true });
+                //return RedirectToAction("Index", "Forum", new { id=topic.ForumId});
             }
 
             return PartialView("popModerate",vm);
@@ -1052,7 +1210,8 @@ namespace MVCForum.Controllers
         [Authorize(Roles = "Administrator,Moderator")]
         public PartialViewResult Moderate(int id)
         {
-            ApproveTopicViewModal vm = new ApproveTopicViewModal {Id = id};
+            var topic = _postService.GetTopic(id);
+            ApproveTopicViewModal vm = new ApproveTopicViewModal {Id = id, PostStatus = ((Status)topic.Status).ToString()};
             return PartialView("popModerate",vm);
         }
 
@@ -1180,7 +1339,7 @@ namespace MVCForum.Controllers
         [Authorize(Roles = "Administrator,Moderator")]
         [ValidateAntiForgeryToken]
         [Route("Topic/SplitTopic/")]
-        public IActionResult SplitTopic(SplitTopicViewModel vm)
+        public async Task<IActionResult> SplitTopicAsync(SplitTopicViewModel vm)
         {
             var originaltopic = _postService.GetTopicWithRelated(vm.Id).Result;
             if (!ModelState.IsValid)
@@ -1211,9 +1370,9 @@ namespace MVCForum.Controllers
             {
                 topic = _postService.SplitTopic(ids, vm.ForumId, vm.Subject);
 
-                _postService.UpdateLastPost(topic!.Id,0);
-                _forumService.UpdateLastPost(topic.ForumId);
-                _postService.UpdateLastPost(originaltopic!.Id,0);
+                await _postService.UpdateLastPost(topic!.Id,0);
+                await _forumService.UpdateLastPost(topic.ForumId);
+                await _postService.UpdateLastPost(originaltopic!.Id, 0);
                 //        EmailController.TopicSplitEmail(ControllerContext, topic);
             }
 
@@ -1433,7 +1592,7 @@ namespace MVCForum.Controllers
                 MemberId = memberid,
                 ForumId = originaltopic != null ? originaltopic.ForumId : model.ForumId,
                 CategoryId = originaltopic != null ? originaltopic.CategoryId : model.CatId,
-                AllowRating = (short)(model.AllowRating ? 1 : 0),
+                AllowRating = (short)(model.AllowTopicRating ? 1 : 0),
                 IsSticky = (short)(model.IsSticky ? 1 : 0),
                 ArchiveFlag = model.DoNotArchive ? 1 : 0,
                 Status = (forum.Moderation == Moderation.AllPosts || forum.Moderation == Moderation.Topics) && !(donotModerate)
