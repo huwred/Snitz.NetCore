@@ -1,0 +1,14 @@
+﻿@model Advert
+@{
+    var basePath = Context.Request.PathBase;
+}
+<div class="sidebar-advert mb-3">
+    <a href="@Url.Action("RecordClick", "Home", new { id = Model.Id })" title="@Model.AltText" target="_blank" rel="nofollow">
+        <img src="@basePath/Content/BannerAds/@Model.Image" class="rounded mx-auto d-block" alt="@Model.AltText" />
+    </a>
+    <div class="img-overlay">
+        <a href="#" class="icon">
+            <i class="fa fa-trash-o"></i>
+        </a>
+    </div>
+</div>

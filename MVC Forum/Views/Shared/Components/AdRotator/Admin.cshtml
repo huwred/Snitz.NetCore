@@ -1,0 +1,103 @@
+﻿@model AdCollection
+@{
+    var basePath = Context.Request.PathBase;
+}
+<div class="accordion-item">
+    <h2 class="accordion-header" id="flush-banners">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseBanners" aria-expanded="false" aria-controls="flush-collapseBanners">
+            Ad Banners
+        </button>
+    </h2>
+    <div id="flush-collapseBanners" class="accordion-collapse collapse" aria-labelledby="flush-banners" data-bs-parent="#plugin-accordion">
+        <div class="accordion-body">
+            <form id="ads-enable" asp-action="SaveFeatures" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#ads-result">
+            <div class="mb-3">
+                <admin-config config-key="INTTOPBANNER" config-label="Banners top of page" config-val="@SnitzConfig.GetIntValue("INTTOPBANNER", 0)"></admin-config>
+            </div>
+            <div class="form-group">
+                <admin-config config-key="INTSIDEBANNER" config-label="Banners in side bar" config-val="@SnitzConfig.GetIntValue("INTSIDEBANNER", 0)"></admin-config>
+            </div>
+@*             <div class="form-group">
+                <admin-config config-type="number" config-key="INTADDURATION" config-label="Duration (secs)" config-val="@SnitzConfig.GetIntValue("INTADDURATION", 0)"></admin-config>
+            </div> *@
+                <div class="mb-3">
+                    <button id="btnSubmit" type="submit" class="btn btn-success">Save Changes</button>
+                </div>
+            <div id="ads-result"></div>
+            </form>
+            <div class="accordion accordion-flush" id="accordionBanners">
+                @for (int i = 0; i < Model.Adverts.Count(); i++)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-heading_@i">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse_@i" aria-expanded="false" aria-controls="flush-collapse_@i">
+                                <image src="@basePath/Content/BannerAds/@Model.Adverts[i].Image" class="rounded d-block m-1" alt="@Model.Adverts[i].AltText"></image>
+                                <span class="h5">
+                                    Location: @Model.Adverts[i].Keyword<br/>
+                                    Impressions: @Model.Adverts[i].Impressions<br />
+                                    Clicks: @Model.Adverts[i].Clicks
+                                </span>
+                            </button>
+                        </h2>
+                        <div id="flush-collapse_@i" class="accordion-collapse collapse" aria-labelledby="flush-heading_@i" data-bs-parent="#accordionBanners">
+                            <div class="accordion-body">
+                                <form method="post" asp-action="Save" asp-controller="Banner" class="bg-plugin text-bg-plugin p-2 rounded" method="POST" data-ajax="true" data-ajax-update="#ads-result-@i">
+                                    <div class="mb-3">
+                                        <input type="hidden" name="Id" value="@Model.Adverts[i].Id" />
+                                        <input type="hidden" name="CLicks" value="@Model.Adverts[i].Clicks" />
+                                        <input type="hidden" name="Impressions" value="@Model.Adverts[i].Impressions" />
+                                        <input type="hidden" name="Image" value="@Model.Adverts[i].Image" />
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="AltText" class="form-label">Alt Text</label>
+                                            <input type="text" class="form-control" name="AltText" value="@Model.Adverts[i].AltText" required />
+                                            <div class="form-text">Alternate Text for the image.</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="Keyword" class="form-label">Location</label>
+                                            <input type="text" class="form-control" name="Keyword" value="@Model.Adverts[i].Keyword" required />
+                                            <div class="form-text">Page location for Banner.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="Width" class="form-label">Width</label>
+                                            <input type="number" class="form-control" name="Width" value="@Model.Adverts[i].Width" />
+                                        </div>
+                                        <div class="col">
+                                            <label for="Height" class="form-label">Height</label>
+                                            <input type="number" class="form-control" name="Height" value="@Model.Adverts[i].Height" />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="Weight" class="form-label">Weight</label>
+                                            <input type="number" class="form-control" name="Weight" value="@Model.Adverts[i].Weight" min="1" max="10"/>
+                                            <div class="form-text">How likely the add should repeat, higher values will appear more often.</div>
+                                        </div>
+                                        <div class="col">
+                                            &nbsp;
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="Url" class="form-label">Advert Link</label>
+                                            <input type="url" class="form-control" name="Url" value="@Model.Adverts[i].Url" />
+                                            <div class="form-text">Where the user should be sent when clicking the Advert.</div>
+
+                                        </div>
+                                    </div>
+                                    <div class="mb-3" id="ads-result-@i"></div>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                    <button type="button" class="btn btn-danger" data-id="@Model.Adverts[i].Id">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

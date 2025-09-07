@@ -15,7 +15,7 @@
         <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">@Localizer["mnuAccountPM"]</button>
         <button class="nav-link" id="v-pills-plugin-tab" data-bs-toggle="pill" data-bs-target="#v-pills-plugin" type="button" role="tab" aria-controls="v-pills-plugin" aria-selected="false">@Localizer["mnuAdminMODS"]</button>
     </div>
-    <div class="tab-content bg-white p-4" id="v-pills-tabContent">
+    <div class="tab-content bg-white p-2" id="v-pills-tabContent">
         <div class="tab-pane fade show active w-100" id="v-pills-forum" role="tabpanel" aria-labelledby="forum-tab">
             <h4>Forum Settings</h4>
             <hr/>
@@ -191,6 +191,7 @@
         </div>
         <div class="tab-pane fade w-100" id="v-pills-plugin" role="tabpanel" aria-labelledby="plugin-tab">
             <div class="accordion accordion-flush" id="plugin-accordion">
+                @await Component.InvokeAsync("AdRotator", new { template = "Admin" })
                 @await Component.InvokeAsync("Polls", new { template ="Config" })
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="bookmark-heading">
@@ -240,33 +241,42 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
+            $(document).on("click", "#INTTOPICRATING", function (e) {
+                $("#rating-enable").submit();
+            });
             $(document).on("click", "#STRBOOKMARK", function (e) {
                 $("#bookmark-enable").submit();
             });
             $(document).on("click", "#INTCALEVENTS", function (e) {
                 $("#photoalbum-enable").submit();
-                $('#EVENTSADMIN').prop("disabled", !e.target.checked);
-                $('#EVENTSCONFIG').prop("disabled", !e.target.checked);
+                var checked = $(this).prop('checked');
+                $('#EVENTSADMIN').prop("disabled", !checked);
+                $('#EVENTSCONFIG').prop("disabled", !checked);
             });
-
-            document.querySelector('#STRIPLOGGING').addEventListener('click', (e) => {
-                document.querySelector('#IPLOGENABLED').disabled = !e.target.checked;
+            $('#STRIPLOGGING').on('change', function () {
+                var checked = $(this).prop('checked');
+                $('#IPLOGENABLED').prop('disabled', !checked);
             });
-            document.querySelector('#STRSHOWPAGING').addEventListener('click', (e) => {
-                document.querySelector('#PAGINGENABLED').disabled = !e.target.checked;
+            $('#STRSHOWPAGING').on('change', function () {
+                var checked = $(this).prop('checked');
+                $('#PAGINGENABLED').prop('disabled', !checked);
             });
-            document.querySelector('#STRHOTTOPIC').addEventListener('click', (e) => {
-                document.querySelector('#HOTTOPICSENABLED').disabled = !e.target.checked;
+            $('#STRHOTTOPIC').on('change', function () {
+                var checked = $(this).prop('checked');
+                $('#HOTTOPICSENABLED').prop('disabled', !checked);
             });
-            document.querySelector('#STRFLOODCHECK').addEventListener('click', (e) => {
-                document.querySelector('#FLOODCHECKENABLED').disabled = !e.target.checked;
+            $('#STRFLOODCHECK').on('change', function () {
+                var checked = $(this).prop('checked');
+                $('#FLOODCHECKENABLED').prop('disabled', !checked);
             });
-            document.querySelector('#STRALLOWUPLOADS').addEventListener('click', (e) => {
-                document.querySelector('#UPLOADSENABLED').disabled = !e.target.checked;
-                document.querySelector('#ALBUMENABLED').disabled = !e.target.checked;
+            $('#STRALLOWUPLOADS').on('change', function () {
+                var checked = $(this).prop('checked');
+                $('#UPLOADSENABLED').prop('disabled', !checked);
+                $('#ALBUMENABLED').prop('disabled', !checked);
             });
-            document.querySelector('#STRPMSTATUS').addEventListener('click', (e) => {
-                document.querySelector('#PMENABLED').disabled = !e.target.checked;
+            $('#STRPMSTATUS').on('change', function () {
+                var checked = $(this).prop('checked');
+                $('#PMENABLED').prop('disabled', !checked);
             });
 
         })
