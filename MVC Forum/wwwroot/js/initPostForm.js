@@ -61,6 +61,7 @@ tinymce.init({
     codesample_languages: [
         { text: 'C#', value: 'csharp' },
         { text: 'Bash', value: 'bash' },
+        { text: 'Python', value: 'python' },
         { text: 'CSS', value: 'css' },
         { text: 'HTML/XML', value: 'markup' },
         { text: 'JavaScript', value: 'javascript' },
