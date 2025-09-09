@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SnitzCore.Data.Interfaces;
-using SnitzCore.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
 using Snitz.PhotoAlbum.Models;
-using Microsoft.AspNetCore.Mvc.Localization;
+using SnitzCore.Data;
+using SnitzCore.Data.Interfaces;
 using SnitzCore.Service;
 
 namespace Snitz.PhotoAlbum.ViewComponents
@@ -19,12 +15,14 @@ namespace Snitz.PhotoAlbum.ViewComponents
         private readonly ISnitzConfig _config;
         private readonly LanguageService _languageResource;
         private readonly IMember _memberService;
-        public ImageAlbumViewComponent(SnitzDbContext dbContext, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,IMember memberService)
+        private readonly IWebHostEnvironment _environment;
+        public ImageAlbumViewComponent(IWebHostEnvironment hostingEnvironment,SnitzDbContext dbContext, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,IMember memberService)
         {
             _dbContext = dbContext;
             _config = config;
             _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
             _memberService = memberService;
+            _environment = hostingEnvironment;
         }
         public async Task<IViewComponentResult> InvokeAsync(string template)
         {
@@ -46,7 +44,18 @@ namespace Snitz.PhotoAlbum.ViewComponents
 
                 int oneRandom = ids[index];
 
-                var photo = _dbContext.Set<AlbumImage>().Include(a=>a.Member).SingleOrDefault(a=> a.Id == oneRandom);
+                var photo = _dbContext.Set<AlbumImage>().AsNoTracking().Include(a=>a.Member).SingleOrDefault(a=> a.Id == oneRandom);
+                if(photo != null)
+                {
+                    var image = Path.Combine(_environment.WebRootPath, _config.ContentFolder, "PhotoAlbum", photo.ImageName);
+                    if(!File.Exists(image))
+                    {
+                        return await Task.FromResult((IViewComponentResult)View());
+                    }
+                }else{
+                    return await Task.FromResult((IViewComponentResult)View());
+                }
+
 
                 return await Task.FromResult((IViewComponentResult)View(template,photo));
 
