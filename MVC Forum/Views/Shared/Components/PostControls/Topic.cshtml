@@ -10,6 +10,8 @@
     var subscriptions = MemberService.Current()?.Subscriptions;
     bool allowThanks = (bool)TempData["allowThanks"];
     bool isblog = Model.Forum.Type == (int)ForumType.BlogPosts;
+
+    var postid = Model.Id ;
 }
 @if (User.Identity.IsAuthenticated)
 {
@@ -18,13 +20,13 @@
         {
             @if (Model.Forum.Subscription == (int)ForumSubscription.TopicSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0 && User.Identity.IsAuthenticated)
             {
-                if (subscriptions != null && subscriptions.Where(s => s.PostId == Model.Id).Select(s => s.PostId).Any())
+                if (subscriptions != null && subscriptions.Where(s => s.PostId == postid).Select(s => s.PostId).Any())
                 {
-                    <i class="fa fa-share-square topic" title="@Localizer["btnUnsubscribe"]" data-id="@Model.Id" data-toggle="tooltip"></i>
+                    <i class="fa fa-share-square topic" title="@Localizer["btnUnsubscribe"]" data-id="@postid" data-toggle="tooltip"></i>
                 }
                 else
                 {
-                    <i class="fa fa-share-square-o topic" title="@Localizer["cnfSubscribeTopic"]" data-id="@Model.Id" data-toggle="tooltip"></i>
+                    <i class="fa fa-share-square-o topic" title="@Localizer["cnfSubscribeTopic"]" data-id="@postid" data-toggle="tooltip"></i>
                 }
             }
         }
@@ -32,36 +34,36 @@
         {
             @if (isblog)
             {
-                <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipBlogComment"]" data-id="@Model.Id" data-toggle="tooltip"></i>
+                <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipBlogComment"]" data-id="@postid" data-toggle="tooltip"></i>
             }
             else if (Model.Forum.Replyauth == (int)PostAuthType.Anyone || (Model.Forum.Replyauth == (int)PostAuthType.Moderators && ismoderator) || isadmin)
             {
-                <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" data-id="@Model.Id" data-toggle="tooltip"></i>
-                <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-commenting m-1 post-quote" title="@Localizer["tipQuoteTopic"]" data-id="@Model.Id" data-toggle="tooltip"></i>           
+                <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-comment-o m-1 post-reply" title="@Localizer["tipTopicReply"]" data-id="@postid" data-toggle="tooltip"></i>
+                <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-commenting m-1 post-quote" title="@Localizer["tipQuoteTopic"]" data-id="@postid" data-toggle="tooltip"></i>
             }
         }
         @if (SnitzConfig.GetIntValue("STRTHANKS", 0) == 1)
         {
             if (allowThanks && User.Identity.IsAuthenticated)
             {
-                @await Component.InvokeAsync("PostThanks", new { template = "TopicSummary", topicid = Model.Id, id = 0, showcount = true, archived = isArchived  })
+                @await Component.InvokeAsync("PostThanks", new { template = "TopicSummary", topicid = postid, id = 0, showcount = true, archived = isArchived })
             }
         }
         @if (SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1 && !isArchived)
         {
-            <i snitz-if="@Bookmarks.IsBookmarked(Model.Id)" class="fa fa-bookmark m-1 bookmark-del" title="@Localizer["tipRemoveBookmark"]" data-id="@Model.Id" data-toggle="tooltip"></i>
-            <i snitz-if="@(!Bookmarks.IsBookmarked(Model.Id))" class="fa fa-bookmark-o m-1 bookmark-add" title="@Localizer["tipBookmarkPost"]" data-id="@Model.Id" data-toggle="tooltip"></i>
+            <i snitz-if="@Bookmarks.IsBookmarked(postid)" class="fa fa-bookmark m-1 bookmark-del" title="@Localizer["tipRemoveBookmark"]" data-id="@postid" data-toggle="tooltip"></i>
+            <i snitz-if="@(!Bookmarks.IsBookmarked(postid))" class="fa fa-bookmark-o m-1 bookmark-add" title="@Localizer["tipBookmarkPost"]" data-id="@postid" data-toggle="tooltip"></i>
         }
         @if (isadmin || isauthor || ismoderator)
         {
-            <i snitz-if="@((!islocked && isauthor) || isadmin || ismoderator)" class="fa fa-pencil m-1 post-edit" title="@Localizer["tipEditTopic"]" data-id="@Model.Id" data-archived="@isArchived" data-toggle="tooltip"></i>
-            <i class="fa fa-trash m-1 post-del" title="@Localizer["tipTopicDel"]" data-id="@Model.Id" data-toggle="tooltip" data-archived="@isArchived"></i>
-            <i snitz-if="@(islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@Model.Id" data-status="1" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && !islocked && !isArchived)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@Model.Id" data-status="0" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 0 && !isArchived)" class="fa fa-thumb-tack m-1 post-stick" title="@Localizer["tipMakeSticky"]" data-id="@Model.Id" data-status="1" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 1 && !isArchived)" class="fa fa-thumb-tack fa-rotate-90 red m-1 post-stick" title="@Localizer["tipUnStick"]" data-id="@Model.Id" data-status="0" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.OnHold))" class="fa fa-pause admin m-1 post-moderate" title="@Localizer["lblOnhold"]" data-id="@Model.Id" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.UnModerated))" class="fa fa-hand-paper-o admin m-1 post-moderate" title="@Localizer["lblUnmoderated"]" data-id="@Model.Id" data-toggle="tooltip"></i>
+            <i snitz-if="@((!islocked && isauthor) || isadmin || ismoderator)" class="fa fa-pencil m-1 post-edit" title="@Localizer["tipEditTopic"]" data-id="@postid" data-archived="@isArchived" data-toggle="tooltip"></i>
+            <i class="fa fa-trash m-1 post-del" title="@Localizer["tipTopicDel"]" data-id="@postid" data-toggle="tooltip" data-archived="@isArchived"></i>
+            <i snitz-if="@(islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@postid" data-status="1" data-toggle="tooltip"></i>
+            <i snitz-if="@((isadmin || ismoderator) && !islocked && !isArchived)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@postid" data-status="0" data-toggle="tooltip"></i>
+            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 0 && !isArchived)" class="fa fa-thumb-tack m-1 post-stick" title="@Localizer["tipMakeSticky"]" data-id="@postid" data-status="1" data-toggle="tooltip"></i>
+            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 1 && !isArchived)" class="fa fa-thumb-tack fa-rotate-90 red m-1 post-stick" title="@Localizer["tipUnStick"]" data-id="@postid" data-status="0" data-toggle="tooltip"></i>
+            <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.OnHold))" class="fa fa-pause admin m-1 post-moderate" title="@Localizer["lblOnhold"]" data-id="@postid" data-toggle="tooltip"></i>
+            <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.UnModerated))" class="fa fa-hand-paper-o admin m-1 post-moderate" title="@Localizer["lblUnmoderated"]" data-id="@postid" data-toggle="tooltip"></i>
         }
     </div>
 }

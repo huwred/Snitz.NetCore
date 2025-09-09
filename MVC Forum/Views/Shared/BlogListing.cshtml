@@ -38,7 +38,7 @@
                 <h2><a href="~/Blog/@Model.Title.Replace(" ", "-")" class="topic-link" aria-label='@Localizer["lblView"] Blog, @BbCodeProcessor.Format(Model.Title, false)'>@BbCodeProcessor.Format(Model.Title, false)</a></h2>
                 <div class="author-info">
                     <div class="author-details">
-                        <snitz-avatar src="~/Content/Avatar/@Model.AuthorImageUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle avatarsmall profile-popup" data-id="@Model.AuthorId" member="@Model.AuthorName" />
+                        <snitz-avatar src="@Model.AuthorImageUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle avatarsmall profile-popup" data-id="@Model.AuthorId" member="@Model.AuthorName" />
                         <div class="info">
                             <h4>@Model.AuthorName</h4>
                             <span class="role">@Model.AuthorTitle</span>

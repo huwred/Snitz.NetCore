@@ -64,7 +64,7 @@
         <div class="row g-3 p-2">
             <div class="col-2">
                 <span class="hidden-xs center authors p-2 profile-popup" data-id="@topic.MemberId">
-                    <snitz-avatar src="~/Content/Avatar/@topic.Member.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" data-id="@topic.MemberId" class="avatar rounded-circle profle-popup" />
+                    <snitz-avatar src="@topic.Member.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" data-id="@topic.MemberId" class="avatar rounded-circle profle-popup" />
                 </span>
                 <p class="card-text center">
                     <member-link text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }" member-id="@topic.MemberId" ></member-link>

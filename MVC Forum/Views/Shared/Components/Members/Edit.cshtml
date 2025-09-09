@@ -15,7 +15,7 @@
 <form asp-action="Update" method="post" class="needs-validation" novalidate>
     <div class="row">
         <div class="col-6 col-md-2 avatar-container">
-            <snitz-avatar src="~/Content/Avatar/@Model.Member!.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid" />
+            <snitz-avatar src="@Model.Member!.PhotoUrl" def-src="/images/ninja-1027877_960_720.webp" class="img-fluid" />
             <div class="overlay-delete" snitz-if="@canedit">
                 <a href="#" class="icon" title="Delete Avatar" data-url="/Account/DeleteAvatar/" data-id="@Model.Member.Id">
                     <i class="fa fa-trash"></i>
