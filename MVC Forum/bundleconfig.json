@@ -168,5 +168,17 @@
     "inputFiles": [
       "wwwroot/js/pluginjs/snitz.cal.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/admin/forum.min.js",
+    "inputFiles": [
+      "wwwroot/js/admin/forum.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/admin/member.min.js",
+    "inputFiles": [
+      "wwwroot/js/admin/member.js"
+    ]
   }
 ]
