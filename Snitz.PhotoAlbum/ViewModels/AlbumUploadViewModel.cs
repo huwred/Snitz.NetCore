@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Snitz.PhotoAlbum.Models;
 
 namespace Snitz.PhotoAlbum.ViewModels
 {
@@ -19,5 +20,8 @@ namespace Snitz.PhotoAlbum.ViewModels
         public string? CommonName { get; set; }
         public string? AllowedTypes { get; internal set; }
         public int MaxSize { get; internal set; }
+
+        public AlbumImage? Image { set; get; }
+        public int Display { get; set; }
     }
 }

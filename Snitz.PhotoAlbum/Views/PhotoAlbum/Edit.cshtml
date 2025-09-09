@@ -1,43 +1,57 @@
-﻿@using SnitzCore.Data.Extensions
+﻿@using Snitz.PhotoAlbum.ViewModels
+@using SnitzCore.Data.Extensions
 @using SnitzCore.Service.Extensions
-@model Snitz.PhotoAlbum.Models.AlbumImage
-
+@model AlbumUploadViewModel
 @{
-    Layout = "Layout";
+    ViewBag.Display = Model.Display;
 }
-<div class="container center">
-<div class="card w-75 center">
-    <div class="card-header subforum-title">
-        <h5>Edit Image</h5>
-    </div>
+<div class="card w-100 center">
     <div class="card-body p-3">
-        <form asp-action="Edit">
-            <input asp-for="Id" type="hidden" />
-            <input asp-for="MemberId" type="hidden" />
-            <input asp-for="ImageName" type="hidden" />
+        <form asp-action="Edit" id="edit-image-form" data-ajax="true" data-ajax-update="#ImageContainer" data-ajax-complete="EditSuccess">
+            <input asp-for="Image.Id" type="hidden" />
+            <input asp-for="Image.MemberId" type="hidden" />
+            <input asp-for="Image.ImageName" type="hidden" />
+            <input asp-for="Image.CategoryId" type="hidden" />
+            <input asp-for="Display" type="hidden" value="@Model.Display" />
+            <input asp-for="Image.Width" type="hidden" value="@ViewBag.ImageMeta.Width" />
+            <input asp-for="Image.Height" type="hidden" value="@ViewBag.ImageMeta.Height" />
+            <input asp-for="Image.Size" type="hidden" value="@ViewBag.ImageMeta.FileSize" />
+            <input asp-for="Image.Mime" type="hidden" value="@ViewBag.ImageMeta.Format" />
             <ul class="list-unstyled">
-                <li class="mb-3 text-truncate">Image: @Model.ImageName</li>
-                <li class="mb-3"><label asp-for="CommonName" class="form-label"></label><input asp-for="CommonName" class="form-control" /></li>
-                <li class="mb-3"><label asp-for="ScientificName" class="form-label"></label><input asp-for="ScientificName" class="form-control" /></li>
-                <li class="mb-3"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control" rows="3"></textarea></li>
+                <li class="mb-3 text-truncate">
+                    <figure class="figure">
+                        <img src="@($"~/Content/PhotoAlbum/{Model.Image.ImageName}?height=100")" class="figure-img" description="@Model.Image.Description"></img>
+                        <figcaption class="figure-caption form-text">@Model.Image.ImageName</figcaption>
+                    </figure>
+                <li class="mb-3"><label asp-for="Image.CommonName" class="form-label">@Localizer["lblLocalName"]</label><input asp-for="Image.CommonName" class="form-control" /></li>
+                <li class="mb-3"><label asp-for="Image.ScientificName" class="form-label">@Localizer["lblScientificName"]</label><input asp-for="Image.ScientificName" class="form-control" /></li>
+                <li class="mb-3"><label asp-for="Image.Description" class="form-label">@Localizer["lblDescription"]</label><textarea asp-for="Image.Description" class="form-control" rows="3"></textarea></li>
                 @* <li class="mb-3"><label asp-for="Location" class="form-label"></label><input asp-for="Location" class="form-control" /></li> *@
-                <li class="mb-3">CategoryId @Model.CategoryId <input asp-for="CategoryId" type="hidden" /></li>
-                <li class="mb-3">GroupId @Model.GroupId <input asp-for="GroupId" type="hidden" /></li>
+                <li class="mb-3 d-none">CategoryId @Model.Image.CategoryId </li>
                 <li class="mb-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" asp-for="IsPrivate">
-                        <label class="form-check-label" asp-for="IsPrivate"></label>
+                    <div>
+                        <label class="form-label col-4" asp-for="Image.GroupId">@Localizer["lblGroup"]:</label>
+                        <div class="col">
+                            <select class="form-select" asp-for="Image.GroupId">
+                                @foreach (var item in Model.GroupList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
                     </div>
                 </li>
                 <li class="mb-3">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" asp-for="DoNotFeature">
-                        <label class="form-check-label" asp-for="DoNotFeature"></label>
+                        <input class="form-check-input" type="checkbox" asp-for="Image.IsPrivate">
+                        <label class="form-check-label" asp-for="Image.IsPrivate">@Localizer["imgPrivate"]</label>
                     </div>
                 </li>
                 <li class="mb-3">
-                    <button class="btn btn-success" type="submit">@Localizer["btnSave"]</button>
-                    <button class="btn btn-danger" asp-action="Delete" type="submit">@Localizer["tipDelImage"]</button>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="Image.DoNotFeature">
+                        <label class="form-check-label" asp-for="Image.DoNotFeature">@Localizer["imgFeature"]</label>
+                    </div>
                 </li>
             </ul>
         </form>
@@ -45,13 +59,12 @@
     </div>
     <div class="card-footer d-none d-lg-inline-block">
         <ul class="list-unstyled list-inline">
-            <li class="list-inline-item">Views @Model.Views</li>
-            <li class="list-inline-item">Width @Model.Width</li>
-            <li class="list-inline-item">Height @Model.Height</li>
-            <li class="list-inline-item">Size @Model.Size</li>
-            <li class="list-inline-item">MimeType @Model.Mime</li>
-            <li class="list-inline-item">Date @Model.Timestamp.FromForumDateStr()</li>
+            <li class="list-inline-item"><b>@Localizer["lblViews"]</b> @Model.Image.Views</li>
+            <li class="list-inline-item"><b>@Localizer["lblWidth"]</b> @ViewBag.ImageMeta.Width</li>
+            <li class="list-inline-item"><b>@Localizer["lblHeight"]</b> @ViewBag.ImageMeta.Height</li>
+            <li class="list-inline-item"><b>@Localizer["lblSize"]</b> @ViewBag.ImageMeta.FileSizeKB.ToString("0.00") KB</li>
+            <li class="list-inline-item"><b>@Localizer["lblMime"]</b> @ViewBag.ImageMeta.Format</li>
+            <li class="list-inline-item"><b>@Localizer["lblDate"]</b> @Model.Image.Timestamp.FromForumDateStr().ToForumDateDisplay()</li>
         </ul>
     </div>
-</div>
 </div>

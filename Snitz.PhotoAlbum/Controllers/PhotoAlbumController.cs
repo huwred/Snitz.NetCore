@@ -1,22 +1,27 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using LinqKit;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Utilities.Zlib;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Metadata;
+using SixLabors.ImageSharp.Processing;
 using SmartBreadcrumbs.Nodes;
 using Snitz.PhotoAlbum.Models;
 using Snitz.PhotoAlbum.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
-using LinqKit;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Service;
-using Microsoft.Extensions.FileProviders;
-using X.PagedList;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp;
 using SnitzCore.Service.Extensions;
+using System.Dynamic;
+using X.PagedList;
+using static Dapper.SqlMapper;
 
 
 namespace Snitz.PhotoAlbum.Controllers
@@ -188,12 +193,12 @@ namespace Snitz.PhotoAlbum.Controllers
                 return View("Error");
             }
 
-            var test = _dbContext.Set<AlbumImage>()
+            var images = _dbContext.Set<AlbumImage>()
                 .Include(i => i.Group)
                 .Include(i=>i.Category)
                 .Include(i => i.Member)
                 .Where(i=>i.MemberId == memberid)
-                .OrderByDescending(i=>i.Timestamp);
+                .OrderByDescending(i=>i.Timestamp).ToList();
 
             ViewBag.Username = id;
             ViewBag.MemberId = memberid;
@@ -220,7 +225,7 @@ namespace Snitz.PhotoAlbum.Controllers
             ViewBag.SortDir = sortorder;
             //Paging info
             ViewBag.Page = pagenum;
-            ViewBag.PageCount = (test.Count() / pagesize) + 1;
+            ViewBag.PageCount = (images.Count() / pagesize) + 1;
             SpeciesAlbum param = new()
             {
                 SortBy = sortby,
@@ -231,7 +236,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 SpeciesOnly = false
             };
            // ViewBag.JsonParams = JsonConvert.SerializeObject(param);
-            return View(test.ToList());
+            return View(images);
 
         }
 
@@ -400,8 +405,8 @@ namespace Snitz.PhotoAlbum.Controllers
         }
         public JsonResult GetCaption(int id)
         {
-
             var photo = _dbContext.Set<AlbumImage>().Find(id);
+            _dbContext.Entry<AlbumImage>(photo).State = EntityState.Detached;
             if (!String.IsNullOrWhiteSpace(photo?.Description))
             {
                 return Json(photo.Description);
@@ -513,9 +518,30 @@ namespace Snitz.PhotoAlbum.Controllers
                 _dbContext.SaveChanges();
             }
 
-            return RedirectToAction("MemberImages", new {id=memberid,display=1 });
+            return RedirectToAction("MemberImages", new {id=memberid,display });
         }
-        public IActionResult Delete(AlbumImage img)
+        private ImageMeta MetaData(int id)
+        {
+            var photo = _dbContext.Set<AlbumImage>().Find(id);
+            _dbContext.Entry<AlbumImage>(photo).State = EntityState.Detached;
+
+            var image = Path.Combine(_environment.WebRootPath, _config.ContentFolder, "PhotoAlbum", photo.ImageName);
+            FileInfo fileInfo = new FileInfo(image);
+            ImageInfo imageInfo = Image.Identify(image);
+            ImageMetadata imageMetaData = imageInfo.Metadata;
+
+            ImageMeta imagemeta = new ImageMeta
+            {
+                Width = imageInfo.Width,
+                Height = imageInfo.Height,
+                FileSize = fileInfo.Length,
+                FileSizeKB = fileInfo.Length / 1024.0,
+                Format = imageInfo.Metadata.DecodedImageFormat.Name,
+            };
+            
+            return imagemeta;
+        }
+        public IActionResult Delete(AlbumImage img, int display=1)
         {
             var image = _dbContext.Set<AlbumImage>().Find(img.Id);
             if (image != null)
@@ -524,38 +550,58 @@ namespace Snitz.PhotoAlbum.Controllers
                 _dbContext.SaveChanges();
             }
 
-            return RedirectToAction("Member", new {id=img.MemberId,display=1 });
+            return RedirectToAction("Member", new {id=img.MemberId,display });
         }
         [HttpGet]
         [Authorize]
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int? id, int display=0)
         {
             if(id == null)
             {
                 return View("Error");
             }
-            var origimage = _dbContext.Set<AlbumImage>().Include(a=>a.Member).SingleOrDefault(a=>a.Id==id);
+            var meta = MetaData(id.Value);
 
-            return View(origimage);
+            var origimage = _dbContext.Set<AlbumImage>().AsNoTracking().Include(a=>a.Member).SingleOrDefault(a=>a.Id==id);
+            if(meta != null && origimage != null)
+            {
+                ViewBag.ImageMeta = meta;
+                ViewBag.MemberName = origimage.Member?.Name;
+            }
+                var model = new AlbumUploadViewModel()
+                {
+                    Description = origimage.Description,
+                    Image = origimage,
+                    GroupList = new SelectList(_dbContext.Set<AlbumGroup>().AsQueryable(), "Id", "Description",origimage.GroupId),
+                    Display = display
+                };
+            ViewBag.Display = display;
+            return PartialView(model);
         }
         [HttpPost]
-        public IActionResult Edit(AlbumImage img)
+        public IActionResult Edit(AlbumUploadViewModel img)
         {
-            var image = _dbContext.Set<AlbumImage>().Find(img.Id);
+            var image = _dbContext.Set<AlbumImage>().Find(img.Image.Id);
             if (image != null)
             {
-                image.CommonName = img.CommonName;
-                image.ScientificName = img.ScientificName;
-                image.Description = img.Description;
-                image.GroupId = img.GroupId;
-                image.CategoryId = img.CategoryId;
-                image.IsPrivate = img.IsPrivate;
-                image.DoNotFeature = img.DoNotFeature;
+                image.CommonName = img.Image.CommonName;
+                image.ScientificName = img.Image.ScientificName;
+                image.Description = img.Image.Description;
+                image.GroupId = img.Image.GroupId;
+                image.CategoryId = img.Image.CategoryId;
+                image.IsPrivate = img.Image.IsPrivate;
+                image.DoNotFeature = img.Image.DoNotFeature;
+                image.Width = img.Image.Width;
+                image.Height = img.Image.Height;
+                image.Size = img.Image.Size;
+                image.Mime = img.Image.Mime;
+
                 _dbContext.Update(image);
                 _dbContext.SaveChanges();
             }
+            return RedirectToAction("MemberImages", new {id=img.Image.MemberId,display = img.Display });
 
-            return RedirectToAction("Member", new {id=img.MemberId });
+            //return RedirectToAction("Member", new {id=img.Image.MemberId, display = img.Display });
         }
         public IActionResult UpdateGroup(AlbumGroup group)
         {
