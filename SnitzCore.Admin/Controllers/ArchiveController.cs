@@ -114,8 +114,8 @@ namespace SnitzCore.BackOffice.Controllers
             return PartialView("SaveResult", "Settings Updated");
 
         }
-        [HttpPost]
-        public IActionResult ArchiveForum(int id)
+        [HttpGet]
+        public IActionResult ArchiveForm(int id)
         {
 
             ArchiveViewModel vm = new ArchiveViewModel {ForumId = id};

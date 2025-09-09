@@ -1,16 +1,9 @@
 ﻿@model SnitzCore.BackOffice.ViewModels.ArchiveViewModel
-@{
-    Layout = null;
-}
-<div class="modal-header bg-dark">
-    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-hidden="true">&times; </button>
-    <h4 class="modal-title">Archive Forum</h4>
-</div> 
-@using (Html.BeginForm("ArchiveForum", "Archive", FormMethod.Post))
-{
+
+<form asp-action="ArchiveForum" asp-controller="Archive" id="archive-form" data-ajax="true" data-ajax-complete="ArchiveStarted">
     <div class="modal-body">
 
-        
+
         <div class="form-group">
             <label class="control-label">Archive Topics which are older than </label>
             <select class="form-control" id="MonthsOlder" name="MonthsOlder">
@@ -25,12 +18,8 @@
         </div>
         <div class="form-group">
             Posts will be archived in the background
-            @Html.HiddenFor(m=>m.ForumId)
-        </div>        
+            @Html.HiddenFor(m => m.ForumId)
+        </div>
 
     </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">@Localizer["btnCancel"]</button>
-        <button type="submit" id="approve-btn" class="btn btn-success">Archive</button>
-    </div>
-}
+</form>
