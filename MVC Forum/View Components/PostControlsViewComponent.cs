@@ -37,7 +37,7 @@ namespace MVCForum.View_Components
             else
             {
                 //var topic = await _postService.GetTopicAsync(post.Id);
-                return await Task.FromResult((IViewComponentResult)View("Topic",post));
+                return await Task.FromResult((IViewComponentResult)View("ArchivedTopic",post));
             }
         }
     }
