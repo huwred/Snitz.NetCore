@@ -443,3 +443,8 @@ FodyWeavers.xsd
 /Snitz.PostThanks/Migrations/20250823171855_PostThanks.cs
 /Snitz.PostThanks/Migrations/PostThanksContextModelSnapshot.cs
 /MVC Forum/wwwroot/Content/VID_20220101_143635_01.mp4
+/MVC Forum/Views/Shared/_popAlbumUpload.cshtml
+/MVC Forum/Views/PhotoAlbum/Member.cshtml
+/MVC Forum/Views/PhotoAlbum/_MemberThumbs.cshtml
+/MVC Forum/Views/PhotoAlbum/MemberImages.cshtml
+/MVC Forum/Views/PhotoAlbum/Album.cshtml
