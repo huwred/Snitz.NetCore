@@ -1,10 +1,19 @@
 ﻿<div class="mb-2">
-    <form asp-controller="Forum" asp-action="Search" method="post" class="needs-validation" novalidate="">
+    <form asp-controller="Forum" asp-action="SearchResult" method="post" class="needs-validation" novalidate>
         <div class="input-group">
-            <input name="SearchFor" type="text" class="form-control homeSearch" placeholder="@Localizer["Search"] ..." required="required"/>
+            <input name="SearchFor" type="text" class="form-control homeSearch" placeholder="@Localizer["Search"] ..." required/>
             <button class="btn btn-secondary" type="submit" aria-label="Search"><i class="fa fa-search"></i></button>
         </div>
         <input type="hidden" name="catid" value="@TempData["CatId"]" />
         <input type="hidden" name="forumid" value="@TempData["ForumId"]" />
     </form>
 </div>
+<script type="text/javascript">
+    // Disable form submissions if there are invalid fields
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            ValidateForms();
+        }, false);
+    })();
+</script>

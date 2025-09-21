@@ -58,29 +58,61 @@ public class MemberImageTagHelper : TagHelper
         if(MemberId != null)
         {
             var member = _member.GetById(MemberId);
-            if(member != null)
+            
+            if(member != null && member.PhotoUrl != null)
             {
-                SourceFile = "~/Content/Avatar/" + member.PhotoUrl;
-            }
-            var path = Path.Combine(_env.WebRootPath, _config.ContentFolder , "Avatar",member.PhotoUrl);
-            if (!File.Exists(path))
-            {
-                SourceFile = null;
+                MemberName = member.Name;
+                if (member.PhotoUrl.ToLowerInvariant().StartsWith("http"))
+                {
+                    SourceFile = member.PhotoUrl;
+                }
+                else
+                {
+                    SourceFile = "~/Content/Avatar/" + member.PhotoUrl;
+                    var path = Path.Combine(_env.WebRootPath, _config.ContentFolder , "Avatar",member.PhotoUrl);
+                    if (!File.Exists(path))
+                    {
+                        SourceFile = null;
+                    } 
+                }
+           
             }
         }
-        else if(!string.IsNullOrEmpty(SourceFile))
+        else if (MemberName != null)
         {
+            var member = _member.GetByUsername(MemberName);
+            if(member != null && member.PhotoUrl != null)
+            {
+                if (member.PhotoUrl.ToLowerInvariant().StartsWith("http"))
+                {
+                    SourceFile = member.PhotoUrl;
+                }
+                else
+                {
+                    SourceFile = "~/Content/Avatar/" + member.PhotoUrl;
+                    var path = Path.Combine(_env.WebRootPath, _config.ContentFolder , "Avatar",member.PhotoUrl);
+                    if (!File.Exists(path))
+                    {
+                        SourceFile = null;
+                    } 
+                }
+            }
+        }
+        else if (!string.IsNullOrEmpty(SourceFile))
+        {
+                if (!SourceFile.ToLowerInvariant().StartsWith("http"))
+                {
+                    var path = Path.Combine(_env.WebRootPath, _config.ContentFolder, "Avatar", SourceFile);
+                    if (!File.Exists(path))
+                    {
+                        SourceFile = null;
+                    }
+                    else
+                    {
+                        SourceFile = "~/Content/Avatar/" + SourceFile;
+                    }
+                }
 
-            var path = Path.Combine(_env.WebRootPath, _config.ContentFolder , "Avatar",SourceFile);
-            
-            if (!File.Exists(path))
-            {
-                SourceFile = null;
-            }
-            else
-            {
-                SourceFile = "~/Content/Avatar/" + SourceFile;
-            }
         }
 
         if (_config.ContentFolder != "Content")
@@ -94,12 +126,13 @@ public class MemberImageTagHelper : TagHelper
         if(Title != null)
         {
             output.Attributes.Add("title", Title);
+            output.Attributes.Add("data-toggle", "tooltip");
         }
         output.Attributes.Add("class", Classes);
         output.Attributes.Add("loading", "lazy");
         output.Attributes.Add("src", urlHelper.Content(SourceFile) ?? urlHelper.Content(Fallback));
 
-        output.Attributes.Add("alt", urlHelper.Content(MemberName));
+        output.Attributes.Add("alt", MemberName);
 
     }
 }

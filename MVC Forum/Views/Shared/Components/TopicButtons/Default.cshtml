@@ -13,7 +13,7 @@
         }
         @if (SnitzConfig.GetIntValue("STREMAIL") == 1 && SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1 && User.Identity.IsAuthenticated)
         {
-            <a href="~/Topic/SendTo/@Model" id="SendTopic" class="sendto-link" type="button" data-id="@Model" data-href="~/Topic/SendTo" title="@Localizer["tipSendTopic"]" aria-label="@Localizer["tipSendTopic"]" rel="noopener noreferrer nofollow" target="_blank" data-toggle="tooltip"><i class="fa fa-envelope fa-2x" aria-hidden="true"></i></a>
+            <a href="#" id="SendTopic" class="sendto-link" type="button" data-id="@Model" data-href="~/Topic/SendTo" title="@Localizer["tipSendTopic"]" aria-label="@Localizer["tipSendTopic"]" rel="noopener noreferrer nofollow" target="_blank" data-toggle="tooltip"><i class="fa fa-envelope fa-2x" aria-hidden="true"></i></a>
         }
         @if (SnitzConfig.GetIntValue("STRSOCIALSHARE") == 1 && User.Identity.IsAuthenticated)
         {

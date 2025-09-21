@@ -151,7 +151,6 @@
     width: 100%;
     align-items: center;
 }
-
 .user-card .metadata, .group-card .metadata {
     display: flex;
     flex-wrap: wrap;

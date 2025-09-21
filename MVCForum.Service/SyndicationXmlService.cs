@@ -37,8 +37,7 @@ public class SyndicationXmlService : ISyndicationXmlService
             Copyright = new TextSyndicationContent($"{DateTime.Now.Year} Copyright Huw Reddick")
         };
         
-        var nodes = _dbContext.GetAllTopicsAndRelated()
-                .OrderByDescending(t=>t.LastPostDate).AsEnumerable().Take(10);
+        var nodes = _dbContext.GetAllTopicsAndRelated().Take(10);
 
         var items = new List<SyndicationItem>();
 

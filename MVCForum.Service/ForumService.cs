@@ -90,6 +90,9 @@ namespace SnitzCore.Service
                 updForum.Subscription = forum.Subscription;
                 updForum.Password = forum.Password;
                 updForum.Rating = forum.Rating;
+                updForum.Postauth = forum.Postauth;
+                updForum.Replyauth = forum.Replyauth;
+
                 _dbContext.Update(updForum);
             }
 
@@ -153,15 +156,11 @@ namespace SnitzCore.Service
         }
         public IEnumerable<Forum> GetAll()
         {
-            //var forums = _dbContext.Forums
-            //    .AsNoTracking()
-            //    .Include(f => f.Category)
-            //    .OrderBy(forum => forum.Category!.Sort).ThenBy(forum => forum.Order);
             return CacheProvider.GetOrCreate("AllForums", () => _dbContext.Forums
                 .AsNoTracking()
                 .Include(f => f.Category)
-                .OrderBy(forum => forum.Category!.Sort).ThenBy(forum => forum.Order).ToList(), TimeSpan.FromMinutes(10));
-            //return forums;
+                .OrderBy(forum => forum.Category!.Sort).ThenBy(forum => forum.Order).ToList(), TimeSpan.FromMinutes(30));
+
         }
         public Dictionary<int, string?> CategoryList()
         {
@@ -191,8 +190,9 @@ namespace SnitzCore.Service
         }
         public Forum GetWithPosts(int id)
         {
-            var f = _dbContext.Forums.AsNoTracking().Include(f=>f.Category).Include(f => f.Posts).Single(f => f.Id == id);
-            if (f.Posts != null)
+            var f = _dbContext.Forums.AsNoTracking().SingleOrDefault(f => f.Id == id);
+            
+            if (f!.TopicCount > 0)
             {
                 return _dbContext.Forums.AsNoTracking().Where(f => f.Id == id)
                     .Include(f=>f.Category)              
@@ -204,6 +204,16 @@ namespace SnitzCore.Service
                     .Single();
             }
             return f;
+
+        }
+        public IQueryable<Post> GetPosts(int forumid)
+        {
+                return _dbContext.Posts.AsNoTracking()
+                    .Include(p=>p.Forum)
+                    .Include(p => p.Member)
+                    .AsSplitQuery()
+                    .Where(f => f.ForumId == forumid)
+                    .OrderByDescending(p=>p.LastPostDate);
 
         }
         public Dictionary<int, string> ForumList(bool admin = true)
@@ -245,27 +255,27 @@ namespace SnitzCore.Service
             }
         }
 
-        public async Task<Forum> UpdateLastPost(int forumid)
+        public Forum UpdateLastPost(int forumid)
         {
             Post? lasttopic = null;
             int topiccount = 0;
             int replycount = 0;
             try
             {
-                var topics = _dbContext.Posts.AsNoTracking().Where(t=>t.ForumId == forumid && t.Status < 2).AsEnumerable();
+                var topics = _dbContext.Posts.AsNoTracking().Where(t => t.ForumId == forumid && t.Status < 2).AsEnumerable();
                 if (topics.Count() > 0)
                 {
                     lasttopic = topics.OrderByDescending(t => t.LastPostDate).FirstOrDefault();
                 }
-                topiccount = _dbContext.Posts.AsNoTracking().Count(t=>t.ForumId == forumid && t.Status <2);
-                replycount = _dbContext.Replies.AsNoTracking().Count(r=>r.ForumId == forumid && r.Status <2);
+                topiccount = _dbContext.Posts.AsNoTracking().Count(t => t.ForumId == forumid && t.Status < 2);
+                replycount = _dbContext.Replies.AsNoTracking().Count(r => r.ForumId == forumid && r.Status < 2);
             }
             catch (Exception e)
             {
                 _logger.Error("UpdateLastPost: Error fetching last topic", e);
             }
 
-            var forum = _dbContext.Forums.Find(forumid) 
+            var forum = _dbContext.Forums.Find(forumid)
             ?? new Forum
             {
                 Id = forumid
@@ -303,7 +313,7 @@ namespace SnitzCore.Service
                 _dbContext.Entry(forum).Property(x => x.LastPost).IsModified = true;
                 _dbContext.Entry(forum).Property(x => x.LastPostAuthorId).IsModified = true;
 
-                await _dbContext.SaveChangesAsync();
+                _dbContext.SaveChanges();
             }
             catch (Exception e)
             {
@@ -312,7 +322,7 @@ namespace SnitzCore.Service
             }
 
             return forum;
-          
+
         }
 
         public PagedList<Post> FetchMyForumTopicsPaged(int pagesize, int pagenum, IEnumerable<int> forumids)
@@ -398,6 +408,12 @@ namespace SnitzCore.Service
         public IEnumerable<ArchivedPost>? ArchivedPosts(int id)
         {
             return _dbContext.ArchivedTopics.AsNoTracking().Include(p=>p.Forum).Where(f=>f.ForumId == id).AsEnumerable();
+        }
+
+        public List<string> GetModerators(int forumId)
+        {
+            var mods = _dbContext.ForumModerator.AsNoTracking().Include(fm => fm.Member).Where(fm => fm.ForumId == forumId).Select(m => m.Member!.Name!).ToList();
+            return mods;
         }
     }
 }

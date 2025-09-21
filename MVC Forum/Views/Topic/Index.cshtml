@@ -12,8 +12,7 @@
 @inject IEnumerable<ISnitzStartupService> pluginservices
 @section MetaData
 {
-        <title>@Config.Value.strForumTitle: Forum > @Model.ForumName > @Model.Title</title>
-
+    <title>@Config.Value.strForumTitle: Forum > @Model.ForumName > @Model.Title</title>
     <meta name="title" content="Topic: @Model.Title" />
     <meta name="description" content="@Model.Content" />
     <meta name="robots" content="index,nofollow" />
@@ -21,123 +20,13 @@
     {
         <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/topic/@Model.Id">     
     }
-
 }
 @section Styles
 {
     <link href="~/css/star-rating.min.css" rel="stylesheet" />
-    <link href="~/css/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" href="~/css/prism.min.css">
-    <style>
-        .star-rating {
-            direction: rtl;
-            display: inline-block;
-            cursor: pointer;
-        }
-
-            .star-rating input {
-                display: none;
-            }
-
-            .star-rating label {
-                color: #ddd;
-                font-size: 20px;
-                padding: 0 2px;
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
-
-                .star-rating label:hover,
-                .star-rating label:hover ~ label,
-                .star-rating input:checked ~ label {
-                    color: #ffc107;
-                }
-        .user-card{
-            font-family: Lato, Arial, sans-serif;
-        }
-        .user-card .first-row .user-card-avatar {
-            margin-top: -3em;
-            max-height: 8em;
-        }
-
-        .post-avatar, .topic-avatar, .user-card-avatar {
-            position: relative;
-        }
-        .user-card .card-content a.card-huge-avatar, .group-card .card-content a.card-huge-avatar {
-            display: block;
-        }
-
-        .user-card .first-row {
-            display: flex;
-        }
-
-        .user-card .card-content, .group-card .card-content {
-            padding: 10px;
-            /* background: rgba(255,255,255, 0.5); */
-        }
-
-        .user-card .first-row .names, .group-card .first-row .names {
-            flex: 1 1 auto;
-        }
-
-        .user-card .first-row .names, .group-card .first-row .names {
-            padding-left: 1.25em;
-        }
-
-        .user-card .first-row .usercard-controls, .group-card .first-row .usercard-controls {
-            list-style-type: none;
-            margin: 0;
-        }
-
-        .user-card .card-row:not(.first-row), .group-card .card-row:not(.first-row) {
-            margin-top: .5em;
-        }
-
-        .user-card .location-and-website {
-            display: flex;
-            flex-wrap: wrap;
-            width: 100%;
-            align-items: center;
-        }
-
-        .user-card .metadata, .group-card .metadata {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .15em .5em;
-            color: #000;
-        }
-        .avatarlarge{
-            max-height:100px;
-            max-width:100px;
-        }
-        .modal-content{
-            background-color: rgba(255, 255, 255, 0.85);
-            width:640px;
-        }
-.user-info .user-detail .name-line .name, .user-info .user-detail .name-line .username {
-    width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-.user-card .names__primary, .group-card .names__primary {
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            line-height: 1.2;
-            font-size: 2em;
-            font-weight: bold;
-        }
-
-        .public-user-fields .user-field-name {
-            font-weight: bold;
-            display:block;
-        }
-        .user-info .user-detail .name-line span:first-child {
-    font-weight: bold;
-    display:block;
-}
-    </style>
+    <link href="~/css/krajee-svg/theme.min.css" media="all" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="@SnitzConfig.ThemeCss("prism.min.css")" asp-fallback-href="~/css/prism.min.css">
+    <link rel="stylesheet" href="~/css/topic.min.css">
         @if (ViewBag.RequireAuth)
         {
             <style>
@@ -149,7 +38,11 @@
                 opacity: 1.0 !important;
                 }
 
+.fa-spin{
 
+    text-align: center;
+    vertical-align: bottom;
+}
             </style>
         }
 }
@@ -390,7 +283,7 @@
     }
     
         <!--Reply Area-->
-        @if (SnitzConfig.GetIntValue("STRSHOWQUICKREPLY") == 1 && !Model.Archived)
+        @if (SnitzConfig.GetIntValue("STRSHOWQUICKREPLY") == 1 && !Model.Archived && Model.Status != (int)Status.Draft)
         {
             <div id="QRAlertPlaceholder"></div>
 
@@ -423,7 +316,7 @@
                                 </div>
                             }
                         }
-                            <div class="col-12 col-md-6 form-check" style="display: none;">
+                        <div class="col-12 col-md-6 form-check" style="display:none">
                             <input class="form-check-input" id="SaveDraft" name="SaveDraft" tabindex="5" type="checkbox" value="true"><input name="SaveDraft" type="hidden" value="false">
                             <label class="form-check-label mt-1">@Localizer["cbxDraft"]</label>
                         </div>
@@ -440,7 +333,7 @@
 }
 <modal id="memberModal" title="Email Member">
     <modal-body>
-        <div id="member-modal"></div>
+        <div id="member-modal"><i class="fa-solid fa-spinner fa-spin"></i></div>
     </modal-body>
     <modal-footer dismiss-text="Cancel">
         <button id="send-email" form="sendemail-form" type="submit" class="btn btn-success">@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
@@ -449,7 +342,9 @@
 </modal>
 <modal id="pmModal" title="Message Member">
     <modal-body>
-        <div id="pm-modal"></div>
+        <div id="pm-modal">
+            <i class="fa-solid fa-spinner fa-spin fa-xl"></i>
+        </div>
     </modal-body>
     <modal-footer dismiss-text="Cancel">
         <button id="send-email" form="sendpm-form" type="submit" class="btn btn-success">@Localizer["btnSend"]</button>
@@ -467,7 +362,13 @@
 </modal>
 
 <partial name="Modal\UploadModal" />
-
+<modal id="previewModal" title="@Localizer["tipPreview"].Value" size="Large">
+    <modal-body>
+        <div id="preview-content"><i class="fa-solid fa-spinner fa-spin"></i></div>
+    </modal-body>
+    <modal-footer dismiss-text="@Localizer["lblClose"].Value">
+    </modal-footer>
+</modal>
 <!-- Send Topic Popup -->
 @if (SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND") == 1)
 {
@@ -489,26 +390,18 @@
 <input type="text" style="display: none;" id="req-auth" value="@ViewBag.RequireAuth.ToString()" />
 <input type="text" style="display: none;" id="req-forumid" value="@Model.ForumId" />
 <partial name="Modal\PasswordDlg" model='new ConfirmDialogViewModel(){Title=Localizer["popPasswordRqdTitle"].Value,Message = Localizer["popPasswordRqdMessage"].Value}' />
-<div id="user-card" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body user-card">
-                <div class="card-content" id="user-card-content"></div>
-            </div>
-        </div>
-    </div>
-</div>
+
+
 @section Scripts
 {
 <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
-<script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
 <script type="text/javascript" src="~/js/postcontroller.min.js"></script>
 <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
 <script type="text/javascript" src="~/js/initPostForm.js"></script>
 <script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
 <script type="text/javascript" src="~/js/topic.min.js"></script>
 <script src="~/js/star-rating.min.js"></script>
-<script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
+<script src="~/js/krajee-svg/theme.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         const qralertPlaceholder = document.getElementById('QRAlertPlaceholder')
           const qrappendAlert = (message, type) => {
@@ -556,6 +449,7 @@
         });
         $(window).on("load",
             function (e) {
+                ValidateForms();
                 $('.split-topic').on('click', function (e) {
                     e.preventDefault();
                     location.href = SnitzVars.baseUrl + "/Topic/SplitTopic/?id=" + $(this).data("topic") + "&replyid=" + $(this).data("id");
@@ -564,7 +458,8 @@
 
         $("#QuickReply").submit(function (e) {
             e.preventDefault();
-
+            $("#btn-submit").prop("disabled",true);
+            window.displayBusyIndicator();
             tinyMCE.get("msg-text").save();
             var form = $("#QuickReply");
             var formData = new FormData(form[0]);
@@ -578,8 +473,9 @@
                     location.href = data.url;// + '?page=-1';
                 },
                 error: function (err) {
-                    console.log(err.responseJSON.err);
+                    console.log(err);
                     qrappendAlert(SnitzVars.floodErr, 'danger');
+                    $('.loading').hide();
                 }
             });
             return false;

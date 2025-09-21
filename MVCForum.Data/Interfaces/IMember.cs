@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SnitzCore.Data.Models;
+using SnitzCore.Data.ViewModels;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using X.PagedList;
 
@@ -38,10 +40,11 @@ namespace SnitzCore.Data
         Task UpdatePostCount(int memberid);
         IEnumerable<int> ForumSubscriptions();
         IEnumerable<Member?> GetAll(bool isInRole);
-        IEnumerable<Member?>  GetRecent(int max);
+        IEnumerable<RecentMembers?>  GetRecent(int max);
         Task UpdateLastPost(int memberid);
         bool ZapMember(int memberid);
         bool HasRatedTopic(int topicid,int? memberid);
         IEnumerable<int> AllowedForums();
+        List<int> ViewableForums(IPrincipal user);
     }
 }

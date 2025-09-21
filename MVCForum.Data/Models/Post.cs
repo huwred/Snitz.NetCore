@@ -106,17 +106,21 @@ public partial class Post
     public virtual IEnumerable<PostReply> Replies { get; set; }
 
     public decimal GetTopicRating()
+    {
+        if(this.AllowRating != 1)
         {
-            //var ratings = repo.First<Topic>("WHERE TOPIC_ID=@0", this.Id);
-            decimal rating = 0;
-            if (this.RatingTotal != null && this.RatingTotal > 0)
-            {
-                decimal ratingSum = Decimal.Divide((decimal)this.RatingTotal!, 10);
-                var ratingCount = (decimal)this.RatingTotalCount;
-                rating = (ratingSum / ratingCount);
-            }
-            return decimal.Parse(rating.ToString());
+            return 0;
         }
+        decimal rating = 0;
+        //var ratings = repo.First<Topic>("WHERE TOPIC_ID=@0", this.Id);
+        if (this.RatingTotal != null && this.RatingTotal > 0)
+        {
+            decimal ratingSum = Decimal.Divide((decimal)this.RatingTotal!, 10);
+            var ratingCount = (decimal)this.RatingTotalCount;
+            rating = (ratingSum / ratingCount);
+        }
+        return decimal.Parse(rating.ToString());
+    }
 
     public Post(){
         Created = DateTime.UtcNow.ToString("yyyyMMddHHmmss");

@@ -54,7 +54,7 @@ tinymce.init({
     images_reuse_filename: true,
     emoticons_database: 'emojiimages',
     emoticons_images_url: SnitzVars.baseUrl + '/images/emoticon/',
-    content_css: SnitzVars.baseUrl +'/css/bootstrap.min.css,'+SnitzVars.baseUrl +'/lib/font-awesome/css/font-awesome.min.css,'+SnitzVars.baseUrl +'/css/site.min.css',
+    content_css: SnitzVars.baseUrl +'/css/bootstrap.min.css,'+SnitzVars.baseUrl +'/lib/font-awesome/css/fontawesome.min.css,'+SnitzVars.baseUrl +'/css/site.min.css',
     content_css_cors: true,
     content_style: `body { font-family:Helvetica,Arial,sans-serif; font-size:14px; padding:1rem;} 
     .mce-content-body img {max-width: 99% !important;height: auto;} `,
@@ -68,7 +68,26 @@ tinymce.init({
         { text: 'SQL', value: 'sql' },
         { text: 'TypeScript', value: 'typescript' }
     ],
-    setup: function(editor) {
+    setup: function (editor) {
+        editor.ui.registry.addButton('postPreview',
+            {
+                icon: 'preview',
+                tooltip: 'Preview post',
+                onAction: function (_) {
+                    var myContent = editor.getContent();
+                    if (myContent === '') {
+                        $('#preview-content').html("<p><em>" + SnitzVars.toolTips.nopreview + "</em></p>");
+                        $('#previewModal').modal('show');
+                    } else {
+                        $('#preview-content').html('');
+                        $('#preview-content')
+                            .load(SnitzVars.baseUrl + "/Home/Preview/", {content: myContent}, function () {
+                                $('#previewModal').modal('show');
+                                Prism.highlightElement($("pre[class^='language-']")[0]);
+                        });
+                    }
+                }
+            });
         if (SnitzVars.attach) {
             editor.ui.registry.addButton('snitzAttach',
                 {
@@ -77,7 +96,7 @@ tinymce.init({
                     onAction: function(_) {
                         $('#upload-content').html('');
                         $('#upload-content').load(SnitzVars.baseUrl + "/Topic/UploadForm/",function() {
-                            $('#uploadModal').modal('show');
+                        $('#uploadModal').modal('show');
                         });
                     }
                 });

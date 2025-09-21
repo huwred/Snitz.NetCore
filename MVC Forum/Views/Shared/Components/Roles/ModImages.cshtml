@@ -1,0 +1,16 @@
+﻿@model List<string>
+@{
+    var forum = ViewBag.ForumId;
+}
+<ul class="list-inline">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var user in Model)
+        {
+            <li class="list-inline-item">
+                <snitz-avatar member="@user" title="Moderator, @user" def-src="~/images/ninja-1027877_960_720.webp" class="avatarmod rounded-circle"></snitz-avatar>
+            </li>
+        }
+    }
+
+</ul>

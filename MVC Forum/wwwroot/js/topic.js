@@ -68,8 +68,9 @@ $(document).on("click","#PrintTopic",function(e) {
     location.href = SnitzVars.baseUrl + '/Topic/Print/' + id + '?archived=' + archive;
 
 });
-$(document).on('click','.sendto-link', function (e) {
-        e.preventDefault();
+
+$('#SendTopic').on('click', function (e) {
+    e.preventDefault();
     var id = $(this).data('id');
     var archive = $.getUrlParam('archived');
     $.get(SnitzVars.baseUrl + '/Topic/SendTo/' + id + '?archived=' + archive, function (data) {
@@ -78,12 +79,12 @@ $(document).on('click','.sendto-link', function (e) {
         $('#modal-sendto').modal('show');
     });
 });
-$(document).on('click', '#submitUpload', function(e) {
+$('#submitUpload').on('click', function(e) {
     e.preventDefault();
     var form = $("#upload-form");
     var formData = new FormData(form[0]);
     $.ajax({
-        url: SnitzVars.baseUrl + $("#upload-form").attr("action"),
+        url: $("#upload-form").attr("action"),
         type: "POST",
         data: formData,
         contentType: false,
@@ -125,7 +126,7 @@ $(document).on('click', '#submitUpload', function(e) {
     });
     return false;
 });
-$(document).on("click", ".email-link", function(e) {
+$('body').off().on("click", ".email-link", function(e) {
         e.preventDefault();
         var memberid = $(this).data("id");
         var href = $(this).data("url");
@@ -133,7 +134,7 @@ $(document).on("click", ".email-link", function(e) {
         $('#member-modal').load(href + "/" + memberid, function() {});
         $('#memberModal .modal-footer').show();
 
-        $(document).on("click",
+    $('body').on("click",
             "#send-email",
             function(e) {
                 e.preventDefault();
@@ -156,7 +157,7 @@ $(document).on("click", ".email-link", function(e) {
             });
         $('#memberModal').data('id', memberid).modal('show');
     });
-$(document).on("click", ".sendpm-link", function(e) {
+$('body').on("click", ".sendpm-link", function(e) {
         e.preventDefault();
         var memberid = $(this).data("id");
         var href = $(this).data("url");
@@ -164,7 +165,7 @@ $(document).on("click", ".sendpm-link", function(e) {
         $('#pm-modal').load(href + "/" + memberid, function() {});
         //$('#memberModal #btnOk').hide();
 
-        $(document).on("click",
+    $('body').on("click",
             "#send-pm",
             function(e) {
                 e.preventDefault();
@@ -188,7 +189,7 @@ $(document).on("click", ".sendpm-link", function(e) {
         $('#pmModal').data('id', memberid).modal('show');
 
     });
-$(document).on("click", ".show-ip", function(e) {
+$('body').on("click", ".show-ip", function(e) {
         e.preventDefault();
         var memberid = $(this).data("id");
         var href = $(this).data("url");
@@ -199,7 +200,7 @@ $(document).on("click", ".show-ip", function(e) {
     });
 
 
-$(document).on("change", "#aFile_upload", function (e) {
+$('body').on("change", "#aFile_upload", function (e) {
         var filesize = ((this.files[0].size / 1024) / 1024).toFixed(4); // MB
         var maxsize = parseInt('@SnitzConfig.GetValue("INTMAXFILESIZE", "5")');
         if (filesize > maxsize) {
@@ -207,7 +208,7 @@ $(document).on("change", "#aFile_upload", function (e) {
             this.value = "";
         }
     });
-$(document).on("change", "input[type=radio][name=pagesize]", function () {
+$('body').on("change", "input[type=radio][name=pagesize]", function () {
         $("#defaultdays-form").submit();
     });
 

@@ -16,7 +16,6 @@
 
 /*jslint white: true, browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, newcap: true, immed: true, strict: false */
 /*global window: false, jQuery: false */
-
 (function ($) {
     var data_click = "unobtrusiveAjaxClick",
         data_target = "unobtrusiveAjaxClickTarget",
@@ -189,6 +188,7 @@
     });
 
     $(document).on("submit", "form[data-ajax=true]", function (evt) {
+        console.log("ajax submit");
         var clickInfo = $(this).data(data_click) || [],
             clickTarget = $(this).data(data_target),
             isCancel = clickTarget && (clickTarget.hasClass("cancel") || clickTarget.attr('formnovalidate') !== undefined);

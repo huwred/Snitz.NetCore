@@ -105,56 +105,73 @@ namespace SnitzCore.Service.TagHelpers
                     }
                 }
             }
-            if(PluginIcon != null)
+            switch (Status)
             {
-                output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
-                mainTag.AddClass("fa", HtmlEncoder.Default);
-                mainTag.AddClass(PluginIcon, HtmlEncoder.Default);
-                mainTag.AddClass("fa-2x", HtmlEncoder.Default);
-            }
-            else if (Status == "2") //unmoderated
-            {
-                output.Attributes.Add("title", _languageResource.GetString($"{icon}_unread_topic-unmoderated"));
-                mainTag.AddClass("fa", HtmlEncoder.Default);
-                mainTag.AddClass("fa-exclamation-triangle", HtmlEncoder.Default);
-                mainTag.AddClass("fa-2x", HtmlEncoder.Default);
+                case "2" :
+                    output.Attributes.Add("title", _languageResource.GetString($"{icon}_unread_topic-unmoderated"));
+                    mainTag.AddClass("fa", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-triangle-exclamation", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-2x", HtmlEncoder.Default);
 
-                output.Attributes.Add("data-toggle","tooltip");
-                output.Content.AppendHtml(mainTag);
-                return;
-            }
-            else if (Status == "3") //OnHold
-            {
-                output.Attributes.Add("title", _languageResource.GetString($"{icon}_unread_topic-onhold"));
-                mainTag.AddClass("fa", HtmlEncoder.Default);
-                mainTag.AddClass("fa-pause-circle-o", HtmlEncoder.Default);
-                mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+                    output.Attributes.Add("data-toggle","tooltip");
+                    output.Content.AppendHtml(mainTag);
+                    return;
+                case "3" :
+                    output.Attributes.Add("title", _languageResource.GetString($"{icon}_unread_topic-onhold"));
+                    mainTag.AddClass("fa-regular", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-circle-pause", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
 
-                output.Attributes.Add("data-toggle","tooltip");
-                output.Content.AppendHtml(mainTag);
-                return;
+                    output.Attributes.Add("data-toggle","tooltip");
+                    output.Content.AppendHtml(mainTag);
+                    return;
+                case "99" :
+                    mainTag.AddClass("fa", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-circle-pause", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+                    output.Attributes.Add("title", _languageResource.GetString($"lblDraftPost"));
+                    break;
+                case "0" :
+                    output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
+                    mainTag.AddClass("fa", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-lock", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+                    output.Attributes.Add("data-toggle","tooltip");
+                    break;
+
+                default:
+                    if(PluginIcon != null)
+                    {
+                        output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
+                        mainTag.AddClass("fa", HtmlEncoder.Default);
+                        mainTag.AddClass(PluginIcon, HtmlEncoder.Default);
+                        mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+                    }
+                    else if (newclass)
+                    {
+                        output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
+                        mainTag.AddClass("fa", HtmlEncoder.Default);
+                        mainTag.AddClass("fa-folder-open", HtmlEncoder.Default);
+                        mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+                    }
+                    else if (Answered)
+                    {
+                        output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}_answered"));
+                        mainTag.AddClass("fa", HtmlEncoder.Default);
+                        mainTag.AddClass("fa-folder", HtmlEncoder.Default);
+                        mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+                    }         
+                    else
+                    {
+                        mainTag.AddClass("fa", HtmlEncoder.Default);
+                        mainTag.AddClass("fa-folder-open", HtmlEncoder.Default);
+                        mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+                        output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
+                    }
+                    break;
             }
-            else if (newclass)
-            {
-                output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
-                mainTag.AddClass("fa", HtmlEncoder.Default);
-                mainTag.AddClass("fa-folder-o", HtmlEncoder.Default);
-                mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
-            }
-            else if (Answered)
-            {
-                output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}_answered"));
-                mainTag.AddClass("fa", HtmlEncoder.Default);
-                mainTag.AddClass("fa-folder", HtmlEncoder.Default);
-                mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
-            }
-            else
-            {
-                mainTag.AddClass("fa", HtmlEncoder.Default);
-                mainTag.AddClass("fa-folder-o", HtmlEncoder.Default);
-                mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
-                output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
-            }
+
+
 
             if (Sticky && _config.GetIntValue("STRSTICKYTOPIC") == 1)
             {
@@ -169,8 +186,8 @@ namespace SnitzCore.Service.TagHelpers
             {
                 output.Attributes.RemoveAll("title");
                 output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}_noreplies"));
-                overlayTag.AddClass("fa", HtmlEncoder.Default);
-                overlayTag.AddClass("fa-frown-o", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-regular", HtmlEncoder.Default);
+                overlayTag.AddClass("fa-frown", HtmlEncoder.Default);
                 overlayTag.AddClass("fa-stack-1x", HtmlEncoder.Default);
             }
             else if (Replies > 100)

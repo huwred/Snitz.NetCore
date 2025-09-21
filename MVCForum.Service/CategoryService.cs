@@ -34,7 +34,7 @@ namespace SnitzCore.Service
         //[OutputCache(Duration = 600)]
         public IEnumerable<Category> GetAll()
         {
-            return CacheProvider.GetOrCreate("AllCats", () => _dbContext.Categories.ToList(), TimeSpan.FromMinutes(10));
+            return CacheProvider.GetOrCreate("AllCats", () => _dbContext.Categories.OrderBy(c=>c.Sort).ToList(), TimeSpan.FromMinutes(60));
 
         }
 

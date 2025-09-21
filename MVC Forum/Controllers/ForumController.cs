@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using BbCodeFormatter.Processors;
+using log4net.Layout.Members;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +37,7 @@ namespace MVCForum.Controllers
         private readonly HttpContext? _httpcontext;
         private readonly IGroups _groupservice;
 
-        public ForumController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
+        public ForumController(SnitzCore.Data.IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
             IForum forumService,IPost postService,ICategory categoryService, ISnitzCookie snitzCookie,SignInManager<ForumUser> SignInManager,IGroups groups) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _forumService = forumService;
@@ -64,7 +66,7 @@ namespace MVCForum.Controllers
             Forum? forum = null;
             try
             {
-                forum = _forumService.GetWithPosts(id);
+                forum = _forumService.Get(id);
             }
             catch (Exception)
             {
@@ -79,7 +81,8 @@ namespace MVCForum.Controllers
             }
             bool passwordrequired = false;
             bool notallowed = false;
-            bool ismoderator = User.IsInRole($"Forum_{forum.Id}");
+            var member = _memberService.Current();
+            bool ismoderator = member == null ? false : _snitzDbContext.ForumModerator.Where(f=>f.MemberId == member.Id && f.ForumId == forum.Id).Any();
             bool isadministrator = User.IsInRole("Administrator");
 
             notallowed = CheckAuthorisation(forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
@@ -100,23 +103,23 @@ namespace MVCForum.Controllers
             bool showsticky = _config.GetIntValue("STRSTICKYTOPIC") == 1;
             
             List<PostListingModel>? stickies = null;
-            IEnumerable<Post>? forumPosts = null;
+            IQueryable<Post>? forumPosts = null;
 
             if (!showsticky)
             {
-                forumPosts = forum?.Posts;
+                forumPosts = _forumService.GetPosts(id);
             }
             else
             {
-                stickies = new PagedList<Post>(forum!.Posts!.Where(p=>p.IsSticky == 1).OrderByDescending(p=>p.LastPostDate), page, pagesize)
+                stickies = new PagedList<Post>(_forumService.GetPosts(id).Where(p=>p.IsSticky == 1).OrderByDescending(p=>p.LastPostDate), page, pagesize)
                 .Select(p => new PostListingModel()
                 {
                     Id = p.Id,
                     Topic =  p,
                     AuthorId = p.MemberId,
                     AuthorName = p.Member?.Name ?? "Unknown",
-                    AuthorImageUrl = p.Member.PhotoUrl,
-                    AuthorTitle = p.Member.Title,
+                    AuthorImageUrl = p.Member?.PhotoUrl,
+                    AuthorTitle = p.Member?.Title,
                     //AuthorRating = p.User?.Rating ?? 0,
                     Title = p.Title,
                     Created = p.Created.FromForumDateStr(),
@@ -127,22 +130,24 @@ namespace MVCForum.Controllers
                     Status = p.Status,
                     Message = p.Content,
                     LastPostDate = !string.IsNullOrEmpty(p.LastPostDate) ? p.LastPostDate?.FromForumDateStr() : null,
-                    LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
+                    LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetMemberName(p.LastPostAuthorId!.Value) : "",
                     LatestReply = p.LastPostReplyId,
-                    Forum = BuildForumListing(p.ForumId,p.Forum!),
+                    Forum = BuildForumListing(p.Forum!),
                     Answered = p.Answered,
-                    HasPoll = _postService.HasPoll(p.Id),
+                    HasPoll = p.Ispoll == 1,
                     AllowRating = p.AllowRating,
                     ForumAllowRating = p.Forum.Rating,
                     Rating = p.GetTopicRating()
                 }).ToList();
-                forumPosts = forum?.Posts?.Where(p => p.IsSticky != 1);
+
+                forumPosts = _forumService.GetPosts(id).Where(p => p.IsSticky != 1);
             }
             if (!(isadministrator || ismoderator))
             {
                 var curuser = _memberService.Current()?.Id;
                 forumPosts = forumPosts?.Where(t => t.Status < 2 || t.MemberId == curuser);
             }
+
             if (defaultdays != null)
             {
                 HttpContext.Session.SetInt32($"Forum_{forum!.Id}", defaultdays.Value);
@@ -154,8 +159,8 @@ namespace MVCForum.Controllers
 
             if (defaultdays != null && defaultdays.Value > 0)
             {
-                forumPosts = forumPosts?.Where(f => f.LastPostDate?.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays.Value * -1) ||
-                                                    (f.LastPostDate == null && f.Created?.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays.Value * -1)));
+                forumPosts = forumPosts?.Where(p => p.LastPostDate.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays.Value * -1) ||
+                                                    (p.LastPostDate == null && p.Created.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays.Value * -1)));
             }
             else if (defaultdays != null)
             {
@@ -168,7 +173,7 @@ namespace MVCForum.Controllers
                     //    //TODO: Archived Topics                      
                     //    break;
                     case -999: //NoReplies
-                        forumPosts = forumPosts?.Where(f => f is { Status: 1, ReplyCount: 0 });
+                        forumPosts = forumPosts?.Where(p=>p.Status == 1 && p.ReplyCount == 0);
                         break;
                     case -9999: //Draft
                         forumPosts = forumPosts?.Where(f => f.Status == 99 ); //TODO: current user check
@@ -194,7 +199,7 @@ namespace MVCForum.Controllers
                     //    //TODO: Archived Topics                      
                     //    break;
                     case -999: //NoReplies
-                        forumPosts = forumPosts?.Where(f => f is { Status: 0, ReplyCount: 0 });
+                        forumPosts = forumPosts?.Where(p=>p.Status == 1 && p.ReplyCount == 0);
                         break;
                     case -9999: //Draft
                         forumPosts = forumPosts?.Where(f => f.Status == 99 ); //TODO: current user check
@@ -207,9 +212,10 @@ namespace MVCForum.Controllers
                         }
                         break;
                     default:
-                        if(forum.Defaultdays > 0)
-                            forumPosts = forumPosts?.Where(f => f.LastPostDate?.FromForumDateStr() > DateTime.UtcNow.AddDays(forum.Defaultdays * -1) ||
-                                                                (f.LastPostDate == null && f.Created?.FromForumDateStr() > DateTime.UtcNow.AddDays(forum.Defaultdays * -1)));
+                        var defdate = DateTime.UtcNow.AddDays(forum.Defaultdays * -1).ToForumDateStr();
+                        if (forum.Defaultdays > 0)
+                            forumPosts = forumPosts?.Where(f => string.Compare(f.LastPostDate,defdate) > 0  ||
+                                                                (f.LastPostDate == null && string.Compare(f.Created,defdate) > 0));
                         break;
                 }                
             }
@@ -219,8 +225,8 @@ namespace MVCForum.Controllers
                 forumPosts = orderby switch
                 {
                     "a" => sortdir == "des"
-                        ? forumPosts?.OrderByDescending(p => p.Member?.Name)
-                        : forumPosts?.OrderBy(p => p.Member?.Name),
+                        ? forumPosts?.OrderByDescending(p => p.Member.Name)
+                        : forumPosts?.OrderBy(p => p.Member.Name),
                     "v" => sortdir == "des"
                         ? forumPosts?.OrderByDescending(p => p.ViewCount)
                         : forumPosts?.OrderBy(p => p.ViewCount),
@@ -228,8 +234,8 @@ namespace MVCForum.Controllers
                         ? forumPosts?.OrderByDescending(p => p.ReplyCount)
                         : forumPosts?.OrderBy(p => p.ReplyCount),
                     "lpa" => sortdir == "des"
-                        ? forumPosts?.OrderByDescending(p => p.LastPostAuthor?.Name)
-                        : forumPosts?.OrderBy(p => p.LastPostAuthor?.Name),
+                        ? forumPosts?.OrderByDescending(p => p.LastPostAuthor.Name)
+                        : forumPosts?.OrderBy(p => p.LastPostAuthor.Name),
                     "pd" => sortdir == "des"
                         ? forumPosts?.OrderByDescending(p => p.Created)
                         : forumPosts?.OrderBy(p => p.Created),
@@ -257,11 +263,11 @@ namespace MVCForum.Controllers
                     Status = p.Status,
                     Message = p.Content,
                     LastPostDate = !string.IsNullOrEmpty(p.LastPostDate) ? p.LastPostDate?.FromForumDateStr() : null,
-                    LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
+                    LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetMemberName(p.LastPostAuthorId!.Value) : "",
                     LatestReply = p.LastPostReplyId,
                     Forum = BuildForumListing(p),
                     Answered = p.Answered,
-                    HasPoll = _postService.HasPoll(p.Id),
+                    HasPoll = p.Ispoll == 1,
                     AllowRating = p.AllowRating,
                     ForumAllowRating = p.Forum.Rating,
                     Rating = p.GetTopicRating()
@@ -273,7 +279,7 @@ namespace MVCForum.Controllers
                     PasswordRequired = passwordrequired,
                     StickyPosts = stickies,
                     Posts = postlistings,
-                    Forum = BuildForumListing(forum.Id,forum,defaultdays,orderby,sortdir),
+                    Forum = BuildForumListing(forum,defaultdays,orderby,sortdir),
                     PageCount = pagedTopics.PageCount,
                     PageNum = pagedTopics.PageNumber,
                     PageSize = pagesize,
@@ -289,7 +295,7 @@ namespace MVCForum.Controllers
             return View("Index");
         }
 
-        
+       
 
         public IActionResult Archived(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 0)
         {
@@ -457,11 +463,11 @@ namespace MVCForum.Controllers
                     Status = 0,
                     Message = p.Message,
                     LastPostDate = !string.IsNullOrEmpty(p.LastPostDate) ? p.LastPostDate?.FromForumDateStr() : null,
-                    LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
+                    LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetMemberName(p.LastPostAuthorId!.Value) : "",
                     LatestReply = p.LastPostReplyId,
                     Forum = BuildForumListing(p),
                     Answered = false,
-                    HasPoll = _postService.HasPoll(p.ArchivedPostId),
+                    HasPoll = p.Ispoll == 1,
                     AllowRating = p.AllowRating,
                     ForumAllowRating = p.Forum.Rating,
 
@@ -473,7 +479,7 @@ namespace MVCForum.Controllers
                     PasswordRequired = passwordrequired,
                     StickyPosts = new List<PostListingModel>(),
                     Posts = postlistings,
-                    Forum = BuildForumListing(forum.Id,forum,defaultdays,orderby,sortdir),
+                    Forum = BuildForumListing(forum,defaultdays,orderby,sortdir),
                     PageCount = pagedTopics.PageCount,
                     PageNum = pagedTopics.PageNumber,
                     PageSize = pagesize,
@@ -536,10 +542,10 @@ namespace MVCForum.Controllers
                 _cookie.SetActiveRefresh(((int)Refresh).ToString());
             }
             var lastvisit = DateTime.UtcNow.AddDays(-7);
-            var member = _memberService.GetByUsername(User.Identity?.Name!);
-            if (member != null)
+            var currmember = _memberService.GetByUsername(User.Identity?.Name!);
+            if (currmember != null)
             {
-                lastvisit = member.LastLogin.FromForumDateStr();
+                lastvisit = currmember.LastLogin.FromForumDateStr();
             }
 
             if (Since.HasValue && Since != ActiveSince.LastVisit)
@@ -563,20 +569,22 @@ namespace MVCForum.Controllers
                 
             }
             //TODO: filter by group ??
-
+            var lastvisitstr = lastvisit.ToForumDateStr();
             var posts = _postService.GetAllTopicsAndRelated()
-                .Where(f => f.LastPostDate?.FromForumDateStr() > lastvisit )
-                .OrderByDescending(t=>t.LastPostDate).AsEnumerable();
+                .Where(f => string.Compare( f.LastPostDate, lastvisitstr) >= 0 );
+
+
             if(groupId > 1)
             {
                 var catfilter = _groupservice.GetGroups(groupId).Select(g=>g.CategoryId).ToList();
                 posts = posts
-                .Where(f =>  catfilter.Contains(f.CategoryId))
-                .OrderByDescending(t=>t.LastPostDate).AsEnumerable();
+                .Where(f =>  catfilter.Contains(f.CategoryId));
             }
             if (!User.IsInRole("Administrator")) //TODO: Is the member a moderator?
             {
-                posts = posts.Where(p => (p.Status < 2 || p.MemberId == member?.Id) && User.CanViewForum(p.Forum, null));
+                var viewableForums = _memberService.ViewableForums(User);
+                var cmemberid = currmember == null ? 0 : currmember.Id;
+                posts = posts.Where(p => (p.Status < 2 || p.MemberId == cmemberid) && viewableForums.Contains(p.ForumId));
             }
             PagedList<Post> latestPosts = new(posts, page, pagesize);
                 
@@ -603,7 +611,7 @@ namespace MVCForum.Controllers
                 AllowRating = p.AllowRating,
                 ForumAllowRating = p.Forum.Rating,
                 Rating = p.GetTopicRating(),
-                HasPoll = _postService.HasPoll(p.Id),
+                HasPoll = p.Ispoll != null ? p.Ispoll == 1 : false,
             });
             if (Refresh == null)
             {
@@ -683,13 +691,14 @@ namespace MVCForum.Controllers
                         Postauth = (int)model.PostAuth,
                         Replyauth = (int)model.ReplyAuth,
                         ArchivedCount = 0,
-                        ArchivedTopics = 0
+                        ArchivedTopics = 0,
+                        Url = model.Url
                     };
                     if (model.ForumId != 0)
                     {
                         newForum.Id = model.Id;
                         await _forumService.Update(newForum);
-                        return RedirectToAction("Index","Category",new{id = model.Category});
+                        return RedirectToAction("Index","Forum",new{id = model.Id});
                     }
                     else
                     {
@@ -702,17 +711,12 @@ namespace MVCForum.Controllers
                     Console.WriteLine(e);
                     ModelState.AddModelError("Save Forum Error",e.Message);
                 }
-
-
-
             }
             else
             {
                 IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
             }
             return View(model);
-
-            
         }
 
         [Authorize(Roles="Administrator")]
@@ -748,7 +752,8 @@ namespace MVCForum.Controllers
                 AllowedMembers = _forumService.AllowedUsers(id),
                 AllowTopicRating = forum.Rating ?? 0,
                 PostAuth = (PostAuthType)forum.Postauth,
-                ReplyAuth = (PostAuthType)forum.Replyauth
+                ReplyAuth = (PostAuthType)forum.Replyauth,
+                Url = forum.Url
             };
             return View("Create",model);
         }
@@ -832,11 +837,11 @@ namespace MVCForum.Controllers
                 Status = p.Status,
                 Message = p.Content,
                 LastPostDate = !string.IsNullOrEmpty(p.LastPostDate) ? p.LastPostDate?.FromForumDateStr() : null,
-                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
+                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetMemberName(p.LastPostAuthorId!.Value) : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p),
                 Answered = p.Answered,
-                HasPoll = _postService.HasPoll(p.Id),
+                HasPoll = p.Ispoll == 1,
                 AllowRating = p.AllowRating,
                 ForumAllowRating = p.Forum.Rating,
                 Rating = p.GetTopicRating()
@@ -861,7 +866,6 @@ namespace MVCForum.Controllers
             return View("../Search/Index",model);
         }
 
-        //[HttpPost]
         public IActionResult SearchResult(ForumSearchModel model,int pagesize=10,int page=1)
         {
             var homePage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
@@ -911,11 +915,11 @@ namespace MVCForum.Controllers
                 Status = p.Status,
                 Message = p.Message,
                 LastPostDate = !string.IsNullOrEmpty(p.LastPostDate) ? p.LastPostDate?.FromForumDateStr() : p.Created.FromForumDateStr(),
-                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
+                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetMemberName(p.LastPostAuthorId!.Value) : "",
                 LatestReply = p.LastPostReplyId,
                 Forum = BuildForumListing(p),
                 Answered = false,
-                HasPoll = _postService.HasPoll(p.ArchivedPostId),
+                HasPoll = p.Ispoll == 1,
                 AllowRating = p.AllowRating,
                 ForumAllowRating = 0,
                 //Rating = p.GetTopicRating()
@@ -937,11 +941,11 @@ namespace MVCForum.Controllers
                 Status = p.Status,
                 Message = p.Content,
                 LastPostDate = !string.IsNullOrEmpty(p.LastPostDate) ? p.LastPostDate?.FromForumDateStr() : p.Created.FromForumDateStr(),
-                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetById(p.LastPostAuthorId!.Value)?.Name : "",
+                LastPostAuthorName = p.LastPostAuthorId != null ? _memberService.GetMemberName(p.LastPostAuthorId!.Value)   : "",
                 LatestReply = p.LastPostReplyId,
-                Forum = BuildForumListing(p),
+                Forum = BuildForumListing(p.Forum!),
                 Answered = p.Answered,
-                HasPoll = _postService.HasPoll(p.Id),
+                HasPoll = p.Ispoll == 1,
                 AllowRating = p.AllowRating,
                 ForumAllowRating = p.Forum.Rating,
                 Rating = p.GetTopicRating()
@@ -1029,6 +1033,44 @@ namespace MVCForum.Controllers
             }
 
         }
+        [HttpPost]
+        public IActionResult AddModerator(IFormCollection form)
+        {
+            try
+            {
+                var member = _memberService.GetByUsername(form["NewModerator"]!);
+                if (member != null)
+                {
+                    var moderator = new ForumModerator()
+                    {
+                        MemberId = member.Id,
+                        ForumId = Convert.ToInt32(form["ForumId"])
+                    };
+                    try
+                    {
+                        _snitzDbContext.ForumModerator.Add(moderator);
+                        _snitzDbContext.SaveChanges();
+                        return Content("Moderator added");
+                    }
+                    catch (Exception e)
+                    {
+                        return Content(e.Message);
+                    }
+                }
+                return Content("Moderator not found");
+            }
+            catch (Exception e)
+            {
+                return Content(e.Message);
+            }
+        }
+        public IActionResult DelModerator(string username, int forumid)
+        {
+            var member = _memberService.GetByUsername(username);
+            _snitzDbContext.ForumModerator.Where(f=>f.MemberId == member.Id && f.ForumId == forumid).ExecuteDelete();
+            return Json(new { redirectToUrl = Url.Action("Edit", "Forum",new{id = forumid}) });
+
+        }
         public IActionResult AddAllowed(IFormCollection form)
         {
             try
@@ -1067,11 +1109,11 @@ namespace MVCForum.Controllers
         {
             var forum = post.Forum!;
 
-            return BuildForumListing(post.ForumId,forum);
+            return BuildForumListing(forum);
         }
 
         //[OutputCache(Duration = 30,VaryByQueryKeys = new []{"forumid"})]
-        private ForumListingModel BuildForumListing(int forumid, Forum forum, int? defaultdays = null, string orderby = "lpd", string sortdir = "des")
+        private ForumListingModel BuildForumListing(Forum forum, int? defaultdays = null, string orderby = "lpd", string sortdir = "des")
         {
             return new ForumListingModel()
             {
@@ -1192,7 +1234,7 @@ namespace MVCForum.Controllers
         {
             var forum = p.Forum!;
 
-            return BuildForumListing(p.ForumId,forum);
+            return BuildForumListing(forum);
         }
     }
 }

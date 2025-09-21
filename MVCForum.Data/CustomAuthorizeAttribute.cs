@@ -24,14 +24,23 @@ namespace SnitzCore.Data
             ISnitzConfig? _config = context.HttpContext.RequestServices.GetService(typeof(ISnitzConfig)) as ISnitzConfig;
             if (_config != null)
             {
-                if (RegCheck == "STRPROHIBITNEWMEMBERS" && _config.GetIntValue("STRPROHIBITNEWMEMBERS") == 1)
+                if(RegCheck == "STRPROHIBITNEWMEMBERS")
                 {
-                    if (!context.HttpContext.User.Identity!.IsAuthenticated)
+                    if (_config.GetIntValue("STRPROHIBITNEWMEMBERS") == 1)
                     {
-                        context.Result = new ForbidResult();
-                        return;
+                        if (!context.HttpContext.User.Identity!.IsAuthenticated)
+                        {
+                            context.Result = new ForbidResult();
+                            return;
+                        }
                     }
-                }                
+                    else
+                    {
+                        return;
+                    } 
+                }
+     
+                
                 if (_config.GetIntValue("STRREQUIREREG") == 1)
                 {
                     if (!context.HttpContext.User.Identity!.IsAuthenticated)

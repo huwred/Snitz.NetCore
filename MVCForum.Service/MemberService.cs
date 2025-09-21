@@ -7,14 +7,17 @@ using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Data.ViewModels;
 using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using X.PagedList;
@@ -28,12 +31,11 @@ namespace SnitzCore.Service
         private readonly Dictionary<int, MemberRanking>? _rankings;
         private readonly ISnitzCookie _cookie;
         private readonly UserManager<ForumUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly string? _tableprefix;
         private readonly string? _memberprefix;
 
-        public MemberService(SnitzDbContext dbContext,ISnitzCookie snitzcookie,UserManager<ForumUser> userManager,IHttpContextAccessor contextAccessor,IOptions<SnitzForums> config,RoleManager<IdentityRole> roleManager)
+        public MemberService(SnitzDbContext dbContext,ISnitzCookie snitzcookie,UserManager<ForumUser> userManager,IHttpContextAccessor contextAccessor,IOptions<SnitzForums> config)
         {
             _dbContext = dbContext;
             _rankings = GetRankings();
@@ -42,7 +44,6 @@ namespace SnitzCore.Service
             _contextAccessor = contextAccessor;
             _tableprefix = config.Value.forumTablePrefix;
             _memberprefix = config.Value.memberTablePrefix;
-            _roleManager = roleManager;
         }
         public async Task<List<Member>> GetUsersInRoleAsync(string roleName)
         {
@@ -62,7 +63,7 @@ namespace SnitzCore.Service
         {
             if (id == null)
                 return null;
-            var member =  _dbContext.Members.AsNoTracking().OrderBy(m=>m.Id).First(m => m.Id == id);
+            var member =  _dbContext.Members.AsNoTracking().OrderBy(m=>m.Id).FirstOrDefault(m => m.Id == id);
             if(member == null) return null;
 
             var curruser = _userManager.FindByNameAsync(member.Name).Result;
@@ -141,14 +142,14 @@ namespace SnitzCore.Service
 
         public async Task UpdatePostCount(int memberid)
         {
-            var member = Get(memberid);
+            var member = _dbContext.Members.Find(memberid);
             if (member != null)
             {
                 member.Posts += 1;
                 member.Lastpostdate = DateTime.UtcNow.ToForumDateStr();
                 member.Lastactivity = DateTime.UtcNow.ToForumDateStr();
                 member.LastIp = _contextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
-                _dbContext.Members.Update(member);
+                _dbContext.Update(member);
                 await _dbContext.SaveChangesAsync();
             }
         }
@@ -531,21 +532,22 @@ namespace SnitzCore.Service
             return _dbContext.MemberSubscriptions.Where(s => s.MemberId == memberid).Select(s => s.ForumId).Distinct().OrderBy(o=>o);
         }
 
-        public IEnumerable<Member?> GetRecent(int max)
+        public IEnumerable<RecentMembers?> GetRecent(int max)
         {
-            return _dbContext.Members.OrderByDescending(m=>m.Lastactivity).Take(max);
+            var recentcutoff = DateTime.UtcNow.AddMonths(-13).ToForumDateStr();   
+            return _dbContext.Members.Select(m=>new RecentMembers(){Id = m.Id, Name = m.Name,Avatar = m.PhotoUrl, LastActivity = m.Lastactivity}).OrderByDescending(m=>m.LastActivity).Where(m=>string.Compare(m.LastActivity, recentcutoff) > 0).Take(max);
         }
 
         public async Task UpdateLastPost(int memberid)
         {
-            var member = Get(memberid);
+            var member = _dbContext.Members.Find(memberid);
             if (member != null)
             {
                 member.Lastpostdate = DateTime.UtcNow.ToForumDateStr();
                 member.Lastactivity = DateTime.UtcNow.ToForumDateStr();
                 member.LastIp = _contextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
                 _dbContext.Members.Update(member);
-                await _dbContext.SaveChangesAsync();
+                _dbContext.SaveChanges();
             }
         }
 
@@ -568,19 +570,31 @@ namespace SnitzCore.Service
                     }
                     _userManager.UpdateSecurityStampAsync(user);
                 }
-                Member zappedMember = new()
+                try
                 {
-                    Id = memberid,
-                    Name = "zapped",
-                    Email = "zapped@dummy.com",
-                    Posts = member.Posts,
-                    Status = 0,
-                    Title = "Zapped Member",
-                    Created = member.Created
-                };
-                _dbContext.Update(zappedMember);
-                _dbContext.SaveChanges();
-                return true;
+                    Member zappedMember = new()
+                    {
+                        Id = memberid,
+                        Name = "zapped",
+                        Email = "zapped@dummy.com",
+                        Posts = member.Posts,
+                        Status = 0,
+                        Title = "Zapped Member",
+                        Created = member.Created,
+                        Level = 1, 
+                        Ip = "0.0.0.0",
+                        Sha256 = 1,
+                    };
+                    _dbContext.Update(zappedMember);
+                    _dbContext.SaveChanges();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    throw;
+                }
+
             }
             return false;
         }
@@ -594,19 +608,46 @@ namespace SnitzCore.Service
             return _dbContext.TopicRating.Where(t=>t.RatingsTopicId == topicid && t.RatingsBymemberId == memberid).Any();
         }
 
-        public List<int>? AllowedForumIDs()
+        public List<int> ViewableForums(IPrincipal user)
         {
-            var context = _contextAccessor.HttpContext;
-            if (context != null && context.Session != null && !context.Session.Keys.Contains("AllowedForums"))
+            List<int> allowed = new();
+            foreach (var forum in _dbContext.Forums)
             {
-                context.Session.SetObject("AllowedForums", AllowedForums().Select(x => x).ToList());
+                if (user.IsAdministrator())
+                {
+                    allowed.Add(forum.Id);
+                }
+                else
+                {
+                    switch (forum.Privateforums)
+                    {
+                        case ForumAuthType.All:
+                            allowed.Add(forum.Id);
+                            break;
+                        case ForumAuthType.AllowedMembers:
+                        case ForumAuthType.AllowedMemberPassword:
+                            if (user.IsInRole("Forum_" + forum.Id) || user.IsInRole("FORUM_" + forum.Id))
+                            {
+                                allowed.Add(forum.Id);
+                            }
+                            break;
+                        case ForumAuthType.MembersHidden:
+                        case ForumAuthType.AllowedMembersHidden:
+
+                            break;
+                        case ForumAuthType.Members:
+                        case ForumAuthType.MembersPassword:
+                        case ForumAuthType.PasswordProtected:
+                            if (user.Identity.IsAuthenticated)
+                            {
+                                allowed.Add(forum.Id);
+                            }
+                            break;
+                    }
+                }
 
             }
-            if(context != null && context.Session != null && context.Session.Keys.Contains("AllowedForums"))
-            {
-                return context.Session.GetObject<List<int>>("AllowedForums");
-            }
-            return null;
+            return allowed;
         }
 
         public IEnumerable<int> AllowedForums()

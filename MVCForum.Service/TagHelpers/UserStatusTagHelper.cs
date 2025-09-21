@@ -18,10 +18,14 @@ namespace SnitzCore.Service.TagHelpers
             output.TagName = "i";
 
             output.AddClass("fa", HtmlEncoder.Default);
-            output.AddClass(Status == "1" ? "fa-user" : "fa-lock", HtmlEncoder.Default);
-            if (Title != null && Title.StartsWith("Zapped"))
+            if (Title != null && Title.ToLowerInvariant().StartsWith("zapped"))
             {
                 output.AddClass("fa-bolt", HtmlEncoder.Default);
+
+            }
+            else
+            {
+                output.AddClass(Status == "1" ? "fa-user" : "fa-user-lock", HtmlEncoder.Default);
 
             }
             output.Attributes.Add("title", Title);

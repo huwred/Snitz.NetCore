@@ -4,6 +4,7 @@
 @if (!SignInManager.IsSignedIn(User))
 {
     var hideme = ViewData["Error"] == null ? "display:none" : "";
+    if (SnitzConfig.GetIntValue("STRUSECAPTURE") == 0){ hideme = ""; }
     var returnurl = Context.Request.PathBase + Context.Request.Path;
     if (returnurl.ToString().Contains("Login"))
     {

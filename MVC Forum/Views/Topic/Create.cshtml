@@ -8,6 +8,7 @@
 @inject IEnumerable<ISnitzStartupService> pluginservices
 @section Styles
 {
+    <link rel="stylesheet" href="@SnitzConfig.ThemeCss("prism.min.css")">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
 }
 @{
@@ -23,6 +24,11 @@
     Model.Content = BbCodeProcessor.Format(Model.Content)!;
     var addEvent = Context.Request.Query["isevent"];
     var addPoll = Context.Request.Query["ispoll"];
+    var allowdraft = false;
+    if(ViewData.ContainsKey("AllowDraft") && ViewData["AllowDraft"] != null && (bool)ViewData["AllowDraft"])
+    {
+        allowdraft = true;
+    }
 }
 
 <div class="container pt-0">
@@ -129,8 +135,8 @@
                         <input asp-for="IsSticky" tabindex="5" type="hidden" value="@(Model.IsSticky ? 1 : 0)">
                         <input asp-for="DoNotArchive" tabindex="5" type="hidden" value="@(Model.DoNotArchive ? 1 : 0)">
                     }
-                    <div class="pl-3 col-12 col-md-6 form-check" style="display: none;">
-                        <input class="form-check-input" id="SaveDraft" name="SaveDraft" tabindex="5" type="checkbox" value="true"><input name="SaveDraft" type="hidden" value="false">
+                    <div class="pl-3 col-12 col-md-6 form-check" snitz-if="@(allowdraft)">
+                        <input class="form-check-input" asp-for="SaveDraft" tabindex="6" type="checkbox" value="true">
                         <label class="form-check-label">@Localizer["cbxDraft"]</label>
                     </div>
                 </div>
@@ -152,11 +158,19 @@
     </div>
 </div>
 <partial name="Modal\UploadModal" />
+<modal id="previewModal" title="@Localizer["tipPreview"].Value" size="Large">
+    <modal-body>
+        <div id="preview-content"></div>
+    </modal-body>
+    <modal-footer dismiss-text="@Localizer["lblClose"].Value">
+    </modal-footer>
+</modal>
 @section Scripts
 {
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
 
     <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
     <script type="text/javascript" src="~/js/initPostForm.js"></script>
     <script type="text/javascript" src="~/js/addpostform.min.js"></script>
     <renderstoredcontent asp-key="topic-post"></renderstoredcontent>

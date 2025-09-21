@@ -14,8 +14,7 @@ function revalidate() {
         $.validator.unobtrusive.parse(newForm);
     }
 }
-$(document).on("change",
-    "#sortdir",
+$("#sortdir").on("change",
     function () {
         $("#defaultdays-form").submit();
     });
@@ -23,7 +22,7 @@ $(document).on("change",
 /* post button events */
 
 // Delete Reply
-$(document).on("click",".reply-del", function() {
+$(".reply-del").on("click", function() {
     var postid = $(this).data("id");
     var topicid = $(this).data("topicid");
     var archived = $(this).data("archived");
@@ -48,7 +47,7 @@ $(document).on("click",".reply-del", function() {
 
 });
 // Delete Post
-$(document).on("click",".post-del", function(e) {
+$(".post-del").off().on("click", function(e) {
     e.preventDefault();
     var postid = $(this).data("id");
     var href = $(this).attr('href');
@@ -73,7 +72,7 @@ $(document).on("click",".post-del", function(e) {
     })();
 });
 // Lock Member
-$(document).on("click",".lock-member", function(e) {
+$(".lock-member").on("click", function(e) {
     e.preventDefault();
     var memberid = $(this).data("id");
     var href = $(this).data("url");
@@ -98,8 +97,7 @@ $(document).on("click",".lock-member", function(e) {
 
 });
 // Bookmark Post
-$(document).on('click',
-    '.bookmark-add',
+$('.bookmark-add').on('click',
     function(e) {
         e.preventDefault();
         var href = $(this).attr('href');
@@ -125,8 +123,7 @@ $(document).on('click',
 
 });
 // Delete Bookmark
-$(document).on('click',
-    '.bookmark-del',
+$('.bookmark-del').on('click',
     function(e) {
         e.preventDefault();
         var href = $(this).attr('href');
@@ -152,7 +149,7 @@ $(document).on('click',
  
     });
 // Lock Post
-$(document).on('click', '.post-lock', function (e) {
+$('.post-lock').on('click', function (e) {
     e.preventDefault();
     var postid = $(this).data("id");
     var poststatus = $(this).data("status");
@@ -178,7 +175,7 @@ $(document).on('click', '.post-lock', function (e) {
         
 });
 // Stick Post
-$(document).on('click', '.post-stick', function (e) {
+$('.post-stick').on('click', function (e) {
     e.preventDefault();
 
     var href = $(this).attr('href');
@@ -206,29 +203,32 @@ $(document).on('click', '.post-stick', function (e) {
        
 });
 // Quote Reply
-$(document).on("click",".reply-quote", function() {
+$(".reply-quote").on("click", function (e) {
+    e.preventDefault();
     var postid = $(this).data("id");
     location.href = SnitzVars.baseUrl + "/Reply/Quote/" + postid;
 });
 // Quote Post
-$(document).on("click",".post-quote", function() {
+$(".post-quote").on("click", function (e) {
+    e.preventDefault();
     var postid = $(this).data("id");
     location.href = SnitzVars.baseUrl + "/Topic/Quote/" + postid;
 });
 // Reply to Post
-$(document).on("click",".post-reply", function() {
+$(".post-reply").on("click", function (e) {
+    e.preventDefault();
     var postid = $(this).data("id");
     location.href = SnitzVars.baseUrl + "/Reply/Create/" + postid;
 });
 // Edit Reply
-$(document).on("click",".reply-edit", function() {
-
+$(".reply-edit").on("click", function(e) {
+    e.preventDefault();
     var postid = $(this).data("id");
     archived = $(this).data("archived");
     location.href = SnitzVars.baseUrl + "/Reply/Edit/" + postid + "?archived=" + archived;
 });
 // Mark as Answer
-$(document).on('click', '.reply-answer', function (e) {
+$('.reply-answer').on('click', function (e) {
     e.preventDefault();
 
     var href = $(this).attr('href');
@@ -256,7 +256,7 @@ $(document).on('click', '.reply-answer', function (e) {
         
 });
 // Edit Post
-$(document).on("click",".post-edit", function() {
+$(".post-edit").on("click", function() {
 
     var postid = $(this).data("id");
     archived = $(this).data("archived");
@@ -264,8 +264,7 @@ $(document).on("click",".post-edit", function() {
 
 });
 // Thumbs Up
-$(document).on('click',
-    '.thumbs-up',
+$('.thumbs-up').on('click',
     function(e) {
         e.preventDefault();
         var id = $(this).data('id');
@@ -285,8 +284,7 @@ $(document).on('click',
                 });
         });
 // Thumbs Down
-$(document).on('click',
-    '.thumbs-down',
+$('.thumbs-down').on('click',
     function(e) {
         e.preventDefault();
         var id = $(this).data('id');

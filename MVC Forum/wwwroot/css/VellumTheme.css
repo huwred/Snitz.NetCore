@@ -707,7 +707,7 @@ li.my-fc-row {
 .table-row .status .fa.fa-lock.fa-stack-1x {
     color: silver !important;
 }
-.table-row .status .fa.fa-frown-o.fa-stack-1x {
+.table-row .status .fa-regular.fa-frown.fa-stack-1x {
     color: yellow !important;
 }
 .table-row .status .fa.fa-fire {

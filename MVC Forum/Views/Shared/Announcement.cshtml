@@ -4,7 +4,7 @@
     var message = SnitzConfig.GetValue("STRANNOUNCE");
 }
 <div class="alert alert-info alert-dismissible fade show text-sm-center" role="alert" id="alert-announce">
-    <h2>@title</h2>
+    <h2 id="announce-title">@title</h2>
     <p>
         @Html.Raw(BbCodeProcessor.Format(message))
     </p>

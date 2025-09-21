@@ -1,4 +1,4 @@
-﻿        $(document).on("click", '[class^="pmread_"]',
+﻿        $('[class^="pmread_"]').on("click", 
             function(e) {
                 e.preventDefault();
                 $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Read/" + $(this).data("id"), function () {
@@ -36,7 +36,7 @@
             var checkboxes = $(this).closest('form').find(':checkbox');
             checkboxes.prop('checked', $(this).is(':checked'));
         });
-        $(document).on("click", ".pm-delete",
+        $(".pm-delete").on("click", 
             function (e) {
                 if ($(this).attr('disabled')) {
                     e.preventDefault();
@@ -117,7 +117,7 @@
                     })();
                 }
             });
-        $(document).on('click', '#pm-find', function () {
+        $('#pm-find').on('click', function () {
                 $('.btn').removeClass('active');
                 $(this).addClass('active');
                 $('.pm-delete').attr('disabled', true);
@@ -132,7 +132,7 @@
                 }
             });
         });
-        $(document).on("click", ".fa-reply", function (e) {
+$('body').on("click", ".fa-reply", function (e) {
             $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Reply/" + $(this).data("id"),function() {
                 ValidateForms();
                 revalidate();
@@ -141,7 +141,7 @@
             e.stopPropagation();
             return false;
         });
-        $(document).on("click", ".fa-share", function (e) {
+$('body').on("click", ".fa-share", function (e) {
             $('#pm-message').load(SnitzVars.baseUrl + "/PrivateMessage/Forward/" + $(this).data("id"), function () {
                 ValidateForms();
                 revalidate();
@@ -150,21 +150,21 @@
             e.stopPropagation();
             return false;
         });
-        $(document).on("click", ".fa-envelope", function (e) {
+        $(".fa-envelope").on("click", function (e) {
             $.get(SnitzVars.baseUrl + "/PrivateMessage/MarkRead/?id=" + $(this).data("id") + "&val=1", function () {
                 location.reload();
                 });
             e.stopPropagation();
             return false;
         });
-        $(document).on("click", ".fa-envelope-open", function (e) {
+        $(".fa-envelope-open").on("click", function (e) {
             $.get(SnitzVars.baseUrl + "/PrivateMessage/MarkRead/?id=" + $(this).data("id") + "&val=0", function () {
                 location.reload();
                 });
             e.stopPropagation();
             return false;
         });
-        $(document).on("click", ".pm-search", function (e) {
+        $(".pm-search").on("click", function (e) {
             $('.btn').removeClass('active');
             $(this).addClass('active');
             $('.pm-delete').attr('disabled', true);

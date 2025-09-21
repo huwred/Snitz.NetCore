@@ -211,7 +211,9 @@ a:active,a:hover {
         margin-top: 5px;
     }
 }
-
+.blog-container{
+    background-color:white;
+}
 .navigate {
     background-color: #eee;
     color: #666;

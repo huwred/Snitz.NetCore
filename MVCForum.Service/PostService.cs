@@ -74,21 +74,24 @@ namespace SnitzCore.Service
             await _dbContext.Posts.AddAsync(post);
             await _dbContext.SaveChangesAsync();
 
-            var forum = await _forumservice.UpdateLastPost(post.ForumId);
-            
-            if (forum.CountMemberPosts == 1)
+            if(post.Status != (int)Status.Draft)
             {
-                await _memberService.UpdatePostCount(post.MemberId);
-            }
-            else
-            {
-                await _memberService.UpdateLastPost(post.MemberId);
-            }
+                var forum = _forumservice.UpdateLastPost(post.ForumId);
+                if (forum.CountMemberPosts == 1)
+                {
+                    await _memberService.UpdatePostCount(post.MemberId);
+                }
+                else
+                {
+                    await _memberService.UpdateLastPost(post.MemberId);
+                }
             
-            var forumtotals = _dbContext.ForumTotal.OrderBy(t=>t.Id).First();
-            forumtotals.TopicCount += 1;
-            await _dbContext.SaveChangesAsync();
-            CacheProvider.Remove("AllForums");
+                var forumtotals = _dbContext.ForumTotal.OrderBy(t=>t.Id).First();
+                forumtotals.TopicCount += 1;
+                await _dbContext.SaveChangesAsync();
+                CacheProvider.Remove("AllForums");
+            }
+
             return post.Id;
         }
 
@@ -122,22 +125,25 @@ namespace SnitzCore.Service
             }
             _dbContext.Replies.Add(post);
             await _dbContext.SaveChangesAsync();
-
-            await UpdateLastPost(post.PostId, moderated);
-            var forum = await _forumservice.UpdateLastPost(post.ForumId);
-            if (forum.CountMemberPosts == 1)
+            if(post.Status != (int)Status.Draft)
             {
-                await _memberService.UpdatePostCount(post.MemberId);
-            }
-            else
-            {
-                await _memberService.UpdateLastPost(post.MemberId);
+                await UpdateLastPost(post.PostId, moderated);
+                var forum = _forumservice.UpdateLastPost(post.ForumId);
+                if (forum.CountMemberPosts == 1)
+                {
+                    await _memberService.UpdatePostCount(post.MemberId);
+                }
+                else
+                {
+                    await _memberService.UpdateLastPost(post.MemberId);
+                }
+
+                var forumtotals = _dbContext.ForumTotal.OrderBy(t=>t.Id).First();
+                forumtotals.PostCount += 1;
+                _dbContext.Update(forumtotals);
+                await _dbContext.SaveChangesAsync();
             }
 
-            var forumtotals = _dbContext.ForumTotal.OrderBy(t=>t.Id).First();
-            forumtotals.PostCount += 1;
-            _dbContext.Update(forumtotals);
-            await _dbContext.SaveChangesAsync();
             return post.Id;
         }
 
@@ -286,7 +292,7 @@ namespace SnitzCore.Service
                 _dbContext.Posts.Remove(post);
                 await _dbContext.SaveChangesAsync();
 
-                await _forumservice.UpdateLastPost(forumid);
+                _forumservice.UpdateLastPost(forumid);
                 CacheProvider.Remove("AllForums");
             }
         }
@@ -309,7 +315,7 @@ namespace SnitzCore.Service
                 _dbContext.ArchivedTopics.Remove(post);
                 await _dbContext.SaveChangesAsync();
 
-                await _forumservice.UpdateLastPost(forumid);
+                _forumservice.UpdateLastPost(forumid);
             }
         }
 
@@ -579,42 +585,50 @@ namespace SnitzCore.Service
 
         }
 
-        public IEnumerable<Post> GetLatestPosts(int n)
+        public List<Post> GetLatestPosts(int n)
         {
-                var posts = GetAllTopicsAndRelated()
-                .OrderByDescending(t=>t.LastPostDate).AsEnumerable();
+                var posts = _dbContext.Posts
+                .AsNoTracking()
+                .Include(p => p.Forum)
+                .Include(p => p.Member)
+                .Include(p=>p.LastPostAuthor)
+                .OrderByDescending(t=>t.LastPostDate)
+                .ThenByDescending(p => p.Id)
+                .AsSplitQuery();
 
             var member = _memberService.Current();
+            var viewableForums = _memberService.ViewableForums(_user);
             if (!_user.IsInRole("Administrator") && member != null) //TODO: Is the member a moderator?
             {
-                posts = posts.Where(p => (p.Status < 2 || p.MemberId == member!.Id) && _user.CanViewForum(p.Forum, null));
+                posts = posts.Where(p => (p.Status < 2 || p.MemberId == member!.Id) && viewableForums.Contains(p.ForumId));
             }else if (member == null)
             {
                 posts = posts.Where(p => p.Status < 2 && p.Forum.Privateforums == ForumAuthType.All);
             }
 
-            return posts.Take(n);
+            return posts.Take(n).ToList();
         }
 
 
         public IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize = 10, int pagenumber = 1)
         {
             var replies = _dbContext.Replies.AsNoTracking().Where(p => p.PostId == topicid)
-                .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Member).AsNoTracking()
-                .OrderByDescending(post => post.Created)
+                .OrderByDescending(post => post.Created).ThenBy(p=>p.Id)
                 .Skip((pagenumber-1) * pagesize).Take(pagesize);
             return replies.ToPagedList(pagenumber, pagesize);
         }
 
-        public IEnumerable<Post> GetAllTopicsAndRelated()
+        public IQueryable<Post> GetAllTopicsAndRelated()
         {
             return _dbContext.Posts
                 .AsNoTracking()
                 .Include(p => p.Category)
                 .Include(p => p.Forum)
                 .Include(p => p.Member)
-                .Include(p=>p.LastPostAuthor);
+                .Include(p=>p.LastPostAuthor)
+                .OrderByDescending(t=>t.LastPostDate).ThenBy(t=>t.Id)
+                .AsSplitQuery();
         }
 
         public async Task<Post?> GetTopicAsync(int id)
@@ -881,7 +895,7 @@ namespace SnitzCore.Service
             throw new NotImplementedException();
         }
 
-        public async Task UpdateLastPost(int topicid, int? moderatedcount)
+        public async Task UpdateLastPost(int topicid, int? moderatedcount, bool wasdraft = false)
         {
             var count = _dbContext.Replies.Count(r => r.PostId == topicid && r.Status < 2);
             var lastreply = _dbContext.Replies.AsNoTracking()
@@ -919,8 +933,24 @@ namespace SnitzCore.Service
             try
             {
                 _dbContext.Update(topic);
-
-                await _dbContext.SaveChangesAsync();
+                _dbContext.SaveChanges();
+                if (wasdraft)
+                {
+                        var forum = _forumservice.UpdateLastPost(topic.ForumId);
+                        if (forum.CountMemberPosts == 1)
+                        {
+                            await _memberService.UpdatePostCount(topic.MemberId);
+                        }
+                        else
+                        {
+                            await _memberService.UpdateLastPost(topic.MemberId);
+                        }
+            
+                        var forumtotals = _dbContext.ForumTotal.OrderBy(t=>t.Id).First();
+                        forumtotals.TopicCount += 1;
+                        CacheProvider.Remove("AllForums");
+                        _dbContext.SaveChanges();
+                }
             }
             catch (Exception e)
             {
@@ -967,11 +997,6 @@ namespace SnitzCore.Service
                 await _dbContext.SaveChangesAsync();
 
             }
-        }
-
-        public bool HasPoll(int id)
-        {
-            return _dbContext.Polls.AsNoTracking().SingleOrDefault(p=>p.TopicId == id) != null;
         }
 
         public Poll? GetPoll(int topicid)

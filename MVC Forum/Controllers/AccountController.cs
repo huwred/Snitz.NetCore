@@ -87,6 +87,8 @@ namespace MVCForum.Controllers
             return false;
         }
 
+        [CustomAuthorize]
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
         public IActionResult Index(int pagesize,string? sortdir,string? orderby,string? initial, int page=1)
         {
 
@@ -182,7 +184,7 @@ namespace MVCForum.Controllers
                 }
             }
             var memberPage = new MvcBreadcrumbNode("Index", "Account", "lblMembers");
-            var myPage = new MvcBreadcrumbNode("Index", "Account", _languageResource["ProfileDetails",member.Name].Value){ Parent = memberPage };
+            var myPage = new MvcBreadcrumbNode("Index", "Account", _languageResource["ProfileDetails",member?.Name].Value){ Parent = memberPage };
             ViewData["BreadcrumbNode"] = myPage;  
             try
             {
@@ -991,7 +993,7 @@ namespace MVCForum.Controllers
         }
         public IActionResult UploadForm(int? id)
         {
-            return PartialView("popUpload",new ViewModels.UploadViewModel(){Controller="Account",Action="UploadAvatar",AllowedTypes=".gif,.png"});;
+            return PartialView("popUpload",new ViewModels.UploadViewModel(){Controller="Account",Action="UploadAvatar",AllowedTypes=".gif,.png,.webp,.jpg"});
         }
 
         [Authorize(Roles = "Administrator,Moderator")]

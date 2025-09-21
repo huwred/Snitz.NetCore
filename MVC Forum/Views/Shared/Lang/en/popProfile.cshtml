@@ -5,6 +5,7 @@
     var ranking = MemberService.GetRankings();
     var mTitle = Model.Title;
     var rankInfoHelper = new RankInfoHelper(Model, ref mTitle, Model.Posts, ranking);
+
 }
 
     <div class="card-row first-row">
@@ -19,8 +20,11 @@
                     <span class="name-username-wrapper">
                         @Model.Firstname @Model.Lastname
                     </span>
-                    <i class="fa fa-shield" aria-hidden="true"></i><span class="sr-only">@Model.Firstname @Model.Lastname is a moderator</span>
                 </a>
+                <span class="d-block fs-5">
+                <i snitz-if="@(Model.IsAdministrator)" class="fa fa-shield" aria-hidden="true"></i><span snitz-if="@(Model.IsAdministrator)" class="sr-only">@Model.Firstname @Model.Lastname is an administrator</span>
+                <i snitz-if="@(Model.IsModerator && !Model.IsAdministrator)" class="fa fa-shield-halved" aria-hidden="true"></i><span snitz-if="@(Model.IsModerator && !Model.IsAdministrator)" class="sr-only">@Model.Firstname @Model.Lastname is a moderator</span>
+                </span>
             </div>
             <div class="names__secondary username">@Model.Name</div>
             <div class="names__secondary">@mTitle</div>
@@ -33,11 +37,11 @@
                 <a href="@Model.Homepage" rel="noopener " target="_blank">Member's Homepage</a>
             </span>
             <span class="location" snitz-if="@(!string.IsNullOrWhiteSpace(Model.Country))">
-                    &nbsp;<i class="fa fa-map-marker" aria-hidden="true"></i>
+                    &nbsp;<i class="fa fa-location-dot" aria-hidden="true"></i>
                     <span snitz-if="@(!string.IsNullOrWhiteSpace(Model.City))">@Model.City,</span><span> @Model.Country</span>
                   </span>
             <span class="local-time" title="Local Time">
-                &nbsp;<i class="fa fa-clock-o" aria-hidden="true"></i>
+                &nbsp;<i class="fa-regular fa-clock" aria-hidden="true"></i>
                 <snitz-datetime datetime="@DateTime.UtcNow.ToLocalTime()" format="HH:mm" freindly-time="false"></snitz-datetime>
             </span>
         </div>

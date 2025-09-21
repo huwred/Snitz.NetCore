@@ -227,7 +227,7 @@
                         </div>
                     </div>
                 }
-                @await Component.InvokeAsync("ImageAlbum", "Config")
+                @await Component.InvokeAsync("ImageAlbum", new { template = "Config" })
                 @await Component.InvokeAsync("Events", new { template = "Admin" })
                 @await Component.InvokeAsync("PostThanks", new { template = "Admin" })
             </div>
@@ -237,7 +237,6 @@
 </div>
 @section Scripts
 {
-    <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
 

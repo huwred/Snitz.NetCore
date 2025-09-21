@@ -20,7 +20,7 @@
                 <hr />
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="INTFIRSTINSTALL" config-label="Toggle Startup page" config-val="@SnitzConfig.GetIntValue("INTFIRSTINSTALL")" help-text="@Localizer["INTFIRSTINSTALL"].Value" disabled="@(@SnitzConfig.GetIntValue("INTFIRSTINSTALL") == 0)"></admin-config>
+                        <admin-config config-key="INTFIRSTINSTALL" config-type="checkbox" config-label="Toggle Startup page" config-val="@SnitzConfig.GetIntValue("INTFIRSTINSTALL")" help-text="@Localizer["INTFIRSTINSTALL"].Value" disabled="@(@SnitzConfig.GetIntValue("INTFIRSTINSTALL") == 0)"></admin-config>
                     </div>
                 </div>
                 <div class="row">
@@ -75,9 +75,9 @@
                     <div class="col">
                         <admin-config config-key="INTTHEMECHANGE" config-label="Allow Theme Change" config-val="@SnitzConfig.GetIntValue("INTTHEMECHANGE")" help-text="@Localizer["INTTHEMECHANGE"].Value"></admin-config>
                         <select name="STRDEFAULTTHEME" id="theme-change-admin" class="form-control" title="@Localizer["tipChangeTheme"]">
+                            <option value="CarpyTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Carpy Theme</option>
                             <option value="SnitzTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Snitz Theme</option>
                             <option value="DarkTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Dark Theme</option>
-                            @* <option value="LightTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Light Theme</option> *@
                             <option value="OrangeTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Orange Theme (Needs Updating)</option>
                             <option value="VellumTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Vellum Theme</option>
                             </select>
@@ -100,7 +100,7 @@
 
 @section Scripts
 {
-    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+    
     <script>
         $("#admin-nav li a.nav-link.active").removeClass("active");
         $("#main-config").addClass("active");

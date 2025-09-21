@@ -1,5 +1,6 @@
 ﻿using SnitzCore.Data.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
 
@@ -19,7 +20,7 @@ namespace SnitzCore.Data.Interfaces
         /// <param name="id">Forum ID</param>
         /// <returns>Forum with posts and author </returns>
         Forum GetWithPosts(int id);
-
+        IQueryable<Post> GetPosts(int forumid);
         IPagedList<Post> GetPagedTopics(int id, int pagesize, int page);
         IEnumerable<Forum> GetAll();
         Dictionary<int, string?> CategoryList();
@@ -33,7 +34,7 @@ namespace SnitzCore.Data.Interfaces
         Dictionary<int, string> ForumList(bool admin = true);
         string ForumName(string rolename);
         Task EmptyForum(int id);
-        Task<Forum> UpdateLastPost(int forumid);
+        Forum UpdateLastPost(int forumid);
         PagedList<Post> FetchMyForumTopicsPaged(int pagesize, int pagenum, IEnumerable<int> forumids);
         IEnumerable<string> GetTagStrings(List<int> list);
         IEnumerable<MyViewTopic> FetchAllMyForumTopics(IEnumerable<int> forumids);
@@ -45,5 +46,7 @@ namespace SnitzCore.Data.Interfaces
 
         Task DeleteArchivedTopics(int id);
         Dictionary<int, string> ModeratedForums();
+
+        List<string> GetModerators(int forumId);
     }
 }

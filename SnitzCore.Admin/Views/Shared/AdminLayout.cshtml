@@ -6,7 +6,9 @@
     <title>Forum</title>
     @await RenderSectionAsync("MetaData", required: false)
     <link rel="stylesheet" href="~/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="~/lib/font-awesome/css/regular.min.css">
+    <link rel="stylesheet" href="~/lib/font-awesome/css/solid.min.css">
     <link rel="stylesheet" href="~/css/site.min.css">
     @await Component.InvokeAsync("SnitzThemeCss") 
     <link rel="stylesheet" href="~/css/busy.min.css">
@@ -49,6 +51,7 @@
 
     <script type="text/javascript" src="~/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="~/js/jquery.min.js"></script>
+    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <partial name="GlobalJs" />
     <partial name="ValidationScriptsPartial" />
     <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js"></script>
@@ -57,9 +60,7 @@
     <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <script>
-        $(window).on('beforeunload', function(){
-            displayBusyIndicator();
-        });
+
         window.addEventListener( "pageshow", function ( event ) {
             var historyTraversal = event.persisted ||
                                         ( typeof window.performance != "undefined" && window.performance.navigation.type === 2 );
@@ -76,12 +77,6 @@
             selector: "[data-bs-toggle='tooltip']"
         });
 
-        $(document).on('submit', 'form', function () {
-            displayBusyIndicator();
-        });
-        function displayBusyIndicator() {
-            $('.loading').show();
-        }
     </script>
 </body>
 </html>

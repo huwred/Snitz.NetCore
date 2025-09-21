@@ -19,7 +19,8 @@
                 <tr data-id="@pm.Id">
                     <td><input type="checkbox" class="checkbox select-post" name="Delete" value="@pm.Id" /></td>
                     <td class="pmread_@pm.Read" data-id="@pm.Id">
-                        <a asp-controller="PrivateMessage" asp-action="read" asp-route-id="@pm.Id" class="pmread_@pm.Read">@pm.Title</a>
+                        @pm.Title
+                        @* <a asp-controller="PrivateMessage" asp-action="read" asp-route-id="@pm.Id" class="pmread_@pm.Read">@pm.Title</a> *@
                     </td>
                     <td class="pmread_@pm.Read" data-id="@pm.Id">@pm.FromMemberName</td>
                     <td class="pmread_@pm.Read" data-id="@pm.Id">@pm.Sent?.ToString("dd MMM, yyyy HH:mm", CultureInfo.CurrentCulture)</td>

@@ -36,7 +36,7 @@
 @section Styles
 {
     <link href="~/css/star-rating.min.css" rel="stylesheet" />
-    <link href="~/css/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css"/>
+    <link href="~/css/krajee-svg/theme.min.css" media="all" rel="stylesheet" type="text/css"/>
 }
 <div class="pt-0">
     <snitz-breadcrumb show-filter="true"></snitz-breadcrumb>
@@ -118,7 +118,7 @@
     <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
 <script type="text/javascript" src="~/js/postcontroller.min.js"></script>
 <script src="~/js/star-rating.min.js"></script>
-<script src="~/js/krajee-svg/theme.js" type="text/javascript"></script>
+<script src="~/js/krajee-svg/theme.min.js" type="text/javascript"></script>
 <script type="text/javascript">
     let refresh = '@refresh';
     $(window).on("load",
@@ -128,15 +128,15 @@
                 'displayOnly':true
             });
         });
-    $(document).on("change", "#default-days", function() {
+    $('body').on("change", "#default-days", function() {
         $("#hdndefaultdays").val($(this).val());
         $("#defaultdays-form").submit();
     });
-    $(document).on("change", "#active-refresh", function() {
+    $('body').on("change", "#active-refresh", function() {
         $("#hdndefaultdays").val($('#default-days').val());
         $("#defaultdays-form").submit();
     });
-    $(document).on("change", "input[type=radio][name=pagesize]", function() {
+    $('body').on("change", "input[type=radio][name=pagesize]", function() {
         $("#defaultdays-form").submit();
     });
     $(document).ready(function() {

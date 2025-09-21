@@ -7,6 +7,7 @@
 @model MVCForum.ViewModels.Forum.NewForumModel
 @{
     var toplevelsubs = Model.CategorySubs;
+
 }
 <div class="container pt-0">
     <snitz-breadcrumb></snitz-breadcrumb>
@@ -34,7 +35,7 @@
                 <div class="mb-3 row">
                     <label asp-for="Type" class="form-label col-2">@Localizer["forumType"]</label>
                     <div class="col-10 col-lg-4">
-                        <enum-select name="Type" enum-type="typeof(ForumType)" selected-value="@(int)Model.Type" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                        <enum-select id="forumtype-select" name="Type" enum-type="typeof(ForumType)" selected-value="@(int)Model.Type" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
                 </div>
                 <div class="mb-3 row">
@@ -51,6 +52,13 @@
                         <textarea asp-for="Description" class="form-control" id="msg-text" rows="6" required="required"></textarea>
                         <input asp-for="Id" type="hidden" />
                         <div class="invalid-feedback">You must enter a description.</div>
+                    </div>
+                </div>
+                <div class="mb-3 row" id="forum-weblink" style="display:none;">
+                    <label asp-for="Url" class="form-label col-2">@Localizer["forumUrl"]</label>
+                    <div class="col-6">
+                        <input asp-for="Url" class="form-control" id="weblink-url" />
+                        <div class="invalid-feedback">You must provide a Url.</div>
                     </div>
                 </div>
                 <div class="mb-3 row">
@@ -101,7 +109,7 @@
                 <div snitz-if="@(SnitzConfig.IsEnabled("STRMODERATION"))" class="mb-3 row">
                     <label asp-for="Moderation" class="form-label col-2">@Localizer["forumModeration"]</label>
                     <div class="col-10 col-lg-5">
-                        <enum-select name="Moderation" enum-type="typeof(Moderation)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                        <enum-select name="Moderation" id="Moderation" enum-type="typeof(Moderation)" selected-value="(int)Model.Moderation" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                     </div>
                 </div>
                 <div snitz-if="@(!SnitzConfig.IsEnabled("STRMODERATION"))">
@@ -134,7 +142,35 @@
             </form>
         </div>
         <div class="col-5">
-            <fieldset>
+            <fieldset style="display:none;" id="forum-moderators">
+                <div class="card" >
+                    <div class="card-header">@Localizer["forumModerators"]</div>
+                    @if (Model.ForumId == 0)
+                    {
+                        <div class="card-body p-2 text-warning text-center">
+                            <p>Forum needs to be saved before Members can be configured</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card-body p-2">
+                            @await Component.InvokeAsync("Roles", new { template = "Moderators", id = Model.ForumId })
+                        </div>
+                        <div class="card-footer">
+                            <form asp-controller="Forum" asp-action="AddModerator" method="POST" id="add-moderator" data-ajax="true" data-ajax-update="#add-moderator-result" data-ajax-complete="ModeratorAdded">
+                                <input type="hidden" name="ForumId" value="@Model.ForumId" />
+                                <label class="form-label">Add moderator</label>
+                                <div class="mb-3">
+                                    <input name="NewModerator" id="new-moderator" type="text" placeholder="Start typing to find a moderator" class="form-control ltr ui-autocomplete-input" data-autocomplete-url="/Forum/AutoCompleteModerator" autocomplete="off">
+                                </div>
+                                <button type="submit" id="add-moderator-btn" class="btn btn-success btn-sm" title="Add moderator"><i class="fa fa-plus"></i> Add Moderator</button>
+                            </form>
+                            <div id="add-moderator-result"></div>
+                        </div>
+                    }
+                </div>
+            </fieldset>
+            <fieldset id="allowed" style="display:none;">
                 <div class="card" id="allowed-members">
                     <div class="card-header">@Localizer["forumAllowed"]</div>
                     @if (Model.ForumId == 0)
@@ -199,6 +235,26 @@
     <script type="text/javascript" src="~/js/initPostForm.js"></script>
     <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
     <script type="text/javascript">
+
+        $(document).ready(function() {
+            var selected = $('#authtype').find(":selected").val();
+            var ftype = $('#forumtype-select').find(":selected").val();
+            if($('#Moderation').find(":selected").val() != '0'){
+                $('#forum-moderators').show();
+            }else{
+                $('#forum-moderators').hide();
+            }
+            if(ftype === "1"){
+                $('#forum-weblink').show();
+            }
+            if (selected == 2 || selected == 3 || selected == 7) {
+                $('#req-password').show();
+            }
+            if (selected == 1 || selected == 3 || selected == 6) {
+                $('#allowed').show();
+            }
+        });
+
         $(document).on("change","#Status",function(){
           if (this.checked) {
 
@@ -207,7 +263,14 @@
             $(this).nextAll('.form-check-label:first').text(' Locked');
           }
         });
-
+        $(document).on("change","#Moderation",function(){
+            var selected = $('#Moderation').find(":selected").val();
+            if(selected != "0"){
+                $('#forum-moderators').show();
+            }else{
+                $('#forum-moderators').hide();
+            }
+        });
         $(document).on('click','.confirm-delete', function(e) {
             e.preventDefault();
             var id = $(this).data('id');
@@ -221,19 +284,41 @@
                 }
             })();
         });
-
-        $(document).ready(function() {
-            var selected = $('#authtype').find(":selected").val();
-            if (selected == 2 || selected == 3 || selected == 7) {
-                $('#req-password').show();
-            }
+        $(document).on('click','.del-moderator', function(e) {
+            e.preventDefault();
+            var href = $(this).attr('href');
+            (async () => {
+                const result = await b_confirm("Remove Moderator")
+                if (result) {
+                    $.get(href.replace("~", SnitzVars.baseUrl) , function(result){
+                        window.location.replace(result.redirectToUrl);
+                    });
+                }
+            })();
         });
+
         $('#authtype').on('change',function() {
             //alert(this.value);
             if (this.value == 2 || this.value == 3 || this.value == 7) {
                 $('#req-password').show();
             } else {
                 $('#req-password').hide();
+            }
+            if (this.value == 1 || this.value == 3 || this.value == 6) {
+                $('#allowed').show();
+            }else{
+                $('#allowed').hide();
+            }
+        });
+        $('#forumtype-select').on('change',function() {
+
+            if (this.value === "1") {
+                $('#forum-weblink').show();
+                $("weblink-url").prop('required',true);
+                
+            } else {
+                $("weblink-url").prop('required',false);
+                $('#forum-weblink').hide();
             }
         });
         $('#add-allowed').on('click', function(e) {
@@ -261,8 +346,8 @@
             e.preventDefault();
             var form = $('#rem-allowedform');
             var actionUrl = form.attr('action');
-            var selectedVal = $('#AllowedMembers').find(":selected").val();
-            var selectedName = $('#AllowedMembers').find(":selected").text();
+            // var selectedVal = $('#AllowedMembers').find(":selected").val();
+            // var selectedName = $('#AllowedMembers').find(":selected").text();
             $.ajax({
                 type: "POST",
                 url: actionUrl,
@@ -279,6 +364,10 @@
                 }
             });
         });
+
+        function ModeratorAdded(){
+            location.reload(true);
+        }
     </script>
     <renderstoredcontent asp-key="forum-plugins"></renderstoredcontent>
 }

@@ -38,7 +38,6 @@
 <partial name="Modal\UploadModal" />
 @section Scripts
 {
-    <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
     <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="~/js/initPostForm.js"></script>
@@ -127,7 +126,7 @@
             $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
         });
 
-        $(document).on('click', '#submitUpload', function (e) {
+        $('#submitUpload').on('click', function (e) {
             e.preventDefault();
             var form = $("#upload-form");
             var formData = new FormData(form[0]);

@@ -1,12 +1,12 @@
-﻿$("#Captcha").focus();
-$(document).on("keyup", '#Captcha',function (event) {
+﻿
+$('#Captcha').on("keyup",function (event) {
             if (event.which == 13 || event.which == 13) {
                 $("#btn-captcha").trigger("click");
                 event.preventDefault();
                 return false;
             }
         });
-        $(document).on("click","#btn-captcha", function(e) {
+$("#btn-captcha").on("click", function (e) {
             e.preventDefault();
             SnitzVars.captchaCheck($("#Captcha").val(), function(data) {
                 if (data) {
@@ -22,7 +22,7 @@ $(document).on("keyup", '#Captcha',function (event) {
                 }
             });
         });
-        $(document).on("click","#captcha-refresh", function(e) {
+$("#captcha-refresh").on("click", function(e) {
             e.preventDefault();
             $.ajax({
                 url: SnitzVars.baseUrl + "/refreshcaptcha",
@@ -31,3 +31,4 @@ $(document).on("keyup", '#Captcha',function (event) {
                 }
             });
         });
+$("#Captcha").focus();

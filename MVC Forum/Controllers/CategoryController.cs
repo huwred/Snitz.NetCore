@@ -1,22 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.EntityFrameworkCore;
+using MVCForum.ViewModels.Category;
+using MVCForum.ViewModels.Forum;
+using MVCForum.ViewModels.Post;
 using SmartBreadcrumbs.Attributes;
 using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using MVCForum.ViewModels.Forum;
-using MVCForum.ViewModels.Category;
-using MVCForum.ViewModels.Post;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
-using SnitzCore.Service.Extensions;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MVCForum.Controllers
 {
@@ -44,6 +45,7 @@ namespace MVCForum.Controllers
         [Route("AllForums")]
         [Route("Category/{id?}")]
         [Route("Category/Index/{id}")]
+        [ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Index(int id, int groupId = 0)
         {
             if (_config.GetIntValue("STRGROUPCATEGORIES") ==1)
@@ -60,11 +62,9 @@ namespace MVCForum.Controllers
             }
             ViewBag.GroupId = groupId;
 
-            var categories = _categoryService.GetAll().OrderBy(c=>c.Sort).ToList();
+            var categories = _categoryService.GetAll().ToList();
 
-            var test = _forumService.GetAll().ToList();
-
-            var forums = test.Select(forum => new ForumListingModel()
+            var forums = _forumService.GetAll().Select(forum => new ForumListingModel()
             {
                 Id = forum.Id,
                 Title = forum.Title,
@@ -95,8 +95,7 @@ namespace MVCForum.Controllers
             {
                 var catfilter = _groupservice.GetGroups(groupId).Select(g=>g.CategoryId).ToList();
                 categories = categories
-                .Where(f =>  catfilter.Contains(f.Id))
-                .OrderBy(c=>c.Sort).ToList();
+                .Where(f =>  catfilter.Contains(f.Id)).ToList();
 
                 forums = forums.Where(f=>catfilter.Contains(f.CategoryId));
 
@@ -106,6 +105,11 @@ namespace MVCForum.Controllers
             if (id > 0)
             {
                 categories = categories.Where(f => f.Id == id).ToList();
+                if (!categories.Any())
+                {
+                    ViewBag.Error = "Category not found";
+                    return View ("Error");
+                }
                 //forums = forums.Where(f => f.CategoryId == id).ToList();
                 var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
                 var topicPage = new MvcBreadcrumbNode("", "Category", categories?.OrderBy(c => c.Name)?.FirstOrDefault()?.Name) { Parent = forumPage,RouteValues = new{id=id}};

@@ -26,10 +26,11 @@ namespace MVCForum.ViewModels.Post
         public bool IsLocked { get; set; }
         public bool IsSticky { get; set; }
         public bool DoNotArchive { get; set; }
-        public bool Answer { get; internal set; }
+        public bool Answer { get; set; }
 
         public bool IsArchived { get; set; }
 
         public Dictionary<int, string>? Forums { get; set; }
+        public bool SaveDraft { get; set; }
     }
 }

@@ -7,6 +7,7 @@
     bool showEmail = Model.ReceiveEmail == 1 && User.Identity!.IsAuthenticated && SnitzConfig.GetIntValue("STREMAIL") == 1;
     bool showPM = SnitzConfig.GetIntValue("STRPMSTATUS") == 1 && Model.Pmreceive == 1 && User.Identity!.IsAuthenticated;
     bool showHome = Model.Privateprofile != 1 && !string.IsNullOrWhiteSpace(Model.Homepage) && SnitzConfig.GetIntValue("STRHOMEPAGE") == 1;
+    showEmail = showEmail || User.IsInRole("Administrator");
 }
 <div class="authors flex-grow-0 flex-shrink-1">
     <div class="username"><a href="~/Account/Detail/@Model.Name" data-toggle="tooltip" aria-label="@Localizer["lblView"] @Localizer["ProfileDetails", Model.Name]">@Model.Name</a></div>
@@ -32,7 +33,7 @@
                 @switch (Model.Status)
                 {
                     case 1:
-                        <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="@Localizer["tipAuthorLock"]" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-lock"></i></a>
+                        <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="@Localizer["tipAuthorLock"]" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-user-lock"></i></a>
                         break;
                     default:
                         <a href="#" class="lock-member" data-toggle="tooltip" data-id="@Model.Id" title="@Localizer["tipAuthorUnLock"]" data-url="@Url.Action("LockMember", "Account")"><i class="fa fa-2x fa-unlock"></i></a>

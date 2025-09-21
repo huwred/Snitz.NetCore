@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 internal sealed class GlobalExceptionHandler : IExceptionHandler
 {
     ///private readonly ILogger<GlobalExceptionHandler> _logger;
-        protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
+        private static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
     //public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
     //{

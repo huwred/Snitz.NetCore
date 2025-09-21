@@ -1,4 +1,5 @@
-﻿using SnitzCore.Data.Models;
+﻿using SnitzCore.Data.Extensions;
+using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,6 +15,9 @@ namespace MVCForum.ViewModels.Forum
 
         [Required]
         public string Description { get; set; } = null!;
+
+        //[RequiredIf("Type", ForumType.WebLink, ErrorMessage = "URL is required when forum type is Link")]
+        public string? Url { get; set; }
         
         public string? NewPassword { get; set; }
 

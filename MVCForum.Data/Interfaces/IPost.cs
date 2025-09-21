@@ -1,5 +1,6 @@
 ﻿using SnitzCore.Data.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
 
@@ -17,7 +18,7 @@ namespace SnitzCore.Data.Interfaces
         ArchivedReply? GetArchivedReply(int id);
         PostReply? GetReplyForUdate(int id);
         List<Post> GetById(int[] ids);
-        IEnumerable<Post> GetAllTopicsAndRelated();
+        IQueryable<Post> GetAllTopicsAndRelated();
         IPagedList<Post> GetFilteredPost(string searchQuery, out int totalcount, int pagesize, int page, int catid,int forumid);
         IPagedList<Post> Find(ForumSearch searchQuery, out int totalcount, int pagesize, int page);
         IPagedList<ArchivedPost> FindArchived(ForumSearch searchQuery, out int totalcount, int pagesize, int page);
@@ -30,7 +31,7 @@ namespace SnitzCore.Data.Interfaces
 
         void UpdateViewCount(int id, int viewCount);
         void UpdateArchivedViewCount(int id, int viewCount);
-        IEnumerable<Post> GetLatestPosts(int n);
+        List<Post> GetLatestPosts(int n);
         IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize, int pagenumber);
         Task<int>  Create(PostReply post);
         int  CreateForMerge(int[]? selected);
@@ -39,14 +40,13 @@ namespace SnitzCore.Data.Interfaces
         decimal GetTopicRating(int topicid);
         decimal GetReplyRating(int topicid);
 
-        Task UpdateLastPost(int topicid, int? moderatedcount);
+        Task UpdateLastPost(int topicid, int? moderatedcount, bool wasdraft = false);
         Task<bool> Answer(int id);
         ArchivedPost? GetArchivedTopic(int id);
         ArchivedPost? GetArchivedTopicWithRelated(int id);
         Task SetStatus(int id, Status status);
         Task SetReplyStatus(int id, Status status);
 
-        bool HasPoll(int id);
         Poll? GetPoll(int topicid);
         void MoveSubscriptions(int oldtopicid, int newtopicid, int newforumId, int newcatId);
         void MoveReplies(int oldtopicid, Post newTopic);

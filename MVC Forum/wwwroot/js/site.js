@@ -21,12 +21,15 @@ new bootstrap.Tooltip(document.body, {
     selector: "[data-toggle='tooltip']"
 });
 if ($.cookie("HideAnnounce")) {
-    $("#alert-announce").hide();
+    var title = $.cookie("HideAnnounce");
+    if (title == $("#announce-title").html()) {
+        $("#alert-announce").hide();
+    }
 }
-$(document).on("click", "", function () {
+$('body').on("click", "dismiss-announce", function () {
     var date = new Date();
     date.setTime(date.getTime() + (10 * 60 * 1000));
-    $.cookie('HideAnnounce', 'yes', {
+    $.cookie('HideAnnounce', $("#announce-title").html(), {
         expires: date
     });
 });
@@ -34,7 +37,6 @@ const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
     
 
 const appendAlert = (message, type) => {
-    console.log("alert called");
     const wrapper = document.createElement('div')
     wrapper.innerHTML = [
         `<div id="alertmessage" class="alert alert-${type} alert-dismissible fade show" role="alert">`,
@@ -47,7 +49,7 @@ const appendAlert = (message, type) => {
     alertPlaceholder.append(wrapper);
 }
 
-$(document).on("click",".insert-emote", function () {
+$('body').on("click",".insert-emote", function () {
     var $txt = $("#msg-text");
     var caretPos = $txt[0].selectionStart;
     var textAreaTxt = $txt.val();
@@ -55,16 +57,16 @@ $(document).on("click",".insert-emote", function () {
     $txt.val(textAreaTxt.substring(0, caretPos) + txtToAdd + textAreaTxt.substring(caretPos) );
 });
 
-$(document).on("click",".btn-postform", function () {
+$('body').on("click",".btn-postform", function () {
     bbcodeinsert($(this).data("first"), $(this).data("last"), "msg-text");
 });
 
-$(document).on("click", ".cat-change",
+$('body').on("click", ".cat-change",
     function() {
         location.href = SnitzVars.baseUrl + "/Forum";
 });
 
-$(document).on("change", "#theme-change",
+$('body').on("change", "#theme-change",
     function() {
         //Account/SetTheme/?theme=
         $.get( SnitzVars.baseUrl + "/Account/SetTheme/?theme=" + $(this).val(), function( data ) {
@@ -74,7 +76,7 @@ $(document).on("change", "#theme-change",
 
 
 /*update the session topiclist if checkbox selected*/
-$(document).on('mouseup','.topic-select', function () {
+$('body').on('mouseup','.topic-select', function () {
     $.ajax({
         type: "POST",
         url: SnitzVars.baseUrl + "/Topic/UpdateTopicList/?id=" + $(this).val(),
@@ -83,7 +85,7 @@ $(document).on('mouseup','.topic-select', function () {
     });
 });
 /*hide the Merge button if < 2 checkboxes selected*/
-$(document).on('change','.topic-select', function () {
+$('body').on('change','.topic-select', function () {
     var checkedNum = $('input[name="topicselected"]').filter(":checked").length;
     if (checkedNum <2) {
         $('.fa-object-group').hide();
@@ -93,14 +95,14 @@ $(document).on('change','.topic-select', function () {
 
 });
 /* Merge Topics */
-$(document).on('click','.fa-object-group',function(e) {
+$('body').on('click','.fa-object-group',function(e) {
     e.preventDefault();
     var selected = [];
     $('input[name="topicselected"]').filter(":checked").each(function() {
         selected.push($(this).val());
     });
     //remove default click event
-    $(document).off('click', '#btnYes');
+    $('body').off('click', '#btnYes');
     var href = SnitzVars.baseUrl + '/Topic/Merge';
     (async () => {
         const result = await b_confirm(Snitzres.cnfMergeTopic)
@@ -122,7 +124,7 @@ $(document).on('click','.fa-object-group',function(e) {
 
 });
 /*update the session replylist if checkbox selected*/
-$(document).on('mouseup','.reply-select', function () {
+$('body').on('mouseup','.reply-select', function () {
 
     $.ajax({
         type: "POST",
@@ -131,7 +133,7 @@ $(document).on('mouseup','.reply-select', function () {
         cache: false
     });
 });
-$(document).on('change','.reply-select', function () {
+$('body').on('change','.reply-select', function () {
     var checkedNum = $('input[name="replyselected"]').filter(":checked").length;
     if (checkedNum <1) {
         $('.fa-object-ungroup').hide();
@@ -141,7 +143,7 @@ $(document).on('change','.reply-select', function () {
 
 });
 /* Restart confirmation */
-$(document).on('click', '.confirm-restart', function (e) {
+$('body').on('click', '.confirm-restart', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
     (async () => {
@@ -164,7 +166,7 @@ $(document).on('click', '.confirm-restart', function (e) {
     })();
 });
 
-$(document).on('click', '.confirm-clearcache', function (e) {
+$('body').on('click', '.confirm-clearcache', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
     (async () => {
@@ -189,7 +191,7 @@ $(document).on('click', '.confirm-clearcache', function (e) {
 });
 
 /* Busy Indicator */
-$(document).on('submit', 'form', function () {
+$('body').on('submit', 'form', function () {
     console.log('form submit');
     displayBusyIndicator();
 });
@@ -202,7 +204,7 @@ window.onbeforeunload = function (event) {
     displayBusyIndicator();
 };
 
-jQuery(document).on('click', 'a', function (event) {
+$('body').on('click', 'a', function (event) {
     if ($(this).attr("rel")) {
         window._link_was_clicked = true;
     }

@@ -1,4 +1,5 @@
-﻿@model List<Member>
+﻿@model List<RecentMembers>
+@using SnitzCore.Data.ViewModels
 @using SnitzCore.Service.MiddleWare
 @using Microsoft.AspNetCore.Identity
 @using SnitzCore.Data.Extensions;
@@ -7,7 +8,7 @@
     var onlinecount = OnlineUsersMiddleware.GetOnlineUsersCount();
     var hiddencount = 0;
     var activecount = 0;
-    var activemembers = new List<Member>();
+    var activemembers = new List<RecentMembers>();
     var maxonline = SnitzConfig.GetIntValue("INTMAXONLINE", 0);
     var _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
     if(onlinecount > maxonline)
@@ -18,7 +19,7 @@
     }
     foreach (var member in Model)
     {
-        if(member.Lastactivity.FromForumDateStr() > DateTime.UtcNow.AddMinutes(-5))
+        if(member.LastActivity.FromForumDateStr() > DateTime.UtcNow.AddMinutes(-5))
         {
             var user = userManager.FindByNameAsync(member.Name).Result;
             if(user != null)
@@ -51,7 +52,7 @@
     <li>
         @foreach (var activemember in activemembers)
         {
-            <snitz-avatar src="@activemember!.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle profile-popup" data-id="@activemember.Id" />
+            <snitz-avatar src="@activemember!.Avatar" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle profile-popup" data-id="@activemember.Id" />
         }
     </li>
     <li><hr /></li>
@@ -60,7 +61,7 @@
     {
         if (!activemembers.Contains(member))
         {
-            <li><a href="~/Account/Detail/@member.Name" aria-label="@member.Name, @Localizer["tipViewProfile"]">@member.Name</a> (<snitz-datetime datetime="@member.Lastactivity.FromForumDateStr()"></snitz-datetime>) </li>
+            <li><a href="~/Account/Detail/@member.Name" aria-label="@member.Name, @Localizer["tipViewProfile"]">@member.Name</a> (<snitz-datetime datetime="@member.LastActivity.FromForumDateStr()"></snitz-datetime>) </li>
         }
     }
 </ul>

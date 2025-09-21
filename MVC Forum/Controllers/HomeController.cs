@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+﻿using BbCodeFormatter;
+using BbCodeFormatter.Processors;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,12 +30,14 @@ namespace MVCForum.Controllers
         private readonly ISnitzCookie _snitzcookie;
         private readonly IPost _postService;
         private readonly IAdRotator _banner;
+        private readonly ICodeProcessor _bbcodeProcessor;
 
-        public HomeController(IMember memberService, IAdRotator banner, ISnitzConfig config,IPost postservice, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, ISnitzCookie snitzcookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
+        public HomeController(ICodeProcessor bbcodeProcessor, IMember memberService, IAdRotator banner, ISnitzConfig config,IPost postservice, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, ISnitzCookie snitzcookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _snitzcookie = snitzcookie;
             _postService = postservice;
             _banner = banner;
+            _bbcodeProcessor = bbcodeProcessor;
         }
 
         public IActionResult Index()
@@ -62,6 +66,11 @@ namespace MVCForum.Controllers
                 return View("TempIndex");
             }
         }
+        public IActionResult Preview (string content)
+        {
+            var processed = _bbcodeProcessor.Format(content);
+            return Content(processed);
+        } 
 
         [Route("About")]
         public IActionResult About()
@@ -76,7 +85,7 @@ namespace MVCForum.Controllers
         public PartialViewResult RefreshRecentTopics(int id = 0, int forumid= 0, bool sidebar=false)
         {
             return PartialView("_RecentTopics", _postService.GetAllTopicsAndRelated()
-                .OrderByDescending(t=>t.LastPostDate).Take(5).ToList());
+                .Take(5).ToList());
         }
 
         public IActionResult SetLanguage(string? lang, string? returnUrl)

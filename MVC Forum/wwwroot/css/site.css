@@ -5,6 +5,7 @@
     --primary-header: #3498db;
     --font-size: 16px;
     --spacing: 1rem;
+    --bs-form-invalid-color: red;
 }
 blockquote.newquote {
     font: 14px/22px normal helvetica, sans-serif;
@@ -252,6 +253,10 @@ footer{
 .card-body {
     flex: 1 auto !important;
 }
+    .card-body img {
+        max-width: 99%;
+        height: auto;
+    }
     .head {
         display: flex;
         padding: 5px;
@@ -335,12 +340,12 @@ footer{
         max-width: 400px !important;
     }
 
-i.fa-reply, i.fa-trash, i.fa-trash-o, i.fa-share, i.fa-close, i.fa-pencil, i.fa-comment-o, i.fa-commenting,
-i.fa-share-square, i.fa-share-square-o, i.fa-flag-checkered, i.fa-thumbs-o-up, i.fa-thumbs-up,
-i.fa-bookmark-o, i.fa-bookmark, i.fa-thumb-tack, i.fa-hand-paper-o {
+i.fa-reply, i.fa-trash, i.fa-trash-can, i.fa-share, i.fa-close, i.fa-pencil, i.fa-pen-to-square, i.fa-comment, i.fa-commenting,
+i.fa-bell-slash, i.fa-bell, i.fa-flag, i.fa-thumbs-up, i.fa-thumbs-down,i.fa-envelope,
+i.fa-bookmark-o, i.fa-bookmark, i.fa-thumb-tack, i.fa-thumb-tack-slash, i.fa-hand-paper-o, i.fa-heart {
     cursor: pointer;
 }
-i.fa-share-square.category, i.fa-share-square-o.category {
+i.fa-bell.category, i.bell-slash.category {
     float: right;
     margin: .5rem;
     font-size: 1.5em;
@@ -528,11 +533,23 @@ img.avatarsmall {
     max-width: 50px;
     max-height: 50px;
 }
+img.avatarmod {
+    margin: 2px;
+    width: auto;
+    max-width: 30px;
+    max-height: 30px;
+}
 img.avatar {
     margin: 2px;
     width: auto;
     max-width: 80px;
     max-height: 80px;
+}
+img.avatarlarge {
+    margin: 2px;
+    width: auto;
+    max-width: 100px;
+    max-height: 100px;
 }
 /* The overlay effect (full height and width) - lays on top of the container and over the image */
 .overlay-delete {
@@ -595,6 +612,9 @@ fieldset {
 .modstatus-3, .modstatus-3 div {
     background-color: orange !important;
 }
+    .modstatus-99, .modstatus-99 div {
+        background-color: gainsboro !important;
+    }
 i[class^="modstatus-"] {
     display: none;
 }
@@ -1029,6 +1049,16 @@ i.modstatus-2, i.modstatus-3 {
         font-size: 16px;
     }
 }
+
+@media (min-width: 481px) {
+
+    .modal-dialog {
+        max-width: 1024px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+}
+
 .mce-content-body[data-mce-placeholder]:not(.mce-visualblocks)::before {
     color: rgba(34,47,62,.7);
     content: attr(data-mce-placeholder);
@@ -1052,11 +1082,11 @@ i.modstatus-2, i.modstatus-3 {
     margin-right:.5rem;
 }
 
-.event-birthday .fc-list-event-graphic .fc-list-event-dot:before {
-    font-family: FontAwesome;
-    content: "\f1fd";
-    color: rgb(218, 165, 32) !important;
-}
+    .event-birthday .fc-list-event-graphic .fc-list-event-dot:before {
+        font-family: "Font Awesome 7 Free";
+        content: "\f1fd";
+        color: rgb(218, 165, 32) !important;
+    }
 .event-birthday .fc-list-event-title {
     color: rgb(218, 165, 32) !important;
 }
@@ -1069,7 +1099,7 @@ i.modstatus-2, i.modstatus-3 {
     display: block;
 }
     .event-birthday.fc-h-event .fc-event-title:before {
-        font-family: FontAwesome;
+        font-family: "Font Awesome 7 Free";
         content: "\f1fd";
         color: white;
     }
@@ -1116,3 +1146,6 @@ i.modstatus-2, i.modstatus-3 {
     transform: translate(-50%, -50%);
     text-align: center;
 }
+
+
+

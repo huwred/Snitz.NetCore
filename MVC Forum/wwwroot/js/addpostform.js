@@ -1,11 +1,9 @@
 ﻿
-        $(document).on("submit", "#addPostForm", function (e) {
+$("#addPostForm").on("submit", function (e) {
             e.preventDefault();
             tinyMCE.get("msg-text").save();
             var form = $("#addPostForm");
             var formData = new FormData(form[0]);
-            console.log($(this).attr("action"));
-            debugger;
             $.ajax({
                 url: $(this).attr("action"),
                 type: "POST",
@@ -13,7 +11,6 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    debugger;
                     if ($('#event-form').length > 0) {
                         var evtform = $('#event-form').find('form');
 
@@ -90,7 +87,7 @@
                 var form = $("#upload-form");
                 var formData = new FormData(form[0]);
                 $.ajax({
-                    url: SnitzVars.baseUrl + $("#upload-form").attr("action"),
+                    url: $("#upload-form").attr("action"),
                     type: "POST",
                     data: formData,
                     contentType: false,

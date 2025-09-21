@@ -80,7 +80,7 @@
                     <input name="input-name" type="number" class="rb-rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs">
                 }
             </div>
-            <div class="d-none d-md-flex  p-2 bd-highlight fs-6 post-buttons">
+            <div class="d-none d-md-flex  p-2 bd-highlight fs-5 post-buttons">
                 @if (!archives || User.IsInRole("Administrator"))
                 {
                     @await Component.InvokeAsync("PostControls", new { post = Model.ArchivedTopic ,forlist = true})
@@ -101,7 +101,7 @@
                 <span class="ms-2">@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
             </span>
         }
-        <div class="d-sm-inline-flex d-md-none bd-highlight fs-6 post-buttons">
+        <div class="d-sm-inline-flex d-md-none bd-highlight fs-5 post-buttons">
                 @if (!archives || User.IsInRole("Administrator"))
                 {
                     @await Component.InvokeAsync("PostControls", new { post = Model.ArchivedTopic ,forlist = true})

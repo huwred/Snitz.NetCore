@@ -26,7 +26,7 @@ else
                 votingAllowed = true;
             }
         }
-        <form asp-action="Vote" asp-controller="Polls" data-ajax="true" data-ajax-update="#PollPanel">
+        <form asp-action="Vote" asp-controller="Polls" data-ajax="true" class="needs-validation"  novalidate data-ajax-complete="VoteComplete">
             <input type="hidden" name="PollId" value="@Model.Poll.Id"/>
             <div class="card mb-2">
                 <div class="card-header @ViewData["panel"] subforum-title">
@@ -44,10 +44,8 @@ else
                     @foreach (var ans in Model.Poll.PollAnswers.OrderBy(a => a.Order))
                     {
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="voteid" value="@ans.Id">
-                            <label class="form-check-label" for="flexRadioDefault1">
-                                @ans.Label
-                            </label>
+                            <input class="form-check-input" type="radio" name="voteid" value="@ans.Id" id="radio_@ans.Id" required>
+                            <label class="form-check-label" for="radio_@ans.Id">@ans.Label</label>
                         </div>
                     }
                 </div>
@@ -58,7 +56,7 @@ else
                     }
                     else
                     {
-                        string loginlink = $"<a href=\"/Account/Login\" id=\"loginLink\">{Localizer["SignIn"].Value}</a>";
+                        string loginlink = $"<a href=\"~/Account/Login\" id=\"loginLink\">{Localizer["SignIn"].Value}</a>";
                         @Html.Raw(string.Format(Localizer["LoginToVote"].Value, loginlink))
                     }
                 </div>
@@ -66,3 +64,8 @@ else
         </form>
     }
 }
+<script>
+    function VoteComplete(){
+        location.reload(true);
+    }
+</script>

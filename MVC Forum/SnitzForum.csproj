@@ -18,150 +18,41 @@
   
   <ItemGroup>
     <Compile Remove="logs\**" />
-    <Compile Remove="Views\Admin\**" />
-    <Compile Remove="wwwroot\Content\Members\**" />
-    <Compile Remove="wwwroot\Content\PhotoAlbum\**" />
-    <Compile Remove="wwwroot\images\forum\**" />
-    <Compile Remove="wwwroot\is-cache\**" />
-    <Compile Remove="wwwroot\js\codemirror\**" />
-    <Compile Remove="wwwroot\ProtectedContent\Members\**" />
-    <Compile Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
-    <Compile Remove="wwwroot\Templates\no\**" />
     <Content Remove="logs\**" />
-    <Content Remove="Views\Admin\**" />
-    <Content Remove="wwwroot\Content\Members\**" />
-    <Content Remove="wwwroot\Content\PhotoAlbum\**" />
-    <Content Remove="wwwroot\images\forum\**" />
-    <Content Remove="wwwroot\is-cache\**" />
-    <Content Remove="wwwroot\js\codemirror\**" />
-    <Content Remove="wwwroot\ProtectedContent\Members\**" />
-    <Content Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
-    <Content Remove="wwwroot\Templates\no\**" />
-    <EmbeddedResource Remove="logs\**" />
-    <EmbeddedResource Remove="Views\Admin\**" />
-    <EmbeddedResource Remove="wwwroot\Content\Members\**" />
-    <EmbeddedResource Remove="wwwroot\Content\PhotoAlbum\**" />
-    <EmbeddedResource Remove="wwwroot\images\forum\**" />
-    <EmbeddedResource Remove="wwwroot\is-cache\**" />
-    <EmbeddedResource Remove="wwwroot\js\codemirror\**" />
-    <EmbeddedResource Remove="wwwroot\ProtectedContent\Members\**" />
-    <EmbeddedResource Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
-    <EmbeddedResource Remove="wwwroot\Templates\no\**" />
     <None Remove="logs\**" />
-    <None Remove="Views\Admin\**" />
-    <None Remove="wwwroot\Content\Members\**" />
-    <None Remove="wwwroot\Content\PhotoAlbum\**" />
-    <None Remove="wwwroot\images\forum\**" />
-    <None Remove="wwwroot\is-cache\**" />
-    <None Remove="wwwroot\js\codemirror\**" />
-    <None Remove="wwwroot\ProtectedContent\Members\**" />
-    <None Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
-    <None Remove="wwwroot\Templates\no\**" />
-    <TypeScriptCompile Remove="logs\**" />
-    <TypeScriptCompile Remove="Views\Admin\**" />
-    <TypeScriptCompile Remove="wwwroot\Content\Members\**" />
-    <TypeScriptCompile Remove="wwwroot\Content\PhotoAlbum\**" />
-    <TypeScriptCompile Remove="wwwroot\is-cache\**" />
-    <TypeScriptCompile Remove="wwwroot\js\codemirror\**" />
-    <TypeScriptCompile Remove="wwwroot\ProtectedContent\Members\**" />
-    <TypeScriptCompile Remove="wwwroot\ProtectedContent\PhotoAlbum\**" />
-    <TypeScriptCompile Remove="wwwroot\Templates\no\**" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <Compile Remove="Controllers\TagCloudController.cs" />
-    <Compile Remove="Startup.cs" />
+    <Content Update="wwwroot\images\**" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\images\**\wizard*" CopyToPublishDirectory="never" />
+    <Content Update="wwwroot\Templates\**" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\Content\**" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\Content\Avatar\**" CopyToPublishDirectory="never" />
+    <Content Update="wwwroot\Content\Members\**" CopyToPublishDirectory="never" />
+    <Content Update="wwwroot\Content\PhotoAlbum\**" CopyToPublishDirectory="never" />
+    <Content Update="wwwroot\ProtectedContent\**" CopyToPublishDirectory="never" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="App_Data\**" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\**\*.css" CopyToPublishDirectory="never" />
+    <Content Update="wwwroot\**\*.min.css" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\**\*.js" CopyToPublishDirectory="never" />
+    <Content Update="wwwroot\**\*.min.js" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\codemirror\**" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\js\timeago\*.*" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\js\tinymce\langs\*.js" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\js\captcha.js" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\js\initPostForm.js" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\js\jquery.cookie.js" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\is-cache\**" CopyToPublishDirectory="never" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
     <Content Remove="log4net.config" />
     <Content Remove="Views\Shared\popUploadAvatar.cshtml" />
-    <Content Remove="Views\Shared\_BookmarkLink.cshtml" />
     <Content Remove="Views\Topic\Blog\Print.cshtml" />
-    <Content Remove="Views\Topic\Blog\_QuickReply.cshtml" />
-    <Content Remove="Views\Topic\Blog\_Reply.cshtml" />
-    <Content Remove="Views\Topic\Blog\_Topic.cshtml" />
-    <Content Remove="wwwroot\Content\Avatar\HuwR132430879466080654.jpg" />
-    <Content Remove="wwwroot\Content\Avatar\Torborg.gif" />
-    <Content Remove="wwwroot\Content\Avatar\untitled.png" />
-    <Content Remove="wwwroot\css\bootstrap.css" />
-    <Content Remove="wwwroot\css\CarpyTheme.css" />
-    <Content Remove="wwwroot\css\DarkTheme.css" />
-    <Content Remove="wwwroot\css\LightTheme.css" />
-    <Content Remove="wwwroot\css\OrangeTheme.css" />
-    <Content Remove="wwwroot\css\print.css" />
-    <Content Remove="wwwroot\css\site.css" />
-    <Content Remove="wwwroot\css\SnitzTheme.css" />
-    <Content Remove="wwwroot\css\VellumTheme.css" />
-    <Content Remove="wwwroot\js\addpostform.js" />
-    <Content Remove="wwwroot\js\jquery.unobtrusive-ajax.js" />
-    <Content Remove="wwwroot\js\pluginjs\snitz.cal.js" />
-    <Content Remove="wwwroot\js\pluginjs\snitz.cal.min.js" />
-    <Content Remove="wwwroot\js\postcontroller.js" />
-    <Content Remove="wwwroot\js\prism.js" />
-    <Content Remove="wwwroot\js\privatemessage.js" />
-    <Content Remove="wwwroot\js\site.js" />
-    <Content Remove="wwwroot\js\tinymce\icons\default\icons.min.js" />
-    <Content Remove="wwwroot\js\tinymce\jquery.tinymce.min.js" />
-    <Content Remove="wwwroot\js\tinymce\langs\README.md" />
-    <Content Remove="wwwroot\js\tinymce\plugins\advlist\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\anchor\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\autolink\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\autoresize\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\autosave\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\bbcode\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\charmap\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\codesample\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\code\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\colorpicker\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\contextmenu\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\directionality\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\emoticons\js\emojiimages.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\emoticons\js\emojiimages.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\emoticons\js\emojis.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\emoticons\js\emojis.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\emoticons\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\fullpage\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\fullscreen\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\help\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\hr\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\imagetools\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\image\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\importcss\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\insertdatetime\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\legacyoutput\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\link\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\lists\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\media\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\nonbreaking\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\noneditable\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\pagebreak\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\paste\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\preview\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\print\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\quickbars\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\save\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\searchreplace\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\spellchecker\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\tabfocus\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\table\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\template\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\textcolor\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\textpattern\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\toc\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\visualblocks\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\visualchars\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\plugins\wordcount\plugin.min.js" />
-    <Content Remove="wwwroot\js\tinymce\themes\mobile\theme.min.js" />
-    <Content Remove="wwwroot\js\tinymce\themes\silver\theme.min.js" />
-    <Content Remove="wwwroot\js\tinymce\tinymce.min.js" />
-    <Content Remove="wwwroot\js\topic.js" />
-    <Content Remove="wwwroot\lib\jquery\dist\jquery-ui.js" />
-    <Content Remove="wwwroot\lib\jquery\jquery.timeago.js" />
-    <Content Remove="wwwroot\ProtectedContent\Avatar\HuwR132430879466080654.jpg" />
-    <Content Remove="wwwroot\ProtectedContent\Avatar\Torborg.gif" />
-    <Content Remove="wwwroot\ProtectedContent\Avatar\untitled.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -169,126 +60,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="bundleconfig.json" />
-    <_ContentIncludedByDefault Remove="Views\Account\ChangeUsername.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Account\EmailMember.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\PrivateMessage\Search.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\PrivateMessage\SearchResult.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Shared\Components\Polls\Config.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Shared\ConfirmDIalog.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Shared\FormButtons.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Shared\_BookmarkLink.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Shared\_PageNotFound.cshtml" />
-    <_ContentIncludedByDefault Remove="wwwroot\css\LightTheme.min.css" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="bundleconfig.json" />
     <None Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wwwroot\codemirror\lib\codemirror.js" />
-    <None Include="wwwroot\codemirror\mode\bbcodemixed\bbcodemixed.js" />
-    <None Include="wwwroot\codemirror\mode\bbcode\bbcode.js" />
-    <None Include="wwwroot\codemirror\mode\clike\clike.js" />
-    <None Include="wwwroot\codemirror\mode\css\css.js" />
-    <None Include="wwwroot\codemirror\mode\css\gss_test.js" />
-    <None Include="wwwroot\codemirror\mode\css\less_test.js" />
-    <None Include="wwwroot\codemirror\mode\css\scss_test.js" />
-    <None Include="wwwroot\codemirror\mode\css\test.js" />
-    <None Include="wwwroot\codemirror\mode\htmlembedded\htmlembedded.js" />
-    <None Include="wwwroot\codemirror\mode\htmlmixed\htmlmixed.js" />
-    <None Include="wwwroot\codemirror\mode\javascript\javascript.js" />
-    <None Include="wwwroot\codemirror\mode\meta.js" />
-    <None Include="wwwroot\Content\Avatar\HuwR132430879466080654.jpg" />
-    <None Include="wwwroot\Content\Avatar\Torborg.gif" />
-    <None Include="wwwroot\Content\Avatar\untitled.png" />
-    <None Include="wwwroot\css\bootstrap.css" />
-    <None Include="wwwroot\css\DarkTheme.css" />
-    <None Include="wwwroot\css\LightTheme.css" />
-    <None Include="wwwroot\css\OrangeTheme.css" />
-    <None Include="wwwroot\css\print.css" />
-    <None Include="wwwroot\css\site.css" />
-    <None Include="wwwroot\css\CarpyTheme.css" />
-    <None Include="wwwroot\css\VellumTheme.css" />
-    <None Include="wwwroot\js\addpostform.js" />
-    <None Include="wwwroot\js\jquery.unobtrusive-ajax.js" />
-    <None Include="wwwroot\js\pluginjs\snitz.cal.js">
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="wwwroot\js\pluginjs\snitz.cal.min.js">
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="wwwroot\js\postcontroller.js" />
-    <None Include="wwwroot\js\prism.js" />
-    <None Include="wwwroot\js\privatemessage.js" />
-    <None Include="wwwroot\js\site.js" />
-    <None Include="wwwroot\js\tinymce\CHANGELOG.md" />
-    <None Include="wwwroot\js\tinymce\icons\default\icons.min.js" />
-    <None Include="wwwroot\js\tinymce\jquery.tinymce.min.js" />
-    <None Include="wwwroot\js\tinymce\langs\README.md" />
-    <None Include="wwwroot\js\tinymce\plugins\advlist\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\anchor\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\autolink\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\autoresize\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\autosave\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\bbcode\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\charmap\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\codesample\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\code\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\colorpicker\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\contextmenu\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\directionality\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojiimages.js" />
-    <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojiimages.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojis.js" />
-    <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojis.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\emoticons\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\fullpage\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\fullscreen\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\help\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\hr\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\imagetools\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\image\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\importcss\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\insertdatetime\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\legacyoutput\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\link\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\lists\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\media\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\nonbreaking\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\noneditable\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\pagebreak\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\paste\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\preview\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\print\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\quickbars\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\save\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\searchreplace\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\spellchecker\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\tabfocus\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\table\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\template\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\textcolor\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\textpattern\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\toc\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\visualblocks\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\visualchars\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\plugins\wordcount\plugin.min.js" />
-    <None Include="wwwroot\js\tinymce\themes\mobile\theme.min.js" />
-    <None Include="wwwroot\js\tinymce\themes\silver\theme.min.js" />
-    <None Include="wwwroot\js\tinymce\tinymce.min.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="wwwroot\js\topic.js" />
-    <None Include="wwwroot\lib\jquery\dist\jquery-ui.js" />
-    <None Include="wwwroot\lib\jquery\jquery.timeago.js" />
-    <None Include="wwwroot\ProtectedContent\Avatar\HuwR132430879466080654.jpg" />
-    <None Include="wwwroot\ProtectedContent\Avatar\Torborg.gif" />
-    <None Include="wwwroot\ProtectedContent\Avatar\untitled.png" />
+   
   </ItemGroup>
 
 
@@ -339,9 +115,9 @@
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.9" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
-    <PackageReference Include="Snitz.Events" Version="1.0.2-rc26" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2-rc89" />
-    <PackageReference Include="Snitz.PostThanks" Version="1.0.3-rc42" />
+    <PackageReference Include="Snitz.Events" Version="1.0.2" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.2" />
+    <PackageReference Include="Snitz.PostThanks" Version="1.0.3-rc47" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
@@ -352,7 +128,6 @@
   <ItemGroup>
     <Folder Include="logs\" />
     <Folder Include="Views\Polls\" />
-    <Folder Include="wwwroot\Templates\images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Views\Shared\Components\Members\wide.cshtml">
@@ -363,50 +138,8 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-    <Content Update="wwwroot\Content\BannerAds\300x600.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\Content\BannerAds\320x60.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\Content\BannerAds\340x280.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\Content\BannerAds\720x200.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\Content\BannerAds\730x90.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\js\timeago\timeago.fa.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\js\timeago\timeago.no.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\js\timeago\timeago.olden.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\Templates\en-GB\pmnotify.html">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="wwwroot\Templates\htmlpage.html">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
   </ItemGroup>
-  <ItemGroup>
-    <None Update="App_Data\adrotator.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="App_Data\emoticons.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="App_Data\stopwords-en.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\Components\Captcha\Captcha.cshtml" />
   </ItemGroup>
@@ -437,7 +170,5 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Shared\_PageNotFound.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="wwwroot\css\SnitzTheme.css" />
-  </ItemGroup>
+
 </Project>

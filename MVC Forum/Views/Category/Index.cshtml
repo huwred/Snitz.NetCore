@@ -1,4 +1,5 @@
 ﻿@model MVCForum.ViewModels.Forum.ForumIndexModel
+@using MVCForum.ViewModels.Forum
 @using Microsoft.AspNetCore.Identity
 @using System.Linq
 @using BbCodeFormatter
@@ -64,7 +65,7 @@
             {
                 <form class="form-inline col-4 col-lg-6">
                     <div class="btn-group mb-2">
-                        <button asp-controller="Category" type="submit" asp-action="Create" aria-label="@Localizer["tipNewCategory"]" class="btn btn-outline-primary"><i class="fa fa-folder-o"></i><span class="d-none d-lg-inline"> @Localizer["tipNewCategory"]</span></button>
+                        <button asp-controller="Category" type="submit" asp-action="Create" aria-label="@Localizer["tipNewCategory"]" class="btn btn-outline-primary"><i class="fa fa-folder-open"></i><span class="d-none d-lg-inline"> @Localizer["tipNewCategory"]</span></button>
                         <button asp-controller="Forum" type="submit" asp-action="Create" aria-label="@Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-lg-inline"> @Localizer["tipNewForum"]</span></button>
                     </div>
                 </form>
@@ -78,26 +79,32 @@
             @foreach (var category in Model.Categories.OrderBy(cat=>cat.Sort)!)
             {
                 var ID = category.Id;
+                var forumlist = Model.ForumList!.Where(f => f.CategoryId == ID).ToList();
+                if (IsHidden(forumlist))
+                {
+                    continue;
+                }
+
                 <div class="subforum border-0 border-primary accordion-item">
                     <h5 class="accordion-header subforum-title rounded" id="heading_@ID">
-                        <button style="display: inline; width: 40px;" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@ID" aria-expanded="true" aria-controls="collapseOne">
+                        <button style="display: inline; width: 40px;" aria-labelledby="section-@ID-label" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@ID" aria-expanded="true" aria-controls="collapseOne">
                             <i class="fa fa-minus"></i>
                         </button>
-                        <a style="display: inline;" href="~/Category/@ID">@category.Name</a>
+                        <a style="display: inline;" href="~/Category/@ID" id="section-@ID-label">@category.Name</a>
                         @if (SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0 && category.Subscription == (int)CategorySubscription.CategorySubscription && User.Identity!.IsAuthenticated)
                         {
                             if (subscriptions!.Where(s => s.CategoryId == category.Id && s.PostId == 0).Select(s => s.CategoryId).Any())
                             {
-                                <i class="fa fa-share-square category center m-2" title="@Localizer["btnUnsubscribe"]" data-id="@category.Id"></i>
+                                <i class="fa fa-bell-slash category center m-2" title="@Localizer["btnUnsubscribe"]" data-id="@category.Id"></i>
                             }
                             else
                             {
-                                <i class="fa fa-share-square-o category center m-2" title="@Localizer["cnfSubscribeCategory"]" data-id="@category.Id"></i>
+                                <i class="fa fa-bell category center m-2" title="@Localizer["cnfSubscribeCategory"]" data-id="@category.Id"></i>
                             }
                         }
                     </h5>
                     <div class="accordion-collapse collapse show" id="collapse_@ID" aria-labelledby="heading_@ID">
-                        @foreach (var forum in Model.ForumList!.Where(f=>f.CategoryId == ID).OrderBy(f=>f.Order))
+                        @foreach (var forum in forumlist.OrderBy(f => f.Order))
                         {
                             @if (HasAccess(forum.AccessType, forum.Id))
                             {
@@ -120,24 +127,27 @@
                                         @if (isAdministrator && forum.ForumType is ForumType.WebLink)
                                         {
                                             <br />
-                                            <i class="fa fa-trash weblink-del" aria-label="Delete External link" data-id="@forum.Id" aria-hidden="true"></i>
+                                            <link-confirm title="Delete External link" jq-selector="weblink-del" href="~/Forum/Delete/" config-class="fa fa-trash fs-4" config-key="@forum.Id"></link-confirm>
+                                            <i class="fa fa-pencil weblink-edit fs-4" aria-label="Edit External link" data-id="@forum.Id" aria-hidden="true"></i>
                                         }
                                     </div>
                                     <div class="subforum-description subforum-column">
                                         @if (forum.ForumType == ForumType.WebLink)
                                         {
-                                            <h4><a href="@forum.Url" target="_blank">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
+                                            <h4><a href="@forum.Url" target="_blank" >@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
                                         }
                                         else
                                         {
-                                            <h4><a href="~/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" aria-label="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a>
-
-                                            </h4>
+                                            <h4><a href="~/Forum/@forum.Id/?defaultdays=@((int)forum.DefaultView)" aria-label="Go to @forum.Title">@Html.Raw(BbCodeProcessor.Subject(forum.Title))</a></h4>
                                         }
                                         <p>@Html.Raw(BbCodeProcessor.Format(forum.Description))</p>
                                         @if (forum.ForumModeration != Moderation.UnModerated )
                                         {
                                             <p class="form-text mt-2 fst-italic">@Localizer[$"Moderation_{forum.ForumModeration}"] in this Forum </p>
+                                            @if (SnitzConfig.IsEnabled("STRSHOWMODERATORS"))
+                                            {
+                                                @await Component.InvokeAsync("Roles", new { id = forum.Id, template = "ModImages" })
+                                            }
                                         }
                                         @if (forum.ForumSubscription != ForumSubscription.None)
                                         {
@@ -201,6 +211,18 @@
 
 @functions
 {
+    bool IsHidden(List<ForumListingModel> forums)
+    {
+        foreach (var forum in forums)
+        {
+            if (HasAccess(forum.AccessType, forum.Id))
+            {
+                return false;
+            }            
+        }
+
+        return true;
+    }
     bool HasAccess(ForumAuthType authType,int forumId)
     {
         if (User.IsInRole("Administrator"))
@@ -247,7 +269,7 @@
 {
     <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
     <script>
-        $(document).on('click','.confirm-delete', function(e) {
+        $('.confirm-delete').on('click', function(e) {
             e.preventDefault();
             var id = $(this).data('id');
             var href = $(this).attr('href');
@@ -264,18 +286,23 @@
             })();
         });
 
-        $(document).on("click", ".weblink-edit", function (e) {
+        $(".weblink-edit").on("click", function (e) {
             e.preventDefault();
             location.href = SnitzVars.baseUrl + "/Forum/Edit/" + $(this).data("id");
         });
-        $(document).on("click", ".weblink-del", function (e) {
+        $(".weblink-del").on("click", function (e) {
             e.preventDefault();
-            $.get(SnitzVars.baseUrl + "/Forum/Delete/" + $(this).data("id"),
-                function(data) {
-                    if (data) {
-                        location.href = data.redirectToUrl;
-                    }
-                });
+            var id = $(this).data('id');
+            var href = $(this).attr('href') + id;
+            (async () => {
+                const result = await b_confirm(Snitzres.cnfDeleteWebLink)
+                if (result) {
+
+                    $.get(href.replace("~", SnitzVars.baseUrl), function(result){
+                        window.location.replace(result.redirectToUrl);
+                    });
+                }
+            })();
         });
 
         let selectedCollapse = localStorage.getItem('selectedCollapse');

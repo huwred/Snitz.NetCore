@@ -1,0 +1,22 @@
+﻿@model List<string>
+@{
+    var forum = ViewBag.ForumId;
+}
+<ul class="list-group">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var user in Model)
+        {
+            <li class="list-group-item">
+                @user
+                <span class="pull-right">
+                    <link-confirm jq-selector="del-moderator" href="~/Forum/DelModerator/?username=@user&forumid=@forum" config-class="@("fa fa-trash-o")" title="Remove Moderator?" config-key="@user" ></link-confirm>
+                </span>
+            </li>
+        }
+    }
+    else
+    {
+        <li class="list-group-item">No Moderators yet!</li>
+    }
+</ul>

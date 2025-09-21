@@ -11,13 +11,21 @@
     // element appear in screen. You could set other events including each one separated by a space.
     trigger: "appear"
 });
-$(document).on('click', '#submitUpload',
+$('#submitUpload').on('click', 
     function (e) {
         e.preventDefault();
         var form = $("#upload-form");
+        if (form[0].checkValidity() === false) {
+            e.preventDefault();
+            e.stopPropagation();
+            form[0].classList.add('was-validated');
+            return false;
+        }
+
+        form[0].classList.add('was-validated');
         var formData = new FormData(form[0]);
         $.ajax({
-            url: SnitzVars.baseUrl + $("#upload-form").attr("action"),
+            url: $("#upload-form").attr("action"),
             type: "POST",
             data: formData,
             contentType: false,
@@ -39,17 +47,32 @@ $(document).on('click', '#submitUpload',
         });
         return false;
     });
-$(document).on("click", "#photo-upload",
+$("#photo-upload").on("click", 
     function (e) {
         e.preventDefault();
-        $('#uploadModal .modal-title').html("Edit Image Details");
+        //$('#uploadModal .modal-title').html("Edit Image Details");
         $('#upload-content').load(SnitzVars.baseUrl + "/PhotoAlbum/UploadForm/?showall=true",
             function () {
                 $('#uploadModal').modal('show');
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms,
+                    function (form) {
+                        form.addEventListener('submit',
+                            function (event) {
+                                if (form.checkValidity() === false) {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                }
+
+                                form.classList.add('was-validated');
+                            },
+                            false);
+                    });
             });
     });
 
-$(document).on('click', '.confirm-privacy', function (e) {
+$('.confirm-privacy').on('click', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
     (async () => {
@@ -69,7 +92,7 @@ $(document).on('click', '.confirm-privacy', function (e) {
     })();
 
 });
-$(document).on('click', '.confirm-feature', function (e) {
+$('.confirm-feature').on('click', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
     (async () => {
@@ -90,7 +113,7 @@ $(document).on('click', '.confirm-feature', function (e) {
 
 });
 
-$(document).on('click', '.edit-image', function (e) {
+$('.edit-image').on('click', function (e) {
     e.preventDefault();
     var dataid = $(this).data('id');
     var display = $(this).data('display');
@@ -100,7 +123,7 @@ $(document).on('click', '.edit-image', function (e) {
     });
 });
 
-$(document).on('click', '.confirm-delimage', function (e) {
+$('.confirm-delimage').on('click', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
     (async () => {

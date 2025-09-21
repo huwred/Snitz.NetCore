@@ -11,7 +11,21 @@ if ($('.cal-dates').length >= 1) {
         }
     });
 }
+$(document).on("change", '#countryRegion', function () {
+    var val = $(this).val(); //$('#change-holidays').val() + '|' + 
+    console.log("change" + val);
+    var url = SnitzVars.baseUrl + "/Calendar/GetHolidays/"
+    FullCalendarNew(url, 'calendar', '', val);
+});
 
+$('#change-holidays')
+    .change(function () {
+        var val = $(this).val();
+        populateRegions(val);
+        var url = SnitzVars.baseUrl + "/Calendar/GetHolidays/"
+        FullCalendar(url, 'calendar', '', val);
+
+    });
 UpComingCalendar = function(url, divid) {
     var d = new Date();
     var day = d.getDate();
@@ -200,7 +214,7 @@ setForumEventsAuth = function(event) {
 
 FullCalendarNew = function (url, divid, firstday, country) {
     var calendarEl = document.getElementById('calendar');
-    var localeSelectorEl = document.getElementById('locale-selector');
+    //var localeSelectorEl = document.getElementById('locale-selector');
 
     var url = SnitzVars.baseUrl + "/Calendar/GetCalendarEvents/"
     var holidayUrl = SnitzVars.baseUrl + "/Calendar/GetHolidays/" + country;
@@ -236,18 +250,18 @@ FullCalendarNew = function (url, divid, firstday, country) {
 
     calendar.render();
     // build the locale selector's options
-    calendar.getAvailableLocaleCodes().forEach(function (localeCode) {
-        var optionEl = document.createElement('option');
-        optionEl.value = localeCode;
-        optionEl.selected = localeCode == SnitzVars.forumlang;
-        optionEl.innerText = localeCode;
-        localeSelectorEl.appendChild(optionEl);
-    });
+    //calendar.getAvailableLocaleCodes().forEach(function (localeCode) {
+    //    var optionEl = document.createElement('option');
+    //    optionEl.value = localeCode;
+    //    optionEl.selected = localeCode == SnitzVars.forumlang;
+    //    optionEl.innerText = localeCode;
+    //    localeSelectorEl.appendChild(optionEl);
+    //});
 
-    // when the selected option changes, dynamically change the calendar option
-    localeSelectorEl.addEventListener('change', function () {
-        if (this.value) {
-            calendar.setOption('locale', this.value);
-        }
-    });
+    //// when the selected option changes, dynamically change the calendar option
+    //localeSelectorEl.addEventListener('change', function () {
+    //    if (this.value) {
+    //        calendar.setOption('locale', this.value);
+    //    }
+    //});
 }

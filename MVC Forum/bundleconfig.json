@@ -180,5 +180,71 @@
     "inputFiles": [
       "wwwroot/js/admin/member.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/topic.min.css",
+    "inputFiles": [
+      "wwwroot/css/topic.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/prism-coldark-cold.min.css",
+    "inputFiles": [
+      "wwwroot/css/prism-coldark-cold.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/SnitzTheme/prism.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/SnitzTheme/prism.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/VellumTheme/prism.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/VellumTheme/prism.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/DarkTheme/prism.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/DarkTheme/prism.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/jquery.passwordstrength.min.js",
+    "inputFiles": [
+      "wwwroot/js/jquery.passwordstrength.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/jquery.twosidedmultiselect.min.js",
+    "inputFiles": [
+      "wwwroot/js/jquery.twosidedmultiselect.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/CarpyTheme/tag_cloud.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/CarpyTheme/tag_cloud.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/DarkTheme/tag_cloud.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/DarkTheme/tag_cloud.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/SnitzTheme/tag_cloud.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/SnitzTheme/tag_cloud.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/VellumTheme/tag_cloud.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/VellumTheme/tag_cloud.css"
+    ]
   }
 ]

@@ -133,7 +133,7 @@
                         <input asp-for="IsSticky" tabindex="5" type="hidden" value="@(Model.IsSticky ? 1 : 0)">
                         <input asp-for="DoNotArchive" tabindex="5" type="hidden" value="@(Model.DoNotArchive ? 1 : 0)">
                     }
-                    <div class="pl-3 col-12 col-md-6 form-check" style="display: none;">
+                    <div class="pl-3 col-12 col-md-6 form-check" snitz-if="@((bool)ViewData["AllowDraft"])">
                         <input class="form-check-input" id="SaveDraft" name="SaveDraft" tabindex="5" type="checkbox" value="true"><input name="SaveDraft" type="hidden" value="false">
                         <label class="form-check-label">@Localizer["cbxDraft"]</label>
                     </div>

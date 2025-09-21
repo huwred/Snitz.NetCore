@@ -91,7 +91,7 @@
                         @{
                             if (Model.SortCol == "name" && Model.SortDir == "asc")
                             {
-                                    queryparams = queryparams.Replace("asc","desc");
+                                queryparams = queryparams.Replace("asc","desc");
                             }else{
                                 queryparams = queryparams.Replace("desc","asc");
                             }
@@ -215,11 +215,11 @@
 <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>
 <script type="text/javascript">
 
-    $(document).on("change", "input[type=radio][name=pagesize]", function() {
+    $("input[type=radio][name=pagesize]").on("change", function() {
         $("#pagesize-form").submit();
     });
 
-    $(document).on('click', '.confirm-lock', function (e) {
+    $('.confirm-lock').on('click', function (e) {
         e.preventDefault();
         var postid = $(this).data('id');
         var href = $(this).attr('href');
@@ -227,21 +227,20 @@
             const result = await b_confirm(Snitzres.cnfLockMember)
             if (result) {
                 $.post(href,
-                    {
-                        id: postid
-                    },
-                    function(data, status) {
-                        if (!data.result) {
-                            appendAlert(data.error, 'error');
-                        } else {
-                            location.reload();
-                        }
-                    });
+                {
+                    id: postid
+                },
+                function(data, status) {
+                    if (!data.result) {
+                        appendAlert(data.error, 'error');
+                    } else {
+                        location.reload();
+                    }
+                });
             }
-            })()
-
+        })()
     });
-    $(document).on('click', '.confirm-unlock', function (e) {
+    $('.confirm-unlock').on('click', function (e) {
         e.preventDefault();
         var postid = $(this).data('id');
         var href = $(this).attr('href');
@@ -261,31 +260,31 @@
                     }
                 });
             }
-            })();
+        })();
     });
-    $(document).on('click', '.confirm-delete', function (e) {
+    $('.confirm-delete').on('click', function (e) {
         e.preventDefault();
         var postid = $(this).data('id');
         var href = $(this).attr('href');
         (async() => {
-                const result = await b_confirm(Snitzres.cnfDelMember )
+            const result = await b_confirm(Snitzres.cnfDelMember )
             if (result) {
                 $.post(href,
-                    {
-                        id: postid
-                    },
-                    function (data, status) {
+                {
+                    id: postid
+                },
+                function (data, status) {
 
-                        if (!data.result) {
-                            appendAlert(data, 'error');
-                        } else {
-                            location.reload();
-                        }
-                    });
+                    if (!data.result) {
+                        appendAlert(data, 'error');
+                    } else {
+                        location.reload();
+                    }
+                });
             }
-            })()
+        })()
     });
-    $(document).on('click', '.confirm-zap', function (e) {
+    $('.confirm-zap').on('click', function (e) {
         e.preventDefault();
         var postid = $(this).data('id');
         var href = $(this).attr('href');
@@ -293,19 +292,18 @@
             const result = await b_confirm(Snitzres.cnfZapMember)
             if (result) {
                 $.post(href,
-                    {
-                        id: postid
-                    },
-                    function(data, status){
-
-                        if (!data.result) {
-                            appendAlert(data, 'error');
-                        } else {
-                        location.reload();
-                        }
+                {
+                    id: postid
+                },
+                function(data, status){
+                    if (!data.result) {
+                        appendAlert(data, 'error');
+                    } else {
+                    location.reload();
+                    }
                 });
             }
-            })();
+        })();
     });
 </script>
 

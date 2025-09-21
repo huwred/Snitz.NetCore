@@ -81,7 +81,7 @@ namespace SnitzCore.Services.TagHelpers
             {
                 case "checkbox":
                     var ischecked = "";
-                    if (Value == "1")
+                    if (Value != null && Value != "0")
                     {
                         ischecked = "checked";
                     }

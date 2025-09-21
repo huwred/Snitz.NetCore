@@ -2,13 +2,11 @@
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Post;
 using SmartBreadcrumbs.Nodes;
@@ -24,7 +22,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -68,6 +65,7 @@ namespace MVCForum.Controllers
         [Route("Topic/{id}")]
         [Route("Topic/Index/{id}")]
         [Route("Topic/Posts/{id}")]
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="", int? replyid = null)
         {
             if(TempData["Error"] != null)
@@ -97,7 +95,6 @@ namespace MVCForum.Controllers
                 sortdir = _config.GetValueWithDefault("STRTOPICSORT","asc");
             }
 
-            var haspoll = _postService.HasPoll(id);
             var post = _postService.GetTopicAsync(id).Result;
 
             if(post == null)
@@ -196,7 +193,7 @@ namespace MVCForum.Controllers
                 Status = post.Status,
                 IsLocked = post.Status == 0 || post.Forum?.Status == 0,
                 IsSticky = post.IsSticky == 1,
-                HasPoll = haspoll,
+                HasPoll = post.Ispoll == 1,
                 Answered = post.Answered,
                 //AuthorRating = post.User?.Rating ?? 0,
                 AuthorName = post.Member?.Name ?? "Unknown",
@@ -228,6 +225,7 @@ namespace MVCForum.Controllers
         }
 
         [Route("Blog/{id}")]
+        [ResponseCache(Duration = 120, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Index(string id,int page = 1, int pagesize = 0, string sortdir="", int? replyid = null)
         {
             if(TempData["Error"] != null)
@@ -257,7 +255,6 @@ namespace MVCForum.Controllers
                 sortdir = _config.GetValueWithDefault("STRTOPICSORT","asc");
             }
 
-            var haspoll = false;
             var post = _postService.GetTopicAsync(id).Result;
 
             if(post == null)
@@ -356,7 +353,7 @@ namespace MVCForum.Controllers
                 Status = post.Status,
                 IsLocked = post.Status == 0 || post.Forum?.Status == 0,
                 IsSticky = post.IsSticky == 1,
-                HasPoll = haspoll,
+                HasPoll = post.Ispoll == 1,
                 Answered = post.Answered,
                 //AuthorRating = post.User?.Rating ?? 0,
                 AuthorName = post.Member?.Name ?? "Unknown",
@@ -387,6 +384,7 @@ namespace MVCForum.Controllers
 
         }
  
+        [ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Archived(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
         {
             bool signedin = false;
@@ -401,8 +399,6 @@ namespace MVCForum.Controllers
                 ViewBag.Error = "No Topic Found with that ID";
                 return View("Error");
             }            
-            var haspoll = false;
-
             bool passwordrequired = false;
             bool notallowed = false;
             bool ismoderator = User.IsInRole($"Forum_{post.ForumId}");
@@ -482,7 +478,7 @@ namespace MVCForum.Controllers
                 Status = post.Status,
                 IsLocked = post.Status == 0 || post.Forum?.Status == 0,
                 IsSticky = post.IsSticky == 1,
-                HasPoll = haspoll,
+                HasPoll = post.Ispoll == 1,
                 Answered = false,
                 //AuthorRating = post.User?.Rating ?? 0,
                 AuthorName = post.Member?.Name ?? "Unknown",
@@ -558,6 +554,7 @@ namespace MVCForum.Controllers
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Create", "Topic", "New Post") { Parent = forumPage };
             ViewData["BreadcrumbNode"] = topicPage;
+            ViewData["AllowDraft"] = true;
             if (forum.Type == (int)ForumType.BugReports)
             {
                 return View("Bug/Create", model);
@@ -604,7 +601,6 @@ namespace MVCForum.Controllers
 
             var member = await _memberService.GetById(User);
             var topic = await _postService.GetTopicWithRelated(id);
-            var haspoll = _postService.HasPoll(id);
             var forum = _forumService.GetWithPosts(topic!.ForumId);
             var model = new NewPostModel()
             {
@@ -621,12 +617,13 @@ namespace MVCForum.Controllers
                 UseSignature = member.SigDefault == 1,
                 IsLocked = topic.Status == 0,
                 IsSticky = topic.IsSticky == 1,
+                SaveDraft = topic.Status == 99,
                 AllowRating = topic.Forum.Rating == 1,
                 AllowTopicRating = topic.AllowRating == 1,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = topic.Created.FromForumDateStr(),
                 IsAuthor = member!.Id == topic.MemberId,
-                IsArchived = archived
+                IsArchived = archived,
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
@@ -634,11 +631,12 @@ namespace MVCForum.Controllers
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
             var replyPage = new MvcBreadcrumbNode("Edit", "Topic", "Edit Post") { Parent = topicPage };
             ViewData["BreadcrumbNode"] = replyPage;
-            if (haspoll)
+            if (topic.Ispoll == 1)
             {
-                TempData["HasPoll"] = haspoll;
+                TempData["HasPoll"] = true;
                 TempData["Poll"] = _postService.GetPoll(id);
             };
+            ViewData["AllowDraft"] = model.SaveDraft;
             return View("Create", model);
 
         }
@@ -657,7 +655,7 @@ namespace MVCForum.Controllers
             ModelState.Remove("IsSticky");
             ModelState.Remove("IsLocked");
             ModelState.Remove("DoNotArchive");
-
+            var wasdraft = false;
             //Check for flood control
             if (_config.GetIntValue("STRFLOODCHECK") == 1 && !User.IsInRole("Administrator"))
             {
@@ -690,10 +688,21 @@ namespace MVCForum.Controllers
             var user =  _userManager.FindByIdAsync(userId!).Result;
 
             var post = BuildPost(model, user!.MemberId);
+            if(model.SaveDraft)
+            {
+                post.Status = 99; //draft
+            }
             if (model.TopicId != 0)
             {
-
-                post.Status = (short)(model.IsLocked ? 0 : post.Status);
+                if(!model.SaveDraft && post.Status != 99)
+                {
+                    post.Status = (short)(model.IsLocked ? 0 : post.Status);
+                }
+                else
+                {
+                    post.Status = (short)(model.IsLocked ? 0 : 1);
+                    wasdraft = true;
+                }
                 post.LastEdit = DateTime.UtcNow.ToForumDateStr();
                 post.LastEditby = user.MemberId;
                 //We are moving the topic so need to update stuff
@@ -703,6 +712,7 @@ namespace MVCForum.Controllers
                     
                     post.ForumId = model.ForumId;
                     post.CategoryId = forum.CategoryId;
+                     _postService.Update(post);
                     //Update the ForumId and CategoryId for the replies
                     var replies = _snitzDbContext.Replies.Where(r => r.PostId == model.TopicId);
                     replies
@@ -715,16 +725,26 @@ namespace MVCForum.Controllers
                         var author = _memberService.GetById(post.MemberId);
                          _mailSender.MoveNotify(author!,post);
                     }
-                     _postService.Update(post);
                 }
                 else
                 {
-                     _postService.Update(post);
+                    if(post.Status != (int)Status.Draft && wasdraft)
+                    {
+                        post.Created = DateTime.UtcNow.ToForumDateStr();
+                        _postService.Update(post);
+
+                        _postService.UpdateLastPost(post.Id,null,wasdraft);
+                    }
+                    else
+                    {
+                        _postService.Update(post);
+                    }
                 }
             }
             else
             {
                 post.Created = DateTime.UtcNow.ToForumDateStr();
+
                 var topicid =  _postService.Create(post).Result;
                 if (post.Status < 2) //not waiting to be moderated
                 {
@@ -828,6 +848,12 @@ namespace MVCForum.Controllers
                     }
                 }
                 _snitzDbContext.SaveChanges(); 
+                var topic = _snitzDbContext.Posts.Find(poll.TopicId);
+                if (topic != null){
+                    topic.Ispoll = 1;
+                    _snitzDbContext.Posts.Update(topic);
+                    _snitzDbContext.SaveChanges();
+                }
             }
             catch (Exception e)
             {
@@ -931,7 +957,7 @@ namespace MVCForum.Controllers
         }
 
         [Authorize]
-        public ActionResult SendTo(int id, int archived)
+        public IActionResult SendTo(int id, int archived)
         {
             EmailViewModel em = new EmailViewModel();
             //var archived = Request.Query["archived"] == "1";
@@ -1047,7 +1073,7 @@ namespace MVCForum.Controllers
                     Status = topic.Status,
                     IsLocked = topic.Status == 0 || topic.Forum?.Status == 0,
                     IsSticky = topic.IsSticky == 1,
-                    HasPoll = _postService.HasPoll(topic.ArchivedPostId),
+                    HasPoll = topic.Ispoll == 1,
                     //AuthorRating = post.User?.Rating ?? 0,
                     AuthorName = topic.Member?.Name ?? "Unknown",
                     Created = topic.Created.FromForumDateStr(),
@@ -1093,7 +1119,7 @@ namespace MVCForum.Controllers
                     Views = topic.ViewCount,
                     IsLocked = topic.Status == 0 || topic.Forum?.Status == 0,
                     IsSticky = topic.IsSticky == 1,
-                    HasPoll = _postService.HasPoll(topic.Id),
+                    HasPoll = topic.Ispoll == 1,
                     Answered = topic.Answered,
                     //AuthorRating = post.User?.Rating ?? 0,
                     AuthorName = topic.Member?.Name ?? "Unknown",
@@ -1152,7 +1178,7 @@ namespace MVCForum.Controllers
                         await _postService.SetStatus(vm.Id, Status.Open);
                         await _postService.UpdateLastPost(vm.Id,-1);
                         //update Forum
-                        forum = await _forumService.UpdateLastPost(topic.ForumId);
+                        forum = _forumService.UpdateLastPost(topic.ForumId);
                         if (forum.CountMemberPosts == 1)
                         {
                             await _memberService.UpdatePostCount(topic.MemberId);
@@ -1371,7 +1397,7 @@ namespace MVCForum.Controllers
                 topic = _postService.SplitTopic(ids, vm.ForumId, vm.Subject);
 
                 await _postService.UpdateLastPost(topic!.Id,0);
-                await _forumService.UpdateLastPost(topic.ForumId);
+                _forumService.UpdateLastPost(topic.ForumId);
                 await _postService.UpdateLastPost(originaltopic!.Id, 0);
                 //        EmailController.TopicSplitEmail(ControllerContext, topic);
             }
@@ -1597,7 +1623,7 @@ namespace MVCForum.Controllers
                 ArchiveFlag = model.DoNotArchive ? 1 : 0,
                 Status = (forum.Moderation == Moderation.AllPosts || forum.Moderation == Moderation.Topics) && !(donotModerate)
                 ? (short)Status.UnModerated
-                : (short)Status.Open,
+                : (originaltopic?.Status ?? (short)Status.Open),
                 Sig = (short)(model.UseSignature ? 1 : 0),
             };
 

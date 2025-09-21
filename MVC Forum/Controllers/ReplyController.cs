@@ -112,7 +112,7 @@ namespace MVCForum.Controllers
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
             var replyPage = new MvcBreadcrumbNode("Quote", "Topic", "lblReply") { Parent = topicPage };
             ViewData["BreadcrumbNode"] = replyPage;
-
+            ViewData["AllowDraft"] = true;
             return View("../Topic/Create", model);
 
         }
@@ -144,6 +144,10 @@ namespace MVCForum.Controllers
                 }
             }
             var reply = BuildReply(model, member!.Id);
+            if(model.SaveDraft)
+            {
+                reply!.Status = (short)Status.Draft;
+            }
             if (model.Id != 0)
             {
                 reply!.Content = model.Content;
@@ -257,6 +261,7 @@ namespace MVCForum.Controllers
                 UseSignature = member.SigDefault == 1,
                 IsLocked = topic.Status == 0,
                 IsSticky = topic.IsSticky == 1,
+                SaveDraft = reply.Status == 99,
                 DoNotArchive = topic.ArchiveFlag == 1,
                 Created = reply.Created.FromForumDateStr(),
                 IsAuthor = User.Identity?.Name == member!.Name,
@@ -268,7 +273,7 @@ namespace MVCForum.Controllers
             var topicPage = new MvcBreadcrumbNode("Index", "Topic", topic.Title) { Parent = forumPage,RouteValues = new{id=topic.Id} };
             var replyPage = new MvcBreadcrumbNode("Quote", "Topic", "Edit Reply") { Parent = topicPage };
             ViewData["BreadcrumbNode"] = replyPage;
-
+            ViewData["AllowDraft"] = model.SaveDraft;
             return View("../Topic/Create", model);
 
         }
@@ -421,7 +426,7 @@ namespace MVCForum.Controllers
                         await _postService.SetReplyStatus(vm.Id, Status.Open);
                         await _postService.UpdateLastPost(reply.PostId, -1);
                         //update Forum
-                        forum = await _forumService.UpdateLastPost(reply.ForumId);
+                        forum = _forumService.UpdateLastPost(reply.ForumId);
                         if (forum.CountMemberPosts == 1)
                         {
                             await _memberService.UpdatePostCount(reply.MemberId);

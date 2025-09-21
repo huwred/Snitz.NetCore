@@ -31,6 +31,7 @@ using SnitzCore.Service.MiddleWare;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -128,14 +129,15 @@ builder.Services.AddTransient<IAdRotator, BannerService>();
 
 builder.Services.AddMvc().AddViewLocalization();
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
-}
-else
-{
-    builder.Services.AddControllersWithViews();
-}
+//if (builder.Environment.IsDevelopment())
+//{
+//    builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+//}
+//else
+//{
+//    builder.Services.AddControllersWithViews();
+//}
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddResponseCaching();
 builder.Services.AddBreadcrumbs(Assembly.GetExecutingAssembly(), options =>
 {
@@ -246,6 +248,18 @@ app.UseImageSharp();
 
 app.UseStaticFiles();
 app.UseRouting();
+app.UseStatusCodePages(async context => {
+    var request = context.HttpContext.Request;
+    var response = context.HttpContext.Response;
+    //using System.Net;
+    if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
+    // you may also check requests path to do this only for specific methods       
+    // && request.Path.Value.StartsWith("/specificPath")
+
+    {
+        response.Redirect("/Account/Login");  //redirect to the login page.
+    }
+    });
 
 app.UseAuthentication();
 app.UseAuthorization();

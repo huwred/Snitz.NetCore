@@ -84,7 +84,14 @@ html, body {
 .bg-dark {
     background-color: var(--primary-header) !important;
 }
+.bg-plugin {
+    --bs-bg-opacity: 1;
+    background-color: var(--primary-header) !important;
+}
 
+.text-bg-plugin {
+    color: #fff !important;
+}
 .navbar-custom .navbar-brand {
     color: #fff;
 }

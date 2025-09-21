@@ -274,13 +274,11 @@ public partial class Member
     [NotMapped]
     public bool IsAdministrator
     {
-        get;
-        set;
+        get => Level==3;
     }
     [NotMapped]
     public bool IsModerator
     {
-        get;
-        set;
+        get => Level==2;
     }
 }
