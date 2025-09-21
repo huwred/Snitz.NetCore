@@ -4,9 +4,11 @@
 @{
     Layout = "Layout";
     var member = "";
+    var memberid = 0;
     if (Model.Any())
     {
         member = Model.First().Member?.Name;
+        memberid = Model.First().MemberId;
     }
 }
 @section MetaData
@@ -36,80 +38,87 @@
 <div class="pt-0">
     <snitz-breadcrumb show-filter="true"></snitz-breadcrumb>
     <div class="collapse" id="showFilters">
-    <form asp-action="MemberImages" asp-controller="PhotoAlbum" data-ajax="true" data-ajax-update="#ImageContainer">
-        <div class="row">
-            <div class="col col-lg-6">
-                <input type="text" value='@ViewBag.Display' name="display" id="display-template" style="display: none;" />
-                <div class="input-group">
-                    <select class="form-select" id="album-sortby" name="SortBy">
-                        <option value="id" snitz-if='@ViewBag.SortBy == "id"' selected>@Localizer["optSortId"]</option>
-                        <option value="id" snitz-if='@ViewBag.SortBy != "id"'>@Localizer["optSortId"]</option>
-                        <option value="date" snitz-if='@ViewBag.SortBy == "date"' selected>@Localizer["optSortDate"]</option>
-                        <option value="date" snitz-if='@ViewBag.SortBy != "date"'>@Localizer["optSortDate"]</option>
-                        <option value="desc" snitz-if='@ViewBag.SortBy == "desc"' selected>@Localizer["optSortDesc"]</option>
-                        <option value="desc" snitz-if='@ViewBag.SortBy != "desc"'>@Localizer["optSortDesc"]</option>
-                        <option value="file" snitz-if='@ViewBag.SortBy == "file"' selected>@Localizer["optSortFile"]</option>
-                        <option value="file" snitz-if='@ViewBag.SortBy != "file"'>@Localizer["optSortFile"]</option>
-                    </select>
-                    <select class="form-select" name="SortOrder" id="album-sortdesc">
-                        <option value="desc" snitz-if="@(ViewBag.SortDir.ToLower() == "desc")" selected>@Localizer["optDesc"]</option>
-                        <option value="desc" snitz-if="@(ViewBag.SortDir.ToLower() != "desc")">@Localizer["optDesc"]</option>
-                        <option value="asc" snitz-if="@(ViewBag.SortDir.ToLower() == "asc")" selected>@Localizer["optAsc"]</option>
-                        <option value="asc" snitz-if="@(ViewBag.SortDir.ToLower() != "asc")">@Localizer["optAsc"]</option>
-                    </select>
-                    <a data-ajax="true"
-                       data-ajax-mode="replace"
-                       data-ajax-update="#ImageContainer"
-                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 0, pagenum = 1 })'
-                       class="btn btn-outline-info"
-                       title="@Localizer["tipThumbs"]">
-                        <li class="fa fa-th"></li>
-                    </a>
-                    <a data-ajax="true"
-                       data-ajax-update="#ImageContainer"
-                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 2, pagenum = 1 })'
-                       class="btn btn-outline-info"
-                       title="@Localizer["tipList"]">
-                        <li class="fa fa-align-justify"></li>
-                    </a>
-                    <a data-ajax="true"
-                       data-ajax-update="#ImageContainer"
-                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 1, pagenum = 1 })'
-                       class="btn btn-outline-info"
-                       title="@Localizer["tipDetails"]">
-                        <li class="fa fa-list"></li>
-                    </a>
-                    <a data-ajax="true"
-                       data-ajax-update="#ImageContainer"
-                       data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 3, pagenum = 1 })'
-                       class="btn btn-outline-info"
-                       title="@Localizer["tipSlide"]">
-                        <li class="fa fa-film"></li>
-                    </a>
-                    <button snitz-if="@ViewBag.IsOwner" class="btn btn-outline-primary" id="photo-upload" title="@Localizer["lblUpload"]"><i class="fa fa-upload"></i></button>
+        <form asp-action="MemberImages" asp-controller="PhotoAlbum" data-ajax="true" data-ajax-update="#ImageContainer" data-ajax-method="GET">
+            <div class="row">
+                <div class="col col-lg-6">
+                    <input type="hidden" value='@ViewBag.MemberId' title="Member ID" name="Id" id="id"  />
+                    <input type="hidden" value='0' title="Display template" name="Display" id="display" />
+                    <div class="input-group">
+                        <select class="form-select" id="album-sortby" title="Change sort field" name="SortBy" >
+                            <option value="id" snitz-if='@ViewBag.SortBy == "id"' selected>@Localizer["optSortId"]</option>
+                            <option value="id" snitz-if='@ViewBag.SortBy != "id"'>@Localizer["optSortId"]</option>
+                            <option value="date" snitz-if='@ViewBag.SortBy == "date"' selected>@Localizer["optSortDate"]</option>
+                            <option value="date" snitz-if='@ViewBag.SortBy != "date"'>@Localizer["optSortDate"]</option>
+                            <option value="desc" snitz-if='@ViewBag.SortBy == "desc"' selected>@Localizer["optSortDesc"]</option>
+                            <option value="desc" snitz-if='@ViewBag.SortBy != "desc"'>@Localizer["optSortDesc"]</option>
+                            <option value="file" snitz-if='@ViewBag.SortBy == "file"' selected>@Localizer["optSortFile"]</option>
+                            <option value="file" snitz-if='@ViewBag.SortBy != "file"'>@Localizer["optSortFile"]</option>
+                        </select>
+                        <select class="form-select" name="SortOrder" title="Change sort order" id="album-sortdesc" >
+                            <option value="desc" snitz-if="@(ViewBag.SortDir.ToLower() == "desc")" selected>@Localizer["optDesc"]</option>
+                            <option value="desc" snitz-if="@(ViewBag.SortDir.ToLower() != "desc")">@Localizer["optDesc"]</option>
+                            <option value="asc" snitz-if="@(ViewBag.SortDir.ToLower() == "asc")" selected>@Localizer["optAsc"]</option>
+                            <option value="asc" snitz-if="@(ViewBag.SortDir.ToLower() != "asc")">@Localizer["optAsc"]</option>
+                        </select>
+                        <button type="submit" class="btn btn-outline">Go</button>
+                        <a data-ajax="true"
+                           data-ajax-update="#ImageContainer"
+                           data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 0, pagenum = 1 })'
+                           class="btn btn-outline-info"
+                           title="@Localizer["tipThumbs"]">
+                            <li class="fa fa-th"></li>
+                        </a>
+                        <a data-ajax="true"
+                           data-ajax-update="#ImageContainer"
+                           data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 2, pagenum = 1 })'
+                           class="btn btn-outline-info"
+                           title="@Localizer["tipList"]">
+                            <li class="fa fa-align-justify"></li>
+                        </a>
+                        <a data-ajax="true"
+                           data-ajax-update="#ImageContainer"
+                           data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 1, pagenum = 1 })'
+                           class="btn btn-outline-info"
+                           title="@Localizer["tipDetails"]">
+                            <li class="fa fa-list"></li>
+                        </a>
+                        <a data-ajax="true"
+                           data-ajax-update="#ImageContainer"
+                           data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 3, pagenum = 1 })'
+                           class="btn btn-outline-info"
+                           title="@Localizer["tipSlide"]">
+                            <li class="fa fa-film"></li>
+                        </a>
+                        <button type="button" snitz-if="@ViewBag.IsOwner" class="btn btn-outline-primary" id="photo-upload" title="@Localizer["lblUpload"]"><i class="fa fa-upload"></i></button>
+                    </div>
                 </div>
+@*                 <div class="col col-lg-6 d-none">
+                        @await Component.InvokeAsync("ImageAlbum", new { template = "Categories", memberid = memberid })
+                </div> *@
             </div>
-        </div>
         </form>
     </div>
     <div class="container mt-3" id="ImageContainer">
         <partial name="_MemberThumbs"/>
     </div>
 </div>
+
 <partial name="Modal\UploadModal" />
 <modal id="editModal" title="@Localizer["tipEditImage"].Value">
-    <modal-body>
-        <div id="editimage-content"></div>
-        @* <p class="footer-title">If you're having problems uploading, try choosing a smaller image.</p> *@
-    </modal-body>
+    <modal-body><div id="editimage-content"></div></modal-body>
     <modal-footer dismiss-text="Cancel">
         <button id="submitEdit" form="edit-image-form" type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
     </modal-footer>
 </modal>
+
 @section Scripts
 {
-
-    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
-    <script src="~/js/jquery.lazyload-any.min.js" type="text/javascript"></script>
+   <script src="~/js/jquery.lazyload-any.min.js" type="text/javascript"></script>
    <script src="~/js/admin/member.min.js" type="text/javascript"></script>
+<script>
+            $(document).ready(function () {
+            // Ensure Unobtrusive AJAX is initialized
+            $.ajaxSetup({ cache: false });
+        });
+</script>
 }

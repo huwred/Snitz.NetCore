@@ -1,0 +1,19 @@
+﻿@model List<Snitz.PhotoAlbum.Models.AlbumCategory>
+@if(Model == null || !Model.Any())
+{
+    return;
+}
+else
+{
+    <div class="row mb-3">
+        <label for="Category" class="form-label col-4">@Localizer["lblCategory"]</label>
+        <div class="col">
+            <select name="Category" class="form-select">
+                @foreach (var cat in Model)
+                {
+                    <option value="@cat.CatId">@cat.Description</option>
+                }
+            </select>
+        </div>
+    </div>
+}

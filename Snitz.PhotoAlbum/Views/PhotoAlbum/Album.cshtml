@@ -40,7 +40,7 @@
                         <input class="form-check-input" type="checkbox" name="SrchIn" value="Desc" aria-label="Checkbox for following text input">
                         <label class="form-check-label" >&nbsp;@Localizer["lblDescription"]</label>
                     </div>
-                    <div class="d-md-none input-group-add-on">
+                    <div class="d-md-none input-group-addon">
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
                                     data-bs-toggle="dropdown" aria-expanded="false">
@@ -82,19 +82,23 @@
                             </ul>
                         </div>
                     </div>
-                    <label class="d-none d-lg-inline-block input-group-text">@Localizer["lblGroup"]</label>
-                    <div class="input-group-addon">
-                        <select class="form-select" name="SrchGroupId">
+                    
+                    @* <label class="d-none d-lg-inline-block input-group-text">@Localizer["lblGroup"]</label> *@
+                    <div class="input-group-append">
+                        <select class="form-select" name="SrchGroupId" title="@Localizer["lblGroup"].Value">
                             @foreach (var grp in Model.GroupList)
                             {
                                 <option value="@grp.Value">@grp.Text</option>
                             }
                         </select>
+                    <div class="input-group">
+                            <label class="input-group-text" for="searchTerms">@Localizer["lblSearchFor"]</label>
+                            <input class="form-control" name="searchTerms" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-success" type="submit" title="Filter records"><i class="fa fa-search"></i></button>
+                            </div>
+                        
                     </div>
-                    <div class="input-group col-6">
-                        <label class="input-group-text" for="searchTerms">@Localizer["lblSearchFor"]</label>
-                        <input class="form-control" name="searchTerms" />
-                        <button class="btn btn-outline-success" type="submit" title="Filter records"><i class="fa fa-search"></i></button>
                     </div>
                 </div>
             </div>
@@ -151,32 +155,31 @@
             <thead>
                 <tr class="row bg-primary">
                     <th class="col-1 d-none d-sm-inline">
-                        <a href="&sortby=user">@Localizer["Member"]</a>
+                        @Localizer["Member"]
                     </th>
                     <th class="col-2 col-md-1 col-thumb">
-                        <a href="&sortby=file"><i class="fa fa-picture-o"</a>
+                        <i class="fa fa-picture-o"></i>
                     </th>
                     <th class="col-2 d-none d-sm-none d-md-none d-lg-inline">
-                        <a href="&sortby=id">@Localizer["lblForumcode"]</a>
+                        @Localizer["lblForumcode"]
                     </th>
                     <th class="col-5 col-sm-3 col-md-2">
-                        <a href="&sortby=scientific">@Localizer["lblScientificName"]</a>
+                        @Localizer["lblScientificName"]
                     </th>
                     <th class="col-5 col-sm-3 col-md-2">
-                        <a href="&sortby=localname">@Localizer["lblLocalName"]</a>
+                        @Localizer["lblLocalName"]
                     </th>
                     <th class="col-1 col-md d-none d-sm-inline ">
-                        <a href="&sortby=desc">@Localizer["lblDescription"]</a>
+                        @Localizer["lblDescription"]
                     </th>
                     <th class="col-1 d-none d-sm-none d-md-inline">
-                        <a href="&sortby=group">@Localizer["lblGroup"]</a>
+                        @Localizer["lblGroup"]
                     </th>
                     <th class="col-1 d-none d-sm-none d-md-none d-lg-inline">
-                        <a href="&sortby=date">@Localizer["Date"]</a>
-                        <i class="fa fa-sort-desc"></i>
+                        @Localizer["Date"]
                     </th>
                     <th class="col-1 d-none d-sm-none d-md-none d-lg-inline">
-                        <a href="&sortby=views">@Localizer["Views"]</a>
+                        @Localizer["Views"]
                     </th>
                 </tr>
             </thead>

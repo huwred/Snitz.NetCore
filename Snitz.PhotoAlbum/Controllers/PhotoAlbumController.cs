@@ -26,7 +26,7 @@ using static Dapper.SqlMapper;
 
 namespace Snitz.PhotoAlbum.Controllers
 {
-
+    [CustomAuthorize]
     public class PhotoAlbumController : Controller
     {
         private readonly IWebHostEnvironment _environment;
@@ -406,6 +406,11 @@ namespace Snitz.PhotoAlbum.Controllers
         public JsonResult GetCaption(int id)
         {
             var photo = _dbContext.Set<AlbumImage>().Find(id);
+            
+            if(photo == null)
+            {
+                return Json("");
+            }
             _dbContext.Entry<AlbumImage>(photo).State = EntityState.Detached;
             if (!String.IsNullOrWhiteSpace(photo?.Description))
             {
@@ -443,19 +448,29 @@ namespace Snitz.PhotoAlbum.Controllers
                     GroupId = model.Group,
                     MemberId = currentMember.Id,
                     Timestamp = timestamp,
-                    Location = GetSafeFilename(model.AlbumImage.FileName)
+                    Location = GetSafeFilename(model.AlbumImage.FileName),
+                    CategoryId = model.Category
                 };
-                _dbContext.Set<AlbumImage>().Add(newalbumImage);
-                _dbContext.SaveChanges();
-                model.GroupList = new SelectList(_dbContext.Set<AlbumGroup>().AsQueryable(), "Id", "Description");
-                var caption = model.ShowCaption ? model.Description : null;
-                return Json(new { result = true,id = newalbumImage.Id, data = StringExtensions.UrlCombine(uploadFolder,uniqueFileName),caption = caption });
+                try
+                {
+                    _dbContext.Set<AlbumImage>().Add(newalbumImage);
+                    _dbContext.SaveChanges();
+                    model.GroupList = new SelectList(_dbContext.Set<AlbumGroup>().AsQueryable(), "Id", "Description");
+                    var caption = model.ShowCaption ? model.Description : null;
+                    return Json(new { result = true,id = newalbumImage.Id, data = StringExtensions.UrlCombine(uploadFolder,uniqueFileName),caption = caption });
+
+                }
+                catch (Exception e)
+                {
+                    return Json(new { result = false, data =  e.Message});
+                }
 
             }
 
             return PartialView("_popAlbumUpload",model);
 
         }
+        [HttpGet]
         public IActionResult MemberImages(int id, int display, int pagenum = 1, string sortby = "date",string sortorder = "desc")
         {
             int memberid = id;
@@ -466,8 +481,44 @@ namespace Snitz.PhotoAlbum.Controllers
                 .Include(i => i.Group)
                 .Include(i=>i.Category)
                 .Include(i => i.Member)
-                .Where(i=>i.MemberId == memberid)
-                .OrderByDescending(i=>i.Timestamp);
+                .Where(i=>i.MemberId == memberid);
+                //.OrderByDescending(i=>i.Timestamp);
+            if(sortorder == "asc")
+            {
+                switch (sortby)
+                {
+                    case "desc":
+                        images = images.OrderBy(i => i.Description);
+                        break;
+                    case "date":
+                        images = images.OrderBy(i => i.Timestamp);
+                        break;
+                    case "id":
+                        images = images.OrderBy(i => i.Id);
+                        break;
+                    case "file":
+                        images = images.OrderBy(i => i.Location);
+                        break;
+                }
+            }
+            else
+            {
+                switch (sortby)
+                {
+                    case "desc":
+                        images = images.OrderByDescending(i => i.Description);
+                        break;
+                    case "date":
+                        images = images.OrderByDescending(i => i.Timestamp);
+                        break;
+                    case "id":
+                        images = images.OrderByDescending(i => i.Id);
+                        break;
+                    case "file":
+                        images = images.OrderByDescending(i => i.Location);
+                        break;
+                }
+            }
 
             ViewBag.Username = id;
             ViewBag.MemberId = memberid;
@@ -573,7 +624,8 @@ namespace Snitz.PhotoAlbum.Controllers
                     Description = origimage.Description,
                     Image = origimage,
                     GroupList = new SelectList(_dbContext.Set<AlbumGroup>().AsQueryable(), "Id", "Description",origimage.GroupId),
-                    Display = display
+                    Display = display,
+                    Category = origimage.CategoryId
                 };
             ViewBag.Display = display;
             return PartialView(model);
@@ -595,7 +647,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 image.Height = img.Image.Height;
                 image.Size = img.Image.Size;
                 image.Mime = img.Image.Mime;
-
+                image.CategoryId = img.Category;
                 _dbContext.Update(image);
                 _dbContext.SaveChanges();
             }

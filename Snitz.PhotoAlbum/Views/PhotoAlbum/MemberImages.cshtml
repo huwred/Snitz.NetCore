@@ -9,7 +9,7 @@
         <partial name="_ImagePager" model="Model" />
     </div>
 } *@
-@switch ((int)ViewBag.Display)
+@switch (dispstyle)
 {
     case 1:
         <partial name="_MemberDetails" />
@@ -31,6 +31,8 @@
     </div>
 
 } *@
-<span class="viewbag-diplay" data-val="@dispstyle">&nbsp;</span>
+@* <span class="viewbag-diplay" data-val="@dispstyle">&nbsp;</span> *@
 
-
+<script>
+    $("#display").val(@dispstyle);
+</script>

@@ -24,7 +24,7 @@ namespace Snitz.PhotoAlbum.ViewComponents
             _memberService = memberService;
             _environment = hostingEnvironment;
         }
-        public async Task<IViewComponentResult> InvokeAsync(string template)
+        public async Task<IViewComponentResult> InvokeAsync(string template, int memberid = 0)
         {
             if (template == "Config")
             {
@@ -35,7 +35,11 @@ namespace Snitz.PhotoAlbum.ViewComponents
                 var albumgroups = _dbContext.Set<AlbumGroup>().AsQueryable();
                 return await Task.FromResult((IViewComponentResult)View(template,albumgroups));
             }
-
+            if(template == "Categories")
+            {
+                var categories = _dbContext.Set<AlbumCategory>().Where(ac=>ac.MemberId == memberid).ToList();
+                return await Task.FromResult((IViewComponentResult)View(template,categories));
+            }
             if (template == "Featured")
             {
                 var ids = _dbContext.Set<AlbumImage>().Where(a=> !a.DoNotFeature).Select(a=>a.Id).ToList();

@@ -13,7 +13,7 @@ namespace Snitz.PhotoAlbum.ViewModels
         public bool NotFeatured { get; set; }
         [Required(ErrorMessage = "Please select a file")]
         public IFormFile AlbumImage { set; get; }
-
+        public int? Category {get;set;}
         public int? Group { get; set; }
         public SelectList? GroupList { get; set; }
         public string? ScientificName { get; set; }
