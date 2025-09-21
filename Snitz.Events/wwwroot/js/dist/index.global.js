@@ -14322,7 +14322,7 @@ var FullCalendar = (function (exports) {
                 ], defaultGenerator: () => renderEventInnerContent(seg, context) /* weird */, seg: seg, timeText: "", disableDragging: true, disableResizing: true }), (InnerContent, eventContentArg) => (y(_, null,
                 buildTimeContent(seg, timeFormat, context, timeHeaderId, dateHeaderId),
                 y("td", { "aria-hidden": true, className: "fc-list-event-graphic" },
-                    y("span", { className: "fc-list-event-dot", style: {
+                    y("span", { className: "fc-list-event-dot fa", style: {
                             borderColor: eventContentArg.borderColor || eventContentArg.backgroundColor,
                         } })),
                 y(InnerContent, { elTag: "td", elClasses: ['fc-list-event-title'], elAttrs: { headers: `${eventHeaderId} ${dateHeaderId}` } })))));

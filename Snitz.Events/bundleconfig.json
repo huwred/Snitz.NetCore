@@ -16,5 +16,11 @@
     "inputFiles": [
       "wwwroot/js/moment.index.global.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/dist/index.global.min.js",
+    "inputFiles": [
+      "wwwroot/js/dist/index.global.js"
+    ]
   }
 ]

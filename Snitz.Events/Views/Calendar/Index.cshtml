@@ -1,6 +1,8 @@
 ﻿@using System.Globalization
 @using System.Resources
 @using Microsoft.AspNetCore.Http
+@using Snitz.Events.Models
+@using SnitzCore.Service.Extensions
 @model dynamic
 
 @{
@@ -8,11 +10,10 @@
     ViewBag.Title = SnitzConfig.ForumTitle + " | " + @Localizer["calTitle"];
     string[] rtlLangs = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur", "yi", "he" };
 
-    //check the culture so we can set the page direction and language
-    var cookielang = SnitzCookie.GetCookieValue("CookieLang");
     CultureInfo ci = CultureInfo.CurrentUICulture;
     string clang = ci.TwoLetterISOLanguageName;
-
+    //check the culture so we can set the page direction and language
+    var cookielang = SnitzCookie.GetCookieValue("CookieLang");
     if (cookielang != null)
     {
         var cultureInfo = new CultureInfo(cookielang);
@@ -21,9 +22,10 @@
     }
     Context.Session.SetString("culture", clang);
     bool isRighToLeft = rtlLangs.Contains(clang);
-
-
     clang = clang + ".global.min.js";
+
+    var countries = (List<EnricoCountry>)ViewData["Countries"];
+
 }
 @section Styles {
     <link rel="stylesheet" href="~/_content/Snitz.Events/css/jquery-ui-timepicker-addon.min.css">
@@ -33,10 +35,22 @@
     <h5>@Localizer["calTitle"]</h5>
     <hr class="title" />
     <div class="row-fluid">
-        <select id="locale-selector"></select>
+        <div class="col-3 d-none">
+            @Html.DropDownList("STRCALCOUNTRY",
+            new SelectList(countries, "countryCode", "fullName", ""),
+                        "Select Country",
+                        new { @class = "form-select", @id = "countryRegion" })
+        </div>
+        <div class="col-3">
+            <select class="form-select" name="STRCALREGION" id="countryRegion" style="display: none;">
+                <option value=''>No Regions</option>
+            </select>
+        </div>
+        <span class="col-10 form-text">Public holiday data supplied by <a href="http://kayaposoft.com/enrico/" title="Enrico Service is a free service written in PHP providing public holidays for several countries" data-toggle="tooltip">Enrico</a></span>
+
+        @* <select id="locale-selector"></select> *@
     </div>
     <div class="row-fluid">
-
         <div id="calendar"></div>
     </div>
     <div class="row-fluid"></div>
@@ -52,26 +66,12 @@
     <environment exclude="Development">
         <script src="~/js/pluginjs/snitz.cal.min.js"></script>
     </environment>
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script src='~/_content/Snitz.Events/js/dist/index.global.min.js'></script>
     <script src="~/_content/Snitz.Events/js/locales-all.global.min.js"></script>
     <script type="text/javascript">
 
         $(document)
             .ready(function () {
-
-                $('#countryRegion').change(function () {
-                    var val = $('#change-holidays').val() + '|' + $(this).val();
-                    FullCalendar("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', val);
-                });
-
-                $('#change-holidays')
-                    .change(function () {
-                        var val = $(this).val();
-                        populateRegions(val);
-                    FullCalendar("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', val);
-
-                    });
-
                 FullCalendarNew("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', 'gbr');
                 @* populateRegions($('#change-holidays').val()); *@
             });

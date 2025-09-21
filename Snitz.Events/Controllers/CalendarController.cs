@@ -35,7 +35,10 @@ public class CalendarController : Controller
     // GET
     public IActionResult Index()
     {
+        var countries = new EventsRepository(_context,_config,_snitzContext, _bbCodeProcessor, _httpClientFactory).GetCountries().Result;
+
         ViewData["BreadcrumbNode"] = new MvcBreadcrumbNode("Index", "Calendar", "calTitle");
+        ViewData["Countries"] = countries;
         return View(); //"IndexNew"
     }
     [HttpPost]
@@ -43,6 +46,8 @@ public class CalendarController : Controller
     {
         return PartialView("SaveResult",SaveForm(form));
     }
+
+    [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
     public JsonResult GetCalendarEvents()
     {
         
@@ -57,6 +62,8 @@ public class CalendarController : Controller
         }
 
     }
+
+    [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
     public JsonResult GetBirthDays()
     {
         var start = Request.Query["start"];
@@ -65,27 +72,29 @@ public class CalendarController : Controller
         return new EventsRepository(_context,_config,_snitzContext,_bbCodeProcessor,_httpClientFactory).GetBirthdays(User,start, end);
     }
 
-        public JsonResult GetUpcomingEvents(int count)
-        {
-            string datetime = DateTime.UtcNow.ToForumDateStr(true);
+    [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
+    public JsonResult GetUpcomingEvents(int count)
+    {
+        string datetime = DateTime.UtcNow.ToForumDateStr(true);
 
-            IEnumerable<CalendarEventItem> eventDetails = _context.EventItems.OrderBy(e=>e.Start).Where(e=> string.Compare(e.Start,datetime) > 0).Take(count);
+        IEnumerable<CalendarEventItem> eventDetails = _context.EventItems.OrderBy(e=>e.Start).Where(e=> string.Compare(e.Start,datetime) > 0).Take(count);
 
-                var eventList = from item in eventDetails
-                    select new
-                    {
-                        id = item.TopicId,
-                        title = _bbCodeProcessor.Format(item.Title),
-                        start = item.StartDate.Value.ToString("s"),
-                        end = item.EndDate.HasValue ? item.EndDate.Value.ToString("s") : "",
-                        allDay = item.IsAllDayEvent,
-                        editable = false,
-                        url = "/Topic/" + item.TopicId
-                    };
+            var eventList = from item in eventDetails
+                select new
+                {
+                    id = item.TopicId,
+                    title = _bbCodeProcessor.Format(item.Title),
+                    start = item.StartDate.Value.ToString("s"),
+                    end = item.EndDate.HasValue ? item.EndDate.Value.ToString("s") : "",
+                    allDay = item.IsAllDayEvent,
+                    editable = false,
+                    url = "/Topic/" + item.TopicId
+                };
 
-                return Json(eventList.ToArray());
-        }
+            return Json(eventList.ToArray());
+    }
 
+    [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
     public JsonResult GetHolidays(string country = "")
     {
         try
