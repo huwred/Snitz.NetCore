@@ -7,12 +7,12 @@
     {
         if (!Model.Thanked)
         {
-            @Html.ActionLink(" ", "Thank", "PostThanks", new { id = Model.TopicId, replyid = Model.ReplyId, returnurl = Context.Request.Path }, new { @class = "fa fa-thumbs-o-up fa-1_5x", title = @Localizer["Thank"], data_toggle = "tooltip" })
+            @Html.ActionLink(" ", "Thank", "PostThanks", new { id = Model.TopicId, replyid = Model.ReplyId, returnurl = Context.Request.Path }, new { @class = "fa-regular fa-heart fa-1_5x", title = @Localizer["Thank"], data_toggle = "tooltip" })
 
         }
         else
         {
-            @Html.ActionLink(" ", "UnThank", "PostThanks", new { id = Model.TopicId, replyid = Model.ReplyId, returnurl = Context.Request.Path }, new { @class = "fa fa-thumbs-up fa-1_5x", title = @Localizer["UnThank"], data_toggle = "tooltip" })
+            @Html.ActionLink(" ", "UnThank", "PostThanks", new { id = Model.TopicId, replyid = Model.ReplyId, returnurl = Context.Request.Path }, new { @class = "fa fa-heart fa-1_5x", title = @Localizer["UnThank"], data_toggle = "tooltip" })
         }
 
     }

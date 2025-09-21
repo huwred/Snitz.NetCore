@@ -4,14 +4,14 @@
     {
         if (!Model.Thanked)
         {
-            <i class="fa fa-thumbs-o-up fa-1_5x topic thumbs-up" title="@Localizer["Thank"]" data-id="@Model.TopicId" data-replyid="@Model.ReplyId" data-archived="@Model.IsArchived" data-toggle="tooltip"></i>
+            <i class="fa-regular fa-heart fa-1_5x topic thumbs-up" title="@Localizer["Thank"]" data-id="@Model.TopicId" data-replyid="@Model.ReplyId" data-archived="@Model.IsArchived" data-toggle="tooltip"></i>
         }
         else
         {
-            <i class="fa fa-thumbs-up fa-2x topic position-relative z-1 thumbs-down" title="@Localizer["UnThank"]" data-id="@Model.TopicId" data-replyid="@Model.ReplyId" data-archived="@Model.IsArchived" data-toggle="tooltip">
+            <i class="fa fa-heart fa-2x topic position-relative z-1 thumbs-down" title="@Localizer["UnThank"]" data-id="@Model.TopicId" data-replyid="@Model.ReplyId" data-archived="@Model.IsArchived" data-toggle="tooltip">
                 @if (Model.ShowCount && Model.ThanksCount > 0)
                 {
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger z-n1 thanks-list fs-7" data-placement="auto" data-id="@Model.TopicId" data-replyid="@Model.ReplyId">@Model.ThanksCount<span class="visually-hidden">unread messages</span></span>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger z-n1 thanks-list fs-6" data-placement="auto" data-id="@Model.TopicId" data-replyid="@Model.ReplyId">@Model.ThanksCount<span class="visually-hidden">unread messages</span></span>
                 }
             </i>
         }
@@ -20,7 +20,7 @@
     {
         if (Model.ShowCount && Model.ThanksCount > 0)
         {
-            <span class="badge rounded-pill bg-secondary fs-7 thanks-list" data-placement="auto" data-id="@Model.TopicId" data-replyid="@Model.ReplyId">@Model.ThanksCount<span class="visually-hidden">unread messages</span></span>
+            <span class="badge rounded-pill bg-secondary fs-6 thanks-list" data-placement="auto" data-id="@Model.TopicId" data-replyid="@Model.ReplyId">@Model.ThanksCount<span class="visually-hidden">unread messages</span></span>
         }
     }
 </span>
