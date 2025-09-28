@@ -12,7 +12,7 @@
 }
 @section Styles
 {
-    <link rel="stylesheet" href="~/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="~/codemirror/lib/codemirror.min.css">
 
 }
 <h2>Page Templates</h2>
@@ -33,17 +33,21 @@
             }
         </ul>
     </div>
-    <div class="col-9 p-2 " id="file-editor-div">
+    <div class="col-9 p-2 " id="file-editor-div" data-file="">
         <textarea id="file-editor"></textarea>
     </div>
 </div>
-
+<div class="row">
+    <div class="col-12 text-end">
+        <button class="btn btn-danger" onclick="SaveMe()">Save Changes</button>
+    </div>
+</div>
 @section Scripts
 {
     <!-- Create a simple CodeMirror instance -->
     
-    <script src="~/codemirror/lib/codemirror.js"></script>
-    <script src="~/codemirror/mode/clike/clike.js"></script>
+    <script src="~/codemirror/lib/codemirror.min.js"></script>
+    <script src="~/codemirror/mode/clike/clike.min.js"></script>
     <script>
         var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("file-editor"), {
             mode: "text/x-csharp",
@@ -58,13 +62,37 @@
             var encoded = encodeURIComponent($(this).data("path"));
             $.get(SnitzVars.baseUrl + "/Admin/LoadFile?id=" + encoded, function (data) {
                 myCodeMirror.setValue(data);
-                myCodeMirror.setSize("98%", 500);
+                myCodeMirror.setSize("98%", "600px");
+                $("#file-editor-div").data("file", encoded);
             });
 
         });
 
         function SaveMe() {
-            var textToWrite = myCodeMirror.doc.getValue();
+            displayBusyIndicator();
+            var filename = $("#file-editor-div").data("file");
+            (async() => {
+                const result = await b_confirm("Saving will overwrite the existing file!")
+                if (result) {
+                    var textToWrite = myCodeMirror.doc.getValue();
+                    //save the file ?
+                    $.ajax(
+                    {
+                        type: "POST", //HTTP POST Method
+                        url: SnitzVars.baseUrl + "/Admin/SaveTemplate", // Controller/View
+                        data: { //Passing data
+                            Name: filename, //Reading text box values using Jquery
+                            Content: textToWrite
+                        }
+
+                    }).done(function() {
+                      hideBusyIndicator();
+                    });
+                }else{
+                    hideBusyIndicator();
+                }
+            })()
         }
+
     </script>
 }

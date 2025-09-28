@@ -17,7 +17,7 @@
 
     <li class="list-unstyled">
         <h4 class="mb-3">@Model.ResourceSet
-        <button snitz-if="@(User.IsInRole("Administrator"))" id="del-resourceset" href="~/LanguageManager/DeleteResource/" data-id="@Model.ResourceSet" class="btn btn-outline-danger align-right" title="Delete Resource values"><i class="fa fa-trash-o"></i></button>
+        <button snitz-if="@(User.IsInRole("Administrator"))" id="del-resourceset" href="~/LanguageManager/DeleteResource/" data-id="@Model.ResourceSet" class="btn btn-outline-danger align-right" title="Delete Resource values"><i class="fa fa-trash-can"></i></button>
         </h4>
     </li>
     @foreach (var res in Model.DefaultStrings!)
@@ -37,7 +37,7 @@
                         </div>   
                         <div class="col-2">
                             <button class="btn btn-sm btn-outline-success" type="submit" title="Save Changes" data-id="@res.Id" name="subBut" value="update"><i class="fa fa-save"></i></button>
-                            <button-confirm snitz-if="@(User.IsInRole("Administrator") && culture.Value != "en")" size="btn-sm" selector="confirm-delete" config-class="fa fa-trash-o" config-key="@res.Name" href="~/LanguageManager/DeleteResource/?id="></button-confirm>
+                            <button-confirm snitz-if="@(User.IsInRole("Administrator") && culture.Value != "en")" size="btn-sm" selector="confirm-delete" config-class="fa fa-trash-can" config-key="@res.Name" href="~/LanguageManager/DeleteResource/?id="></button-confirm>
                             <span id="result_@res.Name"></span>
                         </div>
                     </div>

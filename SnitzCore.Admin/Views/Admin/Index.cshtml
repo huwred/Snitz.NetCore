@@ -25,18 +25,18 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="STRFORUMTITLE" config-label="Forum Title" config-val="@SnitzConfig.GetValue("STRFORUMTITLE")" disabled="true" help-text="@Localizer["STRFORUMTITLE"].Value"></admin-config>
-                        <input type="text" name="_STRFORUMTITLE" value="@Config.Value.strForumTitle" class="form-control" />
+                        <admin-config config-key="_STRFORUMTITLE" config-label="Forum Title" config-val="@Config.Value.strForumTitle" help-text="@Localizer["STRFORUMTITLE"].Value"></admin-config>
+                        <input snitz-if="@(false)" disabled type="text" name="STRFORUMTITLE" value="@SnitzConfig.GetValue("STRFORUMTITLE")" class="form-control" />
                     </div>
                     <div class="col">
-                        <admin-config config-key="STRCOPYRIGHT" config-label="Forum Copyright" config-val="@SnitzConfig.GetValue("STRCOPYRIGHT")" disabled="true" help-text="@Localizer["STRCOPYRIGHT"].Value"></admin-config>
-                        <input type="text" name="_STRCOPYRIGHT" value="@Config.Value.strCopyright" class="form-control" />
+                        <admin-config config-key="_STRCOPYRIGHT" config-label="Forum Copyright" config-val="@Config.Value.strCopyright" help-text="@Localizer["STRCOPYRIGHT"].Value"></admin-config>
+                        <input snitz-if="@(false)" disabled type="text" name="STRCOPYRIGHT" value="@SnitzConfig.GetValue("STRCOPYRIGHT")" class="form-control" />
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <admin-config config-key="STRFORUMDESC" config-label="Forum Description" config-val="@SnitzConfig.GetValue("STRFORUMDESC")" disabled="true"></admin-config>
-                        <input type="text" name="_STRFORUMDESC" value="@Config.Value.strForumDescription" class="form-control" />
+                        <admin-config config-type="textarea" config-key="_STRFORUMDESC" config-label="Forum Description" config-val="@Config.Value.strForumDescription"></admin-config>
+                        <input snitz-if="@(false)" disabled type="text" name="STRFORUMDESC" value="@SnitzConfig.GetValue("STRFORUMDESC")" class="form-control" />
                     </div>
                 </div>
                 <div class="row">
@@ -45,7 +45,7 @@
                     </div>
                     <div class="col">
                         <admin-config config-key="STRFORUMURL" config-label="Forum URL" config-val="@SnitzConfig.ForumUrl" disabled="true" help-text="@Localizer["STRFORUMURL"].Value"></admin-config>
-                        <input type="text" name="_STRFORUMURL" value="@Config.Value.strForumUrl" class="form-control" />
+                        <input snitz-if="@(false)" disabled type="text" name="_STRFORUMURL" value="@SnitzConfig.GetValue("STRFORUMURL")" class="form-control" />
                     </div>
                 </div>
                 <div class="row">
@@ -74,13 +74,14 @@
                 <div class="row p-3">
                     <div class="col">
                         <admin-config config-key="INTTHEMECHANGE" config-label="Allow Theme Change" config-val="@SnitzConfig.GetIntValue("INTTHEMECHANGE")" help-text="@Localizer["INTTHEMECHANGE"].Value"></admin-config>
-                        <select name="STRDEFAULTTHEME" id="theme-change-admin" class="form-control" title="@Localizer["tipChangeTheme"]">
+                        <label class="form-label" for="theme-change-admin">Default Theme</label>
+                        <select name="STRDEFAULTTHEME" id="theme-change-admin" class="form-select" title="@Localizer["tipChangeTheme"]">
                             <option value="CarpyTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Carpy Theme</option>
                             <option value="SnitzTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Snitz Theme</option>
                             <option value="DarkTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Dark Theme</option>
                             <option value="OrangeTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Orange Theme (Needs Updating)</option>
                             <option value="VellumTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Vellum Theme</option>
-                            </select>
+                        </select>
                     </div>
                     <div class="col">
                     </div>

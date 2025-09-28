@@ -21,6 +21,7 @@ using SnitzCore.Data.Models;
 using SnitzCore.Service.Extensions;
 using System.Data;
 using System.Globalization;
+using System.Web;
 using static SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -84,7 +85,7 @@ namespace SnitzCore.BackOffice.Controllers
                 Badwords = _snitzconfig.GetBadwords().ToList(),
                 UserNamefilters = _memberService.UserNameFilter().ToList()
             };
-            ViewBag.Moderators = _config.GetForumModerators();
+            ViewBag.Moderators = _config.GetModerators();
             return View(model);
         }
         public IActionResult Members()
@@ -235,7 +236,7 @@ namespace SnitzCore.BackOffice.Controllers
             AdminModeratorsViewModel vm = new(_forumservice) {ForumId = id};
             Dictionary<int, string?>? modList = forum.ForumModerators?.ToDictionary(o => o.MemberId, o => o.Member?.Name);
 
-            ViewBag.Moderators = _config.GetForumModerators();
+            ViewBag.Moderators = _config.GetModerators();
             ViewBag.Moderation = forum.Moderation;
             if (modList != null)
             {
@@ -1022,6 +1023,22 @@ namespace SnitzCore.BackOffice.Controllers
 
             return Content(contents);
         }
+        public IActionResult SaveTemplate(TemplateFile template)
+        {
+            string contents = template.Content;
+            try
+            {
+                var filepath = Path.Combine(_env.ContentRootPath, $@"{HttpUtility.UrlDecode(template.Name)}");
+                System.IO.File.WriteAllText(filepath, template.Content);
 
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
+            return Ok();
+        }
     }
 }

@@ -60,7 +60,7 @@
                                                 </td>
                                                 <td class="align-center">
                                                     <link-confirm jq-selector="confirm-archive" config-class="fa fa-archive" config-key="@forum.Id" href="@SnitzConfig.RootFolder?.TrimEnd('/')/Archive/ArchiveForm/@forum.Id" title="Archive posts in this forum"></link-confirm>
-                                                    <link-confirm config-class="fa fa-trash-o" config-key="@forum.Id" href="@SnitzConfig.RootFolder?.TrimEnd('/')/Archive/DeleteArchivedForum/@forum.Id" title="Delete archived posts in this forum?"></link-confirm>
+                                                    <link-confirm config-class="fa fa-trash-can" config-key="@forum.Id" href="@SnitzConfig.RootFolder?.TrimEnd('/')/Archive/DeleteArchivedForum/@forum.Id" title="Delete archived posts in this forum?"></link-confirm>
 
                                                     <input type="hidden" name="Categories[@ii].Forums[@i].Id" id="@($"Categories_{@ii}_Forums_{i}_Id")" value="@forum.Id" />
                                                     <input type="checkbox" class="form-check-inline" id="check-@forum.Id" name="check-@forum.Id" />

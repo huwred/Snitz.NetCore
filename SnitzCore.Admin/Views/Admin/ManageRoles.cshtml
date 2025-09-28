@@ -24,7 +24,7 @@
                                 <span class="pull-right">
                                     @if (!protectedRoles.Contains(role))
                                     {
-                                        <link-confirm href="~/Admin/DeleteRole/?rolename=@role" title="Delete Role?" config-class="@(@"fa fa-trash-o")" config-key="@role"></link-confirm>
+                                        <link-confirm href="~/Admin/DeleteRole/?rolename=@role" title="Delete Role?" config-class="@("fa fa-trash-can")" config-key="@role"></link-confirm>
                                     }
                                 </span>
                                 @if (role != null && role.StartsWith("Forum_"))
