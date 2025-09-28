@@ -45,7 +45,7 @@ namespace MVCForum.Controllers
         [Route("AllForums")]
         [Route("Category/{id?}")]
         [Route("Category/Index/{id}")]
-        [ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
+        //[ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Index(int id, int groupId = 0)
         {
             if (_config.GetIntValue("STRGROUPCATEGORIES") ==1)
@@ -202,6 +202,7 @@ namespace MVCForum.Controllers
 
             return View("CreateEdit",model);
         }
+
         [Authorize(Roles = "Administrator")]
         public IActionResult Delete(int id)
         {
@@ -244,29 +245,8 @@ namespace MVCForum.Controllers
                 .ExecuteDelete();
             return Content("OK");
         }
-        private ForumListingModel GetForumListingForPost(Post post)
-        {
-            Forum forum = post.Forum!;
 
-            return new ForumListingModel
-            {
-                Id = forum.Id,
-                Title = forum.Title,
-                AccessType = forum.Privateforums,
-                ForumType = (ForumType)forum.Type,
-                Url = forum.Url,
-                DefaultView = (DefaultDays)forum.Defaultdays,
-                CategoryId = forum.CategoryId,
-                Status = forum.Status,
-                ForumModeration = forum.Moderation,
-                Polls = forum.Polls ?? 0,
-                ArchivedCount = forum.ArchivedTopics,
-                PostAuth = (PostAuthType)forum.Postauth,
-                ReplyAuth = (PostAuthType)forum.Replyauth,
-            };
-        }
-
-
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> EmptyCategory(int id)
         {
             await _categoryService.DeleteForums(id);

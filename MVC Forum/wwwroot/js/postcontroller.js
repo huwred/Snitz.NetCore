@@ -51,6 +51,7 @@ $(".post-del").off().on("click", function(e) {
     e.preventDefault();
     var postid = $(this).data("id");
     var href = $(this).attr('href');
+    console.log(href);
     var archived = $(this).data("archived");
     (async () => {
         const result = await b_confirm(Snitzres.cnfDeleteTopic)
@@ -64,7 +65,7 @@ $(".post-del").off().on("click", function(e) {
                     if (!data.result) {
                         appendAlert(data.error, 'error');
                     } else {
-                        location.href = data.url;
+                        location.href = data.url + href;
                     }
                 }
             );

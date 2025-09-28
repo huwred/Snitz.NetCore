@@ -20,8 +20,8 @@
 }
 <div class="container pt-0">
     <snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
-    <h1 snitz-if="@canedit" class="bg-dark text-dark p-2">@Localizer["Profile"]</h1>
-    <h1 snitz-if="@(!canedit)" class="bg-dark text-dark p-2">@Localizer["ProfileDetails", Model.Name] </h1>
+    <h1 snitz-if="@canedit" class="bg-form p-2">@Localizer["Profile"]</h1>
+    <h1 snitz-if="@(!canedit)" class="bg-form p-2">@Localizer["ProfileDetails", Model.Name] </h1>
     <div id="member-profile">
         @if (canedit)
         {

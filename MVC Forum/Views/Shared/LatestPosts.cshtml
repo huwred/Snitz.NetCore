@@ -14,7 +14,7 @@
 }
 <div class="card mb-2" >
     <div class="card-header  subforum-title">
-        @Localizer["lblRecentActivity"]
+        <a asp-controller="Forum" asp-action="Active" title="@Localizer["lblRecentActivity"].Value">@Localizer["lblRecentActivity"]</a> 
     </div>
     <div class="card-body p-0 latest-posts">
         <ul class="list-group">

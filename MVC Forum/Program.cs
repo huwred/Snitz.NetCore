@@ -1,6 +1,7 @@
 ﻿using BbCodeFormatter;
 using BbCodeFormatter.Processors;
 using Hangfire;
+using Hangfire.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -192,7 +193,7 @@ builder.Services.AddImageSharp(
             return Task.CompletedTask;
         };
     });
-builder.Services.AddTransient<ISyndicationXmlService, SyndicationXmlService>();
+//builder.Services.AddTransient<ISyndicationXmlService, SyndicationXmlService>();
 builder.Services.RegisterPlugins(builder.Configuration,path);
 
 
@@ -224,14 +225,20 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton(builder.Environment.ContentRootFileProvider);
+//builder.Services.Configure<IdentityOptions>(options =>
+//{
+//    // Default User settings.
+//    options.User.AllowedUserNameCharacters =
+//            "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+//    options.User.RequireUniqueEmail = false;
 
+//});
 var app = builder.Build();
 app.MigrateDatabase();
 app.AddPostThanks();
 app.AddEvents();
 app.AddImageAlbum();
 app.UseMultiLanguages(builder.Configuration.GetSection(SnitzForums.SectionName),app.Services.GetRequiredService <IOptions<RequestLocalizationOptions>>().Value);
-
 
 if (app.Environment.IsDevelopment())
 {
@@ -246,7 +253,19 @@ app.UseHttpsRedirection();
 
 app.UseImageSharp();
 
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = (context) =>
+    {
+        var headers = context.Context.Response.GetTypedHeaders();
+
+        headers.CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue
+        {
+            Public = true,
+            MaxAge = TimeSpan.FromDays(365)
+        };
+    }
+});
 app.UseRouting();
 app.UseStatusCodePages(async context => {
     var request = context.HttpContext.Request;
@@ -255,11 +274,10 @@ app.UseStatusCodePages(async context => {
     if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
     // you may also check requests path to do this only for specific methods       
     // && request.Path.Value.StartsWith("/specificPath")
-
     {
-        response.Redirect("/Account/Login");  //redirect to the login page.
+        response.Redirect(request.PathBase + "/Account/Login");  //redirect to the login page.
     }
-    });
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -269,6 +287,7 @@ app.UseOnlineUsers();
 app.UseCookiePolicy();
 app.UseHangfireDashboard("/snitzjobs",new DashboardOptions
 {
+    AppPath = builder.Configuration["SnitzForums:strForumUrl"],
     Authorization = new [] { new SnitzAuthorizationFilter() }
 });
 app.UseResponseCaching();
@@ -278,5 +297,8 @@ name: "default",
 pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
+//Add a Job to clear down old log files
+app.CreateJob(builder.Configuration.GetSection("SnitzForums"),builder.Environment.ContentRootPath);
+
 
 app.Run();

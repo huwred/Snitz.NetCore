@@ -65,7 +65,6 @@ namespace MVCForum.Controllers
         [Route("Topic/{id}")]
         [Route("Topic/Index/{id}")]
         [Route("Topic/Posts/{id}")]
-        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Index(int id,int page = 1, int pagesize = 0, string sortdir="", int? replyid = null)
         {
             if(TempData["Error"] != null)
@@ -225,7 +224,6 @@ namespace MVCForum.Controllers
         }
 
         [Route("Blog/{id}")]
-        [ResponseCache(Duration = 120, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Index(string id,int page = 1, int pagesize = 0, string sortdir="", int? replyid = null)
         {
             if(TempData["Error"] != null)
@@ -384,7 +382,7 @@ namespace MVCForum.Controllers
 
         }
  
-        [ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
+        //[ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Archived(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
         {
             bool signedin = false;
@@ -550,7 +548,7 @@ namespace MVCForum.Controllers
                 DoNotArchive = false,
             };
             var homePage = new MvcBreadcrumbNode("", "Category", "ttlForums");
-            var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.Category!.Id}};
+            var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name){ Parent = homePage,RouteValues = new{id=forum.CategoryId}};
             var forumPage = new MvcBreadcrumbNode("Index", "Forum", forum.Title){ Parent = catPage,RouteValues = new{id=forum.Id }};
             var topicPage = new MvcBreadcrumbNode("Create", "Topic", "New Post") { Parent = forumPage };
             ViewData["BreadcrumbNode"] = topicPage;
@@ -698,6 +696,10 @@ namespace MVCForum.Controllers
                 {
                     post.Status = (short)(model.IsLocked ? 0 : post.Status);
                 }
+                else if(model.SaveDraft)
+                {
+                    post.Status = 99;
+                }
                 else
                 {
                     post.Status = (short)(model.IsLocked ? 0 : 1);
@@ -794,6 +796,7 @@ namespace MVCForum.Controllers
         }
         
         [HttpPost]
+        [Authorize]
         [Route("AddPoll/")]
         public IActionResult AddPoll(Poll poll)
         {
@@ -1030,7 +1033,7 @@ namespace MVCForum.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SendTo(EmailViewModel model)
         {
-            _mailSender.SendToFreind( model);
+            _mailSender.SendToFriend( model);
             TempData["Success"] = "Email sent successfully";
             return RedirectToAction("Index", "Topic", new { id=model.ReturnUrl, pagenum = -1 });
         }
@@ -1512,6 +1515,7 @@ namespace MVCForum.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("Topic/Upload/")]
+        [Authorize]
         public IActionResult Upload(UploadViewModel model)
         {
             var uploadFolder = StringExtensions.UrlCombine(_config.ContentFolder, "Members");
@@ -1555,6 +1559,7 @@ namespace MVCForum.Controllers
         /// <returns>A <see cref="PartialViewResult"/> containing the "popUpload" view and an <see cref="UploadViewModel"/> with
         /// the necessary configuration for the upload form.</returns>
         [Route("Topic/UploadForm/")]
+        [Authorize]
         public IActionResult UploadForm()
         {
             ViewBag.Title = "lblUpload";
@@ -1570,6 +1575,7 @@ namespace MVCForum.Controllers
             return result ? Json(new { result, data = id }) : Json(new { result, error = "Unable to toggle Status" });
         }
 
+        //[ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public PartialViewResult BlogList(int id)
         {
 

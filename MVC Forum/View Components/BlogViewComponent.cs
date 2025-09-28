@@ -62,7 +62,7 @@ namespace MVCForum.View_Components
                 var phrases =  forum.Posts.Select(p=>p.Content);
                 var tagfree = new List<string>();
 
-                Regex singleletters = new Regex(@"(?: |^|\(|\.|&)[A-Za-z0-9]{1,3}(?:$| |\.|,|\)|;)",RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                Regex singleletters = new Regex(@"(?: |^|\(|\.|&|\#)[A-Za-z0-9 ]{1,3}(?:$| |\.|,|\)|;)",RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
                 foreach (var phrase in phrases)
                 {
@@ -76,7 +76,7 @@ namespace MVCForum.View_Components
                         foreach (string word in stopwords )
                         {
 
-                            Regex rgx = new Regex(@$"(?: |^|\(|\.)({word})(?:$| |\.|,|\))",RegexOptions.IgnoreCase| RegexOptions.Multiline);
+                            Regex rgx = new Regex(@$"(?: |^|\(|\.|\#)({word})(?:$| |\.|,|\))",RegexOptions.IgnoreCase| RegexOptions.Multiline);
                             newphrase = rgx.Replace(newphrase, " ");
                         }
                     }
@@ -102,7 +102,6 @@ namespace MVCForum.View_Components
             }
 
             var path = Path.Combine(_environment.ContentRootPath, "App_Data","stopwords-" + culture + ".txt");
-            //path = path.Replace("\\", System.IO.Path.DirectorySeparatorChar.ToString());
             string logFile = "";
             if (System.IO.File.Exists(path))
             {

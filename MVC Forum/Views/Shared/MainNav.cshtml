@@ -8,66 +8,70 @@
     var currForumUser = UserManager.GetUserAsync(User).Result;
     var navcss = currentTheme!.Contains("Dark") ? "navbar-dark bg-dark" : "bg-dark";
 }
+
 <nav class="navbar navbar-expand-md navbar-custom @navcss fixed-top">
     <partial name="MenuLogo" />
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse @navcss" id="navbarSupportedContent">
-        <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownForumLink">@Localizer["mnuForum"]</a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdownForumLink">
-                    <li><a class="dropdown-item" href="~/AllForums">@Localizer["mnuForumHome"]</a></li>
-                    <li><a class="dropdown-item" asp-controller="Forum" asp-action="Active">@Localizer["mnuForumActive"]</a></li>
-                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Index">@Localizer["mnuForumMembers"]</a></li>
-                    <li><a class="dropdown-item" asp-controller="Forum" asp-action="Search">@Localizer["mnuForumSearch"]</a></li>
-                    <li snitz-if="@((SnitzConfig.GetIntValue("INTPOLLS") == 1 && SnitzConfig.GetIntValue("INTACTIVEPOLLS") == 1 && User.Identity.IsAuthenticated)
-                    || (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && (SnitzConfig.GetIntValue("INTPUBLICEVENTS") == 1 && User.Identity.IsAuthenticated)))"><hr class="dropdown-divider" /></li>
-                    @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
-                    @await Component.InvokeAsync("Events", new{template = "MenuItem"})
-                    <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT",1) == 1)"><hr class="dropdown-divider" /></li>
-                    <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT",1) == 1)">
-                        <a class="dropdown-item" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownAbout">@Localizer["mnuAbout"]</a>
-                        <ul class="dropdown-menu dropdown-submenu">
-                            <li><a class="dropdown-item" href="~/About#about">@Localizer["mnuAbout"]</a></li>
-                            <li><a class="dropdown-item" href="~/About#contact">@Localizer["mnuContact"]</a></li>
-                            <li><a class="dropdown-item" href="~/About#privacy">@Localizer["mnuPrivacyPolicy"]</a></li>
-                            <li><a class="dropdown-item" href="~/About#cookie">@Localizer["mnuCookies"]</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-item dropdown" snitz-if="@(SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)">
-                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownAlbumLink">@Localizer["mnuAlbums"]</a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdownAlbumLink">
-                    <li><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Index" asp-route-id="">@Localizer["mnuMemberAlbums"]</a></li>
-                    <li snitz-if="@(SnitzConfig.GetIntValue("INTCOMMONALBUM") == 1)"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Album" asp-route-id="">@Localizer["mnuCommonAlbum"]</a></li>
-                    <li snitz-if="@SignInManager.IsSignedIn(User)"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="@currForumUser?.MemberId">@Localizer["mnuMyAlbum"]</a></li>
-                </ul>
-            </li>
+        <cache expires-sliding="@TimeSpan.FromMinutes(2)" vary-by-user="true">
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownForumLink">@Localizer["mnuForum"]</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownForumLink">
+                        <li><a class="dropdown-item" href="~/AllForums">@Localizer["mnuForumHome"]</a></li>
+                        <li><a class="dropdown-item" asp-controller="Forum" asp-action="Active">@Localizer["mnuForumActive"]</a></li>
+                        <li><a class="dropdown-item" asp-controller="Account" asp-action="Index">@Localizer["mnuForumMembers"]</a></li>
+                        <li><a class="dropdown-item" asp-controller="Forum" asp-action="Search">@Localizer["mnuForumSearch"]</a></li>
+                        <li snitz-if="@((SnitzConfig.GetIntValue("INTPOLLS") == 1 && SnitzConfig.GetIntValue("INTACTIVEPOLLS") == 1 && User.Identity.IsAuthenticated)
+                                                || (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && (SnitzConfig.GetIntValue("INTPUBLICEVENTS") == 1 && User.Identity.IsAuthenticated)))"><hr class="dropdown-divider" /></li>
+                        @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
+                        @await Component.InvokeAsync("Events", new { template = "MenuItem" })
+                        <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT", 1) == 1)"><hr class="dropdown-divider" /></li>
+                        <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT",1) == 1)">
+                            <a class="dropdown-item" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownAbout">@Localizer["mnuAbout"]</a>
+                            <ul class="dropdown-menu dropdown-submenu">
+                                <li><a class="dropdown-item" href="~/About#about">@Localizer["mnuAbout"]</a></li>
+                                <li><a class="dropdown-item" href="~/About#contact">@Localizer["mnuContact"]</a></li>
+                                <li><a class="dropdown-item" href="~/About#privacy">@Localizer["mnuPrivacyPolicy"]</a></li>
+                                <li><a class="dropdown-item" href="~/About#cookie">@Localizer["mnuCookies"]</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown" snitz-if="@(SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownAlbumLink">@Localizer["mnuAlbums"]</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownAlbumLink">
+                        <li><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Index" asp-route-id="">@Localizer["mnuMemberAlbums"]</a></li>
+                        <li snitz-if="@(SnitzConfig.GetIntValue("INTCOMMONALBUM") == 1)"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Album" asp-route-id="">@Localizer["mnuCommonAlbum"]</a></li>
+                        <li snitz-if="@SignInManager.IsSignedIn(User)"><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="@currForumUser?.MemberId">@Localizer["mnuMyAlbum"]</a></li>
+                    </ul>
+                </li>
 
-            @if (!SignInManager.IsSignedIn(User))
-            {
-                <li class="nav-item"><a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path" class="nav-link">@Localizer["SignIn"]</a></li>
-                @if (SnitzConfig.GetIntValue("STRPROHIBITNEWMEMBERS") != 1)
+                @if (!SignInManager.IsSignedIn(User))
                 {
-                    <li class="nav-item"><a asp-controller="Account" asp-action="Register" class="nav-link">@Localizer["Register"]</a></li>
-                }
-            }
-            @if (SignInManager.IsSignedIn(User))
-            {
-                <partial name="MemberMenu"/>
-                if (currForumUser != null)
-                {
-                    var userroles = UserManager.GetRolesAsync(currForumUser).Result.ToList();
-                    if (userroles.Contains("Administrator"))
+                    <li class="nav-item"><a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path" class="nav-link">@Localizer["SignIn"]</a></li>
+                    @if (SnitzConfig.GetIntValue("STRPROHIBITNEWMEMBERS") != 1)
                     {
-                        <partial name="AdminMenu" />
+                        <li class="nav-item"><a asp-controller="Account" asp-action="Register" class="nav-link">@Localizer["Register"]</a></li>
                     }
                 }
-            }
-        </ul>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <partial name="MemberMenu" />
+                    if (currForumUser != null)
+                    {
+                        var userroles = UserManager.GetRolesAsync(currForumUser).Result.ToList();
+                        if (userroles.Contains("Administrator"))
+                        {
+                            <partial name="AdminMenu" />
+                        }
+                    }
+                }
+            </ul>
+        </cache>
+
         <partial name="mailbox" />
         <partial name="SelectTheme" />
         <partial name="SelectLanguage" />

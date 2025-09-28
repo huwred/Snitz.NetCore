@@ -198,18 +198,18 @@
                         .addClass('active');
                     if (!$.cookie(pagesizeCookie)) {
                         var testCookie = 'cookie support check';
-                        $.cookie(testCookie, true);
+                        $.cookie(testCookie, true,{ path: snitzVars.cookiePath });
                         if ($.cookie(testCookie)) { // browser supports cookie
-                            $.cookie(testCookie, null);
+                            $.cookie(testCookie, null,{ path: snitzVars.cookiePath });
                             $.removeCookie(testCookie);
-                            $.cookie(pagesizeCookie, sel, { expires: 1/*, path: window.SnitzVars.cookiePath, domain: window.SnitzVars.cookieDomain*/ });
+                            $.cookie(pagesizeCookie, sel, { expires: 1, path: window.SnitzVars.cookiePath /*, domain: window.SnitzVars.cookieDomain*/ });
                             location.reload(); // re-load the page
                         }
                     } else {
                         var storedSize = parseInt($.cookie(pagesizeCookie));
                         var currentSize = parseInt(sel);
                         if (storedSize !== currentSize) { // user may have changed the pagesize
-                            $.cookie(pagesizeCookie, sel, { expires: 1/*, path: window.SnitzVars.cookiePath, domain: window.SnitzVars.cookieDomain*/ });
+                            $.cookie(pagesizeCookie, sel, { expires: 1, path: window.SnitzVars.cookiePath /*, domain: window.SnitzVars.cookieDomain*/ });
                             location.reload();
                         }
                     }

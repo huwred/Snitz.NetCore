@@ -573,9 +573,9 @@ blockquote.newquote {
     position: relative;
     border: 2px dotted rgba(var(--bs-success-rgb));
 }
-.table-row .status .fa-folder, .note .fa-folder, .answered-overlay .status .fa-lock {
-    color: rgba(var(--bs-success-rgb)) !important;
-}
+    .table-row .answered-overlay .status .fa-folder, .answered-overlay .status .fa-lock {
+        color: rgba(var(--bs-success-rgb)) !important;
+    }
 
 a.latestpost-title {
     display: block;

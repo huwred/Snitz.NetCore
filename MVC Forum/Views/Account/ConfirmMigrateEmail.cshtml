@@ -1,0 +1,16 @@
+﻿@model string
+@{
+    var emaildom = Model.Split("@")[1];
+}
+<div class="container pt-0">
+    <div class="center">
+        <div class="subforum border border-light rounded col-6 p-0">
+            <h1 class="bg-success text-bg-success p-2 rounded-2">@Localizer["emailmigrateTitle"]</h1>
+            <p class="p-2">
+                @Localizer["emailmigrateMessage", emaildom]
+            </p>
+            <p>@Html.ActionLink(Localizer["gotoHomeUrl"].Value, "Index", "Home")</p>
+        </div>
+    </div>
+</div>
+

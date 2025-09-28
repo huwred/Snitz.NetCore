@@ -3,7 +3,7 @@ using System.Net;
 using System.ServiceModel.Syndication;
 using System.Xml;
 
-namespace MVCForum.Controllers
+namespace MVCForum.Extensions
 {
     public class RssActionResult : ActionResult
     {

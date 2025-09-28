@@ -12,7 +12,8 @@
     getUrlParam: function (name) {
         return $.getUrlParams()[name];
     }
-});        
+});     
+
 $(document).ready(function() {
     var replyid = $.getUrlParam('replyid');
     if (replyid) {
@@ -34,6 +35,20 @@ $(document).ready(function() {
             }
         });
     });
+    $('#rating-id').on("rating:change", function (event, value, caption) {
+        var form = $('#save-rating');
+        $.ajax({
+            url: SnitzVars.baseUrl + '/Topic/SaveRating',
+            type: "POST",
+            data: form.serialize(),
+            success: function (data) {
+                $('#rating-id').rating("refresh", { disabled: true, showClear: false });
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
 });
 
 $('.modal-link').on('click', function (e) {
@@ -43,6 +58,7 @@ $('.modal-link').on('click', function (e) {
         $("#moderateModal").modal('show');
     });
 });
+
 $('.send-email').on('click', function (e) {
     e.preventDefault();
     var userid = $(this).data('id');
@@ -53,20 +69,31 @@ $('.send-email').on('click', function (e) {
 
     });
 });
-//$('.sendpm-link').on('click', function () {
-//    var username = $(this).data('id');
-//    $.get(SnitzVars.baseUrl +  + '/PrivateMessage/SendMemberPm/' + username, function (data) {
-//        $('#pmContainer').html(data);
-//        $.validator.unobtrusive.parse($("#sendPMForm"));
-//        $('#modal-sendpm').modal('show');
-//    });
-//});
-$(document).on("click","#PrintTopic",function(e) {
-    e.preventDefault();
-    var id = $(this).data('id');
-    var archive = $.getUrlParam('archived');
-    location.href = SnitzVars.baseUrl + '/Topic/Print/' + id + '?archived=' + archive;
 
+$("#QuickReply").submit(function (e) {
+    e.preventDefault();
+    $("#btn-submit").prop("disabled", true);
+    window.displayBusyIndicator();
+    tinyMCE.get("msg-text").save();
+    var form = $("#QuickReply");
+    var formData = new FormData(form[0]);
+    $.ajax({
+        url: $(this).attr("action"),
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (data) {
+            window.displayBusyIndicator();
+            location.href = data.url;// + '?page=-1';
+        },
+        error: function (err) {
+            console.log(err);
+            qrappendAlert(SnitzVars.floodErr, 'danger');
+            $('.loading').hide();
+        }
+    });
+    return false;
 });
 
 $('#SendTopic').on('click', function (e) {
@@ -79,6 +106,17 @@ $('#SendTopic').on('click', function (e) {
         $('#modal-sendto').modal('show');
     });
 });
+
+$('.reply-select').on('change', function () {
+    var checkedNum = $('input[name="replyselected"]').filter(":checked").length;
+    if (checkedNum < 1) {
+        $('.fa-clone').hide();
+    } else if (checkedNum > 0) {
+        $('.fa-clone').show();
+    }
+
+});
+
 $('#submitUpload').on('click', function(e) {
     e.preventDefault();
     var form = $("#upload-form");
@@ -126,6 +164,14 @@ $('#submitUpload').on('click', function(e) {
     });
     return false;
 });
+
+$("#theme-change").on("change",
+    function () {
+        $.get(SnitzVars.baseUrl + "/Account/SetTheme/?theme=" + $(this).val(), function (data) {
+            location.reload(true);
+        });
+    });
+
 $('body').off().on("click", ".email-link", function(e) {
         e.preventDefault();
         var memberid = $(this).data("id");
@@ -134,29 +180,30 @@ $('body').off().on("click", ".email-link", function(e) {
         $('#member-modal').load(href + "/" + memberid, function() {});
         $('#memberModal .modal-footer').show();
 
-    $('body').on("click",
-            "#send-email",
-            function(e) {
-                e.preventDefault();
-                $(this).prop('disabled', true);
-                var post_url = $('#sendemail-form').attr("action");
-                var form_data = $('#sendemail-form').serialize();
-                $.ajax({
-                    url: post_url,
-                    type: "POST",
-                    data: form_data
-                }).done(function(response) {
-                    if (response.result) {
-                        $('#memberModal').modal('hide');
-                    } else {
-                        //Dont close the modal, display the error
-                        $('#member-modal').html(response);
-                    }
-                });
+        $('body').on("click",
+                "#send-email",
+                function(e) {
+                    e.preventDefault();
+                    $(this).prop('disabled', true);
+                    var post_url = $('#sendemail-form').attr("action");
+                    var form_data = $('#sendemail-form').serialize();
+                    $.ajax({
+                        url: post_url,
+                        type: "POST",
+                        data: form_data
+                    }).done(function(response) {
+                        if (response.result) {
+                            $('#memberModal').modal('hide');
+                        } else {
+                            //Dont close the modal, display the error
+                            $('#member-modal').html(response);
+                        }
+                    });
 
-            });
+                });
         $('#memberModal').data('id', memberid).modal('show');
-    });
+});
+
 $('body').on("click", ".sendpm-link", function(e) {
         e.preventDefault();
         var memberid = $(this).data("id");
@@ -165,30 +212,31 @@ $('body').on("click", ".sendpm-link", function(e) {
         $('#pm-modal').load(href + "/" + memberid, function() {});
         //$('#memberModal #btnOk').hide();
 
-    $('body').on("click",
-            "#send-pm",
-            function(e) {
-                e.preventDefault();
-                $(this).prop('disabled', true);
-                var post_url = $('#sendpm-form').attr("action");
-                var form_data = $('#sendpm-form').serialize();
-                $.ajax({
-                    url: post_url,
-                    type: "POST",
-                    data: form_data
-                }).done(function(response) {
-                    if (response.result) {
-                        $('#pmModal').modal('hide');
-                    } else {
-                        //Dont close the modal, display the error
-                        $('#pm-modal').html(response);
-                    }
-                });
+        $('body').on("click",
+                "#send-pm",
+                function(e) {
+                    e.preventDefault();
+                    $(this).prop('disabled', true);
+                    var post_url = $('#sendpm-form').attr("action");
+                    var form_data = $('#sendpm-form').serialize();
+                    $.ajax({
+                        url: post_url,
+                        type: "POST",
+                        data: form_data
+                    }).done(function(response) {
+                        if (response.result) {
+                            $('#pmModal').modal('hide');
+                        } else {
+                            //Dont close the modal, display the error
+                            $('#pm-modal').html(response);
+                        }
+                    });
 
-            });
+                });
         $('#pmModal').data('id', memberid).modal('show');
 
-    });
+});
+
 $('body').on("click", ".show-ip", function(e) {
         e.preventDefault();
         var memberid = $(this).data("id");
@@ -199,7 +247,6 @@ $('body').on("click", ".show-ip", function(e) {
         $('#memberModal .modal-footer').hide();
     });
 
-
 $('body').on("change", "#aFile_upload", function (e) {
         var filesize = ((this.files[0].size / 1024) / 1024).toFixed(4); // MB
         var maxsize = parseInt('@SnitzConfig.GetValue("INTMAXFILESIZE", "5")');
@@ -207,10 +254,19 @@ $('body').on("change", "#aFile_upload", function (e) {
             alert("File is too big!");
             this.value = "";
         }
-    });
+});
+
 $('body').on("change", "input[type=radio][name=pagesize]", function () {
         $("#defaultdays-form").submit();
-    });
+});
+
+$(document).on("click", "#PrintTopic", function (e) {
+    e.preventDefault();
+    var id = $(this).data('id');
+    var archive = $.getUrlParam('archived');
+    location.href = SnitzVars.baseUrl + '/Topic/Print/' + id + '?archived=' + archive;
+
+});
 
 Prism.hooks.add("before-highlight",
     function(env) {
@@ -232,3 +288,17 @@ function lazyload(){
         }
     });
 }
+function TopicRated() {
+    $('.topic_rating').hide();
+    $('#input-id-@Model.Id').rating("refresh", { disabled: true, showClear: false });
+}
+
+document.querySelectorAll('.star-rating:not(.readonly) label').forEach(star => {
+    star.addEventListener('click', function () {
+        this.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+            this.style.transform = 'scale(1)';
+        }, 200);
+    });
+});
+

@@ -40,19 +40,9 @@ namespace MVCForum.Controllers
             _bbcodeProcessor = bbcodeProcessor;
         }
 
+        //[ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any)]
         public IActionResult Index()
         {            
-//        var passwordHasher = new PasswordHasher<IdentityUser>();
-
-//        // Create a dummy user (can be replaced with your actual user model)
-//        var user = new ForumUser();
-//            user.UserName = "Administrator";
-
-//            // Generate the hashed password
-//            string password = "Passw0rd!";
-//        string hashedPassword = passwordHasher.HashPassword(user, password);
-//_logger.Info($"Hashed: {hashedPassword}");
-
             try
             {
                 return View(new HomeIndexModel
@@ -63,7 +53,7 @@ namespace MVCForum.Controllers
             catch (Exception e)
             {
                 _logger.Error("BuildHomeIndexModel",e);
-                return View("TempIndex");
+                return View("Error");
             }
         }
         public IActionResult Preview (string content)

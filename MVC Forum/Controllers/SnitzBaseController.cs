@@ -60,5 +60,9 @@ namespace MVCForum.Controllers
             return View();
         }
 
+        public IActionResult RefreshFeature()
+        {
+            return ViewComponent("ImageAlbum", new { template = "Featured", info = false });
+        }
     }
 }

@@ -3,6 +3,7 @@ using CreativeMinds.StopForumSpam.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -31,6 +32,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using X.PagedList;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace MVCForum.Controllers
@@ -88,7 +90,7 @@ namespace MVCForum.Controllers
         }
 
         [CustomAuthorize]
-        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
+        //[ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
         public IActionResult Index(int pagesize,string? sortdir,string? orderby,string? initial, int page=1)
         {
 
@@ -116,6 +118,7 @@ namespace MVCForum.Controllers
                 Member = m!,
                 Id = m!.Id,
                 Title = MemberRankTitle(m)!,
+                Migrated = _userManager.FindByNameAsync(m.Name).Result != null,
                 MemberSince = m.Created.FromForumDateStr(),
                 LastPost =
                     !string.IsNullOrEmpty(m.Lastpostdate)
@@ -356,9 +359,17 @@ namespace MVCForum.Controllers
                     return View(user);
                 }
             }
+            //not validating emails so reset fields before creating the accounts
+            if (_config.GetIntValue("STREMAILVAL") != 1)
+            {
+                appUser.LockoutEnabled = false;
+                appUser.LockoutEnd = null;
+                appUser.EmailConfirmed = true;
+
+                forumMember.Status = 1;
+            }
             var newmember = _memberService.Create(forumMember, required);
             appUser.MemberId = newmember.Id;
-
             IdentityResult result = await _userManager.CreateAsync(appUser, user.Password);
             if (!result.Succeeded)
             {
@@ -398,6 +409,7 @@ namespace MVCForum.Controllers
 
             return RedirectToAction(nameof(SuccessRegistration));
         }
+
         [HttpGet]
         public IActionResult ApproveRegistration()
         {
@@ -413,7 +425,11 @@ namespace MVCForum.Controllers
         {
             return View();
         } 
-
+        [HttpGet]
+        public IActionResult ConfirmMigrateEmail(string email)
+        {
+            return View("ConfirmMigrateEmail",email);
+        } 
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = "/")
         {
@@ -513,6 +529,12 @@ namespace MVCForum.Controllers
                 _logger.Info("Not a member so redirect to the register page");
 
                 return RedirectToActionPermanent("Register");
+            }
+            if(member.Status != 1)
+            {
+                _logger.Error($"{login.Username} : Account is locked");
+                ModelState.AddModelError(nameof(login.Username), "Your acount is Locked." + Environment.NewLine + "Please contact the Administrator.");
+                return View(login);
             }
 
             _logger.Info("Member found, migrate account");
@@ -1081,37 +1103,46 @@ namespace MVCForum.Controllers
         {
             #region Migrate Member
 
-            var validpwd = false;
+            MigratePassword validpwd = SnitzCore.Data.Models.MigratePassword.InvalidPassword;
             try
             {
                 _logger.Info("Validate Old member record");
-                validpwd = _memberService.ValidateMember(member!, login.Password);
-                _logger.Info("Password is correct.");
+                validpwd = _memberService.ValidateMember(member, login.Password);
                 //Password is correct but will it validate, if not then force a reset
-                if (validpwd)
+                if (validpwd == SnitzCore.Data.Models.MigratePassword.Valid)
                 {
+                    _logger.Info("Password is correct.");
                     foreach (var validator in _userManager.PasswordValidators)
                     {
                         var result = await validator.ValidateAsync(_userManager, new ForumUser(), login.Password);
 
                         if (!result.Succeeded)
                         {
-                            _logger.Warn("Password won't validate so forse a reset.");
-                            validpwd = false;
+                            _logger.Warn("Password won't validate so force a reset.");
+                            validpwd = SnitzCore.Data.Models.MigratePassword.NewPassword;
                             break;
                         }
                     }
+                }
+                if(validpwd == SnitzCore.Data.Models.MigratePassword.NoMember ) {
+                    _logger.Error("Error finding member record");
                 }
             }
             catch (Exception e)
             {
                 _logger.Error("Error finding member record", e);
+                validpwd = SnitzCore.Data.Models.MigratePassword.NoMember;
                 //membership table may not exists
             }
-            if (member != null)
+            if(validpwd == SnitzCore.Data.Models.MigratePassword.NoMember) {
+                ModelState.AddModelError(nameof(login.Username), "No member to migrate");
+                return View("Login", login);
+            }
+
+            if (validpwd != SnitzCore.Data.Models.MigratePassword.InvalidPassword)
             {
                 _logger.Info($"Found Old member record {member.Name}");
-                ForumUser existingUser = new()
+                ForumUser newUser = new()
                 {
                     UserName = login.Username,
                     Email = member.Email,
@@ -1119,12 +1150,13 @@ namespace MVCForum.Controllers
                     MemberSince = member.Created.FromForumDateStr(),
                     EmailConfirmed = true,
                 };
-                if (!validpwd)
+                if (validpwd == SnitzCore.Data.Models.MigratePassword.NewPassword)
                 {
                     login.Password = _passwordPolicy.GeneratePassword();
                 }
+
                 _logger.Info($"Create new Identity user {member.Name} - {login.Password}");
-                IdentityResult result = await _userManager.CreateAsync(existingUser, login.Password);
+                IdentityResult result = await _userManager.CreateAsync(newUser, login.Password);
                 if (result.Succeeded)
                 {
                     var currroles = _snitzDbContext.Set<OldUserInRole>()
@@ -1135,11 +1167,11 @@ namespace MVCForum.Controllers
                     {
                         if(member.Level == 3)
                         {
-                            await _userManager.AddToRoleAsync(existingUser, "Administrator");
+                            await _userManager.AddToRoleAsync(newUser, "Administrator");
                         }
                         if(member.Level == 2)
                         {
-                            await _userManager.AddToRoleAsync(existingUser, "Moderator");
+                            await _userManager.AddToRoleAsync(newUser, "Moderator");
                         }
                     }
                     else
@@ -1151,20 +1183,20 @@ namespace MVCForum.Controllers
                             {
                                 await _roleManager.CreateAsync(new IdentityRole(userInRole.Role.RoleName));
                             }
-                            await _userManager.AddToRoleAsync(existingUser, userInRole.Role.RoleName);
+                            await _userManager.AddToRoleAsync(newUser, userInRole.Role.RoleName);
                         }
                     }
 
-                    if (!validpwd)
+                    if (validpwd == SnitzCore.Data.Models.MigratePassword.NewPassword)
                     {
-                        var token = _userManager.GeneratePasswordResetTokenAsync(existingUser).Result;
+                        var token = _userManager.GeneratePasswordResetTokenAsync(newUser).Result;
                         TempData["token"] = token;
-                        TempData["username"] = existingUser.UserName;
-                        var email = existingUser.UserName;
+                        TempData["username"] = newUser.UserName;
+                        var email = newUser.UserName;
                         return RedirectToAction("MigratePassword",new {token,email});
                     }
-                    await _signInManager.SignInAsync(existingUser, login.RememberMe);
-                    //_logger.Warn("ReturnUrl2:" + returnUrl);
+                    await _signInManager.SignInAsync(newUser, login.RememberMe);
+
                     if(Url.IsLocalUrl(returnUrl))
                     {
                         _logger.Info("ReturnUrl is local");
@@ -1183,15 +1215,86 @@ namespace MVCForum.Controllers
                 }
 
             }
+            else if (member != null && validpwd == SnitzCore.Data.Models.MigratePassword.InvalidPassword)
+            {
+                //we need to reset their password, so send a validation email
+                ForumUser newUser = new()
+                {
+                    UserName = login.Username,
+                    Email = member.Email,
+                    MemberId = member.Id,
+                    MemberSince = member.Created.FromForumDateStr(),
+                    LockoutEnabled = true,
+                    LockoutEnd = DateTime.UtcNow.AddMonths(2),
+                    EmailConfirmed = false,
+                };
+                IdentityResult result = await _userManager.CreateAsync(newUser, _passwordPolicy.GeneratePassword());
+                if (result.Succeeded) {
+                    CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+                    var confirmationLink = Url.Action(nameof(MigrateConfirmEmail), "Account", new { token, username = newUser.UserName }, Request.Scheme);
+                    var message = new EmailMessage(new[] { newUser.Email }, 
+                        _languageResource["Confirm"].Value, 
+                        _emailSender.ParseTemplate("confirmEmail.html",_languageResource["Confirm"].Value,newUser.Email,newUser.UserName, confirmationLink!, cultureInfo.Name));
+                    await _userManager.AddToRoleAsync(newUser, "Visitor");
+
+                    Task.Run(async () => await _emailSender.SendEmailAsync(message));
+
+                    return RedirectToAction(nameof(ConfirmMigrateEmail),new{email = member.Email});
+                }
+                string commaSeparated = string.Join(", ", result.Errors.Select(r => string.Join(" ", r.Description)));
+                _logger.Error($"{member.Name} : {commaSeparated}");
+                ModelState.AddModelError(nameof(login.Username), commaSeparated);
+            }
             else
             {
                 _logger.Error($"{login.Username} : Either the user was not found or the password does not match");
-                ModelState.AddModelError(nameof(login.Username), "Either the user was not found or the password does not match.<br/>Please try using the forgot password link to reset your password.");
+                ModelState.AddModelError(nameof(login.Username), "Either the user was not found or the password does not match. Please try using the forgot password link to reset your password.");
             }
             #endregion
 
             return View("Login", login);
         }
+
+        public async Task<IActionResult> MigrateConfirmEmail(string token, string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+                return View("Error");
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                // Remove the lockout date if registration is not restricted 
+                await _userManager.SetLockoutEndDateAsync(user,null);
+                
+                var currmember = _memberService.GetByUsername(username);
+                if (currmember != null)
+                {
+                    currmember.LastLogin = DateTime.UtcNow.ToForumDateStr();
+                    currmember.Status = 1;
+                    _memberService.Update(currmember);
+                }
+
+                if (!_userManager.IsInRoleAsync(user,"ForumMember").Result)
+                {
+                    await _userManager.AddToRoleAsync(user, "ForumMember");
+                }
+                if (_userManager.IsInRoleAsync(user, "Visitor").Result)
+                {
+                    await _userManager.RemoveFromRoleAsync(user, "Visitor");
+                }
+
+                var resettoken = _userManager.GeneratePasswordResetTokenAsync(user).Result;
+                TempData["token"] = resettoken;
+                TempData["username"] = username;
+
+                return RedirectToAction("MigratePassword",new {token=resettoken,email=username});
+            }
+            string commaSeparated = string.Join(", ", result.Errors.Select(r => string.Join(" ", r.Description)));
+            ViewBag.Error = commaSeparated;
+            return View("Error");        
+        }
+
         private bool StopForumSpamCheck(string email, string name, string? userip)
         {
             int freq = 0;
@@ -1199,15 +1302,15 @@ namespace MVCForum.Controllers
             {
                 Client client = new Client(); //(apiKeyTextBox.Text)
                 CreativeMinds.StopForumSpam.Responses.Response response;
-                if (!String.IsNullOrWhiteSpace(name) && String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
+                if (!string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(userip))
                 {
                     response = client.CheckUsername(name);
                 }
-                else if (String.IsNullOrWhiteSpace(name) && !String.IsNullOrWhiteSpace(email) && String.IsNullOrWhiteSpace(userip))
+                else if (string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(userip))
                 {
                     response = client.CheckEmailAddress(email);
                 }
-                else if (String.IsNullOrWhiteSpace(name) && String.IsNullOrWhiteSpace(email) && !String.IsNullOrWhiteSpace(userip))
+                else if (string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(userip))
                 {
                     response = client.CheckIPAddress(userip);
                 }

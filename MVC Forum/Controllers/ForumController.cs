@@ -51,6 +51,7 @@ namespace MVCForum.Controllers
         
         [Route("Forum/{id:int}")]
         [Route("Forum/Index/{id:int}")]
+        //[ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Index(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 0)
         {
             ViewBag.RequireAuth = false;
@@ -159,8 +160,9 @@ namespace MVCForum.Controllers
 
             if (defaultdays != null && defaultdays.Value > 0)
             {
-                forumPosts = forumPosts?.Where(p => p.LastPostDate.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays.Value * -1) ||
-                                                    (p.LastPostDate == null && p.Created.FromForumDateStr() > DateTime.UtcNow.AddDays(defaultdays.Value * -1)));
+                var defdate = DateTime.UtcNow.AddDays(defaultdays.Value * -1).ToForumDateStr();
+                forumPosts = forumPosts?.Where(p => string.Compare(p.LastPostDate,defdate) >= 0 ||
+                                                    (p.LastPostDate == null && string.Compare(p.Created,defdate) >= 0 ));
             }
             else if (defaultdays != null)
             {
@@ -295,8 +297,7 @@ namespace MVCForum.Controllers
             return View("Index");
         }
 
-       
-
+        //[ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Archived(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 0)
         {
             Forum forum ;
@@ -490,7 +491,6 @@ namespace MVCForum.Controllers
             }
             return this.NotFound();
         }
-
 
 
         [Route("Topic/Active")]
@@ -961,6 +961,9 @@ namespace MVCForum.Controllers
             model.Results = topicModel;
             return View("../Search/Index",model);
         }
+
+        //[ResponseCache(Duration = 240, Location = ResponseCacheLocation.Client)]
+        [Authorize]
         public IActionResult MyView(int pagenum=1, MyTopicsSince activesince = MyTopicsSince.Last12Months)
         {
             var forumsubs = _memberService.ForumSubscriptions().ToList();
@@ -978,7 +981,9 @@ namespace MVCForum.Controllers
 
             return View(vm);
         }
+
         [HttpGet]
+        [Authorize]
         public IActionResult MyViewNext(int nextpage, string refresh = "NO" )
         {
             var forumsubs = _memberService.ForumSubscriptions().ToList();
@@ -1012,6 +1017,7 @@ namespace MVCForum.Controllers
 
         }
 
+        [Authorize(Roles = "Administrator")]
         public IActionResult RemoveAllowed(IFormCollection form)
         {
             try
@@ -1034,6 +1040,7 @@ namespace MVCForum.Controllers
 
         }
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         public IActionResult AddModerator(IFormCollection form)
         {
             try
@@ -1064,6 +1071,7 @@ namespace MVCForum.Controllers
                 return Content(e.Message);
             }
         }
+        [Authorize(Roles = "Administrator")]
         public IActionResult DelModerator(string username, int forumid)
         {
             var member = _memberService.GetByUsername(username);
@@ -1071,6 +1079,7 @@ namespace MVCForum.Controllers
             return Json(new { redirectToUrl = Url.Action("Edit", "Forum",new{id = forumid}) });
 
         }
+        [Authorize(Roles = "Administrator")]
         public IActionResult AddAllowed(IFormCollection form)
         {
             try
@@ -1100,22 +1109,19 @@ namespace MVCForum.Controllers
             {
                 return Json(new{error=e.Message});
             }
-
-
-            
+ 
         }
 
         private ForumListingModel BuildForumListing(Post post)
         {
-            var forum = post.Forum!;
-
-            return BuildForumListing(forum);
+            return BuildForumListing(post.Forum!);
         }
 
         //[OutputCache(Duration = 30,VaryByQueryKeys = new []{"forumid"})]
         private ForumListingModel BuildForumListing(Forum forum, int? defaultdays = null, string orderby = "lpd", string sortdir = "des")
         {
-            return new ForumListingModel()
+            var result = CacheProvider.GetOrCreate($"ForumListing{forum.Id}",()=> 
+            new ForumListingModel()
             {
                 Id = forum.Id,
                 Title = forum.Title,
@@ -1138,7 +1144,13 @@ namespace MVCForum.Controllers
                 //ImageUrl = forum.ImageUrl
                 PostAuth = forum.Postauth != null ? (PostAuthType)forum.Postauth : PostAuthType.Anyone,
                 ReplyAuth = forum.Replyauth != null ? (PostAuthType)forum.Replyauth : PostAuthType.Anyone,
-            };
+            },TimeSpan.FromMinutes(5));
+
+            result.OrderBy = orderby;
+            result.SortDir = sortdir;
+            result.DefaultView = (defaultdays == null) ? (DefaultDays)forum.Defaultdays : (DefaultDays)defaultdays.Value;
+            return result;
+
         }
         private ForumListingModel BuildForumListing(int? defaultdays, string orderby, string sortdir)
         {
@@ -1149,29 +1161,7 @@ namespace MVCForum.Controllers
                 DefaultView = (defaultdays == null || defaultdays<0) ? DefaultDays.Last30Days : (DefaultDays)defaultdays.Value,
             };
         }
-        private ForumListingModel GetForumListingForPost(Post post)
-        {
-            Forum forum = post.Forum!;
 
-            return new ForumListingModel
-            {
-                Id = forum.Id,
-                Title = forum.Title,
-                AccessType = forum.Privateforums,
-                ForumType = (ForumType)forum.Type,
-                Url = forum.Url,
-                DefaultView = (DefaultDays)forum.Defaultdays,
-                CategoryId = forum.CategoryId,
-                Status = forum.Status,
-                ForumModeration = forum.Moderation,
-                Polls = forum.Polls ?? 0,
-                ArchivedCount = forum.ArchivedTopics,
-                AllowTopicRating = forum.Rating == 1,
-                //ImageUrl = forum.ImageUrl
-                PostAuth = (PostAuthType)forum.Postauth,
-                ReplyAuth = (PostAuthType)forum.Replyauth,
-            };
-        }
         private bool CheckAuthorisation(ForumAuthType auth,bool signedin, bool ismoderator, bool isadministrator, ref bool passwordrequired)
         {
             bool notallowed = false;
@@ -1232,9 +1222,7 @@ namespace MVCForum.Controllers
 
         private ForumListingModel BuildForumListing(ArchivedPost p)
         {
-            var forum = p.Forum!;
-
-            return BuildForumListing(forum);
+            return BuildForumListing(p.Forum!);
         }
     }
 }

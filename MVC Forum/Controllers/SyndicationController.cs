@@ -26,7 +26,7 @@ namespace MVCForum.Controllers
             _syndicationXmlService = syndicationXmlService;
         }
 
-        [Route("forum/feed.rss")]
+    [Route("forum/feed.rss")]
     [ResponseCache(Duration = 900)]
     public FileContentResult Rss()
     {

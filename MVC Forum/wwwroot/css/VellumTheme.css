@@ -185,9 +185,10 @@ a:active,a:hover {
 .subforum-icon {
     color: goldenrod;
 }
-.subforum-icon .fa-ban,.note .fa-ban {
-    color: red;
-}
+    .subforum-icon .fa-ban, .note .fa-ban,
+    .subforum-icon .fa-road-barrier, .note .fa-road-barrier {
+        color: red;
+    }
 .subforum-icon .fa-link, .note .fa-link {
     color: silver;
 }
@@ -195,7 +196,8 @@ a:active,a:hover {
 .table-row .status .fa, .note .fa {
     color: goldenrod;
 }
-.fa-fire, .subforum-icon .fa-fire, .table-row .status .fa-fire,.note .fa-fire {
+.fa-fire, .subforum-icon .fa-fire, .table-row .status .fa-fire, .note .fa-fire,
+.fa-rocket, .subforum-icon .fa-rocket, .table-row .status .fa-rocket, .note .fa-rocket {
     color: orangered;
 }
 /* For the smartphones */
@@ -582,7 +584,8 @@ blockquote.newquote {
     position: relative;
     border: 2px dotted rgba(var(--bs-success-rgb));
 }
-.table-row .status .fa-folder, .note .fa-folder, .answered-overlay .status .fa-lock {
+.answered-overlay .status .fa-folder, .note .fa-folder.answered, .answered-overlay .status .fa-lock,
+.answered-overlay .status .fa-folder-open{
     color: rgba(var(--bs-success-rgb)) !important;
 }
 

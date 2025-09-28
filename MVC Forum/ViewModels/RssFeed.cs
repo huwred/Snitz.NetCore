@@ -20,7 +20,6 @@ namespace SnitzCore.Data.Models
         private readonly string SDescription;
         private readonly string AppUrl; 
         private readonly SnitzDbContext _dbContext;
-        private readonly ISnitzConfig _config;
         private readonly ICodeProcessor BbCodeProcessor;
         private readonly IMember _memberService;
 
@@ -32,7 +31,6 @@ namespace SnitzCore.Data.Models
             SDescription = config.ForumDescription;
             AppUrl = config.ForumUrl; 
             _dbContext = dbContext;
-            _config = config;
             BbCodeProcessor = bbcodeProcessor;
             _memberService = member;
         }

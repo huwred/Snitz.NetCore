@@ -147,8 +147,10 @@
                 @foreach (MemberListingModel member in Model.MemberList!)
                 {
                     var showlink = member.Member.Name != "n/a" && member.Member.Name != "zapped";
-                    <tr>
-                        <td class="user-icon">
+                        var migrated = member.Migrated ? "" : "text-warning";
+
+                        <tr>
+                        <td class="user-icon @migrated">
                             @if (member.LastLogin != null && member.LastLogin > DateTime.UtcNow.AddMinutes(-15) && !member.Member.Roles.Contains("HiddenMembers"))
                             {
                                 <div class="center text-success"><snitz-status-icon status="@member.Member.Status" title="@member.Title"></snitz-status-icon></div>
@@ -183,10 +185,10 @@
                 <tr>
                     <td colspan="@colspan" class="text-center d-none d-md-table-cell">
                         <ul class="list-inline list-unstyled h4 initial">
-                            <li class="list-inline-item"><a href="?initial=&@queryparams&orderby=@Model.SortCol">@Localizer["Search_All"]</a></li>
+                            <li class="list-inline-item"><a href="?initial=&@queryparams&orderby=@Model.SortCol" title="@Localizer["Search_Clear"]" data-toggle="tooltip">@Localizer["Search_All"]</a></li>
                             @foreach (var letter in initials)
                             {
-                                <li class="list-inline-item"><a href="?initial=@letter&@queryparams&orderby=@Model.SortCol">@letter</a></li>
+                                <li class="list-inline-item"><a href="?initial=@letter&@queryparams&orderby=@Model.SortCol" title="@Localizer["Search_Initial"]" data-toggle="tooltip">@letter</a></li>
                             }
                         </ul>
                     </td>

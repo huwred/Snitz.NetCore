@@ -62,7 +62,7 @@
 <body>
     <partial name="_BusyPartial" />
     <div class="d-flex flex-column" style="min-height: 100vh;">
-        <partial name="MainNav"/>
+        <partial name="MainNav"/>       
         <div class="container flex-grow-1">
             <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
             <main role="main" class="pb-3 mt-6">
@@ -76,7 +76,9 @@
                 @RenderBody()
             </main>
         </div>
-        <partial name="Footer"/>
+        <cache expires-after="@TimeSpan.FromDays(7)">
+            <partial name="Footer"/>
+        </cache>
     </div>
     <div id="user-card" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -90,7 +92,6 @@
         </div>
     </div>
     <environment include="Development">
-
         <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
         <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js"></script>
         <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
@@ -98,9 +99,7 @@
         <partial name="ValidationScriptsPartial" />
         <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
     </environment>
-
     <environment exclude="Development">
-
         <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
         <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js"></script>
         <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
@@ -108,34 +107,28 @@
         <partial name="ValidationScriptsPartial" />
         <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
-
-
 @if (!clang.Contains("en"))
 {
         var src = $"timeago.{clang}.js";
         <script type="text/javascript" src="~/js/timeago/@src"></script>
 }
-
 @await RenderSectionAsync("Scripts", required: false)
 <renderstoredcontent asp-key="cookie-consent"></renderstoredcontent>
 <renderstoredcontent asp-key="password-toggle"></renderstoredcontent>
-
 <script type="text/javascript">
-
-/* Show the user card popup when clicking on a profile link */
-$(document).on("click", ".profile-popup", function (e) {
-    e.preventDefault();
-    var rect = e.target.getBoundingClientRect(); 
-    $("#user-card .modal-dialog").css('position', 'absolute');
-    $("#user-card .modal-dialog").css('top', rect.top - 100 + "px");
-    $("#user-card .modal-dialog").css('left', rect.left);
-    $('#user-card').modal('show');
-    $('#user-card-content').html('');
-    $('#user-card-content').load(SnitzVars.baseUrl + "/Account/DetailPopup/" + $(this).data("id") + "/?lang=@clang", function (response, status, xhr) {
-        $("time.timeago").timeago();
+    /* Show the user card popup when clicking on a profile link */
+    $(document).on("click", ".profile-popup", function (e) {
+        e.preventDefault();
+        var rect = e.target.getBoundingClientRect(); 
+        $("#user-card .modal-dialog").css('position', 'absolute');
+        $("#user-card .modal-dialog").css('top', rect.top - 100 + "px");
+        $("#user-card .modal-dialog").css('left', rect.left);
+        $('#user-card').modal('show');
+        $('#user-card-content').html('');
+        $('#user-card-content').load(SnitzVars.baseUrl + "/Account/DetailPopup/" + $(this).data("id") + "/?lang=@clang", function (response, status, xhr) {
+            $("time.timeago").timeago();
+        });
     });
-});
-
-    </script>
+</script>
 </body>
 </html>

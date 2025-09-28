@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using MVCForum.Extensions;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
@@ -18,6 +19,7 @@ namespace MVCForum.Controllers
             feeds = new RssFeed(config,dbContext,bbcodeProcessor,memberService);
         }
 
+        [ResponseCache(Duration = 480, Location = ResponseCacheLocation.Any)]
         public IActionResult Active()
         {
             var feed = feeds.ActiveFeed(ControllerContext.HttpContext.Request);
@@ -28,6 +30,7 @@ namespace MVCForum.Controllers
             return new RssActionResult { Feed = feed };
         }
 
+        [ResponseCache(Duration = 480, Location = ResponseCacheLocation.Any)]
         public IActionResult Topic(int id)
         {
             var feed = feeds.TopicFeed(id, ControllerContext.HttpContext.Request);
@@ -38,6 +41,7 @@ namespace MVCForum.Controllers
             return new RssActionResult { Feed = feed };
         }
 
+        [ResponseCache(Duration = 480, Location = ResponseCacheLocation.Any)]
         public IActionResult Forum(ICollection<int> id)
         {
             var feed = feeds.ForumFeed(id.ToList(), ControllerContext.HttpContext.Request);

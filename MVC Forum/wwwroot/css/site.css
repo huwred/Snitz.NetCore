@@ -468,17 +468,15 @@ img.flag {
 
 }
 
-
-@-webkit-keyframes spin {
+@keyframes fadeIn {
     0% {
-        -webkit-transform: rotate(0deg);
+        opacity: 0;
     }
 
     100% {
-        -webkit-transform: rotate(360deg);
+        opacity: 1;
     }
 }
-
 @keyframes spin {
     0% {
         transform: rotate(0deg);

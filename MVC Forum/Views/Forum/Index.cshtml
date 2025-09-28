@@ -142,7 +142,7 @@
                         {
                             if (Model.Forum.PostAuth == PostAuthType.Anyone || (Model.Forum.PostAuth == PostAuthType.Moderators && User.IsInRole("Forum_" + Model.Forum.Id)) || User.IsInRole("Administrator"))
                             {
-                                <button snitz-if="@Model.Forum?.Status == 1" asp-controller="Topic" asp-action="Create" asp-route-id="@Model.Forum?.Id" class="btn btn-outline-primary"><i class="fa fa-commenting-o"></i><span class="d-none d-lg-inline"> @Localizer["btnNewTopic"]</span></button>
+                                <button snitz-if="@Model.Forum?.Status == 1" data-toggle="tooltip" title="@Localizer["tipNewTopic"].Value" asp-controller="Topic" asp-action="Create" asp-route-id="@Model.Forum?.Id" class="btn btn-outline-primary"><i class="fa fa-comment"></i><span class="d-none d-lg-inline"> @Localizer["btnNewTopic"]</span></button>
                             }
                             if (SnitzConfig.GetIntValue("INTPOLLS") == 1 && Model.Forum.Polls != (int)PollAuth.Disallow)
                             {
@@ -172,8 +172,8 @@
                         }
                         @if (User.IsInRole("Administrator"))
                         {
-                            <button asp-controller="Forum" asp-action="Edit" asp-route-id="@Model.Forum!.Id" aria-label="Edit Forum" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-lg-inline"> @Localizer["tipEditForum"]</span></button>
-                            <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Forum!.Id" href="@SnitzConfig.RootFolder/Forum/Delete/" title="@Localizer["cnfDeleteForum"].Value"></button-confirm>
+                            <button asp-controller="Forum" asp-action="Edit" asp-route-id="@Model.Forum!.Id" data-toggle="tooltip" title="Edit Forum properties" aria-label="Edit Forum" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-lg-inline"> @Localizer["tipEditForum"]</span></button>
+                            <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@Model.Forum!.Id" href="@SnitzConfig.RootFolder/Forum/Delete/" data-toggle="tooltip" title="@Localizer["cnfDeleteForum"].Value"></button-confirm>
                         }
                     </div>
                 </form>
@@ -200,7 +200,7 @@
                         <div class="subjects rounded-2">@Localizer["lblSubject"]</div>
                         <div class="replies rounded-2"></div>
                         <div class="last-reply rounded-2">@Localizer["lblLastPost"]</div>
-                        <div class="subscribe rounded-1 d-none d-md-inline-block"><i class="fa fa-object-group" title="@Localizer["tipMergeTopic"]" style="display: none;" data-toggle="tooltip"></i></div>
+                        <div class="subscribe rounded-1 d-none d-md-inline-block"><i class="fa-regular fa-object-group" title="@Localizer["tipMergeTopic"]" style="display: none;" data-toggle="tooltip"></i></div>
                     </div>
                     @{
                         ViewData["ActiveTopics"] = false;
@@ -238,6 +238,8 @@
                     }
                 <!--ends here-->
                 </div>
+@*             <cache expires-after="@TimeSpan.FromMinutes(5)" vary-by-query="id,defaultdays,OrderBy,sortdir,pagesize,page">
+            </cache> *@
                 <!--Pagination starts-->
                 <partial snitz-if="@(Model.PageCount > 1)" 
                          name="ListPaging" 
@@ -252,10 +254,15 @@
                                     Archived = Model.Archives
                                 })" />
                 <!--pagination ends-->
-                @await Component.InvokeAsync("Members", new { template = "CategoryForumJumpTo"})
-                <partial name="IconInfo" />
+                <cache expires-after="@TimeSpan.FromHours(1)" vary-by-user="true">
+                    @await Component.InvokeAsync("Members", new { template = "CategoryForumJumpTo"})
+                </cache>
+                <cache expires-after="@TimeSpan.FromHours(12)">
+                    <partial name="IconInfo" />
+                </cache>
             </div>
         </div>
+        
     </div>
 }
 

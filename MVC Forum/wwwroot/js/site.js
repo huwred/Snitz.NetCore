@@ -26,10 +26,10 @@ if ($.cookie("HideAnnounce")) {
         $("#alert-announce").hide();
     }
 }
-$('body').on("click", "dismiss-announce", function () {
+$('body').on("click", "#dismiss-announce", function () {
     var date = new Date();
     date.setTime(date.getTime() + (10 * 60 * 1000));
-    $.cookie('HideAnnounce', $("#announce-title").html(), {
+    $.cookie('HideAnnounce', $("#announce-title", { path: snitzVars.cookiePath }).html(), {
         expires: date
     });
 });
@@ -49,25 +49,14 @@ const appendAlert = (message, type) => {
     alertPlaceholder.append(wrapper);
 }
 
-$('body').on("click",".insert-emote", function () {
-    var $txt = $("#msg-text");
-    var caretPos = $txt[0].selectionStart;
-    var textAreaTxt = $txt.val();
-    var txtToAdd = $(this).data("code").trim();
-    $txt.val(textAreaTxt.substring(0, caretPos) + txtToAdd + textAreaTxt.substring(caretPos) );
-});
-
-$('body').on("click",".btn-postform", function () {
-    bbcodeinsert($(this).data("first"), $(this).data("last"), "msg-text");
-});
-
 $('body').on("click", ".cat-change",
     function() {
         location.href = SnitzVars.baseUrl + "/Forum";
 });
 
 $('body').on("change", "#theme-change",
-    function() {
+    function () {
+        console.log("theme-change body");
         //Account/SetTheme/?theme=
         $.get( SnitzVars.baseUrl + "/Account/SetTheme/?theme=" + $(this).val(), function( data ) {
             location.reload(true);
@@ -133,14 +122,13 @@ $('body').on('mouseup','.reply-select', function () {
         cache: false
     });
 });
-$('body').on('change','.reply-select', function () {
+$('body').on('change', '.reply-select', function () {
     var checkedNum = $('input[name="replyselected"]').filter(":checked").length;
     if (checkedNum <1) {
         $('.fa-object-ungroup').hide();
     } else if (checkedNum>0){
         $('.fa-object-ungroup').show();
     }
-
 });
 /* Restart confirmation */
 $('body').on('click', '.confirm-restart', function (e) {
@@ -212,14 +200,15 @@ $('body').on('click', 'a', function (event) {
 
 // Handle page reloads and back/forward navigation
 $(document).ajaxComplete(function (event, xhr, settings) {
-    console.log('ajax complete');
-    $('.loading').hide();
+    hideBusyIndicator();
 });
 /* * Display a busy indicator when the page is loading */
 function displayBusyIndicator() {
     $('.loading').show();
 }
-
+function hideBusyIndicator() {
+    $('.loading').hide();
+}
 window.addEventListener("pageshow", function (event) {
     var historyTraversal = event.persisted ||
         (typeof window.performance != "undefined" &&
@@ -289,16 +278,16 @@ function ValidateForms() {
  * @param {string} endtag - The closing BBCode tag
  * @param {string} textareaid - The ID of the textarea to modify
  */
-function bbcodeinsert(starttag, endtag, textareaid) {
-    var $txt = $("#" + textareaid);
+//function bbcodeinsert(starttag, endtag, textareaid) {
+//    var $txt = $("#" + textareaid);
 
-    var textAreaTxt = $txt.val();
-    var startPos = $txt[0].selectionStart;
-    var endPos = $txt[0].selectionEnd;
-    var sel = $txt.val().substring(startPos, endPos);
+//    var textAreaTxt = $txt.val();
+//    var startPos = $txt[0].selectionStart;
+//    var endPos = $txt[0].selectionEnd;
+//    var sel = $txt.val().substring(startPos, endPos);
 
-    $txt.val(textAreaTxt.replaceAt(startPos, starttag + sel + endtag) + textAreaTxt.substring(endPos));
-}
+//    $txt.val(textAreaTxt.replaceAt(startPos, starttag + sel + endtag) + textAreaTxt.substring(endPos));
+//}
 
 async function b_confirm(msg) {
     const modalElem = document.createElement('div')

@@ -19,13 +19,14 @@ $(document).on("change", '#countryRegion', function () {
 });
 
 $('#change-holidays')
-    .change(function () {
+    .on("change",function () {
         var val = $(this).val();
         populateRegions(val);
         var url = SnitzVars.baseUrl + "/Calendar/GetHolidays/"
         FullCalendar(url, 'calendar', '', val);
 
     });
+
 UpComingCalendar = function(url, divid) {
     var d = new Date();
     var day = d.getDate();

@@ -1,11 +1,11 @@
 ﻿@using SnitzCore.Service.Extensions
 @model List<Category>
 @{
-    var groupedCats = Model.GroupBy(c => (c.Id, c.Name)).Select(g => new
+    var groupedCats = Model.OrderBy(c => c.Sort).GroupBy(c => (c.Id, c.Name)).Select(g => new
     {
         Id = g.Key.Id,
         Name = g.Key.Name,
-        Forums = g.OrderBy(x => x.Name)
+        Forums = g.OrderBy(x => x.Sort)
     });
 }
 <div class="dropdown-container dropdown-container-right dropdown-up dropdown-left dropdown-button-control clearfix" id="jumpbox">
@@ -21,23 +21,22 @@
                 if (hasMatch)
                 {
                     <li>
-                        <a href="~/Category/Index/@cat.Id" class="category">@cat.Name</a>
+                        <a snitz-if="@(cat.Forums.Any())" href="~/Category/Index/@cat.Id" class="category">@cat.Name</a>
                         <ul>
-
-                    @foreach (var c in cat.Forums)
-                    {
-                        @foreach (var f in c.Forums)
-                        {
-                            switch ((ForumType)f.Type)
+                            @foreach (var c in cat.Forums)
                             {
-                                case ForumType.WebLink:
-                                    break;
-                                default:
-                                    @Html.ShowHideForums(User, f, null, Localizer,"li")
-                                    break;
+                                @foreach (var f in c.Forums)
+                                {
+                                    switch ((ForumType)f.Type)
+                                    {
+                                        case ForumType.WebLink:
+                                            break;
+                                        default:
+                                            @Html.ShowHideForums(User, f, null, Localizer,"li")
+                                            break;
+                                    }
+                                }
                             }
-                        }
-                    }
                         </ul>
                     </li>
                 }

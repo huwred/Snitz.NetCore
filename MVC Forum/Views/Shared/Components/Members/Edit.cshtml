@@ -12,6 +12,32 @@
     var memberproperties = Model.Member!.GetType().GetProperties().Where(p => !p.SystemProperty());
     var systemproperties = Model.Member!.GetType().GetProperties().Where(p => p.SystemProperty());
 }
+@if (User.IsInRole("Administrator")){
+        <form asp-asction="ResetOld" class="needs-validation" novalidate style="display:none;">
+    <div class="row">
+            <fieldset class="col-6">
+                <legend>Reset Old account details for @Model.Member?.Name</legend>
+                <input name="Id" class="form-control" type="hidden" />
+                <input name="Username" class="form-control" value="@Model.Member?.Name" type="hidden" />
+                <div class="mb-3">
+                    <label for="Newemail" class="form-label">@Localizer["Email"]</label>
+                    <input name="Newemail" type="email" class="form-control" value="@Model.Member?.Email" />
+                </div>
+                <div class="mb-3">
+                    <label for="Newpassword" class="form-label">@Localizer["NewPassword"]</label>
+                    <input name="Newpassword" type="password" class="form-control" value="" />
+                </div>
+            </fieldset>
+            <fieldset class="col-5">
+                <legend>&nbsp;</legend>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-success">Reset Old account</button>
+                </div>
+            </fieldset>
+        </div>
+    </form>
+}
+
 <form asp-action="Update" method="post" class="needs-validation" novalidate>
     <div class="row">
         <div class="col-6 col-md-2 avatar-container">
@@ -87,6 +113,8 @@
         </div>
     </div>
     <input name="PhotoUrl" type="hidden" value="@Model.Member?.PhotoUrl" />
+
+
     <div snitz-if="@((Model.Member?.Privateprofile != 1 || canedit) && User.Identity!.IsAuthenticated)">
         <div class="row  bg-form p-2 rounded mb-2">
             <legend>@Localizer["Profile"]</legend>

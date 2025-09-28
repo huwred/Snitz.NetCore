@@ -60,7 +60,9 @@ tinymce.init({
     .mce-content-body img {max-width: 99% !important;height: auto;} `,
     codesample_languages: [
         { text: 'C#', value: 'csharp' },
+        { text: 'C-like', value: 'clike' },
         { text: 'Bash', value: 'bash' },
+        { text: 'JSON', value: 'json' },
         { text: 'Python', value: 'python' },
         { text: 'CSS', value: 'css' },
         { text: 'HTML/XML', value: 'markup' },

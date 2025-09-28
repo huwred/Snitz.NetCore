@@ -575,7 +575,7 @@ blockquote.newquote {
     position: relative;
     border: 2px dotted rgba(var(--bs-success-rgb));
 }
-.table-row .status .fa-folder, .note .fa-folder, .answered-overlay .status .fa-lock {
+ .answered-overlay .status .fa-lock {
     color: rgba(var(--bs-success-rgb)) !important;
 }
 

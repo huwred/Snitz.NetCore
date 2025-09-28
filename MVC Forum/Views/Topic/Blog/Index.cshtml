@@ -159,44 +159,8 @@
 
         $(document).ready(function(){
             $(".post-control-btn").addClass("pull-right");
-            $('#rating-id').on("rating:change", function(event, value, caption) {
-                var form = $('#save-rating');
-                $.ajax({
-                    url: SnitzVars.baseUrl + '/Topic/SaveRating',
-                    type: "POST",
-                    data: form.serialize(),
-                    success: function (data) {
-                        $('#rating-id').rating("refresh", {disabled:true, showClear:false});
-                    },
-                    error: function (err) {
-                        console.log(err);
-                    }
-                });
-            });
-        });
-        function TopicRated(){
-            $('.topic_rating').hide();
-            $('#input-id-@Model.Id').rating("refresh", {disabled:true, showClear:false});
-        }
-        $(document).ajaxComplete(function(event, xhr, settings) {
-            $('.loading').hide();
-        });
-        document.querySelectorAll('.star-rating:not(.readonly) label').forEach(star => {
-            star.addEventListener('click', function() {
-                this.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 200);
-            });
-        });
-        $(window).on("load",
-            function (e) {
 
-                $('.split-topic').on('click', function (e) {
-                    e.preventDefault();
-                    location.href = SnitzVars.baseUrl + "/Topic/SplitTopic/?id=" + $(this).data("topic") + "&replyid=" + $(this).data("id");
-                });
-            });
+        });
 
     </script>
     <renderstoredcontent asp-key="password-dialog"></renderstoredcontent>

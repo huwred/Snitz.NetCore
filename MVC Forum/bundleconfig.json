@@ -246,5 +246,23 @@
     "inputFiles": [
       "wwwroot/css/Themes/VellumTheme/tag_cloud.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/codemirror/lib/codemirror.min.css",
+    "inputFiles": [
+      "wwwroot/codemirror/lib/codemirror.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/codemirror/lib/codemirror.min.js",
+    "inputFiles": [
+      "wwwroot/codemirror/lib/codemirror.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/codemirror/mode/clike/clike.min.js",
+    "inputFiles": [
+      "wwwroot/codemirror/mode/clike/clike.js"
+    ]
   }
 ]

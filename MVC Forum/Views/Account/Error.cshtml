@@ -1,2 +1,5 @@
-﻿<h1 class="text-danger">@Localizer["lblError"]</h1>
+﻿@using System.Net
+
+<h1 class= "text-danger" > @Localizer["lblError"] </h1>
 <h2 class="text-danger">@Localizer["ErrHeading"]</h2>
+<p> @Html.Raw(WebUtility.HtmlDecode(ViewBag.Error))</p>

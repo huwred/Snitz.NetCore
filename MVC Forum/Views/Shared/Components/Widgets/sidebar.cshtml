@@ -16,8 +16,11 @@
     }
     @if (SnitzConfig.IsEnabled("INTFEATUREDPHOTO") && Model.Options!.Contains("image"))
     {
-        @await Component.InvokeAsync("ImageAlbum", new { template = "Featured" })
+        <div id="featured-img-card">
+        @await Component.InvokeAsync("ImageAlbum", new { template = "Featured", info = false })
+        </div>
     }
+
     @if (SnitzConfig.IsEnabled("INTCALEVENTS") && SnitzConfig.IsEnabled("INTCALUPCOMINGEVENTS")
         && Model.Options!.Contains("events"))
     {
@@ -41,3 +44,17 @@
     }
 </div>
 
+<script>
+    function refreshViewComponent() {
+        if(document.getElementById('featured-img-card')){
+            fetch(SnitzVars.baseUrl + '/Home/RefreshFeature') // Replace with your ViewComponent's route
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('featured-img-card').innerHTML = html;
+                })
+                .catch(error => console.error('Error refreshing ViewComponent:', error));
+        }
+    }
+    // Refresh every 30 seconds (30000 ms)
+    setInterval(refreshViewComponent, 30000);
+</script>

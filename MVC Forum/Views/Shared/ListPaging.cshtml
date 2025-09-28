@@ -84,13 +84,13 @@
         @if (page == 1)
         {
             <li class="page-item disabled">
-                <a class="page-link" title="@Localizer["tipFirstPage"]" href="#" aria-label="First" tabindex="-1">
+                <a class="page-link" title="@Localizer["tipFirstPage"]" href="#" aria-label="First" tabindex="-1" data-toggle="tooltip">
                     <span aria-hidden="true">&laquo;</span>
                     <span class="sr-only">@Localizer["tipFirstPage"]</span>
                 </a>
             </li>
             <li class="page-item disabled">
-                <a class="page-link" title="@Localizer["tipPreviousPage"]" href="#" aria-label="Previous" tabindex="-1">
+                <a class="page-link" title="@Localizer["tipPreviousPage"]" href="#" aria-label="Previous" tabindex="-1" data-toggle="tooltip">
                     <span aria-hidden="true">&lsaquo;</span>
                     <span class="sr-only">@Localizer["tipPreviousPage"]</span>
                 </a>
@@ -99,13 +99,13 @@
         else
         {
             <li class="page-item">
-                <a class="page-link" title="@Localizer["tipFirstPage"]" href="?page=1@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)@(initial)" aria-label="First" tabindex="-1">
+                <a class="page-link" title="@Localizer["tipFirstPage"]" href="?page=1@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)@(initial)" aria-label="First" tabindex="-1" data-toggle="tooltip">
                     <span aria-hidden="true">&laquo;</span>
                     <span class="sr-only">@Localizer["tipFirstPage"]</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" title="@Localizer["tipPreviousPage"]" href="?page=@(page - 1)@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)@(initial)" aria-label="Previous">
+                <a class="page-link" title="@Localizer["tipPreviousPage"]" href="?page=@(page - 1)@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)@(initial)" aria-label="Previous" data-toggle="tooltip">
                     <span aria-hidden="true">&lsaquo;</span>
                     <span class="sr-only">@Localizer["tipPreviousPage"]</span>
                 </a>
@@ -115,41 +115,41 @@
         {
             if (i == page)
             {
-                <li class="page-item active"><a class="page-link" title="@Localizer["tipGotoPage", i]" href="?page=@i@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)@(initial)">@i<span class="sr-only">(current)</span></a></li>
+                <li class="page-item disabled"><a class="page-link  bg-primary text-bg-primary" title="@Localizer["tipCurrentPage", i]" href="#" data-toggle="tooltip">@i<span class="sr-only">(current)</span></a></li>
             }
             else
             {
-                <li class="page-item"><a class="page-link" title="@Localizer["tipGotoPage", i]" href="?page=@i@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)@(initial)">@i</a></li>
+                <li class="page-item"><a class="page-link" title="@Localizer["tipGotoPage", i]" href="?page=@i@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)@(initial)" data-toggle="tooltip">@i</a></li>
             }
             
         }
         @if (page == pagecount)
         {
             <li class="page-item disabled">
-                <a class="page-link" title="@Localizer["tipNextPage"]" href="#" aria-label="Next" tabindex="-1">
-                    <span aria-hidden="true">&rsaquo;</span>
+                <a class="page-link" title="@Localizer["tipNextPage"]" href="#" aria-label="Next" tabindex="-1" data-toggle="tooltip">
                     <span class="sr-only">@Localizer["tipNextPage"]</span>
+                    <span aria-hidden="true">&rsaquo;</span>
                 </a>
             </li>
             <li class="page-item disabled">
-                <a class="page-link" title="@Localizer["tipLastPage"]" href="#" aria-label="Last" tabindex="-1">
-                    <span aria-hidden="true">&raquo;</span>
+                <a class="page-link" title="@Localizer["tipLastPage"]" href="#" aria-label="Last" tabindex="-1" data-toggle="tooltip">
                     <span class="sr-only">@Localizer["tipLastPage"]</span>
+                    <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
         }
         else
         {
             <li class="page-item">
-                <a class="page-link" title="@Localizer["tipNextPage"]" href="?page=@(page + 1)@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)@(initial)" aria-label="Next">
-                    <span aria-hidden="true">&rsaquo;</span>
+                <a class="page-link" title="@Localizer["tipNextPage"]" href="?page=@(page + 1)@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)@(initial)" aria-label="Next" data-toggle="tooltip">
                     <span class="sr-only">@Localizer["tipNextPage"]</span>
+                    <span aria-hidden="true">&rsaquo;</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" title="@Localizer["tipLastPage"]" href="?page=@pagecount@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)@(initial)" aria-label="Last">
-                    <span aria-hidden="true">&raquo;</span>
+                <a class="page-link" title="@Localizer["tipLastPage"]" href="?page=@pagecount@(orderby)@(defaultdays)@(sortdir)@(pagesize)@(searchfor)@(username)@(initial)" aria-label="Last" data-toggle="tooltip">
                     <span class="sr-only">@Localizer["tipLastPage"]</span>
+                    <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
         }

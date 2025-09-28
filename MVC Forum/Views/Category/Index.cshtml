@@ -55,9 +55,9 @@
             {
                 <form class="form-inline col-4 col-lg-6">
                     <div class="btn-group mb-2">
-                        <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" aria-label=" @Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
-                        <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" aria-label="@Localizer["tipEditCategory"]" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> @Localizer["tipEditCategory"]</span></button>
-                        <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@cat" href="~/Category/Delete/" aria-label="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
+                        <button asp-controller="Forum" type="submit" asp-action="Create" asp-route-id="@cat" data-toggle="tooltip" title="@Localizer["tipNewForum"]" aria-label="@Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-md-inline"> @Localizer["tipNewForum"]</span></button>
+                        <button asp-controller="Category" type="submit" asp-action="Edit" asp-route-id="@cat" data-toggle="tooltip" title="@Localizer["tipEditCategory"]" aria-label="@Localizer["tipEditCategory"]" class="btn btn-outline-warning"><i class="fa fa-pencil"></i><span class="d-none d-md-inline"> @Localizer["tipEditCategory"]</span></button>
+                        <button-confirm selector="confirm-delete" config-class="fa fa-trash" config-key="@cat" href="@SnitzConfig.RootFolder/Category/Delete/" data-toggle="tooltip" title="@Localizer["cnfDeleteCategory"].Value" aria-label="@Localizer["cnfDeleteCategory"].Value"></button-confirm>
                     </div>
                 </form>
             }
