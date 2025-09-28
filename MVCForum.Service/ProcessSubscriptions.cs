@@ -15,8 +15,7 @@ namespace SnitzCore.Service
         private readonly ISnitzConfig _config;
         private readonly IEmailSender _emailsender;
 
-        public ProcessSubscriptions( SnitzDbContext dbContext, 
-            ISnitzConfig config,IEmailSender emailsender)
+        public ProcessSubscriptions( SnitzDbContext dbContext, ISnitzConfig config,IEmailSender emailsender)
         {
             _dbContext = dbContext;
             _config = config;

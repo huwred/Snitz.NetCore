@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data.Extensions;
+using SnitzCore.Service.Extensions;
 
 namespace SnitzCore.Service
 {
@@ -75,9 +76,12 @@ namespace SnitzCore.Service
             return _dbContext.SnitzConfig.AsNoTracking().AsQueryable();
         }
 
-        public IEnumerable<KeyValuePair<int, string>> GetForumModerators()
+        public IEnumerable<KeyValuePair<int, string>> GetModerators()
         {
-            return _dbContext.Members.AsNoTracking().Where(m=>m.Level>1).ToDictionary(o => o.Id, o => o.Name).ToList();
+            return CacheProvider.GetOrCreate("moderators", () =>
+            {
+                return _dbContext.Members.AsNoTracking().Where(m=>m.Level==2).ToDictionary(o => o.Id, o => o.Name).ToList();
+            }, System.TimeSpan.FromHours(1));
         }
 
         public int ActiveSince(string lastvisit)

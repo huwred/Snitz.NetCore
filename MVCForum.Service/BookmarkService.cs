@@ -24,8 +24,6 @@ namespace SnitzCore.Service
             {
                 MemberId = memberService.GetByUsername(userId)!.Id;
             }
-            
-
         }
         public BookmarkEntry? Get(int id)
         {

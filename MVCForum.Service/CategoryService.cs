@@ -127,6 +127,7 @@ namespace SnitzCore.Service
              join c in _dbContext.Posts on b.LatestTopicId equals c.Id 
              join d in _dbContext.Members on c.MemberId equals d.Id into joinedData
              from d in joinedData.DefaultIfEmpty()
+             orderby a.Sort,b.Order
              select new Category()
              {
                 Id = a.Id,

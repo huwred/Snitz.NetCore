@@ -34,6 +34,8 @@ namespace SnitzCore.Service.TagHelpers
         [HtmlAttributeName("sticky")]
         public bool Sticky { get; set; }
 
+        public bool? Blog { get; set; }
+
         [HtmlAttributeName("replies")]
         public int Replies { get; set; }
 
@@ -134,13 +136,20 @@ namespace SnitzCore.Service.TagHelpers
                 case "0" :
                     output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
                     mainTag.AddClass("fa", HtmlEncoder.Default);
-                    mainTag.AddClass("fa-lock", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-folder-closed", HtmlEncoder.Default);
                     mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
                     output.Attributes.Add("data-toggle","tooltip");
                     break;
 
                 default:
-                    if(PluginIcon != null)
+                    if(Blog != null && Blog == true)
+                    {
+                        output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}_blog"));
+                        mainTag.AddClass("fa", HtmlEncoder.Default);
+                        mainTag.AddClass("fa-blog", HtmlEncoder.Default);
+                        mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+                    }
+                    else if (PluginIcon != null)
                     {
                         output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
                         mainTag.AddClass("fa", HtmlEncoder.Default);
@@ -164,7 +173,7 @@ namespace SnitzCore.Service.TagHelpers
                     else
                     {
                         mainTag.AddClass("fa", HtmlEncoder.Default);
-                        mainTag.AddClass("fa-folder-open", HtmlEncoder.Default);
+                        mainTag.AddClass("fa-folder", HtmlEncoder.Default);
                         mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
                         output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
                     }
@@ -182,7 +191,7 @@ namespace SnitzCore.Service.TagHelpers
                 overlayTag.AddClass("fa-thumb-tack", HtmlEncoder.Default);
                 overlayTag.AddClass("fa-stack-1x", HtmlEncoder.Default);
             }
-            else if (Replies == 0)
+            else if (Replies == 0 && Blog != true)
             {
                 output.Attributes.RemoveAll("title");
                 output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}_noreplies"));

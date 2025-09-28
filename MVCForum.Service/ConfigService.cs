@@ -133,7 +133,6 @@ namespace SnitzCore.Service
             _config = config;
             _httpContextAccessor = httpContextAccessor;
             _env = env;
-            var test = ControllerExtensions.GetLinkerTimestampUtc(Assembly.GetExecutingAssembly());
         }
 
         public void RemoveFromCache(string key)

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -11,12 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using X.PagedList;
 using X.PagedList.Extensions;
-using static Azure.Core.HttpHeader;
-using static Dapper.SqlMapper;
 
 namespace SnitzCore.Service
 {
@@ -24,16 +20,13 @@ namespace SnitzCore.Service
     {
         private readonly SnitzDbContext _dbContext;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly string? _tableprefix;
         private readonly log4net.ILog _logger;
 
-        public ForumService(SnitzDbContext dbContext,RoleManager<IdentityRole> roleManager,IOptions<SnitzForums> config)
+        public ForumService(SnitzDbContext dbContext,RoleManager<IdentityRole> roleManager)
         {
             _dbContext = dbContext;
             _roleManager = roleManager;
-            _tableprefix = config.Value.forumTablePrefix;
             _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
-
         }
 
         public async Task Create(Forum forum)
@@ -203,7 +196,12 @@ namespace SnitzCore.Service
                     .AsSplitQuery()
                     .Single();
             }
-            return f;
+            return _dbContext.Forums.AsNoTracking().Where(f => f.Id == id)
+                    .Include(f=>f.Category)              
+                    .Include(f=>f.ForumModerators)!
+                    .ThenInclude(p => p.Member)
+                    .AsSplitQuery()
+                    .Single();
 
         }
         public IQueryable<Post> GetPosts(int forumid)

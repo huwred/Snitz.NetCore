@@ -43,11 +43,20 @@ namespace SnitzCore.Service
 
         public Task SendEmailAsync(EmailMessage message)
         {
-            var emailMessage = CreateEmailMessage(message);
-            return Send(emailMessage);
+            try
+            {
+                var emailMessage = CreateEmailMessage(message);
+                return Send(emailMessage);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
 
-        public void SendToFreind(dynamic model)
+        public void SendToFriend(dynamic model)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress("email", model.FromEmail));

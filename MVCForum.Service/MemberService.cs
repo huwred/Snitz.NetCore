@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SnitzCore.Data;
@@ -111,7 +110,7 @@ namespace SnitzCore.Service
         }
 
         //[Obsolete("Obsolete")]
-        public bool ValidateMember(Member member, string password)
+        public MigratePassword ValidateMember(Member member, string password)
         {
             OldMembership? result = _dbContext.OldMemberships.OrderBy(m=>m.Id).FirstOrDefault(m => m.Id == member.Id);
             if(result == null)
@@ -122,10 +121,15 @@ namespace SnitzCore.Service
                 var strencoded = SHA256Hash(password);
                 if (oldpass != null && oldpass.Count() > 0)
                 {
-                    return strencoded == oldpass.First();
+                    return strencoded == oldpass.ToList().First() ? MigratePassword.Valid : MigratePassword.InvalidPassword;
                 }
+                return MigratePassword.NoMember;
             }
-            return result != null && CustomPasswordHasher.VerifyHashedPassword(result.Password,password);
+            if(result != null) {
+                return CustomPasswordHasher.VerifyHashedPassword(result.Password,password) ? MigratePassword.Valid : MigratePassword.InvalidPassword;
+            }
+            return MigratePassword.NoMember;
+
         }
 
         public Member? Current()

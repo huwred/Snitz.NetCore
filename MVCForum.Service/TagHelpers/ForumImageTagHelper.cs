@@ -1,5 +1,6 @@
 ﻿using log4net.Layout.Members;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SnitzCore.Data.Extensions;
@@ -14,14 +15,16 @@ namespace SnitzCore.Service.TagHelpers
     public class ForumImageTagHelper : TagHelper
     {
         private readonly ISnitzCookie _cookie;
-        private readonly SnitzCore.Data.IMember _memberService;
+        private readonly Data.IMember _memberService;
         private readonly IActionContextAccessor _actionAccessor;
+        private readonly LanguageService  _languageResource;
 
-        public ForumImageTagHelper(ISnitzCookie snitzCookie,SnitzCore.Data.IMember memberservice,IActionContextAccessor actionAccessor)
+        public ForumImageTagHelper(ISnitzCookie snitzCookie,Data.IMember memberservice,IActionContextAccessor actionAccessor,IHtmlLocalizerFactory localizerFactory)
         {
             _cookie = snitzCookie;
             _memberService = memberservice;
             _actionAccessor = actionAccessor;
+            _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
         }
         [HtmlAttributeName("lastpost")]
         public DateTime? LastPost { get; set; }
@@ -62,7 +65,7 @@ namespace SnitzCore.Service.TagHelpers
             if (Status == 0)
             {
                 output.AddClass("fa-lock", HtmlEncoder.Default);
-                output.Attributes.Add("title", "Locked Forum");
+                output.Attributes.Add("title", _languageResource.GetString("ForumLocked"));
             }
             else if (Type == "1")
             {
@@ -72,22 +75,22 @@ namespace SnitzCore.Service.TagHelpers
                     if (IsAdministrator && Type == ((int)ForumType.WebLink).ToString())
                     {
                         output.AddClass("weblink-edit", HtmlEncoder.Default);
-                        output.Attributes.Add("title", "Weblink");
+                        output.Attributes.Add("title", _languageResource.GetString("tipLink"));
                         output.Attributes.Add("data-id", ForumId);
                     }
                 }
             }
             else if (Type == "3") //Bug
             {
-                output.AddClass("fa-bug", HtmlEncoder.Default);
+                output.AddClass("fa-bugs", HtmlEncoder.Default);
             }
             else if (Type == "4") //Blog
             {
-                output.AddClass("fa-file-text-o", HtmlEncoder.Default);
+                output.AddClass("fa-file-lines", HtmlEncoder.Default);
             }
             else if (Access != "0")
             {
-                output.AddClass("fa-ban", HtmlEncoder.Default);
+                output.AddClass("fa-road-barrier", HtmlEncoder.Default);
             }
             else
             {
@@ -97,7 +100,7 @@ namespace SnitzCore.Service.TagHelpers
             if ((newclass))
             {
                 output.AddClass("newposts", HtmlEncoder.Default);
-                output.Attributes.Add("title", "Contains new posts");
+                output.Attributes.Add("title", _languageResource.GetString("ico_forum_unread"));
             }
             output.AddClass("center", HtmlEncoder.Default);
         }

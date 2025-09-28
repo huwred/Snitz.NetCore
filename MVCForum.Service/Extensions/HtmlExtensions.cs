@@ -108,7 +108,8 @@ namespace SnitzCore.Service.Extensions
                 }
                 else if (forum.Privateforums.In(members))
                 {
-                    canview = true;
+                    if (user.Identity.IsAuthenticated)
+                        canview = true;
                 }
                 if (user.Identity.IsAuthenticated)
                 {

@@ -1,8 +1,5 @@
-﻿using log4net.Layout.Members;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -18,7 +15,6 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using X.PagedList;
 using X.PagedList.Extensions;
-using static Dapper.SqlMapper;
 using IMember = SnitzCore.Data.IMember;
 
 namespace SnitzCore.Service

@@ -7,7 +7,7 @@ using SnitzCore.Service.Extensions;
 namespace SnitzCore.Service.TagHelpers
 {
     /// <summary>
-    /// TagHelper to innsert a link to the last post in a topic]]>
+    /// TagHelper to innsert a link to the last post in a topic
     /// </summary>
     [HtmlTargetElement("lastpost-link", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class LastPostLinkTagHelper : TagHelper

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using SnitzCore.Data.Models;
+﻿using SnitzCore.Data.Models;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,7 +9,6 @@ namespace SnitzCore.Service
         private readonly Dictionary<int, MemberRanking>? _ranking;
         private int _level;
         private int _repeat;
-        public string? Title { get; set; }
         private readonly int? _posts;
         private readonly bool _isAdmin;
         private readonly bool _isModerator;
@@ -18,6 +16,7 @@ namespace SnitzCore.Service
         {
             get { return GetStars(); }
         }
+        public string? Title { get; set; }
 
         public RankInfoHelper(Member? user, ref string? title, int? posts, Dictionary<int, MemberRanking>? rankings)
         {
@@ -126,6 +125,4 @@ namespace SnitzCore.Service
         }
 
     }
-
-
 }
