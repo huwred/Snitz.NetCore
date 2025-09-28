@@ -24,8 +24,10 @@ namespace Snitz.PhotoAlbum.ViewComponents
             _memberService = memberService;
             _environment = hostingEnvironment;
         }
-        public async Task<IViewComponentResult> InvokeAsync(string template, int memberid = 0)
+        public async Task<IViewComponentResult> InvokeAsync(string template, int memberid = 0, bool info = true)
         {
+            
+
             if (template == "Config")
             {
                 return await Task.FromResult((IViewComponentResult)View(template,_config.TableExists("FORUM_IMAGES")));
@@ -42,13 +44,14 @@ namespace Snitz.PhotoAlbum.ViewComponents
             }
             if (template == "Featured")
             {
-                var ids = _dbContext.Set<AlbumImage>().Where(a=> !a.DoNotFeature).Select(a=>a.Id).ToList();
+                ViewBag.ShowInfo = info;
                 Random r = new Random();
-                int index = r.Next(0, ids.Count()); // list.Count for List<T>
+                var idcount = _dbContext.Set<AlbumImage>().AsNoTracking().Where(a=> !a.DoNotFeature && !a.IsPrivate).Select(a=>a.Id).Count();
 
-                int oneRandom = ids[index];
+                int index = r.Next(0, idcount); // list.Count for List<T>
 
-                var photo = _dbContext.Set<AlbumImage>().AsNoTracking().Include(a=>a.Member).SingleOrDefault(a=> a.Id == oneRandom);
+                var photo = _dbContext.Set<AlbumImage>().AsNoTracking().Include(a=>a.Member).Where(a=> !a.DoNotFeature && !a.IsPrivate).Skip(index).Take(1).SingleOrDefault();
+
                 if(photo != null)
                 {
                     var image = Path.Combine(_environment.WebRootPath, _config.ContentFolder, "PhotoAlbum", photo.ImageName);

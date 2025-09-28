@@ -62,8 +62,10 @@
                         </select>
                         <button type="submit" class="btn btn-outline">Go</button>
                         <a data-ajax="true"
-                           data-ajax-update="#ImageContainer"
                            data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 0, pagenum = 1 })'
+                           data-ajax-success="hideBusyIndicator"
+                           data-ajax-begin="displayBusyIndicator"
+                           data-ajax-update="#ImageContainer"
                            class="btn btn-outline-info"
                            title="@Localizer["tipThumbs"]">
                             <li class="fa fa-th"></li>
@@ -71,6 +73,8 @@
                         <a data-ajax="true"
                            data-ajax-update="#ImageContainer"
                            data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 2, pagenum = 1 })'
+                           data-ajax-success="hideBusyIndicator"
+                           data-ajax-begin="displayBusyIndicator"
                            class="btn btn-outline-info"
                            title="@Localizer["tipList"]">
                             <li class="fa fa-align-justify"></li>
@@ -78,6 +82,8 @@
                         <a data-ajax="true"
                            data-ajax-update="#ImageContainer"
                            data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 1, pagenum = 1 })'
+                           data-ajax-success="hideBusyIndicator"
+                           data-ajax-begin="displayBusyIndicator"
                            class="btn btn-outline-info"
                            title="@Localizer["tipDetails"]">
                             <li class="fa fa-list"></li>
@@ -85,6 +91,8 @@
                         <a data-ajax="true"
                            data-ajax-update="#ImageContainer"
                            data-ajax-url='@Url.Action("MemberImages", "PhotoAlbum", new { id = ViewBag.MemberId, display = 3, pagenum = 1 })'
+                           data-ajax-success="hideBusyIndicator"
+                           data-ajax-begin="displayBusyIndicator"
                            class="btn btn-outline-info"
                            title="@Localizer["tipSlide"]">
                             <li class="fa fa-film"></li>

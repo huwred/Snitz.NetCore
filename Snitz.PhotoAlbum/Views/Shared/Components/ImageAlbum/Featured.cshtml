@@ -2,26 +2,23 @@
 @using SnitzCore.Service.Extensions
 @model Snitz.PhotoAlbum.Models.AlbumImage
 @{
-    string rootFolder = "Content";
-    string imagename =  $"{Url.Content("~/")}{rootFolder}/PhotoAlbum/{Model.ImageName}?width=400&rmode=crop&format=jpg";
+    string imagename = $"{Url.Content("~/")}Content/PhotoAlbum/{Model.ImageName}?width=400&rmode=crop&format=jpg";
 }
 <div class="card mb-2" >
     <div class="card-header subforum-title">
         @Localizer["lblFeaturedImage"]
     </div>
-
-    <img src="@imagename" alt="[Image=@Model.Id]" id="featured-img" class="img-fluid m-2"/>
+    <img src="@imagename" alt="@Model.Description" id="featured-img" class="img-fluid m-2" />
     <div class="card-body p-3">
-        <label class="h5 card-title">@Model.Description</label>
-        <ul class="list-unstyled form-text">
+        <label snitz-if="@(!string.IsNullOrWhiteSpace(Model.Description))" class="h5 card-title">@Model.Description</label>
+        <ul snitz-if="@(ViewBag.ShowInfo)" class="list-unstyled form-text">
             <li>Tag [Image=@Model.Id]</li>
             <li>@Localizer["lblFileName"]: @Model.Location</li>
             <li snitz-if="@(!string.IsNullOrWhiteSpace(Model.ScientificName))">@Localizer["lblScientificName"]: @Model.ScientificName</li>
             <li snitz-if="@(!string.IsNullOrWhiteSpace(Model.CommonName))">@Localizer["lblLocalName"]: @Model.CommonName</li>
-            <li>@Localizer["lblOwner"]: @Model.Member.Name</li>
+            <li>@Localizer["lblOwner"]: @Model.Member?.Name</li>
             <li>@Localizer["lblDate"]: @Model.Timestamp.FromForumDateStr().ToForumDisplay()</li>
         </ul>
-        @* <a href="#" class="btn btn-primary">Go somewhere</a> *@
     </div>
 </div>
 

@@ -226,15 +226,15 @@ namespace Snitz.PhotoAlbum.Controllers
             //Paging info
             ViewBag.Page = pagenum;
             ViewBag.PageCount = (images.Count() / pagesize) + 1;
-            SpeciesAlbum param = new()
-            {
-                SortBy = sortby,
-                SortDesc = sortorder == "asc" ? "" : "1",
-                GroupFilter = 0,
-                SrchUser = true,
-                SrchTerm = id,
-                SpeciesOnly = false
-            };
+            //SpeciesAlbum param = new()
+            //{
+            //    SortBy = sortby,
+            //    SortDesc = sortorder == "asc" ? "" : "1",
+            //    GroupFilter = 0,
+            //    SrchUser = true,
+            //    SrchTerm = id,
+            //    SpeciesOnly = false
+            //};
            // ViewBag.JsonParams = JsonConvert.SerializeObject(param);
             return View(images);
 
@@ -445,7 +445,7 @@ namespace Snitz.PhotoAlbum.Controllers
                     DoNotFeature = model.NotFeatured,
                     CommonName = model.CommonName ?? "",
                     ScientificName = model.ScientificName ?? "",
-                    GroupId = model.Group,
+                    GroupId = model.Group ?? 0,
                     MemberId = currentMember.Id,
                     Timestamp = timestamp,
                     Location = GetSafeFilename(model.AlbumImage.FileName),
@@ -570,27 +570,6 @@ namespace Snitz.PhotoAlbum.Controllers
             }
 
             return RedirectToAction("MemberImages", new {id=memberid,display });
-        }
-        private ImageMeta MetaData(int id)
-        {
-            var photo = _dbContext.Set<AlbumImage>().Find(id);
-            _dbContext.Entry<AlbumImage>(photo).State = EntityState.Detached;
-
-            var image = Path.Combine(_environment.WebRootPath, _config.ContentFolder, "PhotoAlbum", photo.ImageName);
-            FileInfo fileInfo = new FileInfo(image);
-            ImageInfo imageInfo = Image.Identify(image);
-            ImageMetadata imageMetaData = imageInfo.Metadata;
-
-            ImageMeta imagemeta = new ImageMeta
-            {
-                Width = imageInfo.Width,
-                Height = imageInfo.Height,
-                FileSize = fileInfo.Length,
-                FileSizeKB = fileInfo.Length / 1024.0,
-                Format = imageInfo.Metadata.DecodedImageFormat.Name,
-            };
-            
-            return imagemeta;
         }
         public IActionResult Delete(AlbumImage img, int display=1)
         {
@@ -877,6 +856,27 @@ namespace Snitz.PhotoAlbum.Controllers
             return gList;
         }
 
+        private ImageMeta MetaData(int id)
+        {
+            var photo = _dbContext.Set<AlbumImage>().Find(id);
+            _dbContext.Entry<AlbumImage>(photo).State = EntityState.Detached;
+
+            var image = Path.Combine(_environment.WebRootPath, _config.ContentFolder, "PhotoAlbum", photo.ImageName);
+            FileInfo fileInfo = new FileInfo(image);
+            ImageInfo imageInfo = Image.Identify(image);
+            ImageMetadata imageMetaData = imageInfo.Metadata;
+
+            ImageMeta imagemeta = new ImageMeta
+            {
+                Width = imageInfo.Width,
+                Height = imageInfo.Height,
+                FileSize = fileInfo.Length,
+                FileSizeKB = fileInfo.Length / 1024.0,
+                Format = imageInfo.Metadata.DecodedImageFormat.Name,
+            };
+            
+            return imagemeta;
+        }
 
     }
 }
