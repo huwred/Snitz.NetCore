@@ -33,7 +33,7 @@ namespace SnitzCore.Data.Interfaces
         /// Fetch a list of Moderators
         /// </summary>
         /// <returns></returns>
-        IEnumerable<KeyValuePair<int, string>> GetForumModerators();
+        IEnumerable<KeyValuePair<int, string>> GetModerators();
 
         /// <summary>
         /// Get the newest member

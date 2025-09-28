@@ -2,6 +2,12 @@
 
 namespace SnitzCore.Data.Models
 {
+    public enum MigratePassword{
+        NoMember,
+        InvalidPassword,
+        Valid,
+        NewPassword
+    }
     public enum PollAuth
     {
         Disallow,

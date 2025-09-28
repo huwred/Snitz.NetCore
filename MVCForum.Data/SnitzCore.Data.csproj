@@ -10,6 +10,7 @@
     <Compile Remove="Interfaces\ICacheService.cs" />
     <Compile Remove="Interfaces\ILanguageResource.cs" />
     <Compile Remove="Interfaces\InMemoryCache.cs" />
+    <Compile Remove="Interfaces\ISyndicationXmlService.cs" />
   </ItemGroup>
 
   <ItemGroup>

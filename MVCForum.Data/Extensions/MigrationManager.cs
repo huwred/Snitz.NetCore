@@ -38,9 +38,9 @@ namespace MVCForum.Extensions
     private static void UploadCSV(WebApplication webApp, SnitzDbContext dbContext)
     {
             var path = System.IO.Path.Combine(webApp.Environment.ContentRootPath, "App_Data");
-            var filename = "export_en.csv";
+            var filename = "initiallang_en.csv";
 
-            if (!Directory.Exists(path))
+            if (!File.Exists(Path.Combine(path,filename)))
             {
                 return;
             }
@@ -90,6 +90,9 @@ namespace MVCForum.Extensions
                     dbContext.SaveChanges();
                 }
                 transaction.Commit();
+                //rename the file so it doesn't get re-imported
+                File.Move(Path.Combine(path,filename), Path.Combine(path,"export_en.done"));
+
             }
             catch (Exception e)
             {

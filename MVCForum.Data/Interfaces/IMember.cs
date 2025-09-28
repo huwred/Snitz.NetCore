@@ -12,6 +12,7 @@ namespace SnitzCore.Data
     public interface IMember
     {
         Member? GetById(int? id);
+        Member? Get(int id);
         Task<List<Member>> GetUsersInRoleAsync(string roleName);
         Task<Member?> GetById(ClaimsPrincipal user);
         IPagedList<Member?> GetPagedMembers(bool isadmin,int pagesize, int page,string? sortcol,string? dir);
@@ -34,7 +35,7 @@ namespace SnitzCore.Data
 
         IList<string> Roles(string username);
 
-        bool ValidateMember(Member member, string password);
+        MigratePassword ValidateMember(Member member, string password);
 
         Member? Current();
         Task UpdatePostCount(int memberid);

@@ -15,6 +15,8 @@ namespace SnitzCore.Data.ViewModels
 
         public Models.Member Member { get; set; } = null!;
         public bool IsActive { get; set; }
-        public ForumUser? ForumUser { get; set; }
+        //public ForumUser? ForumUser { get; set; }
+
+        public bool Migrated { get; set; }
     }
 }
