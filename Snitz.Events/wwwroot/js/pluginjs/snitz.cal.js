@@ -47,9 +47,6 @@ UpComingCalendar = function(url, divid) {
                   }
             },
             allDayText: 'all-day',
-
-            //timeFormat: 'HH:mm',
-            //titleFormat: 'Upcoming Events', //TODO
             height: 560,
             eventSources: [
                 { url: url },
@@ -58,11 +55,9 @@ UpComingCalendar = function(url, divid) {
             ],
             loading: function(bool) {
                 if (bool) {
-                    $("#calendar-list").css({ "visibility": "hidden" });
-                    $("#calendar-list").css({ "height": "0px" });
                     $('#upcoming-events').show();
                 } else {
-                    $("#calendar-list").css({ "visibility": "visible" });
+                    $(".fa-spinner").css({ "visibility": "hidden" });
                     $('#cal-loading').hide();
                     $("#calendar-list").css({ "height": "auto" });
                 }
@@ -231,8 +226,6 @@ setForumEventsAuth = function(event) {
 
 FullCalendarNew = function (url, divid, firstday, country) {
     var calendarEl = document.getElementById('calendar');
-    //var localeSelectorEl = document.getElementById('locale-selector');
-
     var url = SnitzVars.baseUrl + "/Calendar/GetCalendarEvents/"
     var holidayUrl = SnitzVars.baseUrl + "/Calendar/GetHolidays/" + country;
     var eventsUrl = SnitzVars.baseUrl + "/Events/GetClubCalendarEvents/-1?old=0&calendar=1";
@@ -243,20 +236,10 @@ FullCalendarNew = function (url, divid, firstday, country) {
             center: 'title',
             right: 'multiMonthYear,dayGridMonth,timeGridWeek'
         },
-
-        //initialView: 'month',
         locale: SnitzVars.forumlang,
-        //initialDate: '2023-01-12',
         editable: true,
         selectable: true,
         dayMaxEvents: true, // allow "more" link when too many events
-        // multiMonthMaxColumns: 1, // guarantee single column
-        // showNonCurrentDates: true,
-        // fixedWeekCount: false,
-        // businessHours: true,
-        // weekends: false,
-
-        //timeFormat: 'HH:mm',
         eventSources: [
             { url: url },
             { url: eventsUrl },
