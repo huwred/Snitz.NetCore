@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.Configuration;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Models;
-using System.Reflection;
 
 #nullable disable
 

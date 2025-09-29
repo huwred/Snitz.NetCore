@@ -448,3 +448,5 @@ FodyWeavers.xsd
 /MVC Forum/Views/PhotoAlbum/_MemberThumbs.cshtml
 /MVC Forum/Views/PhotoAlbum/MemberImages.cshtml
 /MVC Forum/Views/PhotoAlbum/Album.cshtml
+/MVC Forum/Views/PhotoAlbum/Edit.cshtml
+/MVC Forum/Views/PhotoAlbum/_popAlbumUpload.cshtml

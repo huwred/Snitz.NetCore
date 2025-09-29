@@ -346,36 +346,36 @@ namespace MySqlMigrations.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "webpages_Membership",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CreateDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Password = table.Column<string>(type: "varchar(75)", maxLength: 75, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_webpages_Membership", x => x.UserId);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+            //migrationBuilder.CreateTable(
+            //    name: "webpages_Membership",
+            //    columns: table => new
+            //    {
+            //        UserId = table.Column<int>(type: "int", nullable: false)
+            //            .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+            //        CreateDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+            //        Password = table.Column<string>(type: "varchar(75)", maxLength: 75, nullable: false)
+            //            .Annotation("MySql:CharSet", "utf8mb4")
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_webpages_Membership", x => x.UserId);
+            //    })
+            //    .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "webpages_Roles",
-                columns: table => new
-                {
-                    RoleId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RoleName = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_webpages_Roles", x => x.RoleId);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+            //migrationBuilder.CreateTable(
+            //    name: "webpages_Roles",
+            //    columns: table => new
+            //    {
+            //        RoleId = table.Column<int>(type: "int", nullable: false)
+            //            .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+            //        RoleName = table.Column<string>(type: "longtext", nullable: false)
+            //            .Annotation("MySql:CharSet", "utf8mb4")
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_webpages_Roles", x => x.RoleId);
+            //    })
+            //    .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
@@ -517,29 +517,29 @@ namespace MySqlMigrations.Migrations
 
 
 
-            migrationBuilder.CreateTable(
-                name: "webpages_UsersInRoles",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.ForeignKey(
-                        name: "FK_webpages_UsersInRoles_FORUM_MEMBERS_UserId",
-                        column: x => x.UserId,
-                        principalTable: "FORUM_MEMBERS",
-                        principalColumn: "MEMBER_ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_webpages_UsersInRoles_webpages_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "webpages_Roles",
-                        principalColumn: "RoleId",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+            //migrationBuilder.CreateTable(
+            //    name: "webpages_UsersInRoles",
+            //    columns: table => new
+            //    {
+            //        UserId = table.Column<int>(type: "int", nullable: false),
+            //        RoleId = table.Column<int>(type: "int", nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.ForeignKey(
+            //            name: "FK_webpages_UsersInRoles_FORUM_MEMBERS_UserId",
+            //            column: x => x.UserId,
+            //            principalTable: "FORUM_MEMBERS",
+            //            principalColumn: "MEMBER_ID",
+            //            onDelete: ReferentialAction.Cascade);
+            //        table.ForeignKey(
+            //            name: "FK_webpages_UsersInRoles_webpages_Roles_RoleId",
+            //            column: x => x.RoleId,
+            //            principalTable: "webpages_Roles",
+            //            principalColumn: "RoleId",
+            //            onDelete: ReferentialAction.Cascade);
+            //    })
+            //    .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
@@ -1300,15 +1300,15 @@ namespace MySqlMigrations.Migrations
                 table: "FORUM_TOPICS",
                 column: "T_LAST_POST_AUTHOR");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_webpages_UsersInRoles_RoleId",
-                table: "webpages_UsersInRoles",
-                column: "RoleId");
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_webpages_UsersInRoles_RoleId",
+            //    table: "webpages_UsersInRoles",
+            //    column: "RoleId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_webpages_UsersInRoles_UserId",
-                table: "webpages_UsersInRoles",
-                column: "UserId");
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_webpages_UsersInRoles_UserId",
+            //    table: "webpages_UsersInRoles",
+            //    column: "UserId");
 
 
             migrationBuilder.AddForeignKey(
@@ -1679,11 +1679,11 @@ END
             migrationBuilder.DropTable(
                 name: "TOPIC_RATINGS");
 
-            migrationBuilder.DropTable(
-                name: "webpages_Membership");
+            //migrationBuilder.DropTable(
+            //    name: "webpages_Membership");
 
-            migrationBuilder.DropTable(
-                name: "webpages_UsersInRoles");
+            //migrationBuilder.DropTable(
+            //    name: "webpages_UsersInRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -1706,8 +1706,8 @@ END
             migrationBuilder.DropTable(
                 name: "FORUM_POLLS");
 
-            migrationBuilder.DropTable(
-                name: "webpages_Roles");
+            //migrationBuilder.DropTable(
+            //    name: "webpages_Roles");
 
             migrationBuilder.DropTable(
                 name: "FORUM_MEMBERS");

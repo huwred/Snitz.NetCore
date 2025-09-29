@@ -230,68 +230,69 @@ namespace Migrations
                     });
             }
 
-            if (!migrationBuilder.TableExists("webpages_Membership"))
-            {
-                migrationBuilder.CreateTable(
-                    name: "webpages_Membership",
-                    columns: table => new
-                    {
-                        UserId = table.Column<int>(type: "int", nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1"),
-                        CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                        Password = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false)
-                    },
-                    constraints: table =>
-                    {
-                        table.PrimaryKey("PK_webpages_Membership", x => x.UserId);
-                    });
+            //we don't need to do this as they are no longer required, throwback from .net framework
+            //if (!migrationBuilder.TableExists("webpages_Membership"))
+            //{
+            //    migrationBuilder.CreateTable(
+            //        name: "webpages_Membership",
+            //        columns: table => new
+            //        {
+            //            UserId = table.Column<int>(type: "int", nullable: false)
+            //                .Annotation("SqlServer:Identity", "1, 1"),
+            //            CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+            //            Password = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false)
+            //        },
+            //        constraints: table =>
+            //        {
+            //            table.PrimaryKey("PK_webpages_Membership", x => x.UserId);
+            //        });
 
-                migrationBuilder.CreateTable(
-                    name: "webpages_Roles",
-                    columns: table => new
-                    {
-                        RoleId = table.Column<int>(type: "int", nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1"),
-                        RoleName = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                    },
-                    constraints: table =>
-                    {
-                        table.PrimaryKey("PK_webpages_Roles", x => x.RoleId);
-                    });
+            //    migrationBuilder.CreateTable(
+            //        name: "webpages_Roles",
+            //        columns: table => new
+            //        {
+            //            RoleId = table.Column<int>(type: "int", nullable: false)
+            //                .Annotation("SqlServer:Identity", "1, 1"),
+            //            RoleName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+            //        },
+            //        constraints: table =>
+            //        {
+            //            table.PrimaryKey("PK_webpages_Roles", x => x.RoleId);
+            //        });
 
-                migrationBuilder.CreateTable(
-                    name: "webpages_UsersInRoles",
-                    columns: table => new
-                    {
-                        UserId = table.Column<int>(type: "int", nullable: false),
-                        RoleId = table.Column<int>(type: "int", nullable: false)
-                    },
-                    constraints: table =>
-                    {
-                        table.ForeignKey(
-                            name: "FK_webpages_UsersInRoles_FORUM_MEMBERS_UserId",
-                            column: x => x.UserId,
-                            principalTable: "FORUM_MEMBERS",
-                            principalColumn: "MEMBER_ID",
-                            onDelete: ReferentialAction.Cascade);
-                        table.ForeignKey(
-                            name: "FK_webpages_UsersInRoles_webpages_Roles_RoleId",
-                            column: x => x.RoleId,
-                            principalTable: "webpages_Roles",
-                            principalColumn: "RoleId",
-                            onDelete: ReferentialAction.Cascade);
-                    });
+            //    migrationBuilder.CreateTable(
+            //        name: "webpages_UsersInRoles",
+            //        columns: table => new
+            //        {
+            //            UserId = table.Column<int>(type: "int", nullable: false),
+            //            RoleId = table.Column<int>(type: "int", nullable: false)
+            //        },
+            //        constraints: table =>
+            //        {
+            //            table.ForeignKey(
+            //                name: "FK_webpages_UsersInRoles_FORUM_MEMBERS_UserId",
+            //                column: x => x.UserId,
+            //                principalTable: "FORUM_MEMBERS",
+            //                principalColumn: "MEMBER_ID",
+            //                onDelete: ReferentialAction.Cascade);
+            //            table.ForeignKey(
+            //                name: "FK_webpages_UsersInRoles_webpages_Roles_RoleId",
+            //                column: x => x.RoleId,
+            //                principalTable: "webpages_Roles",
+            //                principalColumn: "RoleId",
+            //                onDelete: ReferentialAction.Cascade);
+            //        });
 
-                migrationBuilder.CreateIndex(
-                    name: "IX_webpages_UsersInRoles_RoleId",
-                    table: "webpages_UsersInRoles",
-                    column: "RoleId");
+            //    migrationBuilder.CreateIndex(
+            //        name: "IX_webpages_UsersInRoles_RoleId",
+            //        table: "webpages_UsersInRoles",
+            //        column: "RoleId");
 
-                migrationBuilder.CreateIndex(
-                    name: "IX_webpages_UsersInRoles_UserId",
-                    table: "webpages_UsersInRoles",
-                    column: "UserId");
-            }
+            //    migrationBuilder.CreateIndex(
+            //        name: "IX_webpages_UsersInRoles_UserId",
+            //        table: "webpages_UsersInRoles",
+            //        column: "UserId");
+            //}
 
         }
 
