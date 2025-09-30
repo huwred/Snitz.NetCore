@@ -198,9 +198,9 @@
                         .addClass('active');
                     if (!$.cookie(pagesizeCookie)) {
                         var testCookie = 'cookie support check';
-                        $.cookie(testCookie, true,{ path: snitzVars.cookiePath });
+                        $.cookie(testCookie, true,{ path: SnitzVars.cookiePath });
                         if ($.cookie(testCookie)) { // browser supports cookie
-                            $.cookie(testCookie, null,{ path: snitzVars.cookiePath });
+                            $.cookie(testCookie, null,{ path: SnitzVars.cookiePath });
                             $.removeCookie(testCookie);
                             $.cookie(pagesizeCookie, sel, { expires: 1, path: window.SnitzVars.cookiePath /*, domain: window.SnitzVars.cookieDomain*/ });
                             location.reload(); // re-load the page
