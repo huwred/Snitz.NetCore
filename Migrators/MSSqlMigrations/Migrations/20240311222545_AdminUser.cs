@@ -16,17 +16,20 @@ namespace WebApplication1.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             SetParameters();
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "0D1F96F3-A8BD-4348-AFA4-61B931BB3553", null, "Moderator", "MODERATOR" },
-                    { "2c5e174e-3b0e-446f-86af-483d56fd7210", null, "Administrator", "ADMINISTRATOR" },
-                    { "467DF002-6D82-4109-979A-76F01FA9D4CF", null, "ForumMember", "FORUMMEMBER" },
-                    { "1F55ACDD-212C-4824-96B5-F10A05FE6563", null, "Visitor", "VISITOR" },
-                    { "1BF09C8F-1889-43C1-942C-969A00116DB4", null, "SuperAdmin", "SUPERADMIN" }
-                });
+            if(!migrationBuilder.IndexExists($"SELECT COUNT(Id) FROM AspNetRoles WHERE NormalizedName='SUPERADMIN' ")){
+                migrationBuilder.InsertData(
+                    table: "AspNetRoles",
+                    columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                    values: new object[,]
+                    {
+                        { "0D1F96F3-A8BD-4348-AFA4-61B931BB3553", null, "Moderator", "MODERATOR" },
+                        { "2c5e174e-3b0e-446f-86af-483d56fd7210", null, "Administrator", "ADMINISTRATOR" },
+                        { "467DF002-6D82-4109-979A-76F01FA9D4CF", null, "ForumMember", "FORUMMEMBER" },
+                        { "1F55ACDD-212C-4824-96B5-F10A05FE6563", null, "Visitor", "VISITOR" },
+                        { "1BF09C8F-1889-43C1-942C-969A00116DB4", null, "SuperAdmin", "SUPERADMIN" }
+                    });
+            }
+
             if(!migrationBuilder.IndexExists($"SELECT COUNT(MEMBER_ID) FROM {_memberTablePrefix}MEMBERS")){
                 migrationBuilder.InsertData( // Admin User with password Passw0rd!
                     table: "AspNetUsers",
