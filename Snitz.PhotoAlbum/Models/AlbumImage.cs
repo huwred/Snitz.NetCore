@@ -70,8 +70,6 @@ namespace Snitz.PhotoAlbum.Models
 
         public virtual Member? Member { get; set; } = null!;
 
-        //public virtual string MemberName { get; set; }
-
         public virtual AlbumGroup? Group { get; set; }
         public virtual AlbumCategory? Category { get; set; }
 
@@ -80,10 +78,6 @@ namespace Snitz.PhotoAlbum.Models
         {
             get { return $"{Timestamp}_{Location}"; }
         }
-
-        //public byte[] ImageData { get; set; }
-
-        //public System.Drawing.Image Img { get; set; }
 
     }
 

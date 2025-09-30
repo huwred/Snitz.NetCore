@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Snitz.PhotoAlbum.Models
 {
-    internal class ImageMeta
+    public class ImageMeta
     {
         public int Width { get; set; }
         public int Height { get; set; }

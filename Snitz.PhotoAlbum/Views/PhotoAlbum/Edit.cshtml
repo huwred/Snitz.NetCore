@@ -1,9 +1,13 @@
 ﻿@using Snitz.PhotoAlbum.ViewModels
+@using Snitz.PhotoAlbum.Models
 @using SnitzCore.Data.Extensions
 @using SnitzCore.Service.Extensions
 @model AlbumUploadViewModel
 @{
     ViewBag.Display = Model.Display;
+    var imageMeta = ViewBag.ImageMeta as ImageMeta;
+    var consolidated = SnitzConfig.IsEnabled("INTCOMMONALBUM");
+    ViewData["Category"] = Model.Category;
 }
 <div class="card w-100 center">
     <div class="card-body p-3">
@@ -13,22 +17,23 @@
             <input asp-for="Image.ImageName" type="hidden" />
             <input asp-for="Image.CategoryId" type="hidden" />
             <input asp-for="Display" type="hidden" value="@Model.Display" />
-            <input asp-for="Image.Width" type="hidden" value="@ViewBag.ImageMeta.Width" />
-            <input asp-for="Image.Height" type="hidden" value="@ViewBag.ImageMeta.Height" />
-            <input asp-for="Image.Size" type="hidden" value="@ViewBag.ImageMeta.FileSize" />
-            <input asp-for="Image.Mime" type="hidden" value="@ViewBag.ImageMeta.Format" />
+            <input asp-for="Image.Width" type="hidden" value="@imageMeta.Width" />
+            <input asp-for="Image.Height" type="hidden" value="@imageMeta.Height" />
+            <input asp-for="Image.Size" type="hidden" value="@imageMeta.FileSize" />
+            <input asp-for="Image.Mime" type="hidden" value="@imageMeta.Format" />
             <ul class="list-unstyled">
-                <li class="mb-3 text-truncate">
-                    <figure class="figure">
-                        <img src="@($"~/Content/PhotoAlbum/{Model.Image.ImageName}?height=100")" class="figure-img" description="@Model.Image.Description"></img>
-                        <figcaption class="figure-caption form-text">@Model.Image.ImageName</figcaption>
-                    </figure>
-                <li class="mb-3"><label asp-for="Image.CommonName" class="form-label">@Localizer["lblLocalName"]</label><input asp-for="Image.CommonName" class="form-control" /></li>
-                <li class="mb-3"><label asp-for="Image.ScientificName" class="form-label">@Localizer["lblScientificName"]</label><input asp-for="Image.ScientificName" class="form-control" /></li>
-                <li class="mb-3"><label asp-for="Image.Description" class="form-label">@Localizer["lblDescription"]</label><textarea asp-for="Image.Description" class="form-control" rows="3"></textarea></li>
-                @* <li class="mb-3"><label asp-for="Location" class="form-label"></label><input asp-for="Location" class="form-control" /></li> *@
-                <li class="mb-3 d-none">CategoryId @Model.Image.CategoryId </li>
                 <li class="mb-3">
+                    <figure class="figure">
+                        <img src="@($"~/Content/PhotoAlbum/{Model.Image.ImageName}?height=100")" class="figure-img" description="@Model.Image.Description"/>
+                        <figcaption class="figure-caption form-text text-truncate">@Model.Image.ImageName</figcaption>
+                    </figure>
+                <li class="mb-3">
+                    @await Component.InvokeAsync("ImageAlbum", new { template = "Categories", memberid = Model.Image.MemberId })
+                </li>
+                <li class="mb-3"><label asp-for="Image.CommonName" class="form-label">@Localizer["lblLocalName"]</label><input asp-for="Image.CommonName" class="form-control" /></li>
+                <li snitz-if="@(consolidated)" class="mb-3"><label asp-for="Image.ScientificName" class="form-label">@Localizer["lblScientificName"]</label><input asp-for="Image.ScientificName" class="form-control" /></li>
+                <li class="mb-3"><label asp-for="Image.Description" class="form-label">@Localizer["lblDescription"]</label><textarea asp-for="Image.Description" class="form-control" rows="3"></textarea></li>
+                <li snitz-if="@(consolidated)" class="mb-3">
                     <div>
                         <label class="form-label col-4" asp-for="Image.GroupId">@Localizer["lblGroup"]:</label>
                         <div class="col">
@@ -42,15 +47,15 @@
                     </div>
                 </li>
                 <li class="mb-3">
-                    <div class="form-check">
+                    <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" asp-for="Image.IsPrivate">
-                        <label class="form-check-label" asp-for="Image.IsPrivate">@Localizer["imgPrivate"]</label>
+                        <label class="form-check-label" asp-for="Image.IsPrivate"><span snitz-if="@(!Model.Image.IsPrivate)"> (Not private) </span><span snitz-if="@(Model.Image.IsPrivate)"> (Private) </span>@Localizer["imgPrivate"]</label>
                     </div>
                 </li>
                 <li class="mb-3">
-                    <div class="form-check">
+                    <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" asp-for="Image.DoNotFeature">
-                        <label class="form-check-label" asp-for="Image.DoNotFeature">@Localizer["imgFeature"]</label>
+                        <label class="form-check-label" asp-for="Image.DoNotFeature"><span snitz-if="@(Model.Image.DoNotFeature)"> (Not featured) </span><span snitz-if="@(!Model.Image.DoNotFeature)"> (Featured) </span>@Localizer["imgFeature"]</label>
                     </div>
                 </li>
             </ul>
@@ -59,11 +64,11 @@
     </div>
     <div class="card-footer d-none d-lg-inline-block">
         <ul class="list-unstyled list-inline">
-            <li class="list-inline-item"><b>@Localizer["lblViews"]</b> @Model.Image.Views</li>
-            <li class="list-inline-item"><b>@Localizer["lblWidth"]</b> @ViewBag.ImageMeta.Width</li>
-            <li class="list-inline-item"><b>@Localizer["lblHeight"]</b> @ViewBag.ImageMeta.Height</li>
-            <li class="list-inline-item"><b>@Localizer["lblSize"]</b> @ViewBag.ImageMeta.FileSizeKB.ToString("0.00") KB</li>
-            <li class="list-inline-item"><b>@Localizer["lblMime"]</b> @ViewBag.ImageMeta.Format</li>
+            <li class="list-inline-item"><b>@Localizer["lblViews"]</b> @(Model.Image.Views ?? 0)</li>
+            <li class="list-inline-item"><b>@Localizer["lblWidth"]</b> @imageMeta.Width</li>
+            <li class="list-inline-item"><b>@Localizer["lblHeight"]</b> @imageMeta.Height</li>
+            <li class="list-inline-item"><b>@Localizer["lblSize"]</b> @imageMeta.FileSizeKB.ToString("0.00") KB</li>
+            <li class="list-inline-item"><b>@Localizer["lblMime"]</b> @imageMeta.Format</li>
             <li class="list-inline-item"><b>@Localizer["lblDate"]</b> @Model.Image.Timestamp.FromForumDateStr().ToForumDateDisplay()</li>
         </ul>
     </div>

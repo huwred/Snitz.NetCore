@@ -2,37 +2,34 @@
 @using SnitzCore.Data
 @model Snitz.PhotoAlbum.ViewModels.AlbumUploadViewModel
 @inject IMember MemberService
+@{
+    var consolidated = SnitzConfig.IsEnabled("INTCOMMONALBUM");
+}
 <p class="mb-3">
     @Localizer["maxFileSize", Model.MaxSize]<br />
     @Localizer["allowedFiles", Model.AllowedTypes]
 </p>
 <form action="@SnitzConfig.RootFolder/PhotoAlbum/Upload/" class="needs-validation" method="post" enctype="multipart/form-data" role="form" id="upload-form" novalidate>
     <div class="mb-3">
+        <label asp-for="CommonName" class="form-label">@Localizer["lblLocalName"]</label>
+        <input asp-for="CommonName" class="form-control" maxlength="50" required />
+        <span class="invalid-feedback">@Localizer["lblLocalName"] is required</span>
+    </div>    
+    <div class="mb-3">
         <label asp-for="Description" class="form-label">@Localizer["lblDescription"]</label>
-        <input asp-for="Description" class="form-control" maxlength="50" />
-        <span asp-validation-for="Description"></span>
+            <textarea asp-for="Description" class="form-control" maxlength="50" rows="2" ></textarea>
+            <span asp-validation-for="Description"></span>
     </div>
-    @await Component.InvokeAsync("ImageAlbum", new { template = "Categories", memberid = MemberService.Current()?.Id})
-    @if ((bool)ViewBag.ShowAll)
+    @await Component.InvokeAsync("ImageAlbum", new { template = "Categories", memberid = MemberService.Current()?.Id })
+    @if ((bool)ViewBag.ShowAll && consolidated)
     {
-        <div class="row mb-3">
-            <label asp-for="ScientificName" class="form-label col-4">@Localizer["lblScientificName"]</label>
-            <div class="col">
-                <input asp-for="ScientificName" class="form-control" maxlength="50" />
-                <span asp-validation-for="ScientificName"></span>
-            </div>
+        <div class="mb-3">
+            <label asp-for="ScientificName" class="form-label">@Localizer["lblScientificName"]</label>
+            <input asp-for="ScientificName" class="form-control" maxlength="50" />
+            <span asp-validation-for="ScientificName"></span>
         </div>
-        <div class="row mb-3">
-            <label asp-for="CommonName" class="form-label col-4">@Localizer["lblLocalName"]</label>
-            <div class="col">
-                <input asp-for="CommonName" class="form-control col" maxlength="50" />
-                <span class="invalid-feedback">@Localizer["lblLocalName"] is required</span>
-            </div>
-        </div>
-    }
-    <div class="row mb-3">
-        <label class="form-label col-4" for="Group">@Localizer["lblGroup"]</label>
-        <div class="col">
+        <div class="mb-3">
+            <label class="form-label" for="Group">@Localizer["lblGroup"]</label>
             <select id="Group" name="Group" class="form-select">
                 <option value="">Please Select</option>
                 @foreach (var item in Model.GroupList)
@@ -41,10 +38,10 @@
                 }
             </select>
         </div>
-    </div>
+    }
     @if (!(bool)ViewBag.ShowAll)
     {
-        <div class="form-check">
+        <div class="form-check form-switch">
             @Html.CheckBoxFor(m => m.ShowCaption, new { @class = "form-check-input" })
             <label class="form-check-label" for="ShowCaption">
                 @Localizer["lblShowCaption"]
@@ -52,19 +49,19 @@
         </div>
     }
 
-    <div class="form-check">
+    <div class="form-check form-switch">
         @Html.CheckBoxFor(m => m.Private, new { @class = "form-check-input" })
         <label class="form-check-label" for="Private">
             @Localizer["lblPrivate"]
         </label>
     </div>
-    <div class="form-check mb-3">
+    <div class="form-check form-switch mb-3">
         @Html.CheckBoxFor(m => m.NotFeatured, new { @class = "form-check-input" })
         <label class="form-check-label" for="NotFeatured">
             @Localizer["lblDoNotFeature"]
         </label>
     </div>
-    <div class="photo-input mb-3">
+    <div class="photo-input row mb-3">
         <input asp-for="AlbumImage" class="form-control" accept="@Model.AllowedTypes" />
         <div class="invalid-feedback">
             Please choose a file.

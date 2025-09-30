@@ -164,7 +164,7 @@ namespace Snitz.PhotoAlbum.Controllers
         /// <param name="sortby"></param>
         /// <param name="sortorder"></param>
         /// <returns></returns>
-        public IActionResult Member(string id, int display = 0, int pagenum = 1, string sortby = "date",string sortorder = "desc")
+        public IActionResult Member(string id, int display = 0, int pagenum = 1, string sortby = "date",string sortorder = "desc",int category = 0)
         {
             try
             {
@@ -223,6 +223,7 @@ namespace Snitz.PhotoAlbum.Controllers
             ViewBag.SortPage = sortorder;
             ViewBag.SortHead = sortorder == "asc" ? "desc" : "asc";
             ViewBag.SortDir = sortorder;
+            ViewData["Category"] = category;
             //Paging info
             ViewBag.Page = pagenum;
             ViewBag.PageCount = (images.Count() / pagesize) + 1;
@@ -471,7 +472,7 @@ namespace Snitz.PhotoAlbum.Controllers
 
         }
         [HttpGet]
-        public IActionResult MemberImages(int id, int display, int pagenum = 1, string sortby = "date",string sortorder = "desc")
+        public IActionResult MemberImages(int id, int display, int pagenum = 1, string sortby = "date",string sortorder = "desc", int category = 0)
         {
             int memberid = id;
             var currentmemberid = _memberservice.Current()?.Id;
@@ -482,7 +483,11 @@ namespace Snitz.PhotoAlbum.Controllers
                 .Include(i=>i.Category)
                 .Include(i => i.Member)
                 .Where(i=>i.MemberId == memberid);
-                //.OrderByDescending(i=>i.Timestamp);
+            //.OrderByDescending(i=>i.Timestamp);
+            if (category > 0)
+            {
+                images = images.Where(i=>i.CategoryId == category);
+            }
             if(sortorder == "asc")
             {
                 switch (sortby)
@@ -529,6 +534,7 @@ namespace Snitz.PhotoAlbum.Controllers
             ViewBag.SortPage = sortorder;
             ViewBag.SortHead = sortorder == "asc" ? "desc" : "asc";
             ViewBag.SortDir = sortorder;
+            ViewData["Category"] = category;
             //Paging info
             ViewBag.Page = pagenum;
             //ViewBag.PageCount = db.Pagecount;
@@ -605,7 +611,9 @@ namespace Snitz.PhotoAlbum.Controllers
                     GroupList = new SelectList(_dbContext.Set<AlbumGroup>().AsQueryable(), "Id", "Description",origimage.GroupId),
                     Display = display,
                     Category = origimage.CategoryId
+                    
                 };
+
             ViewBag.Display = display;
             return PartialView(model);
         }

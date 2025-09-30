@@ -1,19 +1,24 @@
 ﻿@model List<Snitz.PhotoAlbum.Models.AlbumCategory>
+@{
+    var category = ViewData["Category"] as int?;
+}
 @if(Model == null || !Model.Any())
 {
     return;
 }
 else
 {
-    <div class="row mb-3">
-        <label for="Category" class="form-label col-4">@Localizer["lblCategory"]</label>
-        <div class="col">
-            <select name="Category" class="form-select">
+    <div class="mb-3">
+        <label for="cat-select" class="form-label">@Localizer["lblCategory"]</label>
+        <div class="input-group">
+            <select name="Category" id="cat-select" class="form-select">
+                <option value="0" selected-val="@category">@Localizer["lblCategorySelect"]</option>
                 @foreach (var cat in Model)
                 {
-                    <option value="@cat.CatId">@cat.Description</option>
+                    <option value="@cat.CatId" selected-val="@category">@cat.Description</option>
                 }
             </select>
+            <button class="btn btn-outline-secondary" type="button" id="category-add">Add Category</button>
         </div>
     </div>
 }

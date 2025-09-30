@@ -11,7 +11,8 @@
     if (SnitzConfig.GetIntValue("STRPHOTOALBUM") == 0)
     {
         disabled = "disabled";
-    } 
+    }
+    var consolidated = SnitzConfig.IsEnabled("INTCOMMONALBUM");
 }
 @section styles
 {
@@ -40,8 +41,8 @@
     </div>
     <div class="mb-3">
         <div class="form-check form-switch mb-3">
-            <input type="checkbox" role="switch" name="INTCOMMONALBUM" id="INTCOMMONALBUM" value="1" class="form-check-input" checked="@(SnitzConfig.GetIntValue("INTCOMMONALBUM")==1)" style="transform: scale(1.4);">
-                <input type="checkbox" name="INTCOMMONALBUM" value="0" checked="" style="display: none">
+            <input type="checkbox" role="switch" name="INTCOMMONALBUM" id="INTCOMMONALBUM" value="1" class="form-check-input" checked="@(SnitzConfig.IsEnabled("INTCOMMONALBUM"))" style="transform: scale(1.4);">
+            <input type="checkbox" name="INTCOMMONALBUM" value="0" checked="" style="display: none">
             <label class="form-check-label" for="INTCOMMONALBUM">Show consolidated album</label>
             <p class="form-text">Shows a link to <b>ALL</b> uploaded images in one consolidated Album. The label for the album uses the ResourceId 'mnuCommonAlbum'.</p>
         </div>
@@ -127,16 +128,15 @@
     </div>
     <div id="pa-results"></div>
     </form>
-    <div class="row-fluid">
-        <h5>Groups</h5>
+    <div class="row-fluid" id="consolidated-groups" snitz-if="@(SnitzConfig.IsEnabled("INTCOMMONALBUM"))">
+        <h5>@Localizer["mnuCommonAlbum"] Groups</h5>
         <hr class="title"/>
         <div id="gridContent" class="col-xs-8" style="padding: 20px;">
-            @await Component.InvokeAsync("ImageAlbum", "Groups")
+            @await Component.InvokeAsync("ImageAlbum", new { template = "Groups"})
         </div>
         <p>&nbsp;</p>
-        <p class="help-block">The description will be used as part of the resource key to look up the display string. i.e. Group_Description (with spaces stripped)</p>
-    </div>
-    <div class="row-fluid">
+        <p class="help-block mb-3">The description will be used as part of the resource key to look up the display string. i.e. Group_Description (with spaces stripped)</p>
+
         <form asp-action="AddGroup" asp-controller="PhotoAlbum" data-ajax="true" data-ajax-update="#gridContent">
             <div class="input-group mb-3">
                 <label class="input-group-text" for="inputGroupSelect01">Group Description</label>
