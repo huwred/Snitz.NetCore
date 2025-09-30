@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
-using System.Collections.Concurrent;
-using SnitzCore.Data.Interfaces;
-using System.Linq;
 using Microsoft.Extensions.Configuration;
+using SnitzCore.Data.Interfaces;
+using SnitzCore.Service.Extensions;
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SnitzCore.Service.MiddleWare
 {
@@ -36,19 +37,12 @@ namespace SnitzCore.Service.MiddleWare
         public Task InvokeAsync(HttpContext context, IMemoryCache memoryCache, ISnitzConfig snitzConfig,IConfiguration config)
         {
             var agent = context.Request.Headers.UserAgent.ToString();
-            var arr = config.GetSection("SnitzForums").GetSection("excludeBots").Value?.Split(",").ToArray();
-            var extras = snitzConfig.GetValue("STREXCLUDEBOTS");
-            if (!string.IsNullOrWhiteSpace(extras)) {
-                if(extras.Split(",").Any()) {
-                    arr = arr?.Union(extras.Split(",")).ToArray();
-                }            
-            }
+
+            var arr = CacheProvider.GetOrCreate("botlist",()=> botlist(snitzConfig,config),TimeSpan.FromDays(1));
 
             if(arr != null && arr.Any(s => agent.Contains(s, StringComparison.OrdinalIgnoreCase))) {
                 return _next(context);
             }
-            _logger.Info(agent);
-
 
             if (context.Request.Cookies.TryGetValue(_cookieName, out var userGuid) == false)
             {
@@ -83,7 +77,17 @@ namespace SnitzCore.Service.MiddleWare
                 //if not possible to remove key from dictionary, then try to mark key as not existing in cache
                 _allKeys.TryUpdate(strKey, false, true);
         }
-
+        private string[] botlist(ISnitzConfig snitzConfig,IConfiguration config)
+        {
+            var arr = config.GetSection("SnitzForums").GetSection("excludeBots").Value?.Split(",").ToArray();
+            var extras = snitzConfig.GetValue("STREXCLUDEBOTS");
+            if (!string.IsNullOrWhiteSpace(extras)) {
+                if(extras.Split(",").Any()) {
+                    arr = arr?.Union(extras.Split(",")).ToArray();
+                }            
+            }
+            return arr ?? [];
+        }
         public static int GetOnlineUsersCount()
         {
             return _allKeys?.Count ?? 0;
