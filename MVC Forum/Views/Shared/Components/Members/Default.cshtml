@@ -52,7 +52,7 @@
     <li>
         @foreach (var activemember in activemembers)
         {
-            <snitz-avatar src="@activemember!.Avatar" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle profile-popup" data-id="@activemember.Id" />
+            <snitz-avatar title="@Localizer["ProfileSummary"].Value" src="@activemember!.Avatar" def-src="~/images/ninja-1027877_960_720.webp" class="avatarsmall rounded-circle profile-popup" data-id="@activemember.Id" />
         }
     </li>
     <li><hr /></li>
