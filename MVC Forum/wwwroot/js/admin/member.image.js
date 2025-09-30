@@ -94,7 +94,29 @@ $('body').on('click', '.confirm-privacy', function (e) {
         }
     })();
 });
+$('body').on('click', '#category-add', function (e) {
+    e.preventDefault();
+    $('#addcategory-content').html('');
+    $('#addcategory-content').load(SnitzVars.baseUrl + "/PhotoAlbum/AddCategory/", function () {
+        $('#addImageCat').modal('show');
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms,
+            function (form) {
+                form.addEventListener('submit',
+                    function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
 
+                        form.classList.add('was-validated');
+                    },
+                    false);
+            });
+    });
+
+});
 $('body').on('click', '.confirm-feature', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');

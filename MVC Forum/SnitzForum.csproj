@@ -120,7 +120,7 @@
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
     <PackageReference Include="Snitz.Events" Version="1.0.2" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.3-rc014" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.3-rc015" />
     <PackageReference Include="Snitz.PostThanks" Version="1.0.3-rc47" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />

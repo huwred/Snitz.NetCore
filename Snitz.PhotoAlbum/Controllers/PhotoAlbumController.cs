@@ -664,6 +664,20 @@ namespace Snitz.PhotoAlbum.Controllers
 
             return Content("Group added, Reload page to view/edit groups.");
         }
+        [Authorize]
+        public IActionResult AddCategory()
+        {
+            return PartialView("_AddCategory");
+        }
+        [HttpPost]
+        [Authorize]
+        public IActionResult AddCategory(AlbumCategory category)
+        {
+            _dbContext.Set<AlbumCategory>().Add(category);
+            _dbContext.SaveChanges();
+
+            return Content("Category added, Reload page to view.");
+        }
         [HttpGet]
         [Authorize]
         public IActionResult DeleteGroup(int id)
