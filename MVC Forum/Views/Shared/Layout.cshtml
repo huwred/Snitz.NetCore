@@ -64,7 +64,6 @@
     <div class="d-flex flex-column" style="min-height: 100vh;">
         <partial name="MainNav"/>       
         <div class="container flex-grow-1">
-            <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
             <main role="main" class="pb-3 mt-6">
             @if (SnitzConfig.IsEnabled("INTTOPBANNER"))
             {
@@ -75,11 +74,13 @@
 
                 @RenderBody()
             </main>
+            <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
         </div>
         <cache expires-after="@TimeSpan.FromDays(7)">
             <partial name="Footer"/>
         </cache>
     </div>
+
     <div id="user-card" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -91,18 +92,19 @@
             </div>
         </div>
     </div>
+
     <environment include="Development">
-        <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js"></script>
+        <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js" ></script>
+        <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" defer></script>
         <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
         <partial name="GlobalJs" />
         <partial name="ValidationScriptsPartial" />
-        <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/js/site.js" asp-append-version="true" defer></script>
     </environment>
     <environment exclude="Development">
         <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
         <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js"></script>
-        <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
+        <script type="text/javascript" src="~/js/jquery.cookie.min.js"></script>
         <partial name="GlobalJs" />
         <partial name="ValidationScriptsPartial" />
         <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
