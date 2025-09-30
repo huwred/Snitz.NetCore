@@ -527,11 +527,6 @@ blockquote.newquote {
         z-index: 1;
     }
 
-.image-gallery .figure:hover .overlay {
-    display: block;
-    opacity: .6;
-}
-
 .image-gallery .text {
     color: white;
     font-size: 18px;

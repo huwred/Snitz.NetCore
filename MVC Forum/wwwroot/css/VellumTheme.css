@@ -536,10 +536,7 @@ blockquote.newquote {
     background-color: #008CBA;
 }
 
-.image-gallery .figure:hover .overlay {
-    display: block;
-    opacity: .6;
-}
+
 
 .image-gallery .text {
     color: white;

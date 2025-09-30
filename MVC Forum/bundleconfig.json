@@ -176,12 +176,6 @@
     ]
   },
   {
-    "outputFileName": "wwwroot/js/admin/member.min.js",
-    "inputFiles": [
-      "wwwroot/js/admin/member.js"
-    ]
-  },
-  {
     "outputFileName": "wwwroot/css/topic.min.css",
     "inputFiles": [
       "wwwroot/css/topic.css"
@@ -263,6 +257,18 @@
     "outputFileName": "wwwroot/codemirror/mode/clike/clike.min.js",
     "inputFiles": [
       "wwwroot/codemirror/mode/clike/clike.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/jquery.cookie.min.js",
+    "inputFiles": [
+      "wwwroot/js/jquery.cookie.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/admin/member.image.min.js",
+    "inputFiles": [
+      "wwwroot/js/admin/member.image.js"
     ]
   }
 ]

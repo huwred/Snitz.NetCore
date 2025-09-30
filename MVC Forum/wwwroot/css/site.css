@@ -562,7 +562,10 @@ img.avatarlarge {
     transition: .3s ease;
     background-color: gainsboro;
 }
-
+.image-gallery .figure:hover .overlay {
+    display: block;
+    opacity: .6;
+}
 /* When you mouse over the container, fade in the overlay icon*/
 .avatar-container:hover .overlay-delete {
     opacity: 1;
@@ -1054,6 +1057,7 @@ i.modstatus-2, i.modstatus-3 {
         max-width: 1024px;
         margin-right: auto;
         margin-left: auto;
+        width:fit-content;
     }
 }
 
