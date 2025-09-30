@@ -11,6 +11,9 @@
     // element appear in screen. You could set other events including each one separated by a space.
     trigger: "appear"
 });
+$('#cat-select').on("change", function (e) {
+    $(this).closest('form').trigger('submit');
+});
 $('#submitUpload').on('click', 
     function (e) {
         e.preventDefault();
@@ -72,7 +75,7 @@ $("#photo-upload").on("click",
             });
     });
 
-$('.confirm-privacy').on('click', function (e) {
+$('body').on('click', '.confirm-privacy', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
     (async () => {
@@ -90,9 +93,9 @@ $('.confirm-privacy').on('click', function (e) {
             );
         }
     })();
-
 });
-$('.confirm-feature').on('click', function (e) {
+
+$('body').on('click', '.confirm-feature', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
     (async () => {
@@ -110,10 +113,9 @@ $('.confirm-feature').on('click', function (e) {
             );
         }
     })();
-
 });
 
-$('.edit-image').on('click', function (e) {
+$('body').on('click', '.edit-image', function (e) {
     e.preventDefault();
     var dataid = $(this).data('id');
     var display = $(this).data('display');
@@ -123,7 +125,7 @@ $('.edit-image').on('click', function (e) {
     });
 });
 
-$('.confirm-delimage').on('click', function (e) {
+$('body').on('click', '.confirm-delimage', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
     (async () => {
@@ -141,9 +143,12 @@ $('.confirm-delimage').on('click', function (e) {
             );
         }
     })();
-
 });
 
+function refreshlist() {
+    
+}
 function EditSuccess() {
     $('#editModal').modal('hide');
+    location.reload(true);
 }
