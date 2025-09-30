@@ -34,7 +34,7 @@
         {
             @if (isblog)
             {
-                <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa fa-comment  post-reply" title="@Localizer["tipBlogComment"]" data-id="@postid" data-toggle="tooltip"></i>
+                <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa-regular fa-comment  post-reply" title="@Localizer["tipBlogComment"]" data-id="@postid" data-toggle="tooltip"></i>
             }
             else if (Model.Forum.Replyauth == (int)PostAuthType.Anyone || (Model.Forum.Replyauth == (int)PostAuthType.Moderators && ismoderator) || isadmin)
             {
@@ -57,7 +57,7 @@
         @if (isadmin || isauthor || ismoderator)
         {
             <i snitz-if="@((!islocked && isauthor) || isadmin || ismoderator)" class="fa-regular fa-pen-to-square  post-edit" title="@Localizer["tipEditTopic"]" data-id="@postid" data-archived="@isArchived" data-toggle="tooltip"></i>
-            <i href="@Context.Request.QueryString" class="fa-regular fa-trash-can post-del" title="@Localizer["tipTopicDel"]" data-id="@postid" data-toggle="tooltip" data-archived="@isArchived"></i>
+            <i href="@Context.Request.QueryString" class="fa fa-trash-can post-del" title="@Localizer["tipTopicDel"]" data-id="@postid" data-toggle="tooltip" data-archived="@isArchived"></i>
             <i snitz-if="@(islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-unlock admin  post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@postid" data-status="1" data-toggle="tooltip"></i>
             <i snitz-if="@((isadmin || ismoderator) && !islocked && !isArchived)" class="fa fa-lock admin  post-lock" title="@Localizer["cnfLockTopic"]" data-id="@postid" data-status="0" data-toggle="tooltip"></i>
             <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 0 && !isArchived)" class="fa fa-thumb-tack  post-stick" title="@Localizer["tipMakeSticky"]" data-id="@postid" data-status="1" data-toggle="tooltip"></i>
