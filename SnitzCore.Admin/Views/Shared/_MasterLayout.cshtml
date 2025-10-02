@@ -19,9 +19,9 @@
 <div class="d-flex flex-column" style="min-height: 100vh;">
     <partial name="MainNav"/>
 
-    <div class="container mt-3">
+    <div class="container mt-3 flex-grow-1">
         <partial name="_Menu" />
-        <main role="main" class="p-2 bg-form rounded mt-3">
+        <main role="main" class="p-2 rounded mt-3">
         <div id="liveAlertPlaceholder"></div>
             @RenderBody()
         </main>
@@ -40,9 +40,10 @@
     @await RenderSectionAsync("Scripts", required: false)
     <renderstoredcontent asp-key="admin-scripts"></renderstoredcontent>
     <script>
-            $(window).on('beforeunload', function(){
-                displayBusyIndicator();
-            });
+            // $(window).on('beforeunload', function(){
+            // console.log('showing busy from nasterlayout');
+            //     displayBusyIndicator();
+            // });
             window.addEventListener( "pageshow", function ( event ) {
               var historyTraversal = event.persisted ||
                                          ( typeof window.performance != "undefined" &&
@@ -53,12 +54,6 @@
                   }
             });
 
-        $(document).on('submit', 'form', function () {
-            displayBusyIndicator();
-        });
-            function displayBusyIndicator() {
-            $('.loading').show();
-        }
     </script>
 </body>
 </html>

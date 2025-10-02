@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CreativeMinds.StopForumSpam" Version="1.0.0-rc151" />
+    <PackageReference Include="HGO.ASPNetCore.FileManager" Version="1.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.16" />
     <PackageReference Include="SkiaSharp" Version="2.88.9" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.9" />

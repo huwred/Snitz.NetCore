@@ -18,7 +18,7 @@
     <button snitz-if="@(User.IsInRole("Administrator"))" data-bs-href="@Url.Action("Import", "LanguageManager")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Import Data</button>
     <button data-bs-href="@Url.Action("Export", "LanguageManager")" class="btn btn-primary" data-bs-target="#modal-container" data-bs-toggle="modal">Export Data</button>
     <a href="~/LanguageManager/Search" class="btn btn-primary text-white" title="Find a Resource"><i class="fa fa-search"></i> Find</a>
-    <a href="~/LanguageManager/Templates" class="btn btn-primary text-white" title="Edit Templates"><i class="fa fa-file-text-o"></i> Email Templates</a>
+    <a href="~/LanguageManager/Templates" class="btn btn-primary text-white" title="Edit Templates"><i class="fa fa-file-text"></i> Email Templates</a>
         <a href="~/LanguageManager/Grid" class="btn btn-primary text-white" title="Edit Templates"><i class="fa fa-table"></i> Grid View</a>
     </h3>
     <form asp-action="AddResource" data-ajax="true" data-ajax-update="#result-resource" class="row mt-3">
@@ -254,9 +254,11 @@
             $.get(action,
                 function (data) {
                     $("#upload-container").html(data);
+                    window.onbeforeunload=null;
                     $("#frmExportCSV").submit(function (e) {
                         $('input[type="submit"]').attr('disabled', 'disabled');
                         $('#modal-container').modal('hide');
+                        
                     });
                 });
         });

@@ -1,0 +1,28 @@
+﻿@using System.IO
+@using HGO.ASPNetCore.FileManager
+@using HGO.ASPNetCore.FileManager.ViewComponentsModel
+@using SnitzCore.BackOffice.Controllers
+@using SnitzCore.Service.Extensions
+@model FileViewModel
+
+@{
+    Layout = "_MasterLayout";
+
+}
+@section Styles {
+    @this.RenderHgoFileManagerCss(false)
+}
+
+<div style="height: 600px; margin-bottom:20px" class="mt-3">
+    @await Component.InvokeAsync("FileManagerComponent", new FileManagerModel()
+    {
+        Id = "FM1", //an application-wide unique ID
+        RootFolder = AppDomain.CurrentDomain.BaseDirectory, //your desired path on server
+        ApiEndPoint = Url.Action("HgoApi"), //Url of previously created action method
+        Config = new FileManagerConfig() // othe configuration
+        })
+</div>
+
+@section Scripts{
+    @this.RenderHgoFileManagerJavaScripts()
+}
