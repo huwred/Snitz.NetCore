@@ -72,7 +72,9 @@ namespace SnitzCore.Service
                     else
                     {
                         privatemsg.HideTo = 1;
+                        _dbContext.PrivateMessages.Update(privatemsg);
                     }
+                    _dbContext.SaveChanges();
                 }
                 else if (privatemsg.FromId == memberid)
                 {
@@ -83,7 +85,9 @@ namespace SnitzCore.Service
                     else
                     {
                         privatemsg.HideFrom = 1;
+                        _dbContext.PrivateMessages.Update(privatemsg);
                     }
+                    _dbContext.SaveChanges();
                 }
             }
             await _dbContext.SaveChangesAsync();
@@ -118,6 +122,7 @@ namespace SnitzCore.Service
                     {
                         privatemsg.HideTo = 1;
                         _dbContext.PrivateMessages.Update(privatemsg);
+                        _dbContext.SaveChanges();
                     }
                 }
                 else if (privatemsg.FromId == memberid)
@@ -130,10 +135,11 @@ namespace SnitzCore.Service
                     {
                         privatemsg.HideFrom = 1;
                         _dbContext.PrivateMessages.Update(privatemsg);
+                        _dbContext.SaveChanges();
                     }
                 }
-            await _dbContext.SaveChangesAsync();
             }
+            await _dbContext.SaveChangesAsync();
         }
 
         public Task Update(PrivateMessage pm)

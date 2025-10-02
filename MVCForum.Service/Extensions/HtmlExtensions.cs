@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Caching.Memory;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
@@ -9,6 +10,7 @@ using SnitzCore.Data.Models;
 using SnitzCore.Data.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -18,7 +20,19 @@ namespace SnitzCore.Service.Extensions
 {
     public static class HtmlExtensions
     {
+        public static string MimeType(this FileInfo file )
+        {
+            var provider = new FileExtensionContentTypeProvider();
+            // Variable to store the MIME type
+            string mimeType;
 
+            // Try to get the MIME type based on the file extension
+            if (!provider.TryGetContentType(file.Name, out mimeType))
+            {
+                mimeType = "application/octet-stream";
+            }
+            return mimeType;
+        }
         /// <summary>
         /// Renders the Members Rank titles and stars for display in the forum
         /// </summary>
