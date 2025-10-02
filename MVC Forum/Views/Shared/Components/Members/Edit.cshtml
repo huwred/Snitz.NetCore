@@ -49,14 +49,14 @@
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <input asp-for="Id" class="form-control" type="hidden" />
+            <input asp-for="Id" class="form-control" type="hidden" id="hdnId" />
             <div class="mb-3">
                 <label asp-for="Name" class="form-label">@Localizer["Username"]</label>
-                <input asp-for="Name" class="form-control" disabled="disabled" />
+                <input asp-for="Name" class="form-control" disabled="disabled" id="hdnName"/>
             </div>
             <div snitz-if="@(canedit || (Model.Member?.HideEmail != 1 && Model.Member?.Privateprofile != 1 && User.Identity!.IsAuthenticated))" class="mb-3">
-                <label asp-for="Email" class="form-label">@Localizer["Email"]</label>
-                <input asp-for="Email" type="hidden" />
+                <label asp-for="Email" class="form-label" >@Localizer["Email"]</label>
+                <input asp-for="Email" type="hidden" id="hdnEmail" />
                 <input asp-for="Newemail" class="form-control" value="@Model.Member?.Email" disabled="disabled" />
             </div>
             <div class="mb-3">

@@ -18,8 +18,23 @@
   
   <ItemGroup>
     <Compile Remove="logs\**" />
+    <Compile Remove="Views\FileManager\**" />
+    <Compile Remove="Views\PhotoAlbum\**" />
+    <Compile Remove="wwwroot\uploads\**" />
     <Content Remove="logs\**" />
+    <Content Remove="Views\FileManager\**" />
+    <Content Remove="Views\PhotoAlbum\**" />
+    <Content Remove="wwwroot\uploads\**" />
+    <EmbeddedResource Remove="Views\FileManager\**" />
+    <EmbeddedResource Remove="Views\PhotoAlbum\**" />
+    <EmbeddedResource Remove="wwwroot\uploads\**" />
     <None Remove="logs\**" />
+    <None Remove="Views\FileManager\**" />
+    <None Remove="Views\PhotoAlbum\**" />
+    <None Remove="wwwroot\uploads\**" />
+    <TypeScriptCompile Remove="Views\FileManager\**" />
+    <TypeScriptCompile Remove="Views\PhotoAlbum\**" />
+    <TypeScriptCompile Remove="wwwroot\uploads\**" />
   </ItemGroup>
   
   <ItemGroup>
@@ -120,7 +135,7 @@
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
     <PackageReference Include="SmartBreadcrumbs" Version="3.6.1" />
     <PackageReference Include="Snitz.Events" Version="1.0.2" />
-    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.3-rc015" />
+    <PackageReference Include="Snitz.PhotoAlbum" Version="1.0.3-rc016" />
     <PackageReference Include="Snitz.PostThanks" Version="1.0.3-rc47" />
     <PackageReference Include="Sysopoly.TagCloud" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />

@@ -180,9 +180,13 @@ $('.confirm-clearcache').on('click', function (e) {
 });
 
 /* Busy Indicator */
-$('body').on('submit', 'form', function () {
-    console.log('form submit');
-    displayBusyIndicator();
+$('body').on('submit', 'form', function (e) {
+    if ($(this).attr("id") != "frmExportCSV") {
+        displayBusyIndicator();
+    } else {
+        location.reload();
+    }
+    
 });
 
 window.onbeforeunload = function (event) {

@@ -2,6 +2,7 @@
 using BbCodeFormatter.Processors;
 using Hangfire;
 using Hangfire.Common;
+using HGO.ASPNetCore.FileManager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -225,14 +226,8 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton(builder.Environment.ContentRootFileProvider);
-//builder.Services.Configure<IdentityOptions>(options =>
-//{
-//    // Default User settings.
-//    options.User.AllowedUserNameCharacters =
-//            "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-//    options.User.RequireUniqueEmail = false;
+builder.Services.AddHgoFileManager();
 
-//});
 var app = builder.Build();
 app.MigrateDatabase();
 app.AddPostThanks();
@@ -266,6 +261,7 @@ app.UseStaticFiles(new StaticFileOptions
         };
     }
 });
+app.UseHgoFileManager();
 app.UseRouting();
 app.UseStatusCodePages(async context => {
     var request = context.HttpContext.Request;

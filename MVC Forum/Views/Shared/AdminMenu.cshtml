@@ -1,28 +1,28 @@
 ﻿<li class="nav-item dropdown">
-    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" id="navbarDropdownAdminLink">
+    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" id="navbarDropdownAdminLink" rel="nofollow noindex">
         @Localizer["mnuAdmin"]
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdminLink">
-        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">@Localizer["mnuAdminMainConfig"]</a></li>
-        <li><a class="dropdown-item" asp-controller="Admin" asp-action="EmailConfig" >Email Setup</a></li>
-        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Forum" >Forum Options</a></li>
-        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Features" >Features</a></li>
-        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Members" >Membership Settings</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index" rel="nofollow noindex">@Localizer["mnuAdminMainConfig"]</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="EmailConfig" rel="nofollow noindex">Email Setup</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Forum" rel="nofollow noindex">Forum Options</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Features" rel="nofollow noindex">Features</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Members" rel="nofollow noindex">Membership Settings</a></li>
         <li><hr class="dropdown-divider" /></li>
-        <li><a class="dropdown-item" href="~/LanguageManager/">@Localizer["mnuAdminLangResources"]</a></li>
-        <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search">Search Dictionary</a></li>
-        <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Templates">Email Templates</a></li>
+        <li><a class="dropdown-item" href="~/LanguageManager/" rel="nofollow noindex">@Localizer["mnuAdminLangResources"]</a></li>
+        <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search" rel="nofollow noindex">Search Dictionary</a></li>
+        <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Templates" rel="nofollow noindex">Email Templates</a></li>
         <li><hr class="dropdown-divider" /></li>
-        <li snitz-if="@User.IsInRole("SuperAdmin")"><a class="dropdown-item" asp-controller="Admin" asp-action="ListViews">Page Templates</a></li>
-        <li><a class="dropdown-item" asp-controller="LogView" asp-action="Index">Logs</a></li>
+        <li snitz-if="@User.IsInRole("SuperAdmin")"><a class="dropdown-item" asp-controller="Admin" asp-action="ListViews" rel="nofollow noindex">Page Templates</a></li>
+        <li><a class="dropdown-item" asp-controller="LogView" asp-action="Index" rel="nofollow noindex">Logs</a></li>
         <li><hr class="dropdown-divider" /></li>
         @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
-        <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">@Localizer["tipNewCategory"]</a></li>
-        <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create">@Localizer["tipNewForum"]</a></li>
+        <li><a class="dropdown-item" asp-controller="Category" asp-action="Create" rel="nofollow noindex">@Localizer["tipNewCategory"]</a></li>
+        <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create" rel="nofollow noindex">@Localizer["tipNewForum"]</a></li>
         @if (User.IsInRole("SuperAdmin"))
         {
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="~/snitzjobs">@Localizer["tipHangfire"]</a></li>
+            <li><a class="dropdown-item" href="~/snitzjobs" rel="nofollow noindex">@Localizer["tipHangfire"]</a></li>
             <li>
                 <link-confirm title="Clear Cache" jq-selector="confirm-clearcache" href="~/Admin/ClearCache" class="dropdown-item text-warning"></link-confirm>
             </li>
@@ -32,6 +32,8 @@
             <li>
                 <link-confirm title="Update Counts" jq-selector="confirm-counts" href="~/Admin/UpdateCounts" class="dropdown-item text-warning"></link-confirm>
             </li>
+
+            <li><a class="dropdown-item" asp-controller="FileManager" asp-action="Index" rel="nofollow noindex">Download Manager</a></li>
         }
     </ul>
 </li>

@@ -797,13 +797,30 @@ namespace MVCForum.Controllers
             member!.Newemail = model.NewEmail;
             _snitzDbContext.Update(member);
             await _snitzDbContext.SaveChangesAsync();
-            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
-            var token = await _userManager.GenerateChangeEmailTokenAsync(user,model.NewEmail!);//.GenerateEmailConfirmationTokenAsync(user);
+
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user,model.NewEmail!);
+
+            if(!_config.IsEnabled("STREMAILVAL"))
+            {
+                //if email validation is off then we can go ahead and change the email now
+                var result = await _userManager.ChangeEmailAsync(user,model.NewEmail!, token);
+                if (result.Succeeded)
+                {
+                    member.Email = model.NewEmail!;
+                    member.Newemail = null;
+                    _memberService.Update(member);
+                    await _snitzDbContext.SaveChangesAsync();
+                    ViewBag.Message = _languageResource.GetString("lblEmailChanged");
+                    return View(model);
+                }
+                ViewBag.Error = "Error changing email";
+                return View("Error");
+            }
             token = HttpUtility.UrlEncode(token);
             var confirmationLink = Url.Action(nameof(ChangeEmail), "Account", new { token, username = member.Name }, Request.Scheme);
             var message = new EmailMessage(new[] { model.NewEmail! }, 
                 _languageResource["Confirm"].Value, 
-                _emailSender.ParseTemplate("changeEmail.html",_languageResource["Confirm"].Value,model.NewEmail!,member.Name, confirmationLink!, cultureInfo.Name));
+                _emailSender.ParseTemplate("changeEmail.html",_languageResource["Confirm"].Value,model.NewEmail!,member.Name, confirmationLink!, Thread.CurrentThread.CurrentCulture.Name));
             
             await _emailSender.SendEmailAsync(message);
             ViewBag.Message = _languageResource.GetString("EmailConfirm");
@@ -811,17 +828,25 @@ namespace MVCForum.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ChangeEmail(string? token, string? user)
+        public async Task<IActionResult> ChangeEmail(string? token, string? username)
         {
-            if (user == null || token == null)
-                return View("Error");            
+            if (username == null || token == null)
+            { 
+                ViewBag.Error = "Invalid Url parameters";
+                return View("Error"); 
+            }            
             
-            var forumUser = await _userManager.FindByIdAsync(user);
+            var forumUser = await _userManager.FindByNameAsync(username);
             var currmember = _memberService.GetById(forumUser?.MemberId);
             if (forumUser == null || currmember == null)
-                return View("Error");
+            { 
+                ViewBag.Error = "User not found";
+                return View("Error"); 
+            } 
             if (currmember.Newemail != null)
             {
+                token = HttpUtility.UrlDecode(token);
+
                 var result = await _userManager.ChangeEmailAsync(forumUser,currmember.Newemail, token);
                 if (result.Succeeded)
                 {
@@ -987,14 +1012,23 @@ namespace MVCForum.Controllers
         public IActionResult DeleteAvatar(int id)
         {
             var currentMember = _memberService.Current();
-            if (currentMember != null)
+            if(currentMember != null && currentMember.PhotoUrl != null && currentMember.PhotoUrl.ToLowerInvariant().Contains("http"))
+            {
+                currentMember.PhotoUrl = null;
+                _snitzDbContext.Update(currentMember);
+                _snitzDbContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            if (currentMember != null && currentMember.PhotoUrl != null)
             {
                 var avPath = Path.Combine(_env.WebRootPath, _config.ContentFolder,"Avatar");
+
                 try
                 {
-                    if (System.IO.File.Exists(Path.GetFullPath(avPath,currentMember.PhotoUrl!)))
+                    if (System.IO.File.Exists(Path.Combine(avPath,currentMember.PhotoUrl!)))
                     {
-                        System.IO.File.Delete(Path.GetFullPath(avPath, currentMember.PhotoUrl!));
+                        System.IO.File.Delete(Path.Combine(avPath, currentMember.PhotoUrl!));
                     }
                 }
                 catch (Exception e)

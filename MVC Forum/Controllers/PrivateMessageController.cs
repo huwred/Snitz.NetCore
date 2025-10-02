@@ -109,7 +109,7 @@ namespace MVCForum.Controllers
         {
             try
             {
-                _pmService.Delete(pmid, userid).RunSynchronously();
+                _pmService.Delete(pmid, userid);
                 return Json(new { success = true, responseText= "Your message was deleted!"});
             }
             catch (Exception e)

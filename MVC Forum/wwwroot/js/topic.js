@@ -88,7 +88,6 @@ $("#QuickReply").submit(function (e) {
             location.href = data.url;// + '?page=-1';
         },
         error: function (err) {
-            console.log(err);
             qrappendAlert(SnitzVars.floodErr, 'danger');
             $('.loading').hide();
         }
@@ -130,8 +129,6 @@ $('#submitUpload').on('click', function(e) {
         success: function(data) {
             if (data.result) {
                 if (!data.type) {
-                    console.log(data);
-                    debugger;
                     var img = "[image=" + data.id + "]";
                     if (data.caption) {
                         img = "[cimage=" + data.id + "]";
@@ -179,28 +176,30 @@ $('body').off().on("click", ".email-link", function(e) {
         $('#memberModal .modal-title').html('Send Member an Email');
         $('#member-modal').load(href + "/" + memberid, function() {});
         $('#memberModal .modal-footer').show();
-
+        $(":reset").on("click", function () {
+            $('#send-email').prop('disabled', false);
+        });
         $('body').on("click",
-                "#send-email",
-                function(e) {
-                    e.preventDefault();
-                    $(this).prop('disabled', true);
-                    var post_url = $('#sendemail-form').attr("action");
-                    var form_data = $('#sendemail-form').serialize();
-                    $.ajax({
-                        url: post_url,
-                        type: "POST",
-                        data: form_data
-                    }).done(function(response) {
-                        if (response.result) {
-                            $('#memberModal').modal('hide');
-                        } else {
-                            //Dont close the modal, display the error
-                            $('#member-modal').html(response);
-                        }
-                    });
-
+            "#send-email",
+            function(e) {
+                e.preventDefault();
+                $(this).prop('disabled', true);
+                var post_url = $('#sendemail-form').attr("action");
+                var form_data = $('#sendemail-form').serialize();
+                $.ajax({
+                    url: post_url,
+                    type: "POST",
+                    data: form_data
+                }).done(function(response) {
+                    if (response.result) {
+                        $('#memberModal').modal('hide');
+                    } else {
+                        //Dont close the modal, display the error
+                        $('#member-modal').html(response);
+                    }
                 });
+
+            });
         $('#memberModal').data('id', memberid).modal('show');
 });
 
@@ -209,12 +208,27 @@ $('body').on("click", ".sendpm-link", function(e) {
         var memberid = $(this).data("id");
         var href = $(this).data("url");
         $('#pmModal .modal-title').html('Send private message');
-        $('#pm-modal').load(href + "/" + memberid, function() {});
-        //$('#memberModal #btnOk').hide();
+        $('#pm-modal').load(href + "/" + memberid, function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms,
+                function (form) {
+                    form.addEventListener('submit',
+                        function (event) {
+                            if (form.checkValidity() === false) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
 
-        $('body').on("click",
-                "#send-pm",
-                function(e) {
+                            form.classList.add('was-validated');
+                        },
+                        false);
+                });
+            $(":reset").on("click", function () {
+                $('#send-pm').prop('disabled', false);
+            });
+            $('body').on("click", "#send-pm",
+                function (e) {
                     e.preventDefault();
                     $(this).prop('disabled', true);
                     var post_url = $('#sendpm-form').attr("action");
@@ -223,7 +237,7 @@ $('body').on("click", ".sendpm-link", function(e) {
                         url: post_url,
                         type: "POST",
                         data: form_data
-                    }).done(function(response) {
+                    }).done(function (response) {
                         if (response.result) {
                             $('#pmModal').modal('hide');
                         } else {
@@ -233,6 +247,11 @@ $('body').on("click", ".sendpm-link", function(e) {
                     });
 
                 });
+
+        });
+
+
+
         $('#pmModal').data('id', memberid).modal('show');
 
 });

@@ -50,7 +50,7 @@
                                 if (data.success) {
                                     appendAlert(data.responseText, "success");
                                     setTimeout(function () {
-                                        $("#alertmessage .btn-close").click();
+                                        $("#alertmessage .btn-close").trigger("click");
                                         location.reload(true);
                                     }, 3000);
                                 } else {
@@ -67,7 +67,7 @@
                                 if (data.success) {
                                     appendAlert(data.responseText, "success");
                                     setTimeout(function () {
-                                        $("#alertmessage .btn-close").click();
+                                        $("#alertmessage .btn-close").trigger("click");
                                         location.reload(true);
                                     }, 3000);
                                 } else {
@@ -88,7 +88,7 @@
                                 if (data.success) {
                                     appendAlert(data.responseText, "info");
                                     setTimeout(function () {
-                                        $("#alertmessage .btn-close").click();
+                                        $("#alertmessage .btn-close").trigger("click");
                                         location.reload(true);
                                     }, 3000);
                                 } else {
@@ -106,7 +106,7 @@
                                 if (data.success) {
                                     appendAlert(data.responseText, "info");
                                     setTimeout(function () {
-                                        $("#alertmessage .btn-close").click();
+                                        $("#alertmessage .btn-close").trigger("click");
                                         location.reload(true);
                                     }, 3000);
                                 } else {

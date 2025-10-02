@@ -19,7 +19,7 @@
                 <div snitz-if="@(!Model.IsPopUp)" id="toHelp" class="form-text">@Localizer["RecipientSeparator"]</div>
                 @if (Model.IsPopUp)
                 {
-                    <input asp-for="To" type="hidden"/>
+                    <input asp-for="To" type="hidden" id="hdnTo"/>
                 }
                 <span asp-validation-for="To"></span>
             </div>

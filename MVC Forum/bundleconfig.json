@@ -270,5 +270,11 @@
     "inputFiles": [
       "wwwroot/js/admin/member.image.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/managefiles.min.css",
+    "inputFiles": [
+      "wwwroot/css/managefiles.css"
+    ]
   }
 ]
