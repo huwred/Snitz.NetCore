@@ -452,3 +452,6 @@ FodyWeavers.xsd
 /MVC Forum/Views/PhotoAlbum/_popAlbumUpload.cshtml
 /MVC Forum/wwwroot/Content/Avatar/shroom.webp
 /MVC Forum/Views/PhotoAlbum/_AddCategory.cshtml
+/MVC Forum/wwwroot/uploads/flat-design-man-fishing-silhouette.zip
+/MVC Forum/wwwroot/uploads/sf2k_v34_07.zip
+/MVC Forum/Views/FileManager/Index.cshtml
