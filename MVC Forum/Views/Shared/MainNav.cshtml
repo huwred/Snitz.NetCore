@@ -36,6 +36,7 @@
                                 <li><a class="dropdown-item" href="~/About#contact">@Localizer["mnuContact"]</a></li>
                                 <li><a class="dropdown-item" href="~/About#privacy">@Localizer["mnuPrivacyPolicy"]</a></li>
                                 <li><a class="dropdown-item" href="~/About#cookie">@Localizer["mnuCookies"]</a></li>
+                                <li snitz-if="@(SnitzConfig.TableExists("FORUM_FILECOUNT"))"><a class="dropdown-item" href="~/Releases">@Localizer["mnuRelease"]</a></li>
                             </ul>
                         </li>
                     </ul>

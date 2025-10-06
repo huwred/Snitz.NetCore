@@ -2,7 +2,7 @@
 @using SnitzCore.Service.Extensions
 
 <footer>
-    <span class="flo">@Html.Raw(SnitzConfig.ForumTitle) - &copy; @string.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year) </span>
+    <span class="flo">@Html.Raw(SnitzConfig.ForumTitle) - &copy; @Html.Raw(string.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year)) </span>
     <span><br /><a href="~/About#privacy" title="View our privacy policy">@Localizer["mnuPrivacyPolicy"]</a> | <a href="~/About#cookie" title="View our cookie policy">@Localizer["mnuCookies"]</a><br /></span>
     <span snitz-if="@(SnitzConfig.GetIntValue("INTPAGETIMER") == 1)" class="page-timer" id="loadTime"></span>
     @* <span><br />Last updated: @ControllerExtensions.GetLinkerTimestampUtc(Assembly.GetExecutingAssembly());</span> *@

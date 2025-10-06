@@ -1,0 +1,29 @@
+﻿@model FileCount
+<form asp-controller="FileManager" asp-action="EditRelease" id="file-form" class="needs-validation" novalidate data-ajax="true" data-ajax-complete="filedone">
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Description</label>
+        <textarea asp-for="Title" class="form-control" placeholder="Title (required)" required maxlength="255" rows="5"></textarea>
+        <div class="invalid-feedback">
+            Please provide a Title.
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Version" class="form-label">Version</label>
+        <input asp-for="Version" class="form-control" placeholder="Version" required maxlength="10" />
+        <div class="invalid-feedback">
+            Please provide the version.
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="LinkHits" class="form-label">Download Counter</label>
+        <input asp-for="LinkHits" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="LinkOrder" class="form-label">Order</label>
+        <input asp-for="LinkOrder" class="form-control" />
+    </div>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="FileName" />
+    <input type="hidden" asp-for="Posted" />
+
+</form>

@@ -12,6 +12,7 @@
             $("#alertmessage").slideUp(500);
         }, 3000);
     }
+
 });
 window._link_was_clicked = false;
 String.prototype.replaceAt=function(index, character) {
@@ -198,6 +199,7 @@ window.onbeforeunload = function (event) {
 };
 
 $('body').on('click', 'a', function (event) {
+    console.log("link clicked");
     if ($(this).attr("rel")) {
         window._link_was_clicked = true;
     }
@@ -278,21 +280,7 @@ function ValidateForms() {
 
 }
 
-/* * Insert BBCode tags around the selected text in the textarea
- * @param {string} starttag - The opening BBCode tag
- * @param {string} endtag - The closing BBCode tag
- * @param {string} textareaid - The ID of the textarea to modify
- */
-//function bbcodeinsert(starttag, endtag, textareaid) {
-//    var $txt = $("#" + textareaid);
 
-//    var textAreaTxt = $txt.val();
-//    var startPos = $txt[0].selectionStart;
-//    var endPos = $txt[0].selectionEnd;
-//    var sel = $txt.val().substring(startPos, endPos);
-
-//    $txt.val(textAreaTxt.replaceAt(startPos, starttag + sel + endtag) + textAreaTxt.substring(endPos));
-//}
 
 async function b_confirm(msg) {
     const modalElem = document.createElement('div')

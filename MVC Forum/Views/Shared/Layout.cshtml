@@ -54,9 +54,6 @@
     @await Component.InvokeAsync("SnitzThemeCss")
     @await RenderSectionAsync("Styles", required: false)
 
-        <script type="text/javascript" src="~/js/bootstrap.bundle.min.js"></script>
-        <script type="text/javascript" src="~/js/jquery.min.js"></script>
-        <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js"></script>
 
 </head>
 <body>
@@ -93,13 +90,16 @@
         </div>
     </div>
 
+        <script type="text/javascript" src="~/js/jquery.min.js" ></script>
+        <script type="text/javascript" src="~/js/bootstrap.bundle.min.js" ></script>
+        <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js" ></script>
     <environment include="Development">
         <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js" ></script>
-        <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" defer></script>
-        <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
         <partial name="GlobalJs" />
+        <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" ></script>
+        <script type="text/javascript" src="~/js/jquery.cookie.js" ></script>
         <partial name="ValidationScriptsPartial" />
-        <script type="text/javascript" src="~/js/site.js" asp-append-version="true" defer></script>
+        <script type="text/javascript" src="~/js/site.js" asp-append-version="true" ></script>
     </environment>
     <environment exclude="Development">
         <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
@@ -121,7 +121,7 @@
     /* Show the user card popup when clicking on a profile link */
     $(document).on("click", ".profile-popup", function (e) {
         e.preventDefault();
-        var rect = e.target.getBoundingClientRect(); 
+        var rect = e.target.getBoundingClientRect();
         $("#user-card .modal-dialog").css('position', 'absolute');
         $("#user-card .modal-dialog").css('top', rect.top - 100 + "px");
         $("#user-card .modal-dialog").css('left', rect.left);

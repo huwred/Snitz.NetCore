@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snitz.PostThanks", "Snitz.P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlMigrations", "Migrators\MySqlMigrations\MySqlMigrations.csproj", "{851522F8-584F-AC34-6137-F55F60C7CBDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YG.ASPNetCore.FileManager", "F:\Temp\YG.ASPNetCore.FileManager-master\src\YG.ASPNetCore.FileManager\YG.ASPNetCore.FileManager.csproj", "{6FC0405E-59D3-74CE-D0D5-22BE934DA368}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{851522F8-584F-AC34-6137-F55F60C7CBDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{851522F8-584F-AC34-6137-F55F60C7CBDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{851522F8-584F-AC34-6137-F55F60C7CBDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FC0405E-59D3-74CE-D0D5-22BE934DA368}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FC0405E-59D3-74CE-D0D5-22BE934DA368}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FC0405E-59D3-74CE-D0D5-22BE934DA368}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FC0405E-59D3-74CE-D0D5-22BE934DA368}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -18,6 +18,7 @@ using SnitzCore.Data.Models;
 using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -1573,6 +1574,11 @@ namespace MVCForum.Controllers
         {
             var result = await _postService.MakeSticky(id, (short)state);
             return result ? Json(new { result, data = id }) : Json(new { result, error = "Unable to toggle Status" });
+        }
+
+        public IActionResult TopicPreview(int id)
+        {
+            return ViewComponent("TopicPreview", new { id });
         }
 
         //[ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]

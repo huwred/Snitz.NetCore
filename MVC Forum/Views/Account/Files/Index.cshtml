@@ -10,8 +10,8 @@
 @inject IWebHostEnvironment _environment
 
 @{
-    Layout = "_MasterLayout";
-
+    Layout = "Layout";
+    var member = ViewBag.MemberId as int?;
 }
 @section Styles {
 @this.RenderYGfilemanagerCss(false,new[]{"fontawesome"},Context.Request.PathBase)
@@ -23,16 +23,17 @@
 }
 
 <div style="height: 600px; margin-bottom:20px" class="mt-3">
+    <p class="p-1 h5 text-danger">Important! Deleting any of these file could result in broken links if the file is referenced in a post</p>
         @await Component.InvokeAsync("FileManagerComponent", new FileManagerModel(){
-            Id = "FM1",
-            RootFolder = _environment.ContentRootPath,
-            ApiEndPoint = Url.Action("SnitzFileApi"),
+            Id = "FMM1",
+            RootFolder = _environment.WebRootPath + "/Content/Members/" + member,
+            ApiEndPoint = Url.Action("SnitzFileApi","FileManager"),
             Config = new FileManagerConfig(){
                 StorageMaxSizeMByte = 0,
                 UseEncryption = false,
                 UseRecycleBin = false,
                 EncryptionKey = "<Your Super Secret Encryption Key>",
-                DisabledFunctions = { Command.Zip, Command.Unzip },
+                DisabledFunctions = { Command.Unzip,Command.CreateNewFolder,Command.Upload,Command.CreateNewFile },
                 HiddenFolders = { "bin", "runtimes", "Properties","refs", "_content", "codemirror", "Identity", "is-cache"},
                 //Language = new TurkishLanguage(),                
             }

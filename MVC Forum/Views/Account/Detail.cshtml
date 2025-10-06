@@ -49,7 +49,7 @@
                 ValidateForms();
             }, false);
         })();
-        if ($('.img-fluid').attr("src") == "/images/ninja-1027877_960_720.webp") {
+        if ($('.img-fluid').attr("src") == SnitzVars.baseUrl + "/images/ninja-1027877_960_720.webp") {
             $(".icon").attr("title", "Add avatar");
             var el = document.querySelector('.fa-trash');
             el.classList.remove('fa-trash');
@@ -131,7 +131,7 @@
             var form = $("#upload-form");
             var formData = new FormData(form[0]);
             $.ajax({
-                url: SnitzVars.baseUrl + $("#upload-form").attr("action"),
+                url:  $("#upload-form").attr("action"),
                 type: "POST",
                 data: formData,
                 contentType: false,

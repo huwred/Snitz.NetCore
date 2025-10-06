@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Home;
 using MVCForum.ViewModels.Post;
+using SmartBreadcrumbs;
 using SmartBreadcrumbs.Attributes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -31,18 +33,28 @@ namespace MVCForum.Controllers
         private readonly IPost _postService;
         private readonly IAdRotator _banner;
         private readonly ICodeProcessor _bbcodeProcessor;
+        private readonly ISnitzConfig _config;
+        private string LandingPage;
 
-        public HomeController(ICodeProcessor bbcodeProcessor, IMember memberService, IAdRotator banner, ISnitzConfig config,IPost postservice, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, ISnitzCookie snitzcookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
+        public HomeController(ICodeProcessor bbcodeProcessor, IMember memberService, IAdRotator banner, ISnitzConfig config,IPost postservice, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, ISnitzCookie snitzcookie,IConfiguration settings) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _snitzcookie = snitzcookie;
             _postService = postservice;
             _banner = banner;
             _bbcodeProcessor = bbcodeProcessor;
+            _config = config;
+            LandingPage = settings.GetValue<string>("SnitzForums:LandingPage","")!;
         }
 
         //[ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any)]
         public IActionResult Index()
-        {            
+        {
+            if (!string.IsNullOrWhiteSpace(LandingPage))
+            {
+                BreadcrumbManager.Options.DontLookForDefaultNode = true;
+                return RedirectPermanent(_config.RootFolder + "/AllForums");
+            }
+            
             try
             {
                 return View(new HomeIndexModel

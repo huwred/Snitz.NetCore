@@ -156,6 +156,29 @@
             </div>
         }
     </div>
+    @if(controller == "Reply" && Model.TopicId > 0)
+    {
+        <div class="row mt-3 mb-3">
+            <div class="col col-md-10 offset-md-1 bg-form p-2 rounded">
+                <div class="accordion" id="previewaccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                @Localizer["lblTopicReview"]
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordion">
+                            <div class="d-flex justify-content-center m-4">
+                              <div class="spinner-border" role="status">
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+        </div>
+    }
+
 </div>
 <partial name="Modal\UploadModal" />
 <modal id="previewModal" title="@Localizer["tipPreview"].Value" size="Large">
@@ -174,4 +197,10 @@
     <script type="text/javascript" src="~/js/initPostForm.js"></script>
     <script type="text/javascript" src="~/js/addpostform.min.js"></script>
     <renderstoredcontent asp-key="topic-post"></renderstoredcontent>
+<script>
+    $('#previewaccordion').on('show.bs.collapse', function () {
+          console.log("expanded");
+          $('#collapseOne').load('@Url.Action("TopicPreview", "Topic", new { id = Model.TopicId })' );
+    });
+</script>
 }

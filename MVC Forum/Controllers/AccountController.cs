@@ -88,7 +88,11 @@ namespace MVCForum.Controllers
 
             return false;
         }
-
+        public IActionResult Files(int id)
+        {
+            ViewBag.MemberId = id;
+            return View("Files/Index");
+        }
         [CustomAuthorize]
         //[ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
         public IActionResult Index(int pagesize,string? sortdir,string? orderby,string? initial, int page=1)

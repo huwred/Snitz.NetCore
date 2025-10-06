@@ -3,13 +3,13 @@
 @model List<AvatarViewModel>
 
 <div class="container overflow-hidden py-6">
-    <div class="grid-wrapper col">
+    <div class="grid-wrapper col mt-2">
         @foreach (var item in Model)
         {
             <div class="lc-block">
                 <figure>
                     <snitz-avatar src="@item.Path" def-src="~/images/notfound.jpg" class="img-thumbnail" data-id="@item.Id" width="100" height="100" />
-                    <figcaption><i class="fa fa-trash fs-4 del-avatar" data-id="@item.Id" data-img="@item.Path"></i>@item.Name</figcaption>
+                    <figcaption><i class="fa fa-trash fs-6 del-avatar" data-id="@item.Id" data-img="@item.Path"></i>@item.Name</figcaption>
                 </figure>
 
             </div>

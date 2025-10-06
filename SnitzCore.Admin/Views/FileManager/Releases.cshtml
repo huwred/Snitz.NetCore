@@ -1,0 +1,173 @@
+﻿@using SnitzCore.BackOffice.Controllers
+@using SnitzCore.Service.Extensions
+@model List<FileRelease>
+
+@{
+    Layout = "Layout";
+}
+@section Styles{
+    <style>
+        .counter {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+        .counter.warning {
+            color: red;
+        }
+        tbody td{
+            border:none;
+        }
+        tbody:nth-child(odd) td {
+            background-color: #ececec !important;
+        }
+    </style>
+}
+@if(User.IsInRole("SuperAdmin"))
+{
+    <div class="accordion" id="accordionExample">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Upload New Release
+          </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+                <form asp-controller="FileManager" asp-action="UploadRelease" method="post" enctype="multipart/form-data" class="needs-validation col-md-6" novalidate>
+                        <div class="mb-3">
+                            <label for="version" class="form-label">Version</label>
+                            <input name="Version" id="version" class="form-control" placeholder="Version" required maxlength="10" />
+                            <div class="invalid-feedback">
+                                Please provide the version.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtTitle" class="form-label">Description</label>
+                            <textarea name="Title" id="txtTitle" class="form-control" placeholder="Title (required)" required maxlength="255" rows="5"></textarea>
+                            <div id="charCounter" class="counter">0 / 255 characters</div>
+                            <div class="invalid-feedback">
+                                Please provide a Title.
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="file" name="Files" class="form-control" accept=".zip" required />
+                            <button type="submit" class="btn btn-success">Upload</button>
+                            <div class="invalid-feedback">
+                                Please select a File.
+                            </div>
+                        </div>
+                </form>
+            </div>
+        </div>
+      </div>
+    </div>
+}
+
+<div class="container">
+    <h2>Forum Releases</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope ="col">Name</th>
+                <th scope="col">Size (KB)</th>
+                <th scope="col">Last Modified</th>
+                <th scope="col">Ver.</th>
+                <th scope="col">Downloads</th>
+                <th scope="col">&nbsp;</th>
+            </tr>
+        </thead>
+        @foreach (var file in Model.OrderBy(f=>f.LinkOrder))
+        {
+            <tbody>
+                <tr>
+                    <td colspan="6">@file.Title</td>
+                </tr>
+                <tr>
+                    <td>@file.Filename</td>
+                    <td>@(file.File.Length / 1024)</td>
+                    <td>@file.File.LastWriteTime.ToForumDisplay()</td>
+                    <td>@file.Version</td>
+                    <td>@file.LinkHits</td>
+                    <td class="fs-5">
+                        <a data-toggle="tooltip" rel="nofollow" title="Download the file @file.Filename" href="@Url.Action("Download", "FileManager", new { id = file.Id })" class="text-decoration-none"><i class="fa fa-download"></i></a>
+                        <a snitz-if="@(User.IsInRole("SuperAdmin"))" rel="nofollow" title="Edit file options" href="@Url.Action("EditRelease", "FileManager", new { id = file.Id })" class="text-decoration-none"><i class="fa fa-cog" data-id="@file.Id"></i></a>
+                    </td>
+                </tr>
+            </tbody>
+        }
+        @if (Model.Count == 0)
+        {
+            <tbody>
+                <tr><td colspan="6" class="text-center"><h2>No current releases</h2></td></tr>
+            </tbody>
+        }
+    </table>
+    <p>
+        If you wish to build/customise the application yourself, the source code is available on  <a href="https://github.com/huwred/Snitz.NetCore" title="Snitz .NET Core GitHub repository" target="_blank">GitHub</a>
+    </p>
+</div>
+<modal id="fileModal" title="Edit Properties" >
+    <modal-body>
+        <div id="fileModal-body"></div>
+    </modal-body>
+    <modal-footer dismiss-text="Cancel">
+        <button id="update-file" form="file-form" type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
+        <button type="reset" form="file-form" class="btn btn-warning ">@Localizer["btnReset"]</button>
+    </modal-footer>
+</modal>
+
+@section Scripts{
+<script>
+        $(document).on("click",'.fa-cog',function(e){
+            e.preventDefault();
+            $('#fileModal-body').load(SnitzVars.baseUrl + "/FileManager/EditRelease/" + $(this).data("id"),function() {
+                    $('#fileModal').modal('show');
+                    ValidateForms();
+            });
+              
+    });
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms,
+    function (form) {
+    form.addEventListener('submit',
+        function (event) {
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        form.classList.add('was-validated');
+        },false);
+    });
+
+    // Select the textarea and counter elements
+    const textArea = document.getElementById('txtTitle');
+    const charCounter = document.getElementById('charCounter');
+
+    // Maximum character limit
+    const maxChars = parseInt(textArea.getAttribute('maxlength'), 10);
+
+    // Update the character counter as the user types
+    textArea.addEventListener('input', () => {
+        const currentLength = textArea.value.length;
+
+        // Update the counter text
+        charCounter.textContent = `${currentLength} / ${maxChars} characters`;
+
+        // Add a warning class if near the limit
+        if (currentLength > maxChars * 0.9) {
+            charCounter.classList.add('warning');
+        } else {
+            charCounter.classList.remove('warning');
+        }
+    });
+
+        function filedone() {
+            $('#fileModal').modal('hide');
+            location.href = SnitzVars.baseUrl + "/Releases";
+        }
+</script>
+}

@@ -1,11 +1,10 @@
 ﻿using BbCodeFormatter;
 using BbCodeFormatter.Processors;
 using Hangfire;
-using Hangfire.Common;
-using HGO.ASPNetCore.FileManager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -36,7 +35,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-
+using YG.ASPNetCore.FileManager;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,6 +62,19 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
 
 },ServiceLifetime.Scoped);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+//Set Values by default
+builder.Services.Configure<FormOptions>(x =>
+{
+    x.ValueLengthLimit = int.MaxValue;
+    x.MultipartBodyLengthLimit = int.MaxValue;
+    x.MultipartBoundaryLengthLimit = int.MaxValue;
+    x.MultipartHeadersCountLimit = int.MaxValue;
+    x.MultipartHeadersLengthLimit = int.MaxValue;
+});
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    options.Limits.MaxRequestBodySize = 52428800*4; // 50 MB
+//});
 
 builder.Services.AddDefaultIdentity<ForumUser>(options =>
     {
@@ -140,9 +152,11 @@ builder.Services.AddMvc().AddViewLocalization();
 //    builder.Services.AddControllersWithViews();
 //}
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+builder.Services.AddYGfilemanager();
 builder.Services.AddResponseCaching();
 builder.Services.AddBreadcrumbs(Assembly.GetExecutingAssembly(), options =>
 {
+    //options.DontLookForDefaultNode = builder.Configuration["SnitzForums:LandingPage"] != "";
     options.TagName = "nav";
     options.TagClasses = "";
     options.OlClasses = "breadcrumb";
@@ -226,7 +240,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton(builder.Environment.ContentRootFileProvider);
-builder.Services.AddHgoFileManager();
+
 
 var app = builder.Build();
 app.MigrateDatabase();
@@ -261,7 +275,7 @@ app.UseStaticFiles(new StaticFileOptions
         };
     }
 });
-app.UseHgoFileManager();
+app.UseYGfilemanager("");//builder.Configuration["SnitzForums:VirtualPath"]
 app.UseRouting();
 app.UseStatusCodePages(async context => {
     var request = context.HttpContext.Request;

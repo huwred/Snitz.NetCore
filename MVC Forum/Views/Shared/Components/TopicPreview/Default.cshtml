@@ -1,0 +1,41 @@
+﻿@using SnitzCore.Data.Extensions
+@model Post
+
+<div class="accordion-body">
+    <div class="panel-body">
+        <div class="col">
+            <div class="message clearfix">
+                <label class="text-body-emphasis">@Html.Raw(BbCodeProcessor.Subject(Model.Title)) </label>
+                <label class="text-body-tertiary">
+                    @Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created.FromForumDateStr()"></snitz-datetime> @Model.Member.Name
+                </label>
+                <hr class="title" />
+                @Html.Raw(BbCodeProcessor.Format(Model.Content))
+            </div>
+        </div>
+    </div>
+    <hr class="title mb-3" />
+    <div class="panel-heading"><label class="h4 panel-title">@Localizer["lblRecentActivity"]</label><hr class="title" /></div>
+    <div class="panel-body padding-none  ">
+        <ul class="replylist topics">
+            @{
+                var replyCount = Model.ReplyCount;
+                var pageReplies = Model.Replies.OrderByDescending(r => r.Created).Take(Math.Min(10,replyCount)).ToArray();
+
+                var rowclass = "bg-body";
+                for (int i = 0; i < Math.Min(10,replyCount); i++)
+                {
+                    var reply = pageReplies[i];
+                    <li class="row @rowclass">
+                        <dl class="panel-body preview-item">
+                            <dt>@reply.Member.Name <snitz-datetime class="text-body-tertiary" datetime="@reply.Created.FromForumDateStr()" freindly-time="true"></snitz-datetime></dt>
+
+                            <dd class="post">@Html.Raw(BbCodeProcessor.Format(reply.Content))<br /></dd>
+                        </dl>
+                    </li>
+                    rowclass = rowclass == "bg-body-secondary" ? "bg-body" : "bg-body-secondary";
+                }
+            }
+        </ul>
+    </div>
+</div>

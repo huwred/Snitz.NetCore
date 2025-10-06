@@ -27,6 +27,7 @@ using X.PagedList;
 namespace MVCForum.Controllers
 {
     [CustomAuthorize]
+
     public class ForumController : SnitzBaseController
     {
         private readonly IForum _forumService;
@@ -95,6 +96,7 @@ namespace MVCForum.Controllers
                     ViewBag.RequireAuth = true;
                 }
             }
+            
             var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
             var catPage = new MvcBreadcrumbNode("", "Category", forum.Category?.Name) { Parent = forumPage,RouteValues = new {id=forum.Category?.Id}};
             var topicPage = new MvcBreadcrumbNode("Index", "Post", forum.Title) { Parent = catPage };

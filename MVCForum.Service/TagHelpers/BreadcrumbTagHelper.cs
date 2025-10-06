@@ -1,16 +1,18 @@
-﻿using System.Reflection;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using SmartBreadcrumbs;
 using SmartBreadcrumbs.Nodes;
+using System.Reflection;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 
 namespace SnitzCore.Service.TagHelpers
 {
@@ -40,9 +42,17 @@ namespace SmartBreadcrumbs
         #endregion
 
         public BreadcrumbTagHelper(BreadcrumbManager breadcrumbManager, IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor, HtmlEncoder htmlEncoder)
+            IActionContextAccessor actionContextAccessor, HtmlEncoder htmlEncoder,IConfiguration settings)
         {
             _breadcrumbManager = breadcrumbManager;
+            if(settings.GetValue<string>("SnitzForums:LandingPage","")! != "")
+            {
+                BreadcrumbManager.Options.DontLookForDefaultNode = true;
+            }
+            else
+            {
+                BreadcrumbManager.Options.DontLookForDefaultNode = false;
+            }
             _htmlEncoder = htmlEncoder;
             if (actionContextAccessor.ActionContext != null)
             {
