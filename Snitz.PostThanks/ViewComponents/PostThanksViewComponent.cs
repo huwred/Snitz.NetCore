@@ -26,7 +26,7 @@ namespace Snitz.PostThanks.ViewComponents
             _memberService = memberService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string template,int? id = 0,int? topicid = 0, bool showcount = false, bool archived = false)
+        public async Task<IViewComponentResult> InvokeAsync(string template,int? id = 0,int? topicid = 0, bool showcount = false, bool archived = false, bool? showlink = true)
         {
             if (template == "ForumConfig")
             {
@@ -46,7 +46,7 @@ namespace Snitz.PostThanks.ViewComponents
                     ReplyId = id.Value,
                     Thanked = false,
                     ShowCount = showcount,
-                    Showlink = true
+                    Showlink = showlink != null ? showlink.Value : true,
                 };
                 vm.Thanked = thanksRepository.IsThanked(topicid.Value, id.Value);
                 vm.ThanksCount = thanksRepository.Count(topicid.Value, id.Value);
