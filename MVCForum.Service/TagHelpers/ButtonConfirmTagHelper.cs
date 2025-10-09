@@ -5,6 +5,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace SnitzCore.Service.TagHelpers;
 
+/// <summary>
+/// A custom <see cref="TagHelper"/> that generates a styled confirmation button with configurable attributes.
+/// </summary>
+/// <remarks>This tag helper renders an HTML `<a>` element styled as a button. It supports various attributes to
+/// customize the button's appearance, behavior, and associated data. The button is typically used in scenarios where a
+/// confirmation action is required, such as deleting an item or performing a critical operation.</remarks>
 [HtmlTargetElement("button-confirm", TagStructure = TagStructure.NormalOrSelfClosing)]
 public class ButtonConfirmTagHelper : TagHelper
 {

@@ -7,6 +7,13 @@ using SnitzCore.Data.Interfaces;
 
 namespace SnitzCore.Service.TagHelpers
 {
+    /// <summary>
+    /// A custom <see cref="TagHelper"/> that generates an HTML <c>&lt;img&gt;</c> element for displaying album images.
+    /// </summary>
+    /// <remarks>This tag helper is used to render an image with optional fallback behavior, lazy loading, and
+    /// configurable dimensions. The <c>album-image</c> tag supports attributes for specifying the image source,
+    /// fallback image, CSS class, description, and dimensions. If the specified image source does not exist, a fallback
+    /// image is used.</remarks>
     [HtmlTargetElement("album-image", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class AlbumImageTagHelper : TagHelper
     {

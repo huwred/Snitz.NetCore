@@ -6,6 +6,13 @@ using SnitzCore.Data.Interfaces;
 
 namespace SnitzCore.Service.TagHelpers
 {
+    /// <summary>
+    /// A custom <see cref="TagHelper"/> that generates an HTML anchor (&lt;a&gt;) element with optional confirmation
+    /// behavior and dynamic attributes.
+    /// </summary>
+    /// <remarks>This tag helper is designed to create a link with additional attributes and behaviors, such
+    /// as a confirmation dialog or dynamic class assignment. The generated anchor tag can include a unique identifier,
+    /// a title, and other attributes based on the provided configuration.</remarks>
     [HtmlTargetElement("link-confirm", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class ActionLinkConfirmTagHelper : TagHelper
     {

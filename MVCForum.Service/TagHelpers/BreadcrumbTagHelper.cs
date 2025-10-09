@@ -18,6 +18,15 @@ namespace SnitzCore.Service.TagHelpers
 {
 namespace SmartBreadcrumbs
 {
+        /// <summary>
+        /// A TagHelper that generates a breadcrumb navigation element for the current page context.
+        /// </summary>
+        /// <remarks>The <see cref="BreadcrumbTagHelper"/> uses the <see cref="BreadcrumbManager"/> to
+        /// retrieve breadcrumb nodes based on the current route and request context. It renders an ordered list
+        /// (`<ol>`) of breadcrumb items, optionally including a filter button if <see cref="ShowFilter"/> is set to
+        /// <see langword="true"/>.  This TagHelper supports customization through the <see
+        /// cref="BreadcrumbManager.Options"/> property, allowing developers to configure the tag name, CSS classes,
+        /// ARIA attributes, and other rendering options.</remarks>
     [HtmlTargetElement("snitz-breadcrumb")]
     public class BreadcrumbTagHelper : TagHelper
     {

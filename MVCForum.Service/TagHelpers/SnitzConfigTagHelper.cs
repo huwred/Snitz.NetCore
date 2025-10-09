@@ -12,12 +12,16 @@ using Microsoft.Extensions.Logging;
 namespace SnitzCore.Service.TagHelpers
 {
     /// <summary>
-    /// TagHelper to render input fields for data in the FORUM_CONFIG_NEW table
+    /// A custom <see cref="TagHelper"/> implementation for rendering configurable HTML elements based on property
+    /// metadata and user-defined attributes.
     /// </summary>
+    /// <remarks>This tag helper is designed to dynamically generate HTML form elements (e.g., input fields,
+    /// checkboxes, text areas, etc.) based on the provided configuration. It supports various input types,
+    /// localization, and conditional rendering based on property metadata and user-defined attributes.  The tag helper
+    /// is primarily used to simplify the creation of configurable UI components in Razor views.</remarks>
     [HtmlTargetElement("snitz-config", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class SnitzConfigTagHelper : TagHelper
     {
-        private readonly ILogger<SnitzConfigTagHelper> _logger;
         [HtmlAttributeName("property-val")]
         public string? Value { get; set; }
         [HtmlAttributeName("property-req")]
@@ -30,11 +34,6 @@ namespace SnitzCore.Service.TagHelpers
         public bool CanEdit { get; set; }
         public string? Name { get; set; }
         public Func<string, string>? TextLocalizerDelegate { get; set; }
-
-        public SnitzConfigTagHelper(ILogger<SnitzConfigTagHelper> logger)
-        {
-            _logger = logger;
-        }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {

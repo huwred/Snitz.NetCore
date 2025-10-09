@@ -7,8 +7,13 @@ using SnitzCore.Service.Extensions;
 namespace SnitzCore.Service.TagHelpers
 {
     /// <summary>
-    /// TagHelper to innsert a link to the last post in a topic
+    /// A TagHelper that generates a link to the last post in a topic or blog, with optional metadata such as post date
+    /// and localization support.
     /// </summary>
+    /// <remarks>This TagHelper is used to create a link pointing to the last post in a topic or blog. It
+    /// supports optional features such as displaying the post date,  customizing the link for archived topics or blogs,
+    /// and localizing tooltips. The generated link includes attributes for accessibility and SEO, such as  `rel` and
+    /// `data-toggle`.</remarks>
     [HtmlTargetElement("lastpost-link", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class LastPostLinkTagHelper : TagHelper
     {

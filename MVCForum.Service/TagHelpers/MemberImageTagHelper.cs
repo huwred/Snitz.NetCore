@@ -9,13 +9,22 @@ using SnitzCore.Data.Interfaces;
 namespace SnitzCore.Service.TagHelpers;
 
 /// <summary>
-/// TagHelper to display member avatar
+/// A custom <see cref="TagHelper"/> that generates an HTML <c>&lt;img&gt;</c> element for displaying a member's avatar.
 /// </summary>
+/// <remarks>This tag helper supports rendering a member's avatar image based on their ID or username. If no
+/// avatar is available,  a fallback image can be specified. Additional attributes such as CSS classes and tooltips can
+/// also be applied.</remarks>
 [HtmlTargetElement("snitz-avatar", TagStructure = TagStructure.NormalOrSelfClosing)]
 public class MemberImageTagHelper : TagHelper
 {
+    /// <summary>
+    /// Gets or sets the unique identifier of the member.
+    /// </summary>
     public int? MemberId {get;set;}
 
+    /// <summary>
+    /// Gets or sets the name of the member associated with the HTML attribute.
+    /// </summary>
     [HtmlAttributeName("member")]
     public string? MemberName {get;set;}
     /// <summary>
@@ -24,7 +33,7 @@ public class MemberImageTagHelper : TagHelper
     [HtmlAttributeName("src")]
     public string? SourceFile { get; set; }
     /// <summary>
-    /// Path to a fallback image if member has no avatar
+    /// Path to a fallback image if member has no Avatar
     /// </summary>
     [HtmlAttributeName("def-src")]
     public string? Fallback { get; set; }

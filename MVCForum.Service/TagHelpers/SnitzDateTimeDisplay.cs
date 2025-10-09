@@ -9,6 +9,13 @@ using System.Text.Encodings.Web;
 
 namespace SnitzCore.Service.TagHelpers
 {
+    /// <summary>
+    /// A custom <see cref="TagHelper"/> that renders a <c>&lt;time&gt;</c> HTML element to display a date and time with
+    /// optional formatting and "friendly time" support.
+    /// </summary>
+    /// <remarks>This tag helper is used to render a <c>&lt;time&gt;</c> element with attributes and content
+    /// based on the provided date, format, and friendly time settings. It supports rendering the date in a
+    /// user-friendly "time ago" format or a custom format string.</remarks>
     [HtmlTargetElement("snitz-datetime", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class SnitzDateTimeDisplay : TagHelper
     {

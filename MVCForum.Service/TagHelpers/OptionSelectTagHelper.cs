@@ -2,6 +2,13 @@
 
 namespace SnitzCore.Service.TagHelpers
 {
+    /// <summary>
+    /// A <see cref="TagHelper"/> that conditionally adds the "selected" attribute to an HTML <c>&lt;option&gt;</c>
+    /// element based on the specified value.
+    /// </summary>
+    /// <remarks>This tag helper is used to dynamically mark an <c>&lt;option&gt;</c> element as selected by
+    /// comparing its "value" attribute to the value of the <see cref="Selected"/> property. If the values match, the
+    /// "selected" attribute is added to the element.</remarks>
     [HtmlTargetElement("option", Attributes = "selected-val")]
     public class OptionSelectTagHelper : TagHelper
     {

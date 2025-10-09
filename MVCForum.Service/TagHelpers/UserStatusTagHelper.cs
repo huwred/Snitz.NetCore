@@ -4,6 +4,13 @@ using System.Text.Encodings.Web;
 
 namespace SnitzCore.Service.TagHelpers
 {
+    /// <summary>
+    /// A custom <see cref="TagHelper"/> that renders a Font Awesome icon representing a user's status.
+    /// </summary>
+    /// <remarks>This tag helper generates an <c>&lt;i&gt;</c> HTML element with appropriate CSS classes based
+    /// on the user's status. The <c>status</c> attribute determines whether the icon represents an active or locked
+    /// user, while the <c>title</c> attribute provides additional context as a tooltip. If the <c>title</c> starts with
+    /// "zapped" (case-insensitive), a lightning bolt icon is used instead.</remarks>
     [HtmlTargetElement("snitz-status-icon", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class UserStatusTagHelper : TagHelper
     {

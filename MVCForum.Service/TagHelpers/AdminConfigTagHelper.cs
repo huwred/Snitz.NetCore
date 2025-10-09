@@ -12,6 +12,13 @@ using System.Text.Encodings.Web;
 
 namespace SnitzCore.Services.TagHelpers
 {
+    /// <summary>
+    /// A TagHelper that renders an HTML element for configuring administrative settings.
+    /// </summary>
+    /// <remarks>This TagHelper generates various input controls (e.g., textboxes, checkboxes, textareas,
+    /// etc.) based on the specified attributes. It supports customization of the input type, placeholder text, labels,
+    /// and other properties. The generated HTML structure is tailored for use in administrative configuration
+    /// forms.</remarks>
     [HtmlTargetElement("admin-config", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class AdminConfigTagHelper : TagHelper
     {

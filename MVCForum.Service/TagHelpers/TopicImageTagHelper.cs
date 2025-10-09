@@ -11,6 +11,12 @@ using System.Threading.Tasks;
 
 namespace SnitzCore.Service.TagHelpers
 {
+    /// <summary>
+    /// A custom <see cref="TagHelper"/> that generates an icon representing the status of a forum topic.
+    /// </summary>
+    /// <remarks>This tag helper is used to render a visual representation of a forum topic's state, such as
+    /// whether it is locked, sticky, has new posts, or is a blog post. The generated output is a styled <c>span</c>
+    /// element containing one or more <c>i</c> elements with appropriate Font Awesome classes.</remarks>
     [HtmlTargetElement("snitz-topic-icon", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class TopicImageTagHelper : TagHelper
     {
@@ -47,14 +53,7 @@ namespace SnitzCore.Service.TagHelpers
 
         [HtmlAttributeName("plugin-icon")]
         public string? PluginIcon {get; set;}
-        /// <summary>
-        ///  <span class="fa-stack fa-1x">
-        ///  <i class="fa fa-folder-o fa-stack-2x"></i>
-        ///  <i class="fa fa-lock fa-stack-1x "></i>
-        ///  </span>
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="output"></param>
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
 
@@ -137,7 +136,7 @@ namespace SnitzCore.Service.TagHelpers
                     output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
                     mainTag.AddClass("fa", HtmlEncoder.Default);
                     mainTag.AddClass("fa-folder-closed", HtmlEncoder.Default);
-                    mainTag.AddClass("fa-stack-2x", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-2x", HtmlEncoder.Default);
                     output.Attributes.Add("data-toggle","tooltip");
                     break;
 
@@ -218,10 +217,10 @@ namespace SnitzCore.Service.TagHelpers
             else if (Status == "0")
             {
                 output.Attributes.RemoveAll("title");
-                overlayTag.AddClass("fa", HtmlEncoder.Default);
-                overlayTag.AddClass("fa-lock", HtmlEncoder.Default);
-                overlayTag.AddClass("fa-stack-1x", HtmlEncoder.Default);
-                output.Attributes.Add("title",_languageResource.GetString($"{icon}{newposts}{locked}"));
+                //overlayTag.AddClass("fa", HtmlEncoder.Default);
+                //overlayTag.AddClass("fa-lock", HtmlEncoder.Default);
+                //overlayTag.AddClass("fa-stack-1x", HtmlEncoder.Default);
+                output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}"));
             }
 
             if (newclass) { mainTag.AddClass("newposts", HtmlEncoder.Default); }

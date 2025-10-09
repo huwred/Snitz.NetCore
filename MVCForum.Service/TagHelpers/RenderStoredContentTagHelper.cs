@@ -8,6 +8,14 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace SnitzCore.Service.TagHelpers
 {
+    /// <summary>
+    /// A <see cref="TagHelper"/> that renders HTML content stored in the <see cref="ITempDataDictionary"/>  under a
+    /// specific key or all stored content if no key is provided.
+    /// </summary>
+    /// <remarks>This tag helper retrieves HTML content stored in the <see cref="ITempDataDictionary"/> using
+    /// a predefined  storage key. The content can be filtered by specifying the <c>asp-key</c> attribute. If the
+    /// attribute is  not provided, all stored content will be rendered. The rendered content is appended to the
+    /// output.</remarks>
     [HtmlTargetElement("renderstoredcontent")]
     public class RenderStoredContentTagHelper : TagHelper
     {

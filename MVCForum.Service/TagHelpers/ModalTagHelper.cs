@@ -13,6 +13,13 @@ namespace SnitzCore.Service.TagHelpers
 
     public enum ModalSize { Default, Small, Large }
 
+    /// <summary>
+    /// Represents a tag helper for rendering a Bootstrap modal dialog.
+    /// </summary>
+    /// <remarks>This tag helper generates the HTML structure for a Bootstrap modal dialog, including the
+    /// modal header, body, and footer. The modal can be customized using the <see cref="Size"/>, <see cref="Title"/>,
+    /// and <see cref="Id"/> properties. Child elements such as <c>modal-body</c> and <c>modal-footer</c> can be used to
+    /// define the content of the modal.</remarks>
     [HtmlTargetElement("modal", TagStructure = TagStructure.NormalOrSelfClosing)]
     [RestrictChildren("modal-body", "modal-footer")]
     public class ModalTagHelper : TagHelper
@@ -67,6 +74,12 @@ namespace SnitzCore.Service.TagHelpers
         }
     }
 
+    /// <summary>
+    /// Represents the body content of a modal dialog.
+    /// </summary>
+    /// <remarks>This tag helper is used within a <c>&lt;modal&gt;</c> element to define the content of the
+    /// modal's body section. The content inside the <c>&lt;modal-body&gt;</c> element is captured and assigned to the
+    /// modal's body.</remarks>
     [HtmlTargetElement("modal-body", ParentTag = "modal")]
     public class ModalBodyTagHelper : TagHelper
     {
@@ -79,6 +92,13 @@ namespace SnitzCore.Service.TagHelpers
         }
     }
 
+    /// <summary>
+    /// Represents the footer section of a modal dialog, allowing customization of its content and optional dismiss
+    /// button.
+    /// </summary>
+    /// <remarks>This tag helper is used in conjunction with the <c>&lt;modal&gt;</c> tag helper to define the
+    /// footer content of a modal dialog. If the <see cref="DismissText"/> property is set, a dismiss button will be
+    /// added to the footer with the specified text.</remarks>
     [HtmlTargetElement("modal-footer", ParentTag = "modal")]
     public class ModalFooterTagHelper : TagHelper
     {

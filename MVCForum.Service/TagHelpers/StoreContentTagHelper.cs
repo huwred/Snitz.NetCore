@@ -7,6 +7,14 @@ using System.Threading.Tasks;
 
 namespace SnitzCore.Service.TagHelpers;
 
+    /// <summary>
+    /// A custom <see cref="TagHelper"/> that stores the inner content of the `<storecontent>` tag into a temporary storage,
+    /// allowing it to be retrieved and reused later in the same request.
+    /// </summary>
+    /// <remarks>The content is stored in the <see cref="ViewContext.TempData"/> dictionary under a predefined key. If
+    /// the <c>asp-key</c> attribute is specified, the content is stored in a sub-key corresponding to the provided value.
+    /// If no key is specified, the content is stored in a default list. This tag helper is useful for scenarios where
+    /// content needs to be dynamically aggregated or reused across different parts of a view.</remarks>
     [HtmlTargetElement("storecontent")]
     public class StoreContentTagHelper : TagHelper
     {

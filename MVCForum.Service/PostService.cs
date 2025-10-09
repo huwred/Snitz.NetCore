@@ -475,7 +475,16 @@ namespace SnitzCore.Service
             
         }
 
-
+        /// <summary>
+        /// Updates the specified post in the database, applying any necessary modifications and saving the changes.
+        /// </summary>
+        /// <remarks>If the bad word filter is enabled in the configuration, the method replaces any
+        /// occurrences of bad words in the post content  with their corresponding replacement values. The bad word list
+        /// is cached for performance optimization.  The method ensures that the post entity is properly tracked by the
+        /// database context before marking its properties as modified.  Only specific properties of the post are
+        /// updated, including its content, title, and metadata such as status and last edit details.  Any errors
+        /// encountered during the update process are logged for diagnostic purposes.</remarks>
+        /// <param name="post">The post to be updated. The post must not be null and should contain valid data for all required fields.</param>
         public void Update(Post post)
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
@@ -516,6 +525,14 @@ namespace SnitzCore.Service
 
         }
 
+        /// <summary>
+        /// Updates the specified post reply in the database, applying any configured content filters.
+        /// </summary>
+        /// <remarks>If the bad word filter is enabled in the configuration, the method replaces any
+        /// occurrences of bad words in the post content with their configured replacements before updating the
+        /// database.</remarks>
+        /// <param name="post">The <see cref="PostReply"/> object to update. The object must already exist in the database.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task Update(PostReply post)
         {
             if (_config.GetIntValue("STRBADWORDFILTER") == 1)
@@ -539,6 +556,14 @@ namespace SnitzCore.Service
             await _dbContext.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Updates the view count for a specific post.
+        /// </summary>
+        /// <remarks>This method updates the view count of a post in the database. If the specified post
+        /// does not exist,  no changes will be made. Ensure that the <paramref name="id"/> corresponds to a valid
+        /// post.</remarks>
+        /// <param name="id">The unique identifier of the post to update.</param>
+        /// <param name="viewCount">The new view count value to set for the post.</param>
         public void UpdateViewCount(int id, int viewCount)
         {
             try
@@ -560,6 +585,13 @@ namespace SnitzCore.Service
 
         }
 
+        /// <summary>
+        /// Updates the view count for an archived post with the specified identifier.
+        /// </summary>
+        /// <remarks>This method updates the view count of an archived post in the database.  If the
+        /// specified post does not exist, no changes will be made.</remarks>
+        /// <param name="id">The unique identifier of the archived post to update.</param>
+        /// <param name="viewCount">The new view count to set for the archived post.</param>
         public void UpdateArchivedViewCount(int id, int viewCount)
         {
             try
@@ -581,6 +613,16 @@ namespace SnitzCore.Service
 
         }
 
+        /// <summary>
+        /// Retrieves the latest posts from the database, ordered by the most recent post date.
+        /// </summary>
+        /// <remarks>This method applies filtering based on the current user's permissions and roles.  -
+        /// If the user is an administrator, all posts are included. - If the user is a regular member, only posts in
+        /// viewable forums or authored by the member are included. - If the user is not authenticated, only public
+        /// posts in forums accessible to all users are included.</remarks>
+        /// <param name="n">The maximum number of posts to retrieve. Must be a positive integer.</param>
+        /// <returns>A list of the latest posts, including their associated forum, author, and last post author details.  The
+        /// list may be empty if no posts are available or accessible to the current user.</returns>
         public List<Post> GetLatestPosts(int n)
         {
                 var posts = _dbContext.Posts
@@ -605,7 +647,16 @@ namespace SnitzCore.Service
             return posts.Take(n).ToList();
         }
 
-
+        /// <summary>
+        /// Retrieves a paginated list of replies for a specified topic.
+        /// </summary>
+        /// <remarks>Replies are ordered by their creation date in descending order, and then by their
+        /// unique identifier  in ascending order. The method uses no-tracking queries to improve performance when data
+        /// tracking  is not required.</remarks>
+        /// <param name="topicid">The unique identifier of the topic for which replies are retrieved.</param>
+        /// <param name="pagesize">The number of replies to include on each page. The default value is 10.</param>
+        /// <param name="pagenumber">The page number to retrieve. The default value is 1.</param>
+        /// <returns>A paginated list of <see cref="PostReply"/> objects representing the replies for the specified topic.</returns>
         public IPagedList<PostReply> GetPagedReplies(int topicid, int pagesize = 10, int pagenumber = 1)
         {
             var replies = _dbContext.Replies.AsNoTracking().Where(p => p.PostId == topicid)
@@ -615,6 +666,14 @@ namespace SnitzCore.Service
             return replies.ToPagedList(pagenumber, pagesize);
         }
 
+        /// <summary>
+        /// Retrieves all topics along with their related entities, including category, forum, member, and last post
+        /// author.
+        /// </summary>
+        /// <remarks>The returned query is configured to not track changes to the entities and includes
+        /// related data for the  specified navigation properties. The results are ordered by the last post date in
+        /// descending order,  followed by the topic ID in ascending order.</remarks>
+        /// <returns>An <see cref="IQueryable{T}"/> of <see cref="Post"/> representing the topics and their related data.</returns>
         public IQueryable<Post> GetAllTopicsAndRelated()
         {
             return _dbContext.Posts
@@ -627,6 +686,14 @@ namespace SnitzCore.Service
                 .AsSplitQuery();
         }
 
+        /// <summary>
+        /// Retrieves a forum post by its unique identifier.
+        /// </summary>
+        /// <remarks>The returned <see cref="Post"/> object includes related data for the post's category,
+        /// forum,  and member, as these relationships are eagerly loaded.</remarks>
+        /// <param name="id">The unique identifier of the forum post to retrieve.</param>
+        /// <returns>A <see cref="Post"/> object representing the forum post with the specified identifier,  or <see
+        /// langword="null"/> if no post with the given identifier exists.</returns>
         public async Task<Post?> GetTopicAsync(int id)
         {
             return await _dbContext.Posts
@@ -637,6 +704,15 @@ namespace SnitzCore.Service
                 .SingleOrDefaultAsync(p => p.Id == id);
 
         }
+
+        /// <summary>
+        /// Retrieves a forum post based on the specified title.
+        /// </summary>
+        /// <remarks>The returned post includes related data for its category, forum, and member, as these
+        /// are eagerly loaded. The operation is performed without tracking changes to the retrieved entity.</remarks>
+        /// <param name="title">The title of the post to retrieve. Hyphens in the title will be replaced with spaces during the search.</param>
+        /// <returns>The <see cref="Post"/> object that matches the specified title, or <see langword="null"/> if no matching
+        /// post is found.</returns>
         public async Task<Post?> GetTopicAsync(string title)
         {
             return await _dbContext.Posts
@@ -647,6 +723,12 @@ namespace SnitzCore.Service
                 .SingleOrDefaultAsync(p => p.Title == title.Replace("-"," "));
 
         }
+
+        /// <summary>
+        /// Retrieves a post by its unique identifier for the purpose of updating it.
+        /// </summary>
+        /// <param name="id">The unique identifier of the post to retrieve.</param>
+        /// <returns>The <see cref="Post"/> object with the specified identifier.</returns>
         public Post GetTopicForUpdate(int id)
         {
             var post = _dbContext.Posts
@@ -655,6 +737,15 @@ namespace SnitzCore.Service
             return post; 
         }
 
+        /// <summary>
+        /// Retrieves an archived topic by its unique identifier.
+        /// </summary>
+        /// <remarks>This method performs a database query to retrieve the archived topic, including its
+        /// associated  category, forum, and member information. The query is executed with no tracking to improve
+        /// performance  for read-only operations.</remarks>
+        /// <param name="id">The unique identifier of the archived topic to retrieve.</param>
+        /// <returns>An <see cref="ArchivedPost"/> object representing the archived topic if found; otherwise, <see
+        /// langword="null"/>.</returns>
         public ArchivedPost? GetArchivedTopic(int id)
         {
             var post = _dbContext.ArchivedTopics
@@ -666,6 +757,15 @@ namespace SnitzCore.Service
             return post;
         }
 
+        /// <summary>
+        /// Retrieves a topic along with its related entities based on the specified topic ID.
+        /// </summary>
+        /// <remarks>The method includes related entities such as the topic's member, last post author,
+        /// category, forum, and replies (ordered by creation date in descending order). The data is retrieved using
+        /// no-tracking queries to ensure the entities are not tracked by the context.</remarks>
+        /// <param name="id">The unique identifier of the topic to retrieve.</param>
+        /// <returns>A <see cref="Post"/> object representing the topic and its related entities, or <see langword="null"/> if no
+        /// topic with the specified ID exists.</returns>
         public async Task<Post?> GetTopicWithRelated(int id)
         {
 
@@ -682,6 +782,15 @@ namespace SnitzCore.Service
 
         }
 
+        /// <summary>
+        /// Retrieves an archived topic along with its related data based on the specified identifier.
+        /// </summary>
+        /// <remarks>The related data includes the topic's member, last post author, category, forum, and
+        /// replies,  with replies ordered by creation date in descending order. All data is retrieved without tracking 
+        /// changes in the database context.</remarks>
+        /// <param name="id">The unique identifier of the archived topic to retrieve.</param>
+        /// <returns>An <see cref="ArchivedPost"/> object containing the archived topic and its related data,  or <see
+        /// langword="null"/> if no topic with the specified identifier exists.</returns>
         public ArchivedPost? GetArchivedTopicWithRelated(int id)
         {
 
@@ -699,6 +808,11 @@ namespace SnitzCore.Service
             return post;
         }
 
+        /// <summary>
+        /// Retrieves a reply by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the reply to retrieve.</param>
+        /// <returns>A <see cref="PostReply"/> object representing the reply with the specified identifier.</returns>
         public PostReply GetReply(int id)
         {
 
@@ -711,6 +825,11 @@ namespace SnitzCore.Service
             return post;
         }
 
+        /// <summary>
+        /// Retrieves an archived reply by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the archived reply to retrieve.</param>
+        /// <returns>An <see cref="ArchivedReply"/> object representing the archived reply with the specified identifier.</returns>
         public ArchivedReply GetArchivedReply(int id)
         {
 
@@ -723,6 +842,11 @@ namespace SnitzCore.Service
             return post;
         }
 
+        /// <summary>
+        /// Retrieves a reply associated with the specified identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the reply to retrieve.</param>
+        /// <returns>The <see cref="PostReply"/> object corresponding to the specified identifier.</returns>
         public PostReply GetReplyForUdate(int id)
         {
 
@@ -733,6 +857,21 @@ namespace SnitzCore.Service
             return post;
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of posts filtered by the specified search query, category, and forum.
+        /// </summary>
+        /// <remarks>The method performs a case-insensitive search on the title and content of posts.
+        /// Results are ordered by the  most recent activity, using the last post date or creation date if the last post
+        /// date is unavailable.</remarks>
+        /// <param name="searchQuery">The search query to filter posts by their title or content. If <see langword="null"/>, an empty list is
+        /// returned.</param>
+        /// <param name="totalcount">When the method returns, contains the total number of posts matching the filter criteria.</param>
+        /// <param name="pagesize">The number of posts to include in each page. The default value is 25.</param>
+        /// <param name="page">The page number to retrieve. The default value is 1.</param>
+        /// <param name="catid">The ID of the category to filter posts by. Use 0 to include all categories. The default value is 0.</param>
+        /// <param name="forumid">The ID of the forum to filter posts by. Use 0 to include all forums. The default value is 0.</param>
+        /// <returns>A paginated list of posts matching the specified filter criteria. If no posts match, an empty list is
+        /// returned.</returns>
         public IPagedList<Post> GetFilteredPost(string? searchQuery,out int totalcount, int pagesize=25, int page=1,int catid=0,int forumid=0)
         {
             if (searchQuery == null)
@@ -756,6 +895,19 @@ namespace SnitzCore.Service
             return posts.ToPagedList(page, pagesize);
         }
 
+        /// <summary>
+        /// Searches for forum posts based on the specified search criteria and returns a paginated list of results.
+        /// </summary>
+        /// <remarks>The search criteria can include filtering by date, category, forums, user name, and
+        /// specific search terms. The results are ordered by the most recent post date. The method supports searching
+        /// within post titles and content, as well as filtering by user name and replies.</remarks>
+        /// <param name="searchQuery">The search criteria used to filter the forum posts. This includes options such as date range, category,
+        /// forums, user name, and search terms.</param>
+        /// <param name="totalcount">When this method returns, contains the total number of posts matching the search criteria.</param>
+        /// <param name="pagesize">The number of posts to include in each page of the results. Must be greater than zero.</param>
+        /// <param name="page">The page number to retrieve. Must be greater than zero.</param>
+        /// <returns>A paginated list of forum posts that match the specified search criteria. If no posts match, the list will
+        /// be empty.</returns>
         public IPagedList<Post> Find(ForumSearch searchQuery, out int totalcount, int pagesize, int page)
         {
 
@@ -821,6 +973,18 @@ namespace SnitzCore.Service
             return posts.OrderByDescending(p=>p.LastPostDate).ToPagedList(page, pagesize);
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of archived forum posts based on the specified search criteria.
+        /// </summary>
+        /// <remarks>This method supports filtering by various criteria, including date range, category,
+        /// forums, user name,  and search terms. The results are ordered by the date of the last post in descending
+        /// order.</remarks>
+        /// <param name="searchQuery">The search criteria used to filter the archived posts.</param>
+        /// <param name="totalcount">When this method returns, contains the total number of posts that match the search criteria.</param>
+        /// <param name="pagesize">The number of posts to include in each page of the result set. Must be greater than zero.</param>
+        /// <param name="page">The page number to retrieve. Must be greater than zero.</param>
+        /// <returns>A paginated list of <see cref="ArchivedPost"/> objects that match the specified search criteria. If no posts
+        /// match the criteria, the returned list will be empty.</returns>
         public IPagedList<ArchivedPost> FindArchived(ForumSearch searchQuery, out int totalcount, int pagesize, int page)
         {
 
@@ -886,11 +1050,32 @@ namespace SnitzCore.Service
             return posts.OrderByDescending(p=>p.LastPostDate).ToPagedList(page, pagesize);
         }
 
+        /// <summary>
+        /// Retrieves the most recent reply to a post with the specified identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the post for which to retrieve the latest reply.</param>
+        /// <returns>The latest <see cref="Post"/> object representing the reply, or <see langword="null"/> if no replies are
+        /// found.</returns>
+        /// <exception cref="NotImplementedException"></exception>
         public Post GetLatestReply(int id)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Updates the metadata of the specified topic, including the last post information, reply count,  and
+        /// unmoderated reply count. Optionally updates related forum and member data if the topic was a draft.
+        /// </summary>
+        /// <remarks>This method updates the topic's last post information based on the most recent reply.
+        /// If no replies exist, the topic's creation details are used instead.  When <paramref name="wasdraft"/> is
+        /// <see langword="true"/>, the method also updates the forum's last post  and the member's post count or last
+        /// post information.</remarks>
+        /// <param name="topicid">The unique identifier of the topic to update.</param>
+        /// <param name="moderatedcount">The number of moderated replies to add to the topic's unmoderated reply count.  If <see langword="null"/>,
+        /// no changes are made to the unmoderated reply count.</param>
+        /// <param name="wasdraft">A value indicating whether the topic was previously a draft.  If <see langword="true"/>, additional updates
+        /// are performed for the forum and member associated with the topic.</param>
+        /// <returns></returns>
         public async Task UpdateLastPost(int topicid, int? moderatedcount, bool wasdraft = false)
         {
             var count = _dbContext.Replies.Count(r => r.PostId == topicid && r.Status < 2);
@@ -956,6 +1141,15 @@ namespace SnitzCore.Service
 
         }
 
+        /// <summary>
+        /// Marks the specified reply as the answer to its associated topic and updates the topic's status accordingly.
+        /// </summary>
+        /// <remarks>This method updates the reply and its associated topic in the database to reflect
+        /// that the reply is the accepted answer. If the reply with the specified <paramref name="id"/> does not exist,
+        /// no changes are made.</remarks>
+        /// <param name="id">The unique identifier of the reply to be marked as the answer.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is <see langword="true"/> if the
+        /// operation completes successfully.</returns>
         public async Task<bool> Answer(int id)
         {
             var reply = _dbContext.Replies.OrderBy(m=>m.Id).FirstOrDefault(r => r.Id == id);
@@ -972,6 +1166,14 @@ namespace SnitzCore.Service
             return true;
         }
 
+        /// <summary>
+        /// Updates the status of a post with the specified identifier.
+        /// </summary>
+        /// <remarks>If the post with the specified <paramref name="id"/> does not exist, no changes are
+        /// made.</remarks>
+        /// <param name="id">The unique identifier of the post to update.</param>
+        /// <param name="status">The new status to assign to the post.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task SetStatus(int id, Status status)
         {
             var topic = _dbContext.Posts.Find(id);
@@ -983,6 +1185,12 @@ namespace SnitzCore.Service
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public async Task SetReplyStatus(int id, Status status)
         {
             var reply = _dbContext.Replies.Find(id);
@@ -995,21 +1203,55 @@ namespace SnitzCore.Service
             }
         }
 
+        /// <summary>
+        /// Retrieves the poll associated with the specified topic ID.
+        /// </summary>
+        /// <remarks>The returned poll is retrieved without tracking changes in the database context. This
+        /// ensures that the  entity is read-only and will not be updated in the database unless explicitly attached and
+        /// modified.</remarks>
+        /// <param name="topicid">The unique identifier of the topic for which the poll is being retrieved.</param>
+        /// <returns>The <see cref="Poll"/> object associated with the specified topic ID, including its related poll answers, 
+        /// or <see langword="null"/> if no poll exists for the given topic ID.</returns>
         public Poll? GetPoll(int topicid)
         {
             return _dbContext.Polls.AsNoTracking().Include(p=>p.PollAnswers).SingleOrDefault(p=>p.TopicId ==topicid);
         }
 
+        /// <summary>
+        /// Retrieves a list of posts that match the specified identifiers.
+        /// </summary>
+        /// <param name="ids">An array of post identifiers to retrieve. Cannot be null.</param>
+        /// <returns>A list of <see cref="Post"/> objects that match the specified identifiers. The list will be empty if no
+        /// matching posts are found.</returns>
         public List<Post> GetById(int[] ids)
         {
             return _dbContext.Posts.AsNoTracking().Where(p => EF.Constant(ids).Contains(p.Id)).OrderBy(t => t.Created).ToList();
         }
 
+        /// <summary>
+        /// Moves subscriptions from one topic to another, updating the associated forum and category identifiers.
+        /// </summary>
+        /// <remarks>This method updates the database to reassign subscriptions from the specified old
+        /// topic to the new topic. Ensure that the provided topic, forum, and category identifiers are valid and exist
+        /// in the database.</remarks>
+        /// <param name="oldtopicid">The identifier of the topic from which subscriptions will be moved.</param>
+        /// <param name="newtopicid">The identifier of the topic to which subscriptions will be moved.</param>
+        /// <param name="newforumId">The identifier of the forum associated with the new topic.</param>
+        /// <param name="newcatId">The identifier of the category associated with the new topic.</param>
         public void MoveSubscriptions(int oldtopicid, int newtopicid, int newforumId, int newcatId)
         {
             _dbContext.Database.ExecuteSql($"UPDATE {_tableprefix}SUBSCRIPTIONS SET TOPIC_ID={newtopicid}, FORUM_ID={newforumId}, CAT_ID={newcatId} WHERE TOPIC_ID={oldtopicid}");
         }
 
+        /// <summary>
+        /// Moves all replies from one topic to another.
+        /// </summary>
+        /// <remarks>This method updates the database to reassign replies associated with the specified
+        /// topic ID  to the new topic. Ensure that <paramref name="newTopic"/> represents a valid and existing topic 
+        /// before calling this method.</remarks>
+        /// <param name="oldtopicid">The identifier of the topic from which replies will be moved.</param>
+        /// <param name="newTopic">The new topic to which the replies will be reassigned. Must contain valid topic, forum, and category
+        /// identifiers.</param>
         public void MoveReplies(int oldtopicid, Post newTopic)
         {
             _dbContext.Database.ExecuteSql(
@@ -1017,6 +1259,18 @@ namespace SnitzCore.Service
 
         }
 
+        /// <summary>
+        /// Splits a topic by creating a new topic from the specified replies and moving them to the new topic.
+        /// </summary>
+        /// <remarks>This method creates a new topic in the specified forum using the content of the first
+        /// reply in the provided list of reply IDs. Subsequent replies are moved to the new topic. The original topic's
+        /// metadata is updated to reflect the removal of the replies.</remarks>
+        /// <param name="ids">An array of reply IDs to be moved to the new topic. The IDs must correspond to valid replies in the
+        /// database.</param>
+        /// <param name="forumId">The ID of the forum where the new topic will be created. The forum must exist.</param>
+        /// <param name="subject">The subject of the new topic. This will be used as the title of the new topic.</param>
+        /// <returns>The newly created <see cref="Post"/> representing the new topic, or <see langword="null"/> if the operation
+        /// fails.</returns>
         public Post? SplitTopic(string[] ids, int forumId, string subject)
         {
             var forum = _dbContext.Forums.AsNoTracking().FirstOrDefault(f=>f.Id == forumId);
@@ -1105,6 +1359,13 @@ namespace SnitzCore.Service
             return topic;
         }
 
+        /// <summary>
+        /// Calculates the average rating for a specified topic.
+        /// </summary>
+        /// <remarks>The rating is calculated as the total rating divided by the number of ratings, scaled
+        /// by a factor of 10.</remarks>
+        /// <param name="topicid">The unique identifier of the topic for which the rating is to be retrieved.</param>
+        /// <returns>The average rating of the topic as a <see cref="decimal"/>.  Returns 0 if the topic has no ratings.</returns>
         public decimal GetTopicRating(int topicid)
         {
             var ratings = _dbContext.Posts
@@ -1121,6 +1382,14 @@ namespace SnitzCore.Service
             return decimal.Parse(rating.ToString());
         }
 
+        /// <summary>
+        /// Calculates the average rating of replies for a given topic.
+        /// </summary>
+        /// <remarks>Only replies with a status less than 2 are included in the calculation. The rating is
+        /// normalized by dividing the sum of reply ratings by 10 before averaging.</remarks>
+        /// <param name="topicid">The unique identifier of the topic for which to calculate the reply rating.</param>
+        /// <returns>The average rating of replies for the specified topic. Returns 0 if there are no replies or if all replies
+        /// are excluded based on their status.</returns>
         public decimal GetReplyRating(int topicid)
         {
             var ratings = _dbContext.Replies
@@ -1138,6 +1407,13 @@ namespace SnitzCore.Service
             return decimal.Parse(rating.ToString());
         }
 
+        /// <summary>
+        /// Retrieves a topic by its unique identifier.
+        /// </summary>
+        /// <remarks>The returned <see cref="Post"/> object is retrieved without tracking changes in the
+        /// database context.</remarks>
+        /// <param name="id">The unique identifier of the topic to retrieve.</param>
+        /// <returns>The <see cref="Post"/> object representing the topic if found; otherwise, <see langword="null"/>.</returns>
         public Post? GetTopic(int id)
         {
             return _dbContext.Posts.AsNoTracking().FirstOrDefault(p => p.Id == id);

@@ -8,8 +8,12 @@ using SnitzCore.Service.Extensions;
 namespace SnitzCore.Service.TagHelpers
 {
     /// <summary>
-    /// TagHelper to create an input select list from an enum
+    /// A TagHelper that generates a dropdown list (<select> element) for an enumeration type.
     /// </summary>
+    /// <remarks>This TagHelper creates a dropdown list where each option corresponds to a value in the
+    /// specified enumeration. The options are generated dynamically based on the values of the enumeration, and the
+    /// display text for each option can be customized using a localization delegate or the <see
+    /// cref="DisplayAttribute"/> applied to the enumeration fields.</remarks>
     [HtmlTargetElement("enum-select")]
     public class SelectEnumTagHelper : TagHelper
     {

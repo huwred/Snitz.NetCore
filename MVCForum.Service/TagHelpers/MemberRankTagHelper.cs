@@ -8,6 +8,15 @@ using System.Security.Claims;
 
 namespace SnitzCore.Service.TagHelpers
 {
+    /// <summary>
+    /// A custom <see cref="TagHelper"/> that renders a visual representation of a member's rank based on their role,
+    /// level, or post count.
+    /// </summary>
+    /// <remarks>This tag helper generates a styled `<div>` element containing a series of star icons to
+    /// visually represent the rank of a forum member. The rank is determined by the member's role (e.g., Administrator,
+    /// Moderator), level, or post count, and is styled according to the provided ranking configuration.  The
+    /// `<member-rank>` tag can be used in Razor views to dynamically display member ranks with customizable styles and
+    /// sizes.</remarks>
     [HtmlTargetElement("member-rank", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class MemberRankTagHelper : TagHelper
     {
