@@ -6,10 +6,10 @@
 @{
     var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? SnitzConfig.GetValueWithDefault("STRDEFAULTTHEME", "SnitzTheme");
     var currForumUser = UserManager.GetUserAsync(User).Result;
-    var navcss = currentTheme!.Contains("Dark") ? "navbar-dark bg-dark" : "bg-dark";
+    var navcss = currentTheme!.Contains("Dark") ? "navbar-dark bg-dark" : "navbar-light bg-dark";
 }
 
-<nav class="navbar navbar-expand-md navbar-custom @navcss fixed-top">
+<nav class="navbar navbar-expand-md navbar-custom @navcss fixed-top ">
     <partial name="MenuLogo" />
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>

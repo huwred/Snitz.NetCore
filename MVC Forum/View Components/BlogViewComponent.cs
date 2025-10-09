@@ -28,7 +28,7 @@ namespace MVCForum.View_Components
             _environment = webHostEnvironment;
             // Constructor logic if needed
         }
-        public async Task<IViewComponentResult> InvokeAsync(string template, int? id = null)
+        public async Task<IViewComponentResult> InvokeAsync(string template, int? id = null, int? topicid = null)
         {
             if(template == "List" && id != null && id != 0){
                 var forum = _forumService.GetWithPosts(id.Value);
@@ -48,18 +48,31 @@ namespace MVCForum.View_Components
                 vm.PageCount = pagecount;
                 vm.Page = 1;
                 return await Task.FromResult((IViewComponentResult)View(template,vm));
-            }else if (template == "TagCloud" && id != null && id != 0)
+            }
+            else if (template == "TagCloud" && id != null && id != 0)
             {
                 TagCloudSetting setting = new TagCloudSetting
                 {
                     NumCategories = 15,
                     MaxCloudSize = 50
                 };
+                IEnumerable<string> phrases = new List<string>();
                 var stopwords = LoadStopWords();
+                if(topicid != null && topicid != 0)
+                {
+                    var topic = _forumService.GetPosts(id.Value).FirstOrDefault(t => t.Id == topicid.Value);
+                    if(topic != null)
+                    {
+                        phrases = new List<string> { topic.Content };
+                    }
+                }
+                else
+                {
+                    var forum = _forumService.GetWithPosts(id.Value);
 
-                var forum = _forumService.GetWithPosts(id.Value);
+                    phrases =  forum.Posts.Select(p=>p.Content);
+                }
 
-                var phrases =  forum.Posts.Select(p=>p.Content);
                 var tagfree = new List<string>();
 
                 Regex singleletters = new Regex(@"(?: |^|\(|\.|&|\#)[A-Za-z0-9 ]{1,3}(?:$| |\.|,|\)|;)",RegexOptions.IgnoreCase | RegexOptions.Multiline);

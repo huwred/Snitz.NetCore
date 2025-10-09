@@ -33,12 +33,26 @@
 
         }
         <i snitz-if="@(!isArchived && !Model.Topic.Answered && (isauthor || isadmin) && !isArchived)" class="fa-regular fa-flag m-1 reply-answer" title="@Localizer["tipAnswer"]"  data-id="@Model.Id" data-toggle="tooltip"></i>
+        @if (SnitzConfig.GetIntValue("STRTHANKS", 0) == 1)
+        {
+            if (allowThanks && User.Identity.IsAuthenticated)
+            {
+                @await Component.InvokeAsync("PostThanks", new { template = "TopicSummary", topicid = topicid, id = Model.Id, archived = isArchived, showcount = true, showlink = false })
+            }
+        }
+
         @if (isadmin || isauthor || ismoderator)
         {
-            <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa-regular fa-pen-to-square m-1 reply-edit" data-archived="@isArchived" title="@Localizer["tipEditReply"]"  data-id="@Model.Id" data-toggle="tooltip"></i>
-            <i class="fa-regular fa-trash-can m-1 reply-del" title="@Localizer["tipDelReply"]"  data-archived="@isArchived" data-id="@Model.Id" data-topicid="@topicid" data-toggle="tooltip"></i>
-            <i snitz-if="@(islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]"  data-id="@topicid" data-status="1" data-toggle="tooltip"></i>
-            <i snitz-if="@(!islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]"  data-id="@topicid" data-status="0" data-toggle="tooltip"></i>
+            <i class="fa fa-toolbox" id="toolbox-@Model.Id" data-bs-toggle="popover" data-bs-content='' data-bs-html="true"></i>
+            <div hidden>
+                <div data-name="toolbox-@Model.Id" class="fs-4">
+                    <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa-regular fa-pen-to-square m-1 reply-edit" data-archived="@isArchived" title="@Localizer["tipEditReply"]" data-id="@Model.Id" data-toggle="tooltip"></i>
+                    <i class="fa-regular fa-trash-can m-1 reply-del" title="@Localizer["tipDelReply"]" data-archived="@isArchived" data-id="@Model.Id" data-topicid="@topicid" data-toggle="tooltip"></i>
+                    <i snitz-if="@(islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@topicid" data-status="1" data-toggle="tooltip"></i>
+                    <i snitz-if="@(!islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@topicid" data-status="0" data-toggle="tooltip"></i>
+
+                </div>
+            </div>
         }
     </div>
 }

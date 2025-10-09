@@ -276,5 +276,41 @@
     "inputFiles": [
       "wwwroot/css/managefiles.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/LightTheme/prism.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/LightTheme/prism.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/LightTheme/star-rating.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/LightTheme/star-rating.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/LightTheme/tag_cloud.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/LightTheme/tag_cloud.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/OrangeTheme/prism.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/OrangeTheme/prism.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/OrangeTheme/star-rating.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/OrangeTheme/star-rating.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/Themes/OrangeTheme/tag_cloud.min.css",
+    "inputFiles": [
+      "wwwroot/css/Themes/OrangeTheme/tag_cloud.css"
+    ]
   }
 ]

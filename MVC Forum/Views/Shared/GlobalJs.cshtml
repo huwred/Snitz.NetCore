@@ -85,7 +85,7 @@
         },
         pmtoolbardef:'undo redo | bold italic underline emoticons codesample | code',
         toolbardef :
-            'snitzAttach snitzImage | undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist | link emoticons media | code codesample postPreview',
+            'snitzAttach snitzImage | undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist | link emoticons media | code codesample postPreview | fullscreen',
         menudef : 'favs edit insert format table help'
     };
     if(SnitzVars.pmAttach){
@@ -93,7 +93,7 @@
     }
     if(!SnitzVars.attach) {
         SnitzVars.toolbardef =
-            ' undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist | link emoticons media | code codesample postPreview';
+            ' undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist | link emoticons media | code codesample postPreview | fullscreen';
     }
     if(!SnitzVars.allowIcons){
         SnitzVars.toolbardef = SnitzVars.toolbardef.replace('emoticons ', '');

@@ -88,6 +88,7 @@ $("#QuickReply").submit(function (e) {
             location.href = data.url;// + '?page=-1';
         },
         error: function (err) {
+            console.log(err);
             qrappendAlert(SnitzVars.floodErr, 'danger');
             $('.loading').hide();
         }

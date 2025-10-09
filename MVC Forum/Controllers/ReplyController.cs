@@ -1,5 +1,4 @@
 ﻿using BbCodeFormatter;
-using BbCodeFormatter.Processors;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -213,16 +212,29 @@ namespace MVCForum.Controllers
                 moderated = 1;
             }
 
-            var topic = _postService.GetTopicForUpdate(reply.PostId);
+            var topic = _snitzDbContext.Posts.Find(reply.PostId) ?? new Post(){Id = reply.PostId};
+            
             topic.UnmoderatedReplies += moderated;
             topic.LastPostReplyId = reply.Id;
             topic.LastPostDate = reply.Created;
             topic.LastPostAuthorId = reply.MemberId;
-            topic.ReplyCount += (1 - moderated);
+            //if(model.Id == 0 && reply.Status < 2)   
+            //{ 
+            //    topic.ReplyCount += (1 - moderated); 
+            //}
             topic.Status = (short)(model.IsLocked ? 0 : 1);
             topic.IsSticky = (short)(model.IsSticky ? 1 : 0);
             topic.ArchiveFlag = (short)(model.DoNotArchive ? 1 : 0);
-            await _snitzDbContext.SaveChangesAsync();
+            try
+            {
+                _snitzDbContext.Update(topic);
+                await _snitzDbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Error updating reply Topic",e);
+
+            }
 
             await _postService.UpdateReplyTopic(topic);
 

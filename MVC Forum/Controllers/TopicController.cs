@@ -224,6 +224,21 @@ namespace MVCForum.Controllers
 
         }
 
+        /// <summary>
+        /// Displays the details of a blog post, including its replies, metadata, and related information.
+        /// </summary>
+        /// <remarks>This action retrieves the blog post and its associated replies, applies pagination
+        /// and sorting, and checks user permissions for accessing the post. If the post requires authentication or a
+        /// password, the appropriate flags are set in the view model.</remarks>
+        /// <param name="id">The unique identifier of the blog post to display.</param>
+        /// <param name="page">The page number of replies to display. Defaults to 1.</param>
+        /// <param name="pagesize">The number of replies to display per page. Defaults to 0, which uses the session's page size or a default
+        /// value.</param>
+        /// <param name="sortdir">The sort direction for replies. Defaults to an application-configured value if not specified.</param>
+        /// <param name="replyid">The identifier of a specific reply to highlight. If the reply does not exist in the topic, this parameter is
+        /// ignored.</param>
+        /// <returns>An <see cref="IActionResult"/> that renders the blog post view with the specified details, or an error view
+        /// if the post is not found or access is denied.</returns>
         [Route("Blog/{id}")]
         public IActionResult Index(string id,int page = 1, int pagesize = 0, string sortdir="", int? replyid = null)
         {
@@ -498,6 +513,15 @@ namespace MVCForum.Controllers
             return View("Index",model);
         }
 
+        /// <summary>
+        /// Displays the form for creating a new post in the specified forum.
+        /// </summary>
+        /// <remarks>This method enforces various access control rules, including flood control checks and
+        /// forum-specific posting permissions. Users must have the appropriate role or authorization level to create a
+        /// post in restricted forums.</remarks>
+        /// <param name="id">The unique identifier of the forum where the post will be created.</param>
+        /// <returns>An <see cref="IActionResult"/> that renders the appropriate view for creating a new post. If the user does
+        /// not have the required permissions or violates flood control rules, an error view is returned.</returns>
         [Authorize]
         public async Task<IActionResult> Create(int id)
         {
@@ -561,6 +585,15 @@ namespace MVCForum.Controllers
             return await Task.Run(() => View(model));
         }
 
+        /// <summary>
+        /// Prepares a new post model for replying to a topic with a quoted message and renders the post creation view.
+        /// </summary>
+        /// <remarks>This method retrieves the topic and its related data, including the forum and the
+        /// current user, to populate the reply model. The reply includes a quoted version of the original topic
+        /// content. Breadcrumb navigation data is also prepared for the view.</remarks>
+        /// <param name="id">The unique identifier of the topic to reply to.</param>
+        /// <returns>An <see cref="IActionResult"/> that renders the post creation view with the pre-filled model for replying to
+        /// the topic.</returns>
         [Authorize]
         public async Task<IActionResult> QuoteAsync(int id)
         {
@@ -594,6 +627,17 @@ namespace MVCForum.Controllers
 
         }
 
+        /// <summary>
+        /// Displays the edit view for an existing topic, allowing the user to modify its content and settings.
+        /// </summary>
+        /// <remarks>This action requires the user to be authorized. The method retrieves the topic, its
+        /// associated forum, and the current user's details  to populate the edit view model. The view model includes
+        /// various properties such as the topic's title, content, status, and other  metadata. Breadcrumb navigation is
+        /// also configured for the view.</remarks>
+        /// <param name="id">The unique identifier of the topic to be edited.</param>
+        /// <param name="archived">A value indicating whether the topic is archived. If <see langword="true"/>, the topic is marked as
+        /// archived.</param>
+        /// <returns>An <see cref="IActionResult"/> that renders the edit view with the pre-populated topic data.</returns>
         [Authorize]
         public async Task<IActionResult> Edit(int id, bool archived)
         {
@@ -640,6 +684,17 @@ namespace MVCForum.Controllers
 
         }
 
+        /// <summary>
+        /// Creates a new post or topic in the forum based on the provided model.
+        /// </summary>
+        /// <remarks>This method requires the user to be authenticated and authorized. It performs flood
+        /// control checks  to prevent excessive posting within a short time frame, validates the provided model, and
+        /// handles  both draft and published posts. If the post mentions other users, private messages may be sent to 
+        /// notify them.</remarks>
+        /// <param name="model">The <see cref="NewPostModel"/> containing the details of the post to be created.</param>
+        /// <returns>An <see cref="IActionResult"/> that represents the result of the operation.  Returns a JSON object
+        /// containing the URL and ID of the created post if successful,  or an error view if the operation fails due to
+        /// validation or other constraints.</returns>
         [HttpPost]
         [Authorize]
         [Route("AddPost/")]
@@ -796,6 +851,15 @@ namespace MVCForum.Controllers
             return Json(new{url=Url.Action("Index", "Topic", new { id = post.Id }),id=post.Id});
         }
         
+        /// <summary>
+        /// Adds or updates a poll and its associated answers in the database.
+        /// </summary>
+        /// <remarks>If a poll with the specified ID already exists, it is updated with the new details.
+        /// Otherwise, a new poll is created. The method also ensures that the associated topic is marked as a poll
+        /// topic.</remarks>
+        /// <param name="poll">The <see cref="Poll"/> object containing the poll details, including the question, voting rules, and
+        /// answers.</param>
+        /// <returns>A JSON result containing the URL of the topic associated with the poll and the topic ID.</returns>
         [HttpPost]
         [Authorize]
         [Route("AddPoll/")]
@@ -868,6 +932,17 @@ namespace MVCForum.Controllers
             return Json(new{url=Url.Action("Index", "Topic", new { id = poll.TopicId }),id = poll.TopicId});
         }
 
+        /// <summary>
+        /// Deletes a topic from the forum, either archived or active, based on the specified parameters.
+        /// </summary>
+        /// <remarks>Only users with the "Administrator" role or the owner of the topic are authorized to
+        /// delete the topic.  If the topic is archived, it must exist in the archived topics collection to be deleted. 
+        /// For active topics, any associated polls or events are also removed during the deletion process.</remarks>
+        /// <param name="id">The unique identifier of the topic to delete.</param>
+        /// <param name="archived">A value indicating whether the topic to delete is archived.  If <see langword="true"/>, the method attempts
+        /// to delete an archived topic; otherwise, it deletes an active topic.</param>
+        /// <returns>A JSON result indicating the success or failure of the operation.  If successful, the result includes a URL
+        /// to the forum index page.  If unsuccessful, the result includes an error message.</returns>
         [HttpPost]
         [Authorize]
         [Route("Topic/Delete/")]
@@ -918,6 +993,14 @@ namespace MVCForum.Controllers
 
         }
 
+        /// <summary>
+        /// Toggles the "answered" status of a topic with the specified identifier.
+        /// </summary>
+        /// <remarks>This action requires the caller to be authorized. The endpoint is accessible via a
+        /// POST request to "Topic/Answered/".</remarks>
+        /// <param name="id">The unique identifier of the topic whose status is to be toggled.</param>
+        /// <returns>An <see cref="IActionResult"/> containing a JSON object with the operation result.  If successful, the JSON
+        /// object includes the topic ID and the result status.  Otherwise, it includes an error message.</returns>
         [HttpPost]
         [Authorize]
         [Route("Topic/Answered/")]
@@ -928,6 +1011,16 @@ namespace MVCForum.Controllers
 
         }
 
+        /// <summary>
+        /// Locks or unlocks a topic based on the specified status.
+        /// </summary>
+        /// <remarks>This action requires the user to be authorized and have the "Administrator" role.  If
+        /// the user does not have the required role, the operation will fail with an error message.</remarks>
+        /// <param name="id">The unique identifier of the topic to be locked or unlocked.</param>
+        /// <param name="status">The status indicating whether to lock or unlock the topic.  A value of <see langword="1"/> locks the topic,
+        /// and <see langword="0"/> unlocks it.</param>
+        /// <returns>An <see cref="IActionResult"/> containing the result of the operation.  If successful, the response includes
+        /// the topic ID and the operation result.  Otherwise, it includes an error message.</returns>
         [HttpPost]
         [Authorize]
         [Route("Topic/LockTopic/")]
@@ -948,6 +1041,17 @@ namespace MVCForum.Controllers
             
         }
 
+        /// <summary>
+        /// Verifies whether the provided password matches the password for the specified forum.
+        /// </summary>
+        /// <remarks>If the password is valid, it is stored in the session under the key
+        /// "Pforum_{forumid}".</remarks>
+        /// <param name="pwd">The password to validate against the forum's password.</param>
+        /// <param name="forumid">The unique identifier of the forum to check.</param>
+        /// <param name="topicid">The optional identifier of the topic within the forum. This parameter is not used in the current
+        /// implementation.</param>
+        /// <returns>A JSON result containing <see langword="true"/> if the password matches the forum's password; otherwise,
+        /// <see langword="false"/>.</returns>
         public IActionResult PasswordCheck(string pwd,string forumid,string? topicid)
         {
             var forum = _forumService.GetWithPosts(Convert.ToInt32(forumid));
@@ -960,6 +1064,17 @@ namespace MVCForum.Controllers
             return Json(false);
         }
 
+        /// <summary>
+        /// Prepares and sends an email containing information about a topic or archived topic.
+        /// </summary>
+        /// <remarks>This action requires the user to be authorized. The email content is dynamically
+        /// generated  based on the topic or archived topic details, including the sender's information and the topic
+        /// title.</remarks>
+        /// <param name="id">The unique identifier of the topic or archived topic to be sent.</param>
+        /// <param name="archived">A value indicating whether the topic is archived.  Pass <see langword="1"/> for archived topics; otherwise,
+        /// pass <see langword="0"/>.</param>
+        /// <returns>A partial view containing the email preparation form if the operation is successful,  or an error view if
+        /// the data cannot be loaded.</returns>
         [Authorize]
         public IActionResult SendTo(int id, int archived)
         {
@@ -1029,6 +1144,14 @@ namespace MVCForum.Controllers
 
         }
         
+        /// <summary>
+        /// Sends an email to a specified recipient using the provided email model.
+        /// </summary>
+        /// <remarks>This action requires the user to be authenticated and includes anti-forgery token
+        /// validation. Upon successful email delivery, a success message is stored in <see cref="TempData"/>.</remarks>
+        /// <param name="model">The <see cref="EmailViewModel"/> containing the email details, including the recipient's address, subject,
+        /// and message.</param>
+        /// <returns>A redirect to the "Index" action of the "Topic" controller, with the specified return URL and page number.</returns>
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -1039,6 +1162,15 @@ namespace MVCForum.Controllers
             return RedirectToAction("Index", "Topic", new { id=model.ReturnUrl, pagenum = -1 });
         }
 
+        /// <summary>
+        /// Generates a printable view of a forum topic based on the specified topic ID.
+        /// </summary>
+        /// <remarks>This method determines whether the topic is archived or active and retrieves the
+        /// appropriate data  for rendering. It also sets the moderator and administrator roles in the view data for use
+        /// in the view.</remarks>
+        /// <param name="id">The unique identifier of the topic to be printed.</param>
+        /// <returns>An <see cref="ActionResult"/> that renders the printable view of the topic.  If the topic is not found, an
+        /// error view is returned.</returns>
         public ActionResult Print(int id)
         {
             bool moderator;
@@ -1155,10 +1287,15 @@ namespace MVCForum.Controllers
         }
 
         /// <summary>
-        /// Process Topic Moderation
+        /// Moderates a forum topic based on the specified approval status.
         /// </summary>
-        /// <param name="vm"></param>
-        /// <returns></returns>
+        /// <remarks>This method allows moderators or administrators to approve, reject, or place a topic
+        /// on hold.  Depending on the selected status, the topic's state is updated, and an optional email notification
+        /// is sent to the topic's author. The method validates the input model before processing.</remarks>
+        /// <param name="vm">The view model containing the topic ID, the desired post status, an optional approval message,  and a flag
+        /// indicating whether to send an email notification to the topic author.</param>
+        /// <returns>An asynchronous operation that returns an <see cref="ActionResult"/>.  If the operation is successful, a
+        /// JSON result indicating success is returned; otherwise, a partial view is rendered.</returns>
         [HttpPost]
         [Authorize(Roles = "Administrator,Moderator")]
         [ValidateAntiForgeryToken]
@@ -1233,10 +1370,13 @@ namespace MVCForum.Controllers
         }
 
         /// <summary>
-        /// Open moderation Popup window
+        /// Renders a partial view for moderating a topic.
         /// </summary>
-        /// <param name="id">Id of Unmoderated <see cref="Topic"/></param>
-        /// <returns>PopUp Window</returns>
+        /// <remarks>This action is restricted to users with the "Administrator" or "Moderator"
+        /// roles.</remarks>
+        /// <param name="id">The unique identifier of the topic to be moderated.</param>
+        /// <returns>A <see cref="PartialViewResult"/> that renders the "popModerate" partial view with the topic's moderation
+        /// details.</returns>
         [Authorize(Roles = "Administrator,Moderator")]
         public PartialViewResult Moderate(int id)
         {
@@ -1245,6 +1385,14 @@ namespace MVCForum.Controllers
             return PartialView("popModerate",vm);
         }
 
+        /// <summary>
+        /// Subscribes the current user to a specified topic.
+        /// </summary>
+        /// <remarks>This method requires the user to be authenticated. The subscription links the current
+        /// user to the specified topic,  as well as its associated category and forum.</remarks>
+        /// <param name="id">The unique identifier of the topic to subscribe to.</param>
+        /// <returns>An <see cref="IActionResult"/> indicating the result of the operation. Returns "OK" if the subscription is
+        /// successful.</returns>
         [HttpGet]
         [Authorize]
         [Route("Topic/Subscribe/")]
@@ -1263,6 +1411,14 @@ namespace MVCForum.Controllers
             return Content("OK");
         }
 
+        /// <summary>
+        /// Unsubscribes the current user from a specific topic.
+        /// </summary>
+        /// <remarks>This action requires the user to be authenticated. The method removes the
+        /// subscription for the current user  to the specified topic, identified by its unique ID.</remarks>
+        /// <param name="id">The unique identifier of the topic to unsubscribe from.</param>
+        /// <returns>An <see cref="IActionResult"/> indicating the result of the operation. Returns "OK" if the operation is
+        /// successful.</returns>
         [HttpGet]
         [Authorize]
         [Route("Topic/UnSubscribe/")]
@@ -1273,6 +1429,16 @@ namespace MVCForum.Controllers
             return Content("OK");
         }
 
+        /// <summary>
+        /// Merges multiple topics into a single topic.
+        /// </summary>
+        /// <remarks>This action is restricted to users with the "Administrator" or "Moderator" roles. 
+        /// The method performs additional processing for subscriptions based on the application's
+        /// configuration.</remarks>
+        /// <param name="selected">An array of topic IDs to be merged. Must contain at least two topic IDs.  If null or fewer than two IDs are
+        /// provided, the method returns a bad request response.</param>
+        /// <returns>A JSON result containing the URL of the newly merged topic if the operation is successful.  Returns a bad
+        /// request response with an error message if the operation fails.</returns>
         [Authorize(Roles = "Administrator,Moderator")]
         [Route("Topic/Merge/")]
         public IActionResult Merge(int[]? selected)
@@ -1333,6 +1499,16 @@ namespace MVCForum.Controllers
 
         }
 
+        /// <summary>
+        /// Displays a view for splitting a topic into a new topic, allowing the user to select replies to move.
+        /// </summary>
+        /// <remarks>This action is restricted to users with the "Administrator" or "Moderator" roles. The
+        /// view model includes the topic details, a list of replies, and a list of available forums  to which the new
+        /// topic can be moved. Breadcrumb navigation is also set up for the view.</remarks>
+        /// <param name="id">The unique identifier of the topic to be split.</param>
+        /// <param name="replyid">The unique identifier of the reply to highlight in the view.</param>
+        /// <returns>An <see cref="IActionResult"/> that renders the view for splitting the topic.  Returns the "Error" view if
+        /// the specified topic is not found.</returns>
         [Authorize(Roles = "Administrator,Moderator")]
         [HttpGet]
         [Route("Topic/SplitTopic/")]
@@ -1365,6 +1541,17 @@ namespace MVCForum.Controllers
             return View(vm);
         }
 
+        /// <summary>
+        /// Splits an existing topic into a new topic based on the selected replies.
+        /// </summary>
+        /// <remarks>This action requires the user to be authenticated and have either the "Administrator"
+        /// or "Moderator" role.  It validates the anti-forgery token and ensures that at least one reply is selected
+        /// for the split operation.</remarks>
+        /// <param name="vm">The view model containing the details of the topic to be split, including the selected replies, target
+        /// forum, and new subject.</param>
+        /// <returns>An <see cref="IActionResult"/> that represents the result of the operation.  Returns the updated view if the
+        /// model state is invalid, an error view if no replies are selected,  or redirects to the new topic's index
+        /// page upon successful split.</returns>
         [HttpPost]
         [Authorize(Roles = "Administrator,Moderator")]
         [ValidateAntiForgeryToken]
@@ -1411,6 +1598,16 @@ namespace MVCForum.Controllers
             return View("Error");
         }
 
+        /// <summary>
+        /// Saves a rating for a topic based on the submitted form data.
+        /// </summary>
+        /// <remarks>This method updates the topic's total rating and rating count, and records the rating
+        /// in the database.  The "PostRating" value must be a valid numeric value, and the "TopicId" and "MemberId"
+        /// must correspond to existing entities.</remarks>
+        /// <param name="form">The form collection containing the rating data. Must include the keys "PostRating", "TopicId", and
+        /// "MemberId".</param>
+        /// <returns>A JSON result indicating the success or failure of the operation.  Returns a success message if the rating
+        /// is saved successfully, or an error message if the required "PostRating" key is not found.</returns>
         [Route("Topic/SaveRating/")]
         public IActionResult SaveRating(IFormCollection form)
         {
@@ -1440,10 +1637,14 @@ namespace MVCForum.Controllers
         }
 
         /// <summary>
-        /// Tracks Checked Topic list
+        /// Updates the list of selected topic IDs stored in the current user's session.
         /// </summary>
-        /// <param name="topicid">Id of checked <see cref="Topic"/></param>
-        /// <returns></returns>
+        /// <remarks>If the session already contains a list of topic IDs, the method adds the specified
+        /// <paramref name="topicid"/>          to the list if it is not already present. If the <paramref
+        /// name="topicid"/> is already in the list, it is removed.          If no topic list exists in the session, a
+        /// new list is created containing the specified <paramref name="topicid"/>.</remarks>
+        /// <param name="topicid">The ID of the topic to add to or remove from the session-based topic list.</param>
+        /// <returns>An empty result indicating that the operation completed successfully.</returns>
         [Authorize(Roles = "Administrator,Moderator")]
         [HttpPost]
         [Route("Topic/UpdateTopicList/")]
@@ -1476,10 +1677,13 @@ namespace MVCForum.Controllers
         }
 
         /// <summary>
-        /// Tracks Checked Topic list
+        /// Updates the reply list stored in the current session by adding or removing the specified reply ID.
         /// </summary>
-        /// <param name="replyid">Id of checked <see cref="Topic"/></param>
-        /// <returns></returns>
+        /// <remarks>If the reply list does not exist in the session, a new list is created and the
+        /// specified reply ID is added to it. If the reply list already exists, the method adds the reply ID to the
+        /// list if it is not already present;  otherwise, it removes the reply ID from the list.</remarks>
+        /// <param name="replyid">The ID of the reply to add to or remove from the reply list.</param>
+        /// <returns>An empty result.</returns>
         [Authorize(Roles = "Administrator,Moderator")]
         [HttpPost]
         [Route("Topic/UpdateReplyList/")]
@@ -1512,9 +1716,16 @@ namespace MVCForum.Controllers
         }
 
         /// <summary>
-        /// File upload handler for Topics
+        /// Handles the upload of an album image for the current member.
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>This method requires the user to be authenticated and authorized. The uploaded file
+        /// is saved to a member-specific directory  within the configured content folder. The method ensures that the
+        /// file name is unique and returns the file's URL, size, and type  in the JSON response upon successful
+        /// upload.</remarks>
+        /// <param name="model">The <see cref="UploadViewModel"/> containing the album image file and associated metadata.</param>
+        /// <returns>An <see cref="IActionResult"/> that represents the result of the upload operation.  Returns a JSON response
+        /// with the file details if the upload is successful, a partial view if the model state is invalid,  or an
+        /// error view if the current member is not authenticated.</returns>
         [Route("Topic/Upload/")]
         [Authorize]
         public IActionResult Upload(UploadViewModel model)
@@ -1553,12 +1764,13 @@ namespace MVCForum.Controllers
         }
 
         /// <summary>
-        /// Renders a partial view for uploading a form with specified configuration settings.
+        /// Renders a partial view for uploading a form.
         /// </summary>
-        /// <remarks>This method sets the view title and returns a partial view named "popUpload" with an
-        /// <see cref="UploadViewModel"/> containing the controller name, action name, and allowed file types.</remarks>
-        /// <returns>A <see cref="PartialViewResult"/> containing the "popUpload" view and an <see cref="UploadViewModel"/> with
-        /// the necessary configuration for the upload form.</returns>
+        /// <remarks>This action method returns a partial view named <c>popUpload</c> with an <see
+        /// cref="UploadViewModel"/>  preconfigured for uploading files. The view model specifies the controller,
+        /// action, and allowed file types  for the upload operation.</remarks>
+        /// <returns>A <see cref="PartialViewResult"/> containing the <c>popUpload</c> partial view and an  <see
+        /// cref="UploadViewModel"/> instance.</returns>
         [Route("Topic/UploadForm/")]
         [Authorize]
         public IActionResult UploadForm()
@@ -1567,6 +1779,16 @@ namespace MVCForum.Controllers
             return PartialView("popUpload",new UploadViewModel(){Controller="Topic",Action="Upload",AllowedTypes=_config.GetValue("STRFILETYPES")});
         }
 
+        /// <summary>
+        /// Toggles the sticky status of a topic.
+        /// </summary>
+        /// <remarks>This action requires the user to be authorized. Ensure the provided topic ID exists
+        /// and the user has the necessary permissions to modify the topic.</remarks>
+        /// <param name="id">The unique identifier of the topic to update.</param>
+        /// <param name="state">The desired sticky state of the topic. Use <see langword="1"/> to make the topic sticky, or <see
+        /// langword="0"/> to remove the sticky status.</param>
+        /// <returns>An <see cref="IActionResult"/> containing a JSON object with the operation result. If successful, the JSON
+        /// object includes the topic ID. If unsuccessful, it includes an error message.</returns>
         [HttpPost]
         [Authorize]
         [Route("Topic/MakeSticky/")]
@@ -1576,12 +1798,27 @@ namespace MVCForum.Controllers
             return result ? Json(new { result, data = id }) : Json(new { result, error = "Unable to toggle Status" });
         }
 
+        /// <summary>
+        /// Renders a preview of the specified topic using the "TopicPreview" view component.
+        /// </summary>
+        /// <param name="id">The unique identifier of the topic to preview.</param>
+        /// <returns>An <see cref="IActionResult"/> that renders the "TopicPreview" view component with the specified topic ID.</returns>
         public IActionResult TopicPreview(int id)
         {
             return ViewComponent("TopicPreview", new { id });
         }
 
-        //[ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
+        /// <summary>
+        /// Renders a partial view displaying a paginated list of blog posts for a specified forum.
+        /// </summary>
+        /// <remarks>The method retrieves the forum and its associated posts using the provided forum ID. 
+        /// If the forum does not exist, an error message is added to the <see cref="ViewBag"/> and  the "Error" partial
+        /// view is returned. Otherwise, the blog posts are paginated with a  fixed page size of 50, and the resulting
+        /// data is passed to the "_BlogList" partial view.</remarks>
+        /// <param name="id">The unique identifier of the forum whose blog posts are to be displayed.</param>
+        /// <returns>A <see cref="PartialViewResult"/> containing the "_BlogList" partial view populated with a  <see
+        /// cref="ForumViewModel"/> that includes the forum details and its associated blog posts. If the forum is not
+        /// found, returns the "Error" partial view with an error message.</returns>
         public PartialViewResult BlogList(int id)
         {
 
@@ -1610,6 +1847,17 @@ namespace MVCForum.Controllers
             return PartialView("_BlogList", vm);
         }
 
+        /// <summary>
+        /// Constructs a new <see cref="Post"/> instance based on the provided model and member ID.
+        /// </summary>
+        /// <remarks>The method determines the forum and category for the post based on the provided topic
+        /// ID, if any. If the topic ID is not specified, the values from the model are used. The moderation status of
+        /// the post is set based on the forum's moderation settings and the user's roles.</remarks>
+        /// <param name="model">The data model containing the details of the post to be created, including title, content, and other
+        /// attributes.</param>
+        /// <param name="memberid">The unique identifier of the member creating the post.</param>
+        /// <returns>A new <see cref="Post"/> object initialized with the specified data. The post's properties, such as forum,
+        /// category, and status, are determined based on the input model and the current user's roles and permissions.</returns>
         private Post BuildPost(NewPostModel model, int memberid)
         {
             Post? originaltopic = null;
@@ -1631,15 +1879,27 @@ namespace MVCForum.Controllers
                 ForumId = originaltopic != null ? originaltopic.ForumId : model.ForumId,
                 CategoryId = originaltopic != null ? originaltopic.CategoryId : model.CatId,
                 AllowRating = (short)(model.AllowTopicRating ? 1 : 0),
+                
                 IsSticky = (short)(model.IsSticky ? 1 : 0),
                 ArchiveFlag = model.DoNotArchive ? 1 : 0,
                 Status = (forum.Moderation == Moderation.AllPosts || forum.Moderation == Moderation.Topics) && !(donotModerate)
                 ? (short)Status.UnModerated
-                : (originaltopic?.Status ?? (short)Status.Open),
+                : (model.IsLocked ? (short)Status.Closed : (short)Status.Open),
                 Sig = (short)(model.UseSignature ? 1 : 0),
             };
 
         }
+
+        /// <summary>
+        /// Builds a collection of <see cref="PostReplyModel"/> objects from a collection of <see cref="PostReply"/>
+        /// entities.
+        /// </summary>
+        /// <remarks>This method maps the properties of each <see cref="PostReply"/> entity to a
+        /// corresponding <see cref="PostReplyModel"/> object. The transformation includes details about the author,
+        /// content, creation date, and other metadata.</remarks>
+        /// <param name="replies">The collection of <see cref="PostReply"/> entities to transform into models. Cannot be null.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="PostReplyModel"/> objects, each representing a transformed
+        /// reply.</returns>
         private IEnumerable<PostReplyModel> BuildPostReplies(IEnumerable<PostReply> replies)
         {
             return replies.Select(reply => new PostReplyModel()
@@ -1662,6 +1922,18 @@ namespace MVCForum.Controllers
                 EditedBy = reply.LastEditby == null ? "" : _memberService.GetMemberName(reply.LastEditby.Value)
             });
         }
+
+        /// <summary>
+        /// Builds a collection of <see cref="PostReplyModel"/> objects from a collection of archived replies.
+        /// </summary>
+        /// <remarks>This method maps each <see cref="ArchivedReply"/> to a <see cref="PostReplyModel"/>
+        /// by extracting relevant properties such as the reply content, author details, creation date, and other
+        /// metadata. The method ensures that the resulting models are enriched with additional information, such as the
+        /// author's role and post count, and handles optional fields like the last edited date and signature
+        /// visibility.</remarks>
+        /// <param name="replies">The collection of archived replies to transform into <see cref="PostReplyModel"/> objects.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="PostReplyModel"/> objects, each representing a reply with its
+        /// associated metadata and author details.</returns>
         private IEnumerable<PostReplyModel> BuildPostReplies(IEnumerable<ArchivedReply> replies)
         {
             return replies.Select(reply => new PostReplyModel()
@@ -1681,6 +1953,18 @@ namespace MVCForum.Controllers
                 EditedBy = reply.LastEditby == null ? "" : _memberService.GetMemberName(reply.LastEditby.Value)
             });
         }
+
+        /// <summary>
+        /// Retrieves a paginated list of replies for the specified post, sorted by creation date.
+        /// </summary>
+        /// <remarks>The replies are sorted by their creation date in the specified order. If the post has
+        /// no replies and no unmoderated replies, the method returns <see langword="null"/>.</remarks>
+        /// <param name="page">The page number to retrieve. Must be greater than or equal to 1.</param>
+        /// <param name="pagesize">The number of replies per page. Must be greater than or equal to 1.</param>
+        /// <param name="sortdir">The sort direction for the replies. Use "asc" for ascending or "desc" for descending order.</param>
+        /// <param name="post">The post for which replies are retrieved. Cannot be <see langword="null"/>.</param>
+        /// <returns>A <see cref="PagedList{T}"/> containing the replies for the specified post, or <see langword="null"/> if the
+        /// post has no replies or unmoderated replies.</returns>
         private PagedList<PostReply>? PagedReplies(int page, int pagesize, string sortdir, Post post)
         {
             if(post.ReplyCount < 1 && post.UnmoderatedReplies < 1) return null;
@@ -1689,6 +1973,17 @@ namespace MVCForum.Controllers
                 : new PagedList<PostReply>(post.Replies.OrderByDescending(r => r.Created), page, pagesize);
             return pagedReplies;
         }
+
+        /// <summary>
+        /// Retrieves a paginated list of archived replies for the specified post, sorted in the specified direction.
+        /// </summary>
+        /// <param name="page">The page number to retrieve. Must be greater than or equal to 1.</param>
+        /// <param name="pagesize">The number of replies per page. Must be greater than or equal to 1.</param>
+        /// <param name="sortdir">The sort direction for the replies. Use "asc" for ascending or "desc" for descending.</param>
+        /// <param name="post">The archived post for which replies are to be retrieved. Cannot be <see langword="null"/>.</param>
+        /// <returns>A <see cref="PagedList{T}"/> containing the archived replies for the specified page and page size,  sorted
+        /// in the specified direction. Returns <see langword="null"/> if the post has no replies or no archived
+        /// replies.</returns>
         private PagedList<ArchivedReply>? PagedReplies(int page, int pagesize, string sortdir, ArchivedPost post)
         {
             if(post.ReplyCount < 1) return null;
@@ -1699,6 +1994,16 @@ namespace MVCForum.Controllers
                 : new PagedList<ArchivedReply>(post.ArchivedReplies.OrderByDescending(r => r.Created), page, pagesize);
             return pagedReplies;
         }
+
+        /// <summary>
+        /// Generates a unique file name by appending a timestamp to the provided file name.
+        /// </summary>
+        /// <remarks>The method ensures that the returned file name is safe for use in file systems by
+        /// sanitizing the original file name.</remarks>
+        /// <param name="fileName">The original file name, which may include an extension. Only the file name portion is used.</param>
+        /// <param name="timestamp">When this method returns, contains the UTC timestamp used in the generated file name, formatted as a string.</param>
+        /// <returns>A string representing the unique file name, consisting of the timestamp followed by an underscore and a
+        /// sanitized version of the original file name.</returns>
         private string GetUniqueFileName(string fileName, out string timestamp)
         {
             fileName = Path.GetFileName(fileName);
@@ -1707,12 +2012,34 @@ namespace MVCForum.Controllers
                     + "_"
                     + GetSafeFilename(fileName);
         }
+
+        /// <summary>
+        /// Converts a filename into a safe format by replacing invalid characters with underscores.
+        /// </summary>
+        /// <param name="filename">The original filename to be sanitized. Cannot be <see langword="null"/> or empty.</param>
+        /// <returns>A sanitized version of the filename with invalid characters replaced by underscores.</returns>
         private static string GetSafeFilename(string filename)
         {
 
             return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
 
         }
+
+        /// <summary>
+        /// Determines whether access is restricted based on the specified forum authorization type and user roles.
+        /// </summary>
+        /// <remarks>This method evaluates the user's access permissions based on the provided
+        /// authorization type and roles. It also determines whether a password is required for access in certain cases.
+        /// The caller should check the return value to determine if access is restricted and use the <paramref
+        /// name="passwordrequired"/> parameter to handle password-protected scenarios.</remarks>
+        /// <param name="auth">The type of forum authorization to evaluate.</param>
+        /// <param name="signedin">A value indicating whether the user is signed in.</param>
+        /// <param name="ismoderator">A value indicating whether the user has moderator privileges.</param>
+        /// <param name="isadministrator">A value indicating whether the user has administrator privileges.</param>
+        /// <param name="passwordrequired">A reference parameter that is set to <see langword="true"/> if a password is required for access; otherwise,
+        /// <see langword="false"/>.</param>
+        /// <returns><see langword="true"/> if access is not allowed based on the specified authorization type and user roles;
+        /// otherwise, <see langword="false"/>.</returns>
         private bool CheckAuthorisation(ForumAuthType auth,bool signedin, bool ismoderator, bool isadministrator, ref bool passwordrequired)
         {
             bool notallowed = false;

@@ -37,8 +37,9 @@ tinymce.init({
     plugins:  [
         'advlist autolink link lists code media',
         'searchreplace wordcount charmap hr insertdatetime paste',
-        'table emoticons codesample'
+        'table emoticons codesample fullscreen'
     ],
+    paste_data_images: true,
     branding: false,
     relative_urls : false,
     remove_script_host : true,
@@ -50,7 +51,7 @@ tinymce.init({
     },
     extended_valid_elements: 'i[class],div[*],',
     images_upload_url: SnitzVars.baseUrl + "/forumupload",
-    images_upload_base_path: SnitzVars.contentFolder,
+    images_upload_base_path: SnitzVars.baseUrl,
     images_reuse_filename: true,
     emoticons_database: 'emojiimages',
     emoticons_images_url: SnitzVars.baseUrl + '/images/emoticon/',

@@ -12,25 +12,25 @@ body {
     line-height: 1.1em !important;
 }
 blockquote.quoteMessage { margin-left: 10px;border: 0px;font-size:smaller}
-blockquote.quoteMessage:before {
-    font-family: FontAwesome;
-  font-weight: normal;
-  font-style: normal;
-  display: inline-block;
-    font-size: 1.2em;
-    vertical-align: super;
-  content: "\f10d";
-}
+    blockquote.quoteMessage:before {
+        font-family: "Font Awesome 7 Free";
+        font-weight: normal;
+        font-style: normal;
+        display: inline-block;
+        font-size: 1.2em;
+        vertical-align: super;
+        content: "\f10d";
+    }
 
-blockquote.quoteMessage:after {
-    font-family: FontAwesome;
-  font-weight: normal;
-  font-style: normal;
-  display: inline-block;
-    font-size: 1.2em;
-    vertical-align: sub;
-  content: "\f10e";
-}
+    blockquote.quoteMessage:after {
+        font-family: "Font Awesome 7 Free";
+        font-weight: normal;
+        font-style: normal;
+        display: inline-block;
+        font-size: 1.2em;
+        vertical-align: sub;
+        content: "\f10e";
+    }
 
 .footer {
   position: absolute;

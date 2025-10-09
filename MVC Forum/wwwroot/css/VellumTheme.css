@@ -491,76 +491,23 @@ blockquote.newquote {
 }
 
 /* Image Galleries */
-.image-gallery figure {
-    display: inline-block;
-    text-align: center;
-    margin-bottom: 0;
-}
-
-.image-gallery {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-}
-
-.image-gallery > li {
-    flex-basis: 300px; /*width: 350px;*/
-    position: relative;
-    cursor: pointer;
-}
-
-.image-gallery::after {
-    content: "";
-    flex-basis: 300px;
-}
-
-.image-gallery li img {
-    object-fit: cover;
-    max-width: 100%;
-    height: auto;
-    vertical-align: middle;
-    border-radius: 5px;
-}
 
 .image-gallery .overlay {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    width: 100%;
-    opacity: 0;
-    transition: .5s ease;
     background-color: #008CBA;
 }
-
-
-
 .image-gallery .text {
     color: white;
     font-size: 18px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    text-align: center;
 }
-    .image-gallery .footer {
-        color: white !important;
-        background-color: var(--primary-header);
-        font-size: 18px;
-        position: absolute;
-        top: 80%;
-        left: 0;
-    }
+.image-gallery .footer {
+    color: white !important;
+    background-color: var(--primary-header);
+    font-size: 18px;
+}
 
-        .image-gallery .footer a {
-            color: white !important;
-        }
+.image-gallery .footer a {
+    color: white !important;
+}
 
 .height-100 {
     height: 100vh
@@ -669,13 +616,13 @@ a.latestpost-title {
 }
 
 .event-birthday span.fc-content span.fc-title:before, .event-birthday span.my-fc-time:before {
-    font-family: FontAwesome;
+    font-family: "Font Awesome 7 Free";
     content: "\f1fd\00a0";
     color: goldenrod !important
 }
 
 .event-birthday > span.fc-time:before {
-    font-family: FontAwesome;
+    font-family: "Font Awesome 7 Free";
     content: "\f1fd\00a0";
     color: goldenrod !important
 }
@@ -743,9 +690,9 @@ li.my-fc-row {
     border-right: 1px solid #c0c0c0;
 }
 
-.fc{
-    background-color:white;
-}
+    .fc .fc-view-harness {
+        background-color: white;
+    }
 
 .new-pm, .new-pm + .fa-stack-1x {
     color: gold;

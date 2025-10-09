@@ -12,10 +12,10 @@
         {
             lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.LastLogin.FromForumDateStr().ToLocalTime();
         }
-        else
-        {
-            lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.LastLogin.FromForumDateStr();
-        }
+        // else
+        // {
+        //     lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.LastLogin.FromForumDateStr();
+        // }
     }
 }
 

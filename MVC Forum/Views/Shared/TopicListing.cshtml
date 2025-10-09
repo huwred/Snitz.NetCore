@@ -33,7 +33,7 @@
 }
 <div class="table-row @answeredClass rounded-2 @moderatedClass">
 
-    <div class="status" data-status="@Model.Status" style="z-index: 2">
+    <div class="status pt-3" data-status="@Model.Status" style="z-index: 2">
         @if (eventservice != null && eventservice.EnabledForTopic(Model.Id))
         {
             <snitz-topic-icon plugin-icon="fa-calendar" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>

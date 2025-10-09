@@ -50,13 +50,13 @@ td.fc-day {
 }
 
 .event-birthday span.fc-content span.fc-title:before, .event-birthday span.my-fc-time:before {
-    font-family: FontAwesome;
+    font-family: "Font Awesome 7 Free";
     content: "\f1fd\00a0";
     color: goldenrod !important
 }
 
 .event-birthday > span.fc-time:before {
-    font-family: FontAwesome;
+    font-family: "Font Awesome 7 Free";
     content: "\f1fd\00a0";
     color: goldenrod !important
 }

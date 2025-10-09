@@ -54,21 +54,37 @@
             <i snitz-if="@Bookmarks.IsBookmarked(postid)" class="fa fa-bookmark  bookmark-del" title="@Localizer["tipRemoveBookmark"]" data-id="@postid" data-toggle="tooltip"></i>
             <i snitz-if="@(!Bookmarks.IsBookmarked(postid))" class="fa-regular fa-bookmark  bookmark-add" title="@Localizer["tipBookmarkPost"]" data-id="@postid" data-toggle="tooltip"></i>
         }
+        @if (SnitzConfig.GetIntValue("STRTHANKS", 0) == 1)
+        {
+            if (allowThanks && User.Identity.IsAuthenticated)
+            {
+                @await Component.InvokeAsync("PostThanks", new { template = "TopicSummary", topicid = postid, id = 0, showcount = true, archived = isArchived, showlink = false })
+            }
+        }        
         @if (isadmin || isauthor || ismoderator)
         {
-            <i snitz-if="@((!islocked && isauthor) || isadmin || ismoderator)" class="fa-regular fa-pen-to-square  post-edit" title="@Localizer["tipEditTopic"]" data-id="@postid" data-archived="@isArchived" data-toggle="tooltip"></i>
-            <i href="@Context.Request.QueryString" class="fa fa-trash-can post-del" title="@Localizer["tipTopicDel"]" data-id="@postid" data-toggle="tooltip" data-archived="@isArchived"></i>
-            <i snitz-if="@(islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-unlock admin  post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@postid" data-status="1" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && !islocked && !isArchived)" class="fa fa-lock admin  post-lock" title="@Localizer["cnfLockTopic"]" data-id="@postid" data-status="0" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 0 && !isArchived)" class="fa fa-thumb-tack  post-stick" title="@Localizer["tipMakeSticky"]" data-id="@postid" data-status="1" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 1 && !isArchived)" class="fa fa-thumb-tack-slash red  post-stick" title="@Localizer["tipUnStick"]" data-id="@postid" data-status="0" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.OnHold))" class="fa fa-pause admin  post-moderate" title="@Localizer["lblOnhold"]" data-id="@postid" data-toggle="tooltip"></i>
-            <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.UnModerated))" class="fa fa-hand-paper-o admin  post-moderate" title="@Localizer["lblUnmoderated"]" data-id="@postid" data-toggle="tooltip"></i>
+
+            <i class="fa fa-toolbox" id="toolbox-@postid" data-trigger="focus" tabindex="0" data-bs-toggle="popover" data-bs-content='' data-bs-html="true"></i>
+            <div hidden>
+                <div data-name="toolbox-@postid" class="fs-4">
+                    <i snitz-if="@((!islocked && isauthor) || isadmin || ismoderator)" class="fa-regular fa-pen-to-square  post-edit" title="@Localizer["tipEditTopic"]" data-id="@postid" data-archived="@isArchived" data-toggle="tooltip"></i>
+                    <i href="@Context.Request.QueryString" class="fa fa-trash-can post-del" title="@Localizer["tipTopicDel"]" data-id="@postid" data-toggle="tooltip" data-archived="@isArchived"></i>
+                    <i snitz-if="@(islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-unlock admin  post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@postid" data-status="1" data-toggle="tooltip"></i>
+                    <i snitz-if="@((isadmin || ismoderator) && !islocked && !isArchived)" class="fa fa-lock admin  post-lock" title="@Localizer["cnfLockTopic"]" data-id="@postid" data-status="0" data-toggle="tooltip"></i>
+                    <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 0 && !isArchived)" class="fa fa-thumb-tack  post-stick" title="@Localizer["tipMakeSticky"]" data-id="@postid" data-status="1" data-toggle="tooltip"></i>
+                    <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 1 && !isArchived)" class="fa fa-thumb-tack-slash red  post-stick" title="@Localizer["tipUnStick"]" data-id="@postid" data-status="0" data-toggle="tooltip"></i>
+                    <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.OnHold))" class="fa fa-pause admin  post-moderate" title="@Localizer["lblOnhold"]" data-id="@postid" data-toggle="tooltip"></i>
+                    <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.UnModerated))" class="fa fa-hand-paper-o admin  post-moderate" title="@Localizer["lblUnmoderated"]" data-id="@postid" data-toggle="tooltip"></i>
+                </div>
+            </div>
+
         }
+
     </div>
 }
 <storecontent asp-key="topic-post-controls">
     <script>
+
         $(".fa-bell.forum").off().on("click",
             function(e) {
                 e.preventDefault();

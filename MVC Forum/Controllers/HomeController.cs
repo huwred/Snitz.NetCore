@@ -1,28 +1,22 @@
 ﻿using BbCodeFormatter;
-using BbCodeFormatter.Processors;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Home;
-using MVCForum.ViewModels.Post;
+using NuGet.Configuration;
 using SmartBreadcrumbs;
 using SmartBreadcrumbs.Attributes;
 using SnitzCore.Data;
-using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
-using SnitzCore.Data.Models;
-using SnitzCore.Service;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace MVCForum.Controllers
 {
@@ -34,9 +28,10 @@ namespace MVCForum.Controllers
         private readonly IAdRotator _banner;
         private readonly ICodeProcessor _bbcodeProcessor;
         private readonly ISnitzConfig _config;
+        private readonly IWebHostEnvironment _env;
         private string LandingPage;
 
-        public HomeController(ICodeProcessor bbcodeProcessor, IMember memberService, IAdRotator banner, ISnitzConfig config,IPost postservice, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, ISnitzCookie snitzcookie,IConfiguration settings) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
+        public HomeController(ICodeProcessor bbcodeProcessor, IMember memberService, IAdRotator banner, ISnitzConfig config,IPost postservice, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor, ISnitzCookie snitzcookie,IConfiguration settings,IWebHostEnvironment env) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _snitzcookie = snitzcookie;
             _postService = postservice;
@@ -44,6 +39,7 @@ namespace MVCForum.Controllers
             _bbcodeProcessor = bbcodeProcessor;
             _config = config;
             LandingPage = settings.GetValue<string>("SnitzForums:LandingPage","")!;
+            _env = env;
         }
 
         //[ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any)]
@@ -131,6 +127,34 @@ namespace MVCForum.Controllers
             return LocalRedirect("~/");
         }
 
+        [Route("ForumUpload/")]
+        public IActionResult ForumUpload(IFormFile file)
+        {
+            if (_memberService.Current() == null)
+            {
+                return BadRequest();
+            }
+            var location = UploadImageToServer(file);
+            _logger.Error("UploadImageToServer:" + location);
+            return Json(new { location });
+        }
+       public string UploadImageToServer(IFormFile file)
+        {
+            var uploadFolder = Path.Combine(_env.WebRootPath, _config.ContentFolder, "Members");
+            var memberid = _memberService.Current()!.Id;
+            var uniqueFileName = "";
+            var fullFilePath = "";
+            if (file != null)
+            {
+                var uploadfilepath = Path.Combine(uploadFolder, memberid.ToString());
+                uniqueFileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                fullFilePath = Path.Combine(uploadfilepath, uniqueFileName);
+                file.CopyTo(new FileStream(fullFilePath, FileMode.Create));
+                var imagepath = StringExtensions.UrlCombine(_config.ContentFolder, "Members");
+                return StringExtensions.UrlCombine(imagepath, memberid.ToString()) + "/" + uniqueFileName;
+            }
+            return "";
+        }
         public ActionResult RecordClick(string id)
         {
             // ..

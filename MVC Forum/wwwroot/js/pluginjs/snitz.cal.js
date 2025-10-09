@@ -227,7 +227,7 @@ FullCalendarNew = function (url, divid, firstday, country) {
             center: 'title',
             right: 'multiMonthYear,dayGridMonth,timeGridWeek'
         },
-
+        firstDay: firstday,
         //initialView: 'month',
         locale: SnitzVars.forumlang,
         //initialDate: '2023-01-12',

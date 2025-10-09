@@ -271,7 +271,7 @@ app.UseStaticFiles(new StaticFileOptions
         headers.CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue
         {
             Public = true,
-            MaxAge = TimeSpan.FromDays(365)
+            MaxAge = TimeSpan.FromDays(33)
         };
     }
 });

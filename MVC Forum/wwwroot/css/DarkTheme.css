@@ -1,5 +1,5 @@
 ﻿:root {
-    --primary-header: silver;
+    --primary-header: #343a40;
     --font-size: 1rem;
     --spacing: 1rem;
 }
@@ -8,8 +8,9 @@ html, body {
     font-size: var(--font-size);
     font-family: Verdana, Arial, helvetica;
     background-color: rgb(34,34,34) !important;
-    color: var(--primary-header) !important;
+    color: silver !important;
     font-weight: 400;
+
 }
 a {
     color: silver;
@@ -40,11 +41,11 @@ a {
 }
 
 .btn-outline-primary {
-/*    --bs-btn-color: #000000;
-    --bs-btn-border-color: #000000;*/
-    --bs-btn-hover-color: #fff;
+    --bs-btn-color: #fff;
+    --bs-btn-border-color: #fff;
+    --bs-btn-hover-color: silver;
     --bs-btn-hover-bg: #000000;
-    /*--bs-btn-hover-border-color: #000000;*/
+    --bs-btn-hover-border-color: silver;
     --bs-btn-focus-shadow-rgb: 13, 110, 253;
     --bs-btn-active-color: #fff;
     --bs-btn-active-bg: #000000;
@@ -325,8 +326,8 @@ footer {
     --bs-table-color-state: initial;
     --bs-table-bg-state: initial;
     --bs-table-color: revert;
-     --bs-table-bg: revert; 
-     --bs-table-border-color: revert; 
+    --bs-table-bg: #343a40 !important;
+    --bs-table-border-color: revert;
     --bs-table-accent-bg: transparent;
     --bs-table-striped-color: revert;
     --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb),.05);
@@ -337,7 +338,12 @@ footer {
     width: 100%;
     margin-bottom: 1rem;
     vertical-align: top;
-     border-color: revert; 
+    border-color: revert;
+}
+.table-primary, .table-primary a {
+    --bs-table-bg: #343a40;
+    --bs-table-color: #fff;
+
 }
 /* comment section */
 .comment-area input:hover {
@@ -422,7 +428,7 @@ footer {
 }
 
 #theme-change {
-    background-color: #343a40;
+    background-color: var(--primary-header);
     color: white;
 }
 
@@ -438,6 +444,9 @@ footer {
 .modal-header > .modal-title, .modal-body > .body-desc, .modal-body > .photo-input, .modal-footer > .footer-title {
     text-align: center
 }
+    .new-posts {
+        color: magenta !important;
+    }
 blockquote.newquote {
     font: 14px/22px normal helvetica, sans-serif;
     margin-top: 10px;
@@ -487,37 +496,6 @@ blockquote.newquote {
 }
 
 /* Image Galleries */
-.image-gallery figure {
-    display: inline-block;
-    text-align: center;
-    margin-bottom: 0;
-}
-
-.image-gallery {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-}
-
-.image-gallery > li {
-    flex-basis: 300px; /*width: 350px;*/
-    position: relative;
-    cursor: pointer;
-}
-
-.image-gallery::after {
-    content: "";
-    flex-basis: 300px;
-}
-
-.image-gallery li img {
-    object-fit: cover;
-    max-width: 100%;
-    height: auto;
-    vertical-align: middle;
-    border-radius: 5px;
-}
 
 .image-gallery .overlay {
     position: absolute;
@@ -529,37 +507,21 @@ blockquote.newquote {
     width: 100%;
     opacity: 0;
     transition: .5s ease;
-    background-color: #008CBA;
+    background-color: #008cba;
 }
-
-.image-gallery .figure:hover .overlay {
-    display: block;
-    opacity: .6;
-}
-
 .image-gallery .text {
     color: white;
     font-size: 18px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    text-align: center;
 }
-    .image-gallery .footer {
-        color: white !important;
-        background-color: black;
-        font-size: 18px;
-        position: absolute;
-        top: 80%;
-        left: 0;
-    }
+.image-gallery .footer {
+    color: white !important;
+    background-color: var(--primary-header);
+    font-size: 18px;
+}
 
-        .image-gallery .footer a {
-            color: white !important;
-        }
+.image-gallery .footer a {
+    color: white !important;
+}
 
 .height-100 {
     height: 100vh
@@ -580,7 +542,8 @@ blockquote.newquote {
     position: relative;
     border: 2px dotted rgba(var(--bs-success-rgb));
 }
-.table-row .status .fa-folder, .note .fa-folder, .answered-overlay .status .fa-lock {
+.answered-overlay .status .fa-folder, .note .fa-folder.answered, .answered-overlay .status .fa-lock,
+.answered-overlay .status .fa-folder-open{
     color: rgba(var(--bs-success-rgb)) !important;
 }
 
@@ -670,13 +633,13 @@ a.latestpost-title {
 }
 
 .event-birthday span.fc-content span.fc-title:before, .event-birthday span.my-fc-time:before {
-    font-family: FontAwesome;
+    font-family: "Font Awesome 7 Free";
     content: "\f1fd\00a0";
     color: goldenrod !important
 }
 
 .event-birthday > span.fc-time:before {
-    font-family: FontAwesome;
+    font-family: "Font Awesome 7 Free";
     content: "\f1fd\00a0";
     color: goldenrod !important
 }
@@ -694,6 +657,24 @@ a.latestpost-title {
     padding: .25rem !important;
 }
 
+.table-row .status .fa.fa-stack-1x {
+    color: #7d7f66 !important;
+}
+.table-row .status .fa.fa-rocket.fa-stack-1x {
+    color: goldenrod !important;
+}
+.table-row .status .fa.fa-thumb-tack.fa-stack-1x {
+    color: blue !important;
+}
+.table-row .status .fa.fa-lock.fa-stack-1x {
+    color: silver !important;
+}
+.table-row .status .fa-regular.fa-frown.fa-stack-1x {
+    color: yellow !important;
+}
+.table-row .status .fa.fa-fire {
+    color: red !important;
+}
 
 .password-strength-indicator.very-weak {
     background: #cf0000;
@@ -718,4 +699,7 @@ a.latestpost-title {
 .password-strength-indicator.very-strong {
     background: #22cf00;
     border-color: #1B9900;
+}
+.widget-item{
+    background-color:transparent;
 }

@@ -3,9 +3,16 @@
 /* ########################################### */
 :root {
     --primary-header: #3498db;
-    --font-size: 16px;
+    --font-size: 14px;
     --spacing: 1rem;
     --bs-form-invalid-color: red;
+}
+.bg-dark {
+    --bs-bg-opacity: 1;
+    background-color: transparent !important;
+}
+.text-bg-dark {
+    color: #000 !important;
 }
 blockquote.newquote {
     font: 14px/22px normal helvetica, sans-serif;
@@ -75,8 +82,8 @@ a.btn:hover {
     display: none;   
 }
 .accordion-button:not(.collapsed) {
-    color: #F5FFFA !important;
-    background-color: #6A5ACD;
+/*    color: #F5FFFA !important;*/
+    background-color: transparent;
     box-shadow: revert;
 }
 
@@ -88,13 +95,7 @@ header{
     padding-left: 5px;
     
 }
-.dropdown-menu {
-    background-color: var(--primary-header);
-    color:white;
-}
-    .dropdown-menu a {
-        color: white;
-    }
+
 
     .dropdown-menu li {
         position: relative;
@@ -341,8 +342,8 @@ footer{
     }
 
 i.fa-reply, i.fa-trash, i.fa-trash-can, i.fa-share, i.fa-close, i.fa-pencil, i.fa-pen-to-square, i.fa-comment, i.fa-commenting,
-i.fa-bell-slash, i.fa-bell, i.fa-flag, i.fa-thumbs-up, i.fa-thumbs-down,i.fa-envelope,
-i.fa-bookmark-o, i.fa-bookmark, i.fa-thumb-tack, i.fa-thumb-tack-slash, i.fa-hand-paper-o, i.fa-heart {
+i.fa-bell-slash, i.fa-bell, i.fa-flag, i.fa-thumbs-up, i.fa-thumbs-down,i.fa-envelope,i,fa-cogs,
+i.fa-bookmark-o, i.fa-bookmark, i.fa-thumb-tack, i.fa-thumb-tack-slash, i.fa-hand-paper-o, i.fa-heart, i.fa-toolbox {
     cursor: pointer;
 }
 i.fa-bell.category, i.bell-slash.category {
@@ -562,10 +563,76 @@ img.avatarlarge {
     transition: .3s ease;
     background-color: gainsboro;
 }
-.image-gallery .figure:hover .overlay {
-    display: block;
-    opacity: .6;
+/* Image Galleries */
+.image-gallery figure {
+    display: inline-block;
+    text-align: center;
+    margin-bottom: 0;
 }
+
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+    .image-gallery > li {
+        flex-basis: 300px; /*width: 350px;*/
+        position: relative;
+        cursor: pointer;
+    }
+
+    .image-gallery::after {
+        content: "";
+        flex-basis: 300px;
+    }
+
+    .image-gallery li img {
+        object-fit: cover;
+        max-width: 100%;
+        height: auto;
+        vertical-align: middle;
+        border-radius: 5px;
+    }
+
+    .image-gallery .overlay {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        opacity: 0;
+        transition: .5s ease;
+        background-color: #008CBA;
+        z-index: 1;
+    }
+
+    .image-gallery .figure:hover .overlay {
+        display: block;
+        opacity: .6;
+    }
+
+    .image-gallery .text {
+        font-size: 18px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .image-gallery .footer {
+        position: absolute;
+        top: 80%;
+        left: 0;
+    }
+
+
 /* When you mouse over the container, fade in the overlay icon*/
 .avatar-container:hover .overlay-delete {
     opacity: 1;
@@ -1066,6 +1133,12 @@ i.modstatus-2, i.modstatus-3 {
     content: attr(data-mce-placeholder);
     position: relative !important;
 }
+.fc{
+    background-color:transparent;
+}
+.fc .fc-view-harness {
+    background-color: white;
+}
 .fc .fc-multimonth-multicol .fc-multimonth-month {
     padding: 0px 0.6em 0.6em;
 }
@@ -1101,10 +1174,28 @@ i.modstatus-2, i.modstatus-3 {
     display: block;
 }
     .event-birthday.fc-h-event .fc-event-title:before {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        display: inline-block;
         font-family: "Font Awesome 7 Free";
+        font-feature-settings: normal;
+        font-style: normal;
+        font-synthesis: none;
+        font-variant: normal;
+        font-weight: 900;
+        line-height: 1;
+        text-align: center;
+        text-rendering: auto;
+        width: 1.25em;
         content: "\f1fd";
+    }
+    .event-birthday.fc-h-event .fc-event-title:before {
+
         color: white;
     }
+.event-birthday fc-h-event .fc-event-title:after {
+    content: "\00a0";
+}
 .public-holiday .fc-list-event-graphic  {
     display:none;
 }
