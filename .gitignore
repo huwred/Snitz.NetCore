@@ -457,3 +457,4 @@ FodyWeavers.xsd
 /MVC Forum/Views/FileManager/Index.cshtml
 /MVC Forum/wwwroot/uploads/images
 /MVC Forum/Views/FileManager/Releases.cshtml
+/MVC Forum/Views/Shared/Components/PostThanks/TopicSummary.cshtml
