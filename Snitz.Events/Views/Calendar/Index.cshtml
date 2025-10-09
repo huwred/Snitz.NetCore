@@ -46,7 +46,7 @@
                 <option value=''>No Regions</option>
             </select>
         </div>
-        <span class="col-10 form-text">Public holiday data supplied by <a href="http://kayaposoft.com/enrico/" title="Enrico Service is a free service written in PHP providing public holidays for several countries" data-toggle="tooltip">Enrico</a></span>
+        <span snitz-if="@(SnitzConfig.GetValue("STRCALCOUNTRY") != "")" class="col-10 form-text">Public holiday data for @SnitzConfig.GetValue("STRCALCOUNTRY") supplied by <a href="http://kayaposoft.com/enrico/" title="Enrico Service is a free service written in PHP providing public holidays for several countries" data-toggle="tooltip">Enrico</a></span>
 
         @* <select id="locale-selector"></select> *@
     </div>
