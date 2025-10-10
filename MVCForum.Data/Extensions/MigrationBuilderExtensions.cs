@@ -6,13 +6,11 @@ using MySqlConnector;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SnitzCore.Data.Extensions
 {
     public static class MigrationBuilderExtensions
     {
-        //E:\GitHub\Snitz.NetCore\MVC Forum\App_Data
         public static bool TableExists(this MigrationBuilder migrationBuilder, string table)
         {
             var connstring = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["SnitzConnection"];
@@ -152,5 +150,15 @@ namespace SnitzCore.Data.Extensions
             }
             return false;
         }
+
+        //public static AdminUserInfo AdminUser(this MigrationBuilder migrationBuilder)
+        //{
+        //    AdminUserInfo adminuser = CacheProvider.Get<AdminUserInfo>("AdminUser");
+
+        //    CacheProvider.Remove("AdminUser");
+        //    return adminuser;
+        //}
     }
+
+
 }

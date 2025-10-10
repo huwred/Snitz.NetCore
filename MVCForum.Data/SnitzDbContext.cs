@@ -12,7 +12,7 @@ namespace SnitzCore.Data
     public class SnitzDbContext : IdentityDbContext
     {
         public SnitzDbContext(){}
-        public SnitzDbContext(DbContextOptions<SnitzDbContext> options,IServiceProvider serviceProvider)
+        public SnitzDbContext(DbContextOptions<SnitzDbContext> options) //,IServiceProvider serviceProvider
             : base(options)
         {
             //SavedChanges += SnitzContext_SavedChanges;

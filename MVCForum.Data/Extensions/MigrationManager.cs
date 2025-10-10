@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SnitzCore.Data;
@@ -9,7 +7,6 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MVCForum.Extensions
 {
@@ -37,6 +34,7 @@ namespace MVCForum.Extensions
 
     private static void UploadCSV(WebApplication webApp, SnitzDbContext dbContext)
     {
+            Console.WriteLine("Importing Language strings");
             var path = System.IO.Path.Combine(webApp.Environment.ContentRootPath, "App_Data");
             var filename = "initiallang_en.csv";
 

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Configuration;
+using System.IO;
 
 namespace MVCForum.Extensions
 {
@@ -41,5 +42,33 @@ namespace MVCForum.Extensions
                 _ => throw new InvalidOperationException($"Unsupported provider: {provider}")
             };
         }
+
+        public static DbContextOptionsBuilder UseDatabase(this DbContextOptionsBuilder builder,  string provider,string connection, string? path)
+        {
+            return provider switch
+            {
+                Mssql => builder.UseSqlServer(connection, opt => 
+                {
+                    opt.UseCompatibilityLevel(120);
+                    opt.MigrationsAssembly("MSSqlMigrations");
+                }),
+
+                Sqlite => builder.UseSqlite(connection?.Replace("|DataDirectory|",path), opt => 
+                {
+                    opt.MigrationsAssembly("SqliteMigrations");
+                }),
+                Mysql => builder.UseMySql(connection,ServerVersion.AutoDetect(connection), opt => 
+                {
+                    opt.MigrationsAssembly("MySqlMigrations");
+                }),
+                //Npgsql => builder.UseNpgsql(connectionstring, opt => 
+                //{
+                //    opt.MigrationsAssembly("NpgsqlMigrations");
+                //}),
+
+                _ => throw new InvalidOperationException($"Unsupported provider: {provider}")
+            };
+        }
+
     }
 }
