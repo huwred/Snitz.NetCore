@@ -1,0 +1,263 @@
+﻿@using System
+@using System.Diagnostics
+@using System.Reflection
+@using MVCForum.ViewModels
+@model DatabaseSetupViewModel
+@{
+    Layout = null;
+    ViewBag.Version = "";
+    var version = Assembly.GetEntryAssembly()?.
+      GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.
+      InformationalVersion;
+    if(version != null)
+    {
+        ViewBag.Version = version.Split("+")[0];
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snitz™ Forums .NET Setup</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background-color: #191970;
+        }
+        .container {
+            background-color: #ffffff;
+            color:#191970;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width:1024px;
+        }
+        img {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+
+        .popover {
+            max-width: 400px; /* Adjust the max width as needed */
+        }
+        .popover-header{
+            background-color: #191970;
+            color: white;
+        }
+        </style>
+</head>
+<body>
+    <div class="container mt-3">
+        <h1 class="text-center">Welcome to Snitz&trade; Forums .NET! 🛠️ @ViewBag.Version</h1>
+        <img class="mx-auto d-block" src="~/images/wizard.webp" alt="Snitz&amp;trade; Forums logo" loading="lazy">
+        <p class="col-8 offset-2">
+            Thanks for chosing to install Snitz&trade; Forums .NET — You’re now the proud owner of a fresh new space for hot takes, and helpful threads.<br />
+            The setup will guide you through the essentials — no need to sticky anything just yet.<br />
+            Soon, you’ll be moderating flame wars, quoting replies like a pro, and maybe even banning that one guy who keeps typing in ALL CAPS.<br />
+            <br />
+            Let’s get your forum up and running — your community is waiting!
+        </p>
+
+        <form asp-action="Index" method="post" class="col-8 offset-2 needs-validation" novalidate autocomplete="off">
+            <fieldset>
+                <legend>Database Configuration</legend>
+                @if (!Model.IsConfigured)
+                {
+                    <p>Before continuing we need to confirm your Database connection settings.</p>
+                    <div class="form-group mb-3">
+                        <label for="provider-select">Provider</label>
+                            <a class="ml-2" tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="hover" title="Database Providers"
+                               data-bs-html="true"
+                               data-bs-content="<strong>localdb and sqlite</strong><br><em>Database files should be placed in the App_Data folder, they will be created if they do not currently exist. (dependending on permissions)</em>"><i class='bi bi-question-circle-fill'></i></a>
+
+                        <select asp-for="Provider" class="form-select" id="provider-select">
+                            <option value="">Select Database Type</option>
+                            <option value="mssql">MS Sql Server/Sql Express</option>
+                            <option value="localdb">MS Sql LocalDb</option>
+                            <option value="mysql">MySql/MariaDb</option>
+                            <option value="sqlite">Sqlite</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Server Name:</label>
+                        <input asp-for="Server" class="form-control" autocomplete="off" placeholder="Server name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Database:</label>
+                        <input asp-for="Database" class="form-control" autocomplete="off" placeholder="Database name"  />
+                    </div>
+                    <div class="form-group form-check mb-3">
+                        <input asp-for="UseEncryption" type="checkbox" class="form-check-input" id="use-encryption" checked> 
+                        <label class="form-check-label" for="use-encryption">Use Encryption</label>
+                            <a class="ml-2" tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="hover" title="Encryption"
+                               data-bs-html="true"
+                               data-bs-content="Ensures all data is encrypted during transmission. See also Trust Server Certificate."><i class='bi bi-question-circle-fill'></i></a>
+                    </div>
+                    <div class="form-group form-check mb-3">
+                        <input asp-for="TrustServerCertificate" type="checkbox" class="form-check-input" id="trust-cert" checked>
+                        <label class="form-check-label" for="trust-cert">Trust Server Certificate</label>
+                            <a class="ml-2" tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="hover" title="Server Certificate"
+                               data-bs-html="true"
+                               data-bs-content="<strong>Accepts the self-signed certificate without requiring it to be from a trusted CA.</strong>
+                                <ul>
+                                <li>While self-signed certificates are convenient for testing or internal use, they are not recommended for production environments due to potential security risks.</li>
+                                <li>For production, use certificates issued by a trusted Certificate Authority (CA) and avoid setting TrustServerCertificate=True.</li></ul>"
+                            ><i class='bi bi-question-circle-fill'></i></a>
+
+                    </div>
+                    <div class="form-group form-check mb-3">
+                        <input asp-for="UseIntegratedSecurity" type="checkbox" class="form-check-input" id="use-security" checked>
+                        <label class="form-check-label" for="use-security">Use Integrated Security</label>
+                    </div>
+                    <div id="sec-settings" style="display:none;">
+                        <div class="mb-3">
+                            <label class="form-label">Username:</label>
+                            <input asp-for="Username" class="form-control" autocomplete="off" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password:</label>
+                            <input asp-for="Password" type="password" class="form-control" autocomplete="off" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info" role="alert">
+                        Your database is already configured. If you need to change the settings, please edit your appsettings.json file directly.
+                    </div>
+                    <input asp-for="Provider" type="hidden" />
+                }
+                <button type="submit" class="btn btn-warning" name="action" value="test">Test Connection</button>
+                @if (!string.IsNullOrEmpty(Model.TestResult))
+                {
+                    @Model.TestResult
+                }
+                <input asp-for="IsConfigured" type="hidden" />
+            </fieldset>
+
+            <fieldset class="mt-4">
+                <legend>Forum Settings</legend>
+                <div class="mb-3">
+                    <label asp-for="ForumUrl" class="form-label">Forum Url:</label>
+                    <input asp-for="ForumUrl" type="text" class="form-control" pattern="https://.*" autocomplete="off" placeholder="https://yourforumurl" required />
+                </div>
+                <input asp-for="Version" type="hidden" value="@ViewBag.Version" /> 
+                <div class="form-group mb-3">
+                    <label for="landing-page">Select Landing Page:</label>
+                    <a tabindex="0" class="" role="button" data-bs-toggle="popover" data-bs-trigger="hover" title="Landing Page"
+                        data-bs-html="true"
+                        data-bs-content="<strong>All Forums</strong><br><em>Default landing page, displays all Categoris and Forums, like classic version</em><br><strong>Welcome page</strong><br><em>Allows you to display a customisable page as the default landing page. (a Welcome page etc)</em>"><i class='bi bi-question-circle-fill'></i></a>
+                    <select asp-for="LandingPage" class="form-select" id="landing-page">
+                        <option value="">Welcome page</option>
+                        <option value="AllForums" >All Forums</option>
+                    </select>
+                </div>
+            </fieldset>
+            <button type="submit" class="btn btn-primary">Continue</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/jquery.validate.min.js" integrity="sha512-KFHXdr2oObHKI9w4Hv1XPKc898mE4kgYx58oqsc/JqqdLMDI4YjOLzom+EMlW8HFUd0QfjfAvxSL6sEq/a42fQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js" integrity="sha512-xq+Vm8jC94ynOikewaQXMEkJIOBp7iArs3IhFWSWdRT3Pq8wFz46p+ZDFAR7kHnSFf+zUv52B3prRYnbDRdgog==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+                // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (() => {
+          'use strict'
+
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          const forms = document.querySelectorAll('.needs-validation')
+
+          // Loop over them and prevent submission
+          Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+              if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+              }
+
+              form.classList.add('was-validated')
+            }, false)
+          })
+        })();
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+          return new bootstrap.Popover(popoverTriggerEl)
+        });
+        $('#provider-select').on("change",function(){
+            console.log('changed');
+            var selectedValue = $(this).val();
+            if(selectedValue === "sqlite" || selectedValue === "localdb"){
+                $('#sec-settings').hide();
+                $('#use-security').prop('checked', true);
+                $('#use-security').prop('disabled', true);
+                $('#use-encryption').prop('disabled', true);
+                $('#trust-cert').prop('disabled', true);
+                $('#Server').removeAttr('required');
+                $('#Server').val("");
+                $('#Server').prop('disabled', true);
+                $('#Database').val("");
+            }else if(selectedValue !== "mssql"){
+                $('#use-encryption').prop('disabled', true);
+                $('#trust-cert').prop('disabled', true);
+                $('#use-security').prop('checked', false);
+                $('#Server').prop('disabled', false);
+                $('#sec-settings').show();
+            }
+            else{
+                $('#use-security').prop('disabled', false);
+                $('#Server').prop('disabled', false);
+                $('#Server').prop("required", true);
+                $('#use-encryption').prop('disabled', false);
+                $('#trust-cert').prop('disabled', false);
+                $('#use-security').prop('checked', true);
+                $('#sec-settings').hide();
+            }
+        });
+
+        $('#use-security').on("change",function(){
+            if($(this).prop('checked')){
+                $('#sec-settings').hide();
+            }else{
+                $('#sec-settings').show();
+            }
+        });
+
+        var selectedprovider = $('#provider-select').val();
+        if(selectedprovider === "sqlite" || selectedprovider === "localdb"){
+            $('#sec-settings').hide();
+            $('#use-security').prop('checked', true);
+            $('#use-security').prop('disabled', true);
+                $('#use-encryption').prop('disabled', true);
+                $('#trust-cert').prop('disabled', true);
+            $('#Server').removeAttr('required');
+            $('#Server').val("");
+            $('#Database').val("");
+        }else if(selectedprovider !== "mssql"){
+            $('#use-encryption').prop('disabled', true);
+            $('#trust-cert').prop('disabled', true);
+            $('#use-security').prop('checked', false);
+            $('#sec-settings').show();
+        }
+        else{
+            $('#use-security').prop('disabled', false);
+            $('#Server').prop("required", true);
+            $('#use-encryption').prop('disabled', false);
+            $('#trust-cert').prop('disabled', false);
+            $('#use-security').prop('checked', true);
+            $('#sec-settings').hide();
+        }
+    </script>
+</body>
+</html>
+
+
+
+

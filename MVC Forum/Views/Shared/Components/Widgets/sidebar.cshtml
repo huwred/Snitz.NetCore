@@ -4,6 +4,7 @@
 
 }
 <div class="d-none d-lg-block @Model.Width widget-sidebar">
+
     @if (SnitzConfig.IsEnabled("INTSIDEBANNER"))
     {
         @await Component.InvokeAsync("AdRotator", new { template = "side" })
