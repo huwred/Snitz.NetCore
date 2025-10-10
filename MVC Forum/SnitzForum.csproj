@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Version>8.0.0-rc01</Version>
+    <Version>8.0.0</Version>
     <UserSecretsId>aspnet-MVC_Forum-7562012B-C66A-4DF1-AC22-BC17CBD85983</UserSecretsId>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RootNamespace>MVCForum</RootNamespace>
@@ -121,6 +121,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="MimeKit" Version="4.13.0" />
     <PackageReference Include="NetCore.AutoRegisterDi" Version="2.2.1" />
     <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
@@ -144,8 +145,6 @@
 
   <ItemGroup>
     <Folder Include="logs\" />
-    <Folder Include="Views\FileManager\" />
-    <Folder Include="Views\Polls\" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Views\Shared\Components\Members\wide.cshtml">

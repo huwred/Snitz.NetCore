@@ -31,26 +31,52 @@ using SnitzCore.Service.Hangfire;
 using SnitzCore.Service.MiddleWare;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using YG.ASPNetCore.FileManager;
 
-
+WebApplication? app;
 var builder = WebApplication.CreateBuilder(args);
-var path = System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data");
+var config = builder.Configuration;
+var connectionString = config.GetConnectionString("SnitzConnection");
+var version = config.GetSection("SnitzForums")["strVersion"];
+
+var dataDir = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
+AppDomain.CurrentDomain.SetData("DataDirectory", dataDir);
 
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)       
     .AddJsonFile($"appsettings{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+if (string.IsNullOrEmpty(version))
+{
+    builder.Services.AddRazorPages();
+    builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+    builder.Services.AddSingleton<IShutdownService, ShutdownService>();
+
+    app = builder.Build();
+    app.UseStaticFiles();
+    app.UseRouting();
+
+    app.MapControllerRoute(
+    name: "setup",
+    pattern: "{controller=Setup}/{action=Index}/{id?}");
+
+    app.MapRazorPages();
+    app.Run();
+
+    return;
+
+}
+
 builder.Services.Configure<SnitzForums>(builder.Configuration.GetSection("SnitzForums"));
 builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddDbContext<SnitzDbContext>(options =>
 {
-
     options.ConfigureWarnings(warnings => warnings
         .Ignore(CoreEventId.FirstWithoutOrderByAndFilterWarning)
         .Ignore(SqlServerEventId.SavepointsDisabledBecauseOfMARS)
@@ -208,7 +234,9 @@ builder.Services.AddImageSharp(
             return Task.CompletedTask;
         };
     });
-//builder.Services.AddTransient<ISyndicationXmlService, SyndicationXmlService>();
+
+var path = System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data");
+
 builder.Services.RegisterPlugins(builder.Configuration,path);
 
 
@@ -242,7 +270,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddSingleton(builder.Environment.ContentRootFileProvider);
 
 
-var app = builder.Build();
+app = builder.Build();
 app.MigrateDatabase();
 app.AddPostThanks();
 app.AddEvents();

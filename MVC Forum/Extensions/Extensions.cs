@@ -106,10 +106,15 @@ namespace MVCForum.Extensions
             using var appContext = scope.ServiceProvider.GetRequiredService<PhotoContext>();
             try
             {
+                Console.WriteLine("PhotoContext Migrations");
                     if (appContext.Database.GetPendingMigrations().Any())
                     {
                         appContext.Database.Migrate();
                     }
+                else
+                {
+                    Console.WriteLine("No Migrations to Apply");
+                }
             }
             catch (Exception ex)
             {
@@ -125,10 +130,15 @@ namespace MVCForum.Extensions
             using var appContext = scope.ServiceProvider.GetRequiredService<EventContext>();
             try
             {
+                Console.WriteLine("EventContext Migrations");
                     if (appContext.Database.GetPendingMigrations().Any())
                     {
                         appContext.Database.Migrate();
                     }
+                else
+                {
+                    Console.WriteLine("No Migrations to Apply");
+                }
             }
             catch (Exception ex)
             {
@@ -144,10 +154,15 @@ namespace MVCForum.Extensions
             using var appContext = scope.ServiceProvider.GetRequiredService<PostThanksContext>();
             try
             {
+                Console.WriteLine("PostThanksContext Migrations");
                     if (appContext.Database.GetPendingMigrations().Any())
                     {
                         appContext.Database.Migrate();
-                    }
+                }
+                else
+                {
+                    Console.WriteLine("No Migrations to Apply");
+                }
             }
             catch (Exception ex)
             {

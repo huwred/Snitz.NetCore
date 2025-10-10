@@ -135,7 +135,8 @@ namespace MVCForum.Controllers
                 return BadRequest();
             }
             var location = UploadImageToServer(file);
-            _logger.Error("UploadImageToServer:" + location);
+            if(_logger.IsDebugEnabled)
+                _logger.Debug("UploadImageToServer:" + location);
             return Json(new { location });
         }
        public string UploadImageToServer(IFormFile file)
