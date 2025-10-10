@@ -25,6 +25,7 @@ namespace SnitzCore.Data.Models
             var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             var builder = new ConfigurationBuilder()
                 .SetBasePath(path)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) 
                 .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
             var config = builder.Build();
 
