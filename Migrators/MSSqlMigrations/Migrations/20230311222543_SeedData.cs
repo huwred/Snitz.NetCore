@@ -80,7 +80,7 @@ namespace WebApplication1.Migrations
                         { 7, "bronze", 5, 2000, "Forum Guru" }
                     });
             }
-
+            //MEMBER ADMIN
             if(!migrationBuilder.IndexExists($"SELECT COUNT(MEMBER_ID) FROM {_memberTablePrefix}MEMBERS"))
             {
                 migrationBuilder.InsertData(
@@ -106,11 +106,7 @@ namespace WebApplication1.Migrations
                     table: $"{_forumTablePrefix}TOTALS",
                     columns: new[] { "COUNT_ID", "P_A_COUNT", "T_A_COUNT", "P_COUNT", "T_COUNT", "U_COUNT" },
                     values: new object[] { (short)1, 0, 0, 1, 1, 0 });
-                }
-
-
-
-
+            }
         }
 
         /// <inheritdoc />

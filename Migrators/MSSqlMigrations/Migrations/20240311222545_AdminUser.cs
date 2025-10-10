@@ -30,7 +30,10 @@ namespace WebApplication1.Migrations
                     });
             }
 
+            // Admin User with password Passw0rd!
             if(!migrationBuilder.IndexExists($"SELECT COUNT(MEMBER_ID) FROM {_memberTablePrefix}MEMBERS")){
+                //var admin = migrationBuilder.AdminUser;
+
                 migrationBuilder.InsertData( // Admin User with password Passw0rd!
                     table: "AspNetUsers",
                     columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Discriminator", "Email", "EmailConfirmed", "IsActive", "IsAdmin", "LockoutEnabled", "LockoutEnd", "MemberId", "MemberSince", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfileImageUrl", "Rating", "SecurityStamp", "TwoFactorEnabled", "UserDescription", "UserName" },
