@@ -461,3 +461,4 @@ FodyWeavers.xsd
 /MVC Forum/Extensions/AesEncryptionHelper.cs
 /MVC Forum/Extensions/EncryptedJsonConfigurationProvider.cs
 /MVC Forum/Extensions/EncryptedJsonConfigurationSource.cs
+/MVC Forum/appsettings.Production.json
