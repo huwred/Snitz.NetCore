@@ -1,13 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.Configuration;
-using SnitzCore.Data;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Models;
-using System;
-using System.Configuration;
-using System.Reflection;
 
 #nullable disable
 
@@ -79,6 +72,10 @@ namespace Migrations
                     table: $"{_forumTablePrefix}BOOKMARKS",
                     column: "B_TOPICID");
             }
+            if(migrationBuilder.TableExists($"{_forumTablePrefix}POLLS")){
+                migrationBuilder.DropTable(
+                    name: $"{_forumTablePrefix}POLLS");
+            }
             if(!migrationBuilder.TableExists($"{_forumTablePrefix}POLLS")){
                 migrationBuilder.CreateTable(
                     name: $"{_forumTablePrefix}POLLS",
@@ -97,6 +94,15 @@ namespace Migrations
                     {
                         table.PrimaryKey("PK_FORUM_POLLS", x => x.POLL_ID);
                     });
+              
+            }
+            if (migrationBuilder.TableExists($"{_forumTablePrefix}POLL_ANSWERS"))
+            {
+                migrationBuilder.DropTable(
+                    name: $"{_forumTablePrefix}POLL_ANSWERS");
+            }
+            if (!migrationBuilder.TableExists($"{_forumTablePrefix}POLL_ANSWERS"))
+            {
                 migrationBuilder.CreateTable(
                     name: $"{_forumTablePrefix}POLL_ANSWERS",
                     columns: table => new
@@ -112,6 +118,14 @@ namespace Migrations
                     {
                         table.PrimaryKey("PK_FORUM_POLL_ANSWERS", x => x.POLLANSWER_ID);
                     });
+            }
+            if (migrationBuilder.TableExists($"{_forumTablePrefix}POLL_VOTES"))
+            {
+                migrationBuilder.DropTable(
+                    name: $"{_forumTablePrefix}POLL_VOTES");
+            }
+            if (!migrationBuilder.TableExists($"{_forumTablePrefix}POLL_VOTES"))
+            {
                 migrationBuilder.CreateTable(
                     name: $"{_forumTablePrefix}POLL_VOTES",
                     columns: table => new
@@ -129,9 +143,8 @@ namespace Migrations
                     constraints: table =>
                     {
                         table.PrimaryKey("PK_FORUM_POLL_VOTES", x => x.POLLVOTES_ID);
-                    });                
+                    }); 
             }
-
             if (!migrationBuilder.TableExists($"{_forumTablePrefix}IMAGES"))
             {
                 migrationBuilder.CreateTable(
@@ -147,7 +160,19 @@ namespace Migrations
                     {
                         table.PrimaryKey("PK_FORUM_IMAGE_CAT", x => x.CAT_ID);
                     });
-
+                migrationBuilder.CreateTable(
+                    name: $"{_forumTablePrefix}ORG_GROUP",
+                    columns: table => new
+                    {
+                        O_GROUP_ID = table.Column<int>(type: "int", nullable: false)
+                            .Annotation("SqlServer:Identity", "1, 1"),
+                        O_GROUP_ORDER = table.Column<int>(type: "int", nullable: false),
+                        O_GROUP_NAME = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    },
+                    constraints: table =>
+                    {
+                        table.PrimaryKey("PK_FORUM_ORG_GROUP", x => x.O_GROUP_ID);
+                    });
                 migrationBuilder.CreateTable(
                     name: $"{_forumTablePrefix}IMAGES",
                     columns: table => new
@@ -230,70 +255,7 @@ namespace Migrations
                     });
             }
 
-            //we don't need to do this as they are no longer required, throwback from .net framework
-            //if (!migrationBuilder.TableExists("webpages_Membership"))
-            //{
-            //    migrationBuilder.CreateTable(
-            //        name: "webpages_Membership",
-            //        columns: table => new
-            //        {
-            //            UserId = table.Column<int>(type: "int", nullable: false)
-            //                .Annotation("SqlServer:Identity", "1, 1"),
-            //            CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-            //            Password = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false)
-            //        },
-            //        constraints: table =>
-            //        {
-            //            table.PrimaryKey("PK_webpages_Membership", x => x.UserId);
-            //        });
-
-            //    migrationBuilder.CreateTable(
-            //        name: "webpages_Roles",
-            //        columns: table => new
-            //        {
-            //            RoleId = table.Column<int>(type: "int", nullable: false)
-            //                .Annotation("SqlServer:Identity", "1, 1"),
-            //            RoleName = table.Column<string>(type: "nvarchar(max)", nullable: false)
-            //        },
-            //        constraints: table =>
-            //        {
-            //            table.PrimaryKey("PK_webpages_Roles", x => x.RoleId);
-            //        });
-
-            //    migrationBuilder.CreateTable(
-            //        name: "webpages_UsersInRoles",
-            //        columns: table => new
-            //        {
-            //            UserId = table.Column<int>(type: "int", nullable: false),
-            //            RoleId = table.Column<int>(type: "int", nullable: false)
-            //        },
-            //        constraints: table =>
-            //        {
-            //            table.ForeignKey(
-            //                name: "FK_webpages_UsersInRoles_FORUM_MEMBERS_UserId",
-            //                column: x => x.UserId,
-            //                principalTable: "FORUM_MEMBERS",
-            //                principalColumn: "MEMBER_ID",
-            //                onDelete: ReferentialAction.Cascade);
-            //            table.ForeignKey(
-            //                name: "FK_webpages_UsersInRoles_webpages_Roles_RoleId",
-            //                column: x => x.RoleId,
-            //                principalTable: "webpages_Roles",
-            //                principalColumn: "RoleId",
-            //                onDelete: ReferentialAction.Cascade);
-            //        });
-
-            //    migrationBuilder.CreateIndex(
-            //        name: "IX_webpages_UsersInRoles_RoleId",
-            //        table: "webpages_UsersInRoles",
-            //        column: "RoleId");
-
-            //    migrationBuilder.CreateIndex(
-            //        name: "IX_webpages_UsersInRoles_UserId",
-            //        table: "webpages_UsersInRoles",
-            //        column: "UserId");
-            //}
-
+            Console.WriteLine("Core update");
         }
 
         /// <inheritdoc />

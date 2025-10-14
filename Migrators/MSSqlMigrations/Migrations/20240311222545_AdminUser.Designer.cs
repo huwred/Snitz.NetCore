@@ -948,11 +948,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("M_LASTACTIVITY");
 
-                    b.Property<string>("LastLogin")
-                        .HasMaxLength(14)
-                        .HasColumnType("TEXT")
-                        .HasColumnName("M_LastLogin");
-
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)
                         .HasColumnType("TEXT")

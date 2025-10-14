@@ -12,7 +12,7 @@ using SnitzCore.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(SnitzDbContext))]
-    [Migration("20231230083312_MVC")]
+    [Migration("20221230083312_MVC")]
     partial class MVC
     {
         /// <inheritdoc />
@@ -886,11 +886,6 @@ namespace WebApplication1.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT")
                         .HasColumnName("M_LASTACTIVITY");
-
-                    b.Property<string>("LastLogin")
-                        .HasMaxLength(14)
-                        .HasColumnType("TEXT")
-                        .HasColumnName("M_LastLogin");
 
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)

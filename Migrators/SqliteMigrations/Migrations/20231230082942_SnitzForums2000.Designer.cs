@@ -13,7 +13,7 @@ using SnitzCore.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(SnitzDbContext))]
-    [Migration("20231230082942_SnitzForums2000")]
+    [Migration("20221230082942_SnitzForums2000")]
     partial class SnitzForums2000
     {
         /// <inheritdoc />
@@ -831,11 +831,6 @@ namespace WebApplication1.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT")
                         .HasColumnName("M_LAST_IP");
-
-                    b.Property<string>("LastLogin")
-                        .HasMaxLength(14)
-                        .HasColumnType("TEXT")
-                        .HasColumnName("M_LastLogin");
 
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)

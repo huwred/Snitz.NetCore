@@ -7,6 +7,7 @@ namespace SnitzCore.Data.Models;
 public partial class ForumTotal
 {
     [Column("COUNT_ID")]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public short Id { get; set; }
 
     [Column("P_COUNT")]

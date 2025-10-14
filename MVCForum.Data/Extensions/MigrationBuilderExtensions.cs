@@ -3,6 +3,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
+using SnitzCore.Data.ViewModels;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -11,13 +12,15 @@ namespace SnitzCore.Data.Extensions
 {
     public static class MigrationBuilderExtensions
     {
+        private static string basepath = Regex.Replace(AppDomain.CurrentDomain.BaseDirectory, @"\\bin\\.*$", string.Empty, RegexOptions.IgnoreCase);
         public static bool TableExists(this MigrationBuilder migrationBuilder, string table)
         {
-            var connstring = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["SnitzConnection"];
-             
+            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).SetBasePath(basepath).Build();
+
+            var connstring = config.GetSection("ConnectionStrings")["SnitzConnection"];
             if (migrationBuilder.IsSqlite())
             {
-                var path = Path.Combine(Regex.Replace(AppDomain.CurrentDomain.BaseDirectory, @"\\bin\\.*$", string.Empty, RegexOptions.IgnoreCase) ,  "App_Data");
+                var path = Path.Combine(basepath ,  "App_Data");
                 using var conn = new SqliteConnection();
                 conn.ConnectionString = connstring?.Replace("|DataDirectory|",path);
                 conn.Open();
@@ -55,8 +58,9 @@ namespace SnitzCore.Data.Extensions
         }
         public static bool ColumnExists(this MigrationBuilder migrationBuilder, string tableName, string column)
         {
-            var connstring = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["SnitzConnection"];
+            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).SetBasePath(basepath).Build();
 
+            var connstring = config.GetSection("ConnectionStrings")["SnitzConnection"];
             if (migrationBuilder.IsSqlite())
             {
                 var path = Path.Combine(Regex.Replace(AppDomain.CurrentDomain.BaseDirectory, @"\\bin\\.*$", string.Empty, RegexOptions.IgnoreCase) ,  "App_Data");
@@ -107,8 +111,9 @@ namespace SnitzCore.Data.Extensions
         }
         public static bool IndexExists(this MigrationBuilder migrationBuilder, string query)
         {
-            var connstring = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["SnitzConnection"];
+            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).SetBasePath(basepath).Build();
 
+            var connstring = config.GetSection("ConnectionStrings")["SnitzConnection"];
             if (migrationBuilder.IsSqlite())
             {
                 var path = Path.Combine( Regex.Replace(AppDomain.CurrentDomain.BaseDirectory, @"\\bin\\.*$", string.Empty, RegexOptions.IgnoreCase) ,  "App_Data");
@@ -120,7 +125,7 @@ namespace SnitzCore.Data.Extensions
                 cmd.CommandText = query;
                 var count = cmd.ExecuteScalar();
                 conn.Close();
-                return count != null && (int)count > 0;
+                return count != null && (long)count > 0;
             }
             else if (migrationBuilder.IsSqlServer())
             {
@@ -151,13 +156,13 @@ namespace SnitzCore.Data.Extensions
             return false;
         }
 
-        //public static AdminUserInfo AdminUser(this MigrationBuilder migrationBuilder)
-        //{
-        //    AdminUserInfo adminuser = CacheProvider.Get<AdminUserInfo>("AdminUser");
+        public static AdminUserInfo? AdminUser(this MigrationBuilder migrationBuilder)
+        {
+            AdminUserInfo? adminuser = SetupCacheProvider.Get<AdminUserInfo?>("AdminUser");
 
-        //    CacheProvider.Remove("AdminUser");
-        //    return adminuser;
-        //}
+            
+            return adminuser;
+        }
     }
 
 

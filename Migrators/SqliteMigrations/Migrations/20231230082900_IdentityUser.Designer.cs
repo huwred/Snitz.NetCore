@@ -12,7 +12,7 @@ using SnitzCore.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(SnitzDbContext))]
-    [Migration("20231230082900_IdentityUser")]
+    [Migration("20221230082900_IdentityUser")]
     partial class IdentityUser
     {
         /// <inheritdoc />

@@ -13,7 +13,7 @@ namespace WebApplication1.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             SetParameters();
-
+            Console.WriteLine("Creating Snitz base Tables");
             migrationBuilder.CreateTable(
                 name: $"{_forumTablePrefix}A_REPLY",
                 columns: table => new
@@ -158,7 +158,6 @@ namespace WebApplication1.Migrations
                     M_LEVEL = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: 1),
                     M_STATUS = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: 1),
                     M_POSTS = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    M_LastLogin = table.Column<string>(type: "TEXT", maxLength: 14, nullable: true),
                     M_LASTPOSTDATE = table.Column<string>(type: "TEXT", maxLength: 14, nullable: true),
                     M_DATE = table.Column<string>(type: "TEXT", maxLength: 14, nullable: false),
                     M_FIRSTNAME = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),

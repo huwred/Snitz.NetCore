@@ -263,7 +263,6 @@ namespace Migrations
                         M_BIO = table.Column<string>(type: "nvarchar(max)", nullable: true),
                         M_LINK1 = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                         M_LINK2 = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                        M_LastLogin = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
                         M_LASTPOSTDATE = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
 
                     },
@@ -283,20 +282,6 @@ namespace Migrations
                     constraints: table =>
                     {
                         table.PrimaryKey("PK_FORUM_NAMEFILTER", x => x.N_ID);
-                    });
-
-                migrationBuilder.CreateTable(
-                    name: $"{_forumTablePrefix}ORG_GROUP",
-                    columns: table => new
-                    {
-                        O_GROUP_ID = table.Column<int>(type: "int", nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1"),
-                        O_GROUP_ORDER = table.Column<int>(type: "int", nullable: false),
-                        O_GROUP_NAME = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                    },
-                    constraints: table =>
-                    {
-                        table.PrimaryKey("PK_FORUM_ORG_GROUP", x => x.O_GROUP_ID);
                     });
 
                 migrationBuilder.CreateTable(
@@ -540,114 +525,7 @@ namespace Migrations
                             principalColumn: "TOPIC_ID",
                             onDelete: ReferentialAction.Cascade);
                     });
-                if (!migrationBuilder.ColumnExists($"{_forumTablePrefix}TOPICS", "T_ISPOLL"))
-                {
-                    migrationBuilder.AddColumn<short>(
-                        name: "T_ISPOLL",
-                        table: $"{_forumTablePrefix}TOPICS",
-                        type: "int",
-                        nullable: true);
-                    migrationBuilder.AddColumn<short>(
-                        name: "T_POLLSTATUS",
-                        table: $"{_forumTablePrefix}TOPICS",
-                        type: "int",
-                        nullable: true);
-                }
-                if (!migrationBuilder.ColumnExists($"{_forumTablePrefix}FORUM", "F_POLLS"))
-                {
-                    migrationBuilder.AddColumn<int>(
-                        name: "F_POLLS",
-                        table: $"{_forumTablePrefix}FORUM",
-                        type: "int",
-                        nullable: true);
-                    migrationBuilder.AddColumn<int>(
-                        name: "F_RATING",
-                        table: $"{_forumTablePrefix}FORUM",
-                        type: "smallint",
-                        nullable: true);
-                }
-                if (!migrationBuilder.ColumnExists($"{_forumTablePrefix}TOPICS", "T_ALLOW_RATING"))
-                {
-                    migrationBuilder.AddColumn<int>(
-                        name: "T_RATING_TOTAL_COUNT",
-                        table: $"{_forumTablePrefix}TOPICS",
-                        type: "int",
-                        nullable: true);
-                    migrationBuilder.AddColumn<int>(
-                        name: "T_RATING_TOTAL",
-                        table: $"{_forumTablePrefix}TOPICS",
-                        type: "int",
-                        nullable: true);
-                    migrationBuilder.AddColumn<int>(
-                        name: "T_ALLOW_RATING",
-                        table: $"{_forumTablePrefix}TOPICS",
-                        type: "int",
-                        nullable: true);
 
-                    migrationBuilder.AddColumn<int>(
-                        name: "R_RATING",
-                        table: $"{_memberTablePrefix}REPLY",
-                        type: "int",
-                        nullable: true);
-                }
-
-                if (!migrationBuilder.ColumnExists($"{_forumTablePrefix}FORUM", "F_POSTAUTH"))
-                {
-                    migrationBuilder.AddColumn<int>(
-                        name: "F_POSTAUTH",
-                        table: $"{_forumTablePrefix}FORUM",
-                        type: "int",
-                        defaultValue: 0,
-                        nullable: true);
-                    migrationBuilder.AddColumn<int>(
-                        name: "F_REPLYAUTH",
-                        table: $"{_forumTablePrefix}FORUM",
-                        type: "int",
-                        nullable: true);
-                }
-
-                if (!migrationBuilder.ColumnExists($"{_memberTablePrefix}MEMBERS", "M_PMEMAIL"))
-                {
-                    migrationBuilder.AddColumn<int>(
-                        name: "M_PMEMAIL",
-                        table: $"{_memberTablePrefix}MEMBERS",
-                        type: "int",
-                        nullable: true);
-                    migrationBuilder.AddColumn<int>(
-                        name: "M_PMRECEIVE",
-                        table: $"{_memberTablePrefix}MEMBERS",
-                        type: "int",
-                        nullable: true);
-                    migrationBuilder.AddColumn<int>(
-                        name: "M_PMSAVESENT",
-                        table: $"{_memberTablePrefix}MEMBERS",
-                        type: "smallint",
-                        nullable: true);
-                }
-                if (!migrationBuilder.ColumnExists($"{_memberTablePrefix}MEMBERS", "M_PRIVATEPROFILE"))
-                {
-                    migrationBuilder.AddColumn<int>(
-                        name: "M_PRIVATEPROFILE",
-                        table: $"{_memberTablePrefix}MEMBERS",
-                        type: "smallint",
-                        nullable: true);
-                }
-                if (!migrationBuilder.ColumnExists($"{_memberTablePrefix}MEMBERS", "M_LASTACTIVITY"))
-                {
-                    migrationBuilder.AddColumn<int>(
-                        name: "M_LASTACTIVITY",
-                        table: $"{_memberTablePrefix}MEMBERS",
-                        type: "varchar(20)",
-                        nullable: true);
-                }
-                if (!migrationBuilder.ColumnExists($"{_memberTablePrefix}MEMBERS", "M_LASTHEREDATE"))
-                {
-                    migrationBuilder.AddColumn<int>(
-                        name: "M_LASTHEREDATE",
-                        table: $"{_memberTablePrefix}MEMBERS",
-                        type: "varchar(20)",
-                        nullable: true);
-                }
                 //M_LASTHEREDATE 
                 migrationBuilder.CreateIndex(
                     name: "IX_FORUM_ALLOWED_MEMBERS_FORUM_ID",
@@ -711,6 +589,25 @@ namespace Migrations
             }
             else
             {
+                if (!migrationBuilder.TableExists($"{_forumTablePrefix}CONFIG_NEW"))
+                {
+                    migrationBuilder.CreateTable(
+                    name: $"{_forumTablePrefix}CONFIG_NEW",
+                    columns: table => new
+                    {
+                        ID = table.Column<int>(type: "int", nullable: false)
+                            .Annotation("SqlServer:Identity", "1, 1"),
+                        C_VARIABLE = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                        C_VALUE = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                    },
+                    constraints: table =>
+                    {
+                        table.PrimaryKey("PK_FORUM_CONFIG_NEW", x => x.ID);
+                        table.UniqueConstraint("AK_FORUM_CONFIG_NEW_VALUE", x => x.C_VARIABLE);
+                    });
+                }
+
+
                 if (!migrationBuilder.ColumnExists($"{_forumTablePrefix}TOPICS", "T_ISPOLL"))
                 {
                     migrationBuilder.AddColumn<short>(
@@ -737,6 +634,17 @@ namespace Migrations
                         type: "smallint",
                         nullable: true);
                 }
+                else
+                {
+                    migrationBuilder.AlterColumn<int>(
+                        name: "F_POLLS",
+                        table: $"{_forumTablePrefix}FORUM",
+                        type: "int",
+                        nullable: true,
+                        oldClrType: typeof(short),
+                        oldType: "smallint");
+                }
+
                 if (!migrationBuilder.ColumnExists($"{_forumTablePrefix}TOPICS", "T_ALLOW_RATING"))
                 {
                     migrationBuilder.AddColumn<int>(
@@ -811,6 +719,16 @@ namespace Migrations
                         type: "varchar(20)",
                         nullable: true);
                 }
+
+                if (!migrationBuilder.ColumnExists($"{_memberTablePrefix}MEMBERS", "M_LASTHEREDATE"))
+                {
+                    migrationBuilder.AddColumn<int>(
+                        name: "M_LASTHEREDATE",
+                        table: $"{_memberTablePrefix}MEMBERS",
+                        type: "varchar(20)",
+                        nullable: true);
+                }
+
 
             }
             if (!migrationBuilder.TableExists($"LANGUAGE_RES"))
@@ -943,7 +861,7 @@ namespace Migrations
                         onDelete: ReferentialAction.Cascade);
                 }
             }
-
+            Console.WriteLine("Snitz Tables");
         }
 
         /// <inheritdoc />

@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.Configuration;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Models;
-using System.Reflection;
 
 #nullable disable
 
@@ -20,6 +18,7 @@ namespace WebApplication1.Migrations
             SetParameters();
             if(!migrationBuilder.IndexExists($"SELECT COUNT(ID) FROM {_forumTablePrefix}CONFIG_NEW"))
             {
+
                 migrationBuilder.InsertData(
                     table: $"{_forumTablePrefix}CONFIG_NEW",
                     columns: new[] { "C_VARIABLE", "C_VALUE" },
@@ -83,10 +82,23 @@ namespace WebApplication1.Migrations
             //MEMBER ADMIN
             if(!migrationBuilder.IndexExists($"SELECT COUNT(MEMBER_ID) FROM {_memberTablePrefix}MEMBERS"))
             {
-                migrationBuilder.InsertData(
-                    table: $"{_memberTablePrefix}MEMBERS",
-                    columns: new[] { "MEMBER_ID", "M_AGE", "M_AIM", "M_ALLOWEMAIL", "M_BIO", "M_CITY", "M_COUNTRY", "M_DATE", "M_DEFAULT_VIEW", "M_DOB", "M_EMAIL", "M_FIRSTNAME", "M_HIDE_EMAIL", "M_HOBBIES", "M_HOMEPAGE", "M_ICQ", "M_IP", "M_KEY", "M_LAST_IP", "M_LastLogin", "M_LASTNAME", "M_LASTPOSTDATE", "M_LEVEL", "M_LINK1", "M_LINK2", "M_LNEWS", "M_MARSTATUS", "M_MSN", "M_NAME", "M_NEWEMAIL", "M_OCCUPATION", "M_PHOTO_URL", "M_POSTS", "M_PWKEY", "M_QUOTE", "M_RECEIVE_EMAIL", "M_SEX", "M_SHA256", "M_SIG_DEFAULT", "M_SIG", "M_STATE", "M_STATUS", "M_SUBSCRIPTION", "M_TITLE", "M_VIEW_SIG", "M_YAHOO" },
-                    values: new object[] { 1, null, null, (short)0, null, null, null, "20250101082941", 0, null, "xxxx@example.com", null, (short)0, null, null, null, null, null, null, null, null, null, (short)3, null, null, null, null, null, "Administrator", null, null, null, 0, null, null, (short)0, null, (short)0, (short)0, null, null, (short)1, (short)0, null, (short)0, null });
+                Console.WriteLine("Seeding");
+                var admin = migrationBuilder.AdminUser();
+                var installdate = DateTime.UtcNow.ToForumDateStr();
+                if(admin != null)
+                {
+                    migrationBuilder.InsertData(
+                        table: $"{_memberTablePrefix}MEMBERS",
+                        columns: new[] { "MEMBER_ID", "M_ALLOWEMAIL", "M_DATE", "M_DEFAULT_VIEW", "M_EMAIL", "M_HIDE_EMAIL", "M_LEVEL", "M_NAME", "M_POSTS", "M_RECEIVE_EMAIL", "M_SHA256", "M_SIG_DEFAULT", "M_STATUS", "M_SUBSCRIPTION", "M_VIEW_SIG" },
+                        values: new object[] { 1, (short)0, installdate, 0, admin.Email, (short)0, (short)3, admin.UserName, 0, (short)0, (short)0, (short)0, (short)1, (short)0, (short)0 });
+                }
+                else
+                {
+                    migrationBuilder.InsertData(
+                        table: $"{_memberTablePrefix}MEMBERS",
+                        columns: new[] { "MEMBER_ID", "M_ALLOWEMAIL", "M_DATE", "M_DEFAULT_VIEW", "M_EMAIL", "M_HIDE_EMAIL", "M_LEVEL", "M_NAME", "M_POSTS", "M_RECEIVE_EMAIL", "M_SHA256", "M_SIG_DEFAULT", "M_STATUS", "M_SUBSCRIPTION", "M_VIEW_SIG" },
+                        values: new object[] { 1, (short)0, installdate, 0, "xxxx@example.com", (short)0, (short)3, "Administrator", 0,(short)0, (short)0, (short)0, (short)1, (short)0, (short)0 });
+                }
                 migrationBuilder.InsertData(
                     table: $"{_forumTablePrefix}CATEGORY",
                     columns: new[] { "CAT_ID", "CAT_MODERATION", "CAT_NAME", "CAT_ORDER", "CAT_STATUS", "CAT_SUBSCRIPTION" },
@@ -107,6 +119,7 @@ namespace WebApplication1.Migrations
                     columns: new[] { "COUNT_ID", "P_A_COUNT", "T_A_COUNT", "P_COUNT", "T_COUNT", "U_COUNT" },
                     values: new object[] { (short)1, 0, 0, 1, 1, 0 });
             }
+
         }
 
         /// <inheritdoc />

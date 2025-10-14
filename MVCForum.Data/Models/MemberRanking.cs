@@ -9,6 +9,7 @@ public partial class MemberRanking
 {
     [Column("RANK_ID")]
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public int Id { get; set; }
 
     [Column("R_TITLE")]

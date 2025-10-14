@@ -47,6 +47,14 @@ namespace SnitzCore.Data.Extensions
                 return dateonly ? DateTime.MinValue.Date : DateTime.MinValue;
             }
         }
+        /// <summary>
+        /// Converts the specified <see cref="DateTime"/> to a formatted string suitable for forum display.
+        /// </summary>
+        /// <param name="date">The <see cref="DateTime"/> to format.</param>
+        /// <param name="dateonly">A value indicating whether to include only the date portion in the output.  If <see langword="true"/>, the
+        /// output will include only the date; otherwise, both the date and time are included.</param>
+        /// <returns>A string representation of the <paramref name="date"/> formatted according to the forum's date or date-time
+        /// format.</returns>
         public static string ToForumDateStr(this DateTime date, bool dateonly = false)
         {
             if (dateonly)

@@ -12,6 +12,7 @@ namespace WebApplication1.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            Console.WriteLine("Identity User Update");
             SetParameters();
             migrationBuilder.AddColumn<string>(
                 name: "Discriminator",

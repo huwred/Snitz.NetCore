@@ -14,12 +14,17 @@ namespace MVCForum.Extensions
     {
         public static WebApplication MigrateDatabase(this WebApplication webApp)
         {
-            //webApp.Configuration.GetSection("").GetChildren("");
+            //webApp.Configuration.GetSection("").GetChildren(""); 
             using var scope = webApp.Services.CreateScope();
             using var appContext = scope.ServiceProvider.GetRequiredService<SnitzDbContext>();
             try
             {
-                appContext.Database.Migrate();
+                if (appContext.Database.GetPendingMigrations().Any())
+                {
+                    Console.WriteLine("Perform Database Update");
+                    appContext.Database.Migrate();
+                }
+
                 UploadCSV(webApp, appContext);
             }
             catch (Exception ex)
@@ -32,14 +37,28 @@ namespace MVCForum.Extensions
             return webApp;
         }
 
-    private static void UploadCSV(WebApplication webApp, SnitzDbContext dbContext)
-    {
-            Console.WriteLine("Importing Language strings");
+        /// <summary>
+        /// Imports language resource strings from a CSV file into the database.
+        /// </summary>
+        /// <remarks>This method reads a predefined CSV file containing language resource strings,
+        /// processes its contents,  and updates or inserts the data into the database. If the file does not exist, the
+        /// method logs a message  and exits without performing any operations. After a successful import, the file is
+        /// renamed to prevent  re-importing it in the future. <para> If a resource with the same <c>Culture</c> and
+        /// <c>ResourceId</c> already exists in the database,  it is updated with the new values. Otherwise, a new
+        /// resource is added. The method uses a database  transaction to ensure that all changes are committed
+        /// automatically. </para> <para> If an exception occurs during the import process, the error message is logged,
+        /// and no changes are committed. </para></remarks>
+        /// <param name="webApp">The <see cref="WebApplication"/> instance, used to determine the application's content root path.</param>
+        /// <param name="dbContext">The <see cref="SnitzDbContext"/> instance used to interact with the database.</param>
+        private static void UploadCSV(WebApplication webApp, SnitzDbContext dbContext)
+        {
+            
             var path = System.IO.Path.Combine(webApp.Environment.ContentRootPath, "App_Data");
             var filename = "initiallang_en.csv";
 
             if (!File.Exists(Path.Combine(path,filename)))
             {
+                //Console.WriteLine("Missing Language strings");
                 return;
             }
 
@@ -57,6 +76,7 @@ namespace MVCForum.Extensions
 
             try
             {
+                Console.WriteLine("Importing Language strings");
                 using var transaction = dbContext.Database.BeginTransaction();
                 foreach (DataRow row in dt.Rows)
                 {
@@ -89,7 +109,7 @@ namespace MVCForum.Extensions
                 }
                 transaction.Commit();
                 //rename the file so it doesn't get re-imported
-                File.Move(Path.Combine(path,filename), Path.Combine(path,"export_en.done"));
+                File.Move(Path.Combine(path,filename), Path.Combine(path,$"{filename}.done"));
 
             }
             catch (Exception e)
@@ -98,7 +118,7 @@ namespace MVCForum.Extensions
 
             }
 
-    }
+        }
 
     }
 }

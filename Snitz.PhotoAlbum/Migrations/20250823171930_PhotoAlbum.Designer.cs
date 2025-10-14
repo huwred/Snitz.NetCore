@@ -1135,11 +1135,6 @@ namespace Snitz.PhotoAlbum.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasColumnName("M_LASTACTIVITY");
 
-                    b.Property<string>("LastLogin")
-                        .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
-                        .HasColumnName("M_LastLogin");
-
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")

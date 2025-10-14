@@ -1,10 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Models;
-using System;
 
 #nullable disable
 
@@ -457,7 +453,7 @@ namespace Migrations
 
             }
 
-
+            Console.WriteLine("Initialalize");
         }
 
         /// <inheritdoc />
