@@ -196,15 +196,19 @@ a:active,a:hover {
 .fa-fire, .subforum-icon .fa-fire, .table-row .status .fa-fire,.note .fa-fire {
     color: orangered;
 }
+/* Select all child elements except the last one */
+.subforum > .accordion-collapse .subforum-row:not(:last-child) {
+    /* Your styles here */
+    border-bottom: 2px solid var(--primary-header);
+}
+
 /* For the smartphones */
 @media screen and (max-width: 460px) {
-    .subforum-divider {
-        margin: 0;
-        display: block;
-        border: 0;
-        height: 1px;
-        background-color: black;
+    .subforum > .accordion-collapse .subforum-row:not(:last-child) {
+        /* Your styles here */
+        border-bottom: 1px solid var(--primary-header);
     }
+
     .body {
         display: flex;
         padding: 10px;
@@ -278,10 +282,7 @@ footer {
     padding: 5px 10px;
     /*border: solid 0.5px darkslategrey;*/
 }
-.pagination.quicklink {
-    padding: 1px !important;
-    margin-bottom: 2px !important;
-}
+
 .pagination.quicklink a {
     color: darkslategrey;
     margin-inline: 1px !important;
@@ -370,7 +371,9 @@ div.card-body .body.alt {
     border: var(--bs-dropdown-border-width) solid var(--bs-dropdown-border-color);
     border-radius: var(--bs-dropdown-border-radius);
 }
-
+.dropdown-item{
+    color:white;
+}
     .dropdown-menu a:visited {
         color: white;
     }
@@ -528,6 +531,7 @@ a.latestpost-title {
 }
 
 
+
 /* Media Query for Mobile Devices */
 @media (max-width: 480px) {
     body {
@@ -563,6 +567,7 @@ a.latestpost-title {
         grid-template-columns: 10% 60% 30%;
 
         overflow: hidden;
+
     }
 
     .subforum-stats {

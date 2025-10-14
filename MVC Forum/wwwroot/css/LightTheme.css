@@ -44,11 +44,9 @@ h1 {
 
 /* For the smartphones */
 @media screen and (max-width: 460px) {
-    .subforum-divider {
-        display: block;
-        border: 0;
-        height: 1px;
-        background-image: linear-gradient(to right, rgba(190, 190, 190, 0), rgba(255, 255, 255, 0.75), rgba(190, 190, 190, 0));
+    .subforum > .accordion-collapse .subforum-row:not(:last-child) {
+        /* Your styles here */
+        border-bottom: 1px solid var(--primary-header);
     }
 }
 

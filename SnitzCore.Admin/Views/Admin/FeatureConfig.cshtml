@@ -36,7 +36,8 @@
                             <div class="col">
                             </div>
                         </div>
-                        <div class="row">
+                    </fieldset>
+                    <div class="row">
                             <div class="col">
                                 <admin-config config-key="STRFORUMPAGESIZES" config-label="Page sizes" config-val="@SnitzConfig.GetValueWithDefault("STRFORUMPAGESIZES", "10,25,50,100")" help-text="@Localizer["STRFORUMPAGESIZES"].Value"></admin-config>
                             </div>
@@ -45,12 +46,11 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <admin-config config-key="STRSEARCHPAGESIZES" config-label="Search results page size" config-val="@SnitzConfig.GetValueWithDefault("STRSEARCHPAGESIZES", "10")" help-text="@Localizer["STRSEARCHPAGESIZES"].Value"></admin-config>
+                                <admin-config config-key="STRSEARCHPAGESIZES" config-type="text" config-label="Search results page size" config-val="@SnitzConfig.GetValueWithDefault("STRSEARCHPAGESIZES", "10")" help-text="@Localizer["STRSEARCHPAGESIZES"].Value"></admin-config>
                             </div>
                             <div class="col">
                             </div>
                         </div>
-                    </fieldset>
                 </div>
                 <partial name="_FormButtons"/>
             </form>
@@ -76,7 +76,7 @@
                         </div>
                     </fieldset>
                     <admin-config config-key="STREDITEDBYDATE" config-label="Show edited by on Date" config-val="@SnitzConfig.GetIntValue("STREDITEDBYDATE")" help-text="@Localizer["STREDITEDBYDATE"].Value"></admin-config>
-                    <admin-config disabled config-key="STRSHOWTOPICNAV" config-label="Show Prev / Next Topic" config-val="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV")" help-text="@Localizer["STRSHOWTOPICNAV"].Value"></admin-config>
+                    <admin-config config-key="STRSHOWTOPICNAV" config-label="Show Prev / Next Topic" config-val="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV")" help-text="@Localizer["STRSHOWTOPICNAV"].Value"></admin-config>
                     <admin-config config-key="STRSHOWSENDTOFRIEND" config-label="Show send Topic to a friend link" config-val="@SnitzConfig.GetIntValue("STRSHOWSENDTOFRIEND")" help-text="@Localizer["STRSHOWSENDTOFRIEND"].Value"></admin-config>
                     <admin-config config-key="STRSHOWPRINTERFRIENDLY" config-label="Show printer friendly link" config-val="@SnitzConfig.GetIntValue("STRSHOWPRINTERFRIENDLY")" help-text="@Localizer["STRSHOWPRINTERFRIENDLY"].Value"></admin-config>
                     <admin-config config-key="STRSOCIALSHARE" config-label="Social Media links" config-val="@SnitzConfig.GetIntValue("STRSOCIALSHARE")" help-text="@Localizer["STRSOCIALSHARE"].Value"></admin-config>

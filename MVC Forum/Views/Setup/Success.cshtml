@@ -15,6 +15,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/busy.css" rel="stylesheet">
     <style>
+        body {
+            background-color: #191970;
+        }
+
+        .container {
+            background-color: #ffffff;
+            color: #191970;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 1024px;
+        }
+
+
+
         #search-overlay {
             position: fixed;
             inset: 0;
@@ -68,20 +83,20 @@
     </style>
 </head>
 <body>
-<div class="container mt-5">
+<div class="container mt-3">
     <div id="search-overlay">
         <div id="loader"></div>
-        <div id="loader-text">Performing Database Upgrade:<br> This may take a some time ...</div>
+        <div id="loader-text">Performing Upgrade tasks:<br> This may take a some time ...</div>
     </div>
     <h2>Database Configuration Complete</h2>
-    <img  src="~/images/wizard.webp" alt="Snitz&amp;trade; Forums logo" loading="lazy">
+    <img  src="~/images/wizard.webp" alt="Snitz&amp;trade; Forums logo" loading="lazy" class="mb-3">
+        <p><strong>🎉 Success!</strong><br>Your connection string has been securely saved and the initial database update is complete.</p>
+        <p><strong>🚀 Next Stop: Application Restart</strong><br>To continue with the upgrade, we need to give the application a quick restart. Don’t worry—it’s painless (for the server).</p>
 
-    <p>Your database connection string has been saved successfully. To continue with the upgrade, please restart the server using the button below.</p>
-
-    <button class="btn btn-outline-danger" id="restart-btn">
-        ⚠️ Restart Server
+    <button class="btn btn-warning mt-3" id="restart-btn">
+        ⚠️ Click to Restart Application
     </button>
-    <p class="mt-4 text-danger"><em>Clicking this button will cause the server to vanish in a puff of digital smoke and reappear moments later, hopefully wiser and better dressed.</em></p>
+        <p class="mt-3 text-danger fw-semibold">Click this button and—poof!—the application will disappear in a puff of digital smoke and reappear moments later, hopefully with better posture and a fresh haircut.</p>
 </div>
 
 <!-- Bootstrap JS Bundle -->
@@ -92,7 +107,6 @@
         e.preventDefault();
         $('#search-overlay').css("display","flex");
         fetch('/api/restart/restart', { method: 'POST' });
-        //alert('Server is restarting. Please wait a few moments before refreshing the page.');
         setTimeout(function(){ 
             $('#loader-text').html('Finished Database Upgrade:<br><h5>Redirecting to home page ... </h5>');
             setTimeout(function(){ 

@@ -413,5 +413,10 @@ namespace SnitzCore.Service
             var mods = _dbContext.ForumModerator.AsNoTracking().Include(fm => fm.Member).Where(fm => fm.ForumId == forumId).Select(m => m.Member!.Name!).ToList();
             return mods;
         }
+
+        public IQueryable<int> TopicIds(int forumid)
+        {
+            return _dbContext.Posts.AsNoTracking().Where(p=>p.ForumId == forumid).OrderBy(p=>p.Id).Select(p=>p.Id);
+        }
     }
 }

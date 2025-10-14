@@ -64,6 +64,7 @@ public class MemberImageTagHelper : TagHelper
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccesor.ActionContext!);
+
         if(MemberId != null)
         {
             var member = _member.GetById(MemberId);
@@ -84,14 +85,19 @@ public class MemberImageTagHelper : TagHelper
                         SourceFile = null;
                     } 
                 }
-           
+                if(member.PhotoUrl == "http://" || member.PhotoUrl == "https://")
+                {
+                    SourceFile = null;
+                }           
             }
+
         }
         else if (MemberName != null)
         {
             var member = _member.GetByUsername(MemberName);
             if(member != null && member.PhotoUrl != null)
             {
+
                 if (member.PhotoUrl.ToLowerInvariant().StartsWith("http"))
                 {
                     SourceFile = member.PhotoUrl;
@@ -105,6 +111,11 @@ public class MemberImageTagHelper : TagHelper
                         SourceFile = null;
                     } 
                 }
+                if(member.PhotoUrl == "http://" || member.PhotoUrl == "https://")
+                {
+                    SourceFile = null;
+                }           
+
             }
         }
         else if (!string.IsNullOrEmpty(SourceFile))
@@ -121,6 +132,10 @@ public class MemberImageTagHelper : TagHelper
                         SourceFile = "~/Content/Avatar/" + SourceFile;
                     }
                 }
+                if(SourceFile == "http://" || SourceFile == "https://")
+                {
+                    SourceFile = null;
+                }           
 
         }
 

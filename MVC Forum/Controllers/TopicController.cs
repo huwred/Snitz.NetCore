@@ -181,6 +181,8 @@ namespace MVCForum.Controllers
                 replies = BuildPostReplies(pagedReplies);
 
             }
+
+
             var model = new PostIndexModel()
             {
                 Id = post.Id,
@@ -212,7 +214,15 @@ namespace MVCForum.Controllers
                 AllowRating = post.Forum.Rating==1 && _config.GetIntValue("INTTOPICRATING")==1 && !_memberService.HasRatedTopic(post.Id,_memberService.Current()?.Id),
                 Rating = post.GetTopicRating(),
                 AccessDenied = notallowed,
+
             };
+            if(_config.IsEnabled("STRSHOWTOPICNAV"))
+            {
+                var res = GetAdjacentTopics(post.Id,post.Forum!.Id);
+                model.PreviousTopicId = (int?)res.PreviousId;
+                model.NextTopicId = (int?)res.NextId;
+            }            
+
             if(post.Forum.Type == (int)ForumType.BlogPosts)
             {
                 return View("Blog/Index",model);
@@ -222,6 +232,29 @@ namespace MVCForum.Controllers
                 return View(model);
             }
 
+        }
+
+        private dynamic GetAdjacentTopics(int id, int forumId)
+        {
+            // Example list of record IDs
+            var recordIds = _forumService.TopicIds(forumId).ToList();
+
+            // Current record ID
+            int currentId = id;
+
+            // Find the index of the current ID
+            int currentIndex = recordIds.IndexOf(currentId);
+
+            // Get the previous and next IDs
+            int? previousId = currentIndex > 0 ? recordIds[currentIndex - 1] : (int?)null;
+            int? nextId = currentIndex < recordIds.Count - 1 ? recordIds[currentIndex + 1] : (int?)null;
+
+            // Output the results
+            Console.WriteLine($"Current ID: {currentId}");
+            Console.WriteLine($"Previous ID: {(previousId.HasValue ? previousId.ToString() : "None")}");
+            Console.WriteLine($"Next ID: {(nextId.HasValue ? nextId.ToString() : "None")}");
+
+            return new { PreviousId = previousId, NextId = nextId };
         }
 
         /// <summary>

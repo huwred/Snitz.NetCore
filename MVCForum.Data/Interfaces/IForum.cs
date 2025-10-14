@@ -48,5 +48,6 @@ namespace SnitzCore.Data.Interfaces
         Dictionary<int, string> ModeratedForums();
 
         List<string> GetModerators(int forumId);
+        IQueryable<int> TopicIds(int forumid);
     }
 }

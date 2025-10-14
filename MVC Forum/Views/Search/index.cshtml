@@ -8,6 +8,7 @@
     ViewBag.PageCount = Model.Results?.PageCount!;
     string pagenum = (Model.Results?.PageNum?.ToString() ?? Context.Request.Query["page"])!;
     ViewBag.PageNum = pagenum;
+
 }
 @section Styles{
     <link href="~/css/star-rating.min.css" rel="stylesheet" />
@@ -32,6 +33,7 @@
                 <input type="hidden" name="fun" id="fun">
             </div>
         }
+
         <!--Display posts table-->
         <div class="posts-table mb-3">
             <partial name="TopicListingHeader" />
@@ -152,12 +154,31 @@
         </div>
     }
     </div>
-
+<form id="searchModel" method="POST">
+    @Html.HiddenFor(m => m.Terms)
+    @Html.HiddenFor(m => m.SearchFor)
+    @Html.HiddenFor(m => m.SearchMessage)
+    @Html.HiddenFor(m => m.SinceDate)
+    @Html.HiddenFor(m => m.SearchArchives)
+    @Html.HiddenFor(m => m.UserName)
+    @Html.HiddenFor(m => m.SearchCategory)
+    @Html.HiddenFor(m => m.SearchForums)
+</form>
 @section Scripts{
     <script src="~/js/star-rating.min.js"></script>
     <script src="~/js/krajee-svg/theme.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="~/js/postcontroller.min.js"></script>
     <script type="text/javascript">
+        $(document).on('click', '.page-link', function (e) {
+            e.preventDefault();
+            console.log($(this).attr("href"));
+                // var form = document.getElementById('searchModel');
+                // var formData = new FormData(form);
+                $('#searchModel').attr('action', SnitzVars.baseUrl + '/Forum/SearchResult/' + $(this).attr("href"));
+                $('#searchModel').submit();
+
+            return false;
+        });
         // Disable form submissions if there are invalid fields
         (function() {
             'use strict';

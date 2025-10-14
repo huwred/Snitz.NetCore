@@ -4,16 +4,13 @@
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdminLink">
         <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index" rel="nofollow noindex">@Localizer["mnuAdminMainConfig"]</a></li>
-        <li><a class="dropdown-item" asp-controller="Admin" asp-action="EmailConfig" rel="nofollow noindex">Email Setup</a></li>
-        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Forum" rel="nofollow noindex">Forum Options</a></li>
-        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Features" rel="nofollow noindex">Features</a></li>
-        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Members" rel="nofollow noindex">Membership Settings</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="EmailConfig" rel="nofollow noindex">@Localizer["mnuAdminEmail"]</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Forum" rel="nofollow noindex">@Localizer["mnuAdminForum"]</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Features" rel="nofollow noindex">@Localizer["mnuAdminFeature"]</a></li>
+        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Members" rel="nofollow noindex">@Localizer["mnuAdminMembership"]</a></li>
         <li><hr class="dropdown-divider" /></li>
         <li><a class="dropdown-item" href="~/LanguageManager/" rel="nofollow noindex">@Localizer["mnuAdminLangResources"]</a></li>
-        <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search" rel="nofollow noindex">Search Dictionary</a></li>
-        @* <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Templates" rel="nofollow noindex">Email Templates</a></li> *@
-        @* <li><hr class="dropdown-divider" /></li> *@
-        @* <li snitz-if="@User.IsInRole("SuperAdmin")"><a class="dropdown-item" asp-controller="Admin" asp-action="ListViews" rel="nofollow noindex">Page Templates</a></li> *@
+        <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search" rel="nofollow noindex">@Localizer["mnuAdminFindLangRes"]</a></li>
         <li><hr class="dropdown-divider" /></li>
         @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
         <li><a class="dropdown-item" asp-controller="Category" asp-action="Create" rel="nofollow noindex">@Localizer["tipNewCategory"]</a></li>
@@ -27,13 +24,13 @@
                 <link-confirm title="Clear Cache" jq-selector="confirm-clearcache" href="~/Admin/ClearCache" class="dropdown-item text-warning"></link-confirm>
             </li>
             <li>
-                <link-confirm title="Restart Application" jq-selector="confirm-restart" href="~/Admin/Restart" class="dropdown-item text-warning"></link-confirm>
+                <link-confirm title="@Localizer["mnuAdminReset"].Value" jq-selector="confirm-restart" href="~/Admin/Restart" class="dropdown-item text-warning"></link-confirm>
             </li>
             <li>
                 <link-confirm title="Update Counts" jq-selector="confirm-counts" href="~/Admin/UpdateCounts" class="dropdown-item text-warning"></link-confirm>
             </li>
 
-            <li><a class="dropdown-item" asp-controller="FileManager" asp-action="Index" rel="nofollow noindex">File Manager</a></li>
+            <li><a class="dropdown-item" asp-controller="FileManager" asp-action="Index" rel="nofollow noindex">@Localizer["mnuAdminExplorer"]</a></li>
         }
     </ul>
 </li>

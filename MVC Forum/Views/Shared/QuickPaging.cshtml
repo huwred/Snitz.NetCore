@@ -7,6 +7,7 @@
     var sortdir = "";
     var intLow = 1;
     var intHigh = pagecount;
+    var pagesperrow = SnitzConfig.GetIntValue("STRPAGENUMBERSIZE",10);
     if (page == 1) {intLow = 1;}
     if (intHigh > pagecount) {intHigh = pagecount;}
 
@@ -37,6 +38,7 @@
         sortdir = $"&sortdir={Model.SortDir}";
     }
     var pagesize = $"&pagesize={Model.PageSize}";
+    
 }
 <nav aria-label="Page navigation" class="mb-1">
     <ul class="pagination quicklink">

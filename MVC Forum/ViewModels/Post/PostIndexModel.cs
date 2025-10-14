@@ -36,6 +36,9 @@ namespace MVCForum.ViewModels.Post
         public bool AccessDenied { get; internal set; }
         public ArchivedPost ArchivedTopic { get; internal set; }
 
+        public int? PreviousTopicId { get; set; }
+        public int? NextTopicId { get; set; }
+
         public PostIndexModel()
         {
             Replies = new HashSet<PostReplyModel>();

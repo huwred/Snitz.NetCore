@@ -173,22 +173,38 @@ namespace SnitzCore.Service
         /// not exist in the database.</description></item> </list></returns>
         public MigratePassword ValidateMember(Member member, string password)
         {
-            OldMembership? result = _dbContext.OldMemberships.OrderBy(m=>m.Id).FirstOrDefault(m => m.Id == member.Id);
-            if(result == null)
+            try
             {
-                //no old .net membership so must be using Member.Password
-                var memberid = member.Id;
-                var oldpass = _dbContext.Database.SqlQuery<string>($"SELECT M_PASSWORD FROM FORUM_MEMBERS WHERE MEMBER_ID = {memberid}");
-                var strencoded = SHA256Hash(password);
-                if (oldpass != null && oldpass.Count() > 0)
+                OldMembership? result = _dbContext.OldMemberships.OrderBy(m=>m.Id).FirstOrDefault(m => m.Id == member.Id);
+                if(result == null)
                 {
-                    return strencoded == oldpass.ToList().First() ? MigratePassword.Valid : MigratePassword.InvalidPassword;
+                    //no old .net membership so must be using Member.Password
+                    var memberid = member.Id;
+                    var oldpass = _dbContext.Database.SqlQuery<string>($"SELECT M_PASSWORD FROM FORUM_MEMBERS WHERE MEMBER_ID = {memberid}");
+                    var strencoded = SHA256Hash(password);
+                    if (oldpass != null && oldpass.Count() > 0)
+                    {
+                        return strencoded == oldpass.ToList().First() ? MigratePassword.Valid : MigratePassword.InvalidPassword;
+                    }
+                    return MigratePassword.NoMember;
                 }
-                return MigratePassword.NoMember;
+                if(result != null) {
+                    return CustomPasswordHasher.VerifyHashedPassword(result.Password,password) ? MigratePassword.Valid : MigratePassword.InvalidPassword;
+                }
             }
-            if(result != null) {
-                return CustomPasswordHasher.VerifyHashedPassword(result.Password,password) ? MigratePassword.Valid : MigratePassword.InvalidPassword;
+            catch (Exception)
+            {
+                    //no old .net membership so must be using Member.Password
+                    var memberid = member.Id;
+                    var oldpass = _dbContext.Database.SqlQuery<string>($"SELECT M_PASSWORD FROM FORUM_MEMBERS WHERE MEMBER_ID = {memberid}");
+                    var strencoded = SHA256Hash(password);
+                    if (oldpass != null && oldpass.Count() > 0)
+                    {
+                        return strencoded == oldpass.ToList().First() ? MigratePassword.Valid : MigratePassword.InvalidPassword;
+                    }
+                    return MigratePassword.NoMember;
             }
+
             return MigratePassword.NoMember;
 
         }

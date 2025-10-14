@@ -6,13 +6,17 @@
     <div class="grid-wrapper col mt-2">
         @foreach (var item in Model)
         {
-            <div class="lc-block">
-                <figure>
-                    <snitz-avatar src="@item.Path" def-src="~/images/notfound.jpg" class="img-thumbnail" data-id="@item.Id" width="100" height="100" />
-                    <figcaption><i class="fa fa-trash fs-6 del-avatar" data-id="@item.Id" data-img="@item.Path"></i>@item.Name</figcaption>
-                </figure>
+            if (item.Path != "http://")
+            {
+                <div class="lc-block">
+                    <figure>
+                        <snitz-avatar src="@item.Path" def-src="~/images/notfound.jpg" class="img-thumbnail" data-id="@item.Id" width="100" height="100" />
+                        <figcaption><i class="fa fa-trash fs-6 del-avatar" data-id="@item.Id" data-img="@item.Path"></i>@item.Name</figcaption>
+                    </figure>
 
-            </div>
+                </div>
+                
+            }
         }
     </div>
 </div>

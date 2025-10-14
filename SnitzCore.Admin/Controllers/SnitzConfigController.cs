@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -184,7 +186,13 @@ namespace SnitzCore.BackOffice.Controllers
                         existingRank.Posts = rank.Value.Posts;
                         existingRank.Image = rank.Value.Image;
                         existingRank.ImgRepeat = rank.Value.ImgRepeat;
-                        if(rank.Key != 0)
+                        if(rank.Key == 0)
+                        {
+                                _context.Attach(existingRank);
+                                // Mark the entity as modified
+                                _context.Entry(existingRank).State = EntityState.Modified;
+
+                        }
                             _context.MemberRanking.Update(existingRank);
                     }
 

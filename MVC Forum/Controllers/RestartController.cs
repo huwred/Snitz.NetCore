@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVCForum.Extensions;
+using SnitzCore.Data.Extensions;
 using System;
 
 namespace MVCForum.Controllers
@@ -20,6 +21,7 @@ namespace MVCForum.Controllers
         [HttpPost("restart")]
         public IActionResult Restart()
         {
+            SetupCacheProvider.Remove("AdminUser");
             Console.WriteLine("Restarting application...");
             
 

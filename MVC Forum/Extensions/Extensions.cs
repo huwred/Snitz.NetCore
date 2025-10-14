@@ -106,14 +106,10 @@ namespace MVCForum.Extensions
             using var appContext = scope.ServiceProvider.GetRequiredService<PhotoContext>();
             try
             {
-                Console.WriteLine("PhotoContext Migrations");
-                    if (appContext.Database.GetPendingMigrations().Any())
-                    {
-                        appContext.Database.Migrate();
-                    }
-                else
+                if (appContext.Database.GetPendingMigrations().Any())
                 {
-                    Console.WriteLine("No Migrations to Apply");
+                    Console.WriteLine("Applying Photo Album Migrations");
+                    appContext.Database.Migrate();
                 }
             }
             catch (Exception ex)
@@ -130,14 +126,10 @@ namespace MVCForum.Extensions
             using var appContext = scope.ServiceProvider.GetRequiredService<EventContext>();
             try
             {
-                Console.WriteLine("EventContext Migrations");
-                    if (appContext.Database.GetPendingMigrations().Any())
-                    {
-                        appContext.Database.Migrate();
-                    }
-                else
+                if (appContext.Database.GetPendingMigrations().Any())
                 {
-                    Console.WriteLine("No Migrations to Apply");
+                    Console.WriteLine("Applying Calendar/Event Migrations");
+                    appContext.Database.Migrate();
                 }
             }
             catch (Exception ex)
@@ -154,14 +146,10 @@ namespace MVCForum.Extensions
             using var appContext = scope.ServiceProvider.GetRequiredService<PostThanksContext>();
             try
             {
-                Console.WriteLine("PostThanksContext Migrations");
-                    if (appContext.Database.GetPendingMigrations().Any())
-                    {
-                        appContext.Database.Migrate();
-                }
-                else
+                if (appContext.Database.GetPendingMigrations().Any())
                 {
-                    Console.WriteLine("No Migrations to Apply");
+                    Console.WriteLine("Applying PostThanks Migrations");
+                    appContext.Database.Migrate();
                 }
             }
             catch (Exception ex)

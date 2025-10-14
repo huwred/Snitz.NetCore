@@ -1197,33 +1197,49 @@ namespace MVCForum.Controllers
                 IdentityResult result = await _userManager.CreateAsync(newUser, login.Password);
                 if (result.Succeeded)
                 {
-                    var currroles = _snitzDbContext.Set<OldUserInRole>()
-                        .Include(u => u.Role).AsNoTracking()
-                        .Include(u => u.User).AsNoTracking()
-                        .Where(r => r.UserId == member.Id).ToList();
-                    if(currroles == null || currroles.Count < 1)
+                    try //OldUserInRole may not exist so try/catch
                     {
-                        if(member.Level == 3)
+                        var currroles = _snitzDbContext.Set<OldUserInRole>()
+                            .Include(u => u.Role).AsNoTracking()
+                            .Include(u => u.User).AsNoTracking()
+                            .Where(r => r.UserId == member.Id).ToList();
+                        if(currroles == null || currroles.Count < 1)
                         {
-                            await _userManager.AddToRoleAsync(newUser, "Administrator");
-                        }
-                        if(member.Level == 2)
-                        {
-                            await _userManager.AddToRoleAsync(newUser, "Moderator");
-                        }
-                    }
-                    else
-                    {
-                        foreach (var userInRole in currroles)
-                        {
-                            var exists = _roleManager.Roles.AsNoTracking().OrderBy(r => r.Name).FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
-                            if (exists == null)
+                            if(member.Level == 3)
                             {
-                                await _roleManager.CreateAsync(new IdentityRole(userInRole.Role.RoleName));
+                                await _userManager.AddToRoleAsync(newUser, "Administrator");
                             }
-                            await _userManager.AddToRoleAsync(newUser, userInRole.Role.RoleName);
+                            if(member.Level == 2)
+                            {
+                                await _userManager.AddToRoleAsync(newUser, "Moderator");
+                            }
+                        }
+                        else
+                        {
+                            foreach (var userInRole in currroles)
+                            {
+                                var exists = _roleManager.Roles.AsNoTracking().OrderBy(r => r.Name).FirstOrDefault(r => r.Name == userInRole.Role.RoleName);
+                                if (exists == null)
+                                {
+                                    await _roleManager.CreateAsync(new IdentityRole(userInRole.Role.RoleName));
+                                }
+                                await _userManager.AddToRoleAsync(newUser, userInRole.Role.RoleName);
+                            }
                         }
                     }
+                    catch (Exception)
+                    {
+                            if(member.Level == 3)
+                            {
+                                await _userManager.AddToRoleAsync(newUser, "Administrator");
+                            }
+                            if(member.Level == 2)
+                            {
+                                await _userManager.AddToRoleAsync(newUser, "Moderator");
+                            }
+
+                    }
+
 
                     if (validpwd == SnitzCore.Data.Models.MigratePassword.NewPassword)
                     {

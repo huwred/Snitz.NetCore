@@ -30,6 +30,12 @@ namespace MVCForum.ViewModels
 
         public string? ForumUrl {get;set;}
 
+        public string? FUsername {get;set; }
+
+        public string? FPassword {get;set; }
+        public string? FEmail {get;set;}
+
+        public bool ShowAdminForm {get;set;}
     }
 
 }

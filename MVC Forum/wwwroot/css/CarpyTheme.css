@@ -198,12 +198,9 @@ a:active,a:hover {
 }
 /* For the smartphones */
 @media screen and (max-width: 460px) {
-    .subforum-divider {
-        margin: 0;
-        display: block;
-        border: 0;
-        height: 1px;
-        background-color: black;
+    .subforum > .accordion-collapse .subforum-row:not(:last-child) {
+        /* Your styles here */
+        border-bottom: 1px solid var(--primary-header);
     }
     .body {
         display: flex;
@@ -276,10 +273,7 @@ footer {
     padding: 5px 10px;
     /*border: solid 0.5px darkslategrey;*/
 }
-.pagination.quicklink {
-    padding: 1px !important;
-    margin-bottom: 2px !important;
-}
+
 .pagination.quicklink a {
     color: darkslategrey;
     margin-inline: 1px !important;

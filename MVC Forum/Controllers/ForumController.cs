@@ -870,6 +870,12 @@ namespace MVCForum.Controllers
 
         public IActionResult SearchResult(ForumSearchModel model,int pagesize=10,int page=1)
         {
+            if (HttpContext.Request.Cookies.ContainsKey("search-pagesize") && _config.GetValueWithDefault("STRFORUMPAGESIZES", _config.DefaultPageSize.ToString())!.Split(',').Count() > 1)
+            {
+                var pagesizeCookie = HttpContext.Request.Cookies["search-pagesize"];
+                if (pagesizeCookie != null)
+                    pagesize = Convert.ToInt32(pagesizeCookie);
+            }
             var homePage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
             var searchPage = new MvcBreadcrumbNode("Search", "Forum", "Search") { Parent = homePage };
             var topicPage = new MvcBreadcrumbNode("Search", "Forum", "ViewData.Title") { Parent = searchPage };

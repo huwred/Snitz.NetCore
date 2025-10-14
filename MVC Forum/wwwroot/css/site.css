@@ -78,9 +78,7 @@ a.btn:hover {
 .user-icon i {
     font-size: 22px;
 }
-.subforum-divider{
-    display: none;   
-}
+
 .accordion-button:not(.collapsed) {
 /*    color: #F5FFFA !important;*/
     background-color: transparent;
@@ -236,7 +234,17 @@ footer{
 .pagination a:hover {
     opacity: 0.5;
 }
-
+    .pagination.quicklink {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px; /* Adds spacing between items */
+        list-style: none; /* Removes bullet points */
+        margin: 0;
+        padding: 1px !important;
+        margin-bottom: 2px !important;
+        margin-top: 4px !important;
+        max-width: 300px;
+    }
 .note {
     padding: 20px;
     display: block;
