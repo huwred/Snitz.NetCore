@@ -69,7 +69,7 @@
                                     </td>
                                 }
                                 <td class="col-2">
-                                    @item.Member?.Created.FromForumDateStr().ToLocalTime().ToForumDateTimeDisplay()
+                                    @item.Member?.Created.FromForumDateStr().ToForumDateTimeDisplay()
                                 </td>
                                 <td class="col-2">
                                     @Html.DisplayFor(modelItem => item.LockoutEnabled)

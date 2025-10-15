@@ -38,19 +38,31 @@ namespace SnitzCore.Service.TagHelpers
             var user = _userManager.FindByNameAsync(Member.Name).Result;
             if((user != null && _userManager.IsInRoleAsync(user,"Administrator").Result) || Member.Level == 3)
             {
+                var thisrank = Ranking?.OrderByDescending(i=>i.Value.Posts).FirstOrDefault(r => r.Key > 2 && Member.Posts >= r.Value.Posts);
                 output.Attributes.Add("style", $"color:{Ranking[0].Image} ;");
-                for (int i = 0; i < Ranking[0].ImgRepeat; i++)
+                output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
+                for (int i = 1; i < thisrank.Value.Value.ImgRepeat; i++)
                 {
                     output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
                 }
+                //for (int i = 0; i < Ranking[0].ImgRepeat; i++)
+                //{
+                //    output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
+                //}
             }
             else if((user != null && _userManager.IsInRoleAsync(user,"Moderator").Result) || Member.Level == 2)
             {
+                var thisrank = Ranking?.OrderByDescending(i=>i.Value.Posts).FirstOrDefault(r => r.Key > 2 && Member.Posts >= r.Value.Posts);
                 output.Attributes.Add("style", $"color:{Ranking[1].Image} ;");
-                for (int i = 0; i < Ranking[1].ImgRepeat; i++)
+                output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
+                for (int i = 1; i < thisrank.Value.Value.ImgRepeat; i++)
                 {
                     output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
                 }
+                //for (int i = 0; i < Ranking[1].ImgRepeat; i++)
+                //{
+                //    output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
+                //}
             }
             else
             {

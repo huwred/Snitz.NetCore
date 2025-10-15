@@ -34,7 +34,7 @@
                         <input type="number" name="MemberId" value="@currmember?.Id" style="display:none" />
                         <div class="input-group" id="rating-grp">
                             <span class="input-group-text">@Localizer["lblRateMe"]</span>
-                            <input id="rating-id" name="PostRating" type="number" class="rating" value="@(Decimal.Divide(Model.RatingTotal??0 , 10))" data-show-caption="true" data-min=0 data-max=5 data-step=0.5 data-size="sm">
+                            <input id="rating-id" name="PostRating" type="number" class="rating" value="@(Decimal.Divide(Model.RatingTotal ?? 0, 10))"  data-min=0 data-max=5 data-step=0.5 data-size="sm">
                         </div>
                     </div>
                     <div id="topic_rating"></div>
@@ -42,7 +42,7 @@
             }
             else 
             {
-                <input snitz-if="@(Model.AllowRating == 1)" disabled name="PostRating" type="number" class="rating" value="@Model.GetTopicRating()" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="sm"/>
+                <input snitz-if="@(Model.AllowRating == 1)" disabled name="PostRating" type="number" class="rating" value="@Model.GetTopicRating()" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="sm" />
                 
             }
         </h1>

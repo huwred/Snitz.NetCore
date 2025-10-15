@@ -73,7 +73,7 @@
             <div class="mb-1">
                 <label asp-for="Member!.Created" class="col-sm-3 form-label">@Localizer["ProfileDate"]</label>
                 <div class="col-sm-9">
-                    <label class="form-label">@Model.Member?.Created.FromForumDateStr().ToForumDisplay()</label>
+                    <label class="form-label">@Model.Member?.Created.FromForumDateStr().ToForumDisplay(SnitzConfig)</label>
                 </div>
             </div>
             <div class="mb-1">
@@ -87,14 +87,14 @@
                 <div class="col-sm-9">
                     @if (Model.Member?.Lastpostdate != null)
                     {
-                        <label class="form-label">@Model.Member?.Lastpostdate?.FromForumDateStr().ToForumDisplay()</label>
+                        <label class="form-label">@Model.Member?.Lastpostdate?.FromForumDateStr().ToForumDisplay(SnitzConfig)</label>
                     }
                 </div>
             </div>
             <div class="mb-3">
                 <label asp-for="Member!.LastLogin" class="col-sm-3 col-form-label">@Localizer["ProfileLastVisit"]</label>
                 <div class="col-sm-9">
-                    <label class="form-label">@Model.Member?.LastLogin.FromForumDateStr().ToForumDisplay()</label>
+                    <label class="form-label">@Model.Member?.LastLogin.FromForumDateStr().ToForumDisplay(SnitzConfig)</label>
                 </div>
             </div>
             <input asp-for="Member!.Id" type="hidden" />

@@ -77,7 +77,7 @@
                         <input type="number" name="MemberId" value="@currmember.Id" style="display:none"/>
                         <div class="input-group" id="rating-grp">
                             <span class="input-group-text">@Localizer["lblRateMe"]</span>
-                            <input id="rating-id" name="PostRating" type="number" class="rating" value="@Model.Rating" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="sm">
+                            <input id="rating-id" name="PostRating" type="number" class="rating" value="@Model.Rating" displayOnly=true data-show-caption="true" min=0 max=5 step=0.5 stars=5 data-size="sm">
                         </div>
                     </div>
                     <div id="topic_rating"></div>

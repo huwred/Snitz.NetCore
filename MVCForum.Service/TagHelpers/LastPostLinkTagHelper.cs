@@ -1,8 +1,9 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using SnitzCore.Data.Interfaces;
 using SnitzCore.Service.Extensions;
+using System;
 
 namespace SnitzCore.Service.TagHelpers
 {
@@ -39,10 +40,11 @@ namespace SnitzCore.Service.TagHelpers
         /// </summary>
         public Func<string, string>? TextLocalizerDelegate { get; set; }
 
-        public LastPostLinkTagHelper(IHttpContextAccessor httpContextAccessor)
+        private readonly ISnitzConfig _snitzconfig;
+        public LastPostLinkTagHelper(IHttpContextAccessor httpContextAccessor,ISnitzConfig snitzconfig)
         {
             webrootpath = httpContextAccessor.HttpContext?.Request.PathBase;
-
+            _snitzconfig = snitzconfig;
         }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -69,7 +71,15 @@ namespace SnitzCore.Service.TagHelpers
             link.InnerHtml.AppendHtml(@"<i class=""fa fa-arrow-right""></i>");
 
             output.TagName = "span";
-            output.Content.AppendHtml($@"<time data-toggle=""tooltip"" datetime=""{PostDate?.ToTimeagoDate()}"" class=""timeago"" aria-label=""Posted on {PostDate?.ToLocalTime()}"">{PostDate?.ToLocalTime().ToForumDisplay()}</time>&nbsp;");
+            //TODO add option to turn off timeago
+            if(_snitzconfig.IsEnabled("INTUSETIMEAGO"))
+            {
+                output.Content.AppendHtml($@"<time data-toggle=""tooltip"" datetime=""{PostDate?.ToTimeagoDate()}"" class=""timeago"" aria-label=""Posted on {PostDate?.ToLocalTime()}"">{PostDate?.ToForumDisplay(_snitzconfig)}</time>&nbsp;");
+            }
+            else
+            {
+                output.Content.AppendHtml($@"<time data-toggle=""tooltip"" datetime=""{PostDate?.ToTimeagoDate()}"" aria-label=""Posted on {PostDate?.ToLocalTime()}"">{PostDate?.ToForumDisplay(_snitzconfig)}</time>&nbsp;");
+            }
             if ((bool)JumpTo!)
             {
                 output.Content.AppendHtml(link);

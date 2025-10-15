@@ -40,7 +40,7 @@
                   </span>
             <span class="local-time" title="Local Time">
                 &nbsp;<i class="fa-regular fa-clock" aria-hidden="true"></i>
-                <snitz-datetime datetime="@DateTime.UtcNow.ToLocalTime()" format="HH:mm" freindly-time="false"></snitz-datetime>
+            <snitz-datetime datetime="@DateTime.UtcNow.ToLocalTime()" format="HH:mm" friendly-time="false"></snitz-datetime>
             </span>
         </div>
     </div>
@@ -52,7 +52,7 @@
             </div>
             <div class="metadata__user-created">
                 <span class="desc">@Localizer["ProfileDate"]:</span>
-                <snitz-datetime datetime="@Model.Created.FromForumDateStr()" freindly-time="false" format="MMM yyyy"></snitz-datetime>
+            <snitz-datetime datetime="@Model.Created.FromForumDateStr()" friendly-time="false" format="MMM yyyy"></snitz-datetime>
             </div>
             <div class="metadata__time-read">
                 <span class="desc">@Localizer["ProfileLastVisit"]:</span>

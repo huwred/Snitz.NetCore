@@ -26,7 +26,11 @@
     <title>@ViewBag.Title</title>
     <link rel="stylesheet" href="~/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.min.css">
+
     <link rel="stylesheet" href="~/css/site.min.css">
+    <link href="~/css/star-rating.min.css" rel="stylesheet" />
+    <link href="~/css/krajee-svg/theme.min.css" media="all" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="~/css/prism.min.css" >
     <link rel="stylesheet" href="~/css/print.min.css">
 </head>
 <body>
@@ -35,7 +39,7 @@
         <h4>@Html.Raw(BbCodeProcessor.Format(Model.Title))</h4>
         <label>@Localizer["lblPrintedFrom"]:</label> @SnitzConfig.ForumTitle<br />
         <label>URL:</label> @string.Format("{0}Topic/Posts/{1}?pagenum=1", SnitzConfig.ForumUrl, Model.Id) <br />
-        <label>@Localizer["lblPrinted"]:</label> @DateTime.Now.ToLocalTime().ToForumDisplay()<br />
+        <label>@Localizer["lblPrinted"]:</label> @DateTime.Now.ToForumDisplay(SnitzConfig)<br />
         <div class="title">
             <h4>@Localizer["lblTopic"] </h4>
             <hr />
@@ -44,7 +48,7 @@
         <div class="message-reply">
             <label>@Localizer["lblAuthor"] :</label> @Model.AuthorName <br />
             <label>@Localizer["lblSubject"] :</label> @Model.Title <br />
-            <label>@Localizer["lblPosted"] :</label> @Model.Created.ToLocalTime().ToForumDisplay() <br />
+            <label>@Localizer["lblPosted"] :</label> @Model.Created.ToForumDisplay(SnitzConfig) <br />
             <label>@Localizer["Message"] :</label> <br /><br />
             <div class="message clearfix">
                 @Html.Raw(BbCodeProcessor.Format(Model.Content))
@@ -65,7 +69,7 @@
                 <i class="fa fa-hashtag"></i><label>@counter</label>
                 <div class="message-reply">
                     <label>@Localizer["lblReplyAuthor"]</label> @item.Author.Name <br />
-                    <label>@Localizer["lblRepliedOn"]</label> @item.Created..ToLocalTime().ToForumDisplay() <br />
+                    <label>@Localizer["lblRepliedOn"]</label> @item.Created.ToForumDisplay(SnitzConfig) <br />
                     <label>@Localizer["Message"]:</label> <br /><br />
                     <div class="message clearfix">
                         @Html.Raw(BbCodeProcessor.Format(item.Content))
@@ -81,11 +85,15 @@
     <script type="text/javascript" src="~/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="~/js/jquery.min.js"></script>
     <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="~/js/jquery.cookie.min.js"></script>
+    <partial name="GlobalJs" />
     <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
     <script type="text/javascript" src="~/js/jquery.cookie.js"></script>
     <script snitz-if="@(clang == "fa")" type="text/javascript" src="~/bundles/Persian"></script>
     <script snitz-if="@(clang is "nb" or "nn" or "no")" type="text/javascript" src="~/js/timeago/timeago.no.js"></script>
-
+    <script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
+    <script src="~/js/star-rating.min.js"></script>
+    <script src="~/js/krajee-svg/theme.min.js" type="text/javascript"></script>
     @if (!clang.Contains("en"))
     {
         var src = $"{SnitzConfig.RootFolder}/js/timeago/timeago.{clang}.js";

@@ -22,16 +22,19 @@ namespace SnitzCore.Service.TagHelpers
         [HtmlAttributeName("datetime")]
         public DateTime? SnitzDate { get; set; }
 
-        public bool? FreindlyTime { get; set; } = true;
+        public bool? FriendlyTime { get; set; } = true;
 
         [HtmlAttributeName("format")]
         public string? Format { get; set; }
 
         private readonly LanguageService  _languageResource;
-        public SnitzDateTimeDisplay(IHtmlLocalizerFactory localizerFactory )
+        private readonly ISnitzConfig _snitzconfig;
+
+        public SnitzDateTimeDisplay(IHtmlLocalizerFactory localizerFactory ,ISnitzConfig snitzconfig)
         {
             _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
             Format = _languageResource.GetString("dateLong");
+            _snitzconfig = snitzconfig;
         }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -39,18 +42,18 @@ namespace SnitzCore.Service.TagHelpers
             base.Process(context, output);
             output.TagMode = TagMode.StartTagAndEndTag;
             output.TagName = "time";
-            if(FreindlyTime == true)
+            if(FriendlyTime == true && _snitzconfig.IsEnabled("INTUSETIMEAGO"))
             { output.AddClass("timeago", HtmlEncoder.Default); }
             output.Attributes.Add("datetime",SnitzDate?.ToTimeagoDate());
             output.Attributes.Add("aria-label", $"{SnitzDate?.ToLocalTime()}");
             output.Attributes.Add("data-toggle","tooltip");
             if (!string.IsNullOrWhiteSpace(Format))
             {
-                output.PreContent.SetHtmlContent(SnitzDate?.ToLocalTime().ToCustomDisplay(Format));
+                output.PreContent.SetHtmlContent(SnitzDate?.ToCustomDisplay(Format));
             }
             else
             {
-                output.PreContent.SetHtmlContent(SnitzDate?.ToLocalTime().ToForumDisplay());
+                output.PreContent.SetHtmlContent(SnitzDate?.ToForumDisplay(_snitzconfig));
             }
 
         }

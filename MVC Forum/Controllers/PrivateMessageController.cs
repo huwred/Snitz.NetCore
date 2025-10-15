@@ -233,7 +233,7 @@ namespace MVCForum.Controllers
             var message = _pmService.GetById(id);
             var msgSent = message.SentDate.FromForumDateStr();
             _member = _memberService.GetMember(User);
-            var header = $"\r\n\r\n\r\n----- Original Message -----\r\nSent: {msgSent.ToForumDisplay()} UTC\r\n";            
+            var header = $"\r\n\r\n\r\n----- Original Message -----\r\nSent: {msgSent.ToForumDisplay(_config)} UTC\r\n";            
             var model = new PrivateMessagePostModel()
             {
                 SaveToSent = _member?.Pmsavesent == 1, 
@@ -250,7 +250,7 @@ namespace MVCForum.Controllers
             var message = _pmService.GetById(id);
             var msgSent = message.SentDate.FromForumDateStr();
             _member = _memberService.GetMember(User)!;
-            var header = $"\r\n\r\n\r\n----- Original Message -----\r\nFrom: {message.From.Name}\r\nSent: {msgSent.ToForumDisplay()} UTC\r\n";            
+            var header = $"\r\n\r\n\r\n----- Original Message -----\r\nFrom: {message.From.Name}\r\nSent: {msgSent.ToForumDisplay(_config)} UTC\r\n";            
             var model = new PrivateMessagePostModel()
             {
                 SaveToSent = _member.Pmsavesent == 1, 

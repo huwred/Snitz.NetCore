@@ -28,7 +28,7 @@
                     var reply = pageReplies[i];
                     <li class="row @rowclass">
                         <dl class="panel-body preview-item">
-                            <dt>@reply.Member.Name <snitz-datetime class="text-body-tertiary" datetime="@reply.Created.FromForumDateStr()" freindly-time="true"></snitz-datetime></dt>
+                            <dt>@reply.Member.Name <snitz-datetime class="text-body-tertiary" datetime="@reply.Created.FromForumDateStr()" friendly-time="true"></snitz-datetime></dt>
 
                             <dd class="post">@Html.Raw(BbCodeProcessor.Format(reply.Content))<br /></dd>
                         </dl>

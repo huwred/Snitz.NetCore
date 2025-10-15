@@ -140,7 +140,7 @@
         $("#defaultdays-form").submit();
     });
     $(document).ready(function() {
-        $('select option:contains("Last Visit")').text("Last Visit " + '(@lastvisit.ToLocalTime().ToForumDisplay()) ');
+        $('select option:contains("Last Visit")').text("Last Visit " + '(@lastvisit.ToForumDisplay(SnitzConfig)) ');
     });
 
     if (refresh.length && refresh > 0) {

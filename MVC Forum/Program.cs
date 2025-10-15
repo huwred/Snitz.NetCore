@@ -271,6 +271,7 @@ builder.Services.AddSingleton(builder.Environment.ContentRootFileProvider);
 
 
 app = builder.Build();
+
 app.MigrateDatabase();
 app.AddPostThanks();
 app.AddEvents();
@@ -285,6 +286,7 @@ else
 {
     app.UseExceptionHandler();
 }
+
 //Pi doesn't like this, could be newt!
 app.UseHttpsRedirection();
 

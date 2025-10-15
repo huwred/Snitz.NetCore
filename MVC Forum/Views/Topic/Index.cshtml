@@ -113,6 +113,8 @@
         <!--Topic Section-->
 
         <vc:topic-buttons postid="@Model.Id" topic-email="@(loggedin ? 1 : 0)" snitz-if="@isAuthenticated"></vc:topic-buttons>
+        <div snitz-if="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1" class="footer"><a snitz-if="@(Model.PreviousTopicId != null)" href="@Model.PreviousTopicId" class="form-control-plaintext" aria-label="@Localizer["tipPrevTopic"]"><i class="fa fa-step-backward" title="@Localizer["tipPrevTopic"]" data-toggle="tooltip"></i></a> <a snitz-if="@(Model.NextTopicId != null)" class="form-control-plaintext text-end" href="@Model.NextTopicId" aria-label="@Localizer["tipNextTopic"]"><i class="fa fa-step-forward" title="@Localizer["tipNextTopic"]" data-toggle="tooltip"></i></a> </div>
+
         <div snitz-if="@showtopic" class="card topic-container">
             @{
                 var answer = "";
@@ -149,7 +151,7 @@
                 </div>
             </div>
             <div snitz-if="@(isAuthenticated || (Model.Edited != null && Model.EditedBy != null))" class="card-footer text-dark">
-                <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && Model.Edited != null)" class="form-text">@Localizer["lblEditedBy", Model.EditedBy!, Model.Edited?.ToLocalTime().ToForumDisplay()!]</span>
+                <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && Model.Edited != null)" class="form-text">@Localizer["lblEditedBy", Model.EditedBy!, Model.Edited?.ToForumDisplay(SnitzConfig)!]</span>
                 @if (!Model.Archived)
                 {
                     @await Component.InvokeAsync("PostControls", new { post = Model.Topic })
@@ -157,7 +159,6 @@
                 }else{
                     @await Component.InvokeAsync("PostControls", new { post = Model.ArchivedTopic})
                 }
-                <div snitz-if="@SnitzConfig.GetIntValue("STRSHOWTOPICNAV") == 1" class="footer"><a snitz-if="@(Model.PreviousTopicId != null)" href="@Model.PreviousTopicId" class="form-control-plaintext" title="Prev Topic"><i class="fa fa-step-backward"></i></a> <a snitz-if="@(Model.NextTopicId != null)" class="form-control-plaintext text-end" href="@Model.NextTopicId" title="Next Topic"><i class="fa fa-step-forward"></i></a> </div>
             </div>
         </div>
 
@@ -252,7 +253,7 @@
                                 </div>
                             </div>
                             <div snitz-if="@(isAuthenticated || (reply.Edited != null && !string.IsNullOrWhiteSpace(reply.EditedBy)))" class="card-footer text-dark">
-                                <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && reply.Edited != null && !string.IsNullOrWhiteSpace(reply.EditedBy))" class="form-text">@Localizer["lblEditedBy", reply.EditedBy!, reply.Edited?.ToLocalTime().ToForumDisplay()!]</span>
+                                <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && reply.Edited != null && !string.IsNullOrWhiteSpace(reply.EditedBy))" class="form-text">@Localizer["lblEditedBy", reply.EditedBy!, reply.Edited?.ToForumDisplay(SnitzConfig)!]</span>
                                 @await Component.InvokeAsync("PostControls", new { post = reply})
                             </div>
                         </div>

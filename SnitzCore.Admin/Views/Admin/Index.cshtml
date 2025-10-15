@@ -1,7 +1,9 @@
-﻿@using SnitzCore.Services.TagHelpers
+﻿@using SnitzCore.Service.Extensions
+@using SnitzCore.Services.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Microsoft.Extensions.Options
 @using SnitzCore.Data.Models
+@using System.Globalization
 @{
     Layout = "AdminLayout";
     string disableme = "";
@@ -9,6 +11,7 @@
     {
         disableme = "disabled";
     }
+    TimeZoneInfo serverTimeZone = TimeZoneInfo.Local;
 }
 
 <form asp-action="SaveSettings" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result" disabled readonly >
@@ -56,6 +59,8 @@
                     <div class="col">
                     </div>
                 </div>
+                <div class="row">
+                </div>
                 <legend>Options</legend>
                 <hr />
                 <div class="row p-3">
@@ -84,6 +89,62 @@
                         </select>
                     </div>
                     <div class="col">
+                        @{
+                            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+                        }
+                        <div class="mb-3">
+                            <admin-config config-key="INTUSETIMEAGO" config-label="Use friendly times" config-val="@SnitzConfig.GetIntValue("INTUSETIMEAGO")" help-text="@Localizer["INTUSETIMEAGO"].Value"></admin-config>
+                        </div>
+                        <div class="input-group mb-3">
+                            <select name="STRDATETYPE" id="strDateType" class="form-select">
+                                <option value="mdy" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    12/31/2000 (US short)
+                                </option>
+                                <option value="dmy" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    31/12/2000 (UK short)
+                                </option>
+@*                                 <option value="ymd" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    2000/12/31 (Other short)
+                                </option>
+                                <option value="ydm" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    2000/31/12 (Other short)
+                                </option> *@
+                                <option value="mmdy" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    Dec 31 2000 (US med)
+                                </option>
+                                <option value="dmmy" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    31 Dec 2000 (UK med)
+                                </option>
+@*                                 <option value="ymmd" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    2000 Dec 31 (Other med)
+                                </option>
+                                <option value="ydmm" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    2000 31 Dec (Other med)
+                                </option> *@
+                                <option value="mmmdy" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    December 31 2000 (US long)
+                                </option>
+                                <option value="dmmmy" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    31 December 2000 (UK long)
+                                </option>
+@*                                 <option value="ymmmd" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    2000 December 31 (Other long)
+                                </option>
+                                <option value="ydmmm" selected-val="@SnitzConfig.GetValue("STRDATETYPE")">
+                                    2000 31 December (Other long)
+                                </option> *@
+                            </select>
+                            <div class="input-group-append">
+                              <span class="input-group-text" id="basic-addon1">
+                                    <i class="fa fa-question-circle fs-4" data-bs-toggle="tooltip" data-bs-html="true" title="@Localizer["STRDATETYPE"].Value"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <label class="form-label" for="date-format-admin">@serverTimeZone.DisplayName</label>
+                        <label class="form-label" for="date-format-admin">UTC Time: @DateTime.UtcNow.ToString(cultureInfo)</label>
+                        <label class="form-label" for="date-format-admin">Server Time: @DateTime.Now.ToString(cultureInfo)</label>
+                        <label class="form-label" for="date-format-admin">Local Time: @DateTime.UtcNow.ToForumDisplay(SnitzConfig)</label>
+
                     </div>
                 </div>
                 <div class="mb-3 p-3">

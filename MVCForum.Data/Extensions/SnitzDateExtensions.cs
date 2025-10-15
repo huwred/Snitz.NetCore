@@ -8,6 +8,19 @@ namespace SnitzCore.Data.Extensions
     {
         private const string DateFormat = "yyyyMMdd";
         private const string DateTimeFormat = "yyyyMMddHHmmss";
+        
+        /// <summary>
+        /// Converts a forum date string to a <see cref="DateTime"/> object.
+        /// </summary>
+        /// <remarks>This method attempts to parse the input string using the current culture's settings.
+        /// If the input string is 8 characters long, it is interpreted as a date in the "yyyyMMdd" format. If the input
+        /// string is longer, the first 14 characters are interpreted as a date and time in the "yyyyMMddHHmmss"
+        /// format.</remarks>
+        /// <param name="date">The forum date string to convert. The string must be in one of the expected formats: "yyyyMMdd" (8
+        /// characters) or "yyyyMMddHHmmss" (14 characters). If the string is null or does not match the expected
+        /// formats, <see cref="DateTime.MinValue"/> is returned.</param>
+        /// <returns>A <see cref="DateTime"/> object representing the parsed UTC date and time. If the input string is null, empty,
+        /// or in an invalid format, <see cref="DateTime.MinValue"/> is returned.</returns>
         public static DateTime FromForumDateStr(this string? date)
         {
             if (date != null)
@@ -47,10 +60,11 @@ namespace SnitzCore.Data.Extensions
                 return dateonly ? DateTime.MinValue.Date : DateTime.MinValue;
             }
         }
+
         /// <summary>
-        /// Converts the specified <see cref="DateTime"/> to a formatted string suitable for forum display.
+        /// Converts the specified <see cref="DateTime"/> to a formatted string far saving to the database.
         /// </summary>
-        /// <param name="date">The <see cref="DateTime"/> to format.</param>
+        /// <param name="date">The UTC <see cref="DateTime"/> to format.</param>
         /// <param name="dateonly">A value indicating whether to include only the date portion in the output.  If <see langword="true"/>, the
         /// output will include only the date; otherwise, both the date and time are included.</param>
         /// <returns>A string representation of the <paramref name="date"/> formatted according to the forum's date or date-time

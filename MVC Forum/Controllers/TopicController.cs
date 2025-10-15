@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Post;
+using Org.BouncyCastle.Asn1.X509;
 using SmartBreadcrumbs.Nodes;
 using Snitz.Events.Models;
 using SnitzCore.Data;
@@ -234,27 +235,33 @@ namespace MVCForum.Controllers
 
         }
 
+        /// <summary>
+        /// Retrieves the IDs of the topics adjacent to the specified topic in the given forum.
+        /// </summary>
+        /// <remarks>The method assumes that topics in the forum are ordered in a predefined sequence. If
+        /// the specified topic ID does not exist in the forum, the method will return <see langword="null"/> for both
+        /// <c>PreviousId</c> and <c>NextId</c>.</remarks>
+        /// <param name="id">The ID of the current topic.</param>
+        /// <param name="forumId">The ID of the forum containing the topics.</param>
+        /// <returns>An object containing the IDs of the adjacent topics: <list type="bullet"> <item>
+        /// <description><c>PreviousId</c>: The ID of the topic immediately preceding the current topic, or <see
+        /// langword="null"/> if the current topic is the first in the list.</description> </item> <item>
+        /// <description><c>NextId</c>: The ID of the topic immediately following the current topic, or <see
+        /// langword="null"/> if the current topic is the last in the list.</description> </item> </list></returns>
         private dynamic GetAdjacentTopics(int id, int forumId)
         {
             // Example list of record IDs
-            var recordIds = _forumService.TopicIds(forumId).ToList();
+            var recordIds = _forumService.TopicIds(forumId).AsEnumerable();
 
-            // Current record ID
-            int currentId = id;
+            int index = recordIds.Select((value, idx) => new { value, idx })
+                               .Where(x => x.value == id)
+                               .Select(x => x.idx)
+                               .FirstOrDefault();
+            // Get previous and next elements
+            int? previous = index > 0 ? recordIds.ElementAt(index - 1) : (int?)null;
+            int? next = index < recordIds.Count() - 1 ? recordIds.ElementAt(index + 1) : (int?)null;
 
-            // Find the index of the current ID
-            int currentIndex = recordIds.IndexOf(currentId);
-
-            // Get the previous and next IDs
-            int? previousId = currentIndex > 0 ? recordIds[currentIndex - 1] : (int?)null;
-            int? nextId = currentIndex < recordIds.Count - 1 ? recordIds[currentIndex + 1] : (int?)null;
-
-            // Output the results
-            Console.WriteLine($"Current ID: {currentId}");
-            Console.WriteLine($"Previous ID: {(previousId.HasValue ? previousId.ToString() : "None")}");
-            Console.WriteLine($"Next ID: {(nextId.HasValue ? nextId.ToString() : "None")}");
-
-            return new { PreviousId = previousId, NextId = nextId };
+            return new { PreviousId = previous, NextId = next };
         }
 
         /// <summary>
@@ -431,7 +438,6 @@ namespace MVCForum.Controllers
 
         }
  
-        //[ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Archived(int id,int page = 1, int pagesize = 0, string sortdir="desc", int? replyid = null)
         {
             bool signedin = false;
