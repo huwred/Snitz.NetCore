@@ -36,7 +36,7 @@
                                 <li><a class="dropdown-item" href="~/About#contact">@Localizer["mnuContact"]</a></li>
                                 <li><a class="dropdown-item" href="~/About#privacy">@Localizer["mnuPrivacyPolicy"]</a></li>
                                 <li><a class="dropdown-item" href="~/About#cookie">@Localizer["mnuCookies"]</a></li>
-                                <li snitz-if="@(SnitzConfig.TableExists("FORUM_FILECOUNT"))"><a class="dropdown-item" href="~/Releases">@Localizer["mnuRelease"]</a></li>
+                                @* <li snitz-if="@(SnitzConfig.TableExists("FORUM_FILECOUNT"))"><a class="dropdown-item" href="~/Releases">@Localizer["mnuRelease"]</a></li> *@
                             </ul>
                         </li>
                     </ul>
@@ -58,6 +58,7 @@
                         <li class="nav-item"><a asp-controller="Account" asp-action="Register" class="nav-link">@Localizer["Register"]</a></li>
                     }
                 }
+                <li class="nav-item"><a asp-controller="FAQ" asp-action="Index" class="nav-link">@Localizer["mnuForumFAQ"]</a></li>
                 @if (SignInManager.IsSignedIn(User))
                 {
                     <partial name="MemberMenu" />

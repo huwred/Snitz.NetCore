@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FAQ>
+  <Categories title="Blank Template" applied="true">
+    <Category id="1" Description="General" Roles="" Order="0"></Category>
+    <Category id="2" Description="Admin" Roles="Administrator" Order="0"></Category>
+  </Categories>
+  <Questions>
+    <Question title="Do I have to register (norwegian)?" id="1" order="1" category="1">
+      <Answer><![CDATA[Registration is not required to view current topics on the Forum; however, if you wish to post a new topic or reply to an existing topic registration is required.
+
+Registration is free and only takes a few minutes. The only required fields are your Username, which may be your real name or a nickname, and a valid e-mail address.
+
+The information you provide during registration is not outsourced or used for any advertising by Snitz Forums 2000.
+
+If you believe someone is sending you advertisements as a result of the information you provided through your registration, please notify us immediately.
+]]></Answer>
+    </Question>
+    <Question title="How can I use smilies and images?" order="2" category="1" id="2">
+      <Answer><![CDATA[
+You've probably seen others use smilies before in e-mail messages or other bulletin board posts. Smilies are keyboard characters used to convey an emotion, such as a smile [:)] or a frown [:(]. This bulletin board automatically converts certain text to a graphical representation when it is inserted between brackets []. Here are the smilies that are currently supported by Snitz Forums 2000:
+
+ [table class="table"][tbody]
+[tr ][td  class="text-right"]
+  [table class="pull-right"][tbody]
+ [tr ][td ][:)][/td][td ]smile[/td][td ][noparse][:)][/noparse][/td][/tr]
+ [tr ][td ][:D][/td][td ]big smile[/td][td ][noparse][:D][/noparse][/td][/tr]
+ [tr ][td ][8D][/td][td ]cool[/td][td ][noparse][8D][/noparse][/td][/tr]
+ [tr ][td ][:I][/td][td ]blush[/td][td ][noparse][:I][/noparse][/td][/tr]
+ [tr ][td ][:p][/td][td ]tongue[/td][td ][noparse][:p][/noparse][/td][/tr]
+ [tr ][td ][}:)][/td][td ]evil[/td][td ][noparse][}:)][/noparse][/td][/tr]
+ [tr ][td ][;)][/td][td ]wink[/td][td ][noparse][;)][/noparse][/td][/tr]
+ [tr ][td ][:o)][/td][td ]clown[/td][td ][noparse][:o)][/noparse][/td][/tr]
+ [tr ][td ][B)][/td][td ]black eye[/td][td ][noparse][B)][/noparse][/td][/tr]
+ [tr ][td ][8][/td][td ]eightball[/td][td ][noparse][8][/noparse][/td][/tr][/tbody][/table]
+ [/td]
+ [td ]
+ [table][tbody]
+ [tr ][td ][:(][/td][td ]frown[/td][td ][noparse][:(][/noparse][/td][/tr]
+ [tr ][td ][8)][/td][td ]shy[/td][td ][noparse][8)][/noparse][/td][/tr]
+ [tr ][td ][:0][/td][td ]shocked[/td][td ][noparse][:0][/noparse][/td][/tr]
+ [tr ][td ][:(!][/td][td ]angry[/td][td ][noparse][:(!][/noparse][/td][/tr]
+ [tr ][td ][xx(][/td][td ]dead[/td][td ][noparse][xx(][/noparse][/td][/tr]
+ [tr ][td ][|)][/td][td ]sleepy[/td][td ][noparse][|)][/noparse][/td][/tr]
+ [tr ][td ][:X][/td][td ]kisses[/td][td ][noparse][:X][/noparse][/td][/tr]
+ [tr ][td ][^][/td][td ]approve[/td][td ][noparse][^][/noparse][/td][/tr]
+ [tr ][td ][V][/td][td ]disapprove[/td][td ][noparse][V][/noparse][/td][/tr]
+ [tr ][td ][?][/td][td ]question[/td][td ][noparse][?][/noparse][/td][/tr]
+[/tbody][/table]
+[/td][/tr][/tbody][/table]             
+                ]]></Answer>
+    </Question>
+    <Question title="Can I add a hyperlink to my messages?" order="2" category="1" id="3">
+      <Answer><![CDATA[You can easily add a hyperlink to your message.
+To add hyperlinks use the [noparse][url]linkto[/url][/noparse] tags
+
+<i>This Example:</i> 
+[noparse][url]http://forum.snitz.com/forum/[/url] takes you home![/noparse]
+<i>Outputs This:</i> 
+[url]http://forum.snitz.com/forum/[/url] takes you home! 
+
+If you use this tag: [noparse][url="linkto"]description[/url][/noparse] you can add a description to the link. 
+<i>This Example:</i> 
+Take me to [noparse][url="http://forum.snitz.com/forum/"]Snitz Forums 2000[/url][/noparse] 
+<i>Outputs This:</i> 
+Take me to [url="http://forum.snitz.com/forum/"]Snitz Forums 2000[/url]
+
+                 ]]></Answer>
+    </Question>
+    <Question title="Can I attach files?" order="2" category="1" id="4">
+      <Answer><![CDATA[        Yes, you can attach certain types of files like images and compressed zip archives.
+        ]]></Answer>
+    </Question>
+    <Question title="Can I be notified by e-mail when there are new posts?" order="2" category="1" id="5">
+      <Answer><![CDATA[Yes, the Subscription feature allows you to subscribe to the entire Board, individual Categories, Forums and/or Topics, depending on what the administrator of this site allows. 
+You will receive an e-mail notifying you of a post that has been made to the Category/Forum/Topic that you have subscribed to. There are four levels of subscription:
+
+Board Wide Subscription
+If you can subscribe to an entire Board, you&#39;ll get a notification for any posts made within all the forums inside that board.
+
+- Category Wide Subscription
+You can subscribe to an entire Category, which will notify you if there was any posts made within any topic, within any forum, within that Category.
+
+- Forum Wide Subscription
+If you don&#39;t want to subscribe to an entire Category, you can subscribe to a single forum. This will notify you of any posts made within any topic, within that forum.
+
+- Topic Wide Subscription
+More conveniently, you can subscribe to just an individual topic. You will be notified of any post made within that topic.
+
+Each level of subscription is optional. The administrator can turn On/Off each level of subscription for each Category/Forum/Topic.
+
+To Subscribe or Unsubscribe from any level of subscription, you can use the "My Subscriptions" link, located near the top of each page to manage your subscriptions. Or you can click on the subscribe/unsubscribe icons (Subscribe UnSubscribe) for that Category/Forum/Topic you want to subscribe/unsubscribe to/from.
+        ]]></Answer>
+    </Question>
+    <Question title="What does it mean if a forum has Moderation enabled? " order="2" category="1" id="6">
+      <Answer><![CDATA[This feature allows the Administrator or the Moderator to "Approve", "Hold" or "Delete" a users post before it is shown to the public.
+<b>Hold:</b> When a user posts a message to a moderated forum, the message is automatically put on hold until a moderator or an administrator approves the post. No one will be able to view the post while it is put on hold.
+<b>NOTE:</b> Authors of the post will be able to edit their post during this mode.
+
+<b>Approve:</b> Only the administrators or the moderators will be able to approve a post made to a moderated forum. When the post is approved, it will be made visible to the public.
+<b>Delete:</b> If the administrator or moderator chooses this option, the post will be deleted and an e-mail will be sent to the poster of the message informing them that their post was not approved. The administrator/moderator will be able to give their reason for not approving the post in the e-mail.        
+        ]]></Answer>
+    </Question>
+    <Question title="Are cookies used? " order="2" category="1" id="7">
+      <Answer><![CDATA[These Forums use cookies to store the following information:
+<ul><li>the last time you logged in</li><li>your Username and your Encrypted Password</li></ul> 
+
+These cookies are stored on your hard drive. Cookies are not used to track your movement or perform any function other than to enhance your use of these forums. If you have not enabled cookies in your browser, many of these time-saving features will not work properly. Also, you need to have cookies enabled if you want to enter a private forum or post a topic/reply.
+
+You may delete all cookies set by these forums in selecting the "[Sign Out]" button at the top of any page.        
+        ]]></Answer>
+    </Question>
+    <Question id="9" title="Can I change the format of my text?" order="0" category="1">
+      <Answer><![CDATA[There are several Forum Codes you may use to change the appearance of your text.  Following is the list of codes currently available:
+
+Bold: Enclose your text with [noparse]<b> and </b>[/noparse] .  
+Example: This is <b>bold</b> text. = This is bold text.
+
+Italic: Enclose your text with [noparse]<i> and </i>[/noparse] .  
+Example: This is <i>italic</i> text. = This is italic text.
+
+[left]Aligning Text Left: Enclose your text with [noparse][left][/noparse][noparse][/left][/noparse] tags [/left] 
+
+[center]Aligning Text Center: Enclose your text with [noparse][center][/center] [/noparse] tags [/center] 
+
+[right]Aligning Text Right: Enclose your text with [noparse][right][/noparse][noparse][/right][/noparse] tags [/right] 
+
+Striking Text: Enclose your text with [noparse]<s> and </s>[/noparse] 
+Example: <s>mistake</s> = mistake 
+
+Horizontal Rule: Place a horizontal line in your post with [noparse]<hr noshade size="1">[/noparse] 
+Example: <hr noshade size="1">  
+
+Font Colors:
+Enclose your text with [noparse][fontcolor] and [/fontcolor] [/noparse] 
+Example: [noparse]<font color="red">Text</font id="red">[/noparse] = <font color="red">Text</font id="red"> 
+Example: [noparse]<font color="blue">Text</font id="blue">[/noparse] = <font color="blue">Text</font id="blue"> 
+Example: [noparse]<font color="pink">Text</font id="pink">[/noparse] = <font color="pink">Text</font id="pink"> 
+
+Headings: Enclose your text with [noparse][hnumber] and [/hn][/noparse] 
+
+Example:  [noparse]<h1>Text</h1>[/noparse] = <h1>Text</h1> 
+Example: [noparse]<h2>Text</h2>[/noparse] =  <h2>Text</h2> 
+Example: [noparse]<h3>Text</h3>[/noparse] =  <h3>Text</h3>  
+
+Font Sizes:
+Example: [noparse]<font size="1">Text</font id="size1">[/noparse] = <font size="1">Text</font id="size1"> 
+Example: [noparse]<font size="2">Text</font id="size2">[/noparse] = <font size="2">Text</font id="size2"> 
+Example: [noparse]<font size="3">Text</font id="size3">[/noparse] = <font size="3">Text</font id="size3"> 
+
+Bulleted List: [noparse]<ul> and </ul>[/noparse], and items in list with [noparse]<li> and </li>[/noparse]. 
+Ordered Alpha List: [noparse]<ol type="a"> and </ol id="a">[/noparse], and items in list with [noparse]<li> and </li>[/noparse]. 
+Ordered Number List: [noparse]<ol type="1"> and </ol id="1">[/noparse], and items in list with [noparse]<li> and </li>[/noparse]. 
+
+Code: Enclose your text with [noparse][code] and [/code][/noparse].
+
+Quote: Enclose your text with [noparse]<blockquote id="quote"><font size="1" face="Verdana, Arial, Helvetica" id="quote">quote:<hr height="1" noshade id="quote"> and <hr height="1" noshade id="quote"></font id="quote"></blockquote id="quote">[/noparse].
+
+Images: Enclose the address with one of the following:
+[noparse][img] and [/img][/noparse] 
+[noparse][img=right] and [/img=right][/noparse] 
+[noparse][img=left] and [/img=left][/noparse] 
+]]></Answer>
+    </Question>
+    <Question id="10" title="Can I edit my own posts? " order="0" category="1">
+      <Answer><![CDATA[You may edit or delete your own posts at any time. Just go to the topic where the post to be edited or deleted is located and you will see an edit or delete icon ([i class="fa fa-edit"][/I] [i class="fa fa-trash"][/I]) on the line that begins "posted on..." Click on this icon to edit or delete the post. No one else can edit your post, except for the forum Moderator or the forum Administrator. A note is generated at the bottom of each edited post displaying when and by whom the post was edited.]]></Answer>
+    </Question>
+    <Question id="11" title="Can I attach my own signature to my posts? " order="0" category="1">
+      <Answer><![CDATA[You may attach signatures to the end of your posts when you post either a New Topic or Reply. 
+To add/edit your signature, chose Member|Account from the menu. Click on the [I class="fa fa-edit"][/I] icon and then navigate to the &#39;Options&#39; tab where you can set options related to signatures. 
+
+<b>NOTE</b>: HTML can not be used in Signatures, but forum code can.]]></Answer>
+    </Question>
+    <Question id="12" title="What do I do if I forget my Password? " order="0" category="1">
+      <Answer><![CDATA[Changing a lost password is simple. Use the [url]Account/ResetPassword[/url] link to have a code e-mailed instantly to your e-mail address, follow the instructions in the email to reset your password. 
+
+<b>Because of the Encryption that we use for your password, we cannot tell you what your password is.</b> ]]></Answer>
+    </Question>
+    <Question id="13" title="buttons" order="0" category="1">
+      <Answer><![CDATA[<h5>Post related icons</h5>
+[I class="fa fa-1_5x fa-comment-o"][/I] Post a Topic 
+[I class="fa fa-1_5x fa-comments-o"][/I] Post a Reply
+[I class="fa fa-1_5x fa-commenting-o"][/I] Post quoted reply
+[I class="fa fa-1_5x fa-bookmark-o"][/I] Bookmark post [I class="fa fa-1_5x fa-bookmark"][/I] Remove bookmark (if enabled)
+[I class="fa fa-1_5x fa-share-square-o"][/I] Subsribe (receive an email when someone posts) [I class="fa fa-1_5x fa-share-square"][/I] Un-subscribe (if enabled) 
+[I class="fa fa-1_5x fa-edit"][/I] Edit post (posts can not be edited if there are newer replies) 
+[I class="fa fa-1_5x fa-trash-o"][/I] Delete post (posts can not be deleted if there are newer replies) 
+
+<h5>Member related icons</h5>
+[I class="fa fa-1_5x fa-envelope"][/I] Email member 
+[I class="fa fa-1_5x fa-comments"][/I] Send member a private message (if enabled)
+[I class="fa fa-1_5x fa-home"][/I] Visit member&#39;s web site <b>(We are not responsible for the content of members own web pages)</b> 
+
+<h5>Topic related</h5>
+[i class="fa fa-1_5x fa-calendar"][/I] - Topic is linked to an Event 
+[i class="fa fa-1_5x fa-bar-chart"][/I] - Topic contains a Poll
+
+
+]]></Answer>
+    </Question>
+  </Questions>
+</FAQ>

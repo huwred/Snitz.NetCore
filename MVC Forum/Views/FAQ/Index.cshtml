@@ -1,0 +1,256 @@
+﻿@model IEnumerable<SnitzCore.Service.FaqCategory>
+@inject UserManager<ForumUser> UserManager
+
+@{
+    IList<string>? userroles = null;
+    if (User.Identity!.IsAuthenticated)
+    {
+        var curruser = UserManager.GetUserAsync(User).Result;
+        userroles = UserManager.GetRolesAsync(curruser!).Result;
+    }
+}
+@section MetaData
+{
+    <title>@Config.Value.strForumTitle: Forum > FAQ</title>
+    <meta name="title" content="Topic: FAQ" />
+    <meta name="description" content="Frequently asked Questions" />
+    <meta name="robots" content="index,nofollow" />
+}
+@section Styles {
+    <style>
+        :root{
+            --bs-border-color: var(--primary-header) !important;
+        }
+
+        .bsb-faq-3 .accordion-button {
+            color: var(--primary-header) !important;
+        }
+
+        .bsb-faq-3 .accordion-button:not(.collapsed) {
+            color: var(--primary-headr) !important;
+        }
+
+        .bsb-faq-3 .accordion-flush > .accordion-item:not(:last-child) {
+            /* Your styles here */
+            border-bottom: 1px solid var(--primary-header);
+        }
+
+        .bsb-faq-3 .accordion {
+            --bs-accordion-btn-icon: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2716%27 fill=%27%23212529%27 class=%27bi bi-plus%27%3E%3Cpath d=%27M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z%27/%3E%3C/svg%3E");
+            --bs-accordion-btn-active-icon: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2716%27 fill=%27%23052c65%27 class=%27bi bi-dash%27%3E%3Cpath d=%27M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z%27/%3E%3C/svg%3E")
+        }
+    </style>
+}
+<div class="pt-0" id="faq-index">
+    <snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
+    <div snitz-if="@(User.IsInRole("FaqModerator"))" class="mb-3">
+        <button id="AddCategory" class="btn btn-secondary" title="Add Category">Add Category</button>
+    </div>
+<div class="accordion" id="accordionFaq">
+    @foreach (var item in Model) 
+    {
+        if (!string.IsNullOrWhiteSpace(item.Roles))
+        {
+            var roles = item.Roles.Split(",").ToList();
+            if (userroles != null && userroles.Any(roles.Contains))
+            {
+                <div class="accordion-item">
+                    <h2 class="accordion-header d-flex flex-row" id="heading-@item.Id">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@item.Id" aria-expanded="true" aria-controls="collapse-@item.Id">
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </button>
+                        <span snitz-if="@User.IsInRole("FaqModerator")" class="btn-group" role="group" aria-label="Admin buttons">
+                            <button type="button" class="btn btn-secondary-outline" title="Edit Category"><i data-id="@item.Id"class='fa fa-pen-to-square'></i></button>
+                            <button type="button" class="btn btn-secondary-outline" title="Delete Category"><i data-id="@item.Id"class='fa fa-trash'></i></button>
+                            <button type="button" class="btn btn-secondary-outline" title="Add Question &amp; Answer"><i data-id="@item.Id" class='fa fa-file-circle-plus'></i></button>
+                        </span>
+                    </h2>
+                    <div id="collapse-@item.Id" data-id="@item.Id" class="accordion-collapse collapse" aria-labelledby="heading-@item.Id" data-bs-parent="#accordionFaq">
+                        <div class="accordion-body p-1 bsb-faq-3">
+                            <div class="d-flex justify-content-center">
+                                <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
+                                    @* <span class="sr-only">Loading...</span> *@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="accordion-item">
+                <h2 class="accordion-header d-flex flex-row" id="heading-@item.Id">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@item.Id" aria-expanded="true" aria-controls="collapse-@item.Id">
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </button>
+                    <span snitz-if="@User.IsInRole("FaqModerator")" class="btn-group" role="group" aria-label="Admin buttons">
+                        <button type="button" class="btn btn-secondary-outline" title="Edit Category"><i data-id="@item.Id"class='fa fa-pen-to-square'></i></button>
+                        <button type="button" class="btn btn-secondary-outline" title="Delete Category"><i data-id="@item.Id"class='fa fa-trash'></i></button>
+                        <button type="button" class="btn btn-secondary-outline" title="Add Question &amp; Answer"><i data-id="@item.Id" class='fa fa-file-circle-plus'></i></button>
+                    </span>
+                </h2>
+                <div id="collapse-@item.Id" data-id="@item.Id" class="accordion-collapse collapse" aria-labelledby="heading-@item.Id" data-bs-parent="#accordionFaq">
+                    <div class="accordion-body p-1 bsb-faq-3">
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
+                                @* <span class="sr-only">Loading...</span> *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+        }
+
+
+    }
+
+</div>
+</div>
+<modal id="faqModal" title="@Localizer["lblEditFaq"].Value" size="Large">
+    <modal-body >
+        <div class="d-flex justify-content-center" id="faq-spinner">
+            <i class="fa-solid fa-spinner fa-spin fs-1"></i>
+        </div>
+        <div id="faq-content" class="bsb-faq-3">
+
+        </div>
+    </modal-body>
+    <modal-footer dismiss-text="Cancel">
+        <button id="submitFaq" form="faq-form" type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
+    </modal-footer>
+</modal>
+<modal id="previewModal" title="@Localizer["tipPreview"].Value" >
+    <modal-body>
+        <div id="preview-content"></div>
+    </modal-body>
+    <modal-footer dismiss-text="@Localizer["lblClose"].Value">
+    </modal-footer>
+</modal>
+@section Scripts{
+    <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
+    <script type="text/javascript" src="~/js/addpostform.min.js"></script>
+    <script>
+        $(function() {
+            $('#AddCategory').on("click",function(e){
+                e.preventDefault();
+                $('#faq-content').html('');
+                $('#faq-content').load(SnitzVars.baseUrl + "/Faq/Category/-1",function() {
+                    $('#faq-spinner').removeClass("d-flex");
+                    $('#faq-spinner').hide();
+
+                    $('#faqModal').modal('show'); //.data('id', memberid)
+                    revalidate();
+                });
+            });
+            $(document).on("click","#accordionFaq .fa-pen-to-square",function(e){
+                e.preventDefault();
+                $('#faq-content').html('');
+                var qid = $(this).data("id");
+                $('#faq-content').load(SnitzVars.baseUrl + "/Faq/Category/" + qid,function() {
+                    $('#faq-spinner').removeClass("d-flex");
+                    $('#faq-spinner').hide();
+                    initmceFaq();
+                    $('#faqModal').modal('show'); //.data('id', memberid)
+                    revalidate();
+                });
+            });
+            $(document).on("click",".question .fa-pen-to-square",function(e){
+                e.preventDefault();
+                $('#faq-content').html('');
+                var qid = $(this).data("id");
+                $('#faq-content').load(SnitzVars.baseUrl + "/Faq/Edit/" + qid,function() {
+                    $('#faq-spinner').removeClass("d-flex");
+                    $('#faq-spinner').hide();
+                    initmceFaq();
+                    $('#faqModal').modal('show'); //.data('id', memberid)
+                    revalidate();
+                });
+            });
+
+            $(document).on("click",".fa-file-circle-plus",function(e){
+                e.preventDefault();
+                $('#faq-content').html('');
+                var qid = $(this).data("id");
+                $('#faq-content').load(SnitzVars.baseUrl + "/Faq/Create/" + qid,function() {
+                    $('#faq-spinner').removeClass("d-flex");
+                    $('#faq-spinner').hide();
+                    initmceFaq();
+                    $('#faqModal').modal('show'); //.data('id', memberid)
+                    revalidate();
+                });
+            });
+
+          $(".collapse").on('shown.bs.collapse', function(e) {
+            if ($(this).is(e.target)) {
+                $(".accordion-body",this).load(SnitzVars.baseUrl + "/Faq/Questions/" + $(this).data("id"),function() {});
+            }
+          });
+        });
+
+        function initmceFaq(){
+            tinymce.remove();
+            tinymce.init({
+                selector: 'textarea#msg-text',
+                height: 200,
+                plugins: 'code emoticons codesample link',
+                branding: false,
+                statusbar: false,
+                toolbar: SnitzVars.pmtoolbardef,
+                emoticons_database: 'emojiimages',
+                emoticons_images_url: SnitzVars.baseUrl + '/images/emoticon/',
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                setup: function (editor) {
+                    editor.ui.registry.addButton('postPreview',
+                        {
+                            icon: 'preview',
+                            tooltip: 'Preview post',
+                            onAction: function (_) {
+                                var myContent = editor.getContent();
+                                if (myContent === '') {
+                                    $('#preview-content').html("<p><em>" + SnitzVars.toolTips.nopreview + "</em></p>");
+                                    $('#previewModal').modal('show');
+                                } else {
+                                    $('#preview-content').html('');
+                                    $('#preview-content')
+                                        .load(SnitzVars.baseUrl + "/Home/Preview/", {content: myContent}, function () {
+                                            $('#previewModal').modal('show');
+                                            Prism.highlightElement($("pre[class^='language-']")[0]);
+                                    });
+                                }
+                            }
+                        });
+                }
+            });
+        document.addEventListener('focusin', (e) => {
+           if (e.target.closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
+              e.stopImmediatePropagation();
+           }
+          });
+
+        }
+        function revalidate() {
+          var forms = document.querySelectorAll('.needs-validation')
+
+          // Loop over them and prevent submission
+          Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+              form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                  event.preventDefault()
+                  event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+              }, false)
+            })
+        }
+
+        faqcompleted = function (xhr) {
+            console.log(xhr);
+            $('#faqModal').modal('hide');
+        };
+
+    </script>
+}
