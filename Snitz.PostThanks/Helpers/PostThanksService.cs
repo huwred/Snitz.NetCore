@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data;
-using NetCore.AutoRegisterDi;
 using SnitzCore.Data.Interfaces;
-using Snitz.PostThanks.Models;
 
 namespace Snitz.PostThanks.Helpers
 {

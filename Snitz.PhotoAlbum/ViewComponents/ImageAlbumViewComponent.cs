@@ -24,6 +24,27 @@ namespace Snitz.PhotoAlbum.ViewComponents
             _memberService = memberService;
             _environment = hostingEnvironment;
         }
+        /// <summary>
+        /// Invokes the view component asynchronously with the specified template and optional parameters.
+        /// </summary>
+        /// <remarks>The behavior of the method depends on the value of the <paramref name="template"/>
+        /// parameter: <list type="bullet"> <item> <description> If <paramref name="template"/> is "Config", the method
+        /// checks if the "FORUM_IMAGES" table exists and passes the result to the view. </description> </item> <item>
+        /// <description> If <paramref name="template"/> is "Groups", the method retrieves all album groups from the
+        /// database and passes them to the view. </description> </item> <item> <description> If <paramref
+        /// name="template"/> is "Categories", the method retrieves album categories associated with the specified
+        /// <paramref name="memberid"/> and passes them to the view. </description> </item> <item> <description> If
+        /// <paramref name="template"/> is "Featured", the method selects a random featured album image that is not
+        /// private or marked as "DoNotFeature", and passes it to the view. If no valid image is found, an empty view is
+        /// returned. </description> </item> </list> If the <paramref name="template"/> does not match any of the
+        /// supported values, an empty view is returned.</remarks>
+        /// <param name="template">The name of the template to render. Supported values include "Config", "Groups", "Categories", and
+        /// "Featured".</param>
+        /// <param name="memberid">The ID of the member to filter data for, used when the template is "Categories". Defaults to 0.</param>
+        /// <param name="info">A boolean value indicating whether to display additional information, used when the template is "Featured".
+        /// Defaults to <see langword="true"/>.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains an <see
+        /// cref="IViewComponentResult"/> representing the rendered view.</returns>
         public async Task<IViewComponentResult> InvokeAsync(string template, int memberid = 0, bool info = true)
         {
             

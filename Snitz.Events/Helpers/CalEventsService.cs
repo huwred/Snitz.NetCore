@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NetCore.AutoRegisterDi;
-using Snitz.Events.Models;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
-using SnitzCore.Data.Models;
 
 namespace Snitz.Events.Helpers
 {

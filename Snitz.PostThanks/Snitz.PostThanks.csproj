@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <Version>1.1.0-rc03</Version>
+    <Version>1.1.1-rc01</Version>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -9,26 +9,8 @@
     <Authors>Huw Reddick</Authors>
     <PackageOutputPath>E:\Umbraco-Dev\Nuget</PackageOutputPath>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>False</GenerateDocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Migrations\MsSql\**" />
-    <Compile Remove="Migrations\MySql\**" />
-    <Compile Remove="Migrations\sqlite\**" />
-    <Content Remove="Migrations\MsSql\**" />
-    <Content Remove="Migrations\MySql\**" />
-    <Content Remove="Migrations\sqlite\**" />
-    <EmbeddedResource Remove="Migrations\MsSql\**" />
-    <EmbeddedResource Remove="Migrations\MySql\**" />
-    <EmbeddedResource Remove="Migrations\sqlite\**" />
-    <None Remove="Migrations\MsSql\**" />
-    <None Remove="Migrations\MySql\**" />
-    <None Remove="Migrations\sqlite\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Helpers\Extensions.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

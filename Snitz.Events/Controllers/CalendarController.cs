@@ -1,5 +1,4 @@
 ﻿using BbCodeFormatter;
-using BbCodeFormatter.Processors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartBreadcrumbs.Nodes;
@@ -32,7 +31,13 @@ public class CalendarController : Controller
         _memberService = memberservice;
         _httpClientFactory = factory;
     }
-    // GET
+    /// <summary>
+    /// Displays the main calendar view with a list of countries and breadcrumb navigation.
+    /// </summary>
+    /// <remarks>This action retrieves a list of countries from the data repository and sets up the 
+    /// breadcrumb navigation for the calendar page. The retrieved countries are passed to  the view via the <see
+    /// cref="ViewData"/> dictionary.</remarks>
+    /// <returns>An <see cref="IActionResult"/> that renders the calendar view.</returns>
     public IActionResult Index()
     {
         var countries = new EventsRepository(_context,_config,_snitzContext, _bbCodeProcessor, _httpClientFactory).GetCountries().Result;
@@ -41,12 +46,25 @@ public class CalendarController : Controller
         ViewData["Countries"] = countries;
         return View(); //"IndexNew"
     }
+    /// <summary>
+    /// Saves the submitted config data and returns a partial view with the result.
+    /// </summary>
+    /// <remarks>This method processes the submitted form data and renders the "SaveResult" partial view with
+    /// the outcome. Ensure that the form data contains all required fields for successful processing.</remarks>
+    /// <param name="form">The form data submitted by the client, represented as an <see cref="IFormCollection"/>.</param>
+    /// <returns>A <see cref="PartialViewResult"/> containing the "SaveResult" view and the result of processing the form data.</returns>
     [HttpPost]
     public IActionResult SaveFeatures(IFormCollection form)
     {
         return PartialView("SaveResult",SaveForm(form));
     }
-
+    /// <summary>
+    /// Retrieves a collection of calendar events.
+    /// </summary>
+    /// <remarks>This method returns calendar events as a JSON result. The response is cached for 300 seconds
+    /// to improve performance. If an error occurs during the retrieval process, an empty JSON result is
+    /// returned.</remarks>
+    /// <returns>A <see cref="JsonResult"/> containing the calendar events. If an error occurs, an empty JSON result is returned.</returns>
     [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
     public JsonResult GetCalendarEvents()
     {
@@ -62,7 +80,12 @@ public class CalendarController : Controller
         }
 
     }
-
+    /// <summary>
+    /// Retrieves a list of user birthdays within the specified date range.
+    /// </summary>
+    /// <remarks>The date range is determined by the "start" and "end" query parameters in the HTTP request.
+    /// The result is cached for 300 seconds to improve performance.</remarks>
+    /// <returns>A <see cref="JsonResult"/> containing the birthdays of users within the specified date range.</returns>
     [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
     public JsonResult GetBirthDays()
     {
@@ -71,7 +94,14 @@ public class CalendarController : Controller
         
         return new EventsRepository(_context,_config,_snitzContext,_bbCodeProcessor,_httpClientFactory).GetBirthdays(User,start, end);
     }
-
+    /// <summary>
+    /// Retrieves a list of upcoming calendar events, limited to the specified count.
+    /// </summary>
+    /// <remarks>The events are ordered by their start time and filtered to include only those occurring after
+    /// the current UTC time. The response is cached for 300 seconds to improve performance.</remarks>
+    /// <param name="count">The maximum number of upcoming events to retrieve. Must be a positive integer.</param>
+    /// <returns>A <see cref="JsonResult"/> containing an array of event details. Each event includes its ID, title, start and
+    /// end times, all-day status, editability, and URL.</returns>
     [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
     public JsonResult GetUpcomingEvents(int count)
     {
@@ -93,7 +123,15 @@ public class CalendarController : Controller
 
             return Json(eventList.ToArray());
     }
-
+    /// <summary>
+    /// Retrieves a list of public holidays within the specified date range and country.
+    /// </summary>
+    /// <remarks>The method uses caching to improve performance, with a cache duration of 300 seconds. The
+    /// date range for the holidays is determined by the "start" and "end" query parameters in the HTTP
+    /// request.</remarks>
+    /// <param name="country">The country for which to retrieve public holidays. If not specified, holidays for all countries are returned.</param>
+    /// <returns>A <see cref="JsonResult"/> containing the list of public holidays. If an error occurs, the response status code
+    /// is set to 400, and an error message is returned.</returns>
     [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
     public JsonResult GetHolidays(string country = "")
     {
@@ -111,7 +149,16 @@ public class CalendarController : Controller
         }
 
     }
-
+    /// <summary>
+    /// Retrieves the list of regions for a specified country.
+    /// </summary>
+    /// <remarks>The method expects the <paramref name="id"/> parameter to include a valid country code as the
+    /// first segment. If the country code is invalid or an error occurs, the HTTP status code is set to 400 (Bad
+    /// Request), and the response includes error details.</remarks>
+    /// <param name="id">A string containing the country code, followed by additional data separated by a pipe ('|'). The country code
+    /// must be the first segment of the string.</param>
+    /// <returns>A <see cref="JsonResult"/> containing the list of regions for the specified country. If the country code is
+    /// invalid, the result contains a list of error messages.</returns>
     public JsonResult GetRegions(string id)
     {
         var ctry = id.Split('|')[0];
@@ -138,7 +185,17 @@ public class CalendarController : Controller
         }
     }
 
-
+    /// <summary>
+    /// Saves the configuration settings provided in the form collection to the database.
+    /// </summary>
+    /// <remarks>This method updates existing configuration settings in the database if the provided values
+    /// differ from the current ones. If a key does not exist in the database and its value is not "0" or empty, a new
+    /// configuration entry is added. The method uses a database transaction to ensure atomicity, rolling back changes
+    /// if an exception occurs.</remarks>
+    /// <param name="form">The form collection containing key-value pairs of configuration settings to be saved. Keys starting with an
+    /// underscore (_) are ignored.</param>
+    /// <returns>A string indicating the result of the operation. Returns "Settings saved successfully" if the operation
+    /// completes successfully, or the error message if an exception occurs.</returns>
     private string SaveForm(IFormCollection form)
     {
         try

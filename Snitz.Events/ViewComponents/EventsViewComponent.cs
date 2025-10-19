@@ -9,6 +9,13 @@ using System.Text.Json;
 
 namespace Snitz.Events.ViewComponents
 {
+    /// <summary>
+    /// Represents a view component for rendering various event-related views in the application.
+    /// </summary>
+    /// <remarks>This view component dynamically renders different views based on the provided template name. 
+    /// It supports templates for displaying upcoming events, forum configurations, topic summaries,  event creation
+    /// forms, and administrative settings, among others. The data for these views is  retrieved from the database or
+    /// configuration settings as appropriate.</remarks>
     public class EventsViewComponent : ViewComponent
     {
         private readonly SnitzDbContext _dbContext;
@@ -24,6 +31,30 @@ namespace Snitz.Events.ViewComponents
             _factory = factory;
         }
 
+        /// <summary>
+        /// Asynchronously invokes a view component with the specified template and optional parameters.
+        /// </summary>
+        /// <remarks>The behavior of this method depends on the value of the <paramref name="template"/>
+        /// parameter: <list type="bullet"> <item> <description> <c>"UpcomingEvents"</c>: Renders the view with no
+        /// additional data. </description> </item> <item> <description> <c>"ForumConfig"</c>: Retrieves a forum entity
+        /// using the <paramref name="id"/> parameter and renders the view with the forum data. </description> </item>
+        /// <item> <description> <c>"TopicSummary"</c>: Retrieves an event item associated with the <paramref
+        /// name="id"/> parameter and renders the view with the event data. </description> </item> <item> <description>
+        /// <c>"AddEvent"</c>: Creates a new calendar event item or retrieves an existing one based on the <paramref
+        /// name="topicid"/> parameter and renders the view with the event data. </description> </item> <item>
+        /// <description> <c>"EnableButton"</c>: Checks if the "CAL_EVENTS" table exists and renders the view with a
+        /// boolean indicating the result. </description> </item> <item> <description> <c>"MenuItem"</c>: Checks if the
+        /// "CAL_EVENTS" table exists and whether calendar events are enabled, then renders the view with a boolean
+        /// indicating the result. </description> </item> <item> <description> <c>"Config"</c>: Retrieves administrative
+        /// configuration data and renders the view with an <see cref="EventsAdminViewModel"/>. </description> </item>
+        /// <item> <description> <c>"Admin"</c>: Retrieves administrative settings and renders the view with a <see
+        /// cref="CalAdminViewModel"/>. </description> </item> </list> If the <paramref name="template"/> does not match
+        /// any of the predefined cases, an empty view is rendered.</remarks>
+        /// <param name="template">The name of the template to render. This determines the view and data model used.</param>
+        /// <param name="id">An optional identifier used to retrieve specific data for certain templates. Defaults to 0.</param>
+        /// <param name="topicid">An optional topic identifier used to retrieve specific data for certain templates. Defaults to 0.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains an <see
+        /// cref="IViewComponentResult"/> that renders the specified template with the appropriate data model.</returns>
         public async Task<IViewComponentResult> InvokeAsync(string template,int id = 0,int? topicid = 0)
         {
             if(template == "UpcomingEvents")

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Snitz.PhotoAlbum.Models;
+﻿namespace Snitz.PhotoAlbum.Models;
 
 public class AlbumList
 {

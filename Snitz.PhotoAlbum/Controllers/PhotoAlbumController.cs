@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
-using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Utilities.Zlib;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Metadata;
 using SixLabors.ImageSharp.Processing;
@@ -19,9 +17,7 @@ using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Service;
 using SnitzCore.Service.Extensions;
-using System.Dynamic;
 using X.PagedList;
-using static Dapper.SqlMapper;
 
 
 namespace Snitz.PhotoAlbum.Controllers
@@ -46,11 +42,27 @@ namespace Snitz.PhotoAlbum.Controllers
             _fileProvider = hostingEnvironment.WebRootFileProvider;
             _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
         }
-
+        /// <summary>
+        /// Renders the Admin view with an empty <see cref="AdminAlbumViewModel"/>.
+        /// </summary>
+        /// <returns>An <see cref="IActionResult"/> that renders the Admin view.</returns>
         public IActionResult Admin()
         {
             return View(new AdminAlbumViewModel());
         }
+        /// <summary>
+        /// Displays a paginated and sortable list of photo albums, filtered by search term if provided.
+        /// </summary>
+        /// <remarks>The method retrieves photo albums grouped by their owners, including the total number
+        /// of images  and the timestamp of the most recent upload for each owner. The results can be sorted and
+        /// filtered  based on the provided parameters. Pagination is applied with a fixed page size of 15
+        /// items.</remarks>
+        /// <param name="page">The page number to display. Defaults to 1.</param>
+        /// <param name="sortdir">The sort direction for the list. Accepts "asc" for ascending or "desc" for descending. Defaults to "asc".</param>
+        /// <param name="orderby">The field by which to sort the list. Accepts "user", "date", or "count". Defaults to "user".</param>
+        /// <param name="term">An optional search term to filter the list by album owner username. Defaults to an empty string.</param>
+        /// <returns>An <see cref="IActionResult"/> that renders the "Index" view with a paginated list of photo albums  or the
+        /// "Error" view if an exception occurs.</returns>
         public IActionResult Index(int page = 1, string sortdir = "asc", string orderby = "user", string term = "")
         {
             var albumPage = new MvcBreadcrumbNode("", "PhotoAlbum", _languageResource["mnuMemberAlbums"].Value);
@@ -97,7 +109,16 @@ namespace Snitz.PhotoAlbum.Controllers
                 return View("Error");
             }
         }
-
+        /// <summary>
+        /// Processes a search request based on the provided search criteria and displays the results in an album view.
+        /// </summary>
+        /// <remarks>This method handles search functionality for species entries. It validates the search
+        /// terms, applies sorting and filtering options, and prepares the data for display in the album view. If an
+        /// error occurs during processing, an error view is returned with the error message.</remarks>
+        /// <param name="vm">The <see cref="SearchViewModel"/> containing the search criteria, including search terms, sorting options,
+        /// and filters.</param>
+        /// <returns>An <see cref="IActionResult"/> that renders the album view with the search results if the search terms are
+        /// valid; otherwise, redirects to the "Album" action if no search terms are provided.</returns>
         [HttpPost]
         public IActionResult Search(SearchViewModel vm)
         {
@@ -144,6 +165,15 @@ namespace Snitz.PhotoAlbum.Controllers
 
             
         }
+        /// <summary>
+        /// Retrieves a photo by its identifier and returns it as a JPEG file.
+        /// </summary>
+        /// <remarks>The method searches for the photo in the database using the provided identifier. If
+        /// the photo exists, it constructs the file path based on the photo's timestamp and location. If the photo is
+        /// not found, a default "not found" image is returned instead.</remarks>
+        /// <param name="id">The identifier of the photo to retrieve. If <see langword="null"/>, a default "not found" image is returned.</param>
+        /// <returns>An <see cref="IActionResult"/> containing the requested photo as a JPEG file if found; otherwise, a default
+        /// "not found" image as a JPEG file.</returns>
         public IActionResult GetPhoto(int? id)
         {
             var orgimage = _dbContext.Set<AlbumImage>().Find(id);
@@ -154,16 +184,48 @@ namespace Snitz.PhotoAlbum.Controllers
             }
             return File(StringExtensions.UrlCombine(_config.ContentFolder, "notfound.jpg") ,"image/jpeg");
         }
-
         /// <summary>
-        /// Show a Members photo Album
+        /// Retrieves the caption (description) of an album image by its identifier.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="display"> 0=thumbs,1=details,2=list,3=slideshow</param>
-        /// <param name="pagenum"></param>
-        /// <param name="sortby"></param>
-        /// <param name="sortorder"></param>
-        /// <returns></returns>
+        /// <remarks>If the album image with the specified identifier does not exist, an empty string is
+        /// returned. The database context entry for the album image is detached after retrieval.</remarks>
+        /// <param name="id">The unique identifier of the album image.</param>
+        /// <returns>A <see cref="JsonResult"/> containing the description of the album image if it exists and is not empty;
+        /// otherwise, an empty string.</returns>
+        public JsonResult GetCaption(int id)
+        {
+            var photo = _dbContext.Set<AlbumImage>().Find(id);
+            
+            if(photo == null)
+            {
+                return Json("");
+            }
+            _dbContext.Entry<AlbumImage>(photo).State = EntityState.Detached;
+            if (!String.IsNullOrWhiteSpace(photo?.Description))
+            {
+                return Json(photo.Description);
+            }
+
+            return Json("");
+        }
+        /// <summary>
+        /// Displays a paginated and sortable list of album images for a specified member.
+        /// </summary>
+        /// <remarks>This action method retrieves album images for a specific member, applying pagination,
+        /// sorting, and optional category filtering. If the specified member ID is invalid or not provided, the current
+        /// member's ID is used. The method also sets various view-related properties, such as breadcrumb navigation,
+        /// ownership status, and sorting options.</remarks>
+        /// <param name="id">The identifier of the member whose album images are to be displayed. If null or empty, the current member's
+        /// ID is used.</param>
+        /// <param name="display">Determines the number of images displayed per page. Valid values are: 1 for 15 images, 2 for 30 images, 3
+        /// for 50 images, and 0 (default) for 50 images.</param>
+        /// <param name="pagenum">The page number to display. Defaults to 1.</param>
+        /// <param name="sortby">The field by which the images are sorted. Defaults to "date".</param>
+        /// <param name="sortorder">The order in which the images are sorted. Valid values are "asc" for ascending and "desc" (default) for
+        /// descending.</param>
+        /// <param name="category">The category filter for the images. Defaults to 0, which means no category filter is applied.</param>
+        /// <returns>An <see cref="IActionResult"/> that renders the view displaying the album images. If the member ID is
+        /// invalid or not found, the "Error" view is returned.</returns>
         public IActionResult Member(string id, int display = 0, int pagenum = 1, string sortby = "date",string sortorder = "desc",int category = 0)
         {
             try
@@ -242,16 +304,20 @@ namespace Snitz.PhotoAlbum.Controllers
         }
 
         /// <summary>
-        /// Show All images in Main album
+        /// Displays a paginated and sortable species album based on the specified parameters.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="pagenum"></param>
-        /// <param name="sortby"></param>
-        /// <param name="groupFilter"></param>
-        /// <param name="sortOrder"></param>
-        /// <param name="showThumbs"></param>
-        /// <param name="speciesOnly"></param>
-        /// <returns></returns>
+        /// <remarks>This action method generates a species album view with pagination, sorting, and
+        /// filtering options. The album can be customized based on the provided parameters, such as sorting by a
+        /// specific field, filtering by group, and toggling the display of thumbnails.</remarks>
+        /// <param name="id">The identifier of the user or entity associated with the album.</param>
+        /// <param name="pagenum">The page number to display. Defaults to 1.</param>
+        /// <param name="sortby">The field by which the album entries are sorted. Defaults to "date".</param>
+        /// <param name="groupFilter">The group filter to apply. Use -1 for no filtering. Defaults to -1.</param>
+        /// <param name="sortOrder">The sort order for the album entries. Use "asc" for ascending or "desc" for descending. Defaults to "desc".</param>
+        /// <param name="showThumbs">Indicates whether thumbnails should be displayed. Defaults to <see langword="true"/>.</param>
+        /// <param name="speciesOnly">Specifies whether to include only species-related entries. Use 1 for species-only entries; otherwise, 0.
+        /// Defaults to 1.</param>
+        /// <returns>An <see cref="ActionResult"/> that renders the species album view with the specified parameters.</returns>
         public ActionResult Album(string id, int pagenum = 1, string sortby = "date", int groupFilter = -1,
             string sortOrder = "desc", bool showThumbs = true, int speciesOnly = 1)
         {
@@ -296,11 +362,18 @@ namespace Snitz.PhotoAlbum.Controllers
         }
 
         /// <summary>
-        /// Displays the images in a Carousel
+        /// Displays a gallery of images based on the specified parameters.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="photoid"></param>
-        /// <returns></returns>
+        /// <remarks>The gallery view includes metadata such as the username, image descriptions, and view
+        /// counts. The images are retrieved and displayed based on the provided sorting and filtering
+        /// parameters.</remarks>
+        /// <param name="id">The identifier of the user or entity associated with the gallery. Defaults to 0.</param>
+        /// <param name="photoid">The identifier of the currently selected photo. Defaults to 0.</param>
+        /// <param name="sortby">The field by which the images should be sorted. Defaults to "date".</param>
+        /// <param name="sortOrder">The order in which the images should be sorted. Use <see langword="desc"/> for descending or "1" for
+        /// ascending. Defaults to <see langword="desc"/>.</param>
+        /// <param name="speciesOnly">A value indicating whether to include only species-related images. Defaults to <see langword="true"/>.</param>
+        /// <returns>An <see cref="ActionResult"/> that renders the gallery view with the specified images and metadata.</returns>
         public ActionResult Gallery(int id = 0, int photoid = 0, string sortby = "date",string sortOrder = "desc", bool speciesOnly = true)
         {
             //todo:test member
@@ -335,25 +408,16 @@ namespace Snitz.PhotoAlbum.Controllers
             return View(imageFiles);
 
         }
-        public IActionResult UploadForm(bool showall = false)
-        {
-            var model = new AlbumUploadViewModel
-            {
-                Group = -1, NotFeatured = false,
-                GroupList = new SelectList(_dbContext.Set<AlbumGroup>().AsQueryable(), "Id", "Description"),
-                AllowedTypes = _config.GetValue("STRIMAGETYPES"),
-                MaxSize = _config.GetIntValue("INTMAXIMAGESIZE", 5)
-            };
-
-            foreach (var item in model.GroupList)
-            {
-                var lname = "Group_" + item.Text.Replace(" ", "");
-                item.Text = _languageResource[lname].Value;
-            }
-            ViewBag.ShowAll = showall;
-            return PartialView("_popAlbumUpload",model);
-        }
-
+        /// <summary>
+        /// Generates and returns a thumbnail image for the specified album image ID.
+        /// </summary>
+        /// <remarks>This method retrieves the original image from the database using the provided ID,
+        /// resizes it to create a thumbnail, and saves the thumbnail to a designated folder. If the thumbnail already
+        /// exists, it is returned directly. The method ensures that the necessary folder structure is created if it
+        /// does not already exist.</remarks>
+        /// <param name="id">The unique identifier of the album image for which the thumbnail is requested.</param>
+        /// <returns>An <see cref="IActionResult"/> containing the thumbnail image as a JPEG file. If the album image does not
+        /// exist or an error occurs, a default "not found" image is returned.</returns>
         public IActionResult Thumbnail(int id)
         {
             var sep = Path.DirectorySeparatorChar;
@@ -404,23 +468,45 @@ namespace Snitz.PhotoAlbum.Controllers
             }
 
         }
-        public JsonResult GetCaption(int id)
+        /// <summary>
+        /// Renders a partial view for the album upload form with configurable options.
+        /// </summary>
+        /// <remarks>The method initializes an <see cref="AlbumUploadViewModel"/> with default values,
+        /// including  allowed file types and maximum file size, which are retrieved from the application configuration.
+        /// The group list is localized based on the current language resource. The partial view  "_popAlbumUpload" is
+        /// returned with the populated model.</remarks>
+        /// <param name="showall">A boolean value indicating whether all album groups should be displayed.  <see langword="true"/> to display
+        /// all groups; otherwise, <see langword="false"/>.</param>
+        /// <returns>A <see cref="PartialViewResult"/> containing the album upload form populated with the necessary data.</returns>
+        public IActionResult UploadForm(bool showall = false)
         {
-            var photo = _dbContext.Set<AlbumImage>().Find(id);
-            
-            if(photo == null)
+            var model = new AlbumUploadViewModel
             {
-                return Json("");
-            }
-            _dbContext.Entry<AlbumImage>(photo).State = EntityState.Detached;
-            if (!String.IsNullOrWhiteSpace(photo?.Description))
-            {
-                return Json(photo.Description);
-            }
+                Group = -1, NotFeatured = false,
+                GroupList = new SelectList(_dbContext.Set<AlbumGroup>().AsQueryable(), "Id", "Description"),
+                AllowedTypes = _config.GetValue("STRIMAGETYPES"),
+                MaxSize = _config.GetIntValue("INTMAXIMAGESIZE", 5)
+            };
 
-            return Json("");
+            foreach (var item in model.GroupList)
+            {
+                var lname = "Group_" + item.Text.Replace(" ", "");
+                item.Text = _languageResource[lname].Value;
+            }
+            ViewBag.ShowAll = showall;
+            return PartialView("_popAlbumUpload",model);
         }
-        //[Route("PhotoAlbumUpload/")]
+        /// <summary>
+        /// Handles the upload of an album image, saves the file to the server, and stores metadata in the database.
+        /// </summary>
+        /// <remarks>This method validates the provided model, generates a unique file name for the
+        /// uploaded image, saves the image to the server, and creates a new database record for the uploaded image. If
+        /// the upload is successful, a JSON response is returned containing the file URL and other details. If an error
+        /// occurs during database operations, the error message is included in the JSON response.</remarks>
+        /// <param name="model">The <see cref="AlbumUploadViewModel"/> containing the album image and associated metadata.</param>
+        /// <returns>An <see cref="IActionResult"/> that represents the result of the upload operation. Returns a JSON object
+        /// with the upload status, file URL, and optional caption if the upload is successful. Returns a partial view
+        /// with the model if the upload fails validation.</returns>
         public IActionResult Upload(AlbumUploadViewModel model)
         {
             var uploadFolder = StringExtensions.UrlCombine(_config.ContentFolder, "PhotoAlbum");
@@ -471,6 +557,22 @@ namespace Snitz.PhotoAlbum.Controllers
             return PartialView("_popAlbumUpload",model);
 
         }
+        /// <summary>
+        /// Retrieves and displays a paginated list of images associated with a specific member, with options for
+        /// filtering, sorting, and categorization.
+        /// </summary>
+        /// <remarks>This action method supports sorting by multiple fields and allows filtering by
+        /// category. It also sets various view-related data, such as the current member ID, display mode, and sorting
+        /// options, which are used to configure the view.</remarks>
+        /// <param name="id">The unique identifier of the member whose images are to be retrieved.</param>
+        /// <param name="display">An integer representing the display mode or view configuration for the images.</param>
+        /// <param name="pagenum">The page number to retrieve. Defaults to 1.</param>
+        /// <param name="sortby">The field by which the images should be sorted. Valid values include "date", "desc", "id", and "file".
+        /// Defaults to "date".</param>
+        /// <param name="sortorder">The order in which the images should be sorted. Valid values are "asc" for ascending and "desc" for
+        /// descending. Defaults to "desc".</param>
+        /// <param name="category">The category ID to filter the images by. If 0, no category filter is applied. Defaults to 0.</param>
+        /// <returns>A partial view containing the filtered, sorted, and paginated list of images.</returns>
         [HttpGet]
         public IActionResult MemberImages(int id, int display, int pagenum = 1, string sortby = "date",string sortorder = "desc", int category = 0)
         {
@@ -541,7 +643,18 @@ namespace Snitz.PhotoAlbum.Controllers
 
             return PartialView(images.ToList());
         }
-
+        /// <summary>
+        /// Toggles the privacy state of an album image and redirects to the member's image gallery.
+        /// </summary>
+        /// <remarks>If the specified album image is not found, no changes are made, and the method still
+        /// redirects to the "MemberImages" action.</remarks>
+        /// <param name="id">The unique identifier of the album image to update.</param>
+        /// <param name="memberid">The unique identifier of the member associated with the image.</param>
+        /// <param name="state">The desired privacy state of the image. <see langword="true"/> to make the image private; otherwise, <see
+        /// langword="false"/>.</param>
+        /// <param name="display">An integer representing the display mode or filter to apply when redirecting to the member's image gallery.</param>
+        /// <returns>An <see cref="IActionResult"/> that redirects to the "MemberImages" action with the specified member ID and
+        /// display parameters.</returns>
         public IActionResult TogglePrivacy(int id, int memberid, bool state, int display)
         {
             var image = _dbContext.Set<AlbumImage>().Find(id);
@@ -554,6 +667,16 @@ namespace Snitz.PhotoAlbum.Controllers
 
             return RedirectToAction("MemberImages", new {id=memberid,display });
         }
+        /// <summary>
+        /// Toggles the "Do Not Feature" state for a specific album image.
+        /// </summary>
+        /// <param name="id">The unique identifier of the album image to update.</param>
+        /// <param name="memberid">The unique identifier of the member associated with the album image.</param>
+        /// <param name="state">The new state to set for the "Do Not Feature" flag. <see langword="true"/> to enable; otherwise, <see
+        /// langword="false"/>.</param>
+        /// <param name="display">The display mode to use when redirecting to the member's images.</param>
+        /// <returns>An <see cref="IActionResult"/> that redirects to the "MemberImages" action with the specified member ID and
+        /// display mode.</returns>
         public IActionResult ToggleDoNotFeature(int id, int memberid, bool state, int display)
         {
             var image = _dbContext.Set<AlbumImage>().Find(id);
@@ -566,28 +689,17 @@ namespace Snitz.PhotoAlbum.Controllers
 
             return RedirectToAction("MemberImages", new {id=memberid,display });
         }
-        public IActionResult DeleteImage(int id, int memberid, int display)
-        {
-            var image = _dbContext.Set<AlbumImage>().Find(id);
-            if (image != null)
-            {
-                _dbContext.Remove<AlbumImage>(image);
-                _dbContext.SaveChanges();
-            }
-
-            return RedirectToAction("MemberImages", new {id=memberid,display });
-        }
-        public IActionResult Delete(AlbumImage img, int display=1)
-        {
-            var image = _dbContext.Set<AlbumImage>().Find(img.Id);
-            if (image != null)
-            {
-                _dbContext.Remove<AlbumImage>(image);
-                _dbContext.SaveChanges();
-            }
-
-            return RedirectToAction("Member", new {id=img.MemberId,display });
-        }
+        /// <summary>
+        /// Displays the edit form for an album image, allowing the user to modify its details.
+        /// </summary>
+        /// <remarks>This action retrieves the album image and its associated metadata from the database.
+        /// If the image exists, the metadata and member name are passed to the view via <see cref="ViewBag"/>. The form
+        /// is pre-populated with the current details of the album image, including its description, group, and
+        /// category.</remarks>
+        /// <param name="id">The unique identifier of the album image to edit. Must not be <see langword="null"/>.</param>
+        /// <param name="display">An optional parameter that determines the display mode. Defaults to 0.</param>
+        /// <returns>A partial view containing the edit form for the specified album image, or an error view if the <paramref
+        /// name="id"/> is <see langword="null"/>.</returns>
         [HttpGet]
         [Authorize]
         public IActionResult Edit(int? id, int display=0)
@@ -617,6 +729,14 @@ namespace Snitz.PhotoAlbum.Controllers
             ViewBag.Display = display;
             return PartialView(model);
         }
+        /// <summary>
+        /// Updates the details of an existing album image in the database.
+        /// </summary>
+        /// <remarks>This method retrieves the album image from the database using the ID provided in the
+        /// <paramref name="img"/> parameter. If the image exists, its properties are updated with the values from the
+        /// view model, and the changes are saved to the database.</remarks>
+        /// <param name="img">The view model containing the updated image details and associated metadata.</param>
+        /// <returns>A redirection to the "MemberImages" action with the member ID and display mode as route parameters.</returns>
         [HttpPost]
         public IActionResult Edit(AlbumUploadViewModel img)
         {
@@ -642,6 +762,15 @@ namespace Snitz.PhotoAlbum.Controllers
 
             //return RedirectToAction("Member", new {id=img.Image.MemberId, display = img.Display });
         }
+        /// <summary>
+        /// Updates the details of an existing album group in the database.
+        /// </summary>
+        /// <remarks>If the specified album group does not exist in the database, no changes are
+        /// made.</remarks>
+        /// <param name="group">The <see cref="AlbumGroup"/> object containing the updated details. The <see cref="AlbumGroup.Id"/> property
+        /// must correspond to an existing album group.</param>
+        /// <returns>An <see cref="IActionResult"/> indicating the result of the operation. Returns a content result with the
+        /// message "Updated" if the update is successful.</returns>
         public IActionResult UpdateGroup(AlbumGroup group)
         {
             var albumGroup = _dbContext.Set<AlbumGroup>().Find(group.Id);
@@ -654,7 +783,15 @@ namespace Snitz.PhotoAlbum.Controllers
             }
             return Content("Updated");
         }
-
+        /// <summary>
+        /// Adds a new album group to the database.
+        /// </summary>
+        /// <remarks>This method requires the caller to be authorized. After the album group is added, 
+        /// the database changes are saved immediately. The caller is responsible for ensuring  that the provided
+        /// <paramref name="group"/> object contains valid data.</remarks>
+        /// <param name="group">The <see cref="AlbumGroup"/> object representing the album group to be added. Cannot be null.</param>
+        /// <returns>An <see cref="IActionResult"/> indicating the result of the operation.  Returns a content result with a
+        /// message confirming the addition of the group.</returns>
         [HttpPost]
         [Authorize]
         public IActionResult AddGroup(AlbumGroup group)
@@ -664,11 +801,25 @@ namespace Snitz.PhotoAlbum.Controllers
 
             return Content("Group added, Reload page to view/edit groups.");
         }
+        /// <summary>
+        /// Returns a partial view for adding a new category.
+        /// </summary>
+        /// <remarks>This action is restricted to authorized users. The returned partial view is named
+        /// "_AddCategory".</remarks>
+        /// <returns>A <see cref="PartialViewResult"/> that renders the "_AddCategory" partial view.</returns>
         [Authorize]
         public IActionResult AddCategory()
         {
             return PartialView("_AddCategory");
         }
+        /// <summary>
+        /// Adds a new album category to the database.
+        /// </summary>
+        /// <remarks>This action requires the user to be authorized. After the category is added, the
+        /// database changes are saved immediately.</remarks>
+        /// <param name="category">The <see cref="AlbumCategory"/> object representing the category to be added. Cannot be null.</param>
+        /// <returns>An <see cref="IActionResult"/> indicating the result of the operation. Returns a success message upon
+        /// completion.</returns>
         [HttpPost]
         [Authorize]
         public IActionResult AddCategory(AlbumCategory category)
@@ -678,6 +829,14 @@ namespace Snitz.PhotoAlbum.Controllers
 
             return Content("Category added, Reload page to view.");
         }
+        /// <summary>
+        /// Deletes an album group with the specified identifier.
+        /// </summary>
+        /// <remarks>This action requires the user to be authorized. Ensure the specified <paramref
+        /// name="id"/> corresponds to an existing album group.</remarks>
+        /// <param name="id">The unique identifier of the album group to delete.</param>
+        /// <returns>An <see cref="IActionResult"/> indicating the result of the operation.  Returns a plain text response with
+        /// the message "Group removed." upon successful deletion.</returns>
         [HttpGet]
         [Authorize]
         public IActionResult DeleteGroup(int id)
@@ -686,7 +845,59 @@ namespace Snitz.PhotoAlbum.Controllers
 
             return Content("Group removed.");
         }
+        /// <summary>
+        /// Deletes an image from the database and redirects to the MemberImages view.
+        /// </summary>
+        /// <param name="id">The unique identifier of the image to delete.</param>
+        /// <param name="memberid">The unique identifier of the member associated with the image.</param>
+        /// <param name="display">An integer value used to determine the display state in the redirection.</param>
+        /// <returns>An <see cref="IActionResult"/> that redirects to the MemberImages view with the specified member ID and
+        /// display state.</returns>
+        public IActionResult DeleteImage(int id, int memberid, int display)
+        {
+            var image = _dbContext.Set<AlbumImage>().Find(id);
+            if (image != null)
+            {
+                _dbContext.Remove<AlbumImage>(image);
+                _dbContext.SaveChanges();
+            }
 
+            return RedirectToAction("MemberImages", new {id=memberid,display });
+        }
+        /// <summary>
+        /// Deletes the specified album image from the database and redirects to the Member view.
+        /// </summary>
+        /// <remarks>If the specified album image does not exist in the database, no action is
+        /// performed.</remarks>
+        /// <param name="img">The album image to delete. The <see cref="AlbumImage.Id"/> property must be set to identify the image.</param>
+        /// <param name="display">An optional parameter specifying the display mode for the Member view. Defaults to 1.</param>
+        /// <returns>A redirection to the Member view with the specified member ID and display mode.</returns>
+        public IActionResult Delete(AlbumImage img, int display=1)
+        {
+            var image = _dbContext.Set<AlbumImage>().Find(img.Id);
+            if (image != null)
+            {
+                _dbContext.Remove<AlbumImage>(image);
+                _dbContext.SaveChanges();
+            }
+
+            return RedirectToAction("Member", new {id=img.MemberId,display });
+        }
+
+        /// <summary>
+        /// Creates a paginated list of albums based on the specified page number, page size, sorting order, and sorting
+        /// criteria.
+        /// </summary>
+        /// <remarks>The method supports sorting by username, last upload date, or image count. If the
+        /// <paramref name="sortBy"/> value is invalid, the method returns <see langword="null"/>.</remarks>
+        /// <param name="pagenum">The number of the page to retrieve. Must be a positive integer.</param>
+        /// <param name="pagesize">The number of items per page. Must be a positive integer.</param>
+        /// <param name="sortOrder">The order in which to sort the results. Acceptable values are <see langword="asc"/> for ascending or <see
+        /// langword="desc"/> for descending.</param>
+        /// <param name="sortBy">The property by which to sort the results. Acceptable values are "user", "date", or "count".</param>
+        /// <param name="model">The queryable collection of albums to paginate and sort. Cannot be null or empty.</param>
+        /// <returns>A <see cref="PagedList{T}"/> containing the paginated and sorted albums, or <see langword="null"/> if the
+        /// provided <paramref name="model"/> is empty.</returns>
         private static PagedList<AlbumList>? PagedPhotos(int pagenum, int pagesize, string sortOrder, string sortBy, IQueryable<AlbumList> model)
         {
             if(!model.Any()) return null;
@@ -712,7 +923,17 @@ namespace Snitz.PhotoAlbum.Controllers
             }
             return null;
         }
-
+        /// <summary>
+        /// Resizes the image to create a thumbnail based on the specified size and configuration settings.
+        /// </summary>
+        /// <remarks>The resizing behavior is determined by the configuration value for "STRTHUMBTYPE": -
+        /// If the value is "scaled", the height is set to 0, and the image is resized with padding to maintain the
+        /// aspect ratio. - Otherwise, the image is resized using cropping to fit the specified size.</remarks>
+        /// <param name="context">The image processing context to apply the resizing operation to.</param>
+        /// <param name="size">The target size for the thumbnail. The width is always used, and the height may be adjusted  based on the
+        /// configuration settings.</param>
+        /// <returns>An <see cref="IImageProcessingContext"/> representing the modified image processing context  after the
+        /// resizing operation.</returns>
         private IImageProcessingContext ConvertToThumb(IImageProcessingContext context, Size size)
         {
             var scaled = _config.GetValue("STRTHUMBTYPE") == "scaled";
@@ -844,7 +1065,6 @@ namespace Snitz.PhotoAlbum.Controllers
             return images.ToList();
 
         }
-
         private static string GetUniqueFileName(string fileName, out string timestamp)
         {
             fileName = Path.GetFileName(fileName);
@@ -877,7 +1097,6 @@ namespace Snitz.PhotoAlbum.Controllers
             }
             return gList;
         }
-
         private ImageMeta MetaData(int id)
         {
             var photo = _dbContext.Set<AlbumImage>().Find(id);

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace Snitz.Events.Models
@@ -35,17 +34,5 @@ namespace Snitz.Events.Models
             modelBuilder.Entity<ClubCalendarSubscriptions>();
         }
     }
-    //public class SqliteEventContext : EventContext
-    //{
-    //    public SqliteEventContext(DbContextOptions<EventContext> options) : base(options)
-    //    {
-    //    }
 
-    //    protected override void OnConfiguring(DbContextOptionsBuilder options)
-    //    {
-    //        var path = System.IO.Path.Combine(System.Text.RegularExpressions.Regex.Replace(AppDomain.CurrentDomain.BaseDirectory, @"\\bin$", String.Empty, System.Text.RegularExpressions.RegexOptions.IgnoreCase), "App_Data", "SnitzForums2000.sqlite.db");
-
-    //        options.UseSqlite(path);
-    //    }
-    //}
 }

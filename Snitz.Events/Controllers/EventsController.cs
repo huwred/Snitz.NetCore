@@ -1,11 +1,9 @@
 ﻿using BbCodeFormatter;
-using BbCodeFormatter.Processors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using SkiaSharp;
 using SmartBreadcrumbs.Nodes;
 using Snitz.Events.Models;
 using Snitz.Events.ViewModels;
@@ -46,140 +44,141 @@ public class EventsController : Controller
         _categories = dbContext.Set<ClubCalendarCategory>().ToDictionary(t => t.Id, t => t.Name);
 
     }
-        [HttpGet]
-        public ActionResult Index(int id=0, int old=0)
+    
+    [HttpGet]
+    public ActionResult Index(int id=0, int old=0)
+    {
+        var BookmarkPage = new MvcBreadcrumbNode("Index", "Events", "mnuEvents");
+        ViewData["BreadcrumbNode"] = BookmarkPage;
+
+        var vm = new AgendaViewModel
         {
+            Categories = _categories,
+            Locations = _locations,
+            Clubs = _clubs,
+            AllowedRoles = new List<string>()
+        };
+
+            if(!String.IsNullOrWhiteSpace(_config.GetValue("STRRESTRICTROLES")))
+                vm.AllowedRoles = _config.GetValue("STRRESTRICTROLES").Split(',').ToList();
+
+            if (id == -1 )
+            {
+                ViewBag.StartDate = _eventsRepository.OldestEvent();
+                ViewBag.OldNew = -1;
+            }else if (old < 0)
+            {
+                ViewBag.OldNew = -1;
+                ViewBag.StartDate = _eventsRepository.OldestEvent();
+            }
+            else
+            {
+                ViewBag.StartDate = DateTime.UtcNow.ToString("yyyy-MM-dd");
+                ViewBag.OldNew = 0;
+            }
+
+            ViewBag.CatSummary = _eventsRepository.GetCategorySummaryList(ViewBag.StartDate);
+        vm.CatSummary = ViewBag.CatSummary;
+        ViewBag.CatFilter = id;
+        ViewBag.TotalEvents = 0;
+        foreach (CatSummary cat in ViewBag.CatSummary)
+        {
+            ViewBag.TotalEvents += cat.EventCount;
+        }
+        return View(vm);
+    }
+    [Authorize]
+    public IActionResult AddEditEvent(int id)
+    {
             var BookmarkPage = new MvcBreadcrumbNode("Index", "Events", "mnuEvents");
-            ViewData["BreadcrumbNode"] = BookmarkPage;
+            var addPage = new MvcBreadcrumbNode("AddEditEvent", "Events", "New Event"){ Parent = BookmarkPage };
+            ViewData["BreadcrumbNode"] = addPage;
 
-            var vm = new AgendaViewModel
+            var vm = new ClubEventViewModel();
+            vm.CatSummary = _eventsRepository.GetCategorySummaryList(_eventsRepository.OldestEvent());
+            var evnt = _eventsRepository.GetClubEventById(id) ?? new ClubCalendarEventItem();
+            vm.Id = evnt.Id;
+            vm.Title = evnt.Title;
+            vm.Description = evnt.Description;
+            vm.CatId = evnt.CatId;
+            vm.ClubId = evnt.ClubId;
+            vm.LocId = evnt.LocId;
+            vm.StartDate = evnt.StartDate;
+            vm.EndDate = evnt.EndDate;
+
+            vm.Categories = new Dictionary<int, string>();
+            vm.Locations = new Dictionary<int, string>();
+            vm.Clubs = new Dictionary<int, string>();
+            foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarCategory>().ToDictionary(t => t.Id, t => t.Name))
             {
-                Categories = _categories,
-                Locations = _locations,
-                Clubs = _clubs,
-                AllowedRoles = new List<string>()
-            };
-
-                if(!String.IsNullOrWhiteSpace(_config.GetValue("STRRESTRICTROLES")))
-                    vm.AllowedRoles = _config.GetValue("STRRESTRICTROLES").Split(',').ToList();
-
-                if (id == -1 )
-                {
-                    ViewBag.StartDate = _eventsRepository.OldestEvent();
-                    ViewBag.OldNew = -1;
-                }else if (old < 0)
-                {
-                    ViewBag.OldNew = -1;
-                    ViewBag.StartDate = _eventsRepository.OldestEvent();
-                }
-                else
-                {
-                    ViewBag.StartDate = DateTime.UtcNow.ToString("yyyy-MM-dd");
-                    ViewBag.OldNew = 0;
-                }
-
-                ViewBag.CatSummary = _eventsRepository.GetCategorySummaryList(ViewBag.StartDate);
-            vm.CatSummary = ViewBag.CatSummary;
-            ViewBag.CatFilter = id;
-            ViewBag.TotalEvents = 0;
-            foreach (CatSummary cat in ViewBag.CatSummary)
-            {
-                ViewBag.TotalEvents += cat.EventCount;
+                vm.Categories.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
             }
-            return View(vm);
-        }
-        [Authorize]
-        public IActionResult AddEditEvent(int id)
-        {
-                var BookmarkPage = new MvcBreadcrumbNode("Index", "Events", "mnuEvents");
-                var addPage = new MvcBreadcrumbNode("AddEditEvent", "Events", "New Event"){ Parent = BookmarkPage };
-                ViewData["BreadcrumbNode"] = addPage;
-
-                var vm = new ClubEventViewModel();
-                vm.CatSummary = _eventsRepository.GetCategorySummaryList(_eventsRepository.OldestEvent());
-                var evnt = _eventsRepository.GetClubEventById(id) ?? new ClubCalendarEventItem();
-                vm.Id = evnt.Id;
-                vm.Title = evnt.Title;
-                vm.Description = evnt.Description;
-                vm.CatId = evnt.CatId;
-                vm.ClubId = evnt.ClubId;
-                vm.LocId = evnt.LocId;
-                vm.StartDate = evnt.StartDate;
-                vm.EndDate = evnt.EndDate;
-
-                vm.Categories = new Dictionary<int, string>();
-                vm.Locations = new Dictionary<int, string>();
-                vm.Clubs = new Dictionary<int, string>();
-                foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarCategory>().ToDictionary(t => t.Id, t => t.Name))
-                {
-                    vm.Categories.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
-                }
-                foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarLocation>().ToDictionary(t => t.Id, t => t.Name))
-                {
-                    vm.Locations.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
-                }
-                foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarClub>().ToDictionary(t => t.Id, t => t.ShortName))
-                {
-                    vm.Clubs.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
-                }
+            foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarLocation>().ToDictionary(t => t.Id, t => t.Name))
+            {
+                vm.Locations.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
+            }
+            foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarClub>().ToDictionary(t => t.Id, t => t.ShortName))
+            {
+                vm.Clubs.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
+            }
                 
-                return View(vm);
-        }
-        [HttpGet]
-        [Authorize]
-        public ActionResult EventSubs()
-        {
-                var BookmarkPage = new MvcBreadcrumbNode("Index", "Events", "mnuEvents");
-                var addPage = new MvcBreadcrumbNode("EventSubs", "Events", "Subscriptions"){ Parent = BookmarkPage };
-                ViewData["BreadcrumbNode"] = addPage;
+            return View(vm);
+    }
+    [HttpGet]
+    [Authorize]
+    public ActionResult EventSubs()
+    {
+            var BookmarkPage = new MvcBreadcrumbNode("Index", "Events", "mnuEvents");
+            var addPage = new MvcBreadcrumbNode("EventSubs", "Events", "Subscriptions"){ Parent = BookmarkPage };
+            ViewData["BreadcrumbNode"] = addPage;
 
+        var currentMember = _memberService.Current();
+        var vm = new SubscribeModel();
+        vm.SubscriptionSources = _eventsRepository.GetClubsList().ToDictionary(t => t.Key, t => t.Value);
+        vm.SelectedSources = _eventsRepository.GetSubsList(currentMember.Id);
+
+        return View(vm);
+    }
+    [HttpPost]
+    [Authorize]
+    public ActionResult EventSubs(SubscribeModel vm)
+    {
+        if (ModelState.IsValid)
+        {
             var currentMember = _memberService.Current();
-            var vm = new SubscribeModel();
-            vm.SubscriptionSources = _eventsRepository.GetClubsList().ToDictionary(t => t.Key, t => t.Value);
-            vm.SelectedSources = _eventsRepository.GetSubsList(currentMember.Id);
-
-            return View(vm);
-        }
-        [HttpPost]
-        [Authorize]
-        public ActionResult EventSubs(SubscribeModel vm)
-        {
-            if (ModelState.IsValid)
+            if(currentMember == null)
             {
-                var currentMember = _memberService.Current();
-                if(currentMember == null)
-                {
-                    return View(vm);
-                }
-                var currentsubs = _eventsRepository.GetSubsList(currentMember.Id).ToList();
-
-                var removesubs = from item in currentsubs
-                            where !vm.SelectedSources.Contains(item)
-                            select item;
-
-                foreach (var ii in removesubs)
-                {
-                    _eventsRepository.SubDelete(ii, currentMember.Id);
-                }
-
-                var addsubs = from item in vm.SelectedSources
-                                where !currentsubs.Contains(item)
-                            select item;
-
-                foreach (var source in addsubs)
-                {
-                    ClubCalendarSubscriptions sub = new ClubCalendarSubscriptions();
-                    sub.ClubId = source;
-                    sub.MemberId = currentMember.Id;
-                    _context.Set<ClubCalendarSubscriptions>().Add(sub);
-
-                }
-                _context.SaveChanges();
-                vm.SelectedSources = _eventsRepository.GetSubsList(currentMember.Id);
+                return View(vm);
             }
-            return View(vm);
+            var currentsubs = _eventsRepository.GetSubsList(currentMember.Id).ToList();
 
+            var removesubs = from item in currentsubs
+                        where !vm.SelectedSources.Contains(item)
+                        select item;
+
+            foreach (var ii in removesubs)
+            {
+                _eventsRepository.SubDelete(ii, currentMember.Id);
+            }
+
+            var addsubs = from item in vm.SelectedSources
+                            where !currentsubs.Contains(item)
+                        select item;
+
+            foreach (var source in addsubs)
+            {
+                ClubCalendarSubscriptions sub = new ClubCalendarSubscriptions();
+                sub.ClubId = source;
+                sub.MemberId = currentMember.Id;
+                _context.Set<ClubCalendarSubscriptions>().Add(sub);
+
+            }
+            _context.SaveChanges();
+            vm.SelectedSources = _eventsRepository.GetSubsList(currentMember.Id);
         }
+        return View(vm);
+
+    }
     [HttpPost]
     public IActionResult AddEvent(CalendarEventItem model)
     {

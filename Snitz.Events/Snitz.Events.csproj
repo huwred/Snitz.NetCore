@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.1.0-rc03</Version>
+    <Version>1.1.0</Version>
     <Authors>Huw Reddick</Authors>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -16,33 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\Mssql\**" />
-    <Compile Remove="Migrations\MySql\**" />
-    <Compile Remove="Migrations\Sqlite\**" />
-    <Content Remove="Migrations\Mssql\**" />
-    <Content Remove="Migrations\MySql\**" />
-    <Content Remove="Migrations\Sqlite\**" />
-    <EmbeddedResource Remove="Migrations\Mssql\**" />
-    <EmbeddedResource Remove="Migrations\MySql\**" />
-    <EmbeddedResource Remove="Migrations\Sqlite\**" />
-    <None Remove="Migrations\Mssql\**" />
-    <None Remove="Migrations\MySql\**" />
-    <None Remove="Migrations\Sqlite\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Helpers\Extensions.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="bundleconfig.json" />
     <Content Remove="wwwroot\js\dist\multimonth-view.html" />
     <Content Remove="wwwroot\js\lang\langs.zip" />
     <Content Remove="wwwroot\js\locales-all.global.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="wwwroot\js\lang\langs.zip" />
   </ItemGroup>
 
   <ItemGroup>

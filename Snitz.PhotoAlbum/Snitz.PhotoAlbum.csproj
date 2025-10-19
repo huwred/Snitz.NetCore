@@ -2,36 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Version>1.1.0-rc03</Version>
+    <Version>1.1.0</Version>
     <Nullable>enable</Nullable>
     <Authors>Huw Reddick</Authors>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <PackageOutputPath>E:\Umbraco-Dev\Nuget</PackageOutputPath>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Migrations\MsSql\**" />
-    <Compile Remove="Migrations\Mysql\**" />
-    <Compile Remove="Migrations\Sqlite\**" />
-    <Content Remove="Migrations\MsSql\**" />
-    <Content Remove="Migrations\Mysql\**" />
-    <Content Remove="Migrations\Sqlite\**" />
-    <EmbeddedResource Remove="Migrations\MsSql\**" />
-    <EmbeddedResource Remove="Migrations\Mysql\**" />
-    <EmbeddedResource Remove="Migrations\Sqlite\**" />
-    <None Remove="Migrations\MsSql\**" />
-    <None Remove="Migrations\Mysql\**" />
-    <None Remove="Migrations\Sqlite\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Helpers\Extensions.cs" />
-    <Compile Remove="Helpers\IPhotoAlbumService.cs" />
-    <Compile Remove="Models\PhotoRepository.cs" />
-    <Compile Remove="Models\ThumbnailResult.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -56,19 +35,6 @@
   <ItemGroup>
     <ProjectReference Include="..\MVCForum.Service\SnitzCore.Service.csproj" />
   </ItemGroup>
-
-<ItemGroup>
-  <Content Remove="appsettings.json;appsettings.Development.json" />
-  <None Include="appsettings.json;appsettings.Development.json">
-    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-  </None>
-  <Content Remove="Views/_ViewImports.cshtml" />
-  <Content Include="Views/_ViewImports.cshtml">
-    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-  </Content>
-</ItemGroup>
 
 <ItemGroup>
   <UpToDateCheckInput Remove="Views\PhotoAlbum\_MemberSlideShow.cshtml" />
