@@ -463,3 +463,6 @@ FodyWeavers.xsd
 /MVC Forum/Extensions/EncryptedJsonConfigurationSource.cs
 /MVC Forum/appsettings.Production.json
 /MVC Forum/App_Data/initiallang_en.csv.done
+/MVC Forum/Views/Charts/Index.cshtml
+/MVC Forum/Views/Charts/_Chart.cshtml
+/MVC Forum/Views/Charts/_ViewImports.cshtml

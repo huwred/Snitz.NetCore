@@ -1,5 +1,6 @@
 ﻿@using SnitzCore.Data.Extensions
 @using SnitzCore.Service.TagHelpers
+@using SnitzCore.Service.Extensions
 @model Snitz.PhotoAlbum.ViewModels.SpeciesAlbum
 
 @section MetaData
@@ -201,7 +202,7 @@
                         <td class="col-5 col-sm-3 col-md-2">@image.CommonName</td>
                         <td class="col-1 col-md d-none d-sm-inline text-truncate">@image.Description</td>
                         <td class="col-1 d-none d-sm-none d-md-inline">@image.Group?.Description</td>
-                        <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@image.Timestamp.FromForumDateStr().ToLocalTime().ToShortDateString()</td>
+                        <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@image.Timestamp.FromForumDateStr().LocalTime(SnitzCookie).ToShortDateString()</td>
                         <td class="col-1 d-none d-sm-none d-md-none d-lg-inline">@image.Views</td>
                     </tr>
                 }

@@ -1,4 +1,5 @@
 ﻿@using SnitzCore.Data.Extensions
+@using SnitzCore.Service.Extensions
 @using SnitzCore.Service.TagHelpers
 @model List<Snitz.PhotoAlbum.Models.AlbumImage>
 @{
@@ -23,7 +24,7 @@
                 </a>
                 <figcaption class="figure-caption form-text">@image.Description</figcaption>
                 <div class="overlay">
-                    <div class="text">@image.CommonName<br />@image.ScientificName<br />Posted on: @image.Timestamp.FromForumDateStr().ToLocalTime().ToShortDateString() <br />@image.Width x @image.Height</div>
+                    <div class="text">@image.CommonName<br />@image.ScientificName<br />Posted on: @image.Timestamp.FromForumDateStr().LocalTime(SnitzCookie).ToShortDateString() <br />@image.Width x @image.Height</div>
                     <div class="footer" snitz-if="@(User.IsAdministrator() || ViewBag.IsOwner)">
                         <link-confirm snitz-if="@image.IsPrivate" title="@Localizer["lblIsPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@image.Id/?state=false&memberid=@image.MemberId" config-class="fa fa-user-secret p-1" config-key="@image.Id"></link-confirm>
                         <link-confirm snitz-if="@(!image.IsPrivate)" title="@Localizer["lblPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@image.Id/?state=true&memberid=@image.MemberId" config-class="fa-regular fa-user p-1" config-key="@image.Id"></link-confirm>

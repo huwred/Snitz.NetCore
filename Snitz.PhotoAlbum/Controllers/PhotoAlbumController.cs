@@ -1,6 +1,7 @@
 ﻿using LinqKit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -31,9 +32,10 @@ namespace Snitz.PhotoAlbum.Controllers
         private readonly LanguageService  _languageResource;
         private readonly ISnitzConfig _config;
         private readonly IFileProvider _fileProvider;
+        private readonly ISnitzCookie _snitzCookie;
         protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
-        public PhotoAlbumController(IWebHostEnvironment hostingEnvironment, PhotoContext dbContext,IMember memberservice,IHtmlLocalizerFactory localizerFactory,ISnitzConfig config)
+        public PhotoAlbumController(IWebHostEnvironment hostingEnvironment, PhotoContext dbContext,IMember memberservice,IHtmlLocalizerFactory localizerFactory,ISnitzConfig config,ISnitzCookie snitzCookie)
         {
             _environment = hostingEnvironment;
             _dbContext = dbContext;
@@ -41,11 +43,14 @@ namespace Snitz.PhotoAlbum.Controllers
             _config = config;
             _fileProvider = hostingEnvironment.WebRootFileProvider;
             _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
+            _snitzCookie = snitzCookie;
+
         }
         /// <summary>
         /// Renders the Admin view with an empty <see cref="AdminAlbumViewModel"/>.
         /// </summary>
         /// <returns>An <see cref="IActionResult"/> that renders the Admin view.</returns>
+        [Authorize(Roles = "Administrator")]
         public IActionResult Admin()
         {
             return View(new AdminAlbumViewModel());
@@ -400,7 +405,7 @@ namespace Snitz.PhotoAlbum.Controllers
 
 
             ViewBag.footer = images[0].Member?.Name + " - " +
-                             images[0].Timestamp.FromForumDateStr().ToLocalTime() + "<br/>" + images[0].Views +
+                             images[0].Timestamp.FromForumDateStr().LocalTime(_snitzCookie) + "<br/>" + images[0].Views +
                              " " + _languageResource.GetString("lblViews");
             ViewBag.title = string.Format("{0}, {1}, {2}", images[0].CommonName, images[0].ScientificName,
                 images[0].Description);
@@ -509,6 +514,11 @@ namespace Snitz.PhotoAlbum.Controllers
         /// with the model if the upload fails validation.</returns>
         public IActionResult Upload(AlbumUploadViewModel model)
         {
+            if(!IsImage(model.AlbumImage))
+            {
+                ModelState.AddModelError("AlbumImage", _languageResource["errInvalidImage"].Value);
+                return PartialView("_popAlbumUpload",model);
+            }
             var uploadFolder = StringExtensions.UrlCombine(_config.ContentFolder, "PhotoAlbum");
 
             var currentMember = _memberservice.Current();
@@ -1118,6 +1128,20 @@ namespace Snitz.PhotoAlbum.Controllers
             
             return imagemeta;
         }
-
+        private bool IsImage(IFormFile file)
+        {
+            try
+            {
+                using (var stream = file.OpenReadStream())
+                {
+                    var image = SixLabors.ImageSharp.Image.Load(stream);
+                    return true; // Successfully loaded as an image
+                }
+            }
+            catch
+            {
+                return false; // Not an image
+            }
+        }
     }
 }
