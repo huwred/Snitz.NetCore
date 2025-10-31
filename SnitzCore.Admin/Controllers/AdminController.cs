@@ -1,18 +1,14 @@
-﻿using Azure;
-using CreativeMinds.StopForumSpam;
+﻿using CreativeMinds.StopForumSpam;
 using CreativeMinds.StopForumSpam.Responses;
-using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Org.BouncyCastle.Asn1.X509;
 using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -20,10 +16,7 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service.Extensions;
 using System.Data;
-using System.Globalization;
 using System.Web;
-using static SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SnitzCore.BackOffice.Controllers
 {
@@ -335,10 +328,10 @@ namespace SnitzCore.BackOffice.Controllers
                     foreach (var user in _userManager.Users.ToList())
                     {
                         if (_userManager.IsInRoleAsync(user, Role.Name!).Result)
-                            names.Add(user.UserName!);
+                            names.Add(user.UserName!.ToUpperInvariant());
                     }
                 }
-                var test = _memberService.GetAll(false).Where(m=> names.IndexOf(m!.Name) >= 0);
+                var test = _memberService.GetAll(false).Where(m=> names.IndexOf(m!.Name.ToUpperInvariant()) >= 0);
 
                 if(test != null)
                     { vm.Members = [.. test]; }
@@ -1040,5 +1033,20 @@ namespace SnitzCore.BackOffice.Controllers
 
             return Ok();
         }
+        public IActionResult Tools(IFormCollection form)
+        {
+            if (form.ContainsKey("Username"))
+            {
+
+            }else if (form.ContainsKey("ForumDest"))
+            {
+
+            }else if (form.ContainsKey("Forum") && !form.ContainsKey("ForumDest"))
+            {
+
+            }
+            return Ok();
+        }
     }
+
 }

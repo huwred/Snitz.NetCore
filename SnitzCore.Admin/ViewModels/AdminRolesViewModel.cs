@@ -1,7 +1,6 @@
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
-using SQLitePCL;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
