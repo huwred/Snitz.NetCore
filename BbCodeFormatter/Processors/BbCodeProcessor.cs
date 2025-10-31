@@ -115,7 +115,7 @@ public class BbCodeProcessor : ICodeProcessor
     _formatters.Add(new RegexFormatter(@"\[h([1-6])(?:\s*)\]((.|\n)*?)\[/h[1-6](?:\s*)\]", "<h$1>$2</h$1>"));
   
     _formatters.Add(new RegexFormatter(@"\[i(?:\s*)\]((.|\n)*?)\[/i(?:\s*)\]", "<em>$1</em>"));
-    _formatters.Add(new RegexFormatter(@"(?:\[i class=""([^]\[]+)""])(?:\[/i])", "<i class=\"$1\"></i>"));
+    _formatters.Add(new RegexFormatter(@"(?:\[i class=\""([^]\[]+)\""])(?:\[/i])", "<i class=\"$1\"></i>"));
     _formatters.Add(new RegexFormatter(@"\[b(?:\s*)\]((.|\n)*?)\[/b(?:\s*)\]", "<b>$1</b>"));
     _formatters.Add(new RegexFormatter(@"\[s(?:\s*)\]((.|\n)*?)\[/s(?:\s*)\]", "<s>$1</s>"));
     _formatters.Add(new RegexFormatter(@"\[u(?:\s*)\]((.|\n)*?)\[/u(?:\s*)\]", "<u>$1</u>"));
