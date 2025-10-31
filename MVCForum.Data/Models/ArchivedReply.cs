@@ -20,7 +20,7 @@ public partial class ArchivedReply
     public int ArchivedPostId { get; set; }
 
     [Column("R_MAIL")]
-    public short Mail { get; set; }
+    public short? Mail { get; set; } = 0;
 
     [Column("R_AUTHOR")]
     public int MemberId { get; set; }

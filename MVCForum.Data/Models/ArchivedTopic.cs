@@ -21,7 +21,7 @@ public partial class ArchivedPost
     public short Status { get; set; }
 
     [Column("T_MAIL")]
-    public short Mail { get; set; }
+    public short? Mail { get; set; } = 0;
 
     [Column("T_SUBJECT")]
     [StringLength(100)]
@@ -37,7 +37,7 @@ public partial class ArchivedPost
     public int ReplyCount { get; set; }
 
     [Column("T_UREPLIES")]
-    public int UnmoderatedReplies { get; set; }
+    public int? UnmoderatedReplies { get; set; } = 0;
 
     [Column("T_VIEW_COUNT")]
     public int ViewCount { get; set; }
@@ -79,19 +79,19 @@ public partial class ArchivedPost
     public short Sig { get; set; }
 
     [Column("T_ISPOLL")]
-    public short Ispoll { get; set; }
+    public short? Ispoll { get; set; } = 0;
 
     [Column("T_POLLSTATUS")]
-    public short Pollstatus { get; set; }
+    public short? Pollstatus { get; set; } = 0;
 
     [Column("T_RATING_TOTAL_COUNT")]
-    public int RatingTotalCount { get; set; }
+    public int? RatingTotalCount { get; set; } = 0;
 
     [Column("T_RATING_TOTAL")]
-    public int RatingTotal { get; set; }
+    public int? RatingTotal { get; set; } = 0;
 
     [Column("T_ALLOW_RATING")]
-    public int AllowRating { get; set; }
+    public int? AllowRating { get; set; } = 0;
 
     public virtual Member? Member { get; set; }
     public virtual Member? LastPostAuthor { get; set; }
