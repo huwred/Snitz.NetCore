@@ -19,8 +19,8 @@ namespace SnitzCore.Data.Models
         private readonly List<string> _cookieCollection = new()
         {
             "snitztheme", "SnitzCulture", "pmModPaging", "User",
-            "ActiveRefresh", "SinceDate", "TopicTracking", "GROUP", "RefreshFilter",
-            "timezoneoffset", "preservedurl", "User"
+            "ActiveRefreshSeconds", "SinceDate", "TopicTracking", "GROUP", "RefreshFilter",
+            "timezoneoffset", "preservedurl", "User","SinceDateEnum"
         };
 
         public SnitzCookie(IHttpContextAccessor httpContextAccessor,ISnitzConfig snitzConfig, SnitzDbContext dbContext)
@@ -63,6 +63,7 @@ namespace SnitzCore.Data.Models
                 }
             }
         }
+
         #region LastVisitDate
         public  string? GetLastVisitDate()
         {
@@ -98,6 +99,10 @@ namespace SnitzCore.Data.Models
                 pages.Add(pollid.ToString(), "1");
             }
             SetMultipleUsingSingleKeyCookies("votetracker", pages);
+        }
+        public string? CookieUser()
+        {
+            return _httpContextAccessor.HttpContext?.User.Identity.Name;
         }
         public bool HasVoted(int pollid, int? memberid)
         {
