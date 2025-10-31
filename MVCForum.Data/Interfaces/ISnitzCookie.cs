@@ -20,5 +20,7 @@ namespace SnitzCore.Data.Interfaces
         void UpdateTopicTrack(string topicId);
         string? Tracked(string topicId);
         void ClearTracking(string topicId);
+
+        string? CookieUser();
     }
 }
