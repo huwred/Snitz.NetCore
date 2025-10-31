@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using System.ComponentModel.DataAnnotations;
-using System;
-using System.Linq;
+using SnitzCore.Data.Interfaces;
 using SnitzCore.Service.Extensions;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace SnitzCore.Service.TagHelpers
 {
@@ -36,6 +37,12 @@ namespace SnitzCore.Service.TagHelpers
         /// </summary>
         public Func<string, string>? TextLocalizerDelegate { get; set; }
 
+        private readonly ISnitzCookie _snitzCookie;
+
+        public SelectEnumTagHelper( ISnitzCookie snitzCookie)
+        {
+            _snitzCookie = snitzCookie;
+        }
         /// <summary>
         /// start creating select-enum tag helper
         /// </summary>
@@ -91,7 +98,7 @@ namespace SnitzCore.Service.TagHelpers
             if (LastVisit != null)
             {
                 if (TextLocalizerDelegate != null)
-                    return TextLocalizerDelegate(text).Replace("[[LASTVISIT]]", LastVisit.Value.ToForumDateTimeDisplay());
+                    return TextLocalizerDelegate(text).Replace("[[LASTVISIT]]", LastVisit.Value.ToForumDateTimeDisplay(_snitzCookie));
             }
 
             if (TextLocalizerDelegate != null)

@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SnitzCore.Data.Interfaces;
+using SnitzCore.Data.Models;
 using System;
 using System.Globalization;
+using System.Net;
 
 namespace SnitzCore.Service.Extensions
 {
@@ -14,45 +16,68 @@ namespace SnitzCore.Service.Extensions
         /// <param name="date">The <see cref="DateTime"/> to format.</param>
         /// <returns>A string representation of the <paramref name="date"/> in the format "MMM dd, yyyy HH:mm", using the current
         /// culture.</returns>
-        public static string ToForumDisplay(this DateTime date, ISnitzConfig config)
+        public static string ToForumDisplay(this DateTime date, ISnitzConfig config, ISnitzCookie snitzCookie)
         {
             var format = DateStr(config.GetValue("STRDATETYPE"));
 
-            return date.ToLocalTime().ToString(format + " HH:mm", CultureInfo.CurrentCulture);
+            return date.LocalTime(snitzCookie).ToString(format + ", HH:mm", CultureInfo.CurrentCulture);
+        }
+        public static DateTime LocalTime(this DateTime date, ISnitzCookie snitzCookie)
+        {
+            var user = snitzCookie.CookieUser();
+            var userTimeZone = CacheProvider.GetOrCreate("TimeZone_" + user, () =>
+            {
+                string? userTimeZoneId = snitzCookie.GetCookieValue("CookieTimeZone"); // Get user's time zone ID from cookie
+                if (!string.IsNullOrEmpty(userTimeZoneId))
+                {
+                    try
+                    {
+                        return TimeZoneInfo.FindSystemTimeZoneById(userTimeZoneId);
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
+                }
+                return null;
+            }, TimeSpan.FromMinutes(10));
+
+
+            if (userTimeZone == null)
+            {
+                // Fallback to UTC if not set
+                return DateTime.SpecifyKind(date, DateTimeKind.Utc);
+            }
+            try
+            {
+                
+                //TimeZoneInfo userTimeZone = TimeZoneInfo.FindSystemTimeZoneById(userTimeZoneId);
+                DateTimeOffset userDateTimeOffset = TimeZoneInfo.ConvertTime(DateTime.SpecifyKind(date, DateTimeKind.Utc), userTimeZone);
+
+                return userDateTimeOffset.DateTime;
+            }
+            catch (Exception)
+            {
+                // Fallback to UTC if not set
+                return DateTime.SpecifyKind(date, DateTimeKind.Utc);
+            }
+
         }
         public static string DateStr(string dateformat)
         {
-                switch (dateformat)
-                {
-                    case "mdy":
-                        dateformat = "MM/dd/yy";
-                        break;
-                    case "dmy":
-                        dateformat = "dd/MM/yy";
-                        break;
-                    case "ymd":
-                        dateformat = "yy/MM/dd";
-                        break;
-                    case "ydm":
-                        dateformat = "yy/dd/MM";
-                        break;
-                    case "dmmy":
-                        dateformat = "dd MMM yyyy";
-                        break;
-                    case "mmdy":
-                        dateformat = "MMM dd, yyyy";
-                        break;
-                    case "mmmdy":
-                        dateformat = "MMMM dd, yyyy";
-                        break;
-                    case "dmmmy":
-                        dateformat = "dd MMMM yyyy";
-                        break;
-                    default:
-                        dateformat = "MMM dd, yyyy";
-                        break;
-            }
-                return dateformat;
+            dateformat = dateformat switch
+            {
+                "mdy" => "MM/dd/yy",
+                "dmy" => "dd/MM/yy",
+                "ymd" => "yy/MM/dd",
+                "ydm" => "yy/dd/MM",
+                "dmmy" => "dd MMM yyyy",
+                "mmdy" => "MMM dd, yyyy",
+                "mmmdy" => "MMMM dd, yyyy",
+                "dmmmy" => "dd MMMM yyyy",
+                _ => "MMM dd, yyyy",
+            };
+            return dateformat;
         }
         /// <summary>
         /// Converts the specified <see cref="DateTime"/> to its string representation using the specified format and
@@ -66,9 +91,9 @@ namespace SnitzCore.Service.Extensions
         /// format specifiers.</param>
         /// <returns>A string representation of the <paramref name="date"/> formatted according to <paramref name="format"/> and
         /// the current culture.</returns>
-        public static string ToCustomDisplay(this DateTime date, string format)
+        public static string ToCustomDisplay(this DateTime date, string format, ISnitzCookie snitzCookie)
         {
-            return date.ToLocalTime().ToString(format, CultureInfo.CurrentCulture);
+            return date.LocalTime(snitzCookie).ToString(format, CultureInfo.CurrentCulture);
         }
 
         /// <summary>
@@ -77,9 +102,9 @@ namespace SnitzCore.Service.Extensions
         /// <param name="date">The <see cref="DateTime"/> to format.</param>
         /// <returns>A string representation of the <paramref name="date"/> in the format "dd/MM/yyyy HH:mm", using the current
         /// culture.</returns>
-        public static string ToForumDateTimeDisplay(this DateTime date)
+        public static string ToForumDateTimeDisplay(this DateTime date, ISnitzCookie snitzCookie)
         {
-            return date.ToLocalTime().ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture);
+            return date.LocalTime(snitzCookie).ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture);
         }
 
         /// <summary>

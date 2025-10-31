@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Text.Encodings.Web;
 
@@ -60,7 +61,7 @@ namespace SnitzCore.Service.TagHelpers
                 }
                 if (lasthere.HasValue)
                 {
-                    if (LastPost.Value.ToLocalTime() > lasthere)
+                    if (LastPost.Value.LocalTime(_cookie) > lasthere)
                     {
                         newclass = true;
                     }

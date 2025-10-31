@@ -29,12 +29,14 @@ namespace SnitzCore.Service.TagHelpers
 
         private readonly LanguageService  _languageResource;
         private readonly ISnitzConfig _snitzconfig;
+        private readonly ISnitzCookie _snitzCookie;
 
-        public SnitzDateTimeDisplay(IHtmlLocalizerFactory localizerFactory ,ISnitzConfig snitzconfig)
+        public SnitzDateTimeDisplay(IHtmlLocalizerFactory localizerFactory ,ISnitzConfig snitzconfig, ISnitzCookie snitzCookie)
         {
             _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
             Format = _languageResource.GetString("dateLong");
             _snitzconfig = snitzconfig;
+            _snitzCookie = snitzCookie;
         }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -45,15 +47,15 @@ namespace SnitzCore.Service.TagHelpers
             if(FriendlyTime == true && _snitzconfig.IsEnabled("INTUSETIMEAGO"))
             { output.AddClass("timeago", HtmlEncoder.Default); }
             output.Attributes.Add("datetime",SnitzDate?.ToTimeagoDate());
-            output.Attributes.Add("aria-label", $"{SnitzDate?.ToLocalTime()}");
+            output.Attributes.Add("aria-label", $"{SnitzDate?.LocalTime(_snitzCookie)}");
             output.Attributes.Add("data-toggle","tooltip");
             if (!string.IsNullOrWhiteSpace(Format))
             {
-                output.PreContent.SetHtmlContent(SnitzDate?.ToCustomDisplay(Format));
+                output.PreContent.SetHtmlContent(SnitzDate?.ToCustomDisplay(Format,_snitzCookie));
             }
             else
             {
-                output.PreContent.SetHtmlContent(SnitzDate?.ToForumDisplay(_snitzconfig));
+                output.PreContent.SetHtmlContent(SnitzDate?.ToForumDisplay(_snitzconfig, _snitzCookie));
             }
 
         }

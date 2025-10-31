@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
+using SnitzCore.Service.Extensions;
 using System;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -92,14 +93,14 @@ namespace SnitzCore.Service.TagHelpers
             if (LastPost.HasValue)
             {
                 var user = _actionAccessor.ActionContext?.HttpContext?.User;
-                var lasthere = _cookie.GetLastVisitDate()?.FromForumDateStr();
+                var lasthere = _cookie.GetLastVisitDate()?.FromForumDateStr().LocalTime(_cookie);
                 if (user != null && user.Identity!.IsAuthenticated)
                 {
-                    lasthere = _memberService.GetByUsername(user.Identity.Name!)!.LastLogin.FromForumDateStr().ToLocalTime();
+                    lasthere = _memberService.GetByUsername(user.Identity.Name!)!.LastLogin.FromForumDateStr().LocalTime(_cookie);
                 }
                 if (lasthere.HasValue)
                 {
-                    if (LastPost.Value.ToLocalTime() > lasthere)
+                    if (LastPost.Value > lasthere)
                     {
                         newposts = "_unread";
                         newclass = true;

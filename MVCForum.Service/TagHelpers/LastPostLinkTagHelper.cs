@@ -41,10 +41,12 @@ namespace SnitzCore.Service.TagHelpers
         public Func<string, string>? TextLocalizerDelegate { get; set; }
 
         private readonly ISnitzConfig _snitzconfig;
-        public LastPostLinkTagHelper(IHttpContextAccessor httpContextAccessor,ISnitzConfig snitzconfig)
+        private readonly ISnitzCookie _snitzCookie;
+        public LastPostLinkTagHelper(IHttpContextAccessor httpContextAccessor,ISnitzConfig snitzconfig, ISnitzCookie snitzCookie)
         {
             webrootpath = httpContextAccessor.HttpContext?.Request.PathBase;
             _snitzconfig = snitzconfig;
+            _snitzCookie = snitzCookie;
         }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -74,11 +76,11 @@ namespace SnitzCore.Service.TagHelpers
             //TODO add option to turn off timeago
             if(_snitzconfig.IsEnabled("INTUSETIMEAGO"))
             {
-                output.Content.AppendHtml($@"<time data-toggle=""tooltip"" datetime=""{PostDate?.ToTimeagoDate()}"" class=""timeago"" aria-label=""Posted on {PostDate?.ToLocalTime()}"">{PostDate?.ToForumDisplay(_snitzconfig)}</time>&nbsp;");
+                output.Content.AppendHtml($@"<time data-toggle=""tooltip"" datetime=""{PostDate?.ToTimeagoDate()}"" class=""timeago"" aria-label=""Posted on {PostDate?.LocalTime(_snitzCookie)}"">{PostDate?.ToForumDisplay(_snitzconfig,_snitzCookie)}</time>&nbsp;");
             }
             else
             {
-                output.Content.AppendHtml($@"<time data-toggle=""tooltip"" datetime=""{PostDate?.ToTimeagoDate()}"" aria-label=""Posted on {PostDate?.ToLocalTime()}"">{PostDate?.ToForumDisplay(_snitzconfig)}</time>&nbsp;");
+                output.Content.AppendHtml($@"<time data-toggle=""tooltip"" datetime=""{PostDate?.ToTimeagoDate()}"" aria-label=""Posted on {PostDate?.LocalTime(_snitzCookie)}"">{PostDate?.ToForumDisplay(_snitzconfig, _snitzCookie)}</time>&nbsp;");
             }
             if ((bool)JumpTo!)
             {

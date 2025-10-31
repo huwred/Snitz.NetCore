@@ -410,16 +410,25 @@ namespace SnitzCore.Service
             {
                 return;
             }
+                var now = DateTime.UtcNow.ToForumDateStr();
             //if there has been no activity for 10 minutes, reset the last login (LastLogin) date
             if (member.Lastactivity.FromForumDateStr().AddMinutes(20) < DateTime.UtcNow)
             {
-                member.LastLogin = member.Lastactivity;
-                if (member.LastLogin != null) _cookie.SetLastVisitCookie(member.LastLogin);
-                member.LastIp = _contextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+                var lastactivity = member.Lastactivity;
+                var lastip = _contextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+                if (lastactivity != null) _cookie.SetLastVisitCookie(lastactivity);
+                _dbContext.Members.Where(m=>m.Name == user.Identity.Name && m.Status == 1)
+                    .ExecuteUpdateAsync(s => s
+                    .SetProperty(b => b.LastLogin, lastactivity)
+                    .SetProperty(b => b.LastIp, lastip)
+                    .SetProperty(b => b.Lastactivity, now)
+                    );
+                return;
             }            
-            member.Lastactivity = DateTime.UtcNow.ToForumDateStr();
-            _dbContext.Members.Update(member);
-            _dbContext.SaveChanges();
+            _dbContext.Members.Where(m=>m.Name == user.Identity.Name && m.Status == 1)
+                .ExecuteUpdateAsync(s => s
+                .SetProperty(b => b.Lastactivity, now));
+
         }
 
         /// <summary>
