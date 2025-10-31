@@ -4,7 +4,7 @@
 @model TemplateViewModel
 @inject IOptions<RequestLocalizationOptions> LocOptions
 @{
-    ViewBag.Title = "Template Editor";
+    ViewBag.Title = "Email Templates Editor";
     Layout = "_MasterLayout";
     var cultureItems = LocOptions.Value.SupportedUICultures!
         .Where(c=>c.TwoLetterISOLanguageName != "en")
@@ -66,8 +66,9 @@
                     }
                 </select>
             </div>
-            <div class="col-3">
+            <div class="col-4">
                 <button type="submit" class="btn btn-danger">Save</button>
+                <button type="button" class="btn btn-outline btn-preview" title="Preview"><i class="fa-regular fa-eye"></i></button>
             </div>
         </div>
         <p class="p-3 fw-bold">If the template does not exist for the selected language, the english template will be loaded.</p>
@@ -79,15 +80,15 @@
     </form>
     <div class="row p-3">
         <div class="col">
-            Replacement Tags:<br />
+            The following Tags can be used and will be replaced when the email is generated:<br />
             <ol>
                 <li>[SERVER] - The url of the Forum</li>
                 <li>[FORUM] - Title of the Forum</li>
-                <li>[SUBJECT]</li>
-                <li>[DATE]</li>
+                <li>[SUBJECT] - Subject of the email</li>
+                <li>[DATE] -  Current date</li>
                 <li>[USER] - Userame of the recipient</li>
-                <li>[URL]</li>
-                <li>[EXTRATEXT]</li>
+                <li>[URL] - Link back to forum</li>
+                <li>[EXTRATEXT] - Other text passed to the template</li>
             </ol>
         </div>
         <div class="col">
@@ -102,7 +103,13 @@
     </div>
 
 </div>
-
+<modal id="previewModal" title="@Localizer["tipPreviewEmail"].Value" size="Large">
+    <modal-body>
+        <iframe id="preview-content" style="width:100%;height:400px;"></iframe>
+    </modal-body>
+    <modal-footer dismiss-text="@Localizer["lblClose"].Value">
+    </modal-footer>
+</modal>
 @section Scripts
 {
     <script src="~/codemirror/lib/codemirror.js" type="text/javascript"></script>
@@ -154,27 +161,27 @@
                     'Expires': '0'
                 }
             })
-                .then(response => {
-                    // status 404 or 500 will set ok to false
-                    if (response.ok) {
-                        // Success: convert data received & populate textarea
-                        response.text().then(html => {
-                            myCodeMirror.setValue(html.trim());
-                            myCodeMirror.setSize("99%", 400);
-                        });
+            .then(response => {
+                // status 404 or 500 will set ok to false
+                if (response.ok) {
+                    // Success: convert data received & populate textarea
+                    response.text().then(html => {
+                        myCodeMirror.setValue(html.trim());
+                        myCodeMirror.setSize("99%", 400);
+                    });
+                }
+                else {
+                    //try loading the english version??
+                    if (response.status == "404" && lang !== 'en-GB') {
+                        setTimeout(loadTemplateHtml(template, 'en-GB'), 250);
+                    } else {
+                        throw new Error(response.status + " Failed Fetch ");
                     }
-                    else {
-                        //try loading the english version??
-                        if (response.status == "404" && lang !== 'en-GB') {
-                            setTimeout(loadTemplateHtml(template, 'en-GB'), 250);
-                        } else {
-                            throw new Error(response.status + " Failed Fetch ");
-                        }
-                    }
-                })
-                .catch((error) => {
-                    alert(error);
-                });
+                }
+            })
+            .catch((error) => {
+                alert(error);
+            });
         }
 
         window.onload = function () {
@@ -187,5 +194,19 @@
             // use a timer to delay the execution
             setTimeout(loadTemplateHtml(template, lang), 250);
         };
+
+        $('.btn-preview').on("click", function(e){
+            e.preventDefault();
+            var template = document.getElementById("selectTemplate").value;
+            var lang = document.getElementById("selectLang").value;
+            //SnitzVars.baseUrl + '/Templates/' + lang + '/' + template + '.html'
+            $('#preview-content').attr('src',SnitzVars.baseUrl + '/Templates/' + lang + '/' + template + '.html')
+            $('#previewModal').modal('show');
+            // $('#preview-content')
+            //     .load(SnitzVars.baseUrl + '/Templates/' + lang + '/' + template + '.html', function () {
+            //         $('#previewModal').modal('show');
+                    
+            // });
+        });
     </script>
 }

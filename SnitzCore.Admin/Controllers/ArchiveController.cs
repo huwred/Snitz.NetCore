@@ -12,8 +12,6 @@ using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service;
-using System.Data;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using static SnitzCore.BackOffice.ViewModels.AdminModeratorsViewModel;
 
 namespace SnitzCore.BackOffice.Controllers

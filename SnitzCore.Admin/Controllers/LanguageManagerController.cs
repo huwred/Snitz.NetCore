@@ -359,6 +359,10 @@ public class LanguageManagerController : Controller
         {
             return Json("error|App_Data folder is missing");
         }
+        if(!IsCsvFile(Request.Form.Files[0]))
+        {
+            return Json("error|Invalid File type");
+        }
 
         for (int i = 0; i < Request.Form.Files.Count; i++)
         {
@@ -395,7 +399,26 @@ public class LanguageManagerController : Controller
         }
         return new JsonResult("error|Problem uploading data");
     }
+    private bool IsCsvFile(IFormFile file)
+    {
+        // Check file extension
+        var allowedExtensions = new[] { ".csv" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
+        if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
+        {
+            return false;
+        }
+
+        // Check MIME type
+        var allowedMimeTypes = new[] { "text/csv", "application/vnd.ms-excel" };
+        if (!allowedMimeTypes.Contains(file.ContentType))
+        {
+            return false;
+        }
+
+        return true;
+    }
     private string GetPathAndFilename(string filename)
     {
 

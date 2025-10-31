@@ -1,6 +1,4 @@
-﻿using SnitzCore.Data.Models;
-
-namespace SnitzCore.BackOffice.ViewModels
+﻿namespace SnitzCore.BackOffice.ViewModels
 {
     public class SubscriptionsViewModel
     {

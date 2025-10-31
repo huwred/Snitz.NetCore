@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Mvc;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.BackOffice.ViewModels;
@@ -51,11 +46,11 @@ namespace SnitzCore.BackOffice.Controllers
         /// <returns></returns>
         [HttpPost]
         
-        public IActionResult AddGroup(string groupname) { 
+        public async Task<IActionResult> AddGroup(string groupname) { 
             var group = new GroupName();
             group.Name = groupname;
             group.Description = groupname;
-            _groupservice.Add(group);
+            await _groupservice.Add(group);
 
             return PartialView("SaveResult", "Group Added");
         }
@@ -65,7 +60,7 @@ namespace SnitzCore.BackOffice.Controllers
         /// <param name="vm">requires a groupnameId and a categoryId</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult AddCatGroup(IFormCollection vm) { 
+        public async Task<IActionResult> AddCatGroup(IFormCollection vm) { 
             var group = vm["GroupName"];
             var groupnameId = vm["GroupNameId"];
             var categories = vm["Categories"].Split(',');
@@ -75,7 +70,7 @@ namespace SnitzCore.BackOffice.Controllers
                     GroupNameId = Convert.ToInt32(groupnameId),
                     CategoryId = Convert.ToInt32(category.First())
                 };
-                _groupservice.Create(newg);
+                await _groupservice.Create(newg);
                 
             }
 

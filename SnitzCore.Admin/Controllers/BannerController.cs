@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
-using SnitzCore.Service;
-using SnitzCore.Service.Extensions;
 
 namespace SnitzCore.BackOffice.Controllers
 {

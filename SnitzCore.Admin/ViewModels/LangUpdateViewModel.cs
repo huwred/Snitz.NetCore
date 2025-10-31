@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace MVCForum.ViewModels
+﻿namespace MVCForum.ViewModels
 {
     public class LangUpdateViewModel
     {

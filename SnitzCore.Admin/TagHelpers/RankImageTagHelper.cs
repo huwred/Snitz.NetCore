@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SnitzCore.Data.Interfaces;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace SnitzCore.BackOffice.TagHelpers
 {

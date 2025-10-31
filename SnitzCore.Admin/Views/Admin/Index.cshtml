@@ -15,7 +15,6 @@
 }
 
 <form asp-action="SaveSettings" asp-controller="SnitzConfig" method="POST" data-ajax="true" data-ajax-update="#result" disabled readonly >
-
     <fieldset @disableme >
         <div class="bg-light m-3 rounded">
             <div class="mb-3 p-3 ">
@@ -56,11 +55,9 @@
                         <admin-config config-key="STRADMINUSER" config-label="Main Admin account" config-val="@SnitzConfig.GetValue("STRADMINUSER")" disabled="true"></admin-config>
                         <label class="form-text mb-3">This has been replaced by the SuperAdmin Role</label>
                     </div>
-                    <div class="col">
-                    </div>
+                    <div class="col"></div>
                 </div>
-                <div class="row">
-                </div>
+                <div class="row"></div>
                 <legend>Options</legend>
                 <hr />
                 <div class="row p-3">
@@ -74,26 +71,30 @@
                         <admin-config config-key="STRPROHIBITNEWMEMBERS" config-label="Prohibit new Members" config-val="@SnitzConfig.GetIntValue("STRPROHIBITNEWMEMBERS")" help-text="@Localizer["STRPROHIBITNEWMEMBERS"].Value"></admin-config>
                         <admin-config config-key="STRREQUIREREG" config-label="Require registration" config-val="@SnitzConfig.GetIntValue("STRREQUIREREG")" help-text="@Localizer["STRREQUIREREG"].Value"></admin-config>
                         <admin-config config-key="STRRESTRICTREG" config-label="Restrict registration" config-val="@SnitzConfig.GetIntValue("STRRESTRICTREG")" help-text="@Localizer["STRRESTRICTREG"].Value"></admin-config>
+                        <admin-config config-key="INTREQUIRECONSENT" config-label="Require Cookie consent" config-val="@SnitzConfig.GetIntValue("INTREQUIRECONSENT")" help-text="@Localizer["INTREQUIRECONSENT"].Value"></admin-config>
                     </div>
                 </div>
                 <div class="row p-3">
                     <div class="col">
-                        <admin-config config-key="INTTHEMECHANGE" config-label="Allow Theme Change" config-val="@SnitzConfig.GetIntValue("INTTHEMECHANGE")" help-text="@Localizer["INTTHEMECHANGE"].Value"></admin-config>
-                        <label class="form-label" for="theme-change-admin">Default Theme</label>
-                        <select name="STRDEFAULTTHEME" id="theme-change-admin" class="form-select" title="@Localizer["tipChangeTheme"]">
-                            <option value="CarpyTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Carpy Theme</option>
-                            <option value="SnitzTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Snitz Theme</option>
-                            <option value="DarkTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Dark Theme</option>
-                            <option value="OrangeTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Orange Theme (Needs Updating)</option>
-                            <option value="VellumTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Vellum Theme</option>
-                        </select>
+                        <div class="mb-3">
+                            <admin-config config-key="INTTHEMECHANGE" config-label="Allow Theme Change" config-val="@SnitzConfig.GetIntValue("INTTHEMECHANGE")" help-text="@Localizer["INTTHEMECHANGE"].Value"></admin-config>
+                            <label class="form-label" for="theme-change-admin">Default Theme</label>
+                            <select name="STRDEFAULTTHEME" id="theme-change-admin" class="form-select" title="@Localizer["tipChangeTheme"]">
+                                <option value="CarpyTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Carpy Theme</option>
+                                <option value="SnitzTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Snitz Theme</option>
+                                <option value="DarkTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Dark Theme</option>
+                                <option value="OrangeTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Orange Theme (Needs Updating)</option>
+                                <option value="VellumTheme" selected-val="@SnitzConfig.GetValue("STRDEFAULTTHEME")">Vellum Theme</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="col">
                         @{
-                            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+                            CultureInfo cultureInfo = new CultureInfo("en-GB");
                         }
-                        <div class="mb-3">
+                        <div>
                             <admin-config config-key="INTUSETIMEAGO" config-label="Use friendly times" config-val="@SnitzConfig.GetIntValue("INTUSETIMEAGO")" help-text="@Localizer["INTUSETIMEAGO"].Value"></admin-config>
+                            <label class="form-label" for="theme-change-admin">Default Date Format</label>
                         </div>
                         <div class="input-group mb-3">
                             <select name="STRDATETYPE" id="strDateType" class="form-select">
@@ -140,16 +141,13 @@
                                 </span>
                             </div>
                         </div>
-                        <label class="form-label" for="date-format-admin">@serverTimeZone.DisplayName</label>
-                        <label class="form-label" for="date-format-admin">UTC Time: @DateTime.UtcNow.ToString(cultureInfo)</label>
-                        <label class="form-label" for="date-format-admin">Server Time: @DateTime.Now.ToString(cultureInfo)</label>
-                        <label class="form-label" for="date-format-admin">Local Time: @DateTime.UtcNow.ToForumDisplay(SnitzConfig)</label>
-
+                        <div class="flex">
+                            <label style="display: flex; justify-content: space-between; align-items: center; gap: 10px;"><span style="flex: 0 0 25%">Timezone: </span><span style="flex:1;">@serverTimeZone.StandardName</span></label>
+                            <label style="display: flex; justify-content: space-between; align-items: center; gap: 10px;" class="fw-bold"><span style="flex: 0 0 25%">Display Time: </span><span style="flex:1;">@DateTime.UtcNow.ToForumDisplay(SnitzConfig,SnitzCookie)</span></label>
+                            <label style="display: flex; justify-content: space-between; align-items: center; gap: 10px;"><span style="flex: 0 0 25%">UTC Time: </span><span style="flex:1;">@DateTime.UtcNow.ToString(cultureInfo)</span></label>
+                            <label style="display: flex; justify-content: space-between; align-items: center; gap: 10px;"><span style="flex: 0 0 25%">Server Time: </span><span style="flex:1;">@DateTime.Now.ToString(cultureInfo)</span></label>
+                        </div>
                     </div>
-                </div>
-                <div class="mb-3 p-3">
-                    <span class="form-text d-none">If you use tracking cookies, this option may be required. It will display a cookie consent form at the bottom of the page.</span>
-                    <admin-config config-key="INTREQUIRECONSENT" config-label="Require Cookie consent" config-val="@SnitzConfig.GetIntValue("INTREQUIRECONSENT")" help-text="@Localizer["INTREQUIRECONSENT"].Value"></admin-config>
                 </div>
             </div>
             <div class="mb-3 p-3">
@@ -162,11 +160,8 @@
 
 @section Scripts
 {
-    
     <script>
         $("#admin-nav li a.nav-link.active").removeClass("active");
         $("#main-config").addClass("active");
-
-
     </script>
 }
