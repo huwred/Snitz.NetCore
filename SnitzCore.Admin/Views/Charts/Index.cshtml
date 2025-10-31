@@ -1,0 +1,178 @@
+﻿@inject IForum ForumService
+
+@{
+    Layout = "_MasterLayout"; 
+    var forums = ForumService.ForumList();
+}
+@section Styles{
+    <style>
+        .card-header,.card-footer{
+            background-color:transparent;
+        }
+
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @@keyframes spin {
+            0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+
+        }
+    </style>
+}
+<div class="m-3 text-center">
+    <div class="btn-group" role="toolbar" aria-label="Toolbar">
+        <link-confirm title="@Localizer["mnuAdminReset"].Value" jq-selector="confirm-restart" href="~/Admin/Restart" class="btn btn-secondary"></link-confirm>
+
+        <button type="button" class="btn btn-secondary" id="member-topics" >Delete All Topics by Member</button>
+        <button type="button" class="btn btn-secondary" id="del-forumposts">Delete ALL posts in a Forum</button>
+
+        <button type="button" class="btn btn-secondary" id="move-forumposts">Move ALL posts in a Forum</button>
+        <link-confirm title="Update Counts" jq-selector="confirm-counts" href="~/Admin/UpdateCounts" class="btn btn-secondary"></link-confirm>
+
+    </div>
+</div>
+<div class="row g-5">
+    <div class="col col-md-6 p-1">
+        <div class="card">
+            <h5 class="card-header">Posts By Year</h5>
+            <div class="card-body">
+                @Html.Partial("_Chart", new ViewDataDictionary(ViewData) { { "type", "years" } })
+            </div>
+        </div>
+    </div>
+    <div class="col col-md-6 p-1">
+        <div class="card">
+            <h5 class="card-header">
+                Posts By Month
+            </h5>
+            <div class="card-body">
+                @Html.Partial("_Chart", new ViewDataDictionary(ViewData) { { "type", "months" } })
+            </div>
+            <div class="card-footer">
+                <select id="year-select" class="form-select">
+                    @for (int i = Convert.ToInt32(Model.MinYear); i < Convert.ToInt32(Model.MaxYear) + 1; i++)
+                    {
+                        <option value="@i" selected-val="@(Convert.ToInt32(Model.MaxYear))">@i</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row g-5">
+    <div class="col col-md-4 p-1">
+        <div class="card">
+            <h5 class="card-header">
+                All Posts by User
+            </h5>
+            <div class="card-body">
+                @Html.Partial("_Chart", new ViewDataDictionary(ViewData) { { "type", "posts" } })
+            </div>
+        </div>
+    </div>
+    <div class="col col-md-4 p-1">
+        <div class="card">
+            <h5 class="card-header">
+                Topics started by User
+            </h5>
+            <div class="card-body">
+                @Html.Partial("_Chart", new ViewDataDictionary(ViewData) { { "type", "topic" } })
+            </div>
+        </div>
+    </div>
+    <div class="col col-md-4 p-1">
+        <div class="card">
+            <h5 class="card-header">
+                Replies by User
+            </h5>
+            <div class="card-body">
+                @Html.Partial("_Chart", new ViewDataDictionary(ViewData) { { "type", "reply" } })
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal id="toolsModal" title="Tools" size="Large">
+    <modal-body>
+        <form asp-controller="Admin" asp-action="Tools" id="tools-form">
+            <input type="text" id="tools-content" data-autocomplete-url="@Url.Action("AutoCompleteUsername", "Admin")" name="Username" class="form-control" placeholder="Members's username" aria-label="Members's username">
+
+            <select name="Forum" class="form-select mb-3" id="forum-select" style="display:none;">
+                <option value="">-- Select Forum --</option>
+                @foreach (var forum in forums!)
+                {
+                    <option value="@forum.Key">@forum.Value</option>
+                }
+            </select>
+            <select name="ForumDest" class="form-select mb-3" id="forum-select-dest" style="display:none;">
+                <option value="">-- Select Destination --</option>
+                @foreach (var forum in forums!)
+                {
+                    <option value="@forum.Key">@forum.Value</option>
+                }
+            </select>
+        </form>
+
+    </modal-body>
+    <modal-footer dismiss-text="@Localizer["lblClose"].Value">
+        <button id="tool-submit" form="tools-form" type="submit" class="btn btn-success">@Localizer["btnOk"]</button>
+    </modal-footer>
+</modal>
+@section Scripts{
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="~/js/admin/snitz.charts.min.js"></script>
+    <renderstoredcontent asp-key="snitz-chart"></renderstoredcontent>
+
+    <script type="text/javascript">
+        $("#year-select").on("change",
+            function () {
+                var id = this.value;
+                SnitzCharts.GetPostsByMonth(id);
+            });
+
+        $('#member-topics').on('click', function (e) {
+            $('.modal-title').html('');
+            $('#forum-select').hide();
+            $('#forum-select-dest').hide();
+            e.preventDefault();
+            var href = $(this).attr('href');
+            $('#tools-content').html('<input type="text" class="form-control" name="Username" placeholder="User"/>');
+            $('#tools-content').show();
+            $('.modal-title').html('Delete All Topics by Member');
+            $('#toolsModal').modal('show');
+        });
+        $('#del-forumposts').on('click', function (e) {
+            $('.modal-title').html('');
+            $('#tools-content').hide();
+            e.preventDefault();
+            var href = $(this).attr('href');
+            $('#forum-select').show();
+            $('#forum-select-dest').hide();
+            $('.modal-title').html('Delete ALL posts in a Forum');
+            $('#toolsModal').modal('show');
+        });
+        $('#move-forumposts').on('click', function (e) {
+            $('.modal-title').html('');
+            e.preventDefault();
+            var href = $(this).attr('href');
+            $('#tools-content').hide();
+            $('#forum-select').show();
+            $('#forum-select-dest').show();
+            $('.modal-title').html('Move ALL posts in a Forum');
+            $('#toolsModal').modal('show');
+        });
+    </script>
+}

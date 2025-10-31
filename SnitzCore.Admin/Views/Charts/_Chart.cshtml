@@ -1,0 +1,37 @@
+﻿@{
+    Layout = null;
+    var charttype = ViewData["type"];
+}
+<div id="spinner_@charttype" class="spinner"></div>
+<canvas id="chart_@charttype" width="400" height="200" style="display:none;"></canvas>
+
+<storecontent asp-key="snitz-chart">
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var chartType = "@charttype";
+            var currYear = new Date().getFullYear();
+
+            switch (chartType) {
+                case "topic":
+                    SnitzCharts.GetTopicsByUser();
+                    break;
+                case "reply":
+                    SnitzCharts.GetReplyData();
+                    break;
+                case "months":
+                    SnitzCharts.GetPostsByMonth(currYear);
+                    break;
+                case "years":
+                    SnitzCharts.GetPostsByYear();
+                    break;
+                default:
+                    SnitzCharts.GetPostsByUser();
+            }
+
+            $("#year-select").on("change",function () {
+                SnitzCharts.GetPostsByMonth(this.value);
+            });
+        });
+
+    </script>
+</storecontent>
