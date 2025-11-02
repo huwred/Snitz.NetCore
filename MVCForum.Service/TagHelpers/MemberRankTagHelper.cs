@@ -24,57 +24,53 @@ namespace SnitzCore.Service.TagHelpers
         public Dictionary<int, MemberRanking>? Ranking { get; set; }
         public ClaimsPrincipal? User { get; set; }
         public string? Size {get;set;}
+
         private readonly UserManager<ForumUser> _userManager;
         public MemberRankTagHelper(UserManager<ForumUser> usrMgr)
         {
             _userManager = usrMgr;
-
         }
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = "div";
             output.TagMode = TagMode.StartTagAndEndTag; 
-            
+            var imgrpt = 1;
+
             var user = _userManager.FindByNameAsync(Member.Name).Result;
-            if((user != null && _userManager.IsInRoleAsync(user,"Administrator").Result) || Member.Level == 3)
+            var thisrank = Ranking?.OrderByDescending(i=>i.Value.Posts).FirstOrDefault(r => r.Key > 2 && Member.Posts >= r.Value.Posts);
+            if (thisrank != null && !thisrank.Equals(default(KeyValuePair<int,MemberRanking>))) {
+                imgrpt = thisrank.Value.Value.ImgRepeat;
+            }
+
+            if ((user != null && _userManager.IsInRoleAsync(user,"Administrator").Result) || Member.Level == 3)
             {
-                var thisrank = Ranking?.OrderByDescending(i=>i.Value.Posts).FirstOrDefault(r => r.Key > 2 && Member.Posts >= r.Value.Posts);
                 output.Attributes.Add("style", $"color:{Ranking[0].Image} ;");
                 output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
-                for (int i = 1; i < thisrank.Value.Value.ImgRepeat; i++)
+                for (int i = 1; i < imgrpt; i++)
                 {
                     output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
                 }
-                //for (int i = 0; i < Ranking[0].ImgRepeat; i++)
-                //{
-                //    output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
-                //}
             }
             else if((user != null && _userManager.IsInRoleAsync(user,"Moderator").Result) || Member.Level == 2)
             {
-                var thisrank = Ranking?.OrderByDescending(i=>i.Value.Posts).FirstOrDefault(r => r.Key > 2 && Member.Posts >= r.Value.Posts);
                 output.Attributes.Add("style", $"color:{Ranking[1].Image} ;");
                 output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
-                for (int i = 1; i < thisrank.Value.Value.ImgRepeat; i++)
+                for (int i = 1; i < imgrpt; i++)
                 {
                     output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
                 }
-                //for (int i = 0; i < Ranking[1].ImgRepeat; i++)
-                //{
-                //    output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
-                //}
             }
             else
             {
-                var thisrank = Ranking?.OrderByDescending(i=>i.Value.Posts).FirstOrDefault(r => r.Key > 2 && Member.Posts >= r.Value.Posts);
                 if(thisrank.Equals(default(KeyValuePair<int,MemberRanking>)))
                 {
                     return;
                 }
                 try
                 {
-                    output.Attributes.Add("style", $"color:{thisrank.Value.Value.Image} ;");
-                    for (int i = 0; i < thisrank.Value.Value.ImgRepeat; i++)
+                    output.Attributes.Add("style", $"color:{thisrank?.Value.Image} ;");
+                    for (int i = 0; i < imgrpt; i++)
                     {
                         output.Content.AppendHtml($@"<i class=""fa fa-star {Size}""></i>");
                     }
