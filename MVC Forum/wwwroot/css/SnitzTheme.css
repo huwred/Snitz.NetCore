@@ -166,7 +166,10 @@ a:active,a:hover {
 .text-muted {
     color: #fefefe !important;
 }
-
+#changeEmailForm > .text-success {
+    --bs-text-opacity: 1;
+    color: white,var(--bs-text-opacity)) !important;
+}
 /* ########################################### */
 /*           Forums.html                       */
 /* ########################################### */
@@ -518,7 +521,7 @@ blockquote.newquote {
     position: relative;
     border: 2px dotted rgba(var(--bs-success-rgb));
 }
- .answered-overlay .status .fa-lock {
+.answered-overlay .status .fa-lock, .fa-folder.answered {
     color: rgba(var(--bs-success-rgb)) !important;
 }
 

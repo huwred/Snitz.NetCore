@@ -1,4 +1,19 @@
-﻿.star-rating {
+﻿.content2 {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+    position: relative;
+    padding: 0.5em;
+}
+
+.content2 .author-sig {
+    width: 100%;
+    border-top: 1px solid #cccccc76;
+    margin-top: auto;
+    left: 3px;
+}
+
+.star-rating {
     direction: rtl;
     display: inline-block;
     cursor: pointer;

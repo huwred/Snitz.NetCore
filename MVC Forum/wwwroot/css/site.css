@@ -288,13 +288,7 @@ footer{
         position: relative;
         padding:0.5em;
     }
-    .content .author-sig {
-        width:100%;
-        border-top:1px solid #cccccc76;
-        position: absolute;
-        bottom: 0;
-        left: 3px;
-    }
+
     .toolbar {
         flex: 5%;
     }
