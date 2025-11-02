@@ -4,53 +4,50 @@
     <Category id="1" Description="General" Roles="" Order="0"></Category>
     <Category id="4" Description="Posting" Roles="" Order="1" />
     <Category id="5" Description="Profile" Roles="" Order="3" />
-    <Category id="6" Description="Admin" Roles="Administrator,FaqModerator" Order="2" />
   </Categories>
   <Questions>
-    <Question title="Do I have to register?" id="1" order="1" category="1">
-      <Answer><![CDATA[Registration is not required to view current topics on the Forum; however, if you wish to post a new topic or reply to an existing topic registration is required.<br>
-
-Registration is free and only takes a few minutes. The only required fields are your Username, which may be your real name or a nickname, and a valid e-mail address.<br>
-<br>
-The information you provide during registration is not outsourced or used for any advertising by Snitz Forums 2000.<br>
-
-If you believe someone is sending you advertisements as a result of the information you provided through your registration, please notify us immediately.<br>
-]]></Answer>
+    <Question title="Editor Toolbar" id="1" order="1" category="1">
+      <Answer><![CDATA[<p>Toolbar buttons ...</p>]]></Answer>
     </Question>
     <Question title="How can I use smilies and images?" order="2" category="4" id="2">
       <Answer><![CDATA[<p>You've probably seen others use smilies before in e-mail messages or other bulletin board posts. Smilies are keyboard characters used to convey an emotion, such as a smile [:)] or a frown [:(]. This bulletin board automatically converts certain text to a graphical representation when it is inserted between brackets []. Here are the smilies that are currently supported by Snitz Forums 2000: [table style="margin:auto;width:360px;"][tbody] [tr ][td style="border:0px;"] [table class="pull-right"][tbody] [tr ][td ][:)][/td][td ]smile[/td][td ][noparse][:)][/noparse][/td][/tr] [tr ][td ][:D][/td][td ]big smile[/td][td ][noparse][:D][/noparse][/td][/tr] [tr ][td ][8D][/td][td ]cool[/td][td ][noparse][8D][/noparse][/td][/tr] [tr ][td ][:I][/td][td ]blush[/td][td ][noparse][:I][/noparse][/td][/tr] [tr ][td ][:p][/td][td ]tongue[/td][td ][noparse][:p][/noparse][/td][/tr] [tr ][td ][}:)][/td][td ]evil[/td][td ][noparse][}:)][/noparse][/td][/tr] [tr ][td ][;)][/td][td ]wink[/td][td ][noparse][;)][/noparse][/td][/tr] [tr ][td ][:o)][/td][td ]clown[/td][td ][noparse][:o)][/noparse][/td][/tr] [tr ][td ][B)][/td][td ]black eye[/td][td ][noparse][B)][/noparse][/td][/tr] [tr ][td ][8][/td][td ]eightball[/td][td ][noparse][8][/noparse][/td][/tr][/tbody][/table] [/td] [td style="border:0px;"] [table][tbody] [tr ][td ][:(][/td][td ]frown[/td][td ][noparse][:(][/noparse][/td][/tr] [tr ][td ][8)][/td][td ]shy[/td][td ][noparse][8)][/noparse][/td][/tr] [tr ][td ][:0][/td][td ]shocked[/td][td ][noparse][:0][/noparse][/td][/tr] [tr ][td ][:(!][/td][td ]angry[/td][td ][noparse][:(!][/noparse][/td][/tr] [tr ][td ][xx(][/td][td ]dead[/td][td ][noparse][xx(][/noparse][/td][/tr] [tr ][td ][|)][/td][td ]sleepy[/td][td ][noparse][|)][/noparse][/td][/tr] [tr ][td ][:X][/td][td ]kisses[/td][td ][noparse][:X][/noparse][/td][/tr][tr ][td ][V][/td][td ]disapprove[/td][td ][noparse][V][/noparse][/td][/tr] [tr ][td ][&lt;3][/td][td ]love it![/td][td ][noparse][&lt;3][/noparse][/td][/tr][tr ][td ][)8][/td][td ]thumbs up[/td][td ][noparse][)8][/noparse][/td][/tr] [tr ][td ][?][/td][td ]question[/td][td ][noparse][?][/noparse][/td][/tr] [/tbody][/table] [/td][/tr] [/tbody][/table]</p>]]></Answer>
     </Question>
-    <Question title="Can I attach files?" order="2" category="4" id="4">
-      <Answer><![CDATA[<p>Yes, you can attach certain types of files like images and compressed zip archives.</p>
-<p>When making a post you can use the [i class="fa-regular fa-file"][/i] button in the editor toolbar</p>]]></Answer>
-    </Question>
     <Question title="Can I be notified by e-mail when there are new posts?" order="2" category="1" id="5">
       <Answer><![CDATA[<p>Yes, the Subscription feature allows you to subscribe to the entire Board, individual Categories, Forums and/or Topics, depending on what the administrator of this site allows. You will receive an e-mail notifying you of a post that has been made to the Category/Forum/Topic that you have subscribed to.</p>
 <p>There are four levels of subscription:</p>
-<p><strong>Board Wide Subscription</strong> If you can subscribe to an entire Board, you'll get a notification for any posts made within all the forums inside that board. <br /><strong>Category Wide Subscription</strong> You can subscribe to an entire Category, which will notify you if there was any posts made within any topic, within any forum, within that Category. <br /><strong>Forum Wide Subscription</strong> If you don't want to subscribe to an entire Category, you can subscribe to a single forum. This will notify you of any posts made within any topic, within that forum. <br /><strong>Topic Wide Subscription</strong> More conveniently, you can subscribe to just an individual topic. You will be notified of any post made within that topic. Each level of subscription is optional.</p>
-<p>The Administrator can turn each level of subscription for each Category/Forum/Topic On/Off. To Subscribe or Unsubscribe from any level of subscription, you can use the "My Subscriptions" link, located near the top of each page to manage your subscriptions. Or you can click on the subscribe/unsubscribe icons ([i class="fa-regular fa-bell"][/i]/[i class="fa-regular fa-bell-slash"][/i]) for that Category/Forum/Topic you want to subscribe/unsubscribe to/from.</p>]]></Answer>
+<ul>
+<li><strong>Board Wide Subscription</strong> If you can subscribe to an entire Board, you'll get a notification for any posts made within all the forums inside that board.</li>
+<li><strong>Category Wide Subscription</strong> You can subscribe to an entire Category, which will notify you if there was any posts made within any topic, within any forum, within that Category.</li>
+<li><strong>Forum Wide Subscription</strong> If you don't want to subscribe to an entire Category, you can subscribe to a single forum. This will notify you of any posts made within any topic, within that forum.</li>
+<li><strong>Topic Wide Subscription</strong> More conveniently, you can subscribe to just an individual topic. You will be notified of any post made within that topic. Each level of subscription is optional.</li>
+</ul>
+<p>The Administrator can turn each level of subscription for each Category/Forum/Topic On/Off.</p>
+<p>To Subscribe or Unsubscribe from any level of subscription, you can click on the subscribe/unsubscribe icons ([i class="fa-regular fa-bell"][/i]/[i class="fa-regular fa-bell-slash"][/i]) for the Category/Forum/Topic you want to subscribe/unsubscribe to/from.</p>]]></Answer>
     </Question>
     <Question title="What does it mean if a forum has Moderation enabled? " order="2" category="1" id="6">
       <Answer><![CDATA[<p>This feature allows the Administrator or the Moderator to "Approve", "Hold" or "Delete" a users post before it is shown to the public.</p>
-<p><strong>Hold:</strong> When a user posts a message to a moderated forum, the message is automatically put on hold until a moderator or an administrator approves the post. No one will be able to view the post while it is put on hold. <strong>NOTE:</strong> Authors of the post will be able to edit their post during this mode.</p>
-<p><strong>Approve:</strong> Only the administrators or the moderators will be able to approve a post made to a moderated forum. When the post is approved, it will be made visible to the public.</p>
-<p><strong>Delete:</strong> If the Administrator or Moderator chooses this option, the post will be deleted and an e-mail will be sent to the poster of the message informing them that their post was not approved. The Administrator/Moderator will be able to give their reason for not approving the post in the e-mail.</p>]]></Answer>
+<ul>
+<li><strong>Hold:</strong> When a user posts a message to a moderated forum, the message is automatically put on hold until a moderator or an administrator approves the post. No one will be able to view the post while it is put on hold. <br /><strong>NOTE:</strong> Authors of the post will be able to edit their post during this mode.</li>
+<li><strong>Approve:</strong> Only the administrators or the moderators will be able to approve a post made to a moderated forum. When the post is approved, it will be made visible to the public.</li>
+<li><strong>Delete:</strong> If the Administrator or Moderator chooses this option, the post will be deleted and an e-mail will be sent to the poster of the message informing them that their post was not approved. The Administrator/Moderator will be able to give their reason for not approving the post in the e-mail.</li>
+</ul>]]></Answer>
     </Question>
     <Question title="Are cookies used? " order="2" category="1" id="7">
-      <Answer><![CDATA[These Forums use cookies to store the following information:
-<ul><li>the last time you logged in</li><li>your Username and your Encrypted Password</li></ul> 
-
-These cookies are stored on your hard drive. Cookies are not used to track your movement or perform any function other than to enhance your use of these forums. If you have not enabled cookies in your browser, many of these time-saving features will not work properly. Also, you need to have cookies enabled if you want to enter a private forum or post a topic/reply.
-
-You may delete all cookies set by these forums in selecting the "[Sign Out]" button at the top of any page.        
-        ]]></Answer>
+      <Answer><![CDATA[<p>These Forums use cookies to store the following information:</p>
+<ul>
+<li>the last time you logged in</li>
+<li>your Username and your Encrypted Password</li>
+</ul>
+<p>These cookies are stored on your hard drive. Cookies are not used to track your movement or perform any function other than to enhance your use of these forums. If you have not enabled cookies in your browser, many of these time-saving features will not work properly. Also, you need to have cookies enabled if you want to enter a private forum or post a topic/reply.</p>
+<p>You may delete all cookies set by these forums in selecting the "[Sign Out]" button at the top of any page.</p>
+<p>View our <a title="View our expanded cookie policy" href="~/About#cookie" target="_blank" rel="noopener">Cookie Policy</a>.</p>]]></Answer>
     </Question>
     <Question id="9" title="Can I change the format of my text?" order="0" category="4">
-      <Answer><![CDATA[<p>The Forum now uses <a title="TinyMCE website: Editor documentation" href="https://www.tiny.cloud/docs/tinymce/5/" target="_blank" rel="noopener">TinyMCE </a>for a complete wysiwyg experience when editing. The old style 'code tags' are still supported but are no longer necessary.</p>]]></Answer>
+      <Answer><![CDATA[<p>The Forum now uses <a title="TinyMCE website: Editor documentation" href="https://www.tiny.cloud/docs/tinymce/5/" target="_blank" rel="noopener">TinyMCE </a>for a complete WYSIWYG experience when editing. The old style 'code tags' are still supported but are no longer necessary.</p>]]></Answer>
     </Question>
     <Question id="10" title="Can I edit my own posts? " order="0" category="4">
-      <Answer><![CDATA[<p>You may edit your own posts at any time, you may not however delete your posts if another member has responded since your post.</p>
-<p>Just go to the topic where the post to be edited or deleted is located and you will see an edit or delete icon ([i class="fa fa-pencil"][/i] [i class="fa fa-trash"][/i]) Click on this icon to edit or delete the post.</p>
+      <Answer><![CDATA[<p>You may edit your own posts at any time, <strong>you may not</strong> however delete your posts if another member has responded since your post.</p>
+<p>Just go to the topic where the post to be edited or deleted is located and you will see a toolbox [i class="fa fa-toolbox"][/i], clicking on this will open the admin popup, here you will find an edit or delete icon ([i class="fa fa-pen-to-square"][/i] [i class="fa fa-trash"][/i]) Click on an icon to edit or delete the post.</p>
 <p>No one else can edit your post, except for the forum Moderator or the forum Administrator. A note is generated at the bottom of each edited post displaying when and by whom the post was edited.</p>]]></Answer>
     </Question>
     <Question id="11" title="Can I attach my own signature to my posts? " order="0" category="5">
@@ -61,15 +58,16 @@ You may delete all cookies set by these forums in selecting the "[Sign Out]" but
       <Answer><![CDATA[<p>Changing a lost password is simple. Use the My Stuff|Change Password link to have a code e-mailed instantly to your e-mail address, follow the instructions in the email to reset your password.</p>
 <p><strong>Because of the Encryption that we use to store your password, we are unable to tell you what your current password is.</strong></p>]]></Answer>
     </Question>
-    <Question id="13" title="Buttons" order="0" category="1">
+    <Question id="13" title="What do all the icons mean" order="0" category="1">
       <Answer><![CDATA[<h5>Post related icons</h5>
 <ul class="list-unstyled">
 <li>[I class="fa fa-1_5x fa-comment"][/I] Post a Topic</li>
 <li>[I class="fa-regular fa-1_5x fa-comment"][/I] Post a Reply</li>
-<li>[I class="fa-regular fa-1_5x fa-commenting"][/I] Post quoted reply</li>
+<li>[I class="fa-regular fa-1_5x fa-commenting"][/I] Quote post when replying</li>
 <li>[I class="fa-regular fa-1_5x fa-bookmark"][/I] Bookmark post [I class="fa fa-1_5x fa-bookmark"][/I] Remove bookmark (if enabled)</li>
 <li>[I class="fa-regular fa-1_5x fa-bell"][/I] Subsribe (receive an email when someone posts) [I class="fa-regular fa-1_5x fa-bell-slash"][/I] Un-subscribe (if enabled)</li>
 <li>[I class="fa-regular fa-1_5x fa-heart"][/I] Thank a Member for their post [I class="fa fa-1_5x fa-heart"][/I] Un-thank</li>
+<li>[i class="fa fa-toolbox"][/i] Post admin functions</li>
 <li>[I class="fa-regular fa-1_5x fa-pen-to-square"][/I] Edit post (posts can not be edited if there are newer replies)</li>
 <li>[I class="fa fa-1_5x fa-trash-can"][/I] Delete post (posts can not be deleted if there are newer replies)</li>
 </ul>
@@ -91,9 +89,6 @@ You may delete all cookies set by these forums in selecting the "[Sign Out]" but
     </Question>
     <Question id="15" title="Can I change my username?" order="0" category="5">
       <Answer><![CDATA[Yes, you can change your username using the &#39;My Stuff|Change username&#39; link from the menu.]]></Answer>
-    </Question>
-    <Question id="17" title="Test question?" order="0" category="6">
-      <Answer><![CDATA[<p>Yes it is!</p>]]></Answer>
     </Question>
   </Questions>
 </FAQ>
