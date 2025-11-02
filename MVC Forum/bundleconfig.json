@@ -312,5 +312,23 @@
     "inputFiles": [
       "wwwroot/css/Themes/OrangeTheme/tag_cloud.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/initPostForm.min.js",
+    "inputFiles": [
+      "wwwroot/js/initPostForm.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/admin/Chart.min.js",
+    "inputFiles": [
+      "wwwroot/js/admin/Chart.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/admin/snitz.charts.min.js",
+    "inputFiles": [
+      "wwwroot/js/admin/snitz.charts.js"
+    ]
   }
 ]

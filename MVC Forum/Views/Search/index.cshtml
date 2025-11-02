@@ -10,6 +10,16 @@
     ViewBag.PageNum = pagenum;
 
 }
+@section MetaData
+{
+    <title>Search - @Config.Value.strForumTitle </title>
+    <meta name="title" content="Search - @Config.Value.strForumTitle" />
+
+    <meta name="copyright" content="@Html.Raw(String.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year)) - @SnitzConfig.ForumTitle">
+
+    <meta name="robots" content="index,nofollow" />
+
+}
 @section Styles{
     <link href="~/css/star-rating.min.css" rel="stylesheet" />
     <link href="~/css/krajee-svg/theme.min.css" media="all" rel="stylesheet" type="text/css" />

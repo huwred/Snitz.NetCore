@@ -22,11 +22,13 @@ namespace MVCForum.Controllers
     {
         private Member? _member;
         private readonly IPrivateMessage _pmService;
+        private readonly ISnitzCookie _snitzCookie;
 
         public PrivateMessageController(IMember memberService, ISnitzConfig config, IHtmlLocalizerFactory localizerFactory,SnitzDbContext dbContext,IHttpContextAccessor httpContextAccessor,
-            IPrivateMessage pmService) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
+            IPrivateMessage pmService,ISnitzCookie snitzCookie) : base(memberService, config, localizerFactory, dbContext, httpContextAccessor)
         {
             _pmService = pmService;
+            _snitzCookie = snitzCookie;
         }
 
         public IActionResult Index()
@@ -233,7 +235,7 @@ namespace MVCForum.Controllers
             var message = _pmService.GetById(id);
             var msgSent = message.SentDate.FromForumDateStr();
             _member = _memberService.GetMember(User);
-            var header = $"\r\n\r\n\r\n----- Original Message -----\r\nSent: {msgSent.ToForumDisplay(_config)} UTC\r\n";            
+            var header = $"\r\n\r\n\r\n----- Original Message -----\r\nSent: {msgSent.ToForumDisplay(_config, _snitzCookie)} UTC\r\n";            
             var model = new PrivateMessagePostModel()
             {
                 SaveToSent = _member?.Pmsavesent == 1, 
@@ -250,7 +252,7 @@ namespace MVCForum.Controllers
             var message = _pmService.GetById(id);
             var msgSent = message.SentDate.FromForumDateStr();
             _member = _memberService.GetMember(User)!;
-            var header = $"\r\n\r\n\r\n----- Original Message -----\r\nFrom: {message.From.Name}\r\nSent: {msgSent.ToForumDisplay(_config)} UTC\r\n";            
+            var header = $"\r\n\r\n\r\n----- Original Message -----\r\nFrom: {message.From.Name}\r\nSent: {msgSent.ToForumDisplay(_config, _snitzCookie)} UTC\r\n";            
             var model = new PrivateMessagePostModel()
             {
                 SaveToSent = _member.Pmsavesent == 1, 
@@ -261,14 +263,14 @@ namespace MVCForum.Controllers
             return PartialView("Create",model);
         }
 
-        public new JsonResult AutoCompleteUsername(string term)
+        public JsonResult AutoCompleteUsername(string term)
         {
             _member = _memberService.GetMember(User);
             if(_member == null)
             {
                 return Json("");
             }
-            IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(r => r!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
+            IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(r => r!.Name.Contains(term, StringComparison.CurrentCultureIgnoreCase)).Select(m=>m!.Name);
             var blocked = _pmService?.GetBlocklist(_member!.Id)?.Select(l => l.BlockedName);
             if(blocked != null && blocked.Any()) {
                 result = result.Where(x => !blocked.Contains(x) && x != _member.Name);

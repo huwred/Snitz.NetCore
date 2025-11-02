@@ -12,15 +12,15 @@
     var lastvisit = DateTime.UtcNow.AddDays(-7);
     if (User.Identity!.IsAuthenticated)
     {
-        lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.LastLogin.FromForumDateStr().ToLocalTime();
+        lastvisit = MemberService.GetByUsername(User.Identity.Name!)!.LastLogin.FromForumDateStr().LocalTime(SnitzCookie);
     }
     var refresh = ViewBag.RefreshSeconds;
     ViewData["Archives"] = false;
 }
 @section MetaData
 {
-    <title>Latest Posts</title>
-    <meta name="title" content="Latest Posts" />
+    <title>Latest Posts - @Config.Value.strForumTitle</title>
+    <meta name="title" content="Latest Posts - @Config.Value.strForumTitle" />
     <meta name="description" content="Listing of the latest posts on the Forum" />
     <meta name="robots" content="index,follow" />
     @if (refresh > 0)
@@ -44,11 +44,11 @@
         <div class="col">
             <div class="collapse" id="showFilters">
                 <form id="defaultdays-form" asp-action="Active" class="form-inline" method="get">
-                    <div class="row m-2">
+@*                     <div class="row m-2">
                         <div class="col">
                             <partial snitz-if="@(SnitzConfig.GetIntValue("STRGROUPCATEGORIES") == 1)" name="GroupFilter" />
                         </div>
-                    </div>
+                    </div> *@
                     <div class="row m-2">
                         <div class="col">
                             <div class="input-group mb-3">
@@ -140,7 +140,7 @@
         $("#defaultdays-form").submit();
     });
     $(document).ready(function() {
-        $('select option:contains("Last Visit")').text("Last Visit " + '(@lastvisit.ToForumDisplay(SnitzConfig)) ');
+        $('select option:contains("Last Visit")').text("Last Visit " + '(@lastvisit.ToForumDisplay(SnitzConfig,SnitzCookie)) ');
     });
 
     if (refresh.length && refresh > 0) {

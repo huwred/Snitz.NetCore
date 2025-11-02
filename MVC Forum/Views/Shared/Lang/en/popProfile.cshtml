@@ -1,11 +1,13 @@
 ﻿@using SnitzCore.Data.Extensions
 @using SnitzCore.Service
+@using SnitzCore.Service.Extensions
+@inject UserManager<ForumUser> userManager
 @model Member
 @{
     var ranking = MemberService.GetRankings();
     var mTitle = Model.Title;
     var rankInfoHelper = new RankInfoHelper(Model, ref mTitle, Model.Posts, ranking);
-
+    var profileUser = userManager.FindByNameAsync(Model.Name).Result;
 }
 
     <div class="card-row first-row">
@@ -35,12 +37,13 @@
                 <a href="@Model.Homepage" rel="noopener " target="_blank">Member's Homepage</a>
             </span>
             <span class="location" snitz-if="@(!string.IsNullOrWhiteSpace(Model.Country))">
-                    &nbsp;<i class="fa fa-location-dot" aria-hidden="true"></i>
-                    <span snitz-if="@(!string.IsNullOrWhiteSpace(Model.City))">@Model.City,</span><span> @Model.Country</span>
-                  </span>
+                &nbsp;<i class="fa fa-location-dot" aria-hidden="true"></i>
+                <span snitz-if="@(!string.IsNullOrWhiteSpace(Model.City))">@Model.City,</span><span> @Model.Country</span>
+            </span>
             <span class="local-time" title="Local Time">
                 &nbsp;<i class="fa-regular fa-clock" aria-hidden="true"></i>
-            <snitz-datetime datetime="@DateTime.UtcNow.ToLocalTime()" format="HH:mm" friendly-time="false"></snitz-datetime>
+            <time datetime="@DateTime.UtcNow" aria-label="11/2/2025 12:07:11 PM" data-toggle="tooltip">@DateTime.UtcNow.LocalTime(userManager, profileUser).ToString("HH:mm")</time>
+                
             </span>
         </div>
     </div>

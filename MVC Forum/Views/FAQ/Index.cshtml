@@ -60,9 +60,9 @@
                             @Html.DisplayFor(modelItem => item.Description)
                         </button>
                         <span snitz-if="@User.IsInRole("FaqModerator")" class="btn-group" role="group" aria-label="Admin buttons">
-                            <button type="button" class="btn btn-secondary-outline" title="Edit Category"><i data-id="@item.Id"class='fa fa-pen-to-square'></i></button>
-                            <button type="button" class="btn btn-secondary-outline" title="Delete Category"><i data-id="@item.Id"class='fa fa-trash'></i></button>
-                            <button type="button" class="btn btn-secondary-outline" title="Add Question &amp; Answer"><i data-id="@item.Id" class='fa fa-file-circle-plus'></i></button>
+                            <button type="button" class="btn btn-primary rounded-0" title="Edit Category"><i data-id="@item.Id" class='fa fa-pen-to-square'></i></button>
+                                <button type="button" class="btn btn-primary" title="Delete Category"><i data-id="@item.Id" class='fa fa-trash-can'></i></button>
+                                <button type="button" class="btn btn-primary" title="Add Question &amp; Answer"><i data-id="@item.Id" class='fa fa-file-circle-plus'></i></button>
                         </span>
                     </h2>
                     <div id="collapse-@item.Id" data-id="@item.Id" class="accordion-collapse collapse" aria-labelledby="heading-@item.Id" data-bs-parent="#accordionFaq">
@@ -81,13 +81,13 @@
         {
             <div class="accordion-item">
                 <h2 class="accordion-header d-flex flex-row" id="heading-@item.Id">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@item.Id" aria-expanded="true" aria-controls="collapse-@item.Id">
+                    <button class="accordion-button rounded-end-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@item.Id" aria-expanded="true" aria-controls="collapse-@item.Id">
                         @Html.DisplayFor(modelItem => item.Description)
                     </button>
-                    <span snitz-if="@User.IsInRole("FaqModerator")" class="btn-group" role="group" aria-label="Admin buttons">
-                        <button type="button" class="btn btn-secondary-outline" title="Edit Category"><i data-id="@item.Id"class='fa fa-pen-to-square'></i></button>
-                        <button type="button" class="btn btn-secondary-outline" title="Delete Category"><i data-id="@item.Id"class='fa fa-trash'></i></button>
-                        <button type="button" class="btn btn-secondary-outline" title="Add Question &amp; Answer"><i data-id="@item.Id" class='fa fa-file-circle-plus'></i></button>
+                    <span snitz-if="@User.IsInRole("FaqModerator")" class="btn-group rounded-0" role="group" aria-label="Admin buttons">
+                        <button type="button" class="btn btn-primary rounded-0" title="Edit Category"><i data-id="@item.Id" class='fa fa-pen-to-square'></i></button>
+                        <button type="button" class="btn btn-primary" title="Delete Category"><i data-id="@item.Id" class='fa fa-trash-can'></i></button>
+                        <button type="button" class="btn btn-primary rounded-bottom-0" title="Add Question &amp; Answer"><i data-id="@item.Id" class='fa fa-file-circle-plus'></i></button>
                     </span>
                 </h2>
                 <div id="collapse-@item.Id" data-id="@item.Id" class="accordion-collapse collapse" aria-labelledby="heading-@item.Id" data-bs-parent="#accordionFaq">
@@ -127,6 +127,7 @@
     <modal-footer dismiss-text="@Localizer["lblClose"].Value">
     </modal-footer>
 </modal>
+<partial name="Modal\UploadModal" />
 @section Scripts{
     <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
@@ -135,6 +136,7 @@
         $(function() {
             $('#AddCategory').on("click",function(e){
                 e.preventDefault();
+                $('#faqModal>.modal-dialog').addClass("modal-md").removeClass("modal-lg");
                 $('#faq-content').html('');
                 $('#faq-content').load(SnitzVars.baseUrl + "/Faq/Category/-1",function() {
                     $('#faq-spinner').removeClass("d-flex");
@@ -146,6 +148,7 @@
             });
             $(document).on("click","#accordionFaq .fa-pen-to-square",function(e){
                 e.preventDefault();
+                $('#faqModal>.modal-dialog').addClass("modal-md").removeClass("modal-lg");
                 $('#faq-content').html('');
                 var qid = $(this).data("id");
                 $('#faq-content').load(SnitzVars.baseUrl + "/Faq/Category/" + qid,function() {
@@ -156,8 +159,9 @@
                     revalidate();
                 });
             });
-            $(document).on("click",".question .fa-pen-to-square",function(e){
+            $(document).on("click",".fa-pencil",function(e){
                 e.preventDefault();
+                $('#faqModal>.modal-dialog').addClass("modal-lg").removeClass("modal-md");
                 $('#faq-content').html('');
                 var qid = $(this).data("id");
                 $('#faq-content').load(SnitzVars.baseUrl + "/Faq/Edit/" + qid,function() {
@@ -168,9 +172,39 @@
                     revalidate();
                 });
             });
+            //Delete
+            $(document).on("click",".fa-trash",function(e){
+                e.preventDefault();
+                var qid = $(this).data("id");
+                (async() => {
+                    const result = await b_confirm("Delete the Question + Answer")
+                    if (result) {
+                        $.get( SnitzVars.baseUrl + "/Faq/DeleteQuestion/" + qid, function( data ) {
+                          location.reload();
+                        }).fail(function() {
+                            appendAlert("data.error", 'error');
+                        });
+                    }
+                })()
+            });
+            $(document).on("click",".fa-trash-can",function(e){
+                e.preventDefault();
+                var qid = $(this).data("id");
+                (async() => {
+                    const result = await b_confirm("Delete Category and ALL Q&A's")
+                    if (result) {
+                        $.get( SnitzVars.baseUrl + "/Faq/DeleteCategory/" + qid, function( data ) {
+                          location.reload();
 
+                        }).fail(function() {
+                            appendAlert("data.error", 'error');
+                        });
+                    }
+                })()
+            });
             $(document).on("click",".fa-file-circle-plus",function(e){
                 e.preventDefault();
+                $('#faqModal>.modal-dialog').addClass("modal-lg").removeClass("modal-md");
                 $('#faq-content').html('');
                 var qid = $(this).data("id");
                 $('#faq-content').load(SnitzVars.baseUrl + "/Faq/Create/" + qid,function() {
@@ -193,10 +227,12 @@
             tinymce.remove();
             tinymce.init({
                 selector: 'textarea#msg-text',
-                height: 200,
-                plugins: 'code emoticons codesample link',
+                height: 300,
+                plugins: 'code emoticons codesample link lists',
                 branding: false,
                 statusbar: false,
+        relative_urls : false,
+        remove_script_host : true,
                 toolbar: SnitzVars.pmtoolbardef,
                 emoticons_database: 'emojiimages',
                 emoticons_images_url: SnitzVars.baseUrl + '/images/emoticon/',
@@ -221,6 +257,19 @@
                                 }
                             }
                         });
+                    if (SnitzVars.attach) {
+                        editor.ui.registry.addButton('snitzAttach',
+                            {
+                                icon: 'new-document',
+                                tooltip: SnitzVars.toolTips.fileBtn + '\n(' + SnitzVars.allowedfiles + ')',
+                                onAction: function(_) {
+                                    $('#upload-content').html('');
+                                    $('#upload-content').load(SnitzVars.baseUrl + "/Topic/UploadForm/",function() {
+                                    $('#uploadModal').modal('show');
+                                    });
+                                }
+                            });
+                    }
                 }
             });
         document.addEventListener('focusin', (e) => {

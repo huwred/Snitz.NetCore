@@ -32,23 +32,30 @@
 {
     @if (Model.Categories != null && Model.Categories.Count() == 1)
     {
-        <title>@Config.Value.strForumTitle: Category - @Model.Categories.First().Name</title>
+        <title>@Model.Categories.First().Name - @Config.Value.strForumTitle</title>
+        <meta name="title" content="@Model.Categories.First().Name - @Config.Value.strForumTitle" />
     }else
     {
-        <title>@Config.Value.strForumTitle: All Forums</title>
+        <title>All Forums - @Config.Value.strForumTitle</title>
+        <meta name="title" content="All Forums - @Config.Value.strForumTitle" />
     }
 
-    <meta name="title" content="@Config.Value.strForumTitle Categories" />
     <meta name="description" content="@Config.Value.strForumDescription" />
     <meta name="robots" content="index,follow" />
 
 }
 <div class="pt-0">
-    <snitz-breadcrumb></snitz-breadcrumb>
+    @if (Model.Categories != null && Model.Categories.Count() == 1)
+    {
+        <snitz-breadcrumb></snitz-breadcrumb> 
+    }
     <div class="row">
-        <form id="goups-form" asp-action="Index" class="form-inline" method="get">
-            <partial snitz-if="@(SnitzConfig.GetIntValue("STRGROUPCATEGORIES") == 1)" name="GroupFilter" />
-        </form>
+        @if (string.IsNullOrWhiteSpace(cat) && SnitzConfig.IsEnabled("STRGROUPCATEGORIES"))
+        {
+            <form id="goups-form" asp-action="Index" class="form-check-inline col-md-6" method="get">
+                <partial name="GroupFilter" />
+            </form>
+        }
         @if (isAdministrator)
         {
             if (!string.IsNullOrWhiteSpace(cat))
@@ -63,7 +70,7 @@
             }
             else
             {
-                <form class="form-inline col-4 col-lg-6">
+                <form class="form-inline col-4">
                     <div class="btn-group mb-2">
                         <button asp-controller="Category" type="submit" asp-action="Create" aria-label="@Localizer["tipNewCategory"]" class="btn btn-outline-primary"><i class="fa fa-folder-open"></i><span class="d-none d-lg-inline"> @Localizer["tipNewCategory"]</span></button>
                         <button asp-controller="Forum" type="submit" asp-action="Create" aria-label="@Localizer["tipNewForum"]" class="btn btn-outline-primary"><i class="fa fa-folder"></i><span class="d-none d-lg-inline"> @Localizer["tipNewForum"]</span></button>
@@ -71,7 +78,6 @@
                 </form>
             }
         }
-        
         <div class="col-8 d-lg-none"><partial name="QuickSearch" /></div>
     </div>
     <div class="row">
@@ -84,7 +90,6 @@
                 {
                     continue;
                 }
-
                 <div class="subforum border-0 border-primary accordion-item">
                     <h5 class="accordion-header subforum-title rounded" id="heading_@ID">
                         <button style="display: inline; width: 40px;" aria-labelledby="section-@ID-label" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@ID" aria-expanded="true" aria-controls="collapseOne">
@@ -188,7 +193,6 @@
                                         </div>
                                     }
                                 </div>
-
                             }
                         }
                     </div>
@@ -205,7 +209,6 @@
         </div>
         @await Component.InvokeAsync("Widgets", new { template = "sidebar", widgets = new[] { "search", "poll", "latest", "image", "events" } })
     </div>
-
 </div>
 
 

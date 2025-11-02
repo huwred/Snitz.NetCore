@@ -141,6 +141,11 @@ namespace MVCForum.Controllers
         }
        public string UploadImageToServer(IFormFile file)
         {
+            if(!IsImage(file))
+            {
+                return "";
+            }
+
             var uploadFolder = Path.Combine(_env.WebRootPath, _config.ContentFolder, "Members");
             var memberid = _memberService.Current()!.Id;
             var uniqueFileName = "";

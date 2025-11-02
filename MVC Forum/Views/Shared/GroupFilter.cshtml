@@ -4,9 +4,9 @@
     List<GroupName> groups = _groupservice.GetNames();
     if (groups != null)
     {
-        <div class="form-group clearfix">
-            <div class="col-xs-8 col-md-5 padding-sm">
-                @Localizer["CategoryGroups"]
+        <div class="form-group row">
+            <label for="GroupId" class="col-sm-4 col-form-label">@Localizer["CategoryGroups"]</label>
+            <div class="col-sm-7">
                 <select class="form-select" name="GroupId" onchange="$(this).closest('form').submit();">
                     @foreach (var group in groups)
                     {
@@ -15,5 +15,6 @@
                 </select>
             </div>
         </div>
+
     }
 }

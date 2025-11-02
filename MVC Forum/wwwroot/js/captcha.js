@@ -25,9 +25,11 @@ $("#btn-captcha").on("click", function (e) {
 $("#captcha-refresh").on("click", function(e) {
             e.preventDefault();
             $.ajax({
-                url: SnitzVars.baseUrl + "/refreshcaptcha",
+                url: SnitzVars.baseUrl + "/home/refreshcaptcha",
                 success: function (data) {
+                    //alert(data);
                     $("#captchaimage-div").html(data);
+                    location.reload();
                 }
             });
         });

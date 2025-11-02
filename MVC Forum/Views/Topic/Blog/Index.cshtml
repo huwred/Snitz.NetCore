@@ -17,8 +17,8 @@
 
 <meta name="title" content="@metaTitle" />
 <meta name="description" content="@BbCodeProcessor.StripTags(Model.Topic.Content).TruncateLongString(149)">
-<meta name="author" content="@Model.Topic.Member.Name">
-<meta name="copyright" content="@Html.Raw(String.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year)) - @SnitzConfig.ForumTitle, @Model.Topic.Member.Name">
+<meta name="author" content="@Model.AuthorName">
+<meta name="copyright" content="@Html.Raw(String.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year)) - @SnitzConfig.ForumTitle, @Model.AuthorName">
 <meta name="distribution" content="global">
 <meta name="rating" content="14 years">
 }

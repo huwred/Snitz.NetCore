@@ -73,9 +73,8 @@
             </main>
             <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
         </div>
-        <cache expires-after="@TimeSpan.FromDays(7)">
-            <partial name="Footer"/>
-        </cache>
+        <partial name="Footer"/>
+
     </div>
 
     <div id="user-card" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true">
@@ -96,20 +95,26 @@
     <environment include="Development">
         <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js" ></script>
         <partial name="GlobalJs" />
-        <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" ></script>
+        @if (SnitzConfig.IsEnabled("INTUSETIMEAGO"))
+        {
+            <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" ></script>         
+        }
         <script type="text/javascript" src="~/js/jquery.cookie.js" ></script>
         <partial name="ValidationScriptsPartial" />
         <script type="text/javascript" src="~/js/site.js" asp-append-version="true" ></script>
     </environment>
     <environment exclude="Development">
         <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js"></script>
+        @if (SnitzConfig.IsEnabled("INTUSETIMEAGO"))
+        {
+            <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" ></script>         
+        }
         <script type="text/javascript" src="~/js/jquery.cookie.min.js"></script>
         <partial name="GlobalJs" />
         <partial name="ValidationScriptsPartial" />
         <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
-@if (!clang.Contains("en"))
+@if (!clang.Contains("en") && SnitzConfig.IsEnabled("INTUSETIMEAGO"))
 {
         var src = $"timeago.{clang}.js";
         <script type="text/javascript" src="~/js/timeago/@src"></script>
@@ -141,6 +146,18 @@
         return new bootstrap.Popover(popoverTriggerEl,options);
     });
 
+    function getBrowserTimeZone() {
+        const options = Intl.DateTimeFormat().resolvedOptions();
+        console.log(options.timeZone);
+        return options.timeZone;
+    }
+
+        var date = new Date();
+    date.setDate(date.getDate() + 365);
+    $.cookie('CookieTimeZone', getBrowserTimeZone(), {
+        path: SnitzVars.cookiePath,
+        expires: date
+    });
 </script>
 </body>
 </html>

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using SmartBreadcrumbs.Attributes;
@@ -7,6 +8,7 @@ using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service;
+using System;
 
 namespace MVCForum.Controllers
 {
@@ -100,25 +102,35 @@ namespace MVCForum.Controllers
             return PartialView(question);
         }
 
-        // GET: FAQController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: FAQController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        [HttpGet]
+        [Authorize(Roles = "FaqModerator")]
+        public IActionResult DeleteQuestion(int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _faqService.DeleteQuestionAsync(id).Wait();
+                return Ok();
+
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                return BadRequest(e);
             }
+        }
+        [HttpGet]
+        [Authorize(Roles = "FaqModerator")]
+        public IActionResult DeleteCategory(int id)
+        {
+            try
+            {
+                _faqService.DeleteCategoryAsync(id).Wait();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+
         }
     }
 }

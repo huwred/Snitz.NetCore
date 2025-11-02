@@ -12,9 +12,12 @@
 @inject IEnumerable<ISnitzStartupService> pluginservices
 @section MetaData
 {
-    <title>@Config.Value.strForumTitle: Forum > @Model.ForumName > @Model.Title</title>
-    <meta name="title" content="Topic: @Model.Title" />
+    <title>@Model.Title - @Config.Value.strForumTitle </title>
+    <meta name="title" content="@Model.Title - @Config.Value.strForumTitle" />
     <meta name="description" content="@Model.Content" />
+    <meta name="author" content="@Model.AuthorName">
+    <meta name="copyright" content="@Html.Raw(String.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year)) - @SnitzConfig.ForumTitle, @Model.AuthorName">
+
     <meta name="robots" content="index,nofollow" />
     @if (SnitzConfig.GetIntValue("INTFORUMRSS") == 1)
     {
@@ -23,28 +26,29 @@
 }
 @section Styles
 {
-    <link href="~/css/star-rating.min.css" rel="stylesheet" />
+    <link href="~/css/star-rating.min.css" rel="stylesheet" type="text/css" />
     <link href="~/css/krajee-svg/theme.min.css" media="all" rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" href="@SnitzConfig.ThemeCss("prism.min.css")" asp-fallback-href="~/css/prism.min.css">
-    <link rel="stylesheet" href="~/css/topic.min.css">
-        @if (ViewBag.RequireAuth)
-        {
-            <style>
-                .modal-backdrop
-                {
-                opacity:1.0 !important;
-                }
-                .modal-backdrop.in {
-                opacity: 1.0 !important;
-                }
+    <link rel="stylesheet" href="@SnitzConfig.ThemeCss("prism.min.css")" asp-fallback-href="~/css/prism.min.css" type="text/css">
+    <link rel="stylesheet" href="~/css/topic.min.css" asp-append-version="true" type="text/css">
 
-.fa-spin{
+    @if (ViewBag.RequireAuth)
+    {
+        <style>
+            .modal-backdrop
+            {
+            opacity:1.0 !important;
+            }
+            .modal-backdrop.in {
+            opacity: 1.0 !important;
+            }
 
-    text-align: center;
-    vertical-align: bottom;
-}
-            </style>
-        }
+            .fa-spin{
+
+                text-align: center;
+                vertical-align: bottom;
+            }
+        </style>
+    }
 }
 @{
     var jumpToreply = Context.Request.Query.ContainsKey("replyid");
@@ -59,23 +63,7 @@
         TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.ForumId);
     }
     var formaction = Model.Archived ? "Archived" : "Index";
-    // var tracked = SnitzCookie.Tracked(Model.Id.ToString());
-    // bool newPosts;
-    // if (tracked != null)
-    // {
-    //     var today = DateTime.UtcNow.ToString("yyyyMM");
-    //     newPosts = (today + tracked).FromForumDateStr() < Model.l.FromForumDateStr();
-    //     if ((DateTime)ViewData["LastVisitDateTime"] > Model.LastPostDate.FromForumDateStr())
-    //     {
-    //         SnitzCookie.ClearTracking(Model.Id.ToString());
-    //         newPosts = (DateTime)ViewData["LastVisitDateTime"] < Model.LastPostDate.FromForumDateStr();
-    //     }
 
-    // }
-    // else
-    // {
-    //     newPosts = (DateTime)ViewData["LastVisitDateTime"] < topic.LastPostDate.FromForumDateStr();
-    // }
 }
     @if (Model.AccessDenied)
     {
@@ -124,13 +112,13 @@
                 }
             }
             <div class="card-header @answer modstatus-@Model.Status">
-                @Html.Raw(BbCodeProcessor.Subject(Model.Title)) - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (@Model.Views @Localizer["Views"])</span>
+                <span snitz-if="@Model.Answered" class="badge rounded-pill text-bg-success">Answered</span> @Html.Raw(BbCodeProcessor.Subject(Model.Title)) - <span class="form-text">@Localizer["lblPosted"] <snitz-datetime datetime="@Model.Created"></snitz-datetime> (@Model.Views @Localizer["Views"])</span>
                 <a asp-controller="Topic" asp-action="Moderate" asp-route-id="@Model.Id" title="Moderate" class="modal-link"><i class="modstatus-@Model.Status fa fa-hand-stop-o"></i></a>
             </div>
             <div class="card-body">
                 <div class="body topic">
                     <partial name="PostAuthor" model="Model.Author"/>
-                    <div class="content flex-shrink-0 flex-grow-0">
+                    <div class="content2">
                         @if (eventservice != null && eventservice.EnabledForTopic(Model.Id))
                         {
                             @await Component.InvokeAsync("Events", new { template = "TopicSummary", id = Model.Id })
@@ -151,7 +139,7 @@
                 </div>
             </div>
             <div snitz-if="@(isAuthenticated || (Model.Edited != null && Model.EditedBy != null))" class="card-footer text-dark">
-                <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && Model.Edited != null)" class="form-text">@Localizer["lblEditedBy", Model.EditedBy!, Model.Edited?.ToForumDisplay(SnitzConfig)!]</span>
+                <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && Model.Edited != null)" class="form-text">@Localizer["lblEditedBy", Model.EditedBy!, Model.Edited?.ToForumDisplay(SnitzConfig,SnitzCookie)!]</span>
                 @if (!Model.Archived)
                 {
                     @await Component.InvokeAsync("PostControls", new { post = Model.Topic })
@@ -246,14 +234,15 @@
                             <div class="card-body" id="reply-@reply.Id">
                                 <div class="body @rowclass">
                                     <partial name="PostAuthor" model="reply.Author"/>
-                                    <div class="content">
+                                    <div class="content2">
                                         @Html.Raw(BbCodeProcessor.Format(reply.Content))
+
                                         <div snitz-if="@(reply.ShowSig)" class="author-sig">@Html.Raw(BbCodeProcessor.Format(reply.Author.Signature))</div>
                                     </div>
                                 </div>
                             </div>
                             <div snitz-if="@(isAuthenticated || (reply.Edited != null && !string.IsNullOrWhiteSpace(reply.EditedBy)))" class="card-footer text-dark">
-                                <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && reply.Edited != null && !string.IsNullOrWhiteSpace(reply.EditedBy))" class="form-text">@Localizer["lblEditedBy", reply.EditedBy!, reply.Edited?.ToForumDisplay(SnitzConfig)!]</span>
+                                <span snitz-if="@(SnitzConfig.GetIntValue("STREDITEDBYDATE") == 1 && reply.Edited != null && !string.IsNullOrWhiteSpace(reply.EditedBy))" class="form-text">@Localizer["lblEditedBy", reply.EditedBy!, reply.Edited?.ToForumDisplay(SnitzConfig,SnitzCookie)!]</span>
                                 @await Component.InvokeAsync("PostControls", new { post = reply})
                             </div>
                         </div>
@@ -361,7 +350,6 @@
         <button type="reset" form="moderateForm" class="btn btn-warning ">@Localizer["btnReset"]</button>
     </modal-footer>
 </modal>
-
 <partial name="Modal\UploadModal" />
 <modal id="previewModal" title="@Localizer["tipPreview"].Value" size="Large">
     <modal-body>

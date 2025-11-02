@@ -15,7 +15,7 @@
         <form id="sendpm-form" method="post" asp-controller="PrivateMessage" asp-action="Send" class="needs-validation p-2" novalidate>
             <div class="mb-3">
                 <label asp-for="To">@Localizer["To"]</label>
-                <input asp-for="To" readonly="@(Model.IsReply || Model.IsPopUp)" class="form-control disabled" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" />
+                <input asp-for="To" readonly="@(Model.IsReply || Model.IsPopUp)" class="form-control" data-autocomplete-url="@Url.Action("AutoCompleteUsername","PrivateMessage")" />
                 <div snitz-if="@(!Model.IsPopUp)" id="toHelp" class="form-text">@Localizer["RecipientSeparator"]</div>
                 @if (Model.IsPopUp)
                 {
@@ -72,6 +72,12 @@
 {
     <script src="~/js/addpostform.min.js" type="text/javascript"></script>
     <script type="text/javascript" >
+        $('*[data-autocomplete-url]').each(function () {
+            $(this).autocomplete({
+                source: $(this).data("autocomplete-url"),
+                minLength: 3
+            });
+        });
         //cancel-send-pm
         $(document).on('click', '#cancel-send-pm', function () {
             location.reload();

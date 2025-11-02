@@ -39,7 +39,7 @@
         <h4>@Html.Raw(BbCodeProcessor.Format(Model.Title))</h4>
         <label>@Localizer["lblPrintedFrom"]:</label> @SnitzConfig.ForumTitle<br />
         <label>URL:</label> @string.Format("{0}Topic/Posts/{1}?pagenum=1", SnitzConfig.ForumUrl, Model.Id) <br />
-        <label>@Localizer["lblPrinted"]:</label> @DateTime.Now.ToForumDisplay(SnitzConfig)<br />
+        <label>@Localizer["lblPrinted"]:</label> @DateTime.Now.ToForumDisplay(SnitzConfig,SnitzCookie)<br />
         <div class="title">
             <h4>@Localizer["lblTopic"] </h4>
             <hr />
@@ -48,7 +48,7 @@
         <div class="message-reply">
             <label>@Localizer["lblAuthor"] :</label> @Model.AuthorName <br />
             <label>@Localizer["lblSubject"] :</label> @Model.Title <br />
-            <label>@Localizer["lblPosted"] :</label> @Model.Created.ToForumDisplay(SnitzConfig) <br />
+            <label>@Localizer["lblPosted"] :</label> @Model.Created.ToForumDisplay(SnitzConfig,SnitzCookie) <br />
             <label>@Localizer["Message"] :</label> <br /><br />
             <div class="message clearfix">
                 @Html.Raw(BbCodeProcessor.Format(Model.Content))
@@ -69,7 +69,7 @@
                 <i class="fa fa-hashtag"></i><label>@counter</label>
                 <div class="message-reply">
                     <label>@Localizer["lblReplyAuthor"]</label> @item.Author.Name <br />
-                    <label>@Localizer["lblRepliedOn"]</label> @item.Created.ToForumDisplay(SnitzConfig) <br />
+                    <label>@Localizer["lblRepliedOn"]</label> @item.Created.ToForumDisplay(SnitzConfig,SnitzCookie) <br />
                     <label>@Localizer["Message"]:</label> <br /><br />
                     <div class="message clearfix">
                         @Html.Raw(BbCodeProcessor.Format(item.Content))

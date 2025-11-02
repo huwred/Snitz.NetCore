@@ -8,9 +8,9 @@
 @inject IEnumerable<ISnitzStartupService> pluginservices
 @section MetaData
 {
-        <title>@Config.Value.strForumTitle: Forum - @Model.Forum?.Title</title>
+        <title>@Model.Forum?.Title - @Config.Value.strForumTitle</title>
 
-    <meta name="title" content="Forum: @Model.Forum?.Title" />
+    <meta name="title" content="@Model.Forum?.Title - @Config.Value.strForumTitle" />
     <meta name="description" content="@Model.Forum?.Description" />
     <meta name="robots" content="index,nofollow" />
     @if (SnitzConfig.GetIntValue("INTFORUMRSS") == 1)
@@ -85,6 +85,7 @@
         formaction = "Archived";
         Model.Forum.DefaultView = DefaultDays.All;
     }
+    var defdays = Context.Session.GetInt32($"Forum_{Model.Forum!.Id}") ?? 0;
 }
 @if (!auth)
 {
@@ -98,7 +99,7 @@
                         <input type="number" value="@pagenum" name="page" style="display: none;" />
                         <input type="number" value="0" name="defaultdays" id="hdndefaultdays" style="display: none;" />
                         <div class="input-group forum ">
-                            <enum-select id="default-days" enum-type="typeof(DefaultDays)" selected-value="(int)Model.Forum.DefaultView" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                            <enum-select id="default-days" enum-type="typeof(DefaultDays)" selected-value="@defdays" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
                             <select name="OrderBy" id="orderby" class="form-select mb-2" title="Order by" aria-invalid="false">
                                 <option value="pd" selected-val="@Model.Forum?.OrderBy">@Localizer["optPostDate"]</option>
                                 <option value="lpd" selected-val="@Model.Forum?.OrderBy">@Localizer["optLastPostDate"]</option>
@@ -231,7 +232,14 @@
                     }
                     @if (Model.Forum.Topics == 0)
                     {
-                        <p class="text-center p-4">@Localizer["lblNoForumTopics"]</p>
+                        if (Model.Forum.Status == (int)Status.Closed)
+                        {
+                            <p class="text-center p-4">@Localizer["lblLockedForum"]</p> 
+                        }
+                        else
+                        {
+                            <p class="text-center p-4">@Localizer["lblNoForumTopics"]</p>                           
+                        }
                     }else if (Model.Posts == null || Model.Posts?.Count() == 0)
                     {
                         <p class="text-center p-4">@Localizer["lblNoTopicsToDisplay"]</p>

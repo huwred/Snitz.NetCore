@@ -787,6 +787,11 @@ namespace MVCForum.Controllers
             }
             if (model.TopicId != 0)
             {
+                var originaltopic = _postService.GetTopic(model.TopicId);
+                if (originaltopic != null) {
+                    wasdraft = originaltopic.Status == 99;
+                }
+
                 if(!model.SaveDraft && post.Status != 99)
                 {
                     post.Status = (short)(model.IsLocked ? 0 : post.Status);
@@ -1769,6 +1774,14 @@ namespace MVCForum.Controllers
         [Authorize]
         public IActionResult Upload(UploadViewModel model)
         {
+            var AllowedTypes=_config.GetValue("STRFILETYPES").Split(',').ToList();
+
+            if (!AllowedTypes.Contains(Path.GetExtension(model.AlbumImage.FileName)))
+            {
+                ModelState.AddModelError("AlbumImage", "Invalid file type");
+                return PartialView("popUpload",model);
+            }
+
             var uploadFolder = StringExtensions.UrlCombine(_config.ContentFolder, "Members");
             var currentMember = _memberService.Current();
             if (currentMember != null)

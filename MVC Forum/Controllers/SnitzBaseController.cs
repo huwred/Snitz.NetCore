@@ -36,12 +36,13 @@ namespace MVCForum.Controllers
         {
             return ViewComponent("Captcha");
         }
-        public JsonResult AutoCompleteUsername(string term)
-        {
-            IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(m=>m?.Status == 1 && m!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
+        //[Route("Base/AutoCompleteUsername")]
+        //public JsonResult AutoCompleteUsername(string term)
+        //{
+        //    IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(m=>m?.Status == 1 && m!.Name.ToLower().Contains(term.ToLower())).Select(m=>m!.Name);
             
-            return Json(result);
-        }
+        //    return Json(result);
+        //}
         public JsonResult AutoCompleteModerator(string term)
         {
             var modlist = CacheProvider.GetOrCreate("Moderators",()=>Moderators(),TimeSpan.FromMinutes(60));
@@ -63,6 +64,21 @@ namespace MVCForum.Controllers
         public IActionResult RefreshFeature()
         {
             return ViewComponent("ImageAlbum", new { template = "Featured", info = false });
+        }
+        public bool IsImage(IFormFile file)
+        {
+            try
+            {
+                using (var stream = file.OpenReadStream())
+                {
+                    var image = SixLabors.ImageSharp.Image.Load(stream);
+                    return true; // Successfully loaded as an image
+                }
+            }
+            catch
+            {
+                return false; // Not an image
+            }
         }
 
 

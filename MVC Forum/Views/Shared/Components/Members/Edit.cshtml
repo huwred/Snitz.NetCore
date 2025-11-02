@@ -13,19 +13,19 @@
     var systemproperties = Model.Member!.GetType().GetProperties().Where(p => p.SystemProperty());
 }
 @if (User.IsInRole("Administrator")){
-        <form asp-asction="ResetOld" class="needs-validation" novalidate style="display:none;">
-    <div class="row">
+    <form asp-asction="ResetOld" class="needs-validation" novalidate style="display:none;">
+        <div class="row">
             <fieldset class="col-6">
                 <legend>Reset Old account details for @Model.Member?.Name</legend>
                 <input name="Id" class="form-control" type="hidden" />
-                <input name="Username" class="form-control" value="@Model.Member?.Name" type="hidden" />
+                <input name="Username" class="form-control" value="@Model.Member?.Name" type="hidden" maxlength="75"/>
                 <div class="mb-3">
                     <label for="Newemail" class="form-label">@Localizer["Email"]</label>
-                    <input name="Newemail" type="email" class="form-control" value="@Model.Member?.Email" />
+                    <input name="Newemail" type="email" class="form-control" value="@Model.Member?.Email" maxlength="50" />
                 </div>
                 <div class="mb-3">
                     <label for="Newpassword" class="form-label">@Localizer["NewPassword"]</label>
-                    <input name="Newpassword" type="password" class="form-control" value="" />
+                    <input name="Newpassword" type="password" class="form-control" value="" maxlength="50" />
                 </div>
             </fieldset>
             <fieldset class="col-5">
@@ -73,13 +73,14 @@
             <div class="mb-1">
                 <label asp-for="Member!.Created" class="col-sm-3 form-label">@Localizer["ProfileDate"]</label>
                 <div class="col-sm-9">
-                    <label class="form-label">@Model.Member?.Created.FromForumDateStr().ToForumDisplay(SnitzConfig)</label>
+                    <label class="form-label">@Model.Member?.Created.FromForumDateStr().ToForumDisplay(SnitzConfig,SnitzCookie)</label>
                 </div>
             </div>
             <div class="mb-1">
                 <label asp-for="Member!.Posts" class="col-sm-3 col-form-label">@Localizer["ProfilePosts"]</label>
                 <div class="col-sm-9">
-                    <label class="form-label">@Model.Member?.Posts</label>
+                    <input asp-for="Member!.Posts" type="number" class="form-control" value="@Model.Member?.Posts" snitz-if="@(User.IsInRole("Administrator"))" />
+                    <label snitz-if="@(!User.IsInRole("Administrator"))" class="form-label">@Model.Member?.Posts</label>
                 </div>
             </div>
             <div class="mb-1">
@@ -87,14 +88,14 @@
                 <div class="col-sm-9">
                     @if (Model.Member?.Lastpostdate != null)
                     {
-                        <label class="form-label">@Model.Member?.Lastpostdate?.FromForumDateStr().ToForumDisplay(SnitzConfig)</label>
+                        <label class="form-label">@Model.Member?.Lastpostdate?.FromForumDateStr().ToForumDisplay(SnitzConfig,SnitzCookie)</label>
                     }
                 </div>
             </div>
             <div class="mb-3">
                 <label asp-for="Member!.LastLogin" class="col-sm-3 col-form-label">@Localizer["ProfileLastVisit"]</label>
                 <div class="col-sm-9">
-                    <label class="form-label">@Model.Member?.LastLogin.FromForumDateStr().ToForumDisplay(SnitzConfig)</label>
+                    <label class="form-label">@Model.Member?.LastLogin.FromForumDateStr().ToForumDisplay(SnitzConfig,SnitzCookie)</label>
                 </div>
             </div>
             <input asp-for="Member!.Id" type="hidden" />
@@ -113,7 +114,6 @@
         </div>
     </div>
     <input name="PhotoUrl" type="hidden" value="@Model.Member?.PhotoUrl" />
-
 
     <div snitz-if="@((Model.Member?.Privateprofile != 1 || canedit) && User.Identity!.IsAuthenticated)">
         <div class="row  bg-form p-2 rounded mb-2">
@@ -209,9 +209,7 @@
                 {
                     <snitz-config can-edit="@canedit" property-info="@prop" property-val="@prop.GetValue(Model.Member, null)" property-req="@(SnitzConfig.GetIntValue(prop.GetPropertyRequiredCheck<Member>()) == 1)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
                 }
-            }
 
-            @{
                 foreach (PropertyInfo property in memberproperties.Where(p => p.PropertyFieldType() == "checkbox" && !p.PropertyIsPrivate() && p.PropertyLayoutSection() != MemberLayout.Signature).OrderBy(p => p.PropertyOrder()))
                 {
                     var showme = SnitzConfig.GetIntValue(property.GetPropertyDisplayCheck<Member>()!, 1) == 1 && !property.PropertyIsPrivate();

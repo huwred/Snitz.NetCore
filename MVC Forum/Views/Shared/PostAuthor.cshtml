@@ -13,11 +13,11 @@
     <div class="username"><a href="~/Account/Detail/@Model.Name" data-toggle="tooltip" title="@Localizer["lblView"] @Localizer["ProfileDetails", Model.Name]">@Model.Name</a></div>
     <div snitz-if="@(rankType == 1 || rankType == 3)">@Html.MemberRankTitle(Model, ranking, Localizer, "span")</div>
     <snitz-avatar title="@Localizer["ProfileSummary"].Value" src="@Model.PhotoUrl" def-src="~/images/ninja-1027877_960_720.webp" class="rounded-circle profile-popup" member="@Model.Name" data-id="@Model.Id" />
-    <div class="d-none d-md-inline-flex"><span class="post-count">@Localizer["lblPosts"]:</span> @Model.Posts</div>
+    <div class="d-none d-md-flex"><span class="post-count">@Localizer["lblPosts"]:</span> @Model.Posts</div>
     <div class="d-md-none text-center" title="@Localizer["lblPosts"]" data-toggle="tooltip">@Model.Posts</div>
-    <div class="d-none d-md-inline-flex" snitz-if="@(rankType > 1)"><member-rank member="@Model" user="@User" ranking="@ranking" size="fs-5"></member-rank></div>
-    <div class="d-none d-lg-inline-flex">
-        <ul class="list-group list-group-horizontal list-unstyled mb-0">
+    <div class="d-none d-md-flex" snitz-if="@(rankType > 1)"><member-rank member="@Model" user="@User" ranking="@ranking" size="fs-5"></member-rank></div>
+    <div class="d-none d-lg-flex">
+        <ul class="list-group list-group-horizontal list-unstyled mb-0 mt-1">
             <li snitz-if="@showEmail" class="p-1">
                 <a href="#" title="@Localizer["tipAuthorEmail"]" data-toggle="tooltip" class="email-link" data-url="@Url.Action("EmailMember", "Account")" data-id="@Model.Id" data-original-title="@Localizer["tipAuthorEmail"]" ><i class="fa fa-2x fa-envelope"></i></a>
             </li>

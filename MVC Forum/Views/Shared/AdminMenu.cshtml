@@ -11,10 +11,10 @@
         <li><hr class="dropdown-divider" /></li>
         <li><a class="dropdown-item" href="~/LanguageManager/" rel="nofollow noindex">@Localizer["mnuAdminLangResources"]</a></li>
         <li><a class="dropdown-item" asp-controller="LanguageManager" asp-action="Search" rel="nofollow noindex">@Localizer["mnuAdminFindLangRes"]</a></li>
+        <li><a class="dropdown-item" asp-controller="Charts" asp-action="Index" rel="nofollow noindex">@Localizer["mnuAdminTools"]</a></li>
         <li><hr class="dropdown-divider" /></li>
         @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
         <li><a class="dropdown-item" asp-controller="Category" asp-action="Create" rel="nofollow noindex">@Localizer["tipNewCategory"]</a></li>
-        <li><a class="dropdown-item" asp-controller="Forum" asp-action="Create" rel="nofollow noindex">@Localizer["tipNewForum"]</a></li>
         @if (User.IsInRole("SuperAdmin"))
         {
             <li><hr class="dropdown-divider" /></li>

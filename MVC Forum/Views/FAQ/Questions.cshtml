@@ -12,7 +12,7 @@
         <div class="accordion-item bg-transparent py-2">
             <h2 class="accordion-header" id="faqHeading_@item.Id">
                 <button class="accordion-button collapsed bg-transparent fw-bold shadow-none link-primary" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse_@item.Id" aria-expanded="false" aria-controls="faqCollapse_@item.Id">
-                    @item.Title
+                    <i class="fa-regular fa-circle-question"></i> @item.Title
                 </button>
             </h2>
             <div id="faqCollapse_@item.Id" class="accordion-collapse collapse" aria-labelledby="faqHeading_@item.Id">
@@ -21,8 +21,8 @@
                         @Html.Raw(BbCodeProcessor.Format(item.Answer))
                     </span>
                     <div snitz-if="@User.IsInRole("FaqModerator")" class="btn-group question" role="group" aria-label="Admin buttons">
-                        <button type="button" class="btn btn-secondary"><i data-id="@item.Id" class='fa fa-pen-to-square'></i></button>
-                        <button type="button" class="btn btn-secondary"><i class='fa fa-trash'></i></button>
+                        <button type="button" class="btn btn-secondary"><i data-id="@item.Id" class='fa fa-pencil question'></i></button>
+                        <button type="button" class="btn btn-secondary"><i data-id="@item.Id" class='fa fa-trash'></i></button>
                     </div>
                 </div>
             </div>

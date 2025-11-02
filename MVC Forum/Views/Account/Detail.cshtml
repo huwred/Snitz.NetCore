@@ -5,12 +5,12 @@
 @using SnitzCore.Data
 @using SnitzCore.Service
 @using SnitzCore.Service.Extensions
-@inject IMember _memberService
+@* @inject IMember _memberService *@
 @{
-    var _ranking = MemberService.GetRankings();
+    //var _ranking = MemberService.GetRankings();
     var canedit = Model.CanEdit || User.IsInRole("Administrator");
-    var memberproperties = Model.Member!.GetType().GetProperties().Where(p => !p.SystemProperty()); 
-    var systemproperties = Model.Member!.GetType().GetProperties().Where(p => p.SystemProperty());
+    // var memberproperties = Model.Member!.GetType().GetProperties().Where(p => !p.SystemProperty()); 
+    // var systemproperties = Model.Member!.GetType().GetProperties().Where(p => p.SystemProperty());
 }
 @section Styles
 {
@@ -82,7 +82,7 @@
         {
             if($(this).children(".form-label").length == 0)
             {
-                $(this).hide();
+                $(this).parent().hide();
             }
         });
         $(function () {

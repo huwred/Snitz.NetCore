@@ -43,13 +43,15 @@ tinymce.init({
     branding: false,
     relative_urls : false,
     remove_script_host : true,
-    document_base_url : SnitzVars.forumUrl,
+    document_base_url: SnitzVars.forumUrl,
+    convert_fonts_to_spans: true,
     convert_urls: true,
     formats: {
         blockquote: { block: 'blockquote', classes: 'newquote' },
-        bold: { inline: 'span', classes: [ 'fw-bold' ] }
+        bold: { inline: 'b' }
     },
-    extended_valid_elements: 'i[class],div[*],',
+    extended_valid_elements: 'i[class],div[*],b',
+    invalid_elements: 'strong,em',
     images_upload_url: SnitzVars.baseUrl + "/forumupload",
     images_upload_base_path: SnitzVars.baseUrl,
     images_reuse_filename: true,
@@ -58,7 +60,7 @@ tinymce.init({
     content_css: SnitzVars.baseUrl +'/css/bootstrap.min.css,'+SnitzVars.baseUrl +'/lib/font-awesome/css/fontawesome.min.css,'+SnitzVars.baseUrl +'/css/site.min.css',
     content_css_cors: true,
     content_style: `body { font-family:Helvetica,Arial,sans-serif; font-size:14px; padding:1rem;} 
-    .mce-content-body img {max-width: 99% !important;height: auto;} `,
+    .mce-content-body img {max-width: 99% !important;height: auto;}`,
     codesample_languages: [
         { text: 'C#', value: 'csharp' },
         { text: 'C-like', value: 'clike' },

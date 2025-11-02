@@ -3,24 +3,20 @@
 <h4>Category</h4>
 <hr />
 <div class="row">
-    <div class="col-md-8">
-        <form asp-action="Category" id="faq-form" class="needs-validation p-2" novalidate data-ajax="true" data-ajax-update="#faq-content" data-ajax-success="faqcompleted">
-            @Html.HiddenFor(Model=>Model.Id)
-            <div class="mb-3">
-                <label class="control-label">Description</label>
-                <input name="Description" id="Description" class="form-control" required value="@Model.Description" placeholder="Title for Category"/>
-                <div class="invalid-feedback">You must provide a Description</div>
-            </div>
-            <div class="mb-3">
-                <label class="control-label">Order</label>
-                <input name="Order" id="Order" type="number" class="form-control" value="@Model.Order" />
-            </div>            
-            <div class="mb-3">
-                <label class="control-label">Roles</label>
-                <input name="Roles" id="Roles" class="form-control" value="@Model.Roles" placeholder="List of Roles allowed to view Category"/>
-            </div>
-        </form>
-    </div>
+    <form asp-action="Category" id="faq-form" class="needs-validation p-2" novalidate data-ajax="true" data-ajax-update="#faq-content" data-ajax-success="faqcompleted">
+        @Html.HiddenFor(Model => Model.Id)
+        <label class="control-label">Title</label>
+        <div class="input-group mb-3">
+            <input type="text" name="Description" id="Description" class="form-control w-50" placeholder="Title" aria-label="Title" required value="@Model.Description">
+            <span class="input-group-text">Order</span>
+            <input type="number" name="Order" id="Order" class="form-control w-25" aria-label="Order" value="@Model.Order">
+        </div>
+
+        <div class="mb-3">
+            <label class="control-label">Roles</label>
+            <input name="Roles" id="Roles" class="form-control" value="@Model.Roles" placeholder="List of Roles allowed to view this Category" />
+        </div>
+    </form>
 </div>
 
 

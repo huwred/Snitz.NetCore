@@ -74,7 +74,13 @@ namespace MVCForum.Controllers
             {
                 return NotFound();
             }
-            
+            if (defaultdays != null)
+            {
+                if(defaultdays.Value == -99)
+                {
+                    return RedirectToAction("Archived",new{id,defaultdays,page,orderby,sortdir,pagesize});
+                }
+            }
 
             bool signedin = false;
             if (User.Identity is { IsAuthenticated: true })
@@ -173,9 +179,6 @@ namespace MVCForum.Controllers
                     case -1 : //AllOpen 
                         forumPosts = forumPosts?.Where(f => f.Status == 1);
                         break;
-                    //case -99 : //Archived
-                    //    //TODO: Archived Topics                      
-                    //    break;
                     case -999: //NoReplies
                         forumPosts = forumPosts?.Where(p=>p.Status == 1 && p.ReplyCount == 0);
                         break;
@@ -302,6 +305,11 @@ namespace MVCForum.Controllers
         //[ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
         public IActionResult Archived(int id,int? defaultdays, int page = 1, string orderby = "lpd",string sortdir="des", int pagesize = 0)
         {
+            if(defaultdays != -99)
+            {
+                return RedirectToAction("Index",new{id,defaultdays,page,orderby,sortdir,pagesize});
+            }
+
             Forum forum ;
             try
             {
@@ -348,7 +356,7 @@ namespace MVCForum.Controllers
             ViewData["BreadcrumbNode"] = topicPage;
 
             ViewData["Title"] = forum.Title;
-            bool showsticky = _config.GetIntValue("STRSTICKYTOPIC") == 1;
+            bool showsticky = _config.IsEnabled("STRSTICKYTOPIC");
             
             IEnumerable<ArchivedPost>? forumPosts = null;
 
@@ -388,7 +396,7 @@ namespace MVCForum.Controllers
                         forumPosts = forumPosts?.Where(f => f.Status == 99 ); //TODO: current user check
                         break;
                     case -88: //Hot
-                        if (_config.GetIntValue("STRHOTTOPIC") == 1)
+                        if (_config.IsEnabled("STRHOTTOPIC"))
                         {
                             var hottopicount = _config.GetIntValue("INTHOTTOPICNUM",25);
                             forumPosts = forumPosts?.Where(f => f.ReplyCount > hottopicount);
@@ -410,7 +418,7 @@ namespace MVCForum.Controllers
                         forumPosts = forumPosts?.Where(f => f.Status == 99 ); //TODO: current user check
                         break;
                     case -88: //Hot
-                        if (_config.GetIntValue("STRHOTTOPIC") == 1)
+                        if (_config.IsEnabled("STRHOTTOPIC"))
                         {
                             var hottopicount = _config.GetIntValue("INTHOTTOPICNUM",25);
                             forumPosts = forumPosts?.Where(f => f.ReplyCount > hottopicount);
@@ -499,7 +507,7 @@ namespace MVCForum.Controllers
         [Route("LatestPosts")]
         public IActionResult Active(int page = 1, int pagesize = 0,ActiveRefresh? Refresh = null,ActiveSince? Since = null, int groupId=0)
         {
-            if (_config.GetIntValue("STRGROUPCATEGORIES") ==1)
+            if (_config.IsEnabled("STRGROUPCATEGORIES"))
             {
                 if (groupId == 0)
                 {
@@ -1227,7 +1235,12 @@ namespace MVCForum.Controllers
 
             return notallowed;
         }
+        public JsonResult AutoCompleteUsername(string term)
+        {
+            IEnumerable<string> result = _memberService.GetAll(User.IsInRole("Administrator")).Where(m => m?.Status == 1 && m!.Name.ToLower().Contains(term.ToLower())).Select(m => m!.Name);
 
+            return Json(result);
+        }
         private ForumListingModel BuildForumListing(ArchivedPost p)
         {
             return BuildForumListing(p.Forum!);

@@ -33,6 +33,7 @@
             }
             <li><hr class="dropdown-divider"> </li>
             <li><a class="dropdown-item" asp-controller="Account" asp-action="LogOut">@Localizer["SignOut"]</a></li>
+            <li><a class="dropdown-item" asp-controller="Account" asp-action="LogOut" asp-route-clearcookies="@(true)" title="@Localizer["tipDelCookie"]">@Localizer["mnuClearCookies"]</a></li>
         </ul>
     </li>
 }

@@ -37,10 +37,9 @@ $('body').on("click", "#dismiss-announce", function () {
 });
 const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
     
-
 const appendAlert = (message, type) => {
-    const wrapper = document.createElement('div')
-    wrapper.innerHTML = [
+    const msgwrapper = document.createElement('div')
+    msgwrapper.innerHTML = [
         `<div id="alertmessage" class="alert alert-${type} alert-dismissible fade show" role="alert">`,
         `   <div style="padding: 5px;">`,
         `       <div>${message}!!</div>`,
@@ -48,7 +47,7 @@ const appendAlert = (message, type) => {
         '   </div>',
         '</div>'
     ].join('');
-    alertPlaceholder.append(wrapper);
+    alertPlaceholder.append(msgwrapper);
 }
 
 $('body').on("click", ".cat-change",
@@ -58,8 +57,6 @@ $('body').on("click", ".cat-change",
 
 $('body').on("change", "#theme-change",
     function () {
-        console.log("theme-change body");
-        //Account/SetTheme/?theme=
         $.get( SnitzVars.baseUrl + "/Account/SetTheme/?theme=" + $(this).val(), function( data ) {
             location.reload(true);
         });
@@ -155,7 +152,22 @@ $('body').on('click', '.confirm-restart', function (e) {
         }
     })();
 });
-
+$('body').on('click', '.confirm-counts', function (e) {
+    e.preventDefault();
+    var href = $(this).attr('href');
+    (async () => {
+        const result = await b_confirm('Update Forum counts')
+        if (result) {
+            $.post(href, '',
+                function (data, status) {
+                    if (!data) {
+                        appendAlert("There was a problem!", 'error');
+                    }
+                }
+            );
+        }
+    })();
+});
 $('.confirm-clearcache').on('click', function (e) {
     e.preventDefault();
     var href = $(this).attr('href');
@@ -199,7 +211,6 @@ window.onbeforeunload = function (event) {
 };
 
 $('body').on('click', 'a', function (event) {
-    console.log("link clicked");
     if ($(this).attr("rel")) {
         window._link_was_clicked = true;
     }

@@ -46,19 +46,26 @@ namespace MVCForum.Controllers
         [Route("Category/{id?}")]
         [Route("Category/Index/{id}")]
         //[ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["id"])]
-        public IActionResult Index(int id, int groupId = 0)
+        public IActionResult Index(int id, int groupId = -1)
         {
-            if (_config.GetIntValue("STRGROUPCATEGORIES") ==1)
+            if (_config.IsEnabled("STRGROUPCATEGORIES"))
             {
-                if (groupId == 0)
+
+                if(groupId == -1)
                 {
-                    var groupcookie = _cookie.GetCookieValue("GROUP");
-                    if (groupcookie != null)
+                    var defId = _groupservice.GetNames().SingleOrDefault(n=>n.Name == "Default Categories")?.Id;
+                    groupId = defId ?? 0;
+                    if(groupId == 0)
                     {
-                        groupId = Convert.ToInt32(groupcookie);
+                        var groupcookie = _cookie.GetCookieValue("GROUP");
+                        if (groupcookie != null)
+                        {
+                            groupId = Convert.ToInt32(groupcookie);
+                        }
                     }
                 }
-                _cookie.SetCookie("GROUP", groupId.ToString());                
+
+                _cookie.SetCookie("GROUP", groupId.ToString(), DateTime.UtcNow.AddMonths(1));                
             }
             ViewBag.GroupId = groupId;
 

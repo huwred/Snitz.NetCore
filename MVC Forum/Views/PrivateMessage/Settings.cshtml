@@ -41,7 +41,7 @@
         <div class="col-6 offset-6"></div>
         <form asp-action="UpdateBlocklist" method="post" id="addMember" class="needs-validation" novalidate>
             <div class="input-group">
-                <input type="text" name="BlockMember" class="form-control" placeholder="Members's username" aria-label="Members's username" aria-describedby="basic-addon2" data-autocomplete-url="@Url.Action("AutoCompleteUsername")" required="required">
+                <input type="text" name="BlockMember" class="form-control" placeholder="Members's username" aria-label="Members's username" aria-describedby="basic-addon2" data-autocomplete-url="@Url.Action("AutoCompleteUsername","PrivateMessage")" required="required">
                 <div class="invalid-feedback">You must provide a username.</div>
                 <div class="input-group-append">
                     <button class="btn btn-outline-success" type="submit">Add</button>

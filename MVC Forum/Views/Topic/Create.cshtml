@@ -199,7 +199,6 @@
     <renderstoredcontent asp-key="topic-post"></renderstoredcontent>
 <script>
     $('#previewaccordion').on('show.bs.collapse', function () {
-          console.log("expanded");
           $('#collapseOne').load('@Url.Action("TopicPreview", "Topic", new { id = Model.TopicId })' );
     });
 </script>

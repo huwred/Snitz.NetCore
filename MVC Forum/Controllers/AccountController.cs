@@ -437,9 +437,12 @@ namespace MVCForum.Controllers
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = "/")
         {
+            var remembercookie = _cookie.GetCookieValue("rememberme");
+
             UserSignInModel login = new()
             {
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
+                RememberMe = remembercookie == "1"
             };
             ModelState.Clear();
             return View(login);
@@ -487,6 +490,7 @@ namespace MVCForum.Controllers
                 _logger.Info($"Found {newIdentityUser.Email}");
                 await _signInManager.SignOutAsync();
                 SignInResult result = await _signInManager.PasswordSignInAsync(newIdentityUser, login.Password, login.RememberMe, true);
+                _cookie.SetCookie("rememberme",login.RememberMe ? "1" : "0",DateTime.UtcNow.AddMonths(2));
                 if (result.Succeeded)
                 {
                     var currmember = _memberService.GetByUsername(login.Username);
@@ -547,10 +551,18 @@ namespace MVCForum.Controllers
             
         }
 
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Logout(bool clearcookies = false)
         {
+            if (clearcookies)
+            {
+                _cookie.ClearAll();
+            }
+            else
+            {
+                _cookie.LogOut();
+
+            }
             await _signInManager.SignOutAsync();
-            _cookie.LogOut();
             return RedirectToAction("Index", "Home");
         }
 
@@ -860,7 +872,7 @@ namespace MVCForum.Controllers
                     await _snitzDbContext.SaveChangesAsync();
                 }
 
-                return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
+                return View(result.Succeeded ? nameof(ChangeEmail) : "Error");
             }
             return View("Error");
         }
@@ -1071,6 +1083,12 @@ namespace MVCForum.Controllers
             {
                 return View("Error");
             }
+            if(!IsImage(model.AlbumImage))
+            {
+                ModelState.AddModelError("AlbumImage", "Invalid image file");
+                return PartialView("popUpload",model);
+            }
+
             //var path = $"{uploadFolder}".Replace("/","\\");
             //return Json(new { result = true, data = Combine(uploadFolder,model.AlbumImage.FileName) });
 

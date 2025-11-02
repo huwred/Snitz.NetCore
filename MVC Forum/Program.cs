@@ -2,6 +2,7 @@
 using BbCodeFormatter.Processors;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MVCForum.Extensions;
+using MVCForum.Security;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
@@ -46,6 +48,7 @@ var version = config.GetSection("SnitzForums")["strVersion"];
 
 var dataDir = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
 AppDomain.CurrentDomain.SetData("DataDirectory", dataDir);
+builder.Services.AddSingleton<IXmlFaqService>(new XmlFaqService(dataDir));
 
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)       
@@ -166,7 +169,7 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IHtmlLocalizerFactory, EFStringLocalizerFactory>();
 builder.Services.AddTransient<IPasswordPolicyService, PasswordPolicyService>();
 builder.Services.AddTransient<IAdRotator, BannerService>();
-
+builder.Services.AddScoped<SignInManager<ForumUser>, CustomSignInManager>();
 builder.Services.AddMvc().AddViewLocalization();
 
 //if (builder.Environment.IsDevelopment())
@@ -235,16 +238,16 @@ builder.Services.AddImageSharp(
         };
     });
 
-var path = System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data");
+//var path = System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data");
 
-builder.Services.RegisterPlugins(builder.Configuration,path);
+builder.Services.RegisterPlugins(builder.Configuration,dataDir);
 
 
 builder.Services.AddHangfire(configuration => configuration
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_110)
     .UseSimpleAssemblyNameTypeSerializer()
     .UseRecommendedSerializerSettings()
-    .SetStorage(builder.Configuration.GetConnectionString("HangfireConnection").Replace("|DataDirectory|",path), builder.Configuration.GetConnectionString("DBProvider"))
+    .SetStorage(builder.Configuration.GetConnectionString("HangfireConnection").Replace("|DataDirectory|",dataDir), builder.Configuration.GetConnectionString("DBProvider"))
     );
 builder.Services.AddHangfireServer();
 builder.Services.AddHsts(options =>
@@ -269,6 +272,9 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton(builder.Environment.ContentRootFileProvider);
 
+builder.Services.AddDataProtection()
+.PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(dataDir, @"dpkeys")))
+.SetApplicationName("snitz-core");
 
 app = builder.Build();
 
@@ -284,7 +290,8 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler();
+    app.UseDeveloperExceptionPage();
+    //app.UseExceptionHandler();
 }
 
 //Pi doesn't like this, could be newt!
@@ -321,6 +328,8 @@ app.UseStatusCodePages(async context => {
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAntiforgery();
+
 app.UseSession();
 
 app.UseOnlineUsers();

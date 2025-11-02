@@ -3,6 +3,7 @@
 @using Snitz.Events.Helpers
 @using Snitz.PostThanks.Helpers
 @using SnitzCore.Data
+@using SnitzCore.Service.Extensions
 @using SnitzCore.Service.TagHelpers
 @model MVCForum.ViewModels.Post.PostListingModel
 @inject IEnumerable<ISnitzStartupService> pluginservices
@@ -36,19 +37,19 @@
     <div class="status pt-3" data-status="@Model.Status" style="z-index: 2">
         @if (eventservice != null && eventservice.EnabledForTopic(Model.Id))
         {
-            <snitz-topic-icon plugin-icon="fa-calendar" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+            <snitz-topic-icon plugin-icon="fa-calendar" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate.Value.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         else if (Model.HasPoll)
         {
-            <snitz-topic-icon plugin-icon="fa-bar-chart" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+            <snitz-topic-icon plugin-icon="fa-bar-chart" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate.Value.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         else if (archives)
         {
-            <snitz-topic-icon plugin-icon="fa-archive" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+            <snitz-topic-icon plugin-icon="fa-archive" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate.Value.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         else
         {
-            <snitz-topic-icon blog="@(isblog)" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate"></snitz-topic-icon>
+            <snitz-topic-icon blog="@(isblog)" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate.Value.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         <span class="d-block d-md-none fs-4 bold" title="@Localizer["lblReplies"]">@Model?.RepliesCount</span>
     </div>
@@ -57,7 +58,7 @@
             <div class="p-2 flex-grow-1 bd-highlight">
                 <a snitz-if="@isblog" href="~/Blog/@Model?.Title?.Replace(" ","-")">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a>
                 <a snitz-if="@(archives && !isblog)" href="~/Topic/Archived/@Model?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a>
-                <a snitz-if="@(!archives && !isblog)" href="~/Topic/@Model?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a><br />
+                <a snitz-if="@(!archives && !isblog)" href="~/Topic/@Model?.Id"><span snitz-if="@Model.Answered" class="badge rounded-pill text-bg-success">Answered</span> @Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a><br />
                 <span>
                     @Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model.AuthorId"></member-link>
                     @if (ViewData["ActiveTopics"] != null && (bool)ViewData["ActiveTopics"]!)
@@ -67,18 +68,14 @@
                     }
                     <snitz-datetime datetime="@Model?.Created"></snitz-datetime> .
                 </span>
-                @if (SnitzConfig.GetIntValue("STRSHOWPAGING") == 1)
+                @if (SnitzConfig.IsEnabled("STRSHOWPAGING"))
                 {
                     @if (Model?.RepliesCount > ViewBag.PageSize)
                     {
-                        var pages = Model.RepliesCount / ViewBag.PageSize;
-                        if (ViewBag.PageSize * pages < Model.RepliesCount)
-                        {
-                            pages += 1;
-                        }
+                        var rem = Model.RepliesCount % ViewBag.PageSize > 0 ? 1 : 0;
                         var paging = new PagingModel
                         {
-                            PageCount = pages,
+                            PageCount = (Model.RepliesCount / ViewBag.PageSize) + rem,
                             PageSize = ViewBag.PageSize,
                             Page = Model.Id
                         };

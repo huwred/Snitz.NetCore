@@ -1,5 +1,6 @@
 ﻿@using SnitzCore.Data.Extensions
 @using SnitzCore.Service
+@using SnitzCore.Service.Extensions
 @model Member
 @{
     var ranking = MemberService.GetRankings();
@@ -42,7 +43,7 @@
                   </span>
             <span class="local-time" title="Local Time">
                 &nbsp;<i class="fa-regular fa-clock" aria-hidden="true"></i>
-            <snitz-datetime datetime="@DateTime.UtcNow.ToLocalTime()" format="HH:mm" friendly-time="false"></snitz-datetime>
+            <snitz-datetime datetime="@DateTime.UtcNow.LocalTime(SnitzCookie)" format="HH:mm" friendly-time="false"></snitz-datetime>
             </span>
         </div>
     </div>
