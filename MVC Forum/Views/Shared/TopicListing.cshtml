@@ -56,9 +56,10 @@
     <div class="subjects" style="z-index: 2">
         <div class="d-lg-flex flex-row bd-highlight mb-1">
             <div class="p-2 flex-grow-1 bd-highlight">
+                <span snitz-if="@Model.Answered" class="badge rounded-pill text-bg-success">Answered</span>&nbsp;
                 <a snitz-if="@isblog" href="~/Blog/@Model?.Title?.Replace(" ","-")">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a>
                 <a snitz-if="@(archives && !isblog)" href="~/Topic/Archived/@Model?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a>
-                <a snitz-if="@(!archives && !isblog)" href="~/Topic/@Model?.Id"><span snitz-if="@Model.Answered" class="badge rounded-pill text-bg-success">Answered</span> @Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a><br />
+                <a snitz-if="@(!archives && !isblog)" href="~/Topic/@Model?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a><br />
                 <span>
                     @Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model.AuthorId"></member-link>
                     @if (ViewData["ActiveTopics"] != null && (bool)ViewData["ActiveTopics"]!)

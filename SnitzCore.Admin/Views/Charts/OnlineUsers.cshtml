@@ -1,0 +1,29 @@
+﻿@model IEnumerable<VisitorLog>
+
+@{
+    Layout = "_MasterLayout";
+    ViewData["Title"] = "Visitor Log";
+}
+
+<h2>Visitor Log</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Visit Time</th>
+            <th>IP Address</th>
+            <th>User Agent</th>
+            <th>Path</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var visitor in Model)
+        {
+            <tr>
+                <td>@visitor.VisitTime.ToLocalTime()</td>
+                <td>@visitor.IpAddress</td>
+                <td>@visitor.UserAgent</td>
+                <td>@visitor.Path</td>
+            </tr>
+        }
+    </tbody>
+</table>

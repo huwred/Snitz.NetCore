@@ -210,6 +210,16 @@ namespace SnitzCore.BackOffice.Controllers
                 throw;
             }
         }
+
+        public IActionResult OnlineUsers()
+        {
+            var visitors = _context.VisitorLog
+                .OrderByDescending(v => v.VisitTime)
+                .Take(100)
+                .ToList();
+
+            return View(visitors);
+        }
     }
 
     public class ChartModel

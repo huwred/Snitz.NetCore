@@ -17,6 +17,7 @@ namespace SnitzCore.Service.MiddleWare
         public static void UseOnlineUsers(this IApplicationBuilder app, string cookieName = "UserGuid", int lastActivityMinutes = 10)
         {
             app.UseMiddleware<OnlineUsersMiddleware>(cookieName, lastActivityMinutes);
+
         }
     }
     public class OnlineUsersMiddleware

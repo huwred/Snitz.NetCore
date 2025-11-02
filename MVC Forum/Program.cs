@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MVCForum.Extensions;
 using MVCForum.Security;
+using NUglify.Helpers;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
@@ -333,6 +334,10 @@ app.UseAntiforgery();
 app.UseSession();
 
 app.UseOnlineUsers();
+if(!string.IsNullOrWhiteSpace(builder.Configuration["SnitzForums:VisitorTracking"])) 
+{
+    app.UseMiddleware<VisitorTrackingMiddleware>();
+}
 app.UseCookiePolicy();
 app.UseHangfireDashboard("/snitzjobs",new DashboardOptions
 {
