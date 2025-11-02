@@ -24,12 +24,22 @@ namespace SnitzCore.Service
             _cookie = cookie;
             var cookielang = cookie.GetCookieValue("CookieLang");
             //bool isRighToLeft = false;
-            if (cookielang != null)
+            try
             {
-                var cultureInfo = new CultureInfo(cookielang);
+                if (cookielang != null)
+                {
+                    var cultureInfo = new CultureInfo(cookielang);
+                    CultureInfo.CurrentUICulture = cultureInfo;
+                    _language = cultureInfo.TwoLetterISOLanguageName;
+                }
+            }
+            catch (Exception)
+            {
+                var cultureInfo = new CultureInfo("en-GB");
                 CultureInfo.CurrentUICulture = cultureInfo;
                 _language = cultureInfo.TwoLetterISOLanguageName;
             }
+
         }
 
         public LocalizedHtmlString this[string name]
