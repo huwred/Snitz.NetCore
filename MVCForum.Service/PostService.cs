@@ -951,21 +951,26 @@ namespace SnitzCore.Service
             }
             if (searchQuery.Terms != null)
             {
+                var srchPosts = posts.AsEnumerable();
+
                 var terms = searchQuery.Terms.Split(' ');
                 switch (searchQuery.SearchFor)
                 {
                     case SearchFor.AllTerms:
-                        posts = searchQuery.SearchMessage ? posts
-                            .Where(p => p.Title.ContainsAll(terms) || p.Content.ContainsAll(terms)) : posts.Where(p => p.Title.ContainsAll(terms));
+                        srchPosts = searchQuery.SearchMessage ? srchPosts
+                            .Where(p => p.Title.ContainsAll(terms) || p.Content.ContainsAll(terms)) : srchPosts.Where(p => p.Title.ContainsAll(terms));
                         break;
                     case SearchFor.AnyTerms :
-                        posts = searchQuery.SearchMessage ? posts
-                            .Where(p => p.Title.ContainsAny(terms) || p.Content.ContainsAny(terms)) : posts.Where(p => p.Title.ContainsAny(terms));
+                        srchPosts = searchQuery.SearchMessage ? srchPosts
+                            .Where(p => p.Title.ContainsAny(terms) || p.Content.ContainsAny(terms)) : srchPosts.Where(p => p.Title.ContainsAny(terms));
                         break;
                     case SearchFor.ExactPhrase :
-                        posts = searchQuery.SearchMessage ? posts.Where(p => p.Title.Contains(searchQuery.Terms) || p.Content.Contains(searchQuery.Terms)) : posts.Where(p => p.Title.Contains(searchQuery.Terms));
+                        srchPosts = searchQuery.SearchMessage ? srchPosts.Where(p => p.Title.Contains(searchQuery.Terms) || p.Content.Contains(searchQuery.Terms)) : srchPosts.Where(p => p.Title.Contains(searchQuery.Terms));
                         break;
                 }
+                totalcount = srchPosts.Count();
+                return srchPosts.OrderByDescending(p=>p.LastPostDate).ToPagedList(page, pagesize);
+
             }
 
 
