@@ -26,11 +26,11 @@ public partial class ArchivedReply
     public int MemberId { get; set; }
 
     [Column("R_MESSAGE")]
-    public string Content { get; set; } = null!;
+    public string? Content { get; set; }
 
     [Column("R_DATE")]
     [StringLength(14)]
-    public string Created { get; set; } = null!;
+    public string? Created { get; set; }
 
     [Column("R_IP")]
     [StringLength(50)]
@@ -50,7 +50,7 @@ public partial class ArchivedReply
     public short Sig { get; set; }
 
     [Column("R_RATING")]
-    public int Rating { get; set; }
+    public int? Rating { get; set; } = 0;
 
     public virtual Member? Member { get; set; }
     public virtual ArchivedPost? Topic { get; set; }
