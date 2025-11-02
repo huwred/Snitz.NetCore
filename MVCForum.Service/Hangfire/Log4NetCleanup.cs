@@ -21,7 +21,7 @@ namespace SnitzCore.Service.Hangfire
         }
         public static void ExecuteTask(string contentRootPath, int daysToKeep)
         {
-            string logDirectory = Path.Combine(contentRootPath,"logs"); // Path to your log directory
+            string logDirectory = Path.Combine(contentRootPath,"Logs"); // Path to your log directory
 
             foreach (var file in Directory.GetFiles(logDirectory))
             {
