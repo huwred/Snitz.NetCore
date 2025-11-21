@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using SnitzCore.BackOffice.ViewModels;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Models;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace SnitzCore.BackOffice.Controllers
@@ -14,10 +17,13 @@ namespace SnitzCore.BackOffice.Controllers
     {
         private readonly SnitzDbContext _context;
         private readonly IOptions<SnitzForums> _config;
-        public ChartsController(SnitzDbContext context,IOptions<SnitzForums> config)
+        private bool showVisits = false;
+        public ChartsController(SnitzDbContext context,IOptions<SnitzForums> config,IConfiguration settings)
         {
             _context = context;
             _config = config;
+            
+            showVisits = settings.GetValue<string>("SnitzForums:VisitorTracking","") != "";
         }
         public IActionResult Index()
         {
@@ -27,6 +33,563 @@ namespace SnitzCore.BackOffice.Controllers
             return View(Years);
 
         }
+        public IActionResult LeaderBoard()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult UserLeaderboard(bool today = false)
+        {
+            var todayStr = DateTime.UtcNow.ToString("yyyyMMdd");
+            var topics = _context.Posts.AsQueryable();
+            var replies = _context.Replies.AsQueryable();
+            var visitors = _context.VisitorLog.AsQueryable();
+            string thanksPostSql = $@"SELECT ft.MEMBER_ID,t.* FROM {_config.Value.forumTablePrefix}THANKS ft
+                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
+                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = t.T_AUTHOR
+				WHERE r.R_AUTHOR IS NULL ";
+            string thanksReplySql = $@"
+                SELECT ft.MEMBER_ID,r.* FROM {_config.Value.forumTablePrefix}THANKS ft
+                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
+                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = r.R_AUTHOR
+				WHERE r.R_AUTHOR IS NOT NULL";
+            string thanksGivenSql = $@"
+                SELECT m.* FROM {_config.Value.forumTablePrefix}THANKS ft
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = ft.MEMBER_ID";
+
+            if (today)
+            {
+                replies = replies.Where(r => String.Compare(r.Created, todayStr) >= 0);
+                topics = topics.Where(r => String.Compare(r.Created, todayStr) >= 0);
+                visitors = visitors.Where(r => r.VisitTime.DayOfYear == DateTime.UtcNow.DayOfYear);
+                thanksPostSql += $@" AND SUBSTRING(t.T_DATE, 1, 8) = '{todayStr}'";
+                thanksReplySql += $@" AND SUBSTRING(r.R_DATE, 1, 8) = '{todayStr}'";
+                thanksGivenSql += $@" WHERE ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 8) = '{todayStr}'";
+            }
+
+            var leaderboard = 
+                //replies
+                replies.Where(r => r.Answer == true)
+                .GroupBy(t => t.Member.Name)
+                .Select(g => new
+                {
+                    UserName = g.Key,
+                    Answers = g.Count(),
+                    Replies = 0,
+                    Thanks = 0,
+                    Posts = 0
+                })
+                .Concat(
+                    replies.Where(r => r.Answer != true)
+                    .GroupBy(r => r.Member!.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = 0,
+                        Replies = g.Count(),
+                        Thanks = 0,
+                        Posts = 0
+                    })
+                )
+                //topics
+                .Concat(
+                    topics
+                    .Where(r => r.Answered == true)
+                    .GroupBy(r => r.Member.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = g.Count(),
+                        Replies = 0,
+                        Thanks = 0,
+                        Posts = 0
+                    })
+                )
+                .Concat(
+                    topics
+                    .Where(r => r.Answered != true && (r.ReplyCount > 10 || r.ViewCount > 100 || r.RatingTotalCount > 0))
+                    .GroupBy(r => r.Member.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = 0,
+                        Replies = 0,
+                        Thanks = 0,
+                        Posts = g.Count()
+                    })
+                )
+                //visits
+                .Concat(
+                    visitors.Where(v => !string.IsNullOrWhiteSpace(v.UserName) && !v.UserName.StartsWith("Anonymous"))
+                    .GroupBy(v => v.UserName)
+                    .Select(g => new
+                    {
+                        UserName = g.Key!,
+                        Answers = 0,
+                        Replies = 0,
+                        Thanks = 0,
+                        Posts = g.Count() / 10 // 1 point for every 10 visits
+                    })
+                )
+                //thanks
+                .Concat(
+                    _context.Posts.FromSqlInterpolated(FormattableStringFactory.Create(thanksPostSql))
+                    .GroupBy(t => t.Member!.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = 0,
+                        Replies = 0,
+                        Thanks = g.Count(),
+                        Posts = 0
+                    })
+                    .Concat(
+                        _context.Replies.FromSqlInterpolated(FormattableStringFactory.Create(thanksReplySql))
+                        .GroupBy(t => t.Member!.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = g.Count(),
+                            Posts = 0
+                        })
+                    )
+                    .Concat(
+                        _context.Members.FromSqlInterpolated(FormattableStringFactory.Create(thanksGivenSql))
+                        .GroupBy(m => m.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = g.Count(),
+                            Posts = 0
+                        })
+                    )
+                )
+                .GroupBy(x => x.UserName)
+                .Select(g => new
+                {
+                    UserName = g.Key,
+                    Answers = g.Sum(x => x.Answers),
+                    Replies = g.Sum(x => x.Replies),
+                    Thanks = g.Sum(x => x.Thanks),
+                    Posts = g.Sum(x => x.Posts),
+                    Total = g.Sum(x => x.Answers) * 3 + g.Sum(x => x.Replies) + g.Sum(x => x.Thanks) * 2 + g.Sum(x => x.Posts)
+                })
+                .OrderByDescending(x => x.Total)
+                .Take(50)
+                .ToList();
+
+            if (!today)
+            {
+                leaderboard = leaderboard
+                .Concat(
+                    _context.ArchivedTopics
+                    .Where(r => (r.ReplyCount > 10 || r.ViewCount > 100 || r.RatingTotalCount > 0))
+                    .GroupBy(r => r.Member!.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = 0,
+                        Replies = 0,
+                        Thanks = 0,
+                        Posts = g.Count(),
+                        Total = 0
+                    })
+                )
+                .GroupBy(x => x.UserName)
+                .Select(g => new
+                {
+                    UserName = g.Key,
+                    Answers = g.Sum(x => x.Answers),
+                    Replies = g.Sum(x => x.Replies),
+                    Thanks = g.Sum(x => x.Thanks),
+                    Posts = g.Sum(x => x.Posts),
+                    Total = g.Sum(x => x.Answers) * 3 + g.Sum(x => x.Replies) + g.Sum(x => x.Thanks) * 2 + g.Sum(x => x.Posts)
+                })
+                .OrderByDescending(x => x.Total)
+                .Take(50)
+                .ToList();;
+            }
+
+
+            // Assign ranks: same rank for same total, next rank skips accordingly
+            int currentRank = 1;
+            int previousTotal = -1;
+
+            var rankedLeaderboard = leaderboard
+                .Select((item, index) =>
+                {
+                    if (item.Total != previousTotal)
+                    {
+                        currentRank ++;
+
+                    }
+
+                    previousTotal = item.Total;
+                    return new
+                    {
+                        Rank = currentRank-1,
+                        item.UserName,
+                        item.Answers,
+                        item.Replies,
+                        item.Thanks,
+                        item.Total
+                    };
+                })
+                .ToList();
+            return Json(rankedLeaderboard);
+        }
+
+        [HttpGet]
+        public IActionResult UserLeaderboardByMonth(int year, int month)
+        {
+            string thanksPostSql = $@"SELECT ft.MEMBER_ID,t.* FROM {_config.Value.forumTablePrefix}THANKS ft
+                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
+                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = t.T_AUTHOR
+				WHERE r.R_AUTHOR IS NULL AND SUBSTRING(t.T_DATE, 1, 4) = '{year}' ";
+            string thanksReplySql = $@"
+                SELECT ft.MEMBER_ID,r.* FROM {_config.Value.forumTablePrefix}THANKS ft
+                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
+                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = r.R_AUTHOR
+				WHERE r.R_AUTHOR IS NOT NULL AND SUBSTRING(t.T_DATE, 1, 4) = '{year}' ";
+            string thanksGivenSql = $@"
+                SELECT m.* FROM {_config.Value.forumTablePrefix}THANKS ft
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = ft.MEMBER_ID
+                WHERE ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 4) = '{year}' ";
+            var replies = _context.Replies.Where(r => Convert.ToInt32(r.Created.Substring(0,4)) == year);
+            var topics = _context.Posts.Where(t => Convert.ToInt32(t.Created.Substring(0,4)) == year);
+            var visitors = _context.VisitorLog.Where(l=>l.VisitTime.Year == year).AsQueryable();
+
+            if (month > 0)
+            {
+                replies = replies.Where(r => Convert.ToInt32(r.Created.Substring(4,2)) == month);
+                topics = topics.Where(t => Convert.ToInt32(t.Created.Substring(4,2)) == month);
+                visitors = visitors.Where(l => l.VisitTime.Month == month);
+                thanksPostSql += $@" AND SUBSTRING(t.T_DATE, 5, 2) = '{month}'";
+                thanksReplySql += $@" AND SUBSTRING(r.R_DATE, 5, 2) = '{month}'";
+                thanksGivenSql += $@" AND ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 5, 2) = '{month}'";
+            }
+
+            var leaderboard = 
+                //replies
+                replies.Where(r => r.Answer == true)
+                .GroupBy(t => t.Member.Name)
+                .Select(g => new
+                {
+                    UserName = g.Key,
+                    Answers = g.Count(),
+                    Replies = 0,
+                    Thanks = 0,
+                    Posts = 0
+                })
+                .Concat(
+                    replies.Where(r => r.Answer != true)
+                    .GroupBy(r => r.Member!.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = 0,
+                        Replies = g.Count(),
+                        Thanks = 0,
+                        Posts = 0
+                    })
+                )
+                //topics
+                .Concat(
+                    topics
+                    .Where(r => r.Answered == true)
+                    .GroupBy(r => r.Member.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = g.Count(),
+                        Replies = 0,
+                        Thanks = 0,
+                        Posts = 0
+                    })
+                )
+                .Concat(
+                    topics
+                    .Where(r => r.Answered != true && (r.ReplyCount > 10 || r.ViewCount > 100 || r.RatingTotalCount > 0))
+                    .GroupBy(r => r.Member.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = 0,
+                        Replies = 0,
+                        Thanks = 0,
+                        Posts = g.Count()
+                    })
+                )
+                //visits
+                //.Concat(
+                //    visitors.Where(v => !string.IsNullOrWhiteSpace(v.UserName) && !v.UserName.StartsWith("Anonymous"))
+                //    .GroupBy(v => v.UserName)
+                //    .Select(g => new
+                //    {
+                //        UserName = g.Key!,
+                //        Answers = 0,
+                //        Replies = 0,
+                //        Thanks = 0,
+                //        Posts = g.Count() / 10 // 1 point for every 10 visits
+                //    })
+                //)
+                //thanks
+                .Concat(
+                    _context.Posts.FromSqlInterpolated(FormattableStringFactory.Create(thanksPostSql))
+                    .GroupBy(t => t.Member!.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = 0,
+                        Replies = 0,
+                        Thanks = g.Count(),
+                        Posts = 0
+                    })
+                    .Concat(
+                        _context.Replies.FromSqlInterpolated(FormattableStringFactory.Create(thanksReplySql))
+                        .GroupBy(t => t.Member!.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = g.Count(),
+                            Posts = 0
+                        })
+                    )
+                    .Concat(
+                        _context.Members.FromSqlInterpolated(FormattableStringFactory.Create(thanksGivenSql))
+                        .GroupBy(m => m.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = g.Count(),
+                            Posts = 0
+                        })
+                    )
+                )
+                .GroupBy(x => x.UserName)
+                .Select(g => new
+                {
+                    UserName = g.Key,
+                    Answers = g.Sum(x => x.Answers),
+                    Replies = g.Sum(x => x.Replies),
+                    Thanks = g.Sum(x => x.Thanks),
+                    Posts = g.Sum(x => x.Posts),
+                    Total = g.Sum(x => x.Answers)*3 + g.Sum(x => x.Replies) + g.Sum(x => x.Thanks)*2 + g.Sum(x => x.Posts)
+                })
+                .OrderByDescending(x => x.Total)
+                .Take(50)
+                .ToList();
+
+            // Assign ranks: same rank for same total, next rank skips accordingly
+            int currentRank = 1;
+            int previousTotal = -1;
+
+            var rankedLeaderboard = leaderboard
+                .Select((item, index) =>
+                {
+                    if (item.Total != previousTotal)
+                    {
+                        currentRank ++;
+
+                    }
+
+                    previousTotal = item.Total;
+                    return new
+                    {
+                        Rank = currentRank-1,
+                        item.UserName,
+                        item.Answers,
+                        item.Replies,
+                        item.Thanks,
+                        item.Total
+                    };
+                })
+                .ToList();
+            return Json(rankedLeaderboard);
+        }
+
+        [HttpGet]
+        public IActionResult UserLeaderboardByWeek(int year, int week)
+        {
+
+            var replies = _context.Replies.Include(p=>p.Member).AsEnumerable().Where(r => Convert.ToInt32(r.Created.Substring(0,4)) == year && r.Created.GetIso8601WeekOfYear() == week);
+            var topics = _context.Posts.Include(p=>p.Member).AsEnumerable().Where(t => Convert.ToInt32(t.Created.Substring(0,4)) == year && t.Created.GetIso8601WeekOfYear() == week);
+            var visitors = _context.VisitorLog.Where(l=>l.VisitTime.Year == year && l.VisitTime.GetIso8601WeekOfYear() == week).AsQueryable();
+
+            string thanksPostSql = $@"SELECT ft.MEMBER_ID,t.* FROM {_config.Value.forumTablePrefix}THANKS ft
+                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
+                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = t.T_AUTHOR
+				WHERE r.R_AUTHOR IS NULL AND SUBSTRING(t.T_DATE, 1, 4) = '{year}' AND DATEPART(ISO_WEEK, CONCAT(SUBSTRING(ft.THANKS_DATE, 1, 4) , '-', SUBSTRING(ft.THANKS_DATE, 5, 2) , '-' , SUBSTRING(ft.THANKS_DATE, 7, 2))) = {week}";
+
+            string thanksReplySql = $@"
+                SELECT ft.MEMBER_ID,r.* FROM {_config.Value.forumTablePrefix}THANKS ft
+                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
+                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = r.R_AUTHOR
+				WHERE r.R_AUTHOR IS NOT NULL AND SUBSTRING(t.T_DATE, 1, 4) = '{year}' AND DATEPART(ISO_WEEK, CONCAT(SUBSTRING(ft.THANKS_DATE, 1, 4) , '-', SUBSTRING(ft.THANKS_DATE, 5, 2) , '-' , SUBSTRING(ft.THANKS_DATE, 7, 2))) = {week}";
+
+            string thanksGivenSql = $@"
+                SELECT m.* FROM {_config.Value.forumTablePrefix}THANKS ft
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = ft.MEMBER_ID
+                WHERE ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 4) = '{year}' AND DATEPART(ISO_WEEK, CONCAT(SUBSTRING(ft.THANKS_DATE, 1, 4) , '-', SUBSTRING(ft.THANKS_DATE, 5, 2) , '-' , SUBSTRING(ft.THANKS_DATE, 7, 2))) = {week}";
+
+
+            var leaderboard = 
+                //replies
+                replies.Where(r => r.Answer == true)
+                .GroupBy(t => t.Member.Name)
+                .Select(g => new
+                {
+                    UserName = g.Key,
+                    Answers = g.Count(),
+                    Replies = 0,
+                    Thanks = 0,
+                    Posts = 0
+                })
+                .Concat(
+                    replies.Where(r => r.Answer != true)
+                    .GroupBy(r => r.Member!.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = 0,
+                        Replies = g.Count(),
+                        Thanks = 0,
+                        Posts = 0
+                    })
+                )
+                //topics
+                .Concat(
+                    topics
+                    .Where(r => r.Answered == true)
+                    .GroupBy(r => r.Member.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = g.Count(),
+                        Replies = 0,
+                        Thanks = 0,
+                        Posts = 0
+                    })
+                )
+                .Concat(
+                    topics
+                    .Where(r => r.Answered != true && (r.ReplyCount > 10 || r.ViewCount > 100 || r.RatingTotalCount > 0))
+                    .GroupBy(r => r.Member.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = 0,
+                        Replies = 0,
+                        Thanks = 0,
+                        Posts = g.Count()
+                    })
+                )
+                //visits
+                //.Concat(
+                //    visitors.Where(v => !string.IsNullOrWhiteSpace(v.UserName) && !v.UserName.StartsWith("Anonymous"))
+                //    .GroupBy(v => v.UserName)
+                //    .Select(g => new
+                //    {
+                //        UserName = g.Key!,
+                //        Answers = 0,
+                //        Replies = 0,
+                //        Thanks = 0,
+                //        Posts = g.Count() / 10 // 1 point for every 10 visits
+                //    })
+                //)
+                //thanks
+                .Concat(
+                    _context.Posts.FromSqlInterpolated(FormattableStringFactory.Create(thanksPostSql))
+                    .GroupBy(t => t.Member!.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = 0,
+                        Replies = 0,
+                        Thanks = g.Count(),
+                        Posts = 0
+                    })
+                    .Concat(
+                        _context.Replies.FromSqlInterpolated(FormattableStringFactory.Create(thanksReplySql))
+                        .GroupBy(t => t.Member!.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = g.Count(),
+                            Posts = 0
+                        })
+                    )
+                    .Concat(
+                        _context.Members.FromSqlInterpolated(FormattableStringFactory.Create(thanksGivenSql))
+                        .GroupBy(m => m.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = g.Count(),
+                            Posts = 0
+                        })
+                    )
+                )
+                .GroupBy(x => x.UserName)
+                .Select(g => new
+                {
+                    UserName = g.Key,
+                    Answers = g.Sum(x => x.Answers),
+                    Replies = g.Sum(x => x.Replies),
+                    Thanks = g.Sum(x => x.Thanks),
+                    Posts = g.Sum(x => x.Posts),
+                    Total = g.Sum(x => x.Answers)*3 + g.Sum(x => x.Replies) + g.Sum(x => x.Thanks)*2 + g.Sum(x => x.Posts)
+                })
+                .OrderByDescending(x => x.Total)
+                .Take(50)
+                .ToList();
+                // Assign ranks: same rank for same total, next rank skips accordingly
+
+                int currentRank = 1;
+                int previousTotal = -1;
+
+                var rankedLeaderboard = leaderboard
+                    .Select((item, index) =>
+                    {
+                        if (item.Total != previousTotal)
+                        {
+                            currentRank++;
+
+                        }
+
+                        previousTotal = item.Total;
+                        return new
+                        {
+                            Rank = currentRank - 1,
+                            item.UserName,
+                            item.Answers,
+                            item.Replies,
+                            item.Thanks,
+                            item.Total
+                        };
+                    })
+                    .ToList();
+            return Json(rankedLeaderboard);
+        }
+
 
         public JsonResult PostsByYear(string page)
         {
@@ -82,7 +645,7 @@ namespace SnitzCore.BackOffice.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                ////Console.WriteLine(e);
                 throw;
             }
             
@@ -213,15 +776,198 @@ namespace SnitzCore.BackOffice.Controllers
 
         public IActionResult OnlineUsers()
         {
-            var visitors = _context.VisitorLog
-                .OrderByDescending(v => v.VisitTime)
-                .Take(100)
+            //var visitors = _context.VisitorLog
+            //    .OrderBy(e => e.UserName).ThenByDescending(e=>e.VisitTime)
+            //    .Where(v=>v.VisitTime.DayOfYear == DateTime.UtcNow.DayOfYear)
+            //    .Take(100)
+            //    .ToList();
+            if(!showVisits)
+            {
+                return RedirectToAction("Index");
+            }
+            return View();
+        }
+
+        public  IActionResult ClearVisitLog()
+        {
+            try
+            {
+                _context.Database.ExecuteSqlRaw($"TRUNCATE TABLE VisitorLog");
+                return Ok();
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
+        }
+
+        public async Task<IActionResult> GetData()
+        {
+            var draw = Request.Form["draw"].FirstOrDefault();
+            var start = int.Parse(Request.Form["start"].FirstOrDefault() ?? "0");
+            var length = int.Parse(Request.Form["length"].FirstOrDefault() ?? "100");
+            var sortDirection = Request.Form["order[0][dir]"].FirstOrDefault() ?? "asc";
+            var sortColumn = Request.Form[$"columns[{Request.Form["order[0][column]"]}][data]"].FirstOrDefault() ?? "visittime";
+
+            var query = _context.VisitorLog.AsQueryable();
+            // Sorting
+            if (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortDirection))
+            {
+                query = sortColumn.ToLower() switch
+                    {
+                        "username" => sortDirection.ToLower() == "asc" ? query.OrderBy(e => e.UserName).ThenByDescending(e=>e.VisitTime) : query.OrderByDescending(e => e.UserName).ThenByDescending(e=>e.VisitTime),
+                        "visittime" => sortDirection.ToLower() == "asc" ? query.OrderBy(e => e.VisitTime) : query.OrderByDescending(e => e.VisitTime),
+                        _ => query // Default: no sorting
+                    };
+            }
+
+            var totalRecords = await query.CountAsync();
+
+            // Fetch paginated data
+            var data = new List<VisitorLog>();
+            if(length != -1)
+            {
+                data = await query.Skip(start).Take(length).ToListAsync();
+            }else{
+                data = await query.ToListAsync();
+            }
+
+            // Return data in Datatables format
+            return Json(new
+            {
+                draw = draw,
+                recordsTotal = totalRecords,
+                recordsFiltered = totalRecords,
+                data = data
+            });
+        }
+
+        [HttpGet]
+        public JsonResult VisitorLogByHour()
+        {
+            var today = DateTime.UtcNow.Date;
+            var data = _context.VisitorLog
+                .Where(v => v.VisitTime >= today)
+                .GroupBy(v => v.VisitTime.Hour)
+                .Select(g => new { Hour = g.Key, Count = g.Count() })
+                .OrderBy(g => g.Hour)
                 .ToList();
 
-            return View(visitors);
+            // Ensure all 24 hours are present
+            var result = Enumerable.Range(0, 24)
+                .Select(h => new {
+                    Hour = h,
+                    Count = data.FirstOrDefault(d => d.Hour == h)?.Count ?? 0
+                }).ToList();
+
+            return Json(result);
+        }
+        // 1. Visits Over Time (per day)
+        [HttpGet]
+        public IActionResult VisitorLogByDay()
+        {
+            var data = _context.VisitorLog
+                .GroupBy(v => v.VisitTime.Date)
+                .Select(g => new { Date = g.Key, Count = g.Count() })
+                .OrderBy(g => g.Date)
+                .ToList();
+
+            return Json(data);
+        }
+
+        // 2. Top Visited Paths
+        [HttpGet]
+        public IActionResult TopVisitedPaths()
+        {
+            var data = _context.VisitorLog
+                .GroupBy(v => v.Path)
+                .Select(g => new { Path = g.Key, Count = g.Count() })
+                .OrderByDescending(g => g.Count)
+                .Take(10)
+                .ToList();
+
+            return Json(data);
+        }
+
+        // 3. Unique Visitors Per Day (by UserName or IpAddress)
+        [HttpGet]
+        public IActionResult UniqueVisitorsPerDay()
+        {
+            var data = _context.VisitorLog
+                .GroupBy(v => v.VisitTime.Date)
+                .Select(g => new {
+                    Date = g.Key,
+                    UniqueCount = g.Select(x => x.UserName).Distinct().Count()
+                })
+                .OrderBy(x => x.Date)
+                .ToList();
+
+            return Json(data);
+        }
+
+        // 4. Visits by User Agent
+        [HttpGet]
+        public IActionResult VisitsByUser()
+        {
+            var data = _context.VisitorLog
+                .GroupBy(v => v.UserName)
+                .Select(g => new { UserName = g.Key, Count = g.Count() })
+                .OrderByDescending(x => x.Count)
+                .Take(1000)
+                .ToList();
+
+            // Step 2: Prepare pie chart data format
+            var pieChartData = new
+            {
+                labels = data.Select(x => x.UserName).ToList(),
+                datasets = new[]
+                {
+                    new {
+                        data = data.Select(x => x.Count).ToList(),
+                        backgroundColor = new[] {
+                            "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF",
+                            "#FF9F40", "#C9CBCF", "#FF6384", "#36A2EB", "#FFCE56"
+                        }
+                    }
+                }
+            };
+
+            // Step 3: Return as JSON for chart rendering on client
+            return Json(pieChartData);
+        }
+
+        // 6. Visits by Hour of Day (across all days)
+        [HttpGet]
+        public IActionResult VisitsByHour()
+        {
+            var data = _context.VisitorLog
+                .GroupBy(v => v.VisitTime.Hour)
+                .Select(g => new { Hour = g.Key, Count = g.Count() })
+                .OrderBy(g => g.Hour)
+                .ToList();
+
+            // Ensure all 24 hours are present
+            var result = Enumerable.Range(0, 24)
+                .Select(h => new {
+                    Hour = h,
+                    Count = data.FirstOrDefault(d => d.Hour == h)?.Count ?? 0
+                }).ToList();
+
+            return Json(result);
         }
     }
-
+public class DataTableAjaxPostModel
+{
+    // properties are not capital due to json mapping
+    public int draw { get; set; }
+    public int start { get; set; }
+    public int length { get; set; }
+    public List<Column> columns { get; set; }
+    public Search search { get; set; }
+    public List<Order> order { get; set; }
+}
     public class ChartModel
     {
         public string MinYear { get; set; }

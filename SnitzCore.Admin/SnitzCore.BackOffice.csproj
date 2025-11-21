@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <RazorCompileOnPublish>false</RazorCompileOnPublish>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,9 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\_ViewImports.cshtml">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
+    <Content Include="Views\**\*.cshtml" CopyToPublishDirectory="Never" />
+    <Content Include="**\*.json" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,26 +4,226 @@
     Layout = "_MasterLayout";
     ViewData["Title"] = "Visitor Log";
 }
+@section Styles {
+    <link href="https://cdn.datatables.net/v/bs5/dt-2.3.4/rg-1.6.0/datatables.min.css" rel="stylesheet" integrity="sha384-wHvxJxNhd7/2voExgpEC7izeqVurLKP0NMKyWvAozun4Avw6AWiARtr1fXRF+HOA" crossorigin="anonymous">
 
+}
 <h2>Visitor Log</h2>
-<table class="table table-striped">
+<div class="row">
+    <div class="col">
+        <canvas id="visitorsHourlyChart" width="400" height="200"></canvas>
+    </div>
+    <div class="col">
+        <canvas id="visitorsChart" width="400" height="200"></canvas>
+    </div>
+</div>
+<input id="grp-user" type="button" value="Group by User" class="btn btn-outline-secondary" data-bs-toggle="button" autocomplete="off">
+<input id="grp-ip" type="button" value="Group by IP" class="btn btn-outline-secondary" data-bs-toggle="button" autocomplete="off">
+<input id="grp-agent" type="button" value="Group by Agent" class="btn btn-outline-secondary" data-bs-toggle="button" autocomplete="off">
+
+<table class="table table-striped table-bordered" id="onlineusers">
     <thead>
         <tr>
-            <th>Visit Time</th>
-            <th>IP Address</th>
-            <th>User Agent</th>
-            <th>Path</th>
+            <th>Time </th>
+            <th>IP </th>
+            <th>User </th>
+            <th>Agent </th>
+            <th>Path </th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var visitor in Model)
-        {
-            <tr>
-                <td>@visitor.VisitTime.ToLocalTime()</td>
-                <td>@visitor.IpAddress</td>
-                <td>@visitor.UserAgent</td>
-                <td>@visitor.Path</td>
-            </tr>
-        }
-    </tbody>
+
 </table>
+@section Scripts {
+    <script src="https://cdn.datatables.net/v/bs5/dt-2.3.4/rg-1.6.0/datatables.min.js" integrity="sha384-Ql5E/R+8cLi6ljMnTZCTm7jVTzeYhv5s/K+l3qEvtG1aQD+3RcpUpA2uBHwCCZ7k" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const button = document.getElementById("grp-user");
+        const button2 = document.getElementById("grp-ip");
+        const button3 = document.getElementById("grp-agent");
+
+        button.addEventListener("click", () => {
+            let column = table.column(2);
+            if(table.rowGroup().enabled()){
+                table
+                    .rowGroup()
+                    .dataSrc('userName')
+                    .disable()
+                    .draw();
+
+ 
+                // Toggle the visibility
+                column.visible(!column.visible());
+            }else{
+                table
+                    .rowGroup()
+                    .dataSrc('userName')
+                    .enable()
+                    .draw();
+                // Toggle the visibility
+                column.visible(!column.visible());
+            }
+            collapsedGroups = {};
+        });
+        button2.addEventListener("click", () => {
+            if(table.rowGroup().enabled()){
+                table
+                    .rowGroup()
+                    .dataSrc('ipAddress')
+                    .disable()
+                    .draw();
+
+            }else{
+                table
+                    .rowGroup()
+                    .dataSrc('ipAddress')
+                    .enable()
+                    .draw();
+            }
+            collapsedGroups = {};
+        });
+        button3.addEventListener("click", () => {
+            if(table.rowGroup().enabled()){
+                table
+                    .rowGroup()
+                    .dataSrc('userAgent')
+                    .disable()
+                    .draw();
+            }else{
+                table
+                    .rowGroup()
+                    .dataSrc('userAgent')
+                    .enable()
+                    .draw();
+            }
+            collapsedGroups = {};
+        });
+        var table;
+        var collapsedGroups = {}; // Track collapsed groups
+
+        Object.assign(DataTable.defaults, {
+            pageLength: 100,
+        });
+        table = new DataTable('#onlineusers',{
+            lengthMenu: [50, 100,250, -1],
+            pageLength: 100,
+            processing: true,
+            serverSide: true,
+            searching:false,
+            ajax: {
+                url: SnitzVars.baseUrl + '/Charts/GetData',
+                type: 'POST'
+            },
+            columns: [
+                { data: 'visitTime' },
+                { data: 'ipAddress' },
+                { data: 'userName' },
+                { data: 'userAgent' },
+                { data: 'path' }
+            ],
+            autoWidth: true,
+            orderCellsTop: true,
+            order: [
+                [2, 'asc'],
+                [0, 'desc']
+            ],
+            rowGroup: {
+                dataSrc: [
+                        'userName'
+                ],
+                startRender: function (rows, group) {
+                    var collapsed = !!collapsedGroups[group]; // Check if the group is collapsed
+                    // Hide rows if the group is collapsed
+                    rows.nodes().each(function (row) {
+                        row.style.display = collapsed ? 'none' : '';
+                    });
+                    // Add a toggle icon for collapse/expand
+                    var toggleClass = collapsed ? 'fa-plus-square' : 'fa-minus-square';
+                    var colspan = rows.columns()[0].length;
+                    return $('<tr/>')
+                    .append('<td colspan="' + colspan + '"><span class="fa ' + toggleClass + ' toggler"></span> ' + group + ' (' + rows.count() + ')</td>')
+                    .attr('data-name', group)
+                    .toggleClass('collapsed', collapsed);
+                }
+            },
+            columnDefs: [
+                { targets: [3, 4], orderable: false},
+                { targets: [2], visible: false }
+            ],
+            layout: {
+                bottomEnd: {
+                    paging: {
+                        numbers: true
+                    }
+                }
+            }
+        });
+        // Add click event to toggle group visibility
+        $('#onlineusers tbody').on('click', 'tr.dtrg-group', function () {
+            var groupName = $(this).data('name');
+            collapsedGroups[groupName] = !collapsedGroups[groupName]; // Toggle collapse state
+            table.draw(false); // Redraw the table without resetting pagination
+        });
+
+        var method = "GET";
+        const fetchOptions = {
+            method,
+        };
+        fetchOptions.headers = {
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+
+        fetch(SnitzVars.baseUrl + '/Charts/VisitsByUser', fetchOptions)
+        .then(response => response.json())
+        .then(chartData => {
+            var ctx = document.getElementById('visitorsChart').getContext('2d');
+            let chart = new Chart(ctx, {
+                type: 'pie',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Visits By User'
+                        }
+                    }
+                }
+            });
+            chart.canvas.parentNode.style.height = '400px';
+            chart.canvas.parentNode.style.width = '400px';
+        });
+        fetch(SnitzVars.baseUrl + '/Charts/VisitsByHour', fetchOptions)
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(d => d.hour.toString().padStart(2, '0') + ':00');
+                const counts = data.map(d => d.count);
+
+                const ctx = document.getElementById('visitorsHourlyChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Visits per Hour (All Time)',
+                            data: counts,
+                            backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Hour of Day' } },
+                            y: { title: { display: true, text: 'Visits' }, beginAtZero: true, precision: 0 }
+                        }
+                    }
+                });
+            });
+
+    </script>
+}

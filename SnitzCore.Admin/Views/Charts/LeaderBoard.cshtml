@@ -1,0 +1,318 @@
+﻿@{
+    Layout = "_MasterLayout";
+    ViewData["Title"] = "Visitor Log";
+}
+@section Styles {
+    <style>
+        .list-group-item{
+            border: var(--bs-list-group-border-width) solid #888
+        }
+        .list-group-item + .list-group-item {
+            margin-top: 15px;
+            border-top-width: 1px;
+        }
+        .leaderboard-gold {
+            background-color: #ffcf40; /* Light gold background */
+        }
+        .leaderboard-silver {
+            background-color: #e2e3e5; /* Light silver background */
+        }
+        .leaderboard-bronze {
+            background-color: #DAAA5E; /* Light bronze background */
+        }
+
+        .leaderboard-current {
+            box-shadow: 0 0 0 4px #0d6efd55;
+            border-color: yellow !important;
+        }
+
+        .leaderboard .podium__wrapper {
+            background: rgb(var(--tertiary-rgb), 0.1);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+        .leaderboard .podium {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 1rem;
+            padding-bottom: 6rem;
+        }
+
+        .leaderboard .winner.-position1 {
+            position: relative;
+            z-index: 1;
+            order: 2;
+        }
+
+        .leaderboard .winner.-position2 {
+            order: 1;
+            transform: translate(20%, 35%);
+        }
+
+        .leaderboard .winner.-position3 {
+            order: 3;
+            transform: translate(-20%, 35%);
+        }
+
+        .leaderboard .winner__avatar {
+            position: relative;
+            margin-bottom: 25px;
+            top:-2rem;
+        }
+        .leaderboard .winner__avatar img {
+            /* width: 100%; */
+            height: auto;
+            border-radius: 100%;
+            border-width: 4px;
+            border-style: solid;
+            box-sizing: border-box;
+        }
+
+        .leaderboard .winner.-position1 .winner__avatar img {
+            border-color: #ffd82a;
+            background-color: #ffe46a;
+        }
+
+        .leaderboard .winner.-position2 .winner__avatar img {
+            border-color: #c4c4c4;
+            background-color: #d6d6d6;
+        }
+
+        .leaderboard .winner.-position3 .winner__avatar img {
+            border-color: #cd7f32;
+            background-color: #dca570;
+        }
+        .leaderboard .winner__rank {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            bottom: 0;
+            right: 50%;
+            transform: translate(50%, 50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 100%;
+            font-size: 28px;
+            color: #222;
+            font-weight: bold;
+        }
+
+        .leaderboard .winner.-position3 .winner__rank {
+            background-color: #cd7f32;
+        }
+        .leaderboard .winner.-position1 .winner__rank {
+            background-color: #ffd82a;
+        }
+        .leaderboard .winner.-position2 .winner__rank {
+            background-color: #c4c4c4;
+        }
+
+        .leaderboard .winner__crown {
+            z-index: 20;
+            position: relative;
+        }
+
+        .leaderboard .winner__name {
+            text-align: center;
+        }
+
+        .leaderboard .winner__name {
+            font-size: 1.14em;;
+        }
+        .leaderboard .winner__score {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+}
+<div class="d-flex aligns-items-center justify-content-center card bg-transparent border-0 text-center w-75 mx-auto mt-3">
+    <h2>Global Leaderboard</h2>
+    <hr/>
+</div>
+<div class="d-flex aligns-items-center justify-content-center card bg-transparent border-0 text-center w-75 mx-auto">
+    <div class="card mx-auto mb-3" style="width:50rem;">
+        <select name="range" id="date-select" class="form-select">
+            <option value="">All Time</option>
+            <option value="d">Today</option>
+            <option value="w">This Week</option>
+            <option value="m">This Month</option>
+            <option value="y" selected>This Year</option>
+        </select>
+    </div>
+    <div class="card mx-auto leaderboard" style="width:50rem;">
+        <div id="top-leaders" class="mb-3 card-header">
+            <div class="podium__wrapper" id="topLeaderboard">
+                <div class="podium">
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <ul class="list-group p-3" id="userLeaderboard">
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/v/bs5/dt-2.3.4/rg-1.6.0/datatables.min.js" integrity="sha384-Ql5E/R+8cLi6ljMnTZCTm7jVTzeYhv5s/K+l3qEvtG1aQD+3RcpUpA2uBHwCCZ7k" crossorigin="anonymous"></script>
+    <script>
+        Date.prototype.getWeek = function (dowOffset) {
+            dowOffset = typeof(dowOffset) == 'number' ? dowOffset : 1;
+            var newYear = new Date(this.getFullYear(),0,1);
+            var day = newYear.getDay() - dowOffset;
+            day = (day >= 0 ? day : day + 7);
+            var daynum = Math.floor((this.getTime() - newYear.getTime() -
+            (this.getTimezoneOffset()-newYear.getTimezoneOffset())*60000)/86400000) + 1;
+            var weeknum;
+            if(day < 4) {
+                weeknum = Math.floor((daynum+day-1)/7) + 1;
+                if(weeknum > 52) {
+                    nYear = new Date(this.getFullYear() + 1,0,1);
+                    nday = nYear.getDay() - dowOffset;
+                    nday = nday >= 0 ? nday : nday + 7;
+                    weeknum = nday < 4 ? 1 : 53;
+                }
+            }
+            else {
+                weeknum = Math.floor((daynum+day-1)/7);
+            }
+            return weeknum;
+        };
+
+        var method = "GET";
+        const fetchOptions = {
+            method,
+        };
+        fetchOptions.headers = {
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+
+        async function getMemberImage(user){
+            const response = await fetch(SnitzVars.baseUrl + '/Account/GetAvatar/?username=' + user,fetchOptions);
+            return await response.text();
+        }
+        // Get current user from Razor
+        const currentUser = '@User.Identity?.Name';
+        async function updateLeaderboard() {
+            const date = new Date();
+            const range = document.getElementById('date-select').value;
+
+            let url = SnitzVars.baseUrl + '/Charts/UserLeaderboard';
+            if(range === 'd'){
+                url = SnitzVars.baseUrl + '/Charts/UserLeaderboard?today=true';
+            } else if(range === 'w'){
+                url = SnitzVars.baseUrl + '/Charts/UserLeaderboardByWeek?year=' + date.getFullYear() + '&week=' + date.getWeek();
+            } else if(range === 'm'){
+                url = SnitzVars.baseUrl + '/Charts/UserLeaderboardByMonth?year=' + date.getFullYear() + '&month=' + (date.getMonth() + 1);
+            } else if(range === 'y'){
+                url = SnitzVars.baseUrl + '/Charts/UserLeaderboardByMonth?year=' + date.getFullYear() + '&month=0';
+            } else {
+                url = SnitzVars.baseUrl + '/Charts/UserLeaderboard';
+            }
+
+            const response = await fetch(url,fetchOptions);
+            const data = await response.json();
+
+            // Find current user in the leaderboard
+            let idx = data.findIndex(u => u.userName.toLowerCase() === currentUser.toLowerCase());
+            let currentUserObj = null;
+            if (idx !== -1) {
+                currentUserObj = { ...data[idx] };
+            } else if (currentUser) {
+                currentUserObj = {
+                    userName: currentUser,
+                    total: 0
+                };
+            }
+
+            const ulist = document.querySelector('#userLeaderboard');
+            const tlist = document.querySelector('#topLeaderboard .podium');
+            tlist.innerHTML = '';
+            ulist.innerHTML = '';
+            console.log(data.length);
+
+            if(data.length > 0){
+                for (let i = 0; i < Math.min(3, data.length); i++) {
+                    const user = data[i];
+                    const litem = document.createElement('div');
+                    let img = await getMemberImage(user.userName);
+                    let trophy = '';
+                    console.log(SnitzVars.baseUrl + img);
+                    if (i === 0) {
+                        trophy = '<span>&#x1F3C6;</span>'; // gold trophy emoji
+                    } else if (i === 1) {
+                        trophy = '<span>&#x1F948;</span>'; // silver medal emoji
+                    } else if (i === 2) {
+                        trophy = '<span>&#x1F949;</span>'; // bronze medal emoji
+                    }
+
+                    litem.setAttribute('class', `winner -position${user.rank}`);
+                    litem.innerHTML = `
+                        <div class="winner__crown fs-1">${trophy}</div>
+                        <div class="winner__avatar" role="button">
+                            <img alt="" width="120" height="120" src="${SnitzVars.baseUrl + img}" class="avatar1" title="${user.userName}">
+                            <div class="winner__rank">
+                                <span>${user.rank}</span>
+                            </div>
+                        </div>
+                        <div class="winner__name">
+                            ${user.userName}
+                        </div>
+                        <div class="winner__score">${user.total}</div>`;
+
+                    tlist.appendChild(litem);
+                }
+
+                if (currentUserObj && currentUserObj.total > 0) { // && currentUserObj.rank > 3
+                    let extraClass = 'leaderboard-current';
+                    let trophy = currentUserObj.rank;
+                    // Optionally, you can style this differently
+                    const litem = document.createElement('li');
+                    litem.setAttribute('class', `list-group-item bg-dark text-white d-flex justify-content-between align-items-center rounded-5 shadow fs-4 ${extraClass}`);
+                    litem.innerHTML = `
+                        <span>${trophy}</span><span>You</span>
+                        <span>${currentUserObj.total}</span>`;
+                    ulist.appendChild(litem);
+                }
+
+                // Render the rest of the leaderboard (skip top 3, and skip current user if already rendered)
+                for (let i = 3; i < data.length; i++) {
+                    const user = data[i];
+                    // Skip current user if already rendered below top 3
+                    //if (user.userName.toLowerCase() === currentUser.toLowerCase()) continue;
+                    const litem = document.createElement('li');
+                    let img = await getMemberImage(user.userName);
+
+                    let extraClass = '';
+                    let badgeClass = 'bg-primary';
+                    let trophy = user.rank;
+
+                    if (user.userName.toLowerCase() === currentUser.toLowerCase()) {
+                        extraClass += ' leaderboard-current';
+                    }
+                    litem.setAttribute('class', `list-group-item d-flex justify-content-between align-items-center rounded-5 shadow fs-4 ${extraClass}`);
+                    litem.innerHTML = `
+                        <span>${trophy}<img src="${SnitzVars.baseUrl + img}" class="avatarsmall rounded-circle" />
+                        ${user.userName}</span>
+                        <span class="badge ${badgeClass} rounded-pill">${user.total}</span>`;
+                    ulist.appendChild(litem);
+                }
+            }else{
+                    const litem = document.createElement('li');
+                    litem.setAttribute('class', `list-group-item bg-dark text-white d-flex justify-content-between align-items-center rounded-5 shadow fs-4`);
+                    litem.innerHTML = `
+                        <span></span><span>No current Data</span>
+                        <span></span>`;
+                    ulist.appendChild(litem);
+            }
+        }
+
+        document.getElementById('date-select').addEventListener("change", updateLeaderboard);
+        updateLeaderboard();
+    </script>
+}

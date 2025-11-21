@@ -35,7 +35,7 @@
 <div class="m-3 text-center">
     <div class="btn-group" role="toolbar" aria-label="Toolbar">
         <link-confirm title="@Localizer["mnuAdminReset"].Value" jq-selector="confirm-restart" href="~/Admin/Restart" class="btn btn-secondary"></link-confirm>
-
+        <button type="button" class="btn btn-secondary" id="clear-visitlog">Clear Visitor Log</button>
         <button type="button" class="btn btn-secondary" id="member-topics" >Delete All Topics by Member</button>
         <button type="button" class="btn btn-secondary" id="del-forumposts">Delete ALL posts in a Forum</button>
 
@@ -142,7 +142,19 @@
                 var id = this.value;
                 SnitzCharts.GetPostsByMonth(id);
             });
-
+        $('#clear-visitlog').on('click', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: '@Url.Action("ClearVisitLog", "Charts")',
+                type: 'POST',
+                success: function (data) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error clearing visit log.');
+                }
+            });
+        });
         $('#member-topics').on('click', function (e) {
             $('.modal-title').html('');
             $('#forum-select').hide();

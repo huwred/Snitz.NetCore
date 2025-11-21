@@ -6,7 +6,7 @@
 
 }
 @section Styles {
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css">
+    <link href="https://cdn.datatables.net/v/bs5/moment-2.29.4/dt-2.3.4/fc-5.0.5/datatables.min.css" rel="stylesheet" integrity="sha384-gTlHoS/w3gpQCG+E5GgOSUalCsh4pUSC52+p5NjButr1bJAZKB/GhrzoB7vmrn78" crossorigin="anonymous">
     <style>
         div.dt-container select.dt-input {
             margin-right: 4px;
@@ -112,17 +112,15 @@
 </div>
 
 @section Scripts{
-    <script type="text/javascript" src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.10.25/sorting/datetime-moment.js"></script>
-
-    <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/dataTables.fixedColumns.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/fixedColumns.dataTables.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-2.3.4/rg-1.6.0/datatables.min.js" integrity="sha384-Ql5E/R+8cLi6ljMnTZCTm7jVTzeYhv5s/K+l3qEvtG1aQD+3RcpUpA2uBHwCCZ7k" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.25/sorting/datetime-moment.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/2.3.3/dataRender/ellipsis.js"></script>
+
     <script type="text/javascript">
         var table;
         Object.assign(DataTable.defaults, {
-            pageLength: 10,
+            pageLength: 25,
             fixedColumns: true,
             scrollX: true,
             scrollY: true
@@ -135,7 +133,7 @@
             layout: {
                 topStart: {
                     pageLength: {
-                        menu: [5, 10, 25, 50]
+                        menu: [25, 50, 250]
                     }
                 }
             },            
