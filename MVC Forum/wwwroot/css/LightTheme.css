@@ -172,6 +172,9 @@ h1 {
 /* ########################################### */
 /*           Forums.html                       */
 /* ########################################### */
+.answered-overlay .status .fa-folder, .note .fa-folder.answered, .answered-overlay .status .fa-lock, .answered-overlay .status .fa-folder-open {
+    color: rgba(var(--bs-success-rgb)) !important;
+}
 .subforum-title {
     background-color: #eee;
 }
