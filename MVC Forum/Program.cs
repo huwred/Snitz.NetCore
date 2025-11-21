@@ -1,6 +1,7 @@
 ﻿using BbCodeFormatter;
 using BbCodeFormatter.Processors;
 using Hangfire;
+using KestrelWAF;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -34,6 +35,7 @@ using SnitzCore.Service.Hangfire;
 using SnitzCore.Service.MiddleWare;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -101,10 +103,6 @@ builder.Services.Configure<FormOptions>(x =>
     x.MultipartHeadersCountLimit = int.MaxValue;
     x.MultipartHeadersLengthLimit = int.MaxValue;
 });
-//builder.WebHost.ConfigureKestrel(options =>
-//{
-//    options.Limits.MaxRequestBodySize = 52428800*4; // 50 MB
-//});
 
 builder.Services.AddDefaultIdentity<ForumUser>(options =>
     {
@@ -172,15 +170,14 @@ builder.Services.AddTransient<IPasswordPolicyService, PasswordPolicyService>();
 builder.Services.AddTransient<IAdRotator, BannerService>();
 builder.Services.AddScoped<SignInManager<ForumUser>, CustomSignInManager>();
 builder.Services.AddMvc().AddViewLocalization();
+if(!string.IsNullOrWhiteSpace(builder.Configuration["SnitzForums:VisitorTracking"]))
+{
+    builder.Services.AddScoped<ILogRepository, VisitorLogRepository>();
+    builder.Services.AddSingleton<ILoggerService, DatabaseLoggerService>();
+    builder.Services.AddHostedService(sp => sp.GetService<ILoggerService>() as DatabaseLoggerService);
+}
 
-//if (builder.Environment.IsDevelopment())
-//{
-//    builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
-//}
-//else
-//{
-//    builder.Services.AddControllersWithViews();
-//}
+
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddYGfilemanager();
 builder.Services.AddResponseCaching();
@@ -277,6 +274,9 @@ builder.Services.AddDataProtection()
 .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(dataDir, @"dpkeys")))
 .SetApplicationName("snitz-core");
 
+    builder.Services.Configure<MicroRuleEngine.Rule>(opt => builder.Configuration.GetSection("Configuration:Ruleset").Bind(opt));
+    builder.Services.AddSingleton(new MaxMindDb(Path.Combine(dataDir,builder.Configuration["Configuration:GeoLiteFile"])));
+builder.Services.AddDetection();
 app = builder.Build();
 
 app.MigrateDatabase();
@@ -332,9 +332,12 @@ app.UseAuthorization();
 app.UseAntiforgery();
 
 app.UseSession();
-
+if (!string.IsNullOrWhiteSpace(builder.Configuration["Configuration:Enabled"]) && builder.Configuration.GetValue<bool>("Configuration:Enabled"))
+{
+    app.UseMiddleware<BlockIpMiddleware>();
+}
 app.UseOnlineUsers();
-if(!string.IsNullOrWhiteSpace(builder.Configuration["SnitzForums:VisitorTracking"])) 
+if (!string.IsNullOrWhiteSpace(builder.Configuration["SnitzForums:VisitorTracking"]))
 {
     app.UseMiddleware<VisitorTrackingMiddleware>();
 }

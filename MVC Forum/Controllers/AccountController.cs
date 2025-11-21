@@ -88,6 +88,20 @@ namespace MVCForum.Controllers
 
             return false;
         }
+        public IActionResult GetAvatar(string username)
+        {
+            var member = _memberService.GetByUsername(username);
+            if (member != null && !string.IsNullOrWhiteSpace(member.PhotoUrl))
+            {
+                var avatarPath = Path.Combine(_env.WebRootPath, "Content", "Avatar", member.PhotoUrl);
+                if (System.IO.File.Exists(avatarPath))
+                {
+                    return Content("/Content/Avatar/" + member.PhotoUrl);
+                }
+            }
+
+            return Content("/images/ninja-1027877_960_720.webp");
+        }
         public IActionResult Files(int id)
         {
             ViewBag.MemberId = id;
@@ -605,6 +619,11 @@ namespace MVCForum.Controllers
         [AllowAnonymous]
         public IActionResult ResetPassword(string? token, string? email)
         {
+            var memberPage = new MvcBreadcrumbNode("Index", "Account", "lblMembers");
+            var myPage = new MvcBreadcrumbNode("Detail", "Account", "Profile"){ Parent = memberPage };
+            var thisPage = new MvcBreadcrumbNode("ResetPassword", "Account", _languageResource.GetString("PasswordReset")) { Parent = myPage };
+
+            ViewData["BreadcrumbNode"] = thisPage;
             if (token == null)
             {
                 var forumuser = _userManager.GetUserAsync(_httpcontext.User).Result;
@@ -781,6 +800,11 @@ namespace MVCForum.Controllers
         public IActionResult NewEmail()
         {
             var member = _memberService.Current();
+            var memberPage = new MvcBreadcrumbNode("Index", "Account", "lblMembers");
+            var myPage = new MvcBreadcrumbNode("Detail", "Account", "Profile"){ Parent = memberPage };
+            var thisPage = new MvcBreadcrumbNode("NewEmail", "Account", _languageResource.GetString("ChangeEmail")) { Parent = myPage };
+
+            ViewData["BreadcrumbNode"] = thisPage; 
             var model = new ChangeEmailModel
             {
                 Email = "",
@@ -994,6 +1018,11 @@ namespace MVCForum.Controllers
         [Authorize]
         public IActionResult ChangeUsername(int? id)
         {
+            var memberPage = new MvcBreadcrumbNode("Index", "Account", "lblMembers");
+            var myPage = new MvcBreadcrumbNode("Detail", "Account", "Profile"){ Parent = memberPage };
+            var thisPage = new MvcBreadcrumbNode("ChangeUsername", "Account", _languageResource.GetString("ChangeUsername")) { Parent = myPage };
+
+            ViewData["BreadcrumbNode"] = thisPage;
             if (_memberService.Current()?.Id != id || id == null)
                 return View("Error");
 

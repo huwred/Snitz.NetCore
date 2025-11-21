@@ -4,6 +4,134 @@
     background-color: rgb(250,250,250) !important;
     color: darkslategrey !important;
 }
+:root {
+    --primary-header: #bbb;
+    --bs-border-color: var(--primary-header) !important;
+}
+.table-primary{
+    --bs-table-bg: silver;
+
+}
+.btn-outline-info {
+    --bs-btn-color: #aaa;
+    --bs-btn-border-color: #aaa;
+    --bs-btn-hover-color: #000;
+    --bs-btn-hover-bg: #aaa;
+    --bs-btn-hover-border-color: #aaa;
+    --bs-btn-focus-shadow-rgb: 13,202,240;
+    --bs-btn-active-color: #000;
+    --bs-btn-active-bg: #aaa;
+    --bs-btn-active-border-color: #aaa;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+    --bs-btn-disabled-color: #aaa;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #aaa;
+    --bs-gradient: none;
+}
+.btn-outline-primary, .btn-outline-warning, .btn-outline-danger {
+    --bs-btn-color: silver;
+    --bs-btn-border-color: silver;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: silver;
+    --bs-btn-hover-border-color: silver;
+    --bs-btn-focus-shadow-rgb: 13, 110, 253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: silver;
+    --bs-btn-active-border-color: silver;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+    --bs-btn-disabled-color: silver;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: silver;
+    --bs-gradient: none;
+}
+.btn-primary {
+    --bs-btn-color: #000;
+    --bs-btn-bg: #eee;
+    --bs-btn-border-color: #000;
+    --bs-btn-hover-color: #111;
+    --bs-btn-hover-bg: #fff;
+    --bs-btn-hover-border-color: #111;
+    --bs-btn-focus-shadow-rgb: 49,132,253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #0a58ca;
+    --bs-btn-active-border-color: #0a53be;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #0d6efd;
+    --bs-btn-disabled-border-color: #0d6efd;
+}
+.btn-warning {
+    --bs-btn-color: #000;
+    --bs-btn-bg: silver;
+    --bs-btn-border-color: silver;
+    --bs-btn-hover-color: #000;
+    --bs-btn-hover-bg: #ffc107;
+    --bs-btn-hover-border-color: silver;
+    --bs-btn-focus-shadow-rgb: 217,164,6;
+    --bs-btn-active-color: #000;
+    --bs-btn-active-bg: silver;
+    --bs-btn-active-border-color: silver;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+    --bs-btn-disabled-color: #000;
+    --bs-btn-disabled-bg: silver;
+    --bs-btn-disabled-border-color: silver;
+}
+.btn-success {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: gray;
+    --bs-btn-border-color: gray;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: green;
+    --bs-btn-hover-border-color: #146c43;
+    --bs-btn-focus-shadow-rgb: 60,153,110;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #146c43;
+    --bs-btn-active-border-color: #13653f;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: gray;
+    --bs-btn-disabled-border-color: gray;
+}
+.btn-danger {
+    --bs-btn-color: #000;
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: #111;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #bb2d3b;
+    --bs-btn-hover-border-color: #b02a37;
+    --bs-btn-focus-shadow-rgb: 225,83,97;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #b02a37;
+    --bs-btn-active-border-color: #a52834;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #dc3545;
+    --bs-btn-disabled-border-color: #dc3545;
+}
+.fc-h-event {
+    background-color: gray;
+    border: 1px solid gray;
+    display: block;
+}
+.event-birthday.fc-h-event {
+    background-color: silver;
+    border: 1px solid silver;
+    display: block;
+}
+.fc .fc-daygrid-day.fc-day-today {
+    background-color: #eee;
+}
+.form-check-input:checked {
+    background-color: #000;
+    border-color: #000;
+}
+#side-menu ul li a:hover {
+    background: #eee !important;
+    color: var(--bs-heading-color);
+}
+#side-menu ul li ul li a:hover {
+    border-left: 4px solid #333 !important;
+}
 .navbar {
     background-color: #eeeeee !important;
     color: #ccc;
@@ -28,18 +156,28 @@ h1 {
     font-size: 16px;
     font-weight: bolder;
 }
-
-
+.accordion-button{
+    background-color:transparent;
+}
+.sidebar-toggle{
+    color:black !important;
+}
+.table-row .status .fa.fa-thumb-tack.fa-stack-1x, .table-row .status .fa.fa-fire.fa-stack-1x, .table-row .status .fa-regular.fa-frown.fa-stack-1x,
+.table-row .status .fa.fa-rocket.fa-stack-1x {
+    color: silver !important;
+}
+#member-tools .nav-item:hover{
+    background-color: rgba(0,0,0,.125);
+}
 /* ########################################### */
 /*           Forums.html                       */
 /* ########################################### */
-
 .subforum-title {
     background-color: #eee;
 }
 
 .subforum-column {
-    background-color: #ddd;
+    /*background-color: #ddd;*/
 }
 
 /* For the smartphones */
@@ -61,13 +199,16 @@ h1 {
 }
 
 .nav-item a {
-    color: darkslategrey;
+    font-weight:bolder;
+    color: #333;
 }
 
     .nav-item a:hover {
-        color: white;
+        color: #000;
     }
-
+#fixed-head .nav-item .dropdown-menu {
+    width: 200px;
+}
 .bar-icon {
     color: #fff;
 }
@@ -91,14 +232,17 @@ footer {
 /* posts table's head  */
 
 .table-head div {
-    background-color: #aaa;
+    background-color: transparent !important;
     font-weight: bold;
 }
+.table-head{
+    border: 1px solid gray;
+    border-radius: var(--bs-border-radius)!important;
 
+}
 /* posts table's body  */
-
 .table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply, .table-row .subscribe {
-    background-color: #ddd;
+    /*background-color: #ddd;*/
 }
 
 /* navigation path*/
@@ -129,13 +273,18 @@ footer {
 /* ########################################### */
 /*            detail.html                      */
 /* ########################################### */
-
+.widget-sidebar .list-group-item:first-child {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
 .head {
     background-color: #aaa;
 }
-
+.topic-container .card-body {
+    background-color: #efefef;
+}
 .body {
-    background-color: #eee;
+    background-color: #fff;
 }
 .body.topic {
     background-color: #efefef;

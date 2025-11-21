@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlMigrations", "Migrator
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YG.ASPNetCore.FileManager", "F:\Temp\YG.ASPNetCore.FileManager-master\src\YG.ASPNetCore.FileManager\YG.ASPNetCore.FileManager.csproj", "{6FC0405E-59D3-74CE-D0D5-22BE934DA368}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KestrelWAF", "F:\Temp\KestrelWAF-main\KestrelWAF\KestrelWAF.csproj", "{D2281B68-BFA6-D275-4854-F0AD8BF85C5C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{6FC0405E-59D3-74CE-D0D5-22BE934DA368}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FC0405E-59D3-74CE-D0D5-22BE934DA368}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FC0405E-59D3-74CE-D0D5-22BE934DA368}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2281B68-BFA6-D275-4854-F0AD8BF85C5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2281B68-BFA6-D275-4854-F0AD8BF85C5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2281B68-BFA6-D275-4854-F0AD8BF85C5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2281B68-BFA6-D275-4854-F0AD8BF85C5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

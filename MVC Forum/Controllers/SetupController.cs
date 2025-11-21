@@ -189,9 +189,9 @@ public class SetupController : Controller
         var appdataPath = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
         optionsBuilder.UseDatabase(provider == "localdb" ? "mssql" : provider,connectionString,appdataPath);
         using var context = new SnitzDbContext(optionsBuilder.Options);
-        Console.WriteLine("Performing Database Upgrade");
+        //Console.WriteLine("Performing Database Upgrade");
         await context.Database.MigrateAsync();
-        Console.WriteLine("Upgrade complete");
+        //Console.WriteLine("Upgrade complete");
         return View();
     }
     

@@ -9,9 +9,12 @@
 
 html, body {
     font-size: var(--font-size);
-    font-family: Verdana, Arial, helvetica;
+    font-family: "open sans", Verdana, Arial, helvetica;
     background-color: whitesmoke !important;
     color: var(--primary-header) !important;
+}
+#admin-menu a.nav-link { /*must move*/
+    color: white;
 }
 .dropdown-menu {
     --bs-dropdown-divider-bg: whitesmoke;
@@ -168,7 +171,7 @@ a:active,a:hover {
 }
 #changeEmailForm > .text-success {
     --bs-text-opacity: 1;
-    color: white,var(--bs-text-opacity)) !important;
+    color: white,var(--bs-text-opacity) !important;
 }
 /* ########################################### */
 /*           Forums.html                       */

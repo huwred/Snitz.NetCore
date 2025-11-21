@@ -37,7 +37,7 @@ tinymce.init({
     plugins:  [
         'advlist autolink link lists code media',
         'searchreplace wordcount charmap hr insertdatetime paste',
-        'table emoticons codesample fullscreen'
+        'table emoticons codesample fullscreen image imagetools'
     ],
     paste_data_images: true,
     branding: false,

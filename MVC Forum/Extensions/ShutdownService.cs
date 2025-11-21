@@ -17,7 +17,7 @@ public class ShutdownService : IShutdownService
             Thread.Sleep(1000); // Let the response flush
             var exePath = Process.GetCurrentProcess().MainModule.FileName;
             Process.Start(exePath); // Relaunch
-            Console.WriteLine("Application restarted.");
+            //Console.WriteLine("Application restarted.");
             Environment.Exit(0);    // Terminate current process
     }
 }

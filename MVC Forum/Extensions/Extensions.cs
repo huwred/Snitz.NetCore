@@ -108,14 +108,14 @@ namespace MVCForum.Extensions
             {
                 if (appContext.Database.GetPendingMigrations().Any())
                 {
-                    Console.WriteLine("Applying Photo Album Migrations");
+                    //Console.WriteLine("Applying Photo Album Migrations");
                     appContext.Database.Migrate();
                 }
             }
             catch (Exception ex)
             {
                 //Log errors or do anything you think it's needed
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
                 //throw;
             }
             return webApp;
@@ -128,14 +128,14 @@ namespace MVCForum.Extensions
             {
                 if (appContext.Database.GetPendingMigrations().Any())
                 {
-                    Console.WriteLine("Applying Calendar/Event Migrations");
+                    //Console.WriteLine("Applying Calendar/Event Migrations");
                     appContext.Database.Migrate();
                 }
             }
             catch (Exception ex)
             {
                 //Log errors or do anything you think it's needed
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
                 //throw;
             }
             return webApp;
@@ -148,14 +148,14 @@ namespace MVCForum.Extensions
             {
                 if (appContext.Database.GetPendingMigrations().Any())
                 {
-                    Console.WriteLine("Applying PostThanks Migrations");
+                    //Console.WriteLine("Applying PostThanks Migrations");
                     appContext.Database.Migrate();
                 }
             }
             catch (Exception ex)
             {
                 //Log errors or do anything you think it's needed
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
                 //throw;
             }
             return webApp;

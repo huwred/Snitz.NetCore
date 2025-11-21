@@ -969,7 +969,7 @@ namespace MVCForum.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                //Console.WriteLine(e);
                 throw;
             }
                
@@ -1505,7 +1505,7 @@ namespace MVCForum.Controllers
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e);
+                        //Console.WriteLine(e);
                         throw;
                     }
 

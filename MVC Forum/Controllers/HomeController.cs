@@ -45,6 +45,7 @@ namespace MVCForum.Controllers
         //[ResponseCache(Duration = 240, Location = ResponseCacheLocation.Any)]
         public IActionResult Index()
         {
+
             if (!string.IsNullOrWhiteSpace(LandingPage))
             {
                 BreadcrumbManager.Options.DontLookForDefaultNode = true;

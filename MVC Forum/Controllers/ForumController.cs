@@ -718,7 +718,7 @@ namespace MVCForum.Controllers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ////Console.WriteLine(e);
                     ModelState.AddModelError("Save Forum Error",e.Message);
                 }
             }
@@ -978,20 +978,26 @@ namespace MVCForum.Controllers
             return View("../Search/Index",model);
         }
 
-        //[ResponseCache(Duration = 240, Location = ResponseCacheLocation.Client)]
+        /// <summary>
+        /// Displays a paged list of topics from forums the current user is subscribed to, filtered by the specified time period.
+        /// </summary>
+        /// <param name="pagenum">The page number to display.</param>
+        /// <param name="activesince">The time period to filter topics (e.g., last 12 months).</param>
+        /// <returns>Returns the MyView Razor Page with the user's forum topics.</returns>
         [Authorize]
         public IActionResult MyView(int pagenum=1, MyTopicsSince activesince = MyTopicsSince.Last12Months)
         {
             var forumsubs = _memberService.ForumSubscriptions().ToList();
-            var result = _forumService.FetchMyForumTopicsPaged(5, pagenum, forumsubs);
+            var forumtopics = _forumService.FetchMyForumTopicsPaged(5, pagenum, forumsubs);
+            //var topicsubs = _memberService.TopicSubscriptions().ToList();
+            //var topics = _forumService.FetchMySubscribedTopicsPaged(5,pagenum,topicsubs);
 
             var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
             var topicPage = new MvcBreadcrumbNode("MyView", "Forum", "mnuMyView") { Parent = forumPage };
             ViewData["BreadcrumbNode"] = topicPage;
             MyTopicsViewModel vm = new MyTopicsViewModel
             {
-                Topics = result,
-                //AllTopics = _forumService.FetchAllMyForumTopics(forumsubs),
+                Topics = forumtopics,
                 ActiveSince = activesince
             };
 

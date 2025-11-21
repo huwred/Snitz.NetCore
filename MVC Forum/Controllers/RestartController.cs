@@ -22,7 +22,7 @@ namespace MVCForum.Controllers
         public IActionResult Restart()
         {
             SetupCacheProvider.Remove("AdminUser");
-            Console.WriteLine("Restarting application...");
+            //Console.WriteLine("Restarting application...");
             
 
         // Fire-and-forget shutdown
@@ -31,7 +31,7 @@ namespace MVCForum.Controllers
             //Thread.Sleep(3000);
 
             //Response.Redirect("/");
-            Console.WriteLine("Server is doing a triple somersault and will land back on its feet in a moment...");
+            //Console.WriteLine("Server is doing a triple somersault and will land back on its feet in a moment...");
             return new EmptyResult(); // Response already redirected
         }
     }
