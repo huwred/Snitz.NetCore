@@ -1033,9 +1033,18 @@ namespace MVCForum.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> EmptyForum(int id )
         {
-            await _forumService.EmptyForum(id);
-            var forum = _forumService.GetWithPosts(id);
-            return Json(new { redirectToUrl = Url.Action("Index", "Category",new{id=forum.CategoryId}) });
+            try
+            {
+                await _forumService.EmptyForum(id);
+                var forum = _forumService.GetWithPosts(id);
+                CacheProvider.Remove("AllForums");
+                return Json(new { redirectToUrl = Url.Action("Index", "Category",new{id=forum.CategoryId}) });
+            }
+            catch (Exception e)
+            {
+                return Json(false);
+                //throw;
+            }
 
         }
 

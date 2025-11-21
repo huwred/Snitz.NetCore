@@ -278,7 +278,7 @@
             (async () => {
                 const result = await b_confirm(Snitzres.cnfEmptyForum)
                 if (result) {
-                    $.get(href.replace("~", SnitzVars.baseUrl) + id, function(result){
+                    $.get(href.replace("~", SnitzVars.baseUrl), function(result){
                         window.location.replace(result.redirectToUrl);
                     });
                 }
