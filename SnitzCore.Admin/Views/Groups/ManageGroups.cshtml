@@ -19,6 +19,16 @@
                 <li>@Html.ActionLink(linkText, "ManageGroups", new { id = fgroup.Id },new{@class="manage-group", data_id=fgroup.Id})</li>
             }
         </ul>
+        <form asp-action="UpdateGroupName" asp-controller="Groups" method="POST" data-ajax="true" id="upd-groupname" data-ajax-update="#group-result" >
+            <div class="mb-3">
+                <label class="form-label">Group Name</label>
+                <div class="input-group mb-3">
+                    <input type="text" name="GroupName" value="@Model.GroupName" class="form-control" aria-label="Group name">
+                    <input type="hidden" name="GroupNameId" value="@Model.GroupNameId" aria-label="Group name id">
+                    <button class="btn btn-outline-success" type="submit">Change Name</button>
+                </div>
+            </div>
+        </form>
         <hr/>
         <form asp-action="AddGroup" asp-controller="Groups" method="POST" data-ajax="true" data-ajax-update="#group-result">
             <div class="mb-3">

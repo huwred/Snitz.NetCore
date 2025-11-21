@@ -32,13 +32,20 @@ namespace SnitzCore.BackOffice.Controllers
                 GroupName = _categoryservice.GetGroupNames().FirstOrDefault(g=>g.Id == id)?.Name,
                 Groups = _categoryservice.GetGroupNames().ToList(),
             };
-            if (id > 0)
-            {
 
-            }
             return View(vm);
         }
+        public IActionResult UpdateGroupName(int GroupNameId, string GroupName)
+        {
+            var group = _categoryservice.GetGroupNames().FirstOrDefault(g=>g.Id == GroupNameId);
+            if(group != null)
+            {
+                group.Name = GroupName;
+                _groupservice.Update(group);
+            }
 
+            return PartialView("SaveResult", "Name updated");
+        }
         /// <summary>
         /// Adds a new group
         /// </summary>

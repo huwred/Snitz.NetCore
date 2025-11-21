@@ -55,9 +55,10 @@ namespace SnitzCore.Service
         {
             return _dbContext.GroupName.Include(g=>g.Groups).ToList();
         }
-        public Task Update(Group group)
+        public Task Update(GroupName group)
         {
-            throw new NotImplementedException();
+            _dbContext.Update(group);
+            return _dbContext.SaveChangesAsync();
         }
     }
 }

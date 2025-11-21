@@ -12,7 +12,7 @@ namespace SnitzCore.Data.Interfaces
         Task Add(GroupName group);
 
         Task Create(Group group);
-        Task Update(Group group);
+        Task Update(GroupName group);
         Task Delete(GroupName group);
         Task DeleteCategory(int groupnameid, int categoryid);
         List<Group> GetAll();
