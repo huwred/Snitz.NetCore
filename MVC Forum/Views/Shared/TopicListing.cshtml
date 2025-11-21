@@ -8,7 +8,6 @@
 @model MVCForum.ViewModels.Post.PostListingModel
 @inject IEnumerable<ISnitzStartupService> pluginservices
 @{
-    Layout = null;
     var eventservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(CalEventsService));
     var answeredClass = "";
     var moderatedClass = $"modstatus-{Model.Status}";
@@ -33,35 +32,34 @@
     var isblog = Model.Topic?.Forum?.Type == (int)ForumType.BlogPosts;
 }
 <div class="table-row @answeredClass rounded-2 @moderatedClass">
-
     <div class="status pt-3" data-status="@Model.Status" style="z-index: 2">
         @if (eventservice != null && eventservice.EnabledForTopic(Model.Id))
         {
-            <snitz-topic-icon plugin-icon="fa-calendar" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate.Value.LocalTime(SnitzCookie)"></snitz-topic-icon>
+            <snitz-topic-icon plugin-icon="fa-calendar" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         else if (Model.HasPoll)
         {
-            <snitz-topic-icon plugin-icon="fa-bar-chart" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate.Value.LocalTime(SnitzCookie)"></snitz-topic-icon>
+            <snitz-topic-icon plugin-icon="fa-bar-chart" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         else if (archives)
         {
-            <snitz-topic-icon plugin-icon="fa-archive" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate.Value.LocalTime(SnitzCookie)"></snitz-topic-icon>
+            <snitz-topic-icon plugin-icon="fa-archive" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         else
         {
-            <snitz-topic-icon blog="@(isblog)" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model.LastPostDate.Value.LocalTime(SnitzCookie)"></snitz-topic-icon>
+            <snitz-topic-icon blog="@(isblog)" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         <span class="d-block d-md-none fs-4 bold" title="@Localizer["lblReplies"]">@Model?.RepliesCount</span>
     </div>
     <div class="subjects" style="z-index: 2">
         <div class="d-lg-flex flex-row bd-highlight mb-1">
             <div class="p-2 flex-grow-1 bd-highlight">
-                <span snitz-if="@Model.Answered" class="badge rounded-pill text-bg-success">Answered</span>&nbsp;
+                <span snitz-if="@Model?.Answered" class="badge rounded-pill text-bg-success">Answered&nbsp;</span>
                 <a snitz-if="@isblog" href="~/Blog/@Model?.Title?.Replace(" ","-")">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a>
                 <a snitz-if="@(archives && !isblog)" href="~/Topic/Archived/@Model?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a>
                 <a snitz-if="@(!archives && !isblog)" href="~/Topic/@Model?.Id">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a><br />
                 <span>
-                    @Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model.AuthorId"></member-link>
+                    @Localizer["Started"] @Localizer["lblPostedBy"] <member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-id="@Model?.AuthorId"></member-link>
                     @if (ViewData["ActiveTopics"] != null && (bool)ViewData["ActiveTopics"]!)
                     {
                         @Localizer["lblin"]
@@ -91,7 +89,7 @@
             <div class="d-none d-md-flex  p-2 bd-highlight fs-5 post-buttons">
                 @if (!archives)
                 {
-                    @await Component.InvokeAsync("PostControls", new { post = Model.Topic ,forlist = true})
+                    @await Component.InvokeAsync("PostControls", new { post = Model?.Topic ,forlist = true})
                 }
             </div>
         </div>
@@ -104,7 +102,7 @@
         {
             <span class="d-flex-1">
                 <span class="d-sm-inline-flex d-md-none">@Localizer["lblLastPost"]</span>
-                <lastpost-link is-blog="@isblog" blog-title="@Model?.Title?.Replace(" ","-")" jump-to="@(SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1)" post-date="@Model.LastPostDate" topic-id="@Model.Id" reply-id="@Model.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
+                <lastpost-link is-blog="@isblog" blog-title="@Model?.Title?.Replace(" ","-")" jump-to="@(SnitzConfig.GetIntValue("STRJUMPLASTPOST") == 1)" post-date="@Model?.LastPostDate" topic-id="@Model!.Id" reply-id="@Model.LatestReply" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></lastpost-link>
                 <br class="d-none d-sm-inline-flex" />
                 <span class="ms-2">@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
             </span>
@@ -112,11 +110,11 @@
         <div class="d-sm-inline-flex d-md-none bd-highlight fs-5 post-buttons">
             @if (!archives)
             {
-                @await Component.InvokeAsync("PostControls", new { post = Model.Topic, forlist = true })
+                @await Component.InvokeAsync("PostControls", new { post = Model?.Topic, forlist = true })
             }
         </div>
     </div>
-    <div class="subscribe d-none d-sm-inline-flex">
+    <div class="subscribe d-none d-xl-inline-flex">
         <input snitz-if="@(User?.IsInRole("Administrator"))" type="checkbox" class="form-check-input topic-select" value="@Model?.Id" name="topicselected" aria-label="Select Topic" />
     </div>
 </div>

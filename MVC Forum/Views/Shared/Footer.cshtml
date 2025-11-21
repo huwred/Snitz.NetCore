@@ -2,8 +2,11 @@
 @using SnitzCore.Service.Extensions
 
 <footer>
-    <span class="flo">@Html.Raw(SnitzConfig.ForumTitle) - &copy; @Html.Raw(string.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year)) </span>
-    <span><br /><a href="~/About#privacy" title="View our privacy policy">@Localizer["mnuPrivacyPolicy"]</a> | <a href="~/About#cookie" title="View our cookie policy">@Localizer["mnuCookies"]</a><br /></span>
-    <span snitz-if="@(SnitzConfig.GetIntValue("INTPAGETIMER") == 1)" class="page-timer" id="loadTime"></span>
-    <span><br />All times are Local!. The time now is @DateTime.UtcNow.ToForumDateTimeDisplay(SnitzCookie)</span>
+    <div class="d-flex flex-row justify-content-between align-items-start">
+        <span class="flo">@Html.Raw(SnitzConfig.ForumTitle) - &copy; @Html.Raw(string.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year)) </span>
+        <span><a href="~/About#privacy" title="View our privacy policy">@Localizer["mnuPrivacyPolicy"]</a> | <a href="~/About#cookie" title="View our cookie policy">@Localizer["mnuCookies"]</a><br /></span>
+        <span snitz-if="@(SnitzConfig.GetIntValue("INTPAGETIMER") == 1)" class="page-timer" id="loadTime"></span>
+
+    </div>
+    <span class="d-none"><br />All times are Local!. The time now is @DateTime.UtcNow.ToForumDateTimeDisplay(SnitzCookie)</span>
 </footer>

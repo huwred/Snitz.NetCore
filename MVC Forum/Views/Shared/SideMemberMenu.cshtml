@@ -1,0 +1,37 @@
+﻿@using SnitzCore.Data
+@inject IPrivateMessage pmService
+
+@{
+    var member = MemberService.Current();
+    var pmcount = 0;
+    if (member != null)
+    {
+        pmcount = pmService.GetInbox(member!.Id).Where(mbox => mbox.Read == 0).Count();
+    }
+    <li class="sub-menu">
+        <a href="#" id="navbarDropdownUserLink">
+            @Localizer["mnuAccount"]<div class='fa fa-caret-down right'></div>
+        </a>
+        <ul aria-labelledby="navbarDropdownUserLink">
+            <li><a asp-controller="Account" asp-action="Detail" asp-route-id="">@Localizer["mnuAccountProfile"]</a></li>
+            <li snitz-if="@(MemberService.ForumSubscriptions().Count() > 0)">
+                <a asp-controller="Forum" asp-action="MyView" title="View subscribed Topics activity">@Localizer["mnuMyView"]</a>
+            </li>
+            <li snitz-if="@SnitzConfig.GetIntValue("STRPMSTATUS") == 1"><a asp-controller="PrivateMessage" asp-action="Inbox">@Localizer["mnuAccountPM"] (@pmcount)</a></li>
+            <li snitz-if="@SnitzConfig.GetIntValue("STRBOOKMARK") == 1"><a asp-controller="Bookmark" asp-action="Index" asp-route-id="">@Localizer["mnuBookMarks"]</a></li>
+            <li snitz-if="@(SnitzConfig.TableExists("FORUM_IMAGES") && SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)"><a asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="">@Localizer["mnuMyAlbum"]</a></li>
+
+            @if (User.IsInRole("LanguageEditor"))
+            {
+                <li><hr class="dropdown-divider"> </li>
+                <li><a href="~/LanguageManager/">@Localizer["mnuAdminLangResources"]</a></li>
+                <li><a asp-controller="LanguageManager" asp-action="Templates">Email Templates</a></li>      
+            }
+            <li><hr class="dropdown-divider"> </li>
+            
+            <li><a asp-controller="Account" asp-action="LogOut" asp-route-clearcookies="@(true)" title="@Localizer["tipDelCookie"]">@Localizer["mnuClearCookies"]</a></li>
+        </ul>
+    </li>
+}
+
+

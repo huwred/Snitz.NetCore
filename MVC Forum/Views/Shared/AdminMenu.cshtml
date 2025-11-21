@@ -19,6 +19,8 @@
         {
             <li><hr class="dropdown-divider" /></li>
             <li><a class="dropdown-item" asp-controller="LogView" asp-action="Index" rel="nofollow noindex">Logs</a></li>
+            <li><a class="dropdown-item" asp-controller="Charts" asp-action="OnlineUsers" rel="nofollow noindex">Visitors</a></li>
+            <li><a class="dropdown-item" asp-controller="Charts" asp-action="LeaderBoard" rel="nofollow noindex">LeaderBoard</a></li>
             <li><a class="dropdown-item" href="~/snitzjobs" rel="nofollow noindex">@Localizer["tipHangfire"]</a></li>
             <li>
                 <link-confirm title="Clear Cache" jq-selector="confirm-clearcache" href="~/Admin/ClearCache" class="dropdown-item text-warning"></link-confirm>

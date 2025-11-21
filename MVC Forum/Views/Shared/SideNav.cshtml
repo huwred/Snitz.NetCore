@@ -1,0 +1,69 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SnitzCore.Service.TagHelpers
+@inject UserManager<ForumUser> UserManager
+
+@{
+    var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? SnitzConfig.GetValueWithDefault("STRDEFAULTTHEME", "SnitzTheme");
+    var currForumUser = UserManager.GetUserAsync(User).Result;
+}
+
+<nav class='animated bounceInDown' id="side-menu">
+    <ul>
+    <cache expires-sliding="@TimeSpan.FromMinutes(2)" vary-by-user="true">
+        <li class='sub-menu'>
+            <a href="#" role="button" id="navbarDropdownForumLink">@Localizer["mnuForum"]<div class='fa fa-caret-down right'></div></a>
+            <ul aria-labelledby="navbarDropdownForumLink">
+                <li><a href="~/AllForums">@Localizer["mnuForumHome"]</a></li>
+                <li><a asp-controller="Forum" asp-action="Active">@Localizer["mnuForumActive"]</a></li>
+                <li><a asp-controller="Account" asp-action="Index">@Localizer["mnuForumMembers"]</a></li>
+                <li><a asp-controller="Forum" asp-action="Search">@Localizer["mnuForumSearch"]</a></li>
+                <li snitz-if="@((SnitzConfig.GetIntValue("INTPOLLS") == 1 && SnitzConfig.GetIntValue("INTACTIVEPOLLS") == 1 && User.Identity.IsAuthenticated)
+                                        || (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && (SnitzConfig.GetIntValue("INTPUBLICEVENTS") == 1 && User.Identity.IsAuthenticated)))"><hr class="dropdown-divider" /></li>
+                @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
+                @await Component.InvokeAsync("Events", new { template = "MenuItem" })
+                <li snitz-if="@(SnitzConfig.IsEnabled("INTLEADERBOARD"))"><a asp-controller="Forum" asp-action="Search">@Localizer["mnuAbout"]</a></li>
+
+            </ul>
+        </li>
+        <li class="sub-menu" snitz-if="@(SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)">
+            <a href="#" role="button" id="navbarDropdownAlbumLink">@Localizer["mnuAlbums"]<div class='fa fa-caret-down right'></div></a>
+            <ul aria-labelledby="navbarDropdownAlbumLink">
+                <li><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Index" asp-route-id="">@Localizer["mnuMemberAlbums"]</a></li>
+                <li snitz-if="@(SnitzConfig.GetIntValue("INTCOMMONALBUM") == 1)"><a asp-controller="PhotoAlbum" asp-action="Album" asp-route-id="">@Localizer["mnuCommonAlbum"]</a></li>
+                <li snitz-if="@SignInManager.IsSignedIn(User)"><a asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="@currForumUser?.MemberId">@Localizer["mnuMyAlbum"]</a></li>
+            </ul>
+        </li>
+
+        @if (!SignInManager.IsSignedIn(User))
+        {
+            <li><a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path" >@Localizer["SignIn"]</a></li>
+            @if (SnitzConfig.GetIntValue("STRPROHIBITNEWMEMBERS") != 1)
+            {
+                <li><a asp-controller="Account" asp-action="Register">@Localizer["Register"]</a></li>
+            }
+        }
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <partial name="SideMemberMenu" />
+
+        }
+        <li><a asp-controller="FAQ" asp-action="Index">@Localizer["mnuForumFAQ"]</a></li>
+        <li class='sub-menu' snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT",1) == 1)">
+            <a href="#about" role="button" id="navbarDropdownAbout">More ... <div class='fa fa-caret-down right'></div></a>
+            <ul>
+                <li><a href="~/About#about">@Localizer["mnuAbout"]</a></li>
+                <li><a href="~/About#contact">@Localizer["mnuContact"]</a></li>
+                <li><a href="~/About#privacy">@Localizer["mnuPrivacyPolicy"]</a></li>
+                <li><a href="~/About#cookie">@Localizer["mnuCookies"]</a></li>
+                @* <li snitz-if="@(SnitzConfig.TableExists("FORUM_FILECOUNT"))"><a class="dropdown-item" href="~/Releases">@Localizer["mnuRelease"]</a></li> *@
+            </ul>
+        </li>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                 <li><a asp-controller="Account" asp-action="LogOut">@Localizer["SignOut"]</a></li>
+               
+            }
+    </cache>
+    </ul>
+</nav>

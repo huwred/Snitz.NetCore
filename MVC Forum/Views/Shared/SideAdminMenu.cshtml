@@ -1,0 +1,37 @@
+﻿<li class="sub-menu">
+    <a href="#" role="button" id="navbarDropdownAdminLink" rel="nofollow noindex">
+        @Localizer["mnuAdmin"]<div class='fa fa-caret-down right'></div>
+    </a>
+    <ul aria-labelledby="navbarDropdownAdminLink">
+        <li><a asp-controller="Admin" asp-action="Index" rel="nofollow noindex">@Localizer["mnuAdminMainConfig"]</a></li>
+        <li><a asp-controller="Admin" asp-action="EmailConfig" rel="nofollow noindex">@Localizer["mnuAdminEmail"]</a></li>
+        <li><a asp-controller="Admin" asp-action="Forum" rel="nofollow noindex">@Localizer["mnuAdminForum"]</a></li>
+        <li><a asp-controller="Admin" asp-action="Features" rel="nofollow noindex">@Localizer["mnuAdminFeature"]</a></li>
+        <li><a asp-controller="Admin" asp-action="Members" rel="nofollow noindex">@Localizer["mnuAdminMembership"]</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a href="~/LanguageManager/" rel="nofollow noindex">@Localizer["mnuAdminLangResources"]</a></li>
+        <li><a asp-controller="LanguageManager" asp-action="Search" rel="nofollow noindex">@Localizer["mnuAdminFindLangRes"]</a></li>
+        <li><a asp-controller="Charts" asp-action="Index" rel="nofollow noindex">@Localizer["mnuAdminTools"]</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
+        <li><a asp-controller="Category" asp-action="Create" rel="nofollow noindex">@Localizer["tipNewCategory"]</a></li>
+        @if (User.IsInRole("SuperAdmin"))
+        {
+            <li><hr class="dropdown-divider" /></li>
+            <li><a asp-controller="LogView" asp-action="Index" rel="nofollow noindex">Logs</a></li>
+            <li><a asp-controller="Charts" asp-action="OnlineUsers" rel="nofollow noindex">Visitors</a></li>
+            <li><a asp-controller="Charts" asp-action="LeaderBoard" rel="nofollow noindex">LeaderBoard</a></li>
+            <li><a href="~/snitzjobs" rel="nofollow noindex">@Localizer["tipHangfire"]</a></li>
+            <li>
+                <link-confirm title="Clear Cache" jq-selector="confirm-clearcache" href="~/Admin/ClearCache" class="text-warning"></link-confirm>
+            </li>
+            <li>
+                <link-confirm title="@Localizer["mnuAdminReset"].Value" jq-selector="confirm-restart" href="~/Admin/Restart" class="text-warning"></link-confirm>
+            </li>
+            <li>
+                <link-confirm title="Update Counts" jq-selector="confirm-counts" href="~/Admin/UpdateCounts" class="text-warning"></link-confirm>
+            </li>
+            <li><a asp-controller="FileManager" asp-action="Index" rel="nofollow noindex">@Localizer["mnuAdminExplorer"]</a></li>
+        }
+    </ul>
+</li>

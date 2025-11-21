@@ -48,7 +48,14 @@
 <script>
     function refreshViewComponent() {
         if(document.getElementById('featured-img-card')){
-            fetch(SnitzVars.baseUrl + '/Home/RefreshFeature') // Replace with your ViewComponent's route
+        var method = "GET";
+        const fetchOptions = {
+            method,
+        };
+            fetchOptions.headers = {
+                'X-Requested-With': 'XMLHttpRequest'
+            };
+            fetch(SnitzVars.baseUrl + '/Home/RefreshFeature', fetchOptions) // Replace with your ViewComponent's route
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('featured-img-card').innerHTML = html;

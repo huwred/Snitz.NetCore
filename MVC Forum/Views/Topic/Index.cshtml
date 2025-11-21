@@ -183,9 +183,8 @@
                                 <option value="asc" selected-val="@Model.SortDir">@Localizer["optAsc"]</option>
                             </select>
                         </div>
-                        <div class="col"><span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span></div>
-                    </div>
-
+                        <div class="col p-2"><span class="form-text">&nbsp;@Localizer["selSortDir"] &nbsp;</span></div>
+                        <div class="col">
                     @if (SnitzConfig.GetValueWithDefault("STRTOPICPAGESIZES", "") != "")
                     {
                         var ischecked = Model.PageSize;
@@ -203,6 +202,10 @@
                             }
                         </div>
                     }
+                        </div>
+                    </div>
+
+
                 <input type="number" value="@pagenum" name="page" style="display: none;"/>
             </form>
             </div>

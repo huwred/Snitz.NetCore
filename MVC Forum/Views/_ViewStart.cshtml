@@ -1,3 +1,11 @@
-﻿@{
-    Layout = "Layout";
+﻿@using Wangkanai.Detection.Services
+@inject IDetectionService DetectionService
+@{
+    Layout = "SideLayout"; // Default layout
+
+    if (DetectionService.Device.Type == Wangkanai.Detection.Models.Device.Mobile ||
+        DetectionService.Device.Type == Wangkanai.Detection.Models.Device.Tablet)
+    {
+         Layout = "Layout";
+    }
 }

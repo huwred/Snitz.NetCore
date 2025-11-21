@@ -9,7 +9,13 @@
 @using SnitzCore.Service.TagHelpers
 @model MVCForum.ViewModels.User.MemberIndexModel
 @inject UserManager<ForumUser> UserManager
-
+@section MetaData
+{
+    <title>Members - @Config.Value.strForumTitle </title>
+    <meta name="title" content="Members - @Config.Value.strForumTitle" />
+    <meta name="copyright" content="@Html.Raw(String.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year)) - @SnitzConfig.ForumTitle">
+    <meta name="robots" content="index,nofollow" />
+}
 @{
     var ranking = MemberService.GetRankings();
     var rankType = SnitzConfig.GetIntValue("STRSHOWRANK", 0);

@@ -9,14 +9,15 @@
     var navcss = currentTheme!.Contains("Dark") ? "navbar-dark bg-dark" : "navbar-light bg-dark";
 }
 
-<nav class="navbar navbar-expand-md navbar-custom @navcss fixed-top ">
+<nav class="navbar navbar-expand-lg navbar-custom @navcss fixed-top  ">
+    <div class="container align-content-between">
     <partial name="MenuLogo" />
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse @navcss" id="navbarSupportedContent">
-        <cache expires-sliding="@TimeSpan.FromMinutes(2)" vary-by-user="true">
+    <div class="collapse navbar-collapse @navcss justify-content-between" id="navbarSupportedContent">
             <ul class="navbar-nav">
+            <cache expires-sliding="@TimeSpan.FromMinutes(2)" vary-by-user="true">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownForumLink">@Localizer["mnuForum"]</a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownForumLink">
@@ -28,6 +29,7 @@
                                                 || (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && (SnitzConfig.GetIntValue("INTPUBLICEVENTS") == 1 && User.Identity.IsAuthenticated)))"><hr class="dropdown-divider" /></li>
                         @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
                         @await Component.InvokeAsync("Events", new { template = "MenuItem" })
+                        <li snitz-if="@(SnitzConfig.IsEnabled("INTLEADERBOARD"))"><a class="dropdown-item" asp-controller="Forum" asp-action="Search">@Localizer["mnuAbout"]</a></li>
                         <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT", 1) == 1)"><hr class="dropdown-divider" /></li>
                         <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT",1) == 1)">
                             <a class="dropdown-item" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownAbout">@Localizer["mnuAbout"]</a>
@@ -71,11 +73,12 @@
                         }
                     }
                 }
+            </cache>
+                <li><partial name="SelectTheme" /></li>
             </ul>
-        </cache>
 
         <partial name="mailbox" />
-        <partial name="SelectTheme" />
         <partial name="SelectLanguage" />
+    </div>
     </div>
 </nav>

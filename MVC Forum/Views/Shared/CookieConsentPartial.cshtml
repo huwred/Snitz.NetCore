@@ -9,7 +9,7 @@
 @if (showBanner)
 {
     <div id="cookieConsent" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
-        @Localizer["CookieConsent"] <a asp-area="" asp-controller="Home" asp-action="CookiePolicy">Learn More</a>.
+        @Localizer["CookieConsent"] <a href="~/About#cookie" title="Cookie Policy">Learn More</a>.
         <button type="button" class="btn btn-success accept-policy close" data-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">
             <span aria-hidden="true">@Localizer["CookieBtn"]</span>
         </button>

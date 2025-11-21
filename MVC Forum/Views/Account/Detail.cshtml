@@ -5,12 +5,15 @@
 @using SnitzCore.Data
 @using SnitzCore.Service
 @using SnitzCore.Service.Extensions
-@* @inject IMember _memberService *@
+@section MetaData
+{
+    <title>@Model.Title - @Config.Value.strForumTitle </title>
+    <meta name="title" content="@Model.Title - @Config.Value.strForumTitle" />
+    <meta name="copyright" content="@Html.Raw(String.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year)) - @SnitzConfig.ForumTitle">
+    <meta name="robots" content="noindex,nofollow" />
+}
 @{
-    //var _ranking = MemberService.GetRankings();
     var canedit = Model.CanEdit || User.IsInRole("Administrator");
-    // var memberproperties = Model.Member!.GetType().GetProperties().Where(p => !p.SystemProperty()); 
-    // var systemproperties = Model.Member!.GetType().GetProperties().Where(p => p.SystemProperty());
 }
 @section Styles
 {
@@ -18,21 +21,35 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
     }
 }
-<div class="container pt-0">
+<div class="row container pt-0">
     <snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
-    <h1 snitz-if="@canedit" class="bg-form p-2">@Localizer["Profile"]</h1>
-    <h1 snitz-if="@(!canedit)" class="bg-form p-2">@Localizer["ProfileDetails", Model.Name] </h1>
-    <div id="member-profile">
-        @if (canedit)
-        {
-            @await Component.InvokeAsync("Members", new { template = "Edit", Member = Model })
-        }
-        else
-        {
-            @await Component.InvokeAsync("Members", new { template = "Public", Member = Model })
-        }
+    <div class="col">
+        <div class="card" id="member-tools">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link active" asp-controller="Account" asp-action="Files" asp-route-id="@Model?.Id">@Localizer["mnuManageFiles"]</a></li>
+                <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="NewEmail" asp-route-id="">@Localizer["mnuChangeEmail"]</a></li>
+                <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="ChangeUsername" asp-route-id="@Model?.Id">@Localizer["mnuChangeUsername"]</a></li>
+                <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="ResetPassword" asp-route-id="">@Localizer["mnuChangePassword"]</a></li>
+            </ul>
+
+        </div>
     </div>
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-10">
+        <h1 snitz-if="@canedit" class="bg-form p-2">@Localizer["Profile"]</h1>
+        <h1 snitz-if="@(!canedit)" class="bg-form p-2">@Localizer["ProfileDetails", Model.Name] </h1>
+        <div id="member-profile">
+            @if (canedit)
+            {
+                @await Component.InvokeAsync("Members", new { template = "Edit", Member = Model })
+            }
+            else
+            {
+                @await Component.InvokeAsync("Members", new { template = "Public", Member = Model })
+            }
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    </div>
+
 </div>
 
 <partial name="Modal\UploadModal" />

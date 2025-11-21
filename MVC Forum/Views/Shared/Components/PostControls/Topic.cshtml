@@ -42,19 +42,19 @@
                 <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa-regular fa-commenting  post-quote" title="@Localizer["tipQuoteTopic"]" data-id="@postid" data-toggle="tooltip"></i>
             }
         }
-        @if (SnitzConfig.GetIntValue("STRTHANKS", 0) == 1)
+        @if (SnitzConfig.IsEnabled("STRTHANKS"))
         {
             if (allowThanks && User.Identity.IsAuthenticated)
             {
                 @await Component.InvokeAsync("PostThanks", new { template = "TopicSummary", topicid = postid, id = 0, showcount = true, archived = isArchived })
             }
         }
-        @if (SnitzConfig.GetIntValue("STRBOOKMARK", 0) == 1 && !isArchived)
+        @if (SnitzConfig.IsEnabled("STRBOOKMARK") && !isArchived)
         {
             <i snitz-if="@Bookmarks.IsBookmarked(postid)" class="fa fa-bookmark  bookmark-del" title="@Localizer["tipRemoveBookmark"]" data-id="@postid" data-toggle="tooltip"></i>
             <i snitz-if="@(!Bookmarks.IsBookmarked(postid))" class="fa-regular fa-bookmark  bookmark-add" title="@Localizer["tipBookmarkPost"]" data-id="@postid" data-toggle="tooltip"></i>
         }
-        @if (SnitzConfig.GetIntValue("STRTHANKS", 0) == 1)
+        @if (SnitzConfig.IsEnabled("STRTHANKS"))
         {
             if (allowThanks && User.Identity.IsAuthenticated)
             {

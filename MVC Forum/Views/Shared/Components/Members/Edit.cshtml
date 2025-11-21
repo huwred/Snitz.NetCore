@@ -63,20 +63,16 @@
                 <label asp-for="Title" class="form-label">@Localizer["ProfileTitle"]</label>
                 <input name="Title" class="form-control" disabled="@(!User.IsInRole("Administrator"))" value="@Html.MemberRankTitle(Model.Member, _ranking, Localizer)" />
             </div>
-            <div class="mb-3" snitz-if="@canedit">
-                <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
-                <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
-                <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
-            </div>
+
         </div>
         <div class="col col-md-4">
-            <div class="mb-1">
-                <label asp-for="Member!.Created" class="col-sm-3 form-label">@Localizer["ProfileDate"]</label>
+            <div class="mb-3">
+                <label asp-for="Member!.Created" class="col-sm-6 form-label">@Localizer["ProfileDate"]</label>
                 <div class="col-sm-9">
                     <label class="form-label">@Model.Member?.Created.FromForumDateStr().ToForumDisplay(SnitzConfig,SnitzCookie)</label>
                 </div>
             </div>
-            <div class="mb-1">
+            <div class="mb-2">
                 <label asp-for="Member!.Posts" class="col-sm-3 col-form-label">@Localizer["ProfilePosts"]</label>
                 <div class="col-sm-9">
                     <input asp-for="Member!.Posts" type="number" class="form-control" value="@Model.Member?.Posts" snitz-if="@(User.IsInRole("Administrator"))" />
@@ -93,7 +89,7 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label asp-for="Member!.LastLogin" class="col-sm-3 col-form-label">@Localizer["ProfileLastVisit"]</label>
+                <label asp-for="Member!.LastLogin" class="col-sm-6 col-form-label">@Localizer["ProfileLastVisit"]</label>
                 <div class="col-sm-9">
                     <label class="form-label">@Model.Member?.LastLogin.FromForumDateStr().ToForumDisplay(SnitzConfig,SnitzCookie)</label>
                 </div>
@@ -111,6 +107,13 @@
             {
                 @await Component.InvokeAsync("PostThanks", new { template = "Profile", id = Model.Member.Id })
             }
+        </div>
+    </div>
+    <div class="row">
+        <div class="mb-3" snitz-if="@canedit">
+            <a asp-action="Index" class="btn btn-danger">@Localizer["btnCancel"]</a>
+            <button type="reset" class="btn btn-warning">@Localizer["btnReset"]</button>
+            <button type="submit" class="btn btn-success">@Localizer["btnSave"]</button>
         </div>
     </div>
     <input name="PhotoUrl" type="hidden" value="@Model.Member?.PhotoUrl" />

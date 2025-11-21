@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12 col-lg-7" id="msg-list">
+        <div class="col-12 col-lg-8" id="msg-list">
             @if (Model.Inbox != null)
             {
                 @await Html.PartialAsync("inbox",Model)
@@ -41,7 +41,7 @@
                 @await Html.PartialAsync("outbox",Model)
             }
         </div>
-        <div class="col-12 col-lg-7" id="pm-message">
+        <div class="col-12 col-lg-8" id="pm-message">
             @if (Model.Settings != null)
             {
                 <partial name="Settings" model="@Model.Settings"/>

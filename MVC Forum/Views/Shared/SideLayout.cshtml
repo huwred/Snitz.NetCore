@@ -54,14 +54,137 @@
     @await Component.InvokeAsync("SnitzThemeCss")
     @await RenderSectionAsync("Styles", required: false)
 
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+    #sidebar {
+      width: 240px;
+      height: 100vh;
+      position: fixed;
+      top: 56px; /* height of navbar */
+      transition: width 0.1s ease;
+      overflow-y: auto;
 
+    }
+    #sidebar.collapsed {
+      display:none;
+    }
+#main-content {
+  flex: 1 0 auto;
+  margin-top: 70px;
+  margin-left: 240px;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  transition: width 0.6s ease;
+}
+#main-content::-webkit-scrollbar {
+  display: none;
+}
+
+footer {
+  flex-shrink: 0;
+  z-index:1;
+}
+
+
+    #sidebar.collapsed + #main-content {
+      margin-left: 0;
+    }
+    .sidebar-toggle {
+      cursor: pointer;
+    }
+#side-menu {
+	position: relative;
+	margin: 20px;
+	/* width: 180px; */
+
+}
+#side-menu ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+#side-menu ul li {
+  /* Sub Menu */
+}
+#side-menu ul li a {
+	display: block;
+	padding: 10px 15px;
+	color: var(--bs-heading-color);
+	text-decoration: none;
+	-webkit-transition: 0.2s linear;
+	-moz-transition: 0.2s linear;
+	-ms-transition: 0.2s linear;
+	-o-transition: 0.2s linear;
+	transition: 0.2s linear;
+}
+#side-menu ul li a:hover {
+	background: var(--primary-header);
+	color: #fff;
+}
+#side-menu ul li a .fa {
+	width: 16px;
+	text-align: center;
+	margin-right: 5px;
+	float:right;
+}
+#side-menu ul ul {
+	background: rgba(0, 0, 0, 0.2);
+}
+#side-menu ul li ul li a {
+	
+	border-left: 4px solid transparent;
+	padding: 10px 20px;
+}
+#side-menu ul li ul li a:hover {
+	border-left: 4px solid #3498db;
+}
+.navbar>.container, .navbar>.container-fluid, .navbar>.container-sm, .navbar>.container-md, .navbar>.container-lg, .navbar>.container-xl, .navbar>.container-xxl {
+    display: flex;
+    flex-wrap: inherit;
+    align-items: center;
+    justify-content: start !important;
+}
+.content {
+  flex: 1 0 auto;
+
+}
+
+.image-gallery > li{
+    flex-basis:200px;
+}
+</style>
 </head>
 <body>
-    <partial name="_BusyPartial" />
-    <div class="d-flex flex-column" style="min-height: 100vh;">
-        <div class="container flex-grow-1">
-        <partial name="MainNav"/>       
-            <main role="main" class="pb-3 mt-6">
+  <!-- Fixed Header -->
+  <nav id="fixed-head" class="navbar navbar-dark bg-dark fixed-top">
+    <div class="container justify-content-between">
+      <button class="btn btn-outline-none sidebar-toggle text-white fs-2 mx-4" id="toggleSidebar">☰</button>
+      <span class="navbar-brand"><partial name="MenuLogo" /></span>
+      <partial name="SelectTheme" />
+        <partial name="mailbox" />
+        <partial name="SelectLanguage" />
+                @if (User.IsInRole("Administrator"))
+                {
+                    <div id="admin-menu"><partial name="AdminMenu" /></div>
+                    
+                }
+    </div>
+  </nav>
+<div class="container content" >
+
+  <!-- Fixed Sidebar -->
+  <div id="sidebar" class="border-end">
+    <partial name="SideNav" />
+  </div>
+
+  <!-- Main Content -->
+  <div id="main-content" class="p-4">
             @if (SnitzConfig.IsEnabled("INTTOPBANNER"))
             {
                 @await Component.InvokeAsync("AdRotator", new { template = "top" })
@@ -70,12 +193,11 @@
             <partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
 
                 @RenderBody()
-            </main>
             <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
-        </div>
+  </div>
+</div>
+  <!-- Sticky Footer -->
         <partial name="Footer"/>
-
-    </div>
 
     <div id="user-card" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -158,6 +280,16 @@
         path: SnitzVars.cookiePath,
         expires: date
     });
+
+    document.getElementById('toggleSidebar').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    });
+
+      $('.sub-menu ul').hide();
+        $(".sub-menu a").click(function () {
+	        $(this).parent(".sub-menu").children("ul").slideToggle("100");
+	        $(this).find(".right").toggleClass("fa-caret-up fa-caret-down");
+        });
 </script>
 </body>
 </html>

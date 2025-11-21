@@ -41,7 +41,7 @@ else
         <div class="row pt-0">
             <div class="center m-2 ">
                 <div class="subforum col-6 bg-form border border-dark rounded">
-                    <h1 class="bg-dark text-bg-dark p-2">@Localizer["registerTitle"]</h1>
+                    <h1 class="bg-dark text-bg-dark p-2 rounded-top">@Localizer["registerTitle"]</h1>
                     <div class="p-2">
                         <div class="mb-3">
                             <label asp-for="Name" class="form-label">@Localizer["Username"]</label>
@@ -75,7 +75,7 @@ else
         <div class="row pt-0">
             <div class="center m-2 ">
                 <div class="subforum col-6 bg-form border border-dark rounded">
-                    <h1 class="bg-dark text-bg-dark p-2">@Localizer["Required"]</h1>
+                    <h1 class="bg-dark text-bg-dark rounded-top p-2">@Localizer["Required"]</h1>
                     <div class="p-2">
                         @if (Model.RequiredFields != null)
                         {

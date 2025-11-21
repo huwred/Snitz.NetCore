@@ -11,26 +11,6 @@
         allowrating = allowrating && topic.AllowRating == 1 && SnitzConfig.GetIntValue("INTTOPICRATING", 0) == 1;
 
         string postsclass = "read";
-        //string forumTitle = Uri.EscapeDataString(SnitzConfig.ForumTitle);
-        //var actionuri = Url.Action("Index", "Topic", new { id = topic.Id });
-        //string pageUrl = Uri.EscapeDataString(actionuri);
-@*     var tracked = SnitzCookie.Tracked(topic.Id.ToString());
-    bool newPosts;
-    if (tracked != null)
-    {
-        var today = DateTime.UtcNow.ToString("yyyyMM");
-        newPosts = (today + tracked).FromForumDateStr() < topic.LastPostDate.FromForumDateStr();
-        if ((DateTime)ViewData["LastVisitDateTime"] > topic.LastPostDate.FromForumDateStr())
-        {
-            SnitzCookie.ClearTracking(topic.Id.ToString());
-            newPosts = (DateTime)ViewData["LastVisitDateTime"] < topic.LastPostDate.FromForumDateStr();
-        }
-
-    }
-    else
-    {
-        newPosts = (DateTime)ViewData["LastVisitDateTime"] < topic.LastPostDate.FromForumDateStr();
-    } *@
         int replies = topic.ReplyCount;
         var lpAuthor = MemberService.GetById(topic.LastPostAuthorId);
         var author = MemberService.GetById(topic.MemberId);
@@ -41,20 +21,6 @@
         {
             replies += topic.UnmoderatedReplies;
         }
-@*         if (tracked != null)
-        {
-            var today = DateTime.UtcNow.ToString("yyyyMM");
-            newPosts = (today + tracked).FromForumDateStr() < topic.LastPostDate?.FromForumDateStr();
-        }
-        else
-        {
-            newPosts = (DateTime?)TempData["LastVisitDateTime"] < topic.LastPostDate?.FromForumDateStr();
-        }
-        if (newPosts)
-        {
-            postsclass = "newposts";
-
-        } *@
         if (topic.LastPostAuthorId == MemberService.Current()?.Id)
         {
             postsclass += "_mine";
@@ -68,9 +34,6 @@
                 </span>
                 <p class="card-text center">
                     <member-link text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }" member-id="@topic.MemberId" ></member-link>
-@*                     <a class="@rolecssAU" href="@Url.Action("UserProfile", "Account", new { id = topic.Member.Name })">
-                        @topic.Member.Name
-                    </a> *@
                 </p>
             </div>
             <div class="col-10">
@@ -87,20 +50,14 @@
                         <p>@Html.Raw(BbCodeProcessor.Format(topic.Content))</p>
                     </div>
                     <ul class="list-inline list-unstyled mb-0 border-top border-1 p-1" >
-                        <li class="list-inline-item"><span><i class="fa fa-calendar m-2"></i><snitz-datetime datetime="@topic.Created.FromForumDateStr()"></snitz-datetime></span></li>
+                        <li class="list-inline-item"><span><i class="fa fa-calendar m-2" title="Posted" data-toggle="tooltip"></i><snitz-datetime datetime="@topic.Created.FromForumDateStr()"></snitz-datetime></span></li>
                         <li class="list-inline-item">|</li>
-                        <li class="list-inline-item" aria-label="@topic.ViewCount @Localizer["lblViews"]">@topic.ViewCount</li>
+                        <li class="list-inline-item" aria-label="@topic.ViewCount @Localizer["lblViews"]" title="Views" data-toggle="tooltip">@topic.ViewCount</li>
                         <li class="list-inline-item">|</li>
-                    @*                 
-                        @if (allowrating && ViewBag.RatingSum > 0)
-                        {
-                            <li class="list-inline-item"><input id="star-rating-demo" value="@ViewBag.RatingSum" type="number" class="rating" min=0 max=5 step=0.1 data-size="xs"/></li><li>|</li>
-                        } 
-                        
-                    *@
+                        <li class="list-inline-item"><span><i class="fa fa-calendar m-2" title="Last post" data-toggle="tooltip"></i><snitz-datetime datetime="@topic.LastPostDate.FromForumDateStr()"></snitz-datetime></span></li>
+                        <li class="list-inline-item">|</li>
                         <li class="list-inline-item hidden-xs fs-4">
                             <vc:topic-buttons postid="@topic.Id"></vc:topic-buttons>
-                            @* <partial name="_SocialMedia" /> *@
                         </li>
                     </ul>
                 </div>
