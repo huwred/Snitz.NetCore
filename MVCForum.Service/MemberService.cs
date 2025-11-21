@@ -352,7 +352,7 @@ namespace SnitzCore.Service
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
                 //Supress any errors
             }
             return rankings;
@@ -837,23 +837,20 @@ namespace SnitzCore.Service
             var memberid = Current()?.Id;
             if (memberid.HasValue)
             {
-                //return CacheProvider.GetOrCreate($"Subs_{memberid.Value}", ()=> GetForumSubscriptions(memberid.Value),TimeSpan.FromMinutes(10));
-                return _dbContext.MemberSubscriptions.Where(s => s.MemberId == memberid).Select(s => s.ForumId).Distinct().OrderBy(o=>o);
-
+                return _dbContext.MemberSubscriptions.AsNoTracking().Where(s => s.MemberId == memberid && s.PostId == 0).Select(s => s.ForumId).Distinct().OrderBy(o=>o);
             }
 
             return new List<int>();
         }
-
-        /// <summary>
-        /// Retrieves a collection of forum IDs that the specified member is subscribed to.
-        /// </summary>
-        /// <param name="memberid">The unique identifier of the member whose forum subscriptions are to be retrieved.</param>
-        /// <returns>An <see cref="IEnumerable{T}"/> of integers representing the IDs of forums the member is subscribed to. The
-        /// collection is distinct and ordered in ascending order.</returns>
-        private IEnumerable<int> GetForumSubscriptions(int memberid)
+        public IEnumerable<int> TopicSubscriptions()
         {
-            return _dbContext.MemberSubscriptions.Where(s => s.MemberId == memberid).Select(s => s.ForumId).Distinct().OrderBy(o=>o);
+            var memberid = Current()?.Id;
+            if (memberid.HasValue)
+            {
+                return _dbContext.MemberSubscriptions.AsNoTracking().Where(s => s.MemberId == memberid && s.PostId != 0).Select(s => s.PostId).Distinct().OrderBy(o=>o);
+            }
+
+            return new List<int>();
         }
 
         /// <summary>
@@ -942,7 +939,7 @@ namespace SnitzCore.Service
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    //Console.WriteLine(e.Message);
                     throw;
                 }
 

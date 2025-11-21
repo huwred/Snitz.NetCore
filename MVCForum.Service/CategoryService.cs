@@ -62,7 +62,7 @@ namespace SnitzCore.Service
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                //Console.WriteLine(e);
                 throw;
             }
 
@@ -86,7 +86,7 @@ namespace SnitzCore.Service
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                //Console.WriteLine(e);
                 throw;
             }
             CacheProvider.Remove("AllCats");
@@ -114,7 +114,7 @@ namespace SnitzCore.Service
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                //Console.WriteLine(e);
                 throw;
             }
 

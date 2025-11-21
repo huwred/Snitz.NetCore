@@ -59,7 +59,7 @@ namespace SnitzCore.Service
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                //Console.WriteLine(e);
                 throw;
             }
 
@@ -334,7 +334,17 @@ namespace SnitzCore.Service
                 .OrderByDescending(p=>p.LastPostDate);
             return new PagedList<Post>(result, pagenum, pagesize);
         }
-
+        public PagedList<Post> FetchMySubscribedTopicsPaged(int pagesize, int pagenum, IEnumerable<int> topicids)
+        {
+            var result = _dbContext.Posts.AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Forum)
+                .Include(p => p.Member).Include(p => p.LastPostAuthor)
+                .Where(p=> EF.Constant(topicids).Contains(p.Id))
+                .Where(p=>p.Status < 2)
+                .OrderByDescending(p=>p.LastPostDate);
+            return new PagedList<Post>(result, pagenum, pagesize);
+        }
         public IEnumerable<string> GetTagStrings(List<int> list)
         {
             return _dbContext.Posts.AsNoTracking().Where(f => EF.Constant(list).Contains(f.ForumId)).Select(p => p.Content);

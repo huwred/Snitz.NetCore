@@ -151,7 +151,7 @@ namespace SnitzCore.Service.TagHelpers
                     output.TagName = "div";
                     output.AddClass("mb-3", HtmlEncoder.Default);
                     output.Content.AppendHtml(
-                        $@"<label for=""{PropertyInfo?.Name}"">{displayName ?? PropertyInfo?.Name}</label>");
+                        $@"<label for=""{PropertyInfo?.Name}"" class=""form-label"">{displayName ?? PropertyInfo?.Name}</label>");
                     if (CanEdit)
                     {
                         output.Content.AppendHtml($@"<div class=""input-group date"" data-provide=""datepicker"">");
@@ -186,7 +186,7 @@ namespace SnitzCore.Service.TagHelpers
                     output.TagName = "div";
                     output.AddClass("mb-3", HtmlEncoder.Default);
                     output.Content.AppendHtml(
-                    $@"<label class=""form-label""  for=""{PropertyInfo?.Name}"">{displayName ?? PropertyInfo?.Name}</label>");
+                    $@"<label class=""form-label"" class=""form-label""  for=""{PropertyInfo?.Name}"">{displayName ?? PropertyInfo?.Name}</label>");
                     if (CanEdit)
                     {
                         output.Content.AppendHtml($@"<input type=""{valtype}"" name=""{Name ?? PropertyInfo?.Name}"" id=""{PropertyInfo?.Name}"" value=""{Value}"" class=""form-control"" {required} {disabled}/>");

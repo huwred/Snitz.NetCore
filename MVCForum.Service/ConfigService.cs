@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
@@ -11,6 +12,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SnitzCore.Service
 {
@@ -122,6 +124,8 @@ namespace SnitzCore.Service
             }
         }
 
+        private readonly List<SnitzConfig> _cachedConfig = new List<SnitzConfig>();
+
         string? ISnitzConfig.ForumDescription
         {
             get => _config.GetSection("SnitzForums").GetSection("strForumDescription").Value; 
@@ -133,6 +137,8 @@ namespace SnitzCore.Service
             _config = config;
             _httpContextAccessor = httpContextAccessor;
             _env = env;
+
+            _cachedConfig = CacheProvider.GetOrCreate("snitzconfig_cache",()=> _dbContext.SnitzConfig.AsNoTracking().ToList(),TimeSpan.FromHours(1));
         }
 
         public void RemoveFromCache(string key)
@@ -141,20 +147,7 @@ namespace SnitzCore.Service
         }
         public int GetIntValue(string key, int defaultvalue = 0)
         {
-            return CacheProvider.GetOrCreate<int>("cfg_" + key,()=> CachedIntValue(key, defaultvalue),TimeSpan.FromMinutes(5));
-        }
-        public bool IsEnabled(string key)
-        {
-            var keyvalue = CacheProvider.GetOrCreate<int>("cfg_" + key,()=> CachedIntValue(key, 0),TimeSpan.FromMinutes(5));
-            return keyvalue == 1;
-        }
-        public IEnumerable<string> GetRequiredMemberFields()
-        {
-            return _dbContext.SnitzConfig.Where(c => c.Key.StartsWith("STRREQ") && c.Value == "1").Select(c=>c.Key);
-        }
-        private int CachedIntValue(string? key, int defaultvalue)
-        {
-            var config = _dbContext.SnitzConfig.SingleOrDefault(c => c.Key == key);
+            var config = _cachedConfig.SingleOrDefault(c => c.Key == key);
             if (config != null && int.TryParse(config.Value, out int parsedValue))
             {
                 return parsedValue;
@@ -162,6 +155,20 @@ namespace SnitzCore.Service
 
             return defaultvalue;
         }
+        public bool IsEnabled(string key)
+        {
+            var config = _cachedConfig.SingleOrDefault(c => c.Key == key);
+            if (config != null && int.TryParse(config.Value, out int keyvalue))
+            {
+                return keyvalue == 1;
+            }
+            return false;
+        }
+        public IEnumerable<string> GetRequiredMemberFields()
+        {
+            return _cachedConfig.Where(c => c.Key.StartsWith("STRREQ") && c.Value == "1").Select(c=>c.Key);
+        }
+
 
         public string GetValue(string key)
         {
@@ -170,13 +177,8 @@ namespace SnitzCore.Service
         }
         public string GetValueWithDefault(string key, string? defVal = null)
         {
-            return CacheProvider.GetOrCreate("cfg_" + key, () => CachedStringValue(key,defVal),TimeSpan.FromMinutes(5));
-        }
-
-        private string CachedStringValue(string key, string? defVal)
-        {
-            var result = _dbContext.SnitzConfig.SingleOrDefault(c=>c.Key == key)?.Value;
-            return result ?? defVal!;
+            var result = _cachedConfig.SingleOrDefault(c=>c.Key == key);
+            return result != null ? result.Value : defVal!;
         }
 
         public bool TableExists(string tablename)
@@ -186,7 +188,7 @@ namespace SnitzCore.Service
 
         public IEnumerable<Badword> GetBadwords()
         {
-            return _dbContext.Badwords;
+            return CacheProvider.GetOrCreate("badword_cache",()=> _dbContext.Badwords.ToList(),TimeSpan.FromHours(1));
         }
 
         private void AddOrUpdateAppSetting<T>(string key, T value) 
@@ -214,7 +216,7 @@ namespace SnitzCore.Service
             }
             catch (ConfigurationErrorsException) 
             {
-                Console.WriteLine("Error writing app settings");
+                //Console.WriteLine("Error writing app settings");
             }
         }
 
@@ -243,7 +245,8 @@ namespace SnitzCore.Service
             }
 
             _dbContext.SaveChanges();
-            RemoveFromCache(key);
+            CacheProvider.Remove("snitzconfig_cache");
+
         }
     }
 }

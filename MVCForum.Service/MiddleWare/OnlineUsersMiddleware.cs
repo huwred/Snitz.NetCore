@@ -41,7 +41,7 @@ namespace SnitzCore.Service.MiddleWare
 
             var arr = CacheProvider.GetOrCreate("botlist",()=> botlist(snitzConfig,config),TimeSpan.FromDays(1));
 
-            if(arr != null && arr.Any(s => agent.Contains(s, StringComparison.OrdinalIgnoreCase))) {
+            if (IsBotRequest(context, arr)) {
                 return _next(context);
             }
 
@@ -92,6 +92,13 @@ namespace SnitzCore.Service.MiddleWare
         public static int GetOnlineUsersCount()
         {
             return _allKeys?.Count ?? 0;
+        }
+
+        private bool IsBotRequest(HttpContext context, string[] botList)
+        {
+            var agent = context.Request.Headers.UserAgent.ToString();
+            if (string.IsNullOrWhiteSpace(agent)) return false;
+            return botList.Any(bot => agent.Contains(bot, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
