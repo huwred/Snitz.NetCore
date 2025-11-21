@@ -13,7 +13,6 @@
 }
 @{
 
-    Layout = "Layout";
     bool showprivate = User.IsInRole("Administrator");
     var speciesonly = Model.SpeciesOnly ? 0 : 1;
 }
@@ -21,8 +20,8 @@
     <snitz-breadcrumb show-filter="true"></snitz-breadcrumb>
     <div class="collapse" id="showFilters">
     <form asp-action="Search" asp-controller="PhotoAlbum" method="post" >
-        <div class="row">
-            <div class="col-12 col-lg-10">
+        <div class="row g-3">
+            <div class="col-md-7">
                 <div class="input-group">
                     <label class="d-none d-lg-inline-block input-group-text">@Localizer["lblSearchin"]</label>
                     <div class="d-none d-lg-inline-block input-group-text">
@@ -41,66 +40,71 @@
                         <input class="form-check-input" type="checkbox" name="SrchIn" value="Desc" aria-label="Checkbox for following text input">
                         <label class="form-check-label" >&nbsp;@Localizer["lblDescription"]</label>
                     </div>
-                    <div class="d-md-none input-group-addon">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                Search in
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <div class="form-check">
-                                            <input class="form-check-input mt-0" type="checkbox" name="SrchIn" value="Member" aria-label="Checkbox for following text input">
-                                            <label class="form-check-label">&nbsp;@Localizer["Member"]</label>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <div class="form-check">
-                                            <input class="form-check-input mt-0" type="checkbox" name="SrchIn" value="ScientificName" aria-label="Checkbox for following text input">
-                                            <label class="form-check-label">&nbsp;@Localizer["lblScientificName"]</label>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <div class="form-check">
-                                            <input class="form-check-input mt-0" type="checkbox" name="SrchIn" value="CommonName" aria-label="Checkbox for following text input">
-                                            <label class="form-check-label">&nbsp;@Localizer["lblLocalName"]</label>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <div class="form-check">
-                                            <input class="form-check-input mt-0" type="checkbox" name="SrchIn" value="Desc" aria-label="Checkbox for following text input">
-                                            <label class="form-check-label">&nbsp;@Localizer["lblDescription"]</label>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
+                </div>
+            </div>
+            <div class="col-md-2">
+                    <div class="input-group">
+                        <div class="d-md-none input-group-addon">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    Search in
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="form-check">
+                                                <input class="form-check-input mt-0" type="checkbox" name="SrchIn" value="Member" aria-label="Checkbox for following text input">
+                                                <label class="form-check-label">&nbsp;@Localizer["Member"]</label>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="form-check">
+                                                <input class="form-check-input mt-0" type="checkbox" name="SrchIn" value="ScientificName" aria-label="Checkbox for following text input">
+                                                <label class="form-check-label">&nbsp;@Localizer["lblScientificName"]</label>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="form-check">
+                                                <input class="form-check-input mt-0" type="checkbox" name="SrchIn" value="CommonName" aria-label="Checkbox for following text input">
+                                                <label class="form-check-label">&nbsp;@Localizer["lblLocalName"]</label>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="form-check">
+                                                <input class="form-check-input mt-0" type="checkbox" name="SrchIn" value="Desc" aria-label="Checkbox for following text input">
+                                                <label class="form-check-label">&nbsp;@Localizer["lblDescription"]</label>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="input-group-append">
+                            <select class="form-select" name="SrchGroupId" title="@Localizer["lblGroup"].Value">
+                                @foreach (var grp in Model.GroupList)
+                                {
+                                    <option value="@grp.Value">@grp.Text</option>
+                                }
+                            </select>
                         </div>
                     </div>
-                    
-                    @* <label class="d-none d-lg-inline-block input-group-text">@Localizer["lblGroup"]</label> *@
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <label class="input-group-text" for="searchTerms">@Localizer["lblSearchFor"]</label>
+                    <input class="form-control" name="searchTerms" />
                     <div class="input-group-append">
-                        <select class="form-select" name="SrchGroupId" title="@Localizer["lblGroup"].Value">
-                            @foreach (var grp in Model.GroupList)
-                            {
-                                <option value="@grp.Value">@grp.Text</option>
-                            }
-                        </select>
-                    <div class="input-group">
-                            <label class="input-group-text" for="searchTerms">@Localizer["lblSearchFor"]</label>
-                            <input class="form-control" name="searchTerms" />
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-success" type="submit" title="Filter records"><i class="fa fa-search"></i></button>
-                            </div>
-                        
+                        <button class="btn btn-outline-success" type="submit" title="Filter records"><i class="fa fa-search"></i></button>
                     </div>
-                    </div>
+
                 </div>
             </div>
             <input type="hidden" name="SortBy" value="@ViewBag.SortBy" />

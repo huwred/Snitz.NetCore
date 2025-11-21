@@ -18,6 +18,8 @@ namespace Snitz.PostThanks.Models
         [Column("REPLY_ID")]
         public int ReplyId { get; set; }
 
+        [Column("THANKS_DATE")]
+        public string? Date { get; set; }
         public virtual Member? Member { get; set; }
     }
 

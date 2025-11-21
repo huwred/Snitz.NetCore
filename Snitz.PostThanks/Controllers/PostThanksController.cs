@@ -51,7 +51,7 @@ namespace Snitz.PostThanks.Controllers
                     ShowCount = showcount,
                     Showlink = showlink
                 };
-                vm.Thanked = thanksRepository.IsThanked(id, replyid);
+                vm.Thanked = thanksRepository.IsThanked(id, replyid,_memberService.Current()?.Id);
                 vm.ThanksCount = thanksRepository.Count(id, replyid);
                 //vm.PostAuthor = thanksRepository.IsAuthor(id, replyid);
 

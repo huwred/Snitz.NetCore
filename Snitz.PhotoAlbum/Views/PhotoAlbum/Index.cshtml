@@ -1,8 +1,14 @@
 ﻿@using SnitzCore.Data.Extensions
 @model X.PagedList.PagedList<Snitz.PhotoAlbum.Models.AlbumList>
+@section MetaData
+{
+    <title>@Config.Value.strForumTitle @Localizer["lblPhotoAlbum"]</title>
 
+    <meta name="title" content="@Config.Value.strForumTitle @Localizer["lblPhotoAlbum"]" />
+    <meta name="description" content="Photo Album" />
+    <meta name="robots" content="index,follow" />
+}
 @{
-    Layout = "Layout";
     string sortIcon = ViewBag.SortDir == "asc" ? "<i class=\"fa fa-sort-asc\"></i>" : "<i class=\"fa fa-sort-desc\"></i>";
 }
 <snitz-breadcrumb></snitz-breadcrumb>

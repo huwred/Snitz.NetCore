@@ -1,4 +1,5 @@
 ﻿using BbCodeFormatter;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartBreadcrumbs.Nodes;
@@ -87,6 +88,7 @@ public class CalendarController : Controller
     /// The result is cached for 300 seconds to improve performance.</remarks>
     /// <returns>A <see cref="JsonResult"/> containing the birthdays of users within the specified date range.</returns>
     [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
+    [Authorize]
     public JsonResult GetBirthDays()
     {
         var start = Request.Query["start"];

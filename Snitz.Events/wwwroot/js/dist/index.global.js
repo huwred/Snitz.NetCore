@@ -4643,11 +4643,15 @@ var FullCalendar = (function (exports) {
         if (method === 'GET') {
             url += (url.indexOf('?') === -1 ? '?' : '&') +
                 new URLSearchParams(params);
+            fetchOptions.headers = {
+                'X-Requested-With': 'XMLHttpRequest'
+            };
         }
         else {
             fetchOptions.body = new URLSearchParams(params);
             fetchOptions.headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With' : 'XMLHttpRequest'
             };
         }
         return fetch(url, fetchOptions).then((fetchRes) => {

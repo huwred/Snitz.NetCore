@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Snitz.PostThanks.Models;
 using SnitzCore.Data;
+using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System.Runtime.CompilerServices;
@@ -75,7 +76,7 @@ namespace PostThanks.Models
             }
             try
             {
-                var entity = new PostThanksEntry { MemberId = _memberid.Value,TopicId = topicid,ReplyId=replyid };
+                var entity = new PostThanksEntry { MemberId = _memberid.Value,TopicId = topicid,ReplyId=replyid,Date = DateTime.UtcNow.ToForumDateStr() };
                 _dbContext.PostThanks.Add(entity);
                 _dbContext.SaveChanges();
 
@@ -138,9 +139,13 @@ namespace PostThanks.Models
         /// <param name="topicid">The unique identifier of the topic to check.</param>
         /// <param name="replyid">The unique identifier of the reply to check. Defaults to 0, which indicates the topic itself.</param>
         /// <returns><see langword="true"/> if the specified topic or reply has been thanked; otherwise, <see langword="false"/>.</returns>
-        public bool IsThanked(int topicid, int replyid = 0)
+        public bool IsThanked(int topicid, int replyid = 0, int? memberid = null)
         {
-            if (_dbContext.PostThanks.SingleOrDefault(c => c.TopicId == topicid && c.ReplyId == replyid) != null)
+            if(_memberid == null) {
+                if (_dbContext.PostThanks.SingleOrDefault(c => c.TopicId == topicid && c.ReplyId == replyid) != null)
+                    return true;
+            }
+            if (_dbContext.PostThanks.SingleOrDefault(c => c.TopicId == topicid && c.ReplyId == replyid && c.MemberId == memberid) != null)
                 return true;
 
             return false;

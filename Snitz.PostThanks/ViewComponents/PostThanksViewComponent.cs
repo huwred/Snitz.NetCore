@@ -81,7 +81,7 @@ namespace Snitz.PostThanks.ViewComponents
                     ShowCount = showcount,
                     Showlink = showlink != null ? showlink.Value : true,
                 };
-                vm.Thanked = thanksRepository.IsThanked(topicid.Value, id.Value);
+                vm.Thanked = thanksRepository.IsThanked(topicid.Value, id.Value,_memberService.Current()?.Id);
                 vm.ThanksCount = thanksRepository.Count(topicid.Value, id.Value);
                 vm.PostAuthor = thanksRepository.IsAuthor(topicid.Value, id.Value, archived);
                 return await Task.FromResult((IViewComponentResult)View(template,vm));
