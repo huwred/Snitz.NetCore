@@ -10,7 +10,7 @@ namespace WebApplication1.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            Console.WriteLine("Creating .NET Identity Schema");
+            //Console.WriteLine("Creating .NET Identity Schema");
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new

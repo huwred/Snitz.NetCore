@@ -453,7 +453,7 @@ namespace Migrations
 
             }
 
-            Console.WriteLine("Initialalize");
+            //Console.WriteLine("Initialalize");
         }
 
         /// <inheritdoc />

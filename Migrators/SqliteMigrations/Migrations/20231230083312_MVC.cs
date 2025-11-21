@@ -13,7 +13,7 @@ namespace WebApplication1.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            Console.WriteLine("Snitz .NET updates");
+            //Console.WriteLine("Snitz .NET updates");
             SetParameters();
             migrationBuilder.CreateTable(
                 name: $"{_forumTablePrefix}RATINGS",

@@ -13,7 +13,7 @@ namespace WebApplication1.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             SetParameters();
-            Console.WriteLine("Creating Snitz base Tables");
+            //Console.WriteLine("Creating Snitz base Tables");
             migrationBuilder.CreateTable(
                 name: $"{_forumTablePrefix}A_REPLY",
                 columns: table => new

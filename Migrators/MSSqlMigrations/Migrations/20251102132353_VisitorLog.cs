@@ -23,6 +23,7 @@ namespace WebApplication1.Migrations
                     VisitTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserAgent = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(100)", nullable: true),
                     Path = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>

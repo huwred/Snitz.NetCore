@@ -15,7 +15,7 @@ namespace MySqlMigrations.Migrations
         {
             SetParameters();
 
-            Console.WriteLine("Adding .NET Identity Schema");
+            //Console.WriteLine("Adding .NET Identity Schema");
 
             migrationBuilder.AlterDatabase()
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -66,7 +66,7 @@ namespace MySqlMigrations.Migrations
                     .Annotation("MySql:CharSet", "utf8mb4");
             }
 
-            Console.WriteLine("Applying MySQL initial migration...");
+            //Console.WriteLine("Applying MySQL initial migration...");
             if (!migrationBuilder.TableExists($"{_forumTablePrefix}BADWORDS"))
             {
                 migrationBuilder.CreateTable(

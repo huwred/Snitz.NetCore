@@ -14,7 +14,7 @@ namespace WebApplication1.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            Console.WriteLine("Seeding Data");
+            //Console.WriteLine("Seeding Data");
             SetParameters();
             if(!migrationBuilder.IndexExists($"SELECT COUNT(ID) FROM {_forumTablePrefix}CONFIG_NEW"))
             {

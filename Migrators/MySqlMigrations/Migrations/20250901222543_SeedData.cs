@@ -15,7 +15,7 @@ namespace MySqlMigrations.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            Console.WriteLine("Seeding data");
+            //Console.WriteLine("Seeding data");
             SetParameters();
             if(!migrationBuilder.IndexExists($"SELECT COUNT(ID) FROM {_forumTablePrefix}CONFIG_NEW"))
             {
@@ -84,7 +84,7 @@ namespace MySqlMigrations.Migrations
                 keyValue: "-1",
                 column: "RANK_ID",
                 value: 0);
-            Console.WriteLine("Checking Admin User");
+            //Console.WriteLine("Checking Admin User");
             var admin = migrationBuilder.AdminUser();
             if(!migrationBuilder.IndexExists($"SELECT COUNT(Id) FROM AspNetRoles"))
             {
@@ -102,7 +102,7 @@ namespace MySqlMigrations.Migrations
             }
             if(!migrationBuilder.IndexExists($"SELECT COUNT(MEMBER_ID) FROM {_memberTablePrefix}MEMBERS") || admin != null)
             {
-                Console.WriteLine("Adding Admin User");
+                //Console.WriteLine("Adding Admin User");
                 var installdate = DateTime.UtcNow.ToForumDateStr();
                 if(admin != null)
                 {

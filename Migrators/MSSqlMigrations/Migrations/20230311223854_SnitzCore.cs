@@ -255,7 +255,7 @@ namespace Migrations
                     });
             }
 
-            Console.WriteLine("Core update");
+            //Console.WriteLine("Core update");
         }
 
         /// <inheritdoc />

@@ -47,7 +47,7 @@ namespace WebApplication1.Migrations
             var admin = migrationBuilder.AdminUser();
 
             if(!migrationBuilder.IndexExists($"SELECT COUNT(MEMBER_ID) FROM {_memberTablePrefix}MEMBERS") || admin != null){
-                Console.WriteLine("Admin Create");
+                //Console.WriteLine("Admin Create");
                 if(admin != null)
                 {
                     migrationBuilder.InsertData(

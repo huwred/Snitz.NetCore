@@ -861,7 +861,7 @@ namespace Migrations
                         onDelete: ReferentialAction.Cascade);
                 }
             }
-            Console.WriteLine("Snitz Tables");
+            //Console.WriteLine("Snitz Tables");
         }
 
         /// <inheritdoc />

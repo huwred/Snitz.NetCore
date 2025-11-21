@@ -15,7 +15,7 @@ namespace WebApplication1.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            Console.WriteLine("Setting up AdminUser");
+            //Console.WriteLine("Setting up AdminUser");
             SetParameters();
             migrationBuilder.InsertData(
                 table: "AspNetRoles",

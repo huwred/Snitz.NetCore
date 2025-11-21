@@ -82,7 +82,7 @@ namespace WebApplication1.Migrations
             //MEMBER ADMIN
             if(!migrationBuilder.IndexExists($"SELECT COUNT(MEMBER_ID) FROM {_memberTablePrefix}MEMBERS"))
             {
-                Console.WriteLine("Seeding");
+                //Console.WriteLine("Seeding");
                 var admin = migrationBuilder.AdminUser();
                 var installdate = DateTime.UtcNow.ToForumDateStr();
                 if(admin != null)
