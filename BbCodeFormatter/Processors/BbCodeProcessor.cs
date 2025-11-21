@@ -1,8 +1,11 @@
-﻿using System.Text.RegularExpressions;
-using System.Web;
-using BbCodeFormatter.Formatters;
+﻿using BbCodeFormatter.Formatters;
+using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
+using SnitzCore.Data.Models;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Web;
 
 // expanded from original code found here: http://forums.asp.net/p/1087581/1635776.aspx
 // Modified to support Snitz Forums bbcode http://forum.snitz.com/forum/
@@ -28,6 +31,8 @@ public class BbCodeProcessor : ICodeProcessor
     private readonly List<IHtmlFormatter> _quoteformatter;
     private readonly List<IHtmlFormatter> _tables;
 
+    private readonly Dictionary<string,string>? _badwords;
+    private static Dictionary<string, string>? _badwordsCache;
     #endregion  Private Class Member Declarations
 
     #region  Static Constructors
@@ -43,6 +48,12 @@ public class BbCodeProcessor : ICodeProcessor
         _urlformatters = new List<IHtmlFormatter>();
         _codeformatter = new List<IHtmlFormatter>();
         _quoteformatter = new List<IHtmlFormatter>();
+        if (_badwordsCache == null)
+        {
+            _badwordsCache = dbContext.Badwords.AsNoTracking()
+            .ToDictionary(x => x.Word, x => x.ReplaceWith);
+        }
+        _badwords = _badwordsCache;
 
         #region UrlTags
         //lets replace any old links to TOPICS etc
@@ -175,7 +186,7 @@ public class BbCodeProcessor : ICodeProcessor
     _postformatters.Add(new SearchReplaceFormatter("[hr]", "<hr noshade size=\"1\">"));
     if (_config.GetIntValue("STRBADWORDFILTER") == 1)
     {
-        _postformatters.Add(new BadWordFilter(_dbContext));
+        _postformatters.Add(new BadWordFilter(_badwords));
     }
     _postformatters.Add(new SearchReplaceFormatter(@"[Done]", "<i class=\"fa fa-check-circle\" title=\"Completed\" data-toggle=\"tooltip\"></i>"));
     _postformatters.Add(new SearchReplaceFormatter(@"[Fixed]", "<i class=\"fa fa-check-square text-success\" title=\"Issue resolved\" data-toggle=\"tooltip\"></i>"));
@@ -547,6 +558,6 @@ public class BbCodeProcessor : ICodeProcessor
         return data;
     }
 
-
+    
   }
 }

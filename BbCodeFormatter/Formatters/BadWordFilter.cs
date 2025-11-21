@@ -23,6 +23,21 @@ namespace BbCodeFormatter.Formatters
                 _formatters.Add(new RegexFormatter(@"\b" + Regex.Escape(badword.Word) + @"\b", badword.ReplaceWith!));
             }
         }
+
+        public BadWordFilter(Dictionary<string, string>? badwords)
+        {
+            if(badwords == null)
+            {
+                _formatters = new List<IHtmlFormatter>();
+                return;
+            }
+            _formatters = new List<IHtmlFormatter>();
+            foreach (var badword in badwords)
+            {
+                _formatters.Add(new RegexFormatter(@"\b" + Regex.Escape(badword.Key) + @"\b", badword.Value!));
+            }
+        }
+
         public string Format(string data)
         {
             foreach (IHtmlFormatter formatter in _formatters)
