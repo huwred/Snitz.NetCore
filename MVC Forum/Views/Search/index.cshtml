@@ -129,7 +129,7 @@
                     <div class="col-12 col-md-6">
                         <label for="ddlSearchCategory" class="form-label">@Localizer["Search_Category"]</label>
                         <select id="ddlSearchCategory" name="SearchCategory" asp-items="Model.Categories" aria-describedby="selectHelpBlock" class="form-select">
-                            <option value="0">All</option>
+                            <option value="0">@Localizer["Search_AllCategories"]</option>
                         </select>
                         <span id="selectHelpBlock" class="form-text text-muted">@Localizer["Search_CatDesc"]</span>
                     </div>
