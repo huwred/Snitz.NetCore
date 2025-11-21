@@ -1,9 +1,3 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@using SnitzCore.Service.TagHelpers
-
-<a class="navbar-brand" asp-controller="Home" asp-action="Index" aria-label="@Html.Raw(SnitzConfig.ForumTitle) Home page" >
-    <img src="@SnitzConfig.RootFolder/images/wizard.webp" height="50" loading="lazy" alt="@Html.Raw(SnitzConfig.ForumTitle) logo">
+﻿<a class="navbar-brand" href="@SnitzConfig.GetValueWithDefault("STRHOMEURL","/")" aria-label="@Html.Raw(SnitzConfig.ForumTitle) Home page">
+    <img src="@SnitzConfig.RootFolder/images/wizard.webp?height=50" height="50" loading="lazy" alt="@Html.Raw(SnitzConfig.ForumTitle) logo">
 </a>
-@* <div style="padding: 15px 0;">
-    <a href="#" id="msbo"><i class="ic fa fa-bars"></i></a>
-</div> *@
