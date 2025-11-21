@@ -45,6 +45,32 @@ namespace SnitzCore.Data.Extensions
                 return DateTime.MinValue;
             }
         }
+        public static int GetIso8601WeekOfYear(this string date)
+        {
+            DateTime time = date.FromForumDateStr();
+            var day = System.Globalization.CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(time);
+            if (day >= DayOfWeek.Monday && day <= DayOfWeek.Wednesday)
+                time = time.AddDays(3);
+            return System.Globalization.CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time,
+                System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+        }
+        public static int GetIso8601WeekOfYear(this DateTime time)
+        {
+            // Adjust for ISO 8601: If the day is Monday, Tuesday, or Wednesday,
+            // shift to the nearest Thursday to ensure correct week calculation
+            DayOfWeek day = CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(time);
+            if (day >= DayOfWeek.Monday && day <= DayOfWeek.Wednesday)
+            {
+                time = time.AddDays(3);
+            }
+
+            // Return the ISO 8601 week number
+            return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(
+                time,
+                CalendarWeekRule.FirstFourDayWeek,
+                DayOfWeek.Monday
+            );
+        }
         public static DateTime FromForumDateStr(this string? date, bool dateonly)
         {
             if (!string.IsNullOrWhiteSpace(date))

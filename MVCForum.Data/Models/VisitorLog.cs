@@ -9,5 +9,7 @@ namespace SnitzCore.Data.Models
         public string? IpAddress { get; set; }
         public string? UserAgent { get; set; }
         public string? Path { get; set; }
+
+        public string? UserName { get; set; }
     }
 }

@@ -36,6 +36,7 @@ namespace SnitzCore.Data.Interfaces
         Task EmptyForum(int id);
         Forum UpdateLastPost(int forumid);
         PagedList<Post> FetchMyForumTopicsPaged(int pagesize, int pagenum, IEnumerable<int> forumids);
+        PagedList<Post> FetchMySubscribedTopicsPaged(int pagesize, int pagenum, IEnumerable<int> topicids);
         IEnumerable<string> GetTagStrings(List<int> list);
         IEnumerable<MyViewTopic> FetchAllMyForumTopics(IEnumerable<int> forumids);
 

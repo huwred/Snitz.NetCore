@@ -34,10 +34,10 @@ namespace MVCForum.Extensions
                 {
                     opt.MigrationsAssembly("MySqlMigrations");
                 }),
-                //Npgsql => builder.UseNpgsql(connectionstring, opt => 
-                //{
-                //    opt.MigrationsAssembly("NpgsqlMigrations");
-                //}),
+                Npgsql => builder.UseNpgsql(connectionstring, opt =>
+                {
+                    opt.MigrationsAssembly("NpgsqlMigrations");
+                }),
 
                 _ => throw new InvalidOperationException($"Unsupported provider: {provider}")
             };
@@ -61,10 +61,10 @@ namespace MVCForum.Extensions
                 {
                     opt.MigrationsAssembly("MySqlMigrations");
                 }),
-                //Npgsql => builder.UseNpgsql(connectionstring, opt => 
-                //{
-                //    opt.MigrationsAssembly("NpgsqlMigrations");
-                //}),
+                Npgsql => builder.UseNpgsql(connection, opt =>
+                {
+                    opt.MigrationsAssembly("NpgsqlMigrations");
+                }),
 
                 _ => throw new InvalidOperationException($"Unsupported provider: {provider}")
             };

@@ -21,7 +21,7 @@ namespace MVCForum.Extensions
             {
                 if (appContext.Database.GetPendingMigrations().Any())
                 {
-                    Console.WriteLine("Perform Database Update");
+                    //Console.WriteLine("Perform Database Update");
                     appContext.Database.Migrate();
                 }
 
@@ -30,7 +30,7 @@ namespace MVCForum.Extensions
             catch (Exception ex)
             {
                 //Log errors or do anything you think it's needed
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
                 //throw;
             }
 
@@ -58,7 +58,7 @@ namespace MVCForum.Extensions
 
             if (!File.Exists(Path.Combine(path,filename)))
             {
-                //Console.WriteLine("Missing Language strings");
+                ////Console.WriteLine("Missing Language strings");
                 return;
             }
 
@@ -76,7 +76,7 @@ namespace MVCForum.Extensions
 
             try
             {
-                Console.WriteLine("Importing Language strings");
+                //Console.WriteLine("Importing Language strings");
                 using var transaction = dbContext.Database.BeginTransaction();
                 foreach (DataRow row in dt.Rows)
                 {
@@ -114,7 +114,7 @@ namespace MVCForum.Extensions
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
 
             }
 

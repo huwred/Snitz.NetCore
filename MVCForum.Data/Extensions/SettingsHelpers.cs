@@ -31,7 +31,7 @@ namespace SnitzCore.Data.Extensions
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error writing app settings | {0}", ex.Message);
+                //Console.WriteLine("Error writing app settings | {0}", ex.Message);
             }
         }
 

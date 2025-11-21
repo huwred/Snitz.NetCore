@@ -40,6 +40,8 @@ namespace SnitzCore.Data
         Member? Current();
         Task UpdatePostCount(int memberid);
         IEnumerable<int> ForumSubscriptions();
+        IEnumerable<int> TopicSubscriptions();
+
         IEnumerable<Member?> GetAll(bool isInRole);
         IEnumerable<RecentMembers?>  GetRecent(int max);
         Task UpdateLastPost(int memberid);
