@@ -22,7 +22,7 @@
                                         || (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && (SnitzConfig.GetIntValue("INTPUBLICEVENTS") == 1 && User.Identity.IsAuthenticated)))"><hr class="dropdown-divider" /></li>
                 @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
                 @await Component.InvokeAsync("Events", new { template = "MenuItem" })
-                <li snitz-if="@(SnitzConfig.IsEnabled("INTLEADERBOARD"))"><a asp-controller="Forum" asp-action="Search">@Localizer["mnuAbout"]</a></li>
+                <li snitz-if="@(SnitzConfig.IsEnabled("INTLEADERBOARD"))"><a asp-controller="Charts" asp-action="Leaderboard">@Localizer["mnuLeaderboard"]</a></li>
 
             </ul>
         </li>
