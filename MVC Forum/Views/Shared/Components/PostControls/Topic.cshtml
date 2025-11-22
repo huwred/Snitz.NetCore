@@ -74,7 +74,7 @@
                     <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 0 && !isArchived)" class="fa fa-thumb-tack  post-stick" title="@Localizer["tipMakeSticky"]" data-id="@postid" data-status="1" data-toggle="tooltip"></i>
                     <i snitz-if="@((isadmin || ismoderator) && Model.IsSticky == 1 && !isArchived)" class="fa fa-thumb-tack-slash red  post-stick" title="@Localizer["tipUnStick"]" data-id="@postid" data-status="0" data-toggle="tooltip"></i>
                     <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.OnHold))" class="fa fa-pause admin  post-moderate" title="@Localizer["lblOnhold"]" data-id="@postid" data-toggle="tooltip"></i>
-                    <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.UnModerated))" class="fa fa-hand-paper-o admin  post-moderate" title="@Localizer["lblUnmoderated"]" data-id="@postid" data-toggle="tooltip"></i>
+                    <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.UnModerated))" class="fa-regular fa-hand admin  post-moderate" title="@Localizer["lblUnmoderated"]" data-id="@postid" data-toggle="tooltip"></i>
                 </div>
             </div>
 
@@ -122,6 +122,7 @@
         $(".post-moderate").on("click",
             function(e) {
                 e.preventDefault();
+                $(".popover").hide();
                 var topicid = $(this).data("id");
                 
                 $.get(SnitzVars.baseUrl + "/Topic/Moderate/" + topicid,
