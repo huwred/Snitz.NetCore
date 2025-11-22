@@ -18,10 +18,27 @@ namespace SnitzCore.BackOffice.Controllers
         private readonly SnitzDbContext _context;
         private readonly IOptions<SnitzForums> _config;
         private bool showVisits = false;
+
+        private string thanksPostSql = "";
+        private string thanksReplySql = "";
+        private string thanksGivenSql = "";
         public ChartsController(SnitzDbContext context,IOptions<SnitzForums> config,IConfiguration settings)
         {
             _context = context;
             _config = config;
+
+            thanksPostSql = $@"SELECT t.*,m.* FROM {_config.Value.forumTablePrefix}THANKS ft
+                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
+                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = t.T_AUTHOR";
+            thanksReplySql = $@"
+                SELECT r.*,m.* FROM {_config.Value.forumTablePrefix}THANKS ft
+                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
+                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = r.R_AUTHOR";     
+            thanksGivenSql = $@"
+                SELECT m.* FROM {_config.Value.forumTablePrefix}THANKS ft
+				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = ft.MEMBER_ID";  
             
             showVisits = settings.GetValue<string>("SnitzForums:VisitorTracking","") != "";
         }
@@ -38,38 +55,303 @@ namespace SnitzCore.BackOffice.Controllers
             return View();
         }
         [HttpGet]
+        [ResponseCache(Duration = 200, Location = ResponseCacheLocation.Any,VaryByQueryKeys = new[] { "today" } )]
         public IActionResult UserLeaderboard(bool today = false)
         {
             var todayStr = DateTime.UtcNow.ToString("yyyyMMdd");
-            var topics = _context.Posts.AsQueryable();
-            var replies = _context.Replies.AsQueryable();
-            var visitors = _context.VisitorLog.AsQueryable();
-            string thanksPostSql = $@"SELECT ft.MEMBER_ID,t.* FROM {_config.Value.forumTablePrefix}THANKS ft
-                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
-                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
-				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = t.T_AUTHOR
-				WHERE r.R_AUTHOR IS NULL ";
-            string thanksReplySql = $@"
-                SELECT ft.MEMBER_ID,r.* FROM {_config.Value.forumTablePrefix}THANKS ft
-                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
-                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
-				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = r.R_AUTHOR
-				WHERE r.R_AUTHOR IS NOT NULL";
-            string thanksGivenSql = $@"
-                SELECT m.* FROM {_config.Value.forumTablePrefix}THANKS ft
-				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = ft.MEMBER_ID";
+            var topics = _context.Posts.AsNoTracking().Include(p=>p.Member).AsEnumerable() ?? Enumerable.Empty<Post>();
+            var replies = _context.Replies.AsNoTracking().Include(p=>p.Member).AsEnumerable() ?? Enumerable.Empty<PostReply>();
+            var visitors = _context.VisitorLog.AsNoTracking().AsEnumerable() ?? Enumerable.Empty<VisitorLog>();
+
+            var thanksPostSql = this.thanksPostSql + $@" WHERE r.R_AUTHOR IS NULL ";
+            var thanksReplySql = this.thanksReplySql + $@" WHERE r.R_AUTHOR IS NOT NULL";
+            string thanksGivenSql = this.thanksGivenSql;
 
             if (today)
             {
-                replies = replies.Where(r => String.Compare(r.Created, todayStr) >= 0);
-                topics = topics.Where(r => String.Compare(r.Created, todayStr) >= 0);
-                visitors = visitors.Where(r => r.VisitTime.DayOfYear == DateTime.UtcNow.DayOfYear);
-                thanksPostSql += $@" AND SUBSTRING(t.T_DATE, 1, 8) = '{todayStr}'";
-                thanksReplySql += $@" AND SUBSTRING(r.R_DATE, 1, 8) = '{todayStr}'";
+                replies = replies.Where(r => r.Created.Substring(0,8) == todayStr);
+                topics = topics.Where(r => r.Created.Substring(0,8) == todayStr);
+                visitors = visitors.Where(r => r.VisitTime.Date == DateTime.UtcNow.Date);
+                thanksPostSql += $@" AND ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 8) = '{todayStr}'";
+                thanksReplySql += $@" AND ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 8) = '{todayStr}'";
                 thanksGivenSql += $@" WHERE ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 8) = '{todayStr}'";
             }
+            var thanksPost = _context.Posts.FromSqlInterpolated(FormattableStringFactory.Create(thanksPostSql))
+                .Select(p => new Post
+                {
+                    // Map Post properties
+                    Id = p.Id,
+                    Member = new Member
+                    {
+                        // Map Member properties
+                        Id = p.Member.Id, 
+                        Name = p.Member.Name
+                    }
+                })
+                .AsEnumerable() ?? Enumerable.Empty<Post>();
+            var thanksReply = _context.Replies.FromSqlInterpolated(FormattableStringFactory.Create(thanksReplySql))
+                .Select(p => new PostReply
+                {
+                    // Map Post properties
+                    Id = p.Id,
+                    Member = new Member
+                    {
+                        // Map Member properties
+                        Id = p.Member.Id, 
+                        Name = p.Member.Name
+                    }
+                })                
+                .AsEnumerable() ?? Enumerable.Empty<PostReply>();
+            var thanksGiven = _context.Members.FromSqlInterpolated(FormattableStringFactory.Create(thanksGivenSql))
+                .AsEnumerable() ?? Enumerable.Empty<Member>();
+            IEnumerable<dynamic> leaderboard = null;
+            try
+            {
+                leaderboard = 
+                    //replies
+                    replies.Where(r => r.Answer == true)
+                    .GroupBy(t => t.Member.Name)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = g.Count(),
+                        Replies = 0,
+                        Thanks = 0,
+                        Posts = 0
+                    })
+                    .Concat(
+                        replies.Where(r => r.Answer != true)
+                        .GroupBy(r => r.Member!.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = g.Count(),
+                            Thanks = 0,
+                            Posts = 0
+                        })
+                    )
+                    //topics
+                    .Concat(
+                        topics
+                        .Where(r => r.Answered == true)
+                        .GroupBy(r => r.Member.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = g.Count(),
+                            Replies = 0,
+                            Thanks = 0,
+                            Posts = 0
+                        })
+                    )
+                    .Concat(
+                        topics
+                        .Where(r => r.Answered != true && (r.ReplyCount > 10 || r.ViewCount > 100 || r.RatingTotalCount > 0))
+                        .GroupBy(r => r.Member.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = 0,
+                            Posts = g.Count()
+                        })
+                    )
+                    //visits
+                    .Concat(
+                        visitors.Where(v => !string.IsNullOrWhiteSpace(v.UserName) && !v.UserName.StartsWith("Anonymous"))
+                        .GroupBy(v => v.UserName, StringComparer.OrdinalIgnoreCase)
+                        .Select(g => new
+                        {
+                            UserName = g.Key!,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = 0,
+                            Posts = g.Count() / 10 // 1 point for every 10 visits
+                        })
+                    )
+                    //thanks
+                    .Concat(
+                        thanksPost
+                        .GroupBy(t => t.Member!.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = g.Count(),
+                            Posts = 0
+                        })
+                        .Concat(
+                            thanksReply
+                            .GroupBy(t => t.Member!.Name)
+                            .Select(g => new
+                            {
+                                UserName = g.Key,
+                                Answers = 0,
+                                Replies = 0,
+                                Thanks = g.Count(),
+                                Posts = 0
+                            })
+                        )
+                        .Concat(
+                            thanksGiven
+                            .GroupBy(m => m.Name)
+                            .Select(g => new
+                            {
+                                UserName = g.Key,
+                                Answers = 0,
+                                Replies = 0,
+                                Thanks = g.Count(),
+                                Posts = 0
+                            })
+                        )
+                    )
+                    .GroupBy(x => x.UserName, StringComparer.OrdinalIgnoreCase)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = g.Sum(x => x.Answers),
+                        Replies = g.Sum(x => x.Replies),
+                        Thanks = g.Sum(x => x.Thanks),
+                        Posts = g.Sum(x => x.Posts),
+                        Total = g.Sum(x => x.Answers) * 3 + g.Sum(x => x.Replies) + g.Sum(x => x.Thanks) * 2 + g.Sum(x => x.Posts)
+                    })
+                    .OrderByDescending(x => x.Total)
+                    .Take(50)
+                    .ToList();
+            }
+            catch (Exception e)
+            {
 
-            var leaderboard = 
+                throw;
+            }
+
+
+            if (!today)
+            {
+                try
+                {
+                    leaderboard = leaderboard
+                    .Concat(
+                        _context.ArchivedTopics.AsNoTracking().Include(p=>p.Member).AsEnumerable()
+                        .Where(r => (r.ReplyCount > 10 || r.ViewCount > 100 || r.RatingTotalCount > 0))
+                        .GroupBy(r => r.Member!.Name, StringComparer.OrdinalIgnoreCase)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = 0,
+                            Posts = g.Count(),
+                            Total = 0
+                        })
+                    )
+                    .GroupBy(x => x.UserName)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = g.Sum(x => x.Answers),
+                        Replies = g.Sum(x => x.Replies),
+                        Thanks = g.Sum(x => x.Thanks),
+                        Posts = g.Sum(x => x.Posts),
+                        Total = g.Sum(x => x.Answers) * 3 + g.Sum(x => x.Replies) + g.Sum(x => x.Thanks) * 2 + g.Sum(x => x.Posts)
+                    })
+                    .OrderByDescending(x => x.Total)
+                    .Take(50)
+                    .ToList();
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
+
+            }
+
+
+            // Assign ranks: same rank for same total, next rank skips accordingly
+            int currentRank = 1;
+            int previousTotal = -1;
+
+            var rankedLeaderboard = leaderboard
+                .Select((item, index) =>
+                {
+                    if (item.Total != previousTotal)
+                    {
+                        currentRank ++;
+
+                    }
+
+                    previousTotal = item.Total;
+                    return new
+                    {
+                        Rank = currentRank-1,
+                        item.UserName,
+                        item.Answers,
+                        item.Replies,
+                        item.Thanks,
+                        item.Total
+                    };
+                })
+                .ToList();
+            return Json(rankedLeaderboard);
+        }
+
+        [HttpGet]
+        [ResponseCache(Duration = 200, Location = ResponseCacheLocation.Any,VaryByQueryKeys = new[] { "month" } )]
+        public IActionResult UserLeaderboardByMonth(int year, int month)
+        {
+            string thanksPostSql = this.thanksPostSql + $@" WHERE r.R_AUTHOR IS NULL AND ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 4) = '{year}' ";
+            string thanksReplySql = this.thanksReplySql + $@" WHERE r.R_AUTHOR IS NOT NULL AND ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 4) = '{year}' ";
+            string thanksGivenSql = this.thanksGivenSql + $@" WHERE ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 4) = '{year}' ";
+
+            var replies = _context.Replies.AsNoTracking().Include(p=>p.Member).Where(r => Convert.ToInt32(r.Created.Substring(0,4)) == year).AsEnumerable() ?? Enumerable.Empty<PostReply>();
+            var topics = _context.Posts.AsNoTracking().Include(p=>p.Member).Where(t => Convert.ToInt32(t.Created.Substring(0,4)) == year).AsEnumerable() ?? Enumerable.Empty<Post>();
+            var visitors = _context.VisitorLog.AsNoTracking().Where(l=>l.VisitTime.Year == year).AsEnumerable() ?? Enumerable.Empty<VisitorLog>();
+
+            if (month > 0)
+            {
+                replies = replies.Where(r => Convert.ToInt32(r.Created.Substring(4,2)) == month);
+                topics = topics.Where(t => Convert.ToInt32(t.Created.Substring(4,2)) == month);
+                visitors = visitors.Where(l => l.VisitTime.Month == month);
+                thanksPostSql += $@" AND SUBSTRING(ft.THANKS_DATE, 5, 2) = '{month}'";
+                thanksReplySql += $@" AND SUBSTRING(ft.THANKS_DATE, 5, 2) = '{month}'";
+                thanksGivenSql += $@" AND SUBSTRING(ft.THANKS_DATE, 5, 2) = '{month}'";
+            }
+            var thanksPost = _context.Posts.FromSqlInterpolated(FormattableStringFactory.Create(thanksPostSql))
+                .Select(p => new Post
+                {
+                    // Map Post properties
+                    Id = p.Id,
+                    Member = new Member
+                    {
+                        // Map Member properties
+                        Id = p.Member.Id, 
+                        Name = p.Member.Name
+                    }
+                })
+                .AsEnumerable() ?? Enumerable.Empty<Post>();
+            var thanksReply = _context.Replies.FromSqlInterpolated(FormattableStringFactory.Create(thanksReplySql))
+                .Select(p => new PostReply
+                {
+                    // Map Post properties
+                    Id = p.Id,
+                    Member = new Member
+                    {
+                        // Map Member properties
+                        Id = p.Member.Id, 
+                        Name = p.Member.Name
+                    }
+                })                
+                .AsEnumerable() ?? Enumerable.Empty<PostReply>();
+            var thanksGiven = _context.Members.FromSqlInterpolated(FormattableStringFactory.Create(thanksGivenSql))
+                .AsEnumerable() ?? Enumerable.Empty<Member>();
+            IEnumerable<dynamic> leaderboard = null;
+            try
+            {
+                leaderboard = 
                 //replies
                 replies.Where(r => r.Answer == true)
                 .GroupBy(t => t.Member.Name)
@@ -123,7 +405,7 @@ namespace SnitzCore.BackOffice.Controllers
                 //visits
                 .Concat(
                     visitors.Where(v => !string.IsNullOrWhiteSpace(v.UserName) && !v.UserName.StartsWith("Anonymous"))
-                    .GroupBy(v => v.UserName)
+                    .GroupBy(v => v.UserName, StringComparer.OrdinalIgnoreCase)
                     .Select(g => new
                     {
                         UserName = g.Key!,
@@ -135,8 +417,8 @@ namespace SnitzCore.BackOffice.Controllers
                 )
                 //thanks
                 .Concat(
-                    _context.Posts.FromSqlInterpolated(FormattableStringFactory.Create(thanksPostSql))
-                    .GroupBy(t => t.Member!.Name)
+                    thanksPost
+                    .GroupBy(t => t.Member.Name)
                     .Select(g => new
                     {
                         UserName = g.Key,
@@ -146,7 +428,7 @@ namespace SnitzCore.BackOffice.Controllers
                         Posts = 0
                     })
                     .Concat(
-                        _context.Replies.FromSqlInterpolated(FormattableStringFactory.Create(thanksReplySql))
+                        thanksReply
                         .GroupBy(t => t.Member!.Name)
                         .Select(g => new
                         {
@@ -158,7 +440,7 @@ namespace SnitzCore.BackOffice.Controllers
                         })
                     )
                     .Concat(
-                        _context.Members.FromSqlInterpolated(FormattableStringFactory.Create(thanksGivenSql))
+                        thanksGiven
                         .GroupBy(m => m.Name)
                         .Select(g => new
                         {
@@ -170,215 +452,7 @@ namespace SnitzCore.BackOffice.Controllers
                         })
                     )
                 )
-                .GroupBy(x => x.UserName)
-                .Select(g => new
-                {
-                    UserName = g.Key,
-                    Answers = g.Sum(x => x.Answers),
-                    Replies = g.Sum(x => x.Replies),
-                    Thanks = g.Sum(x => x.Thanks),
-                    Posts = g.Sum(x => x.Posts),
-                    Total = g.Sum(x => x.Answers) * 3 + g.Sum(x => x.Replies) + g.Sum(x => x.Thanks) * 2 + g.Sum(x => x.Posts)
-                })
-                .OrderByDescending(x => x.Total)
-                .Take(50)
-                .ToList();
-
-            if (!today)
-            {
-                leaderboard = leaderboard
-                .Concat(
-                    _context.ArchivedTopics
-                    .Where(r => (r.ReplyCount > 10 || r.ViewCount > 100 || r.RatingTotalCount > 0))
-                    .GroupBy(r => r.Member!.Name)
-                    .Select(g => new
-                    {
-                        UserName = g.Key,
-                        Answers = 0,
-                        Replies = 0,
-                        Thanks = 0,
-                        Posts = g.Count(),
-                        Total = 0
-                    })
-                )
-                .GroupBy(x => x.UserName)
-                .Select(g => new
-                {
-                    UserName = g.Key,
-                    Answers = g.Sum(x => x.Answers),
-                    Replies = g.Sum(x => x.Replies),
-                    Thanks = g.Sum(x => x.Thanks),
-                    Posts = g.Sum(x => x.Posts),
-                    Total = g.Sum(x => x.Answers) * 3 + g.Sum(x => x.Replies) + g.Sum(x => x.Thanks) * 2 + g.Sum(x => x.Posts)
-                })
-                .OrderByDescending(x => x.Total)
-                .Take(50)
-                .ToList();;
-            }
-
-
-            // Assign ranks: same rank for same total, next rank skips accordingly
-            int currentRank = 1;
-            int previousTotal = -1;
-
-            var rankedLeaderboard = leaderboard
-                .Select((item, index) =>
-                {
-                    if (item.Total != previousTotal)
-                    {
-                        currentRank ++;
-
-                    }
-
-                    previousTotal = item.Total;
-                    return new
-                    {
-                        Rank = currentRank-1,
-                        item.UserName,
-                        item.Answers,
-                        item.Replies,
-                        item.Thanks,
-                        item.Total
-                    };
-                })
-                .ToList();
-            return Json(rankedLeaderboard);
-        }
-
-        [HttpGet]
-        public IActionResult UserLeaderboardByMonth(int year, int month)
-        {
-            string thanksPostSql = $@"SELECT ft.MEMBER_ID,t.* FROM {_config.Value.forumTablePrefix}THANKS ft
-                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
-                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
-				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = t.T_AUTHOR
-				WHERE r.R_AUTHOR IS NULL AND SUBSTRING(t.T_DATE, 1, 4) = '{year}' ";
-            string thanksReplySql = $@"
-                SELECT ft.MEMBER_ID,r.* FROM {_config.Value.forumTablePrefix}THANKS ft
-                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
-                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
-				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = r.R_AUTHOR
-				WHERE r.R_AUTHOR IS NOT NULL AND SUBSTRING(t.T_DATE, 1, 4) = '{year}' ";
-            string thanksGivenSql = $@"
-                SELECT m.* FROM {_config.Value.forumTablePrefix}THANKS ft
-				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = ft.MEMBER_ID
-                WHERE ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 4) = '{year}' ";
-            var replies = _context.Replies.Where(r => Convert.ToInt32(r.Created.Substring(0,4)) == year);
-            var topics = _context.Posts.Where(t => Convert.ToInt32(t.Created.Substring(0,4)) == year);
-            var visitors = _context.VisitorLog.Where(l=>l.VisitTime.Year == year).AsQueryable();
-
-            if (month > 0)
-            {
-                replies = replies.Where(r => Convert.ToInt32(r.Created.Substring(4,2)) == month);
-                topics = topics.Where(t => Convert.ToInt32(t.Created.Substring(4,2)) == month);
-                visitors = visitors.Where(l => l.VisitTime.Month == month);
-                thanksPostSql += $@" AND SUBSTRING(t.T_DATE, 5, 2) = '{month}'";
-                thanksReplySql += $@" AND SUBSTRING(r.R_DATE, 5, 2) = '{month}'";
-                thanksGivenSql += $@" AND ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 5, 2) = '{month}'";
-            }
-
-            var leaderboard = 
-                //replies
-                replies.Where(r => r.Answer == true)
-                .GroupBy(t => t.Member.Name)
-                .Select(g => new
-                {
-                    UserName = g.Key,
-                    Answers = g.Count(),
-                    Replies = 0,
-                    Thanks = 0,
-                    Posts = 0
-                })
-                .Concat(
-                    replies.Where(r => r.Answer != true)
-                    .GroupBy(r => r.Member!.Name)
-                    .Select(g => new
-                    {
-                        UserName = g.Key,
-                        Answers = 0,
-                        Replies = g.Count(),
-                        Thanks = 0,
-                        Posts = 0
-                    })
-                )
-                //topics
-                .Concat(
-                    topics
-                    .Where(r => r.Answered == true)
-                    .GroupBy(r => r.Member.Name)
-                    .Select(g => new
-                    {
-                        UserName = g.Key,
-                        Answers = g.Count(),
-                        Replies = 0,
-                        Thanks = 0,
-                        Posts = 0
-                    })
-                )
-                .Concat(
-                    topics
-                    .Where(r => r.Answered != true && (r.ReplyCount > 10 || r.ViewCount > 100 || r.RatingTotalCount > 0))
-                    .GroupBy(r => r.Member.Name)
-                    .Select(g => new
-                    {
-                        UserName = g.Key,
-                        Answers = 0,
-                        Replies = 0,
-                        Thanks = 0,
-                        Posts = g.Count()
-                    })
-                )
-                //visits
-                //.Concat(
-                //    visitors.Where(v => !string.IsNullOrWhiteSpace(v.UserName) && !v.UserName.StartsWith("Anonymous"))
-                //    .GroupBy(v => v.UserName)
-                //    .Select(g => new
-                //    {
-                //        UserName = g.Key!,
-                //        Answers = 0,
-                //        Replies = 0,
-                //        Thanks = 0,
-                //        Posts = g.Count() / 10 // 1 point for every 10 visits
-                //    })
-                //)
-                //thanks
-                .Concat(
-                    _context.Posts.FromSqlInterpolated(FormattableStringFactory.Create(thanksPostSql))
-                    .GroupBy(t => t.Member!.Name)
-                    .Select(g => new
-                    {
-                        UserName = g.Key,
-                        Answers = 0,
-                        Replies = 0,
-                        Thanks = g.Count(),
-                        Posts = 0
-                    })
-                    .Concat(
-                        _context.Replies.FromSqlInterpolated(FormattableStringFactory.Create(thanksReplySql))
-                        .GroupBy(t => t.Member!.Name)
-                        .Select(g => new
-                        {
-                            UserName = g.Key,
-                            Answers = 0,
-                            Replies = 0,
-                            Thanks = g.Count(),
-                            Posts = 0
-                        })
-                    )
-                    .Concat(
-                        _context.Members.FromSqlInterpolated(FormattableStringFactory.Create(thanksGivenSql))
-                        .GroupBy(m => m.Name)
-                        .Select(g => new
-                        {
-                            UserName = g.Key,
-                            Answers = 0,
-                            Replies = 0,
-                            Thanks = g.Count(),
-                            Posts = 0
-                        })
-                    )
-                )
-                .GroupBy(x => x.UserName)
+                .GroupBy(x => x.UserName, StringComparer.OrdinalIgnoreCase)
                 .Select(g => new
                 {
                     UserName = g.Key,
@@ -391,6 +465,13 @@ namespace SnitzCore.BackOffice.Controllers
                 .OrderByDescending(x => x.Total)
                 .Take(50)
                 .ToList();
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
 
             // Assign ranks: same rank for same total, next rank skips accordingly
             int currentRank = 1;
@@ -421,61 +502,56 @@ namespace SnitzCore.BackOffice.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(Duration = 200, Location = ResponseCacheLocation.Any,VaryByQueryKeys = new[] { "week" } )]
         public IActionResult UserLeaderboardByWeek(int year, int week)
         {
 
-            var replies = _context.Replies.Include(p=>p.Member).AsEnumerable().Where(r => Convert.ToInt32(r.Created.Substring(0,4)) == year && r.Created.GetIso8601WeekOfYear() == week);
-            var topics = _context.Posts.Include(p=>p.Member).AsEnumerable().Where(t => Convert.ToInt32(t.Created.Substring(0,4)) == year && t.Created.GetIso8601WeekOfYear() == week);
-            var visitors = _context.VisitorLog.Where(l=>l.VisitTime.Year == year && l.VisitTime.GetIso8601WeekOfYear() == week).AsQueryable();
+            var replies = _context.Replies.AsNoTracking().Include(p=>p.Member).AsEnumerable().Where(r => Convert.ToInt32(r.Created.Substring(0,4)) == year && r.Created.GetIso8601WeekOfYear() == week) ?? Enumerable.Empty<PostReply>();
+            var topics = _context.Posts.AsNoTracking().Include(p=>p.Member).AsEnumerable().Where(t => Convert.ToInt32(t.Created.Substring(0,4)) == year && t.Created.GetIso8601WeekOfYear() == week) ?? Enumerable.Empty<Post>();
+            var visitors = _context.VisitorLog.AsNoTracking().AsEnumerable().Where(l=>l.VisitTime.Year == year && l.VisitTime.GetIso8601WeekOfYear() == week) ?? Enumerable.Empty<VisitorLog>();
 
-            string thanksPostSql = $@"SELECT ft.MEMBER_ID,t.* FROM {_config.Value.forumTablePrefix}THANKS ft
-                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
-                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
-				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = t.T_AUTHOR
-				WHERE r.R_AUTHOR IS NULL AND SUBSTRING(t.T_DATE, 1, 4) = '{year}' AND DATEPART(ISO_WEEK, CONCAT(SUBSTRING(ft.THANKS_DATE, 1, 4) , '-', SUBSTRING(ft.THANKS_DATE, 5, 2) , '-' , SUBSTRING(ft.THANKS_DATE, 7, 2))) = {week}";
+            string thanksPostSql = this.thanksPostSql + $@" WHERE ft.THANKS_DATE IS NOT NULL AND r.R_AUTHOR IS NULL AND SUBSTRING(ft.THANKS_DATE, 1, 4) = '{year}' AND DATEPART(ISO_WEEK, CONCAT(SUBSTRING(ft.THANKS_DATE, 1, 4) , '-', SUBSTRING(ft.THANKS_DATE, 5, 2) , '-' , SUBSTRING(ft.THANKS_DATE, 7, 2))) = {week}";
 
-            string thanksReplySql = $@"
-                SELECT ft.MEMBER_ID,r.* FROM {_config.Value.forumTablePrefix}THANKS ft
-                JOIN {_config.Value.forumTablePrefix}TOPICS t on ft.TOPIC_ID = t.TOPIC_ID
-                LEFT JOIN {_config.Value.forumTablePrefix}REPLY r on ft.REPLY_ID = r.REPLY_ID
-				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = r.R_AUTHOR
-				WHERE r.R_AUTHOR IS NOT NULL AND SUBSTRING(t.T_DATE, 1, 4) = '{year}' AND DATEPART(ISO_WEEK, CONCAT(SUBSTRING(ft.THANKS_DATE, 1, 4) , '-', SUBSTRING(ft.THANKS_DATE, 5, 2) , '-' , SUBSTRING(ft.THANKS_DATE, 7, 2))) = {week}";
+            string thanksReplySql = this.thanksReplySql + $@" WHERE ft.THANKS_DATE IS NOT NULL AND r.R_AUTHOR IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 4) = '{year}' AND DATEPART(ISO_WEEK, CONCAT(SUBSTRING(ft.THANKS_DATE, 1, 4) , '-', SUBSTRING(ft.THANKS_DATE, 5, 2) , '-' , SUBSTRING(ft.THANKS_DATE, 7, 2))) = {week}";
 
-            string thanksGivenSql = $@"
-                SELECT m.* FROM {_config.Value.forumTablePrefix}THANKS ft
-				JOIN {_config.Value.memberTablePrefix}MEMBERS m on m.MEMBER_ID = ft.MEMBER_ID
-                WHERE ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 4) = '{year}' AND DATEPART(ISO_WEEK, CONCAT(SUBSTRING(ft.THANKS_DATE, 1, 4) , '-', SUBSTRING(ft.THANKS_DATE, 5, 2) , '-' , SUBSTRING(ft.THANKS_DATE, 7, 2))) = {week}";
+            string thanksGivenSql = this.thanksGivenSql + $@" WHERE ft.THANKS_DATE IS NOT NULL AND SUBSTRING(ft.THANKS_DATE, 1, 4) = '{year}' AND DATEPART(ISO_WEEK, CONCAT(SUBSTRING(ft.THANKS_DATE, 1, 4) , '-', SUBSTRING(ft.THANKS_DATE, 5, 2) , '-' , SUBSTRING(ft.THANKS_DATE, 7, 2))) = {week}";
 
-
-            var leaderboard = 
-                //replies
-                replies.Where(r => r.Answer == true)
-                .GroupBy(t => t.Member.Name)
-                .Select(g => new
+            var thanksPost = _context.Posts.FromSqlInterpolated(FormattableStringFactory.Create(thanksPostSql))
+                .Select(p => new Post
                 {
-                    UserName = g.Key,
-                    Answers = g.Count(),
-                    Replies = 0,
-                    Thanks = 0,
-                    Posts = 0
-                })
-                .Concat(
-                    replies.Where(r => r.Answer != true)
-                    .GroupBy(r => r.Member!.Name)
-                    .Select(g => new
+                    // Map Post properties
+                    Id = p.Id,
+                    Member = new Member
                     {
-                        UserName = g.Key,
-                        Answers = 0,
-                        Replies = g.Count(),
-                        Thanks = 0,
-                        Posts = 0
-                    })
-                )
-                //topics
-                .Concat(
-                    topics
-                    .Where(r => r.Answered == true)
-                    .GroupBy(r => r.Member.Name)
+                        // Map Member properties
+                        Id = p.Member.Id, 
+                        Name = p.Member.Name
+                    }
+                })
+                .AsEnumerable() ?? Enumerable.Empty<Post>();
+            var thanksReply = _context.Replies.FromSqlInterpolated(FormattableStringFactory.Create(thanksReplySql))
+                .Select(p => new PostReply
+                {
+                    // Map Post properties
+                    Id = p.Id,
+                    Member = new Member
+                    {
+                        // Map Member properties
+                        Id = p.Member.Id, 
+                        Name = p.Member.Name
+                    }
+                })                
+                .AsEnumerable() ?? Enumerable.Empty<PostReply>();
+            var thanksGiven = _context.Members.FromSqlInterpolated(FormattableStringFactory.Create(thanksGivenSql))
+                .AsEnumerable() ?? Enumerable.Empty<Member>();
+            IEnumerable<dynamic> leaderboard = null;
+
+            try
+            {
+                leaderboard = 
+                    //replies
+                    replies.Where(r => r.Answer == true)
+                    .GroupBy(t => t.Member.Name)
                     .Select(g => new
                     {
                         UserName = g.Key,
@@ -484,47 +560,61 @@ namespace SnitzCore.BackOffice.Controllers
                         Thanks = 0,
                         Posts = 0
                     })
-                )
-                .Concat(
-                    topics
-                    .Where(r => r.Answered != true && (r.ReplyCount > 10 || r.ViewCount > 100 || r.RatingTotalCount > 0))
-                    .GroupBy(r => r.Member.Name)
-                    .Select(g => new
-                    {
-                        UserName = g.Key,
-                        Answers = 0,
-                        Replies = 0,
-                        Thanks = 0,
-                        Posts = g.Count()
-                    })
-                )
-                //visits
-                //.Concat(
-                //    visitors.Where(v => !string.IsNullOrWhiteSpace(v.UserName) && !v.UserName.StartsWith("Anonymous"))
-                //    .GroupBy(v => v.UserName)
-                //    .Select(g => new
-                //    {
-                //        UserName = g.Key!,
-                //        Answers = 0,
-                //        Replies = 0,
-                //        Thanks = 0,
-                //        Posts = g.Count() / 10 // 1 point for every 10 visits
-                //    })
-                //)
-                //thanks
-                .Concat(
-                    _context.Posts.FromSqlInterpolated(FormattableStringFactory.Create(thanksPostSql))
-                    .GroupBy(t => t.Member!.Name)
-                    .Select(g => new
-                    {
-                        UserName = g.Key,
-                        Answers = 0,
-                        Replies = 0,
-                        Thanks = g.Count(),
-                        Posts = 0
-                    })
                     .Concat(
-                        _context.Replies.FromSqlInterpolated(FormattableStringFactory.Create(thanksReplySql))
+                        replies.Where(r => r.Answer != true)
+                        .GroupBy(r => r.Member!.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = g.Count(),
+                            Thanks = 0,
+                            Posts = 0
+                        })
+                    )
+                    //topics
+                    .Concat(
+                        topics
+                        .Where(r => r.Answered == true)
+                        .GroupBy(r => r.Member.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = g.Count(),
+                            Replies = 0,
+                            Thanks = 0,
+                            Posts = 0
+                        })
+                    )
+                    .Concat(
+                        topics
+                        .Where(r => r.Answered != true && (r.ReplyCount > 10 || r.ViewCount > 100 || r.RatingTotalCount > 0))
+                        .GroupBy(r => r.Member.Name)
+                        .Select(g => new
+                        {
+                            UserName = g.Key,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = 0,
+                            Posts = g.Count()
+                        })
+                    )
+                    //visits
+                    .Concat(
+                        visitors.Where(v => !string.IsNullOrWhiteSpace(v.UserName) && !v.UserName.StartsWith("Anonymous"))
+                        .GroupBy(v => v.UserName, StringComparer.OrdinalIgnoreCase)
+                        .Select(g => new
+                        {
+                            UserName = g.Key!,
+                            Answers = 0,
+                            Replies = 0,
+                            Thanks = 0,
+                            Posts = g.Count() / 10 // 1 point for every 10 visits
+                        })
+                    )
+                    //thanks
+                    .Concat(
+                        thanksPost
                         .GroupBy(t => t.Member!.Name)
                         .Select(g => new
                         {
@@ -534,39 +624,57 @@ namespace SnitzCore.BackOffice.Controllers
                             Thanks = g.Count(),
                             Posts = 0
                         })
+                        .Concat(
+                            thanksReply
+                            .GroupBy(t => t.Member!.Name)
+                            .Select(g => new
+                            {
+                                UserName = g.Key,
+                                Answers = 0,
+                                Replies = 0,
+                                Thanks = g.Count(),
+                                Posts = 0
+                            })
+                        )
+                        .Concat(
+                            thanksGiven
+                            .GroupBy(m => m.Name)
+                            .Select(g => new
+                            {
+                                UserName = g.Key,
+                                Answers = 0,
+                                Replies = 0,
+                                Thanks = g.Count(),
+                                Posts = 0
+                            })
+                        )
                     )
-                    .Concat(
-                        _context.Members.FromSqlInterpolated(FormattableStringFactory.Create(thanksGivenSql))
-                        .GroupBy(m => m.Name)
-                        .Select(g => new
-                        {
-                            UserName = g.Key,
-                            Answers = 0,
-                            Replies = 0,
-                            Thanks = g.Count(),
-                            Posts = 0
-                        })
-                    )
-                )
-                .GroupBy(x => x.UserName)
-                .Select(g => new
-                {
-                    UserName = g.Key,
-                    Answers = g.Sum(x => x.Answers),
-                    Replies = g.Sum(x => x.Replies),
-                    Thanks = g.Sum(x => x.Thanks),
-                    Posts = g.Sum(x => x.Posts),
-                    Total = g.Sum(x => x.Answers)*3 + g.Sum(x => x.Replies) + g.Sum(x => x.Thanks)*2 + g.Sum(x => x.Posts)
-                })
-                .OrderByDescending(x => x.Total)
-                .Take(50)
-                .ToList();
+                    .GroupBy(x => x.UserName, StringComparer.OrdinalIgnoreCase)
+                    .Select(g => new
+                    {
+                        UserName = g.Key,
+                        Answers = g.Sum(x => x.Answers),
+                        Replies = g.Sum(x => x.Replies),
+                        Thanks = g.Sum(x => x.Thanks),
+                        Posts = g.Sum(x => x.Posts),
+                        Total = g.Sum(x => x.Answers)*3 + g.Sum(x => x.Replies) + g.Sum(x => x.Thanks)*2 + g.Sum(x => x.Posts)
+                    })
+                    .OrderByDescending(x => x.Total)
+                    .Take(50)
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
                 // Assign ranks: same rank for same total, next rank skips accordingly
 
                 int currentRank = 1;
                 int previousTotal = -1;
 
-                var rankedLeaderboard = leaderboard
+            var rankedLeaderboard = leaderboard
                     .Select((item, index) =>
                     {
                         if (item.Total != previousTotal)

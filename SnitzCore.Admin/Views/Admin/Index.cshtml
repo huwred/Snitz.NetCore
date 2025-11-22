@@ -37,7 +37,7 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <admin-config config-type="textarea" config-key="_STRFORUMDESC" config-label="Forum Description" config-val="@Config.Value.strForumDescription"></admin-config>
+                        <admin-config config-type="textarea" config-key="_STRFORUMDESC" config-label="Forum Description" config-val="@Config.Value.strForumDescription" help-text="@Localizer["STRFORUMDESC"].Value"></admin-config>
                         <input snitz-if="@(false)" disabled type="text" name="STRFORUMDESC" value="@SnitzConfig.GetValue("STRFORUMDESC")" class="form-control" />
                     </div>
                 </div>
