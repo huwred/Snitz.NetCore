@@ -69,7 +69,9 @@ a.btn:hover {
 .subforum-description *{
     margin-block: 0;
 }
-
+#calendar-list .fc-header-toolbar {
+    display: none;
+}
 
 
 .subforum-icon i{

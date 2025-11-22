@@ -162,13 +162,19 @@ h1 {
 .sidebar-toggle{
     color:black !important;
 }
-.table-row .status .fa.fa-thumb-tack.fa-stack-1x, .table-row .status .fa.fa-fire.fa-stack-1x, .table-row .status .fa-regular.fa-frown.fa-stack-1x,
-.table-row .status .fa.fa-rocket.fa-stack-1x {
+.table-row .status .fa.fa-thumb-tack.fa-stack-1x, .table-row .status .fa-regular.fa-frown.fa-stack-1x {
     color: silver !important;
+}
+.table-row .status .fa.fa-fire {
+    color: #f00 !important;
+}
+.fa-fire, .subforum-icon .fa-fire, .table-row .status .fa-fire, .note .fa-fire, .fa-rocket, .subforum-icon .fa-rocket, .table-row .status .fa-rocket, .note .fa-rocket {
+    color: #ff4500;
 }
 #member-tools .nav-item:hover{
     background-color: rgba(0,0,0,.125);
 }
+
 /* ########################################### */
 /*           Forums.html                       */
 /* ########################################### */
