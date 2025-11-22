@@ -57,6 +57,9 @@
     <Content Update="wwwroot\codemirror\**" CopyToPublishDirectory="always" />
     <Content Update="wwwroot\js\timeago\*.*" CopyToPublishDirectory="always" />
     <Content Update="wwwroot\js\tinymce\langs\*.js" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\images\wizard.webp">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\js\captcha.js" CopyToPublishDirectory="always" />
     <Content Update="wwwroot\js\initPostForm.js" CopyToPublishDirectory="always" />
     <Content Update="wwwroot\js\jquery.cookie.js" CopyToPublishDirectory="always" />
