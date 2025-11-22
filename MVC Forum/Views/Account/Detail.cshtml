@@ -23,7 +23,7 @@
 }
 <div class="row container pt-0">
     <snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
-    <div class="col">
+    <div snitz-if="@Model.CanEdit" class="col">
         <div class="card" id="member-tools">
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link active" asp-controller="Account" asp-action="Files" asp-route-id="@Model?.Id">@Localizer["mnuManageFiles"]</a></li>

@@ -102,8 +102,13 @@ namespace MVCForum.Controllers
 
             return Content("/images/ninja-1027877_960_720.webp");
         }
+        [Authorize]
         public IActionResult Files(int id)
         {
+            if (_memberService.Current()?.Id != id) {
+
+                return NotFound();
+            }
             ViewBag.MemberId = id;
             return View("Files/Index");
         }
