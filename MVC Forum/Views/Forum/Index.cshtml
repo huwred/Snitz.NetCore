@@ -273,7 +273,15 @@
         
     </div>
 }
-
+<modal id="moderateModal" title="Post Moderation">
+    <modal-body>
+        <div id="postModeration"></div>
+    </modal-body>
+    <modal-footer dismiss-text="Cancel">
+        <button id="send-email" form="moderateForm" type="submit" class="btn btn-success">@Localizer["btnSend"] <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+        <button type="reset" form="moderateForm" class="btn btn-warning ">@Localizer["btnReset"]</button>
+    </modal-footer>
+</modal>
 <input type="text" style="display: none;" id="req-auth" value="@ViewBag.RequireAuth.ToString()" />
 <input type="text" style="display: none;" id="req-forumid" value="@Model.Forum.Id" />
 @section Scripts {

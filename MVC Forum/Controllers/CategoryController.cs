@@ -98,7 +98,7 @@ namespace MVCForum.Controllers
                 ReplyAuth = forum.Replyauth != null ? (PostAuthType)forum.Replyauth : PostAuthType.Anyone,               
             });            
             
-            if(groupId > 1)
+            if(groupId > 1 && id < 1)
             {
                 var catfilter = _groupservice.GetGroups(groupId).Select(g=>g.CategoryId).ToList();
                 categories = categories
@@ -111,13 +111,13 @@ namespace MVCForum.Controllers
 
             if (id > 0)
             {
-                categories = categories.Where(f => f.Id == id).ToList();
-                if (!categories.Any())
+                //categories = categories.Where(f => f.Id == id).ToList();
+                if (!categories.Any(f => f.Id == id))
                 {
                     ViewBag.Error = "Category not found";
                     return View ("Error");
                 }
-                //forums = forums.Where(f => f.CategoryId == id).ToList();
+                forums = forums.Where(f => f.CategoryId == id).ToList();
                 var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
                 var topicPage = new MvcBreadcrumbNode("", "Category", categories?.OrderBy(c => c.Name)?.FirstOrDefault()?.Name) { Parent = forumPage,RouteValues = new{id=id}};
                 ViewData["BreadcrumbNode"] = topicPage; 
