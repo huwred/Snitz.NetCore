@@ -21,6 +21,9 @@ String.prototype.replaceAt=function(index, character) {
 new bootstrap.Tooltip(document.body, {
     selector: "[data-toggle='tooltip']"
 });
+new bootstrap.Tooltip(document.body, {
+    selector: "[rel='tooltip']"
+});
 if ($.cookie("HideAnnounce")) {
     var title = $.cookie("HideAnnounce");
     if (title == $("#announce-title").html()) {

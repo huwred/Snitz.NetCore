@@ -72,9 +72,13 @@ a.btn:hover {
 #calendar-list .fc-header-toolbar {
     display: none;
 }
+pre {
+    max-height: 500px !important; /*workaround for Prism scrollbars*/
+    max-width:800px;
+    margin:8px;
+}
 
-
-.subforum-icon i{
+.subforum-icon i {
     font-size: 32px;
 }
 .user-icon i {
@@ -1247,5 +1251,49 @@ i.modstatus-2, i.modstatus-3 {
     text-align: center;
 }
 
+/* Donation Banner */
+.donation-banner {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #f0f8ff; /* pastel sky blue */
+    color: #333;
+    text-align: center;
+    padding: 10px 0;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 9999;
+}
 
+    .donation-banner a {
+        display: inline-block;
+        margin-left: 10px;
+        background: #ff7f50; /* coral button */
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background 0.3s ease;
+    }
+
+        .donation-banner a:hover {
+            background: #ff6347; /* slightly darker coral on hover */
+        }
+
+.close-banner {
+    position: absolute;
+    right: 15px;
+    top: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+    .close-banner:hover {
+        color: #000;
+    }
 
