@@ -95,7 +95,8 @@ namespace MVCForum.Controllers
                 ForumSubscription = (ForumSubscription)forum.Subscription,
                 ArchivedCount = forum.ArchivedTopics,
                 PostAuth = forum.Postauth != null ? (PostAuthType)forum.Postauth : PostAuthType.Anyone,
-                ReplyAuth = forum.Replyauth != null ? (PostAuthType)forum.Replyauth : PostAuthType.Anyone,               
+                ReplyAuth = forum.Replyauth != null ? (PostAuthType)forum.Replyauth : PostAuthType.Anyone,     
+                AllowedAccess = _forumService.AllowedUsers(forum.Id).Any(l => l.Key == _memberService.Current()?.Id)
             });            
             
             if(groupId > 1 && id < 1)
@@ -127,6 +128,7 @@ namespace MVCForum.Controllers
                 var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
                 ViewData["BreadcrumbNode"] = forumPage;
             }
+                            
 
             var model = new ForumIndexModel()
             {

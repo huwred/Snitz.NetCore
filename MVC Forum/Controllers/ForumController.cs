@@ -17,6 +17,7 @@ using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
+using SnitzCore.Service;
 using SnitzCore.Service.Extensions;
 using System;
 using System.Collections.Generic;
@@ -93,7 +94,7 @@ namespace MVCForum.Controllers
             bool ismoderator = member == null ? false : _snitzDbContext.ForumModerator.Where(f=>f.MemberId == member.Id && f.ForumId == forum.Id).Any();
             bool isadministrator = User.IsInRole("Administrator");
 
-            notallowed = CheckAuthorisation(forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
+            notallowed = CheckAuthorisation(forum.Id,member.Id,forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
             if (!isadministrator && passwordrequired)
             {
                 var auth = _httpcontext.Session.GetString("Pforum_" + id) == null ? "" : _httpcontext.Session.GetString("Pforum_" + id);
@@ -279,7 +280,6 @@ namespace MVCForum.Controllers
                     ForumAllowRating = p.Forum.Rating,
                     Rating = p.GetTopicRating()
                 });
-
                 var model = new ForumTopicModel()
                 {
                     AccessDenied = notallowed,
@@ -341,7 +341,7 @@ namespace MVCForum.Controllers
             bool ismoderator = User.IsInRole($"Forum_{forum.Id}");
             bool isadministrator = User.IsInRole("Administrator");
 
-            notallowed = CheckAuthorisation(forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
+            notallowed = CheckAuthorisation(forum.Id,_memberService.Current()?.Id??0,forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
             if (!isadministrator && passwordrequired)
             {
                 var auth = _httpcontext.Session.GetString("Pforum_" + id) == null ? "" : _httpcontext.Session.GetString("Pforum_" + id);
@@ -1193,13 +1193,14 @@ namespace MVCForum.Controllers
             };
         }
 
-        private bool CheckAuthorisation(ForumAuthType auth,bool signedin, bool ismoderator, bool isadministrator, ref bool passwordrequired)
+        private bool CheckAuthorisation(int forumid,int memberid,ForumAuthType auth,bool signedin, bool ismoderator, bool isadministrator, ref bool passwordrequired)
         {
             bool notallowed = false;
+            bool isallowedmember = _forumService.AllowedUsers(forumid).Any(l=>l.Key == memberid);
             switch (auth)
             {
                 case ForumAuthType.AllowedMembers:
-                    if (signedin && (ismoderator || isadministrator))
+                    if (signedin && (ismoderator || isadministrator || isallowedmember))
                     {
                         break;
                     }
@@ -1209,7 +1210,7 @@ namespace MVCForum.Controllers
                     passwordrequired = true;
                     break;
                 case ForumAuthType.AllowedMemberPassword:
-                    if (signedin && (ismoderator || isadministrator))
+                    if (signedin && (ismoderator || isadministrator || isallowedmember))
                     {
                         passwordrequired = true;
                         break;
@@ -1227,10 +1228,11 @@ namespace MVCForum.Controllers
                     notallowed = true;
                     break;
                 case ForumAuthType.AllowedMembersHidden:
-                    if (signedin && (ismoderator || isadministrator))
+                    if (signedin && (ismoderator || isadministrator || isallowedmember))
                     {
                         break;
                     }
+                    
                     notallowed = true;
                     break;
                 case ForumAuthType.MembersPassword:

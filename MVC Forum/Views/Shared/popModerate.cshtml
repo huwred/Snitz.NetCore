@@ -1,9 +1,13 @@
 ﻿@model MVCForum.ViewModels.Post.ApproveTopicViewModal
 @{
-    var test = Model.PostStatus;
+    var controller = "Topic";
+    if(Model.IsReply)
+    {
+        controller = "Reply";
+    }
 }
 <div class="container" id="approvalForm">
-    <form id="moderateForm" asp-controller="Topic" asp-action="ModeratePost" data-ajax="true" class="needs-validation" novalidate data-toggle="validator">
+    <form id="moderateForm" asp-controller="@controller" asp-action="ModeratePost" data-ajax="true" class="needs-validation" novalidate data-toggle="validator">
         @Html.HiddenFor(m => m.Id)
         <div class="form-horizontal">
             <div class="mb-3">
@@ -37,7 +41,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $.validator.unobtrusive.parse('#approvalForm');
+            $.validator.unobtrusive.parse('#moderateForm');
             $('body').on('change', '#emailAuthor', function () {
                 $('#approvalMessage').prop("disabled", $('#emailAuthor').prop('checked') == false);
             });

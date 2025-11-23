@@ -37,6 +37,7 @@ namespace MVCForum.ViewModels.Forum
 
         public int? ArchivedCount { get; set; }
         public bool AllowTopicRating {get;set;}
+        public bool AllowedAccess { get; internal set; }
     }
 
     public class ForumList{

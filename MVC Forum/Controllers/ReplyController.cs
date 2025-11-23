@@ -400,7 +400,7 @@ namespace MVCForum.Controllers
         [Authorize(Roles = "Administrator,Moderator")]
         public PartialViewResult Moderate(int id)
         {
-            ApproveTopicViewModal vm = new ApproveTopicViewModal {Id = id};
+            ApproveTopicViewModal vm = new ApproveTopicViewModal {Id = id,IsReply = true};
             return PartialView("popModerate",vm);
         }
 
@@ -484,9 +484,9 @@ namespace MVCForum.Controllers
                     _mailSender.ModerationEmail(author, subject, message, forum, reply);
                 }
                 
-                return RedirectToAction("Index", "Topic", new { id=reply.PostId});
+                return Json(new { result = true });
             }
-
+            vm.IsReply = true;
             return PartialView("popModerate",vm);
         }
 

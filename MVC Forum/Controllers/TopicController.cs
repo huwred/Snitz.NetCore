@@ -1409,7 +1409,7 @@ namespace MVCForum.Controllers
                 return Json(new { result = true });
                 //return RedirectToAction("Index", "Forum", new { id=topic.ForumId});
             }
-
+            vm.IsReply = false;
             return PartialView("popModerate",vm);
         }
 
@@ -1425,7 +1425,7 @@ namespace MVCForum.Controllers
         public PartialViewResult Moderate(int id)
         {
             var topic = _postService.GetTopic(id);
-            ApproveTopicViewModal vm = new ApproveTopicViewModal {Id = id, PostStatus = ((Status)topic.Status).ToString()};
+            ApproveTopicViewModal vm = new ApproveTopicViewModal {Id = id,IsReply=false, PostStatus = ((Status)topic.Status).ToString()};
             return PartialView("popModerate",vm);
         }
 
