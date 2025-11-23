@@ -63,8 +63,10 @@
         }        
         @if (isadmin || isauthor || ismoderator)
         {
-
-            <i class="fa fa-toolbox" id="toolbox-@postid" data-trigger="focus" tabindex="0" data-bs-toggle="popover" data-bs-content='' data-bs-html="true"></i>
+            <span rel="tooltip" title="Admin options">
+            <i class="fa fa-toolbox" id="toolbox-@postid" data-bs-trigger="focus" tabindex="0" data-bs-toggle="popover" data-bs-content='' data-bs-html="true"></i>
+            </span>
+    
             <div hidden>
                 <div data-name="toolbox-@postid" class="fs-4">
                     <i snitz-if="@((!islocked && isauthor) || isadmin || ismoderator)" class="fa-regular fa-pen-to-square  post-edit" title="@Localizer["tipEditTopic"]" data-id="@postid" data-archived="@isArchived" data-toggle="tooltip"></i>
@@ -84,7 +86,10 @@
 }
 <storecontent asp-key="topic-post-controls">
     <script>
-
+        $(".fa-toolbox").on("shown.bs.popover",function(){
+            //alert("show me");
+            $('[rel="tooltip"], .tooltip').tooltip("hide");
+        });
         $(".fa-bell.forum").off().on("click",
             function(e) {
                 e.preventDefault();
@@ -145,6 +150,43 @@
                             data: form_data
                         }).done(function(response) {
                             if (response.result) {
+                                $("#send-email").blur();
+                                $('#moderateModal').modal('hide');
+                                location.reload;
+                            } else {
+                                //Dont close the modal, display the error
+                                $('#postModeration').html(response);
+                            }
+                        });
+                    });
+            });
+        $(".reply-moderate").on("click",
+            function(e) {
+                e.preventDefault();
+                $(".popover").hide();
+                var replyid = $(this).data("id");
+
+                $.get(SnitzVars.baseUrl + "/Reply/Moderate/" + replyid,
+                    function(data) {
+                        $('#moderateModal #send-email').html('Post');
+                        $('#moderateModal .modal-title').html('Moderate Post');
+                        $('#postModeration').html(data);
+                        $("#moderateModal").modal('show');
+                    });
+                $(document).on("submit",
+                    "#moderateForm",
+                    function(e) {
+                        e.preventDefault();
+                        $('#send-email').prop('disabled', true);
+                        var post_url = $(this).attr("action").replace("Topic", "Reply");
+                        var form_data = $('#moderateForm').serialize();
+                        $.ajax({
+                            url: post_url,
+                            type: "POST",
+                            data: form_data
+                        }).done(function(response) {
+                            if (response.result) {
+                                $("#send-email").blur();
                                 $('#moderateModal').modal('hide');
                                 location.reload;
                             } else {

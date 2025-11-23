@@ -273,7 +273,6 @@
         });
 
         $('#provider-select').on("change",function(){
-            console.log('changed');
             var selectedValue = $(this).val();
             if(selectedValue === "sqlite" || selectedValue === "localdb"){
                 $('#sec-settings').hide();

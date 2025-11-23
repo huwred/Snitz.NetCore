@@ -23,13 +23,13 @@
                 @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
                 @await Component.InvokeAsync("Events", new { template = "MenuItem" })
                 <li snitz-if="@(SnitzConfig.IsEnabled("INTLEADERBOARD"))"><a asp-controller="Charts" asp-action="Leaderboard">@Localizer["mnuLeaderboard"]</a></li>
-
+                <li class="d-none"><a asp-controller="Paypal" asp-action="Donate" title="Help keep Snitz running with a small donation">@Localizer["mnuDonate"]</a></li>
             </ul>
         </li>
         <li class="sub-menu" snitz-if="@(SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)">
             <a href="#" role="button" id="navbarDropdownAlbumLink">@Localizer["mnuAlbums"]<div class='fa fa-caret-down right'></div></a>
             <ul aria-labelledby="navbarDropdownAlbumLink">
-                <li><a class="dropdown-item" asp-controller="PhotoAlbum" asp-action="Index" asp-route-id="">@Localizer["mnuMemberAlbums"]</a></li>
+                <li><a asp-controller="PhotoAlbum" asp-action="Index" asp-route-id="">@Localizer["mnuMemberAlbums"]</a></li>
                 <li snitz-if="@(SnitzConfig.GetIntValue("INTCOMMONALBUM") == 1)"><a asp-controller="PhotoAlbum" asp-action="Album" asp-route-id="">@Localizer["mnuCommonAlbum"]</a></li>
                 <li snitz-if="@SignInManager.IsSignedIn(User)"><a asp-controller="PhotoAlbum" asp-action="Member" asp-route-id="@currForumUser?.MemberId">@Localizer["mnuMyAlbum"]</a></li>
             </ul>

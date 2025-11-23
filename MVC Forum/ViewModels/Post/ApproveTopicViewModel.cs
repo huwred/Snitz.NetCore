@@ -13,5 +13,7 @@ namespace MVCForum.ViewModels.Post
         public int Id { get; set; }
 
         public bool EmailAuthor { get; set; }
+
+        public bool IsReply { get; set; } = false;
     }
 }

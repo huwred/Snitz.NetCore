@@ -158,9 +158,11 @@ footer {
 .image-gallery > li{
     flex-basis:200px;
 }
+
 </style>
 </head>
 <body>
+
   <!-- Fixed Header -->
   <nav id="fixed-head" class="navbar navbar-dark bg-dark fixed-top">
     <div class="container justify-content-between">
@@ -184,17 +186,22 @@ footer {
   </div>
 
   <!-- Main Content -->
-  <div id="main-content" class="p-4">
-            @if (SnitzConfig.IsEnabled("INTTOPBANNER"))
-            {
-                @await Component.InvokeAsync("AdRotator", new { template = "top" })
-            }
-            <div id="liveAlertPlaceholder"></div>     
-            <partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
+    <div id="main-content" class="p-4">
+        <div class="d-none donation-banner" id="donationBanner">
+            🌟 Love this site? Help keep it running 👉 
+            <a asp-action="Donate" asp-controller="Paypal" title="Donate via Paypal">Support Us</a>
+            <span class="close-banner" onclick="closeBanner()">✖</span>
+        </div>
+        @if (SnitzConfig.IsEnabled("INTTOPBANNER"))
+        {
+            @await Component.InvokeAsync("AdRotator", new { template = "top" })
+        }
+        <div id="liveAlertPlaceholder"></div>     
+        <partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
 
-                @RenderBody()
-            <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
-  </div>
+            @RenderBody()
+        <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
+    </div>
 </div>
   <!-- Sticky Footer -->
         <partial name="Footer"/>
@@ -245,6 +252,23 @@ footer {
 <renderstoredcontent asp-key="cookie-consent"></renderstoredcontent>
 <renderstoredcontent asp-key="password-toggle"></renderstoredcontent>
 <script type="text/javascript">
+  const banner = document.getElementById("donationBanner");
+  const dismissedAt = localStorage.getItem("donationBannerDismissedAt");
+
+  // Check if banner should be hidden or shown
+  if (dismissedAt) {
+    const now = new Date().getTime();
+    const fourteenDays = 14 * 24 * 60 * 60 * 1000; // 14 days in ms
+    if (now - parseInt(dismissedAt, 10) < fourteenDays) {
+      banner.style.display = "none"; // still within 14 days
+    }
+  }
+
+  function closeBanner() {
+    banner.style.display = "none";
+    localStorage.setItem("donationBannerDismissedAt", new Date().getTime());
+  }
+
     /* Show the user card popup when clicking on a profile link */
     $(document).on("click", ".profile-popup", function (e) {
         e.preventDefault();

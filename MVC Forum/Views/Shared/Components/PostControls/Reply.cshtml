@@ -43,13 +43,17 @@
 
         @if (isadmin || isauthor || ismoderator)
         {
-            <i class="fa fa-toolbox" id="toolbox-@Model.Id" data-bs-toggle="popover" data-bs-content='' data-bs-html="true"></i>
+            <span rel="tooltip" title="Admin options">
+                <i class="fa fa-toolbox" id="toolbox-@Model.Id" data-bs-toggle="popover" data-bs-content='' data-bs-html="true"></i>
+            </span>
             <div hidden>
                 <div data-name="toolbox-@Model.Id" class="fs-4">
                     <i snitz-if="@(!islocked || isadmin || ismoderator)" class="fa-regular fa-pen-to-square m-1 reply-edit" data-archived="@isArchived" title="@Localizer["tipEditReply"]" data-id="@Model.Id" data-toggle="tooltip"></i>
                     <i class="fa-regular fa-trash-can m-1 reply-del" title="@Localizer["tipDelReply"]" data-archived="@isArchived" data-id="@Model.Id" data-topicid="@topicid" data-toggle="tooltip"></i>
                     <i snitz-if="@(islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-unlock admin m-1 post-lock" title="@Localizer["cnfUnlockTopic"]" data-id="@topicid" data-status="1" data-toggle="tooltip"></i>
                     <i snitz-if="@(!islocked && (isadmin || ismoderator) && !isArchived)" class="fa fa-lock admin m-1 post-lock" title="@Localizer["cnfLockTopic"]" data-id="@topicid" data-status="0" data-toggle="tooltip"></i>
+                    <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.OnHold))" class="fa fa-pause admin  reply-moderate" title="@Localizer["lblOnhold"]" data-id="@Model.Id" data-toggle="tooltip"></i>
+                    <i snitz-if="@((isadmin || ismoderator) && (Model.Status == (int)Status.UnModerated))" class="fa-regular fa-hand admin  reply-moderate" title="@Localizer["lblUnmoderated"]" data-id="@Model.Id" data-toggle="tooltip"></i>
 
                 </div>
             </div>

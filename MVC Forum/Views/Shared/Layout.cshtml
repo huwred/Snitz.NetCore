@@ -62,6 +62,11 @@
         <div class="container flex-grow-1">
         <partial name="MainNav"/>       
             <main role="main" class="pb-3 mt-6">
+            <div class="d-none donation-banner" id="donationBanner">
+                🌟 Love this site? Help keep it running 👉 
+                <a asp-action="Donate" asp-controller="Paypal" title="Donate via Paypal">Support Us</a>
+                <span class="close-banner" onclick="closeBanner()">✖</span>
+            </div>
             @if (SnitzConfig.IsEnabled("INTTOPBANNER"))
             {
                 @await Component.InvokeAsync("AdRotator", new { template = "top" })
@@ -123,6 +128,22 @@
 <renderstoredcontent asp-key="cookie-consent"></renderstoredcontent>
 <renderstoredcontent asp-key="password-toggle"></renderstoredcontent>
 <script type="text/javascript">
+  const banner = document.getElementById("donationBanner");
+  const dismissedAt = localStorage.getItem("donationBannerDismissedAt");
+
+  // Check if banner should be hidden or shown
+  if (dismissedAt) {
+    const now = new Date().getTime();
+    const fourteenDays = 14 * 24 * 60 * 60 * 1000; // 14 days in ms
+    if (now - parseInt(dismissedAt, 10) < fourteenDays) {
+      banner.style.display = "none"; // still within 14 days
+    }
+  }
+
+  function closeBanner() {
+    banner.style.display = "none";
+    localStorage.setItem("donationBannerDismissedAt", new Date().getTime());
+  }
     /* Show the user card popup when clicking on a profile link */
     $(document).on("click", ".profile-popup", function (e) {
         e.preventDefault();

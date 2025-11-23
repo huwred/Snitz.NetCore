@@ -111,7 +111,7 @@
                     <div class="accordion-collapse collapse show" id="collapse_@ID" aria-labelledby="heading_@ID">
                         @foreach (var forum in forumlist.OrderBy(f => f.Order))
                         {
-                            @if (HasAccess(forum.AccessType, forum.Id))
+                            @if (HasAccess(forum.AccessType, forum.Id,forum.AllowedAccess))
                             {
                                 var weblinkclass = "";
                                 if (forum.ForumType == ForumType.WebLink)
@@ -218,7 +218,7 @@
     {
         foreach (var forum in forums)
         {
-            if (HasAccess(forum.AccessType, forum.Id))
+            if (HasAccess(forum.AccessType, forum.Id, forum.AllowedAccess))
             {
                 return false;
             }            
@@ -226,7 +226,7 @@
 
         return true;
     }
-    bool HasAccess(ForumAuthType authType,int forumId)
+    bool HasAccess(ForumAuthType authType,int forumId,bool allowedaccess)
     {
         if (User.IsInRole("Administrator"))
         {
@@ -237,7 +237,7 @@
             case ForumAuthType.All:
                 return true;
             case ForumAuthType.AllowedMembers:
-                if (SignInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forumId) || User.IsInRole("Administrator")))
+                if (SignInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forumId) || User.IsInRole("Administrator") || allowedaccess))
                 {
                     return true;
                 }
@@ -245,7 +245,7 @@
             case ForumAuthType.PasswordProtected:
                 return true;
             case ForumAuthType.AllowedMemberPassword:
-                if (SignInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forumId) || User.IsInRole("Administrator")))
+                if (SignInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forumId) || User.IsInRole("Administrator") || allowedaccess))
                 {
                     return true;
                 }
@@ -257,6 +257,10 @@
             case ForumAuthType.MembersHidden:
                 return false;
             case ForumAuthType.AllowedMembersHidden:
+                if (SignInManager.IsSignedIn(User) && (User.IsInRole("Forum_" + forumId) || User.IsInRole("Administrator") || allowedaccess))
+                {
+                    return true;
+                }
                 return false;
             case ForumAuthType.MembersPassword:
                 // if (SignInManager.IsSignedIn(User))
