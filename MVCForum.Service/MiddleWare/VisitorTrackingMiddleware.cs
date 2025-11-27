@@ -11,7 +11,6 @@ using SnitzCore.Service.Extensions;
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SnitzCore.Service.MiddleWare
@@ -19,17 +18,17 @@ namespace SnitzCore.Service.MiddleWare
     public class VisitorTrackingMiddleware
     {
         private readonly RequestDelegate _next;
-            private readonly MaxMindDb geo;
-    private readonly IMemoryCache cache;
+        private readonly MaxMindDb geo;
+        private readonly IMemoryCache cache;
         private readonly Func<WebRequest, bool> compiledRule;
 
         public VisitorTrackingMiddleware(RequestDelegate next, MaxMindDb geo, IMemoryCache cache,
         IOptions<Rule> ruleset)
         {
             _next = next;
-                    this.geo = geo;
-        this.cache = cache;
-        this.compiledRule = new MRE().CompileRule<WebRequest>(ruleset.Value);
+            this.geo = geo;
+            this.cache = cache;
+            this.compiledRule = new MRE().CompileRule<WebRequest>(ruleset.Value);
         }
 
         public async Task InvokeAsync(HttpContext context, ILoggerService databaseLogger,ISnitzConfig snitzConfig,IConfiguration config)
@@ -49,13 +48,21 @@ namespace SnitzCore.Service.MiddleWare
                 await _next(context);
                 return;
             }
-            var wr = new WebRequest(context.Request, geo, cache);
+            try
+            {
+                var wr = new WebRequest(context.Request, geo, cache);
 
-            databaseLogger.Log(
-                context.Request.Headers["User-Agent"].ToString(),
-                context.Request.GetEncodedPathAndQuery(),
-                context.User.Identity?.IsAuthenticated == true ? context.User.Identity.Name.ToLowerInvariant() : $"Anonymous {wr.IpCountry}",
-                context.Connection.RemoteIpAddress?.ToString());
+                databaseLogger.Log(
+                    context.Request.Headers["User-Agent"].ToString(),
+                    context.Request.GetEncodedPathAndQuery(),
+                    context.User.Identity?.IsAuthenticated == true ? context.User.Identity.Name.ToLowerInvariant() : $"Anonymous {wr?.IpCountry}",
+                    context.Connection.RemoteIpAddress?.ToString());
+            }
+            catch (Exception)
+            {
+
+            }
+
 
             await _next(context);
         }

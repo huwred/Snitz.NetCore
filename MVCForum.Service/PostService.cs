@@ -920,12 +920,19 @@ namespace SnitzCore.Service
                 .Include(p=>p.Replies!).ThenInclude(r=>r.Member)
                 .AsQueryable();
 
-            if (searchQuery.SinceDate != SearchDate.AnyDate)
+            if (searchQuery.SinceDate != null && searchQuery.SinceWhen == "after")
             {
-                var lastvisit = DateTime.UtcNow.AddDays(-(int)searchQuery.SinceDate).ToForumDateStr();
+                var lastvisit = searchQuery.SinceDate.Value.ToForumDateStr();
                 posts = posts
                     
                 .Where(f => string.Compare( f.LastPostDate , lastvisit) > 0)
+                .OrderByDescending(t=>t.LastPostDate).AsQueryable();
+            }else if (searchQuery.SinceDate != null && searchQuery.SinceWhen == "before")
+            {
+                var lastvisit = searchQuery.SinceDate.Value.ToForumDateStr();
+                posts = posts
+                    
+                .Where(f => string.Compare( f.LastPostDate , lastvisit) < 0)
                 .OrderByDescending(t=>t.LastPostDate).AsQueryable();
             }
             if (searchQuery.SearchCategory is > 0)
@@ -1002,12 +1009,19 @@ namespace SnitzCore.Service
                 //.Include(p=>p.ArchivedReplies!).ThenInclude(r=>r.Member)
                 .AsQueryable();
 
-            if (searchQuery.SinceDate != SearchDate.AnyDate)
+            if (searchQuery.SinceDate != null && searchQuery.SinceWhen == "after")
             {
-                var lastvisit = DateTime.UtcNow.AddDays(-(int)searchQuery.SinceDate).ToForumDateStr();
+                var lastvisit = searchQuery.SinceDate.Value.ToForumDateStr();
                 posts = posts
                     
                 .Where(f => string.Compare( f.LastPostDate , lastvisit) > 0)
+                .OrderByDescending(t=>t.LastPostDate).AsQueryable();
+            }else if (searchQuery.SinceDate != null && searchQuery.SinceWhen == "before")
+            {
+                var lastvisit = searchQuery.SinceDate.Value.ToForumDateStr();
+                posts = posts
+                    
+                .Where(f => string.Compare( f.LastPostDate , lastvisit) < 0)
                 .OrderByDescending(t=>t.LastPostDate).AsQueryable();
             }
             if (searchQuery.SearchCategory is > 0)
