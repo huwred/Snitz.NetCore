@@ -1,5 +1,6 @@
 ﻿using BbCodeFormatter.Formatters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileSystemGlobbing;
 using SnitzCore.Data;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
@@ -478,12 +479,35 @@ public class BbCodeProcessor : ICodeProcessor
             return data;
         const RegexOptions options = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline;
         Regex regex = new Regex(@"[\[\<][^\]|\>]*[\]\>]", options);
-
         data = regex.Replace(data, "");
 
         return data;
     }
+    public List<string> GetAltTags(string data)
+    {
+        // [\[\<][^\]|\>]*[\]\>]
+        if (String.IsNullOrWhiteSpace(data))
+            return new List<string>();
+        const RegexOptions options = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline;
+        Regex regex = new Regex(@"(title=.+(?=""|'))|(alt=.+(?=""|'))", options);
+        var results = new List<string>();
+        var matches = regex.Matches(data);
+        foreach (Match match in matches)
+        {
+            // Start from 1 to skip the full match (Group[0])
+            for (int i = 1; i < match.Groups.Count; i++)
+            {
+                if (match.Groups[i].Success)
+                    {
+                        if(!results.Contains(match.Groups[i].Value))
+                            { results.Add(match.Groups[i].Value); }
 
+                    }
+            }
+        }
+
+        return results;
+    }
     /// <summary>
     /// Strip content from [code] tags
     /// </summary>
