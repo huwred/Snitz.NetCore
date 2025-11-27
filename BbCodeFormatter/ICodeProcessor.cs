@@ -49,4 +49,6 @@ public interface ICodeProcessor
     /// <param name="data"></param>
     /// <returns></returns>
     string StripCodeContents(string data);
+
+    List<string> GetAltTags(string data);
 }
