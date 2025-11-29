@@ -1,4 +1,6 @@
-﻿namespace SnitzCore.Data.Models
+﻿using System;
+
+namespace SnitzCore.Data.Models
 {
     public class ForumSearch
     {
@@ -10,7 +12,8 @@
         public int? SearchCategory { get; set; }
         public int[]? SearchForums { get; set; }
 
-        public SearchDate SinceDate { get; set; }
+        public DateTime? SinceDate { get; set; }
+        public string SinceWhen {get;set;} = "after";
 
     }
 }

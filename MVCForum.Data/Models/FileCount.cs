@@ -1,11 +1,6 @@
 ﻿using SnitzCore.Data.Extensions;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SnitzCore.Data.Models
 {
@@ -22,7 +17,9 @@ namespace SnitzCore.Data.Models
         public int Archived { get; set; }
         public string Title { get; set; }
         public string FileName { get; set; }
-        public string Version {get;set;}
+        public string? Version {get;set;}
+
+        public string? ReadMe { get; set; } = string.Empty;
 
     }
 }

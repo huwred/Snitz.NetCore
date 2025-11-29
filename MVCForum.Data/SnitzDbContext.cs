@@ -103,5 +103,7 @@ namespace SnitzCore.Data
         public DbSet<BookmarkEntry> Bookmarks { get; set; }
 
         public DbSet<VisitorLog> VisitorLog { get; set; }
+
+        public DbSet<FileCount> Releases { get; set; }
     }
 }
