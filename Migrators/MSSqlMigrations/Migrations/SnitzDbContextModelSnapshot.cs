@@ -309,7 +309,7 @@ namespace Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("CAL_EVENTS", (string)null);
+                    b.ToTable("CAL_EVENTS");
                 });
 
             modelBuilder.Entity("Snitz.Events.Models.ClubCalendarCategory", b =>
@@ -335,7 +335,7 @@ namespace Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("EVENT_CAT", (string)null);
+                    b.ToTable("EVENT_CAT");
                 });
 
             modelBuilder.Entity("Snitz.Events.Models.ClubCalendarClub", b =>
@@ -375,7 +375,7 @@ namespace Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("EVENT_CLUB", (string)null);
+                    b.ToTable("EVENT_CLUB");
                 });
 
             modelBuilder.Entity("Snitz.Events.Models.ClubCalendarLocation", b =>
@@ -401,7 +401,7 @@ namespace Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("EVENT_LOCATION", (string)null);
+                    b.ToTable("EVENT_LOCATION");
                 });
 
             modelBuilder.Entity("Snitz.PhotoAlbum.Models.AlbumCategory", b =>
@@ -423,7 +423,7 @@ namespace Migrations
 
                     b.HasKey("CatId");
 
-                    b.ToTable("FORUM_IMAGE_CAT", (string)null);
+                    b.ToTable("FORUM_IMAGE_CAT");
                 });
 
             modelBuilder.Entity("Snitz.PhotoAlbum.Models.AlbumGroup", b =>
@@ -445,7 +445,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FORUM_ORG_GROUP", (string)null);
+                    b.ToTable("FORUM_ORG_GROUP");
                 });
 
             modelBuilder.Entity("Snitz.PhotoAlbum.Models.AlbumImage", b =>
@@ -528,7 +528,7 @@ namespace Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("FORUM_IMAGES", (string)null);
+                    b.ToTable("FORUM_IMAGES");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedPost", b =>
@@ -658,7 +658,7 @@ namespace Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("FORUM_A_TOPICS", (string)null);
+                    b.ToTable("FORUM_A_TOPICS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ArchivedReply", b =>
@@ -731,7 +731,7 @@ namespace Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("FORUM_A_REPLY", (string)null);
+                    b.ToTable("FORUM_A_REPLY");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Badword", b =>
@@ -756,7 +756,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FORUM_BADWORDS", (string)null);
+                    b.ToTable("FORUM_BADWORDS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.BookmarkEntry", b =>
@@ -782,7 +782,7 @@ namespace Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("FORUM_BOOKMARKS", (string)null);
+                    b.ToTable("FORUM_BOOKMARKS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Category", b =>
@@ -816,7 +816,49 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FORUM_CATEGORY", (string)null);
+                    b.ToTable("FORUM_CATEGORY");
+                });
+
+            modelBuilder.Entity("SnitzCore.Data.Models.FileCount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("FC_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Archived")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LinkHits")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LinkOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Posted")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReadMe")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Version")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FORUM_FILECOUNT");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Forum", b =>
@@ -965,7 +1007,7 @@ namespace Migrations
 
                     b.HasIndex("LatestTopicId");
 
-                    b.ToTable("FORUM_FORUM", (string)null);
+                    b.ToTable("FORUM_FORUM");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ForumAllowedMember", b =>
@@ -982,7 +1024,7 @@ namespace Migrations
 
                     b.HasIndex("ForumId");
 
-                    b.ToTable("FORUM_ALLOWED_MEMBERS", (string)null);
+                    b.ToTable("FORUM_ALLOWED_MEMBERS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ForumModerator", b =>
@@ -1012,7 +1054,7 @@ namespace Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("FORUM_MODERATOR", (string)null);
+                    b.ToTable("FORUM_MODERATOR");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ForumTotal", b =>
@@ -1043,7 +1085,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FORUM_TOTALS", (string)null);
+                    b.ToTable("FORUM_TOTALS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Group", b =>
@@ -1069,7 +1111,7 @@ namespace Migrations
 
                     b.HasIndex("GroupNameId");
 
-                    b.ToTable("FORUM_GROUPS", (string)null);
+                    b.ToTable("FORUM_GROUPS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.GroupName", b =>
@@ -1104,7 +1146,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FORUM_GROUP_NAMES", (string)null);
+                    b.ToTable("FORUM_GROUP_NAMES");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.LanguageResource", b =>
@@ -1140,7 +1182,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LANGUAGE_RES", (string)null);
+                    b.ToTable("LANGUAGE_RES");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Member", b =>
@@ -1386,7 +1428,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FORUM_MEMBERS", (string)null);
+                    b.ToTable("FORUM_MEMBERS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.MemberNamefilter", b =>
@@ -1406,7 +1448,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FORUM_NAMEFILTER", (string)null);
+                    b.ToTable("FORUM_NAMEFILTER");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.MemberRanking", b =>
@@ -1439,7 +1481,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FORUM_RANKING", (string)null);
+                    b.ToTable("FORUM_RANKING");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.MemberSubscription", b =>
@@ -1477,7 +1519,7 @@ namespace Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("FORUM_SUBSCRIPTIONS", (string)null);
+                    b.ToTable("FORUM_SUBSCRIPTIONS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.OldMembership", b =>
@@ -1501,7 +1543,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("webpages_Membership", (string)null);
+                    b.ToTable("webpages_Membership");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.OldRole", b =>
@@ -1518,7 +1560,7 @@ namespace Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("webpages_Roles", (string)null);
+                    b.ToTable("webpages_Roles");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.OldUserInRole", b =>
@@ -1533,7 +1575,7 @@ namespace Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("webpages_UsersInRoles", (string)null);
+                    b.ToTable("webpages_UsersInRoles");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Poll", b =>
@@ -1577,7 +1619,7 @@ namespace Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("FORUM_POLLS", (string)null);
+                    b.ToTable("FORUM_POLLS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.PollAnswer", b =>
@@ -1611,7 +1653,7 @@ namespace Migrations
 
                     b.HasIndex("PollId");
 
-                    b.ToTable("FORUM_POLL_ANSWERS", (string)null);
+                    b.ToTable("FORUM_POLL_ANSWERS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.PollVote", b =>
@@ -1651,7 +1693,7 @@ namespace Migrations
 
                     b.HasIndex("PollId");
 
-                    b.ToTable("FORUM_POLL_VOTES", (string)null);
+                    b.ToTable("FORUM_POLL_VOTES");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.Post", b =>
@@ -1785,7 +1827,7 @@ namespace Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("FORUM_TOPICS", (string)null);
+                    b.ToTable("FORUM_TOPICS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.PostReply", b =>
@@ -1864,7 +1906,7 @@ namespace Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("FORUM_REPLY", (string)null);
+                    b.ToTable("FORUM_REPLY");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.PrivateMessage", b =>
@@ -1930,7 +1972,7 @@ namespace Migrations
 
                     b.HasIndex("FromId");
 
-                    b.ToTable("FORUM_PM", (string)null);
+                    b.ToTable("FORUM_PM");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.PrivateMessageBlocklist", b =>
@@ -1958,7 +2000,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FORUM_PM_BLOCKLIST", (string)null);
+                    b.ToTable("FORUM_PM_BLOCKLIST");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.SnitzConfig", b =>
@@ -1986,7 +2028,7 @@ namespace Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
-                    b.ToTable("FORUM_CONFIG_NEW", (string)null);
+                    b.ToTable("FORUM_CONFIG_NEW");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.SpamFilter", b =>
@@ -2006,7 +2048,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FORUM_SPAM_MAIL", (string)null);
+                    b.ToTable("FORUM_SPAM_MAIL");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.TopicRating", b =>
@@ -2028,7 +2070,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TOPIC_RATINGS", (string)null);
+                    b.ToTable("TOPIC_RATINGS");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.VisitorLog", b =>
@@ -2048,12 +2090,15 @@ namespace Migrations
                     b.Property<string>("UserAgent")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("VisitTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("VisitorLog", (string)null);
+                    b.ToTable("VisitorLog");
                 });
 
             modelBuilder.Entity("SnitzCore.Data.Models.ForumUser", b =>

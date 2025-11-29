@@ -3,47 +3,51 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SnitzCore.Data;
 
 #nullable disable
 
-namespace MySqlMigrations.Migrations
+namespace WebApplication1.Migrations
 {
     [DbContext(typeof(SnitzDbContext))]
-    partial class SnitzDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251128161111_FileRelease-Update")]
+    partial class FileReleaseUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.13")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
                 });
@@ -54,17 +58,17 @@ namespace MySqlMigrations.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -76,59 +80,59 @@ namespace MySqlMigrations.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasMaxLength(13)
-                        .HasColumnType("varchar(13)");
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -137,7 +141,8 @@ namespace MySqlMigrations.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
 
@@ -152,17 +157,17 @@ namespace MySqlMigrations.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -175,18 +180,18 @@ namespace MySqlMigrations.Migrations
                 {
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
                         .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -198,10 +203,10 @@ namespace MySqlMigrations.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -213,18 +218,18 @@ namespace MySqlMigrations.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -238,7 +243,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("C_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("AuthorId")
                         .HasColumnType("int")
@@ -253,15 +258,15 @@ namespace MySqlMigrations.Migrations
                         .HasColumnName("CLUB_ID");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("EVENT_DETAILS");
 
                     b.Property<string>("End")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("EVENT_ENDDATE");
 
                     b.Property<bool>("IsAllDayEvent")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("EVENT_ALLDAY");
 
                     b.Property<int?>("LocId")
@@ -269,11 +274,11 @@ namespace MySqlMigrations.Migrations
                         .HasColumnName("LOC_ID");
 
                     b.Property<string>("Posted")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("DATE_ADDED");
 
                     b.Property<string>("RecurDays")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("EVENT_DAYS");
 
                     b.Property<int>("Recurs")
@@ -281,11 +286,11 @@ namespace MySqlMigrations.Migrations
                         .HasColumnName("EVENT_RECURS");
 
                     b.Property<string>("Start")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("EVENT_DATE");
 
                     b.Property<string>("Title")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("EVENT_TITLE");
 
                     b.Property<int>("TopicId")
@@ -317,11 +322,11 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("CAT_NAME");
 
                     b.Property<int>("Order")
@@ -343,11 +348,11 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("CLUB_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Abbreviation")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("CLUB_ABBR");
 
                     b.Property<int>("DefLocId")
@@ -356,7 +361,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("LongName")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("CLUB_L_NAME");
 
                     b.Property<int>("Order")
@@ -365,7 +370,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("ShortName")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("CLUB_S_NAME");
 
                     b.HasKey("Id");
@@ -383,11 +388,11 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("LOC_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("LOC_NAME");
 
                     b.Property<int>("Order")
@@ -409,10 +414,10 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CatId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CatId"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("CAT_DESC");
 
                     b.Property<int>("MemberId")
@@ -431,10 +436,10 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("O_GROUP_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("O_GROUP_NAME");
 
                     b.Property<int>("Order")
@@ -453,22 +458,22 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("I_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int")
                         .HasColumnName("I_CAT");
 
                     b.Property<string>("CommonName")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_NORWEGIANNAME");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_DESC");
 
                     b.Property<bool>("DoNotFeature")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("I_NOTFEATURED");
 
                     b.Property<int?>("GroupId")
@@ -480,11 +485,11 @@ namespace MySqlMigrations.Migrations
                         .HasColumnName("I_HEIGHT");
 
                     b.Property<bool>("IsPrivate")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("I_PRIVATE");
 
                     b.Property<string>("Location")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_LOC");
 
                     b.Property<int>("MemberId")
@@ -492,11 +497,11 @@ namespace MySqlMigrations.Migrations
                         .HasColumnName("I_MID");
 
                     b.Property<string>("Mime")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_TYPE");
 
                     b.Property<string>("ScientificName")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_SCIENTIFICNAME");
 
                     b.Property<int>("Size")
@@ -504,7 +509,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnName("I_SIZE");
 
                     b.Property<string>("Timestamp")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("I_DATE");
 
                     b.Property<int?>("Views")
@@ -536,7 +541,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("TOPIC_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ArchivedPostId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ArchivedPostId"));
 
                     b.Property<int?>("AllowRating")
                         .HasColumnType("int")
@@ -553,7 +558,7 @@ namespace MySqlMigrations.Migrations
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_DATE");
 
                     b.Property<int>("ForumId")
@@ -562,7 +567,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("T_IP");
 
                     b.Property<short>("IsSticky")
@@ -575,7 +580,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("LastEdit")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_LAST_EDIT");
 
                     b.Property<int?>("LastEditby")
@@ -588,7 +593,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("LastPostDate")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_LAST_POST");
 
                     b.Property<int?>("LastPostReplyId")
@@ -605,7 +610,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("T_MESSAGE");
 
                     b.Property<short?>("Pollstatus")
@@ -635,7 +640,7 @@ namespace MySqlMigrations.Migrations
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("T_SUBJECT");
 
                     b.Property<int?>("UnmoderatedReplies")
@@ -666,7 +671,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("REPLY_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ArchivedPostId")
                         .HasColumnType("int")
@@ -677,12 +682,12 @@ namespace MySqlMigrations.Migrations
                         .HasColumnName("CAT_ID");
 
                     b.Property<string>("Content")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("R_MESSAGE");
 
                     b.Property<string>("Created")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("R_DATE");
 
                     b.Property<int>("ForumId")
@@ -691,7 +696,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("R_IP");
 
                     b.Property<int?>("LastEditby")
@@ -700,7 +705,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("LastEdited")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("R_LAST_EDIT");
 
                     b.Property<short?>("Mail")
@@ -739,17 +744,17 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("B_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ReplaceWith")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("B_REPLACE");
 
                     b.Property<string>("Word")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("B_BADWORD");
 
                     b.HasKey("Id");
@@ -764,7 +769,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("BOOKMARK_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("MemberId")
                         .HasColumnType("int")
@@ -790,14 +795,14 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("CAT_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("Moderation")
                         .HasColumnType("int")
                         .HasColumnName("CAT_MODERATION");
 
                     b.Property<string>("Name")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("CAT_NAME");
 
                     b.Property<int>("Sort")
@@ -824,14 +829,14 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("FC_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Archived")
                         .HasColumnType("int");
 
                     b.Property<string>("FileName")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("LinkHits")
                         .HasColumnType("int");
@@ -841,18 +846,18 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Posted")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReadMe")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Version")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -866,7 +871,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("FORUM_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ArchiveSched")
                         .HasColumnType("int")
@@ -898,24 +903,24 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("F_DESCRIPTION");
 
                     b.Property<string>("Ip")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("F_IP");
 
                     b.Property<string>("LastArchived")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("F_L_ARCHIVE");
 
                     b.Property<string>("LastDelete")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("F_L_DELETE");
 
                     b.Property<string>("LastPost")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("F_LAST_POST");
 
                     b.Property<int?>("LastPostAuthorId")
@@ -943,7 +948,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnName("F_ORDER");
 
                     b.Property<string>("Password")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("F_PASSWORD_NEW");
 
                     b.Property<int?>("Polls")
@@ -981,7 +986,7 @@ namespace MySqlMigrations.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("F_SUBJECT");
 
                     b.Property<int>("TopicCount")
@@ -994,7 +999,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Url")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("F_URL");
 
                     b.HasKey("Id");
@@ -1032,7 +1037,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("MOD_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ForumId")
                         .HasColumnType("int")
@@ -1093,7 +1098,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("GROUP_KEY");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int")
@@ -1119,27 +1124,27 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("GROUP_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("GROUP_DESCRIPTION");
 
                     b.Property<string>("Icon")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("GROUP_ICON");
 
                     b.Property<string>("Image")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("GROUP_IMAGE");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("GROUP_NAME");
 
                     b.HasKey("Id");
@@ -1154,29 +1159,29 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("pk");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Culture")
                         .IsRequired()
                         .HasMaxLength(6)
-                        .HasColumnType("varchar(6)");
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("ResourceId");
 
                     b.Property<string>("ResourceSet")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Type")
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)");
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1190,16 +1195,16 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("MEMBER_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Age")
                         .HasMaxLength(10)
-                        .HasColumnType("varchar(10)")
+                        .HasColumnType("nvarchar(10)")
                         .HasColumnName("M_AGE");
 
                     b.Property<string>("Aim")
                         .HasMaxLength(150)
-                        .HasColumnType("varchar(150)")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("M_AIM");
 
                     b.Property<short>("Allowemail")
@@ -1207,23 +1212,23 @@ namespace MySqlMigrations.Migrations
                         .HasColumnName("M_ALLOWEMAIL");
 
                     b.Property<string>("Bio")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("M_BIO");
 
                     b.Property<string>("City")
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("M_CITY");
 
                     b.Property<string>("Country")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_COUNTRY");
 
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("M_DATE");
 
                     b.Property<int>("DefaultView")
@@ -1232,17 +1237,17 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Dob")
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("M_DOB");
 
                     b.Property<string>("Email")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_EMAIL");
 
                     b.Property<string>("Firstname")
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("M_FIRSTNAME");
 
                     b.Property<short>("HideEmail")
@@ -1250,52 +1255,52 @@ namespace MySqlMigrations.Migrations
                         .HasColumnName("M_HIDE_EMAIL");
 
                     b.Property<string>("Hobbies")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("M_HOBBIES");
 
                     b.Property<string>("Homepage")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("M_HOMEPAGE");
 
                     b.Property<string>("Icq")
                         .HasMaxLength(150)
-                        .HasColumnType("varchar(150)")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("M_ICQ");
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_IP");
 
                     b.Property<string>("Key")
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("M_KEY");
 
                     b.Property<string>("LastIp")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_LAST_IP");
 
                     b.Property<string>("LastLogin")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("M_LASTHEREDATE");
 
                     b.Property<string>("Lastactivity")
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("M_LASTACTIVITY");
 
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("M_LASTNAME");
 
                     b.Property<string>("Lastpostdate")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("M_LASTPOSTDATE");
 
                     b.Property<short>("Level")
@@ -1304,47 +1309,47 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Link1")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("M_LINK1");
 
                     b.Property<string>("Link2")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("M_LINK2");
 
                     b.Property<string>("Lnews")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("M_LNEWS");
 
                     b.Property<string>("Marstatus")
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("M_MARSTATUS");
 
                     b.Property<string>("Msn")
                         .HasMaxLength(150)
-                        .HasColumnType("varchar(150)")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("M_MSN");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(75)
-                        .HasColumnType("varchar(75)")
+                        .HasColumnType("nvarchar(75)")
                         .HasColumnName("M_NAME");
 
                     b.Property<string>("Newemail")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_NEWEMAIL");
 
                     b.Property<string>("Occupation")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("M_OCCUPATION");
 
                     b.Property<string>("PhotoUrl")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("M_PHOTO_URL");
 
                     b.Property<int?>("Pmemail")
@@ -1369,11 +1374,11 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Pwkey")
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("M_PWKEY");
 
                     b.Property<string>("Quote")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("M_QUOTE");
 
                     b.Property<short>("ReceiveEmail")
@@ -1382,7 +1387,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Sex")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_SEX");
 
                     b.Property<short?>("Sha256")
@@ -1394,12 +1399,12 @@ namespace MySqlMigrations.Migrations
                         .HasColumnName("M_SIG_DEFAULT");
 
                     b.Property<string>("Signature")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("M_SIG");
 
                     b.Property<string>("State")
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("M_STATE");
 
                     b.Property<short>("Status")
@@ -1412,7 +1417,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Title")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_TITLE");
 
                     b.Property<short>("ViewSig")
@@ -1421,7 +1426,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Yahoo")
                         .HasMaxLength(150)
-                        .HasColumnType("varchar(150)")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("M_YAHOO");
 
                     b.HasKey("Id");
@@ -1436,12 +1441,12 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("N_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(75)
-                        .HasColumnType("varchar(75)")
+                        .HasColumnType("nvarchar(75)")
                         .HasColumnName("N_NAME");
 
                     b.HasKey("Id");
@@ -1453,15 +1458,14 @@ namespace MySqlMigrations.Migrations
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int")
-                        .HasColumnName("RANK_ID")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 0L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnName("RANK_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 0L);
 
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("R_IMAGE");
 
                     b.Property<int>("ImgRepeat")
@@ -1475,7 +1479,7 @@ namespace MySqlMigrations.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("R_TITLE");
 
                     b.HasKey("Id");
@@ -1490,7 +1494,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("SUBSCRIPTION_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int")
@@ -1528,16 +1532,16 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("UserId");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("CreateDate");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(75)
-                        .HasColumnType("varchar(75)")
+                        .HasColumnType("nvarchar(75)")
                         .HasColumnName("Password");
 
                     b.HasKey("Id");
@@ -1551,11 +1555,11 @@ namespace MySqlMigrations.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("RoleId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
 
                     b.Property<string>("RoleName")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RoleId");
 
@@ -1584,7 +1588,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("POLL_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CatId")
                         .HasColumnType("int")
@@ -1596,13 +1600,13 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Lastvote")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("P_LASTVOTE");
 
                     b.Property<string>("Question")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("P_QUESTION");
 
                     b.Property<int>("TopicId")
@@ -1611,7 +1615,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Whovotes")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("P_WHOVOTES");
 
                     b.HasKey("Id");
@@ -1628,7 +1632,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("POLLANSWER_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Count")
                         .HasColumnType("int")
@@ -1637,7 +1641,7 @@ namespace MySqlMigrations.Migrations
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("POLLANSWER_LABEL");
 
                     b.Property<int>("Order")
@@ -1662,7 +1666,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("POLLVOTES_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int")
@@ -1702,14 +1706,14 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("TOPIC_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("AllowRating")
                         .HasColumnType("int")
                         .HasColumnName("T_ALLOW_RATING");
 
                     b.Property<bool>("Answered")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("T_ANSWERED");
 
                     b.Property<int?>("ArchiveFlag")
@@ -1722,13 +1726,13 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("T_MESSAGE");
 
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_DATE");
 
                     b.Property<int>("ForumId")
@@ -1737,7 +1741,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("T_IP");
 
                     b.Property<short>("IsSticky")
@@ -1750,7 +1754,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("LastEdit")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_LAST_EDIT");
 
                     b.Property<int?>("LastEditby")
@@ -1763,7 +1767,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("LastPostDate")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("T_LAST_POST");
 
                     b.Property<int?>("LastPostReplyId")
@@ -1805,7 +1809,7 @@ namespace MySqlMigrations.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("T_SUBJECT");
 
                     b.Property<int>("UnmoderatedReplies")
@@ -1836,10 +1840,10 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("REPLY_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("Answer")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("R_ANSWER");
 
                     b.Property<int>("CategoryId")
@@ -1848,13 +1852,13 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("R_MESSAGE");
 
                     b.Property<string>("Created")
                         .IsRequired()
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("R_DATE");
 
                     b.Property<int>("ForumId")
@@ -1863,7 +1867,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Ip")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("R_IP");
 
                     b.Property<int?>("LastEditby")
@@ -1872,7 +1876,7 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("LastEdited")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("R_LAST_EDIT");
 
                     b.Property<short>("Mail")
@@ -1915,7 +1919,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("M_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("FromId")
                         .HasColumnType("int")
@@ -1931,17 +1935,17 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("Mail")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_MAIL");
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("M_MESSAGE");
 
                     b.Property<string>("Pmcount")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("M_PMCOUNT");
 
                     b.Property<int>("Read")
@@ -1954,13 +1958,13 @@ namespace MySqlMigrations.Migrations
 
                     b.Property<string>("SentDate")
                         .HasMaxLength(14)
-                        .HasColumnType("varchar(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasColumnName("M_SENT");
 
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("M_SUBJECT");
 
                     b.Property<int>("To")
@@ -1981,7 +1985,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("BL_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BlockedId")
                         .HasColumnType("int")
@@ -1990,7 +1994,7 @@ namespace MySqlMigrations.Migrations
                     b.Property<string>("BlockedName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("BL_BLOCKED_NAME");
 
                     b.Property<int>("MemberId")
@@ -2009,17 +2013,17 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("C_VARIABLE");
 
                     b.Property<string>("Value")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("C_VALUE");
 
                     b.HasKey("Id");
@@ -2037,12 +2041,12 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("SPAM_ID");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Server")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("SPAM_SERVER");
 
                     b.HasKey("Id");
@@ -2057,7 +2061,7 @@ namespace MySqlMigrations.Migrations
                         .HasColumnType("int")
                         .HasColumnName("RATING");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("RatingsBymemberId")
                         .HasColumnType("int")
@@ -2078,22 +2082,22 @@ namespace MySqlMigrations.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("IpAddress")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Path")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserAgent")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("VisitTime")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -2105,25 +2109,25 @@ namespace MySqlMigrations.Migrations
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsAdmin")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.Property<int>("MemberId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("MemberSince")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ProfileImageUrl")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
                     b.Property<string>("UserDescription")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasIndex("MemberId");
 
