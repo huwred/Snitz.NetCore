@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MVCForum.Data\SnitzCore.Data.csproj" />
     <ProjectReference Include="..\MVCForum.Service\SnitzCore.Service.csproj" />
+    <ProjectReference Include="F:\Temp\YG.ASPNetCore.FileManager-master\src\YG.ASPNetCore.FileManager\YG.ASPNetCore.FileManager.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,7 +29,6 @@
     <PackageReference Include="SkiaSharp" Version="2.88.9" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.9" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
-    <PackageReference Include="YG.ASPNetCore.FileManager" Version="9.1.2-rc12" />
   </ItemGroup>
 
 

@@ -149,6 +149,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="row p-3">
+                    <div class="col">
+                        <admin-config config-key="INTLEADERBOARD" config-label="Show Leaderboard" config-val="@SnitzConfig.GetIntValue("INTLEADERBOARD")" help-text="@Localizer["INTLEADERBOARD"].Value"></admin-config>
+                    </div>
+                    <div class="col">
+                        <admin-config config-key="INTDONATIONS" config-label="Show Donation link" config-val="@SnitzConfig.GetIntValue("INTDONATIONS")" help-text="@Localizer["INTDONATIONS"].Value"></admin-config>
+                    </div>
+                </div>
             </div>
             <div class="mb-3 p-3">
                 <partial name="_FormButtons" />
