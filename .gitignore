@@ -469,3 +469,6 @@ FodyWeavers.xsd
 /MVC Forum/App_Data/dpkeys
 /MVC Forum/Views/Charts/LeaderBoard.cshtml
 /MVC Forum/Views/PhotoAlbum/_ViewImports.cshtml
+/MVC Forum/Views/FileManager/_EditForm.cshtml
+/MVC Forum/Views/PhotoAlbum/_MemberDetails.cshtml
+/MVC Forum/Views/PhotoAlbum/_MemberSlideShow.cshtml
