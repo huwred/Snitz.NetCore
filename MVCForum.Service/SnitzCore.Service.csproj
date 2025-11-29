@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Remove="EFStringLocalizerOfT.cs" />
     <Compile Remove="SyndicationXmlService.cs" />
+    <Compile Remove="TagHelpers\AlbumImageTagHelper.cs" />
     <Compile Remove="TagHelpers\TopicButtonsTagHelper.cs" />
   </ItemGroup>
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -7,6 +8,7 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using SnitzCore.Service.Extensions;
 using System;
+using System.IO;
 using System.Text.Encodings.Web;
 
 namespace SnitzCore.Service.TagHelpers
@@ -26,8 +28,9 @@ namespace SnitzCore.Service.TagHelpers
         private readonly LanguageService  _languageResource;
         private readonly ISnitzConfig _config;
         private readonly string _currentTheme;
+        private readonly IWebHostEnvironment _env;
 
-        public ForumLogoTagHelper(ISnitzConfig config,ISnitzCookie snitzCookie,Data.IMember memberservice,IActionContextAccessor actionAccessor,IHtmlLocalizerFactory localizerFactory)
+        public ForumLogoTagHelper(ISnitzConfig config,ISnitzCookie snitzCookie,Data.IMember memberservice,IActionContextAccessor actionAccessor,IHtmlLocalizerFactory localizerFactory,IWebHostEnvironment env)
         {
             _cookie = snitzCookie;
             _memberService = memberservice;
@@ -35,6 +38,7 @@ namespace SnitzCore.Service.TagHelpers
             _languageResource = (LanguageService)localizerFactory.Create("SnitzController", "MVCForum");
             _currentTheme = snitzCookie.GetCookieValue("snitztheme") ?? "";
             _config = config;
+            _env = env;
         }
 
         public bool UseTheme { get; set; } = false;
@@ -45,15 +49,20 @@ namespace SnitzCore.Service.TagHelpers
             base.Process(context, output);
             output.TagMode = TagMode.SelfClosing;
             output.TagName = "img";
-            if (UseTheme && !string.IsNullOrWhiteSpace(_currentTheme))
+
+            var path = Path.Combine(_env.WebRootPath, "images" , _currentTheme??string.Empty, Logo);
+            if(!File.Exists(path)) {
+                output.Attributes.Add("src", $"{_config.RootFolder}/images/logo.png?height=50");
+            }
+            else if (UseTheme && !string.IsNullOrWhiteSpace(_currentTheme))
             {
                 output.Attributes.Add("src", $"{_config.RootFolder}/images/{_currentTheme}/{Logo}?height=50");
-
             }
             else
             {
                 output.Attributes.Add("src", $"{_config.RootFolder}/images/{Logo}?height=50");
             }
+
             output.Attributes.Add("loading", "lazy");
             output.Attributes.Add("height", "50");
             output.Attributes.Add("alt", _languageResource.GetString("ForumLogo"));

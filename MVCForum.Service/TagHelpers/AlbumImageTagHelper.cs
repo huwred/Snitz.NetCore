@@ -1,9 +1,10 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.EntityFrameworkCore;
 using SnitzCore.Data.Interfaces;
+using System.IO;
 
 namespace SnitzCore.Service.TagHelpers
 {
@@ -20,11 +21,13 @@ namespace SnitzCore.Service.TagHelpers
         [HtmlAttributeName("src")]
         public string? Src { get; set; }
 
+        //public int? DataId {get;set;}
         public string? Fallback { get; set; }
 
         [HtmlAttributeName("class")]
         public string? Class { get; set; }
 
+        public int? ImageId {get;set;}
         public string? Description { get; set; }
 
         public int? Width { get; set; }
@@ -50,6 +53,10 @@ namespace SnitzCore.Service.TagHelpers
         private readonly IActionContextAccessor actionContextAccesor;
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            if(ImageId != null)
+            {
+                //var orgimage = _dbContext.Set<AlbumImage>().Find(id);
+            }
             var urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccesor.ActionContext!);
             var path = Path.Combine(_env.WebRootPath, contentfolder, "PhotoAlbum", Src ?? "");
             if (!File.Exists(path))
