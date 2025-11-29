@@ -25,7 +25,7 @@
 }
 @if(User.IsInRole("SuperAdmin"))
 {
-    <div class="accordion" id="accordionExample">
+    <div class="accordion  mb-3" id="accordionExample">
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingOne">
           <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -44,14 +44,19 @@
                         </div>
                         <div class="mb-3">
                             <label for="txtTitle" class="form-label">Description</label>
-                            <textarea name="Title" id="txtTitle" class="form-control" placeholder="Title (required)" required maxlength="255" rows="5"></textarea>
+                            <textarea name="Title" id="txtTitle" class="form-control" placeholder="Title (required)" required maxlength="255" rows="2"></textarea>
                             <div id="charCounter" class="counter">0 / 255 characters</div>
                             <div class="invalid-feedback">
                                 Please provide a Title.
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <input type="file" placeholder="read me file" name="Files" class="form-control" accept=".md,.html,.txt" aria-describedby="radio1HelpBlock" />
+                            @* <button type="submit" class="btn btn-success">Upload</button> *@
+                            <span id="radio1HelpBlock" class="form-text text-muted">Select a read me file for this release.</span>
+                        </div>
 
-                        <div class="input-group">
+                        <div class="input-group mb-3">
                             <input type="file" name="Files" class="form-control" accept=".zip" required />
                             <button type="submit" class="btn btn-success">Upload</button>
                             <div class="invalid-feedback">
@@ -75,32 +80,34 @@
                 <th scope="col">Last Modified</th>
                 <th scope="col">Ver.</th>
                 <th scope="col">Downloads</th>
+                <th scope="col">Readme</th>
                 <th scope="col">&nbsp;</th>
             </tr>
         </thead>
         @foreach (var file in Model.OrderBy(f=>f.LinkOrder))
         {
-            <tbody>
-                <tr>
-                    <td colspan="6">@file.Title</td>
-                </tr>
+            <tbody class="border-1 rounded">
                 <tr>
                     <td>@file.Filename</td>
                     <td>@(file.File.Length / 1024)</td>
                     <td>@file.File.LastWriteTime.ToForumDisplay(SnitzConfig,SnitzCookie)</td>
                     <td>@file.Version</td>
                     <td>@file.LinkHits</td>
+                    <td>Readme link @file.ReadMe</td>
                     <td class="fs-5">
                         <a data-toggle="tooltip" rel="nofollow" title="Download the file @file.Filename" href="@Url.Action("Download", "FileManager", new { id = file.Id })" class="text-decoration-none"><i class="fa fa-download"></i></a>
                         <a snitz-if="@(User.IsInRole("SuperAdmin"))" rel="nofollow" title="Edit file options" href="@Url.Action("EditRelease", "FileManager", new { id = file.Id })" class="text-decoration-none"><i class="fa fa-cog" data-id="@file.Id"></i></a>
                     </td>
+                </tr>
+                <tr>
+                    <td colspan="7">@file.Title</td>
                 </tr>
             </tbody>
         }
         @if (Model.Count == 0)
         {
             <tbody>
-                <tr><td colspan="6" class="text-center"><h2>No current releases</h2></td></tr>
+                <tr><td colspan="7" class="text-center"><h2>No current releases</h2></td></tr>
             </tbody>
         }
     </table>
