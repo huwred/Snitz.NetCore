@@ -52,7 +52,7 @@ namespace SnitzCore.BackOffice.Controllers
             foreach (var file in dir.GetFiles())
             {
 
-                var filerec = _dbcontext.Database.SqlQuery<FileCount>($"SELECT [FC_ID],[Title],[FileName],[LinkHits],[LinkOrder],[Posted], [Archived],[Version] FROM [FORUM_FILECOUNT] WHERE [FileName] = {file.Name}").ToList();
+                var filerec = _dbcontext.Database.SqlQuery<FileCount>($"SELECT [FC_ID],[Title],[FileName],[LinkHits],[LinkOrder],[Posted], [Archived],[Version],[ReadMe] FROM [FORUM_FILECOUNT] WHERE [FileName] = {file.Name}").ToList();
                 if (filerec != null && filerec.Count == 1)
                 {
                     vm.Add(new FileRelease
@@ -65,7 +65,8 @@ namespace SnitzCore.BackOffice.Controllers
                         Archived = filerec.First().Archived,
                         Posted = filerec.First().Posted,
                         Version = filerec.First().Version,
-                        File = file
+                        File = file,
+                        ReadMe = filerec.First().ReadMe
                     });
 
                 }
@@ -122,7 +123,7 @@ namespace SnitzCore.BackOffice.Controllers
 
         public IActionResult EditRelease(int id)
         {
-            var filerec = _dbcontext.Database.SqlQuery<FileCount>($"SELECT [FC_ID],[Title],[FileName],[LinkHits],[LinkOrder],[Posted], [Archived],[Version] FROM [FORUM_FILECOUNT] WHERE [FC_ID] = {id}").ToList();
+            var filerec = _dbcontext.Database.SqlQuery<FileCount>($"SELECT [FC_ID],[Title],[FileName],[LinkHits],[LinkOrder],[Posted], [Archived],[Version],[ReadMe] FROM [FORUM_FILECOUNT] WHERE [FC_ID] = {id}").ToList();
 
             return PartialView("_EditForm",filerec.FirstOrDefault());
         }
@@ -156,6 +157,8 @@ namespace SnitzCore.BackOffice.Controllers
         public string Posted { get; set; }
         public string Version {get;set;}
         public FileInfo File { get; set; }
+
+        public string? ReadMe {get;set;}
 
     }
 }
