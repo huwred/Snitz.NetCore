@@ -169,6 +169,7 @@ my
 myself
 name
 namely
+nbsp
 need
 neither
 new
