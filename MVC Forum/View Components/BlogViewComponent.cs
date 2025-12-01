@@ -58,8 +58,12 @@ namespace MVCForum.View_Components
                 };
                 IEnumerable<string> phrases = new List<string>();
                 var stopwords = LoadStopWords();
-                if(topicid != null && topicid != 0)
+                if((topicid != null && topicid != 0) || TempData["BlogTopic"] != null)
                 {
+                    if(topicid == null || topicid == 0)
+                    {
+                        topicid = (int)TempData["BlogTopic"];
+                    }
                     var topic = _forumService.GetPosts(id.Value).FirstOrDefault(t => t.Id == topicid.Value);
                     if(topic != null)
                     {
@@ -70,21 +74,24 @@ namespace MVCForum.View_Components
                 {
                     var forum = _forumService.GetWithPosts(id.Value);
 
-                    phrases =  forum.Posts.Select(p=>p.Content);
+                    phrases =  forum.Posts?.Select(p=>p.Content) ?? new List<string>();
                 }
 
                 var tagfree = new List<string>();
 
-                Regex singleletters = new Regex(@"(?: |^|\(|\.|&|\#)[A-Za-z0-9 ]{1,3}(?:$| |\.|,|\)|;)",RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                Regex singleletters = new Regex(@"(?:&[A-Za-z0-9]+(?:;))|(?: |^|\(|\.|&|\#)[a-z0-9 ]{1,3}(?:$| |\.|,|\)|;)", RegexOptions.Multiline);
 
                 foreach (var phrase in phrases)
                 {
-                    string newphrase = _bbcodeProcessor.CleanCode(phrase);
-                    newphrase = _bbcodeProcessor.StripCodeContents(newphrase);
+                    //string newphrase = _bbcodeProcessor.CleanCode(phrase);
+                    string newphrase = _bbcodeProcessor.StripCodeContents(phrase);
+                    newphrase = singleletters.Replace(newphrase, " ");
+                    var altandtitle = _bbcodeProcessor.GetAltTags(newphrase);
+                    tagfree.AddRange(altandtitle);
                     newphrase = _bbcodeProcessor.StripTags(newphrase);
                     newphrase = _bbcodeProcessor.RemoveHtmlTags(newphrase);
                     newphrase = singleletters.Replace(newphrase, " ");                     
-                    if (stopwords.Any())
+                    if (stopwords.Count != 0)
                     {
                         foreach (string word in stopwords )
                         {
@@ -95,7 +102,6 @@ namespace MVCForum.View_Components
                     }
 
                     tagfree.Add(newphrase);
-                    
 
                 }
                 var vm = new TagCloudAnalyzer(setting)
