@@ -330,5 +330,23 @@
     "inputFiles": [
       "wwwroot/js/admin/snitz.charts.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/paypalbanner.min.js",
+    "inputFiles": [
+      "wwwroot/js/paypalbanner.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/leaderboard.min.css",
+    "inputFiles": [
+      "wwwroot/css/leaderboard.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/site-sidebar.min.css",
+    "inputFiles": [
+      "wwwroot/css/site-sidebar.css"
+    ]
   }
 ]

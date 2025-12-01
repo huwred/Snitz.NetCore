@@ -8,6 +8,7 @@
 @model Post
 
 @{
+    TempData["BlogTopic"] = Model.Id;
     var currmember = MemberService.Current();
     bool allowrating = Model.AllowRating == 1 && !MemberService.HasRatedTopic(Model.Id, currmember?.Id);
     

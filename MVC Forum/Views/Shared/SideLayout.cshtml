@@ -50,161 +50,50 @@
         <link rel="stylesheet" href="~/css/about.min.css">
         <link rel="stylesheet" href="~/css/busy.min.css">
     </environment>
-
+    <link rel="stylesheet" href="~/css/site-sidebar.min.css" />
     @await Component.InvokeAsync("SnitzThemeCss")
     @await RenderSectionAsync("Styles", required: false)
 
-<style>
-html, body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
-    #sidebar {
-      width: 240px;
-      height: 100vh;
-      position: fixed;
-      top: 56px; /* height of navbar */
-      transition: width 0.1s ease;
-      overflow-y: auto;
-
-    }
-    #sidebar.collapsed {
-      display:none;
-    }
-#main-content {
-  flex: 1 0 auto;
-  margin-top: 70px;
-  margin-left: 240px;
-  overflow-y: scroll;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  transition: width 0.6s ease;
-}
-#main-content::-webkit-scrollbar {
-  display: none;
-}
-
-footer {
-  flex-shrink: 0;
-  z-index:1;
-}
-
-
-    #sidebar.collapsed + #main-content {
-      margin-left: 0;
-    }
-    .sidebar-toggle {
-      cursor: pointer;
-    }
-#side-menu {
-	position: relative;
-	margin: 20px;
-	/* width: 180px; */
-
-}
-#side-menu ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-#side-menu ul li {
-  /* Sub Menu */
-}
-#side-menu ul li a {
-	display: block;
-	padding: 10px 15px;
-	color: var(--bs-heading-color);
-	text-decoration: none;
-	-webkit-transition: 0.2s linear;
-	-moz-transition: 0.2s linear;
-	-ms-transition: 0.2s linear;
-	-o-transition: 0.2s linear;
-	transition: 0.2s linear;
-}
-#side-menu ul li a:hover {
-	background: var(--primary-header);
-	color: #fff;
-}
-#side-menu ul li a .fa {
-	width: 16px;
-	text-align: center;
-	margin-right: 5px;
-	float:right;
-}
-#side-menu ul ul {
-	background: rgba(0, 0, 0, 0.2);
-}
-#side-menu ul li ul li a {
-	
-	border-left: 4px solid transparent;
-	padding: 10px 20px;
-}
-#side-menu ul li ul li a:hover {
-	border-left: 4px solid #3498db;
-}
-.navbar>.container, .navbar>.container-fluid, .navbar>.container-sm, .navbar>.container-md, .navbar>.container-lg, .navbar>.container-xl, .navbar>.container-xxl {
-    display: flex;
-    flex-wrap: inherit;
-    align-items: center;
-    justify-content: start !important;
-}
-.content {
-  flex: 1 0 auto;
-
-}
-
-.image-gallery > li{
-    flex-basis:200px;
-}
-
-</style>
 </head>
 <body>
 
   <!-- Fixed Header -->
-  <nav id="fixed-head" class="navbar navbar-dark bg-dark fixed-top">
+<nav id="fixed-head" class="navbar navbar-dark bg-dark fixed-top">
     <div class="container justify-content-between">
-      <button class="btn btn-outline-none sidebar-toggle text-white fs-2 mx-4" id="toggleSidebar">☰</button>
-      <span class="navbar-brand"><partial name="MenuLogo" /></span>
-      <partial name="SelectTheme" />
+        <button title="Sidebar" class="btn btn-outline-secondary sidebar-toggle text-white fs-2 mx-4 border-0" id="toggleSidebar">☰</button>
+        <span class="navbar-brand"><partial name="MenuLogo" /></span>
+        <partial name="SelectTheme" />
         <partial name="mailbox" />
         <partial name="SelectLanguage" />
-                @if (User.IsInRole("Administrator"))
-                {
-                    <div id="admin-menu"><partial name="AdminMenu" /></div>
-                    
-                }
+        @if (User.IsInRole("Administrator"))
+        {
+            <div id="admin-menu"><partial name="AdminMenu" /></div>       
+        }
     </div>
-  </nav>
+</nav>
 <div class="container content" >
 
-  <!-- Fixed Sidebar -->
+  <!-- Sidebar -->
   <div id="sidebar" class="border-end">
     <partial name="SideNav" />
   </div>
 
   <!-- Main Content -->
     <div id="main-content" class="p-4">
-        <div class="d-none donation-banner" id="donationBanner">
-            🌟 Love this site? Help keep it running 👉 
-            <a asp-action="Donate" asp-controller="Paypal" title="Donate via Paypal">Support Us</a>
-            <span class="close-banner" onclick="closeBanner()">✖</span>
-        </div>
+        <partial snitz-if="@(SnitzConfig.IsEnabled("INTDONATIONS"))" name="PaypalBanner" />
         @if (SnitzConfig.IsEnabled("INTTOPBANNER"))
         {
             @await Component.InvokeAsync("AdRotator", new { template = "top" })
         }
         <div id="liveAlertPlaceholder"></div>     
-        <partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
+        <partial snitz-if="@(SnitzConfig.IsEnabled("STRSHOWANNOUNCE"))" name="Announcement" />
 
-            @RenderBody()
-        <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
+        @RenderBody()
+        <partial snitz-if="@(SnitzConfig.IsEnabled("INTREQUIRECONSENT"))" name="CookieConsentPartial" />
     </div>
 </div>
   <!-- Sticky Footer -->
-        <partial name="Footer"/>
+    <partial name="Footer"/>
 
     <div id="user-card" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -218,11 +107,11 @@ footer {
         </div>
     </div>
 
-        <script type="text/javascript" src="~/js/jquery.min.js" ></script>
-        <script type="text/javascript" src="~/js/bootstrap.bundle.min.js" ></script>
-        <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js" ></script>
+    <script type="text/javascript" src="~/js/jquery.min.js" ></script>
+    <script type="text/javascript" src="~/js/bootstrap.bundle.min.js" ></script>
+    <script type="text/javascript" src="~/js/jquery.unobtrusive-ajax.min.js" ></script>
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
     <environment include="Development">
-        <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js" ></script>
         <partial name="GlobalJs" />
         @if (SnitzConfig.IsEnabled("INTUSETIMEAGO"))
         {
@@ -233,7 +122,6 @@ footer {
         <script type="text/javascript" src="~/js/site.js" asp-append-version="true" ></script>
     </environment>
     <environment exclude="Development">
-        <script type="text/javascript" src="~/lib/jquery/dist/jquery-ui.min.js"></script>
         @if (SnitzConfig.IsEnabled("INTUSETIMEAGO"))
         {
             <script type="text/javascript" src="~/lib/jquery/jquery.timeago.min.js" ></script>         
@@ -243,77 +131,27 @@ footer {
         <partial name="ValidationScriptsPartial" />
         <script type="text/javascript" src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
-@if (!clang.Contains("en") && SnitzConfig.IsEnabled("INTUSETIMEAGO"))
-{
-        var src = $"timeago.{clang}.js";
-        <script type="text/javascript" src="~/js/timeago/@src"></script>
-}
-@await RenderSectionAsync("Scripts", required: false)
-<renderstoredcontent asp-key="cookie-consent"></renderstoredcontent>
-<renderstoredcontent asp-key="password-toggle"></renderstoredcontent>
-<script type="text/javascript">
-  const banner = document.getElementById("donationBanner");
-  const dismissedAt = localStorage.getItem("donationBannerDismissedAt");
-
-  // Check if banner should be hidden or shown
-  if (dismissedAt) {
-    const now = new Date().getTime();
-    const fourteenDays = 14 * 24 * 60 * 60 * 1000; // 14 days in ms
-    if (now - parseInt(dismissedAt, 10) < fourteenDays) {
-      banner.style.display = "none"; // still within 14 days
+    @if (!clang.Contains("en") && SnitzConfig.IsEnabled("INTUSETIMEAGO"))
+    {
+            var src = $"timeago.{clang}.js";
+            <script type="text/javascript" src="~/js/timeago/@src"></script>
     }
-  }
-
-  function closeBanner() {
-    banner.style.display = "none";
-    localStorage.setItem("donationBannerDismissedAt", new Date().getTime());
-  }
-
-    /* Show the user card popup when clicking on a profile link */
-    $(document).on("click", ".profile-popup", function (e) {
-        e.preventDefault();
-        var rect = e.target.getBoundingClientRect();
-        $("#user-card .modal-dialog").css('position', 'absolute');
-        $("#user-card .modal-dialog").css('top', rect.top - 100 + "px");
-        $("#user-card .modal-dialog").css('left', rect.left);
-        $('#user-card').modal('show');
-        $('#user-card-content').html('');
-        $('#user-card-content').load(SnitzVars.baseUrl + "/Account/DetailPopup/" + $(this).data("id") + "/?lang=@clang", function (response, status, xhr) {
-            $("time.timeago").timeago();
-        });
-    });
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-        var options = {
-            html: true,
-            title: "",
-            content: $('[data-name="' + popoverTriggerEl.id + '"]')
-        }
-        return new bootstrap.Popover(popoverTriggerEl,options);
-    });
-
-    function getBrowserTimeZone() {
-        const options = Intl.DateTimeFormat().resolvedOptions();
-        console.log(options.timeZone);
-        return options.timeZone;
+    @await RenderSectionAsync("Scripts", required: false)
+    <renderstoredcontent asp-key="cookie-consent"></renderstoredcontent>
+    <renderstoredcontent asp-key="password-toggle"></renderstoredcontent>
+    @if (SnitzConfig.IsEnabled("INTDONATIONS"))
+    {
+        <script type="text/javascript" src="~/js/paypalbanner.min.js"></script>
     }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Sidebar toggle behavior
+            let sidebarCollapse = localStorage.getItem('sidebarCollapse');
+            if (sidebarCollapse) {
 
-        var date = new Date();
-    date.setDate(date.getDate() + 365);
-    $.cookie('CookieTimeZone', getBrowserTimeZone(), {
-        path: SnitzVars.cookiePath,
-        expires: date
-    });
-
-    document.getElementById('toggleSidebar').addEventListener('click', () => {
-      document.getElementById('sidebar').classList.toggle('collapsed');
-    });
-
-      $('.sub-menu ul').hide();
-        $(".sub-menu a").click(function () {
-	        $(this).parent(".sub-menu").children("ul").slideToggle("100");
-	        $(this).find(".right").toggleClass("fa-caret-up fa-caret-down");
+                document.getElementById('sidebar').classList.toggle('collapsed');
+            }
         });
-</script>
+    </script>
 </body>
 </html>

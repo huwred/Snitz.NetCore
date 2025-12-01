@@ -291,8 +291,7 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseDeveloperExceptionPage();
-    //app.UseExceptionHandler();
+    app.UseExceptionHandler();
 }
 
 //Pi doesn't like this, could be newt!

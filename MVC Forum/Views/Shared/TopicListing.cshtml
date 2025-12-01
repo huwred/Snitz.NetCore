@@ -52,7 +52,7 @@
         <span class="d-block d-md-none fs-4 bold" title="@Localizer["lblReplies"]">@Model?.RepliesCount</span>
     </div>
     <div class="subjects" style="z-index: 2">
-        <div class="d-lg-flex flex-row bd-highlight mb-1">
+        <div class="d-lg-flex flex-column bd-highlight mb-1">
             <div class="p-2 flex-grow-1 bd-highlight">
                 <span snitz-if="@Model?.Answered" class="badge rounded-pill text-bg-success">Answered&nbsp;</span>
                 <a snitz-if="@isblog" href="~/Blog/@Model?.Title?.Replace(" ","-")">@Html.Raw(BbCodeProcessor.Subject(Model?.Title!))</a>
@@ -86,7 +86,7 @@
                     <input name="input-name" type="number" class="rb-rating" value="@(Model?.Rating ?? 0)" displayOnly=true min=0 max=5 step=0.5 stars=5 data-size="xs" aria-label="Topic rating">
                 }
             </div>
-            <div class="d-none d-md-flex  p-2 bd-highlight fs-5 post-buttons">
+            <div class="flex-grow-1 bd-highlight fs-5 post-buttons">
                 @if (!archives)
                 {
                     @await Component.InvokeAsync("PostControls", new { post = Model?.Topic ,forlist = true})
@@ -94,8 +94,11 @@
             </div>
         </div>
     </div>
-    <div class="replies">
-        @Model?.RepliesCount @Localizer["lblReplies"] <br/> @Model?.ViewCount @Localizer["lblViews"]
+    <div class="replies text-center" title="@Localizer["lblReplies"]" rel="tooltip">
+        @Model?.RepliesCount 
+    </div>
+    <div class="replies text-center" title="@Localizer["lblViews"]" rel="tooltip">
+        @Model?.ViewCount 
     </div>
     <div class="last-reply d-flex" style="z-index:2">
         @if (Model?.LastPostDate != null)
@@ -115,6 +118,6 @@
         </div>
     </div>
     <div class="subscribe d-none d-xl-inline-flex">
-        <input snitz-if="@(User?.IsInRole("Administrator"))" type="checkbox" class="form-check-input topic-select" value="@Model?.Id" name="topicselected" aria-label="Select Topic" />
+        <input snitz-if="@(User?.IsInRole("Administrator"))" rel="tooltip" type="checkbox" title="@Localizer["tipSelectForMerge"]" class="form-check-input topic-select" value="@Model?.Id" name="topicselected" aria-label="Select Topic" />
     </div>
 </div>

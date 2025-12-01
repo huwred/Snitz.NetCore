@@ -62,21 +62,16 @@
         <div class="container flex-grow-1">
         <partial name="MainNav"/>       
             <main role="main" class="pb-3 mt-6">
-            <div class="d-none donation-banner" id="donationBanner">
-                🌟 Love this site? Help keep it running 👉 
-                <a asp-action="Donate" asp-controller="Paypal" title="Donate via Paypal">Support Us</a>
-                <span class="close-banner" onclick="closeBanner()">✖</span>
-            </div>
+            <partial snitz-if="@(SnitzConfig.IsEnabled("INTDONATIONS"))" name="PaypalBanner" />
             @if (SnitzConfig.IsEnabled("INTTOPBANNER"))
             {
                 @await Component.InvokeAsync("AdRotator", new { template = "top" })
             }
             <div id="liveAlertPlaceholder"></div>     
-            <partial snitz-if="@(SnitzConfig.GetIntValue("STRSHOWANNOUNCE") == 1)" name="Announcement" />
-
-                @RenderBody()
+            <partial snitz-if="@(SnitzConfig.IsEnabled("STRSHOWANNOUNCE"))" name="Announcement" />
+            @RenderBody()
             </main>
-            <partial snitz-if="@(SnitzConfig.GetIntValue("INTREQUIRECONSENT") == 1)" name="CookieConsentPartial" />
+            <partial snitz-if="@(SnitzConfig.IsEnabled("INTREQUIRECONSENT"))" name="CookieConsentPartial" />
         </div>
         <partial name="Footer"/>
 
@@ -127,58 +122,10 @@
 @await RenderSectionAsync("Scripts", required: false)
 <renderstoredcontent asp-key="cookie-consent"></renderstoredcontent>
 <renderstoredcontent asp-key="password-toggle"></renderstoredcontent>
-<script type="text/javascript">
-  const banner = document.getElementById("donationBanner");
-  const dismissedAt = localStorage.getItem("donationBannerDismissedAt");
-
-  // Check if banner should be hidden or shown
-  if (dismissedAt) {
-    const now = new Date().getTime();
-    const fourteenDays = 14 * 24 * 60 * 60 * 1000; // 14 days in ms
-    if (now - parseInt(dismissedAt, 10) < fourteenDays) {
-      banner.style.display = "none"; // still within 14 days
-    }
-  }
-
-  function closeBanner() {
-    banner.style.display = "none";
-    localStorage.setItem("donationBannerDismissedAt", new Date().getTime());
-  }
-    /* Show the user card popup when clicking on a profile link */
-    $(document).on("click", ".profile-popup", function (e) {
-        e.preventDefault();
-        var rect = e.target.getBoundingClientRect();
-        $("#user-card .modal-dialog").css('position', 'absolute');
-        $("#user-card .modal-dialog").css('top', rect.top - 100 + "px");
-        $("#user-card .modal-dialog").css('left', rect.left);
-        $('#user-card').modal('show');
-        $('#user-card-content').html('');
-        $('#user-card-content').load(SnitzVars.baseUrl + "/Account/DetailPopup/" + $(this).data("id") + "/?lang=@clang", function (response, status, xhr) {
-            $("time.timeago").timeago();
-        });
-    });
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-        var options = {
-            html: true,
-            title: "",
-            content: $('[data-name="' + popoverTriggerEl.id + '"]')
-        }
-        return new bootstrap.Popover(popoverTriggerEl,options);
-    });
-
-    function getBrowserTimeZone() {
-        const options = Intl.DateTimeFormat().resolvedOptions();
-        console.log(options.timeZone);
-        return options.timeZone;
+    @if (SnitzConfig.IsEnabled("INTDONATIONS"))
+    {
+        <script type="text/javascript" src="~/js/paypalbanner.min.js"></script>
     }
 
-        var date = new Date();
-    date.setDate(date.getDate() + 365);
-    $.cookie('CookieTimeZone', getBrowserTimeZone(), {
-        path: SnitzVars.cookiePath,
-        expires: date
-    });
-</script>
 </body>
 </html>

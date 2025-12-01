@@ -82,7 +82,7 @@
     </div>
     <div class="row">
         <div class="col accordion">
-            @foreach (var category in Model.Categories.OrderBy(cat=>cat.Sort)!)
+            @foreach (var category in Model.Categories?.OrderBy(cat=>cat.Sort)!)
             {
                 var ID = category.Id;
                 var forumlist = Model.ForumList!.Where(f => f.CategoryId == ID).ToList();
@@ -198,14 +198,14 @@
                     </div>
                 </div>
             }
-
             @await Component.InvokeAsync("Members", new { template = "CategoryForumJumpTo" })
             @if (SnitzConfig.GetIntValue("STRSHOWSTATISTICS") == 1)
             {
                 <partial name="ForumStats" />
             }
-            @await Component.InvokeAsync("Members", new {max = 10,template = "wide"})
-
+            <cache expires-after="@TimeSpan.FromMinutes(5)" vary-by-culture="true" >
+                @await Component.InvokeAsync("Members", new { max = 10, template = "wide" })
+            </cache>
         </div>
         @await Component.InvokeAsync("Widgets", new { template = "sidebar", widgets = new[] { "search", "poll", "latest", "image", "events" } })
     </div>
@@ -214,6 +214,11 @@
 
 @functions
 {
+    /// <summary>
+    /// Determines if any of the specified forums are visible in a Category.
+    /// </summary>
+    /// <param name="forums">A list of <see cref="ForumListingModel"/> objects representing the forums to evaluate.</param>
+    /// <returns><see langword="true"/> if ALL the forums are considered hidden (Category will be hidden); otherwise, <see langword="false"/>.</returns>
     bool IsHidden(List<ForumListingModel> forums)
     {
         foreach (var forum in forums)
@@ -226,6 +231,15 @@
 
         return true;
     }
+    /// <summary>
+    /// Determines whether access is granted to a forum based on the specified authorization type, forum ID, and
+    /// access flag.
+    /// </summary>
+    /// <param name="authType">The type of forum authorization to evaluate.</param>
+    /// <param name="forumId">The unique identifier of the forum.</param>
+    /// <param name="allowedaccess">A flag indicating whether access is explicitly allowed for the user.</param>
+    /// <returns><see langword="true"/> if access is granted based on the specified authorization type and access flag;
+    /// otherwise, <see langword="false"/>.</returns>
     bool HasAccess(ForumAuthType authType,int forumId,bool allowedaccess)
     {
         if (User.IsInRole("Administrator"))
@@ -266,9 +280,7 @@
                 // if (SignInManager.IsSignedIn(User))
                 //     return true;
                 return true;
-
         }
-
         return false;
     }
 }
@@ -278,14 +290,10 @@
     <script>
         $('.confirm-delete').on('click', function(e) {
             e.preventDefault();
-            var id = $(this).data('id');
             var href = $(this).attr('href');
-            console.log(id);
-            console.log(href);
             (async () => {
                 const result = await b_confirm(Snitzres.cnfDeleteCategory)
                 if (result) {
-
                     $.get(href.replace("~", SnitzVars.baseUrl), function(result){
                         window.location.replace(result.redirectToUrl);
                     });
@@ -304,7 +312,6 @@
             (async () => {
                 const result = await b_confirm(Snitzres.cnfDeleteWebLink)
                 if (result) {
-
                     $.get(href.replace("~", SnitzVars.baseUrl), function(result){
                         window.location.replace(result.redirectToUrl);
                     });
@@ -328,7 +335,6 @@
         }
         //To set, which one will be opened
         $('.accordion .accordion-button').on('click', function(){ 
-
             let target = $(this).data('bs-target').replace("#","");
             if ('@routeid' != "") {
                 return false;
@@ -343,7 +349,6 @@
                     retArray.push(target);
                     collapseme(target);
                 }
-                
             } else {
                 $("#" + target).toggle();
                 if (exists === -1) {
@@ -351,7 +356,6 @@
                     collapseme(target);
                 } else {
                     retArray = jQuery.grep(retArray, function (value) {
-                        
                         return value != target;
                     });
                     $('.accordion').find("[data-bs-target='#" + target + "']").removeClass('collapsed');

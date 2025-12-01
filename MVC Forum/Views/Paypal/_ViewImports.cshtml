@@ -1,6 +1,7 @@
 ﻿@using BbCodeFormatter
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Configuration
 @using Microsoft.Extensions.Options
 @using MVCForum
 @using SnitzCore.Data.Interfaces
@@ -8,7 +9,7 @@
 @using SnitzCore.Data
 @using SnitzCore.Data.Models
 @using SnitzCore.Service.TagHelpers
-
+@inject IConfiguration Configuration
 @inject IViewLocalizer Localizer
 @inject ISnitzConfig SnitzConfig
 @inject IOptionsSnapshot<SnitzForums> Config

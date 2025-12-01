@@ -8,12 +8,11 @@
 @inject IEnumerable<ISnitzStartupService> pluginservices
 @section MetaData
 {
-        <title>@Model.Forum?.Title - @Config.Value.strForumTitle</title>
-
+    <title>@Model.Forum?.Title - @Config.Value.strForumTitle</title>
     <meta name="title" content="@Model.Forum?.Title - @Config.Value.strForumTitle" />
     <meta name="description" content="@Model.Forum?.Description" />
     <meta name="robots" content="index,nofollow" />
-    @if (SnitzConfig.GetIntValue("INTFORUMRSS") == 1)
+    @if (SnitzConfig.IsEnabled("INTFORUMRSS"))
     {
         <link rel="alternate" type="application/rss+xml" title="RSS" href="~/rssfeed/forum/@Model.Forum?.Id">      
     }
@@ -22,7 +21,6 @@
     
     <link href="~/css/star-rating.min.css" rel="stylesheet" />
     <link href="~/css/krajee-svg/theme.min.css" media="all" rel="stylesheet" type="text/css"/>
-    @* <link href="@SnitzConfig.ThemeCss("tag_cloud.min.css")" rel="stylesheet" /> *@
     <link rel="stylesheet" href="@SnitzConfig.ThemeCss("prism.min.css")" asp-fallback-href="~/css/prism.min.css">
     @if (ViewBag.RequireAuth)
     {
@@ -38,18 +36,23 @@
     }
 }
 @{
+    var authlevel = 0;
     var auth = (bool)ViewBag.RequireAuth;
-    TempData["ForumId"] = Model.Forum.Id;
+    var pagenum = Model.PageNum?.ToString() ??  Context.Request.Query["page"];
+    var pagesize = Context.Session.GetInt32("TopicPageSize");
+    TempData["ForumId"] = Model.Forum?.Id;
     TempData["CatId"] = 0;
     var eventservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(CalEventsService));
     var thanksservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(PostThanksService));
-    if(thanksservice != null)
+    if(thanksservice != null && Model.Forum != null)
     {
         TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.Forum.Id);
     }
+    if(eventservice != null && Model.Forum != null)
+    {
+        authlevel = eventservice.AuthLevel(Model.Forum.Id);
+    }
     ViewBag.PageCount = Model.PageCount;
-    var pagenum = Model.PageNum?.ToString() ??  Context.Request.Query["page"];
-    var pagesize = Context.Session.GetInt32("TopicPageSize");
     ViewBag.PageSize = pagesize ?? Model.PageSize;
     ViewBag.PageNum = pagenum;
     if (Model.PasswordRequired && !User.IsInRole("Administrator"))
@@ -58,8 +61,6 @@
             <h2>This Forum requires a password</h2>
         </div>
         <partial name="Modal\PasswordDlg" model='new ConfirmDialogViewModel(){Title=Localizer["popPasswordRqdTitle"].Value,Message = Localizer["popPasswordRqdMessage"].Value}' />
-
-        //return;
     }
     else if (Model.AccessDenied)
     {
@@ -80,7 +81,7 @@
 
     var subscriptions = MemberService.Current()?.Subscriptions;
     var formaction = "Index";
-    if(Model.Archives)
+    if(Model.Archives && Model.Forum != null)
     {
         formaction = "Archived";
         Model.Forum.DefaultView = DefaultDays.All;
@@ -117,9 +118,9 @@
                             <div snitz-if="@(SnitzConfig.GetValueWithDefault("STRFORUMPAGESIZES", "") != "")" class="radioBtn btn-group d-none d-sm-block" role="group" aria-label="Select page size" title="Select page size">
                                 @{
                                     var ischecked = Model.PageSize;
-                                    foreach (var size in SnitzConfig.GetValueWithDefault("STRFORUMPAGESIZES", "").Split(","))
+                                    foreach (var size in SnitzConfig.GetValueWithDefault("STRFORUMPAGESIZES", "")!.Split(","))
                                     {
-                                        <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if (ischecked == Convert.ToInt32(size)){@Html.Raw("checked")}/>
+                                        <input type="radio" class="btn-check" name="pagesize" id="option_@size" autocomplete="off" value="@size" @if(ischecked == Convert.ToInt32(size)){@Html.Raw("checked")}/>
                                         <label class="btn btn-outline-secondary mb-2" for="option_@size">@size</label>
                                     }
                                 }
@@ -145,29 +146,28 @@
                             {
                                 <button snitz-if="@Model.Forum?.Status == 1" data-toggle="tooltip" title="@Localizer["tipNewTopic"].Value" asp-controller="Topic" asp-action="Create" asp-route-id="@Model.Forum?.Id" class="btn btn-outline-primary"><i class="fa fa-comment"></i><span class="d-none d-lg-inline"> @Localizer["btnNewTopic"]</span></button>
                             }
-                            if (SnitzConfig.GetIntValue("INTPOLLS") == 1 && Model.Forum.Polls != (int)PollAuth.Disallow)
+                            if (SnitzConfig.IsEnabled("INTPOLLS") && Model.Forum?.Polls != (int)PollAuth.Disallow)
                             {
-                                if ((Model.Forum.Polls == (int)PollAuth.Members) || (Model.Forum.Polls == (int)PollAuth.AdminModerators && User.IsInRole("Forum_" + Model.Forum.Id)) || User.IsInRole("Administrator"))
+                                if ((Model.Forum?.Polls == (int)PollAuth.Members) || (Model.Forum?.Polls == (int)PollAuth.AdminModerators && User.IsInRole("Forum_" + Model.Forum.Id)) || User.IsInRole("Administrator"))
                                 {
-                                    <a class="btn btn-outline-primary" title="@Localizer["tipAddPoll"]" data-toggle="tooltip" href="@Url.Action("Create", "Topic", new { id = Model.Forum.Id, ispoll = true })">
+                                    <a class="btn btn-outline-primary" title="@Localizer["tipAddPoll"]" data-toggle="tooltip" href="@Url.Action("Create", "Topic", new { id = Model.Forum?.Id, ispoll = true })">
                                         <i class="fa fa-bar-chart"></i> <span class="d-none d-lg-inline"> @Localizer["btnAddPoll"]</span>
                                     </a>
                                 }
                             }
-                            if (SnitzConfig.GetIntValue("INTCALEVENTS", 0) == 1)
+                            if (SnitzConfig.IsEnabled("INTCALEVENTS"))
                             {
-                                int authlevel = eventservice.AuthLevel(Model.Forum.Id);
                                 if ((authlevel == 2 || authlevel == 3 && (User.IsInRole("Administrator") || User.IsInRole("Moderator"))) || authlevel == 4 && User.IsInRole("Administrator"))
                                 {
-                                    <a class="btn btn-outline-primary" title="@Localizer["tipAddEvent"]" data-toggle="tooltip" href="@Url.Action("Create", "Topic", new { id = Model.Forum.Id, isevent = true })">
+                                    <a class="btn btn-outline-primary" title="@Localizer["tipAddEvent"]" data-toggle="tooltip" href="@Url.Action("Create", "Topic", new { id = Model.Forum?.Id, isevent = true })">
                                         <i class="fa-regular fa-calendar-plus"></i> <span class="d-none d-lg-inline"> @Localizer["btnAddEvent"]</span>
                                     </a>
                                 }
                             }
-                        }  
-                        @if (SnitzConfig.GetIntValue("INTFORUMRSS") == 1)
+                        }
+                        @if (SnitzConfig.IsEnabled("INTFORUMRSS"))
                         {
-                            <a class="btn btn-outline-primary" title="@Localizer["tipForumRss"]" data-toggle="tooltip" href="@Url.Action("Forum", "RssFeed", new { id = Model.Forum.Id })">
+                            <a class="btn btn-outline-primary" title="@Localizer["tipForumRss"]" data-toggle="tooltip" href="@Url.Action("Forum", "RssFeed", new { id = Model.Forum?.Id })">
                                 <i class="fa fa-rss"></i> <span class="d-none d-lg-inline"> @Localizer["tipForumRss"]</span>
                             </a>
                         }
@@ -186,7 +186,7 @@
                 <div class="posts-table">
                     <div class="table-head">
                         <div class="status rounded-2">
-                            @if (!Model.Archives && User.Identity.IsAuthenticated && Model.Forum.ForumSubscription == ForumSubscription.ForumSubscription && SnitzConfig.GetIntValue("STRSUBSCRIPTION", 0) != 0)
+                            @if (!Model.Archives && User.Identity.IsAuthenticated && Model.Forum.ForumSubscription == ForumSubscription.ForumSubscription && SnitzConfig.IsEnabled("STRSUBSCRIPTION"))
                             {
                                 if (subscriptions != null && subscriptions.Where(s => s.ForumId == Model.Forum.Id && s.PostId == 0).Select(s => s.ForumId).Any())
                                 {
@@ -199,6 +199,7 @@
                             }
                         </div>
                         <div class="subjects rounded-2">@Localizer["lblSubject"]</div>
+                        <div class="replies rounded-2"></div>
                         <div class="replies rounded-2"></div>
                         <div class="last-reply rounded-2">@Localizer["lblLastPost"]</div>
                         <div class="subscribe rounded-1 d-none d-md-inline-block"><i class="fa-regular fa-object-group" title="@Localizer["tipMergeTopic"]" style="display: none;" data-toggle="tooltip"></i></div>
@@ -246,8 +247,7 @@
                     }
                 <!--ends here-->
                 </div>
-@*             <cache expires-after="@TimeSpan.FromMinutes(5)" vary-by-query="id,defaultdays,OrderBy,sortdir,pagesize,page">
-            </cache> *@
+
                 <!--Pagination starts-->
                 <partial snitz-if="@(Model.PageCount > 1)" 
                          name="ListPaging" 
@@ -262,15 +262,12 @@
                                     Archived = Model.Archives
                                 })" />
                 <!--pagination ends-->
-                <cache expires-after="@TimeSpan.FromHours(1)" vary-by-user="true">
-                    @await Component.InvokeAsync("Members", new { template = "CategoryForumJumpTo"})
-                </cache>
-                <cache expires-after="@TimeSpan.FromHours(12)">
+                @await Component.InvokeAsync("Members", new { template = "CategoryForumJumpTo"})
+                <cache expires-after="@TimeSpan.FromHours(12)" vary-by-culture="true">
                     <partial name="IconInfo" />
                 </cache>
             </div>
         </div>
-        
     </div>
 }
 <modal id="moderateModal" title="Post Moderation">
@@ -285,59 +282,47 @@
 <input type="text" style="display: none;" id="req-auth" value="@ViewBag.RequireAuth.ToString()" />
 <input type="text" style="display: none;" id="req-forumid" value="@Model.Forum.Id" />
 @section Scripts {
-    <script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
+<script type="text/javascript" src="~/js/prism.min.js" data-manual></script>
 <script src="~/js/star-rating.min.js"></script>
 <script src="~/js/krajee-svg/theme.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="~/js/postcontroller.min.js" asp-append-version="true"></script>
 <script type="text/javascript">
-        $('body').on('click','.confirm-delete', function(e) {
-            e.preventDefault();
-            var id = $(this).data('id');
-            var href = $(this).attr('href');
-            console.log(href);
-            (async () => {
-                const result = await b_confirm(Snitzres.cnfDeleteForum)
-                if (result) {
-                    $.get(href.replace("~", SnitzVars.baseUrl), function(result){
-                        window.location.replace(result.redirectToUrl);
-                    });
-                }
-            })();
+    $('body').on('click','.confirm-delete', function(e) {
+        e.preventDefault();
+        var href = $(this).attr('href');
+        (async () => {
+            const result = await b_confirm(Snitzres.cnfDeleteForum)
+            if (result) {
+                $.get(href.replace("~", SnitzVars.baseUrl), function(result){
+                    window.location.replace(result.redirectToUrl);
+                });
+            }
+        })();
+    });
+    $(window).on("load", function(e) {
+        $('.rb-rating').rating({
+            'showCaption': false,
+            'displayOnly':true
         });
-    $(window).on("load",
-        function(e) {
-            $('.rb-rating').rating({
-                'showCaption': false,
-                'displayOnly':true
-            });
-        });
-    $('body').on("change",
-        "#default-days",
-        function() {
-            $("#hdndefaultdays").val($(this).val());
-            $("#defaultdays-form").submit();
-        });
-        $('body').on("change",
-        "#orderby",
-        function() {
-            $("#hdndefaultdays").val($("#default-days").val());
-            $("#defaultdays-form").submit();
-        });
-        $('body').on("change",
-        "input[type=radio][name=pagesize]",
-        function() {
-            $("#defaultdays-form").submit();
-        });
-        $('body').on("change",
-        "#sortdir",
-        function() {
-            $("#hdndefaultdays").val($("#default-days").val());
-            $("#defaultdays-form").submit();
-        });
-        Prism.hooks.add("before-highlight",
-        function(env) {
+    });
+    $('body').on("change", "#default-days", function() {
+        $("#hdndefaultdays").val($(this).val());
+        $("#defaultdays-form").submit();
+    });
+    $('body').on("change", "#orderby", function() {
+        $("#hdndefaultdays").val($("#default-days").val());
+        $("#defaultdays-form").submit();
+    });
+    $('body').on("change", "input[type=radio][name=pagesize]", function() {
+        $("#defaultdays-form").submit();
+    });
+    $('body').on("change", "#sortdir", function() {
+        $("#hdndefaultdays").val($("#default-days").val());
+        $("#defaultdays-form").submit();
+    });
+    Prism.hooks.add("before-highlight", function(env) {
             env.code = env.element.innerText;
-        });
+    });
 
     code = document.getElementsByTagName('code');
     Array.from(code).forEach(el => { Prism.highlightElement(el) });

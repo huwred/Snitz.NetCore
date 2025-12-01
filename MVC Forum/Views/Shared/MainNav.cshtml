@@ -17,7 +17,6 @@
     </button>
     <div class="collapse navbar-collapse @navcss justify-content-between" id="navbarSupportedContent">
             <ul class="navbar-nav">
-            <cache expires-sliding="@TimeSpan.FromMinutes(2)" vary-by-user="true">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownForumLink">@Localizer["mnuForum"]</a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownForumLink">
@@ -30,7 +29,7 @@
                         @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
                         @await Component.InvokeAsync("Events", new { template = "MenuItem" })
                         <li snitz-if="@(SnitzConfig.IsEnabled("INTLEADERBOARD"))"><a class="dropdown-item" asp-controller="Charts" asp-action="Leaderboard">@Localizer["mnuLeaderboard"]</a></li>
-                        <li class="d-none"><a class="dropdown-item" asp-controller="Paypal" asp-action="Donate">@Localizer["mnuDonate"]</a></li>
+                        <li snitz-if="@(SnitzConfig.IsEnabled("INTDONATIONS"))" ><a class="dropdown-item" asp-controller="Paypal" asp-action="Donate">@Localizer["mnuDonate"]</a></li>
                         <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT", 1) == 1)"><hr class="dropdown-divider" /></li>
                         <li snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT",1) == 1)">
                             <a class="dropdown-item" href="#" data-bs-toggle="dropdown" role="button" id="navbarDropdownAbout">@Localizer["mnuAbout"]</a>
@@ -75,7 +74,6 @@
                         }
                     }
                 }
-            </cache>
                 <li><partial name="SelectTheme" /></li>
             </ul>
 

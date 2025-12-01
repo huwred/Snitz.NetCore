@@ -18,7 +18,7 @@
     <div class="row">
         <snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
         <div class="col-12 col-md-8 mt-3">
-            <h1 class="bg-dark text-bg-dark p-2 rounded-2">Topics from forums you are subscribed to</h1>
+            <div class="h4 bg-dark text-bg-dark p-2 rounded-2">@Localizer["lblMyViewPosts",Model.SubType]</div>
             <div id="topic-panel">
                 <div id="docsContainer">
                     @await Component.InvokeAsync("MyView", new { template = "Posts", model = Model })

@@ -11,6 +11,7 @@
     }
     <partial name="QuickSearch" snitz-if="@(Model.Options?.Contains("search"))" />
     <partial name="FeaturedPoll" snitz-if="@(Model.Options?.Contains("poll"))" />
+    
     @if (Model.Options!.Contains("latest"))
     {
         <partial name="LatestPosts" model="@Model.LatestPosts" />

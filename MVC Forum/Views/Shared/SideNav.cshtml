@@ -8,22 +8,21 @@
     var currForumUser = UserManager.GetUserAsync(User).Result;
 }
 
-<nav class='animated bounceInDown' id="side-menu">
+<nav id="side-menu">
     <ul>
-    <cache expires-sliding="@TimeSpan.FromMinutes(2)" vary-by-user="true">
         <li class='sub-menu'>
             <a href="#" role="button" id="navbarDropdownForumLink">@Localizer["mnuForum"]<div class='fa fa-caret-down right'></div></a>
             <ul aria-labelledby="navbarDropdownForumLink">
                 <li><a href="~/AllForums">@Localizer["mnuForumHome"]</a></li>
-                <li><a asp-controller="Forum" asp-action="Active">@Localizer["mnuForumActive"]</a></li>
-                <li><a asp-controller="Account" asp-action="Index">@Localizer["mnuForumMembers"]</a></li>
-                <li><a asp-controller="Forum" asp-action="Search">@Localizer["mnuForumSearch"]</a></li>
+                <li><a title="View the latest posts" asp-controller="Forum" asp-action="Active">@Localizer["mnuForumActive"]</a></li>
+                <li><a title="View a list of Members" asp-controller="Account" asp-action="Index">@Localizer["mnuForumMembers"]</a></li>
+                <li><a title="Search the forum posts" asp-controller="Forum" asp-action="Search">@Localizer["mnuForumSearch"]</a></li>
                 <li snitz-if="@((SnitzConfig.GetIntValue("INTPOLLS") == 1 && SnitzConfig.GetIntValue("INTACTIVEPOLLS") == 1 && User.Identity.IsAuthenticated)
                                         || (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && (SnitzConfig.GetIntValue("INTPUBLICEVENTS") == 1 && User.Identity.IsAuthenticated)))"><hr class="dropdown-divider" /></li>
                 @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
                 @await Component.InvokeAsync("Events", new { template = "MenuItem" })
                 <li snitz-if="@(SnitzConfig.IsEnabled("INTLEADERBOARD"))"><a asp-controller="Charts" asp-action="Leaderboard">@Localizer["mnuLeaderboard"]</a></li>
-                <li class="d-none"><a asp-controller="Paypal" asp-action="Donate" title="Help keep Snitz running with a small donation">@Localizer["mnuDonate"]</a></li>
+                <li snitz-if="@(SnitzConfig.IsEnabled("INTDONATIONS"))" ><a asp-controller="Paypal" asp-action="Donate" title="Help keep Snitz running with a small donation">@Localizer["mnuDonate"]</a></li>
             </ul>
         </li>
         <li class="sub-menu" snitz-if="@(SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)">
@@ -56,14 +55,12 @@
                 <li><a href="~/About#contact">@Localizer["mnuContact"]</a></li>
                 <li><a href="~/About#privacy">@Localizer["mnuPrivacyPolicy"]</a></li>
                 <li><a href="~/About#cookie">@Localizer["mnuCookies"]</a></li>
-                @* <li snitz-if="@(SnitzConfig.TableExists("FORUM_FILECOUNT"))"><a class="dropdown-item" href="~/Releases">@Localizer["mnuRelease"]</a></li> *@
             </ul>
         </li>
-            @if (SignInManager.IsSignedIn(User))
-            {
-                 <li><a asp-controller="Account" asp-action="LogOut">@Localizer["SignOut"]</a></li>
+        @if (SignInManager.IsSignedIn(User))
+        {
+                <li><a asp-controller="Account" asp-action="LogOut">@Localizer["SignOut"]</a></li>
                
-            }
-    </cache>
+        }
     </ul>
 </nav>
