@@ -145,7 +145,7 @@ public class MemberImageTagHelper : TagHelper
         }
 
         base.Process(context, output);
-        output.TagMode = TagMode.StartTagAndEndTag;
+        output.TagMode = TagMode.SelfClosing;
         output.TagName = "img";
         if(Title != null)
         {

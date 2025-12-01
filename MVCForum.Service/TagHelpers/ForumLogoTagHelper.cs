@@ -50,7 +50,7 @@ namespace SnitzCore.Service.TagHelpers
             output.TagMode = TagMode.SelfClosing;
             output.TagName = "img";
 
-            var path = Path.Combine(_env.WebRootPath, "images" , _currentTheme??string.Empty, Logo);
+            var path = Path.Combine(_env.WebRootPath, "images" , UseTheme ?_currentTheme??string.Empty : string.Empty, Logo);
             if(!File.Exists(path)) {
                 output.Attributes.Add("src", $"{_config.RootFolder}/images/logo.png?height=50");
             }
