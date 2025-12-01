@@ -68,7 +68,7 @@ namespace Snitz.PhotoAlbum.Controllers
         /// <param name="term">An optional search term to filter the list by album owner username. Defaults to an empty string.</param>
         /// <returns>An <see cref="IActionResult"/> that renders the "Index" view with a paginated list of photo albums  or the
         /// "Error" view if an exception occurs.</returns>
-        public IActionResult Index(int page = 1, string sortdir = "asc", string orderby = "user", string term = "")
+        public IActionResult Index(int page = 1, string sortdir = "asc", string sortby = "user", string term = "")
         {
             var albumPage = new MvcBreadcrumbNode("", "PhotoAlbum", _languageResource["mnuMemberAlbums"].Value);
             ViewData["BreadcrumbNode"] = albumPage;
@@ -84,12 +84,14 @@ namespace Snitz.PhotoAlbum.Controllers
                         MemberId = ai.Key.MemberId,
                         Username = ai.Key.Name,
                         imgLastUpload = ai.Max(l=>l.Timestamp),
-                        imgCount = ai.Count()
+                        imgCount = ai.Count(),
+                        prvCount = ai.Count(i=>i.IsPrivate)
                     });
 
-                ViewBag.SortUser = ViewBag.SortDate = ViewBag.SortCount = "asc";
+                ViewBag.SortUser = ViewBag.SortDate = ViewBag.SortCount = sortdir == "asc" ? "desc" : "asc";
+
                 ViewBag.SortDir = sortdir;
-                ViewBag.SortBy = orderby;
+                ViewBag.SortBy = sortby;
                 ViewBag.SearchTerm = term;
                 if (!string.IsNullOrWhiteSpace(term))
                 {
@@ -103,7 +105,7 @@ namespace Snitz.PhotoAlbum.Controllers
                 }
                 ViewBag.PageCount = pageCount;
                 ViewBag.Page = page;
-                PagedList<AlbumList>? pagedImages = PagedPhotos(page, 15, sortdir,orderby, model);
+                PagedList<AlbumList>? pagedImages = PagedPhotos(page, 15, sortdir,sortby, model);
 
                 return View("Index",pagedImages);
             }
@@ -183,7 +185,8 @@ namespace Snitz.PhotoAlbum.Controllers
         {
             var orgimage = _dbContext.Set<AlbumImage>().Find(id);
             var folder = StringExtensions.UrlCombine(_config.ContentFolder, "PhotoAlbum");
-            if(orgimage != null)
+            var memberid = _memberservice.Current()?.Id;
+            if (orgimage != null && (User.IsAdministrator() || !orgimage.IsPrivate || orgimage.MemberId == memberid))
             {
                 return File(StringExtensions.UrlCombine(folder,$"{orgimage.Timestamp}_{orgimage.Location}"),"image/jpeg");
             }
@@ -426,10 +429,10 @@ namespace Snitz.PhotoAlbum.Controllers
         public IActionResult Thumbnail(int id)
         {
             var sep = Path.DirectorySeparatorChar;
-
+            var memberid = _memberservice.Current()?.Id;
             var uploadFolder = Path.Combine(_config.ContentFolder.Replace('\\',sep), "PhotoAlbum");
             var orgimage = _dbContext.Set<AlbumImage>().Find(id);
-            if(orgimage == null)
+            if(orgimage == null || (orgimage.IsPrivate && !User.IsAdministrator() && orgimage.MemberId != memberid))
             {
                 return File("~/images/notfound.jpg", "image/jpeg");
             }
@@ -918,18 +921,22 @@ namespace Snitz.PhotoAlbum.Controllers
                     pagedReplies = sortOrder == "asc"
                         ? new PagedList<AlbumList>(model.OrderBy(r => r.Username), pagenum, pagesize)
                         : new PagedList<AlbumList>(model.OrderByDescending(r => r.Username), pagenum, pagesize);
-                    return pagedReplies;                    break;
+                    return pagedReplies;
                 case "date":
                     pagedReplies = sortOrder == "asc"
                         ? new PagedList<AlbumList>(model.OrderBy(r => r.imgLastUpload), pagenum, pagesize)
                         : new PagedList<AlbumList>(model.OrderByDescending(r => r.imgLastUpload), pagenum, pagesize);
                     return pagedReplies;
-                    break;
+                case "prvcount":
+                    pagedReplies = sortOrder == "asc"
+                        ? new PagedList<AlbumList>(model.OrderBy(r => r.imgCount-r.prvCount), pagenum, pagesize)
+                        : new PagedList<AlbumList>(model.OrderByDescending(r => r.imgCount-r.prvCount), pagenum, pagesize);
+                    return pagedReplies;
                 case "count":
                     pagedReplies = sortOrder == "asc"
                         ? new PagedList<AlbumList>(model.OrderBy(r => r.imgCount), pagenum, pagesize)
                         : new PagedList<AlbumList>(model.OrderByDescending(r => r.imgCount), pagenum, pagesize);
-                    return pagedReplies;                    break;
+                    return pagedReplies;
             }
             return null;
         }

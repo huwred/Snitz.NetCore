@@ -9,7 +9,7 @@
     {
         currentmember = ViewBag.CurrentMemberId;
     }
-    if (currentmember == ViewBag.MemberId)
+    if (currentmember == ViewBag.MemberId || User.IsAdministrator())
     {
         showprivate = true;
     }
@@ -22,12 +22,10 @@
         @{
             foreach (var image in Model)
             {
-                var path = $"{SnitzConfig.RootFolder}/{SnitzConfig.ContentFolder}/PhotoAlbum/{image.Timestamp}_{image.Location}?width=1024&height=768&format=jpg&rmode=crop";
-                if (idx == 0)
+                if (idx == 0 && (!image.IsPrivate || showprivate))
                 {
-                    <div class="carousel-item active">
-
-                        <album-image data-id="@image.Id" org-width="@image.Width" org-height="@image.Height" width="800" height="600" src="@($"{image.Timestamp}_{image.Location}")" class="d-block" description="@image.Description"></album-image>
+                    <div class="carousel-item active" snitz-if="@(!image.IsPrivate || showprivate)">
+                        <album-image image-id="@image.Id" data-id="@image.Id" width="800" height="600" class="d-block" description="@image.Description"></album-image>
                         <div class="carousel-caption d-none d-md-block">
                             <h5>@image.ImageName</h5>
                             <p>@image.Description</p>
@@ -37,8 +35,8 @@
                 }
                 else
                 {
-                    <div class="carousel-item">
-                        <album-image data-id="@image.Id" org-width="@image.Width" org-height="@image.Height" width="800" height="600" src="@($"{image.Timestamp}_{image.Location}")" class="d-block img-fluid" description="@image.Description"></album-image>
+                    <div class="carousel-item" snitz-if="@(!image.IsPrivate || showprivate)">
+                        <album-image image-id="@image.Id" data-id="@image.Id" width="800" height="600" class="d-block img-fluid" description="@image.Description"></album-image>
                         <div class="carousel-caption d-none d-md-block">
                             <h5 class="text-dark">@image.ImageName</h5>
                             <p>@image.Description</p>

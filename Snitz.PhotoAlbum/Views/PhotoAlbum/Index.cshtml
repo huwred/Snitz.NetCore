@@ -10,6 +10,16 @@
 }
 @{
     string sortIcon = ViewBag.SortDir == "asc" ? "<i class=\"fa fa-sort-asc\"></i>" : "<i class=\"fa fa-sort-desc\"></i>";
+    var currentmember = 0;
+    bool showprivate = false;
+    if (ViewBag.CurrentMemberId != null)
+    {
+        currentmember = ViewBag.CurrentMemberId;
+    }
+    if (currentmember == ViewBag.MemberId || User.IsAdministrator())
+    {
+        showprivate = true;
+    }
 }
 <snitz-breadcrumb></snitz-breadcrumb>
 <h5 class="form-text">@Localizer["h5Index"]</h5>
@@ -22,23 +32,30 @@
         </div>
     </form>
 </div>
-<div class="row bg-dark p-2">
-    <div class="col-2 text-light">
-        @Html.ActionLink(@Localizer["Member"].Value, "Index", new { page = ViewBag.Page, sortdir = ViewBag.SortUser, sortby = "user", term = ViewBag.SearchTerm }, new { @class = "text-light" })
+<div class="row bg-dark p-2 rounded">
+    <div class="col-2">
+        @Html.ActionLink(@Localizer["Member"].Value, "Index", new { page = ViewBag.Page, sortdir = ViewBag.SortUser, sortby = "user", term = ViewBag.SearchTerm }, new {  })
         @if (ViewBag.SortBy == "user")
         {
             @Html.Raw(sortIcon)
         }
     </div>
-    <div class="col-2 text-light">
-        @Html.ActionLink(@Localizer["lblImages"].Value, "Index", new { page = ViewBag.Page, sortdir = ViewBag.SortCount, sortby = "count", term = ViewBag.SearchTerm }, new { @class = "text-light" })
+    <div class="col-2" snitz-if="@(showprivate)">
+        @Html.ActionLink(@Localizer["lblImages"].Value, "Index", new { page = ViewBag.Page, sortdir = ViewBag.SortCount, sortby = "count", term = ViewBag.SearchTerm }, new {  })
         @if (ViewBag.SortBy == "count")
         {
             @Html.Raw(sortIcon)
         }
     </div>
-    <div class="col-2 text-light">
-        @Html.ActionLink(@Localizer["lblLastPhoto"].Value, "Index", new { page = ViewBag.Page, sortdir = ViewBag.SortDate, sortby = "date", term = ViewBag.SearchTerm }, new { @class = "text-light" })
+    <div class="col-2" snitz-if="@(!showprivate)">
+        @Html.ActionLink(@Localizer["lblImages"].Value, "Index", new { page = ViewBag.Page, sortdir = ViewBag.SortCount, sortby = "prvcount", term = ViewBag.SearchTerm }, new {  })
+        @if (ViewBag.SortBy == "count")
+        {
+            @Html.Raw(sortIcon)
+        }
+    </div>
+    <div class="col-2">
+        @Html.ActionLink(@Localizer["lblLastPhoto"].Value, "Index", new { page = ViewBag.Page, sortdir = ViewBag.SortDate, sortby = "date", term = ViewBag.SearchTerm }, new {  })
         @if (ViewBag.SortBy == "date")
         {
             @Html.Raw(sortIcon)
@@ -57,7 +74,8 @@ else
             <div class="col-2">
                 @Html.ActionLink(album.Username, "Member", new { id = album.MemberId, sortby = "date", sortorder = "desc" })
             </div>
-            <div class="col-2">@album.imgCount</div>
+            <div class="col-2" snitz-if="@(showprivate)">@album.imgCount</div>
+            <div class="col-2" snitz-if="@(!showprivate)">@(album.imgCount - album.prvCount)</div>
             <div class="col-2"><snitz-datetime datetime="@album.imgLastUpload.FromForumDateStr()"></snitz-datetime></div>
         </div>
     }    

@@ -9,6 +9,7 @@ public class AlbumList
     public string Username { get; set; }
 
     public virtual int imgCount { get; set; }
+    public virtual int prvCount { get; set; }
 
     public virtual string imgLastUpload { get; set; }
     public List<AlbumImage> Items { get; set; }

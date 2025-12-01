@@ -55,7 +55,7 @@
                     <tr class="row lazyloadtr" snitz-if="@(!photo.IsPrivate || showprivate)">
                         <td class="col-2 col-md-1 col-thumb">
                             <a class="view-gallery" target="_blank" href="~/PhotoAlbum/Gallery/@photo.MemberId/?photoid=@photo.Id&speciesOnly=false" title="Image @photo.Id">
-                                <album-image class="img-thumbnail" src="@photo.ImageName" width="100" height="100" org-width="@photo.Width" org-height="@photo.Height"></album-image>
+                                <album-image image-id="@photo.Id" class="img-thumbnail" width="100" height="100" ></album-image>
                             </a>
                         </td>
                         <td class="col-2 d-none d-sm-none d-md-none d-lg-inline">[image=@photo.Id]</td>
@@ -69,7 +69,7 @@
                         {
                             <td class="col-1 d-none d-sm-none d-md-none d-lg-inline col-ctrl">
                                 <link-confirm snitz-if="@photo.IsPrivate" title="@Localizer["lblIsPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@photo.Id/?state=false&memberid=@photo.MemberId&display=@ViewBag.Display" config-class="fa fa-user-secret" config-key="@photo.Id"></link-confirm>
-                                <link-confirm snitz-if="@(!photo.IsPrivate)" title="@Localizer["lblPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@photo.Id/?state=true&memberid=@photo.MemberId&display=@ViewBag.Display" config-class="fa-regular fa-user-o" config-key="@photo.Id"></link-confirm>
+                                <link-confirm snitz-if="@(!photo.IsPrivate)" title="@Localizer["lblPrivate"].Value" jq-selector="confirm-privacy" href="~/PhotoAlbum/TogglePrivacy/@photo.Id/?state=true&memberid=@photo.MemberId&display=@ViewBag.Display" config-class="fa-regular fa-user" config-key="@photo.Id"></link-confirm>
                                 <link-confirm snitz-if="@photo.DoNotFeature" title="@Localizer["lblDoNotFeature"].Value" jq-selector="confirm-feature" href="~/PhotoAlbum/ToggleDoNotFeature/@photo.Id/?state=false&memberid=@photo.MemberId&display=@ViewBag.Display" config-class="fa-regular fa-square" config-key="@photo.Id"></link-confirm>
                                 <link-confirm snitz-if="@(!photo.DoNotFeature)" title="@Localizer["imgFeature"].Value" jq-selector="confirm-feature" href="~/PhotoAlbum/ToggleDoNotFeature/@photo.Id/?state=true&memberid=@photo.MemberId&display=@ViewBag.Display" config-class="fa-regular fa-image" config-key="@photo.Id"></link-confirm>
                                 <a href="@Url.Action("Edit", new { id = photo.Id })" data-display="@ViewBag.Display" data-id="@photo.Id" class="edit-image" title="@Localizer["tipEditImage"].Value" data-toggle="tooltip"><i class="fa-regular fa-pen-to-square"></i></a>

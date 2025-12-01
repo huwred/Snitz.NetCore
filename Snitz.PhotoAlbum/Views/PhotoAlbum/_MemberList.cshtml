@@ -1,5 +1,12 @@
-﻿@model List<Snitz.PhotoAlbum.Models.AlbumImage>
-
+﻿@using SnitzCore.Data.Extensions
+@model List<Snitz.PhotoAlbum.Models.AlbumImage>
+@{
+    bool showprivate = false;
+    if (ViewBag.IsOwner != null)
+    {
+        showprivate = false || ViewBag.IsOwner || User.IsAdministrator();
+    }
+}
 <div class="panel panel-primary">
     <div class="panel-heading">
         <ul class="list-unstyled">
@@ -13,7 +20,7 @@
         <ul class="list-unstyled">
             @foreach (var photo in Model)
             {
-                <li class="row">
+                <li class="row" snitz-if="@(!photo.IsPrivate || showprivate)">
                     <div class="col-7 col-md-8 text-truncate">
                         <a class="view-gallery" target="_blank" href="@Url.Action("Gallery", new {id = photo.MemberId, photoid = photo.Id,pagenum=1 })" title="@Localizer["lblImage"] @photo.Id">@photo.Location</a>
                     </div>
