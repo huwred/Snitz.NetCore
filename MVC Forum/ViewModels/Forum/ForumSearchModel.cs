@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Diagnostics;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using SnitzCore.Data.Models;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,7 +17,9 @@ namespace MVCForum.ViewModels.Forum
         public int SearchCategory { get; set; }
         public int[]? SearchForums { get; set; }
 
-        public SearchDate SinceDate { get; set; }
+        public System.DateTime? SinceDate { get; set; }
+
+        public string SinceWhen {get;set;} = "after";
 
         public SelectList? Categories { get; set; }
         public SelectList? Forums { get; set; }

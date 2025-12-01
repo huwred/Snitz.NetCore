@@ -14,13 +14,12 @@
 {
     <title>Search - @Config.Value.strForumTitle </title>
     <meta name="title" content="Search - @Config.Value.strForumTitle" />
-
     <meta name="copyright" content="@Html.Raw(String.Format(SnitzConfig.Copyright, DateTime.UtcNow.Year)) - @SnitzConfig.ForumTitle">
-
     <meta name="robots" content="index,nofollow" />
 
 }
 @section Styles{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
     <link href="~/css/star-rating.min.css" rel="stylesheet" />
     <link href="~/css/krajee-svg/theme.min.css" media="all" rel="stylesheet" type="text/css" />
 }
@@ -79,50 +78,64 @@
     {
         var allterms = Localizer[SearchFor.AllTerms.GetAttribute<DisplayAttribute>()!.Name!].Value;
         var anyterms = Localizer[SearchFor.AnyTerms.GetAttribute<DisplayAttribute>()!.Name!].Value;
-        <div class="col col-md-8 offset-md-2 ">
+        <div class="col col-md-10 offset-md-1 ">
             <form asp-controller="Forum" asp-action="SearchResult" class="needs-validation bg-form p-4 rounded" novalidate>
-
+                <legend>@Localizer["btnSearch"]</legend>
                 <div class="row mb-3">
-                    <label asp-for="Terms" class="form-label">@Localizer["lblKeywords"]</label>
-                    <div class="input-group">
+                    <div class="col-6">
                         <input asp-for="Terms" type="text" class="form-control" placeholder="@Localizer["plhSearchTerm"]" aria-label="@Localizer["plhSearchTerm"]" aria-describedby="button-addon2">
-                        <button class="btn btn-primary" type="button" id="button-addon2" title="@Localizer["tipAdvancedSearch"]" data-bs-toggle="collapse" data-bs-target="#showFilters" aria-expanded="false" data-toggle="tooltip"><i class="fa fa-sliders"></i></button>
+                        <i class="fa fa-sliders"></i><button class="btn btn-link" type="button" id="button-addon2" title="@Localizer["tipAdvancedSearch"]" data-bs-toggle="collapse" data-bs-target="#showFilters" aria-expanded="false" data-toggle="tooltip">@Localizer["tipAdvancedSearch"]</button>
+                        <div class="invalid-feedback">@Localizer["PropertyRequired", ""]</div>
                     </div>
-@*                     @if (SnitzConfig.GetIntValue("INTFULLTEXT") == 1)
-                    {
-                        <span id="textHelpBlock" class="form-text text-muted">@Localizer["fulltextSearch",allterms,anyterms]</span>
-                    } *@
-                    <div class="invalid-feedback">@Localizer["PropertyRequired",""]</div>
+                    <div class="col-4">
+                        <select id="SearchFor" name="SearchFor" class="form-select">
+                        @foreach (SearchFor c in Enum.GetValues(typeof(SearchFor)).OfType<SearchFor>())
+                        {
+                            var displayName = c.GetAttribute<DisplayAttribute>()!.Name!;
+                            <option value="@((int)c)" selected-val="@Model.SearchFor">@Localizer[displayName]</option>
+                        }
+                        </select>
+
+                    </div>
+                    <div class="col"><button type="submit" id="btn-submit" value="Search" class="btn btn-success btn-small"><i class="fa fa-search"></i> @Localizer["btnSearch"]</button></div>
                 </div>
-                <div class="mb-3">
-                    @foreach (SearchFor c in Enum.GetValues(typeof(SearchFor)).OfType<SearchFor>())
-                    {
-                        var displayName = c.GetAttribute<DisplayAttribute>()!.Name!;
-                        <div class="form-check">
-                            <input asp-for="SearchFor" type="radio" class="form-check-input" value="@((int)c)" checked="@(c == Model.SearchFor)">
-                            <label asp-for="SearchFor" class="form-check-label">@Localizer[displayName]</label>
-                        </div>
-                    }
-                </div>
+
                 <div class="collapse" id="showFilters">
                 <div class="row mb-3">
                     <div class="col-12 col-md-6">
                         <label for="SearchMessage" class="form-label">@Localizer["lblSearchin"]</label>
                         <select id="SearchMessage" name="SearchMessage" class="form-select">
-                            <option value="True" selected-val="@Model.SearchMessage">@Localizer["SearchIn_Message"]</option>
+                            <option value="True" selected-val="@Model.SearchMessage">v</option>
                             <option value="False" selected-val="@Model.SearchMessage">@Localizer["SearchIn_Subject"]</option>
                         </select>
                     </div>
                     <div class="col-12 col-md-6">
-                        <label for="date-since" class="form-label">@Localizer["Search_Date"]</label>
-                        <enum-select name="SinceDate" enum-type="typeof(SearchDate)" selected-value="(int)Model.SinceDate" text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }"></enum-select>
+                        <label for="SinceWhen" class="form-label">@Localizer["lblPosted"]</label>
+                        <div class="row">
+                            <div class="col">
+                                <select id="SinceWhen" name="SinceWhen" class="form-select">
+                                    <option value="before" selected-val="@Model.SinceWhen">@Localizer["Search_Before"]</option>
+                                    <option value="after" selected-val="@Model.SinceWhen">@Localizer["Search_After"]</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <div class="input-group date" data-provide="datepicker" id="datepicker">
+                                    <input type="text" class="form-control" placeholder="dd/mm/yyyy" name="SinceDate">
+                                    <div class="input-group-addon">
+                                        <button type="button" class="btn btn-outline-secondary"><i class="fa fa-calendar"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="UserName" class="form-label">@Localizer["Search_Member"]</label>
-                    <div class="input-group">
-                        <span class="input-group-text" id="basic-addon1"><i class="fa fa-user"></i></span>
-                        <input id="UserName" name="UserName" placeholder="@Localizer["plhUsername"]" type="text" class="form-control">
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="UserName" class="form-label">@Localizer["Search_Member"]</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1"><i class="fa fa-user"></i></span>
+                            <input id="UserName" name="UserName" placeholder="@Localizer["plhUsername"]" type="text" class="form-control">
+                        </div>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -142,23 +155,22 @@
                     </div>
                 </div>
 
-                <div class="mb-3" >
-                    <label class="form-label">@Localizer["Search_Archive"]</label>
-                    <div class="form-check">
-                        <input asp-for="SearchArchives" id="SearchArchivesOn" type="radio" class="form-check-input" value="true" aria-describedby="radio1HelpBlock">
-                        <label for="SearchArchivesOn" class="form-check-label">@Localizer["lblYes"]</label>
+                <div class="row mb-3" >
+                    <div class="col-2">
+                        <label class="form-label">@Localizer["Search_Archive"]</label>
                     </div>
-                    <div class="form-check">
-                        <input asp-for="SearchArchives" id="SearchArchivesOff" type="radio" class="form-check-input" value="false" aria-describedby="radio1HelpBlock">
-                        <label for="SearchArchivesOff" class="form-check-label">@Localizer["lblNo"]</label>
+                    <div class="col">
+                        <div class="form-check form-check-inline">
+                            <input asp-for="SearchArchives" id="SearchArchivesOn" type="radio" class="form-check-input" value="true" aria-describedby="radio1HelpBlock">
+                            <label for="SearchArchivesOn" class="form-check-label">@Localizer["lblYes"]</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="SearchArchives" id="SearchArchivesOff" type="radio" class="form-check-input" value="false" aria-describedby="radio1HelpBlock">
+                            <label for="SearchArchivesOff" class="form-check-label">@Localizer["lblNo"]</label>
+                        </div>
                     </div>
                     <span id="radio1HelpBlock" class="form-text text-muted">@Localizer["Search_ArchiveDesc"]</span>
                 </div>
-                </div>
-                <div class="mb-3 p-2">
-                    <button type="button" class="btn btn-danger-ou cancel" onclick="history.go(-1);">@Localizer["btnCancel"]</button>
-                    <button type="reset" class="btn btn-warning ">@Localizer["btnReset"]</button>
-                    <button type="submit" id="btn-submit" value="Search" class="btn btn-success">@Localizer["btnSearch"]</button>
                 </div>
             </form>
         </div>
@@ -169,12 +181,14 @@
     @Html.HiddenFor(m => m.SearchFor)
     @Html.HiddenFor(m => m.SearchMessage)
     @Html.HiddenFor(m => m.SinceDate)
+    @Html.HiddenFor(m => m.SinceWhen)
     @Html.HiddenFor(m => m.SearchArchives)
     @Html.HiddenFor(m => m.UserName)
     @Html.HiddenFor(m => m.SearchCategory)
     @Html.HiddenFor(m => m.SearchForums)
 </form>
 @section Scripts{
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
     <script src="~/js/star-rating.min.js"></script>
     <script src="~/js/krajee-svg/theme.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="~/js/postcontroller.min.js"></script>
@@ -245,5 +259,31 @@
                         }
                     }
                 });
+        $.fn.datepicker.defaults.format = "mm/dd/yyyy";
+
+            $(function () {
+                $('#datepicker').datepicker({
+
+                    format: {
+                        /*
+                         * Convert to Forum datestring format,
+                         */
+
+                        toDisplay: function (date, format, language) {
+                            var d = new Date(date);
+                            d.setDate(d.getDate());
+                            return d.toLocaleDateString();
+                        },
+                        toValue: function (date, format, language) {
+                            let re = /([0-9]{4})([0-9]{2})([0-9]{2})/;
+                            let lastFirst = date.replace(re, '$1-$2-$3');
+                            var d = new Date(lastFirst);
+                            d.setDate(d.getDate());
+                            return new Date(d);
+                        }
+                    }
+                });
+
+            });
     </script>
 }

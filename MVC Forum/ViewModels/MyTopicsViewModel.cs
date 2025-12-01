@@ -15,6 +15,7 @@ namespace MVCForum.ViewModels
         public IEnumerable<MyViewTopic> AllTopics { get; set; }
         public DefaultDays DefaultDays { get; set; }
 
+        public string? SubType {get; set;}
 
     }
 

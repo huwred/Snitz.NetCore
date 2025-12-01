@@ -94,7 +94,7 @@ namespace MVCForum.Controllers
             bool ismoderator = member == null ? false : _snitzDbContext.ForumModerator.Where(f=>f.MemberId == member.Id && f.ForumId == forum.Id).Any();
             bool isadministrator = User.IsInRole("Administrator");
 
-            notallowed = CheckAuthorisation(forum.Id,member.Id,forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
+            notallowed = CheckAuthorisation(forum.Id,member?.Id,forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
             if (!isadministrator && passwordrequired)
             {
                 var auth = _httpcontext.Session.GetString("Pforum_" + id) == null ? "" : _httpcontext.Session.GetString("Pforum_" + id);
@@ -341,7 +341,7 @@ namespace MVCForum.Controllers
             bool ismoderator = User.IsInRole($"Forum_{forum.Id}");
             bool isadministrator = User.IsInRole("Administrator");
 
-            notallowed = CheckAuthorisation(forum.Id,_memberService.Current()?.Id??0,forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
+            notallowed = CheckAuthorisation(forum.Id,_memberService.Current()?.Id,forum.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
             if (!isadministrator && passwordrequired)
             {
                 var auth = _httpcontext.Session.GetString("Pforum_" + id) == null ? "" : _httpcontext.Session.GetString("Pforum_" + id);
@@ -891,7 +891,8 @@ namespace MVCForum.Controllers
             ViewData["Title"] = "Search Results";
             var searchmodel = new ForumSearch()
             {
-                SinceDate = (SearchDate)model.SinceDate,
+                SinceWhen = model.SinceWhen,
+                SinceDate = model.SinceDate,
                 SearchArchives = model.SearchArchives,
                 SearchMessage = model.SearchMessage,
                 SearchCategory = model.SearchCategory,
@@ -908,10 +909,7 @@ namespace MVCForum.Controllers
                 {
                     ViewData["Title"] = $"{searchmodel.UserName}'s Topics";
                 }
-                if (searchmodel.SinceDate == SearchDate.Since14Days)
-                {
-                    ViewData["Title"] = $"{searchmodel.UserName}'s Recent Posts";
-                }
+
             }
             int totalcount;
 
@@ -993,12 +991,13 @@ namespace MVCForum.Controllers
             //var topics = _forumService.FetchMySubscribedTopicsPaged(5,pagenum,topicsubs);
 
             var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
-            var topicPage = new MvcBreadcrumbNode("MyView", "Forum", "mnuMyView") { Parent = forumPage };
+            var topicPage = new MvcBreadcrumbNode("MyView", "Forum", "mnuMyForumView") { Parent = forumPage };
             ViewData["BreadcrumbNode"] = topicPage;
             MyTopicsViewModel vm = new MyTopicsViewModel
             {
                 Topics = forumtopics,
-                ActiveSince = activesince
+                ActiveSince = activesince,
+                SubType = "Forums"
             };
 
             return View(vm);
@@ -1015,9 +1014,39 @@ namespace MVCForum.Controllers
                 Topics = result,
             };
             return ViewComponent("MyView", new { template = "Posts", model = vm });
+        }
+        [Authorize]
+        public IActionResult MyTopicView(int pagenum=1, MyTopicsSince activesince = MyTopicsSince.Last12Months)
+        {
+            var topicsubs = _memberService.TopicSubscriptions().ToList();
+            var topics = _forumService.FetchMySubscribedTopicsPaged(5, pagenum, topicsubs);
 
+            var forumPage = new MvcBreadcrumbNode("", "AllForums", "ttlForums");
+            var topicPage = new MvcBreadcrumbNode("MyView", "Forum", "mnuMyTopicView") { Parent = forumPage };
+            ViewData["BreadcrumbNode"] = topicPage;
+            MyTopicsViewModel vm = new MyTopicsViewModel
+            {
+                Topics = topics,
+                ActiveSince = activesince,
+                SubType = "Topics"
+            };
+
+            return View("MyView", vm);
         }
 
+        [HttpGet]
+        [Authorize]
+        public IActionResult MyTopicViewNext(int nextpage, string refresh = "NO" )
+        {
+            var topicsubs = _memberService.TopicSubscriptions().ToList();
+            var result = _forumService.FetchMySubscribedTopicsPaged(5, nextpage, topicsubs);
+
+            MyTopicsViewModel vm = new MyTopicsViewModel
+            {
+                Topics = result,
+            };
+            return ViewComponent("MyView", new { template = "Posts", model = vm });
+        }
         public IActionResult PasswordCheck(string pwd,string forumid,string? topicid)
         {
             var forum = _forumService.GetWithPosts(Convert.ToInt32(forumid));
@@ -1193,7 +1222,7 @@ namespace MVCForum.Controllers
             };
         }
 
-        private bool CheckAuthorisation(int forumid,int memberid,ForumAuthType auth,bool signedin, bool ismoderator, bool isadministrator, ref bool passwordrequired)
+        private bool CheckAuthorisation(int forumid,int? memberid,ForumAuthType auth,bool signedin, bool ismoderator, bool isadministrator, ref bool passwordrequired)
         {
             bool notallowed = false;
             bool isallowedmember = _forumService.AllowedUsers(forumid).Any(l=>l.Key == memberid);
@@ -1262,5 +1291,6 @@ namespace MVCForum.Controllers
         {
             return BuildForumListing(p.Forum!);
         }
+
     }
 }
