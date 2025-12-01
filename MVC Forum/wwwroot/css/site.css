@@ -155,8 +155,10 @@ footer{
 /* ########################################### */
 
 /* posts table's head  */
-.table-head{
+.table-head {
     display: flex;
+    flex-wrap: wrap;
+    margin: 1px;
 }
 
 .table-head div{
@@ -172,22 +174,21 @@ footer{
 }
 
 .table-head .subjects{
-    flex: 65%;
+    flex: 60%;
 }
 
     .table-head .replies {
-        flex: 10%;
+        flex: 5%;
         flex-grow: 0;
     }
 
 .table-head .last-reply{
-    flex: 15%;
+    flex: 18%;
     flex-grow: 1;
 }
 .table-head .subscribe {
         flex: 3%;
         flex-shrink: 1;
-        /*font-size: 24px;*/
     }
 /* posts table's body  */
 
@@ -204,15 +205,14 @@ footer{
     .table-row .status {
         flex: 5%;
         flex-grow:0;
-        /*font-size: 1.3em;*/
         text-align: center;
     }
 .table-row .subjects{
-    flex: 65%;
+    flex: 60%;
     flex-grow:0;
 }
     .table-row .replies {
-        flex: 10%;
+        flex: 5%;
         flex-grow: 0;
     }
     .table-row .subscribe {
@@ -221,11 +221,11 @@ footer{
     }
 
 .table-row .last-reply{
-    flex: 15%;
+    flex: 18%;
     flex-grow: 1;
 }
 
-.filter-btn, .post-buttons {
+.filter-btn {
     margin-left: auto;
     order: 2;
 }
@@ -661,17 +661,17 @@ img.avatarlarge {
     text-align: center;
 }
 
-#cal-loading {
+/* #cal-loading {
     margin: auto;
     width: 20px;
-    height: 20px;
+    height: 20px;*/
     /*border: solid black;*/
-    position: absolute;
+    /*position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0
-}
+}*/
 /* When you move the mouse over the icon, change color */
 .fa-trash:hover {
     color: #eee;
@@ -1257,31 +1257,18 @@ i.modstatus-2, i.modstatus-3 {
     top: 0;
     left: 0;
     width: 100%;
-    background: #f0f8ff; /* pastel sky blue */
-    color: #333;
     text-align: center;
     padding: 10px 0;
-    font-family: "Segoe UI", sans-serif;
-    font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    z-index: 9999;
+    /*z-index: 9999;*/
 }
 
-    .donation-banner a {
-        display: inline-block;
-        margin-left: 10px;
-        background: #ff7f50; /* coral button */
-        color: #fff;
-        padding: 6px 12px;
-        border-radius: 20px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: background 0.3s ease;
-    }
-
-        .donation-banner a:hover {
-            background: #ff6347; /* slightly darker coral on hover */
-        }
+.donation-banner a {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    transition: background 0.3s ease;
+}
 
 .close-banner {
     position: absolute;
@@ -1289,11 +1276,7 @@ i.modstatus-2, i.modstatus-3 {
     top: 8px;
     cursor: pointer;
     font-size: 18px;
-    color: #666;
     transition: color 0.3s ease;
 }
 
-    .close-banner:hover {
-        color: #000;
-    }
 

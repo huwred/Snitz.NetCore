@@ -337,3 +337,57 @@ async function b_confirm(msg) {
         }
     })
 }
+
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    var options = {
+        html: true,
+        title: "",
+        content: $('[data-name="' + popoverTriggerEl.id + '"]')
+    }
+    return new bootstrap.Popover(popoverTriggerEl, options);
+});
+
+function getBrowserTimeZone() {
+    const options = Intl.DateTimeFormat().resolvedOptions();
+    console.log(options.timeZone);
+    return options.timeZone;
+}
+//store users timezone in cookie
+var date = new Date();
+date.setDate(date.getDate() + 365);
+$.cookie('CookieTimeZone', getBrowserTimeZone(), {
+    path: SnitzVars.cookiePath,
+    expires: date
+});
+
+document.getElementById('toggleSidebar').addEventListener('click', () => {
+    let sidebarCollapse = localStorage.getItem('sidebarCollapse');
+    document.getElementById('sidebar').classList.toggle('collapsed');
+    if (sidebarCollapse) {
+        localStorage.removeItem('sidebarCollapse');
+    } else {
+        localStorage.setItem('sidebarCollapse', "sidebarCollapse");
+    }
+    
+});
+
+$('.sub-menu ul').hide();
+$(".sub-menu a").click(function () {
+    $(this).parent(".sub-menu").children("ul").slideToggle("100");
+    $(this).find(".right").toggleClass("fa-caret-up fa-caret-down");
+});
+
+/* Show the user card popup when clicking on a profile link */
+$(document).on("click", ".profile-popup", function (e) {
+    e.preventDefault();
+    var rect = e.target.getBoundingClientRect();
+    $("#user-card .modal-dialog").css('position', 'absolute');
+    $("#user-card .modal-dialog").css('top', rect.top - 100 + "px");
+    $("#user-card .modal-dialog").css('left', rect.left);
+    $('#user-card').modal('show');
+    $('#user-card-content').html('');
+    $('#user-card-content').load(SnitzVars.baseUrl + "/Account/DetailPopup/" + $(this).data("id") + "/?lang=" + SnitzVars.forumlang, function (response, status, xhr) {
+        $("time.timeago").timeago();
+    });
+});

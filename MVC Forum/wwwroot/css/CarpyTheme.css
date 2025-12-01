@@ -678,3 +678,30 @@ li.my-fc-row {
     --bs-alert-border-color: var(--bs-danger-border-subtle);
     --bs-alert-link-color: var(--bs-danger-text-emphasis);
 }
+/* Donation Banner */
+.donation-banner {
+    background: var(--primary-header); /* pastel sky blue */
+    color: #333;
+    text-align: center;
+    padding: 10px 0;
+}
+
+    .donation-banner a {
+        background: #ff7f50; /* coral button */
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        .donation-banner a:hover {
+            background: #ff6347; /* slightly darker coral on hover */
+        }
+
+.close-banner {
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+    .close-banner:hover {
+        color: #000;
+    }

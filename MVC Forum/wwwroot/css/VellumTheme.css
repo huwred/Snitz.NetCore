@@ -177,7 +177,7 @@ a:active,a:hover {
     color:white;
 }
 .text-muted {
-    color: #fefefe !important;
+    color: silver !important;
 }
 
 /* ########################################### */
@@ -433,6 +433,10 @@ tr.bg-dark, .card-header.bg-dark {
 }
 .btn-secondary {
     background-color: #7d7f66;
+}
+#toggleSidebar.btn-outline-secondary:hover {
+    background-color: #565E07;
+
 }
 .bg-form {
     background-color: #fafafa;
@@ -724,3 +728,30 @@ li.my-fc-row {
     }
 }
 
+/* Donation Banner */
+.donation-banner {
+    background: var(--primary-header); /* pastel sky blue */
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.donation-banner a {
+    background: #ff7f50; /* coral button */
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.donation-banner a:hover {
+    background: #ff6347; /* slightly darker coral on hover */
+}
+
+.close-banner {
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.close-banner:hover {
+    color: #000;
+}

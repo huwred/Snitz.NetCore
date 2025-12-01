@@ -78,6 +78,7 @@ UpComingCalendar = function(url, divid) {
                     $('#upcoming-events').show();
                 } else {
                     $("#calendar-list").css({ "visibility": "visible" });
+                    $('#cal-loading i').hide();
                     $('#cal-loading').hide();
                     $("#calendar-list").css({ "height": "auto" });
                 }

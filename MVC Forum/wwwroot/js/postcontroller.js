@@ -258,11 +258,9 @@ $('.reply-answer').on('click', function (e) {
 });
 // Edit Post
 $(".post-edit").on("click", function() {
-
     var postid = $(this).data("id");
     archived = $(this).data("archived");
     location.href = SnitzVars.baseUrl + "/Topic/Edit/" + postid + "?archived=" + archived;
-
 });
 // Thumbs Up
 $('.thumbs-up').on('click',

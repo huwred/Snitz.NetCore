@@ -108,6 +108,9 @@
     --bs-btn-disabled-bg: #dc3545;
     --bs-btn-disabled-border-color: #dc3545;
 }
+#toggleSidebar.btn-outline-secondary:hover {
+    background-color: var(--primary-header);
+}
 .fc-h-event {
     background-color: gray;
     border: 1px solid gray;
@@ -162,6 +165,7 @@ h1 {
 .sidebar-toggle{
     color:black !important;
 }
+
 .table-row .status .fa.fa-thumb-tack.fa-stack-1x, .table-row .status .fa-regular.fa-frown.fa-stack-1x {
     color: silver !important;
 }
@@ -422,4 +426,35 @@ tr.bg-dark, .card-header.bg-dark, .btn-group.btn-dark {
 .password-strength-indicator.very-strong {
     background: #22cf00;
     border-color: #1B9900;
+}
+/* Donation Banner */
+.donation-banner {
+    background: var(--primary-header); /* pastel sky blue */
+    color: #333;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.donation-banner a {
+    background: #ff7f50 !important; /* coral button */
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.donation-banner a:hover {
+    background: #ff6347 !important; /* slightly darker coral on hover */
+}
+
+.close-banner {
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.close-banner:hover {
+    color: #000;
+}
+
+code[class*="language-"], pre[class*="language-"]{
+    background-color:white !important;
 }

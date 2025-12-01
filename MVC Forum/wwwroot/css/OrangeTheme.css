@@ -412,3 +412,30 @@ div.btn-group.btn-dark {
     background: #22cf00;
     border-color: #1B9900;
 }
+/* Donation Banner */
+.donation-banner {
+    background: var(--primary-header); /* pastel sky blue */
+    color: #333;
+    text-align: center;
+    padding: 10px 0;
+}
+
+    .donation-banner a {
+        background: #ff7f50; /* coral button */
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        .donation-banner a:hover {
+            background: #ff6347; /* slightly darker coral on hover */
+        }
+
+.close-banner {
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+    .close-banner:hover {
+        color: #000;
+    }

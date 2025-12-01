@@ -1,5 +1,5 @@
 /* PrismJS 1.30.0
-https://prismjs.com/download#themes=prism-dark&languages=markup+css+clike+javascript+bash+csharp+json+cshtml+sql&plugins=line-numbers */
+https://prismjs.com/download#themes=prism-dark&languages=markup+css+clike+javascript+aspnet+bash+csharp+python */
 /// <reference lib="WebWorker"/>
 
 var _self = (typeof window !== 'undefined')
@@ -1722,242 +1722,6 @@ if (Prism.languages.markup) {
 Prism.languages.js = Prism.languages.javascript;
 
 (function (Prism) {
-	// $ set | grep '^[A-Z][^[:space:]]*=' | cut -d= -f1 | tr '\n' '|'
-	// + LC_ALL, RANDOM, REPLY, SECONDS.
-	// + make sure PS1..4 are here as they are not always set,
-	// - some useless things.
-	var envVars = '\\b(?:BASH|BASHOPTS|BASH_ALIASES|BASH_ARGC|BASH_ARGV|BASH_CMDS|BASH_COMPLETION_COMPAT_DIR|BASH_LINENO|BASH_REMATCH|BASH_SOURCE|BASH_VERSINFO|BASH_VERSION|COLORTERM|COLUMNS|COMP_WORDBREAKS|DBUS_SESSION_BUS_ADDRESS|DEFAULTS_PATH|DESKTOP_SESSION|DIRSTACK|DISPLAY|EUID|GDMSESSION|GDM_LANG|GNOME_KEYRING_CONTROL|GNOME_KEYRING_PID|GPG_AGENT_INFO|GROUPS|HISTCONTROL|HISTFILE|HISTFILESIZE|HISTSIZE|HOME|HOSTNAME|HOSTTYPE|IFS|INSTANCE|JOB|LANG|LANGUAGE|LC_ADDRESS|LC_ALL|LC_IDENTIFICATION|LC_MEASUREMENT|LC_MONETARY|LC_NAME|LC_NUMERIC|LC_PAPER|LC_TELEPHONE|LC_TIME|LESSCLOSE|LESSOPEN|LINES|LOGNAME|LS_COLORS|MACHTYPE|MAILCHECK|MANDATORY_PATH|NO_AT_BRIDGE|OLDPWD|OPTERR|OPTIND|ORBIT_SOCKETDIR|OSTYPE|PAPERSIZE|PATH|PIPESTATUS|PPID|PS1|PS2|PS3|PS4|PWD|RANDOM|REPLY|SECONDS|SELINUX_INIT|SESSION|SESSIONTYPE|SESSION_MANAGER|SHELL|SHELLOPTS|SHLVL|SSH_AUTH_SOCK|TERM|UID|UPSTART_EVENTS|UPSTART_INSTANCE|UPSTART_JOB|UPSTART_SESSION|USER|WINDOWID|XAUTHORITY|XDG_CONFIG_DIRS|XDG_CURRENT_DESKTOP|XDG_DATA_DIRS|XDG_GREETER_DATA_DIR|XDG_MENU_PREFIX|XDG_RUNTIME_DIR|XDG_SEAT|XDG_SEAT_PATH|XDG_SESSION_DESKTOP|XDG_SESSION_ID|XDG_SESSION_PATH|XDG_SESSION_TYPE|XDG_VTNR|XMODIFIERS)\\b';
-
-	var commandAfterHeredoc = {
-		pattern: /(^(["']?)\w+\2)[ \t]+\S.*/,
-		lookbehind: true,
-		alias: 'punctuation', // this looks reasonably well in all themes
-		inside: null // see below
-	};
-
-	var insideString = {
-		'bash': commandAfterHeredoc,
-		'environment': {
-			pattern: RegExp('\\$' + envVars),
-			alias: 'constant'
-		},
-		'variable': [
-			// [0]: Arithmetic Environment
-			{
-				pattern: /\$?\(\([\s\S]+?\)\)/,
-				greedy: true,
-				inside: {
-					// If there is a $ sign at the beginning highlight $(( and )) as variable
-					'variable': [
-						{
-							pattern: /(^\$\(\([\s\S]+)\)\)/,
-							lookbehind: true
-						},
-						/^\$\(\(/
-					],
-					'number': /\b0x[\dA-Fa-f]+\b|(?:\b\d+(?:\.\d*)?|\B\.\d+)(?:[Ee]-?\d+)?/,
-					// Operators according to https://www.gnu.org/software/bash/manual/bashref.html#Shell-Arithmetic
-					'operator': /--|\+\+|\*\*=?|<<=?|>>=?|&&|\|\||[=!+\-*/%<>^&|]=?|[?~:]/,
-					// If there is no $ sign at the beginning highlight (( and )) as punctuation
-					'punctuation': /\(\(?|\)\)?|,|;/
-				}
-			},
-			// [1]: Command Substitution
-			{
-				pattern: /\$\((?:\([^)]+\)|[^()])+\)|`[^`]+`/,
-				greedy: true,
-				inside: {
-					'variable': /^\$\(|^`|\)$|`$/
-				}
-			},
-			// [2]: Brace expansion
-			{
-				pattern: /\$\{[^}]+\}/,
-				greedy: true,
-				inside: {
-					'operator': /:[-=?+]?|[!\/]|##?|%%?|\^\^?|,,?/,
-					'punctuation': /[\[\]]/,
-					'environment': {
-						pattern: RegExp('(\\{)' + envVars),
-						lookbehind: true,
-						alias: 'constant'
-					}
-				}
-			},
-			/\$(?:\w+|[#?*!@$])/
-		],
-		// Escape sequences from echo and printf's manuals, and escaped quotes.
-		'entity': /\\(?:[abceEfnrtv\\"]|O?[0-7]{1,3}|U[0-9a-fA-F]{8}|u[0-9a-fA-F]{4}|x[0-9a-fA-F]{1,2})/
-	};
-
-	Prism.languages.bash = {
-		'shebang': {
-			pattern: /^#!\s*\/.*/,
-			alias: 'important'
-		},
-		'comment': {
-			pattern: /(^|[^"{\\$])#.*/,
-			lookbehind: true
-		},
-		'function-name': [
-			// a) function foo {
-			// b) foo() {
-			// c) function foo() {
-			// but not “foo {”
-			{
-				// a) and c)
-				pattern: /(\bfunction\s+)[\w-]+(?=(?:\s*\(?:\s*\))?\s*\{)/,
-				lookbehind: true,
-				alias: 'function'
-			},
-			{
-				// b)
-				pattern: /\b[\w-]+(?=\s*\(\s*\)\s*\{)/,
-				alias: 'function'
-			}
-		],
-		// Highlight variable names as variables in for and select beginnings.
-		'for-or-select': {
-			pattern: /(\b(?:for|select)\s+)\w+(?=\s+in\s)/,
-			alias: 'variable',
-			lookbehind: true
-		},
-		// Highlight variable names as variables in the left-hand part
-		// of assignments (“=” and “+=”).
-		'assign-left': {
-			pattern: /(^|[\s;|&]|[<>]\()\w+(?:\.\w+)*(?=\+?=)/,
-			inside: {
-				'environment': {
-					pattern: RegExp('(^|[\\s;|&]|[<>]\\()' + envVars),
-					lookbehind: true,
-					alias: 'constant'
-				}
-			},
-			alias: 'variable',
-			lookbehind: true
-		},
-		// Highlight parameter names as variables
-		'parameter': {
-			pattern: /(^|\s)-{1,2}(?:\w+:[+-]?)?\w+(?:\.\w+)*(?=[=\s]|$)/,
-			alias: 'variable',
-			lookbehind: true
-		},
-		'string': [
-			// Support for Here-documents https://en.wikipedia.org/wiki/Here_document
-			{
-				pattern: /((?:^|[^<])<<-?\s*)(\w+)\s[\s\S]*?(?:\r?\n|\r)\2/,
-				lookbehind: true,
-				greedy: true,
-				inside: insideString
-			},
-			// Here-document with quotes around the tag
-			// → No expansion (so no “inside”).
-			{
-				pattern: /((?:^|[^<])<<-?\s*)(["'])(\w+)\2\s[\s\S]*?(?:\r?\n|\r)\3/,
-				lookbehind: true,
-				greedy: true,
-				inside: {
-					'bash': commandAfterHeredoc
-				}
-			},
-			// “Normal” string
-			{
-				// https://www.gnu.org/software/bash/manual/html_node/Double-Quotes.html
-				pattern: /(^|[^\\](?:\\\\)*)"(?:\\[\s\S]|\$\([^)]+\)|\$(?!\()|`[^`]+`|[^"\\`$])*"/,
-				lookbehind: true,
-				greedy: true,
-				inside: insideString
-			},
-			{
-				// https://www.gnu.org/software/bash/manual/html_node/Single-Quotes.html
-				pattern: /(^|[^$\\])'[^']*'/,
-				lookbehind: true,
-				greedy: true
-			},
-			{
-				// https://www.gnu.org/software/bash/manual/html_node/ANSI_002dC-Quoting.html
-				pattern: /\$'(?:[^'\\]|\\[\s\S])*'/,
-				greedy: true,
-				inside: {
-					'entity': insideString.entity
-				}
-			}
-		],
-		'environment': {
-			pattern: RegExp('\\$?' + envVars),
-			alias: 'constant'
-		},
-		'variable': insideString.variable,
-		'function': {
-			pattern: /(^|[\s;|&]|[<>]\()(?:add|apropos|apt|apt-cache|apt-get|aptitude|aspell|automysqlbackup|awk|basename|bash|bc|bconsole|bg|bzip2|cal|cargo|cat|cfdisk|chgrp|chkconfig|chmod|chown|chroot|cksum|clear|cmp|column|comm|composer|cp|cron|crontab|csplit|curl|cut|date|dc|dd|ddrescue|debootstrap|df|diff|diff3|dig|dir|dircolors|dirname|dirs|dmesg|docker|docker-compose|du|egrep|eject|env|ethtool|expand|expect|expr|fdformat|fdisk|fg|fgrep|file|find|fmt|fold|format|free|fsck|ftp|fuser|gawk|git|gparted|grep|groupadd|groupdel|groupmod|groups|grub-mkconfig|gzip|halt|head|hg|history|host|hostname|htop|iconv|id|ifconfig|ifdown|ifup|import|install|ip|java|jobs|join|kill|killall|less|link|ln|locate|logname|logrotate|look|lpc|lpr|lprint|lprintd|lprintq|lprm|ls|lsof|lynx|make|man|mc|mdadm|mkconfig|mkdir|mke2fs|mkfifo|mkfs|mkisofs|mknod|mkswap|mmv|more|most|mount|mtools|mtr|mutt|mv|nano|nc|netstat|nice|nl|node|nohup|notify-send|npm|nslookup|op|open|parted|passwd|paste|pathchk|ping|pkill|pnpm|podman|podman-compose|popd|pr|printcap|printenv|ps|pushd|pv|quota|quotacheck|quotactl|ram|rar|rcp|reboot|remsync|rename|renice|rev|rm|rmdir|rpm|rsync|scp|screen|sdiff|sed|sendmail|seq|service|sftp|sh|shellcheck|shuf|shutdown|sleep|slocate|sort|split|ssh|stat|strace|su|sudo|sum|suspend|swapon|sync|sysctl|tac|tail|tar|tee|time|timeout|top|touch|tr|traceroute|tsort|tty|umount|uname|unexpand|uniq|units|unrar|unshar|unzip|update-grub|uptime|useradd|userdel|usermod|users|uudecode|uuencode|v|vcpkg|vdir|vi|vim|virsh|vmstat|wait|watch|wc|wget|whereis|which|who|whoami|write|xargs|xdg-open|yarn|yes|zenity|zip|zsh|zypper)(?=$|[)\s;|&])/,
-			lookbehind: true
-		},
-		'keyword': {
-			pattern: /(^|[\s;|&]|[<>]\()(?:case|do|done|elif|else|esac|fi|for|function|if|in|select|then|until|while)(?=$|[)\s;|&])/,
-			lookbehind: true
-		},
-		// https://www.gnu.org/software/bash/manual/html_node/Shell-Builtin-Commands.html
-		'builtin': {
-			pattern: /(^|[\s;|&]|[<>]\()(?:\.|:|alias|bind|break|builtin|caller|cd|command|continue|declare|echo|enable|eval|exec|exit|export|getopts|hash|help|let|local|logout|mapfile|printf|pwd|read|readarray|readonly|return|set|shift|shopt|source|test|times|trap|type|typeset|ulimit|umask|unalias|unset)(?=$|[)\s;|&])/,
-			lookbehind: true,
-			// Alias added to make those easier to distinguish from strings.
-			alias: 'class-name'
-		},
-		'boolean': {
-			pattern: /(^|[\s;|&]|[<>]\()(?:false|true)(?=$|[)\s;|&])/,
-			lookbehind: true
-		},
-		'file-descriptor': {
-			pattern: /\B&\d\b/,
-			alias: 'important'
-		},
-		'operator': {
-			// Lots of redirections here, but not just that.
-			pattern: /\d?<>|>\||\+=|=[=~]?|!=?|<<[<-]?|[&\d]?>>|\d[<>]&?|[<>][&=]?|&[>&]?|\|[&|]?/,
-			inside: {
-				'file-descriptor': {
-					pattern: /^\d/,
-					alias: 'important'
-				}
-			}
-		},
-		'punctuation': /\$?\(\(?|\)\)?|\.\.|[{}[\];\\]/,
-		'number': {
-			pattern: /(^|\s)(?:[1-9]\d*|0)(?:[.,]\d+)?\b/,
-			lookbehind: true
-		}
-	};
-
-	commandAfterHeredoc.inside = Prism.languages.bash;
-
-	/* Patterns in command substitution. */
-	var toBeCopied = [
-		'comment',
-		'function-name',
-		'for-or-select',
-		'assign-left',
-		'parameter',
-		'string',
-		'environment',
-		'function',
-		'keyword',
-		'builtin',
-		'boolean',
-		'file-descriptor',
-		'operator',
-		'punctuation',
-		'number'
-	];
-	var inside = insideString.variable[1].inside;
-	for (var i = 0; i < toBeCopied.length; i++) {
-		inside[toBeCopied[i]] = Prism.languages.bash[toBeCopied[i]];
-	}
-
-	Prism.languages.sh = Prism.languages.bash;
-	Prism.languages.shell = Prism.languages.bash;
-}(Prism));
-
-(function (Prism) {
 
 	/**
 	 * Replaces all placeholders "<<n>>" of given pattern with the n-th replacement (zero based).
@@ -2324,517 +2088,354 @@ Prism.languages.js = Prism.languages.javascript;
 
 }(Prism));
 
-// https://www.json.org/json-en.html
-Prism.languages.json = {
-	'property': {
-		pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?=\s*:)/,
-		lookbehind: true,
-		greedy: true
+Prism.languages.aspnet = Prism.languages.extend('markup', {
+	'page-directive': {
+		pattern: /<%\s*@.*%>/,
+		alias: 'tag',
+		inside: {
+			'page-directive': {
+				pattern: /<%\s*@\s*(?:Assembly|Control|Implements|Import|Master(?:Type)?|OutputCache|Page|PreviousPageType|Reference|Register)?|%>/i,
+				alias: 'tag'
+			},
+			rest: Prism.languages.markup.tag.inside
+		}
 	},
-	'string': {
-		pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?!\s*:)/,
-		lookbehind: true,
-		greedy: true
-	},
-	'comment': {
-		pattern: /\/\/.*|\/\*[\s\S]*?(?:\*\/|$)/,
-		greedy: true
-	},
-	'number': /-?\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/i,
-	'punctuation': /[{}[\],]/,
-	'operator': /:/,
-	'boolean': /\b(?:false|true)\b/,
-	'null': {
-		pattern: /\bnull\b/,
-		alias: 'keyword'
+	'directive': {
+		pattern: /<%.*%>/,
+		alias: 'tag',
+		inside: {
+			'directive': {
+				pattern: /<%\s*?[$=%#:]{0,2}|%>/,
+				alias: 'tag'
+			},
+			rest: Prism.languages.csharp
+		}
 	}
-};
+});
+// Regexp copied from prism-markup, with a negative look-ahead added
+Prism.languages.aspnet.tag.pattern = /<(?!%)\/?[^\s>\/]+(?:\s+[^\s>\/=]+(?:=(?:("|')(?:\\[\s\S]|(?!\1)[^\\])*\1|[^\s'">=]+))?)*\s*\/?>/;
 
-Prism.languages.webmanifest = Prism.languages.json;
+// match directives of attribute value foo="<% Bar %>"
+Prism.languages.insertBefore('inside', 'punctuation', {
+	'directive': Prism.languages.aspnet['directive']
+}, Prism.languages.aspnet.tag.inside['attr-value']);
 
-// Docs:
-// https://docs.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-5.0&tabs=visual-studio
-// https://docs.microsoft.com/en-us/aspnet/core/mvc/views/razor?view=aspnetcore-5.0
+Prism.languages.insertBefore('aspnet', 'comment', {
+	'asp-comment': {
+		pattern: /<%--[\s\S]*?--%>/,
+		alias: ['asp', 'comment']
+	}
+});
+
+// script runat="server" contains csharp, not javascript
+Prism.languages.insertBefore('aspnet', Prism.languages.javascript ? 'script' : 'tag', {
+	'asp-script': {
+		pattern: /(<script(?=.*runat=['"]?server\b)[^>]*>)[\s\S]*?(?=<\/script>)/i,
+		lookbehind: true,
+		alias: ['asp', 'script'],
+		inside: Prism.languages.csharp || {}
+	}
+});
 
 (function (Prism) {
+	// $ set | grep '^[A-Z][^[:space:]]*=' | cut -d= -f1 | tr '\n' '|'
+	// + LC_ALL, RANDOM, REPLY, SECONDS.
+	// + make sure PS1..4 are here as they are not always set,
+	// - some useless things.
+	var envVars = '\\b(?:BASH|BASHOPTS|BASH_ALIASES|BASH_ARGC|BASH_ARGV|BASH_CMDS|BASH_COMPLETION_COMPAT_DIR|BASH_LINENO|BASH_REMATCH|BASH_SOURCE|BASH_VERSINFO|BASH_VERSION|COLORTERM|COLUMNS|COMP_WORDBREAKS|DBUS_SESSION_BUS_ADDRESS|DEFAULTS_PATH|DESKTOP_SESSION|DIRSTACK|DISPLAY|EUID|GDMSESSION|GDM_LANG|GNOME_KEYRING_CONTROL|GNOME_KEYRING_PID|GPG_AGENT_INFO|GROUPS|HISTCONTROL|HISTFILE|HISTFILESIZE|HISTSIZE|HOME|HOSTNAME|HOSTTYPE|IFS|INSTANCE|JOB|LANG|LANGUAGE|LC_ADDRESS|LC_ALL|LC_IDENTIFICATION|LC_MEASUREMENT|LC_MONETARY|LC_NAME|LC_NUMERIC|LC_PAPER|LC_TELEPHONE|LC_TIME|LESSCLOSE|LESSOPEN|LINES|LOGNAME|LS_COLORS|MACHTYPE|MAILCHECK|MANDATORY_PATH|NO_AT_BRIDGE|OLDPWD|OPTERR|OPTIND|ORBIT_SOCKETDIR|OSTYPE|PAPERSIZE|PATH|PIPESTATUS|PPID|PS1|PS2|PS3|PS4|PWD|RANDOM|REPLY|SECONDS|SELINUX_INIT|SESSION|SESSIONTYPE|SESSION_MANAGER|SHELL|SHELLOPTS|SHLVL|SSH_AUTH_SOCK|TERM|UID|UPSTART_EVENTS|UPSTART_INSTANCE|UPSTART_JOB|UPSTART_SESSION|USER|WINDOWID|XAUTHORITY|XDG_CONFIG_DIRS|XDG_CURRENT_DESKTOP|XDG_DATA_DIRS|XDG_GREETER_DATA_DIR|XDG_MENU_PREFIX|XDG_RUNTIME_DIR|XDG_SEAT|XDG_SEAT_PATH|XDG_SESSION_DESKTOP|XDG_SESSION_ID|XDG_SESSION_PATH|XDG_SESSION_TYPE|XDG_VTNR|XMODIFIERS)\\b';
 
-	var commentLike = /\/(?![/*])|\/\/.*[\r\n]|\/\*[^*]*(?:\*(?!\/)[^*]*)*\*\//.source;
-	var stringLike =
-		/@(?!")|"(?:[^\r\n\\"]|\\.)*"|@"(?:[^\\"]|""|\\[\s\S])*"(?!")/.source +
-		'|' +
-		/'(?:(?:[^\r\n'\\]|\\.|\\[Uux][\da-fA-F]{1,8})'|(?=[^\\](?!')))/.source;
+	var commandAfterHeredoc = {
+		pattern: /(^(["']?)\w+\2)[ \t]+\S.*/,
+		lookbehind: true,
+		alias: 'punctuation', // this looks reasonably well in all themes
+		inside: null // see below
+	};
 
-	/**
-	 * Creates a nested pattern where all occurrences of the string `<<self>>` are replaced with the pattern itself.
-	 *
-	 * @param {string} pattern
-	 * @param {number} depthLog2
-	 * @returns {string}
-	 */
-	function nested(pattern, depthLog2) {
-		for (var i = 0; i < depthLog2; i++) {
-			pattern = pattern.replace(/<self>/g, function () { return '(?:' + pattern + ')'; });
+	var insideString = {
+		'bash': commandAfterHeredoc,
+		'environment': {
+			pattern: RegExp('\\$' + envVars),
+			alias: 'constant'
+		},
+		'variable': [
+			// [0]: Arithmetic Environment
+			{
+				pattern: /\$?\(\([\s\S]+?\)\)/,
+				greedy: true,
+				inside: {
+					// If there is a $ sign at the beginning highlight $(( and )) as variable
+					'variable': [
+						{
+							pattern: /(^\$\(\([\s\S]+)\)\)/,
+							lookbehind: true
+						},
+						/^\$\(\(/
+					],
+					'number': /\b0x[\dA-Fa-f]+\b|(?:\b\d+(?:\.\d*)?|\B\.\d+)(?:[Ee]-?\d+)?/,
+					// Operators according to https://www.gnu.org/software/bash/manual/bashref.html#Shell-Arithmetic
+					'operator': /--|\+\+|\*\*=?|<<=?|>>=?|&&|\|\||[=!+\-*/%<>^&|]=?|[?~:]/,
+					// If there is no $ sign at the beginning highlight (( and )) as punctuation
+					'punctuation': /\(\(?|\)\)?|,|;/
+				}
+			},
+			// [1]: Command Substitution
+			{
+				pattern: /\$\((?:\([^)]+\)|[^()])+\)|`[^`]+`/,
+				greedy: true,
+				inside: {
+					'variable': /^\$\(|^`|\)$|`$/
+				}
+			},
+			// [2]: Brace expansion
+			{
+				pattern: /\$\{[^}]+\}/,
+				greedy: true,
+				inside: {
+					'operator': /:[-=?+]?|[!\/]|##?|%%?|\^\^?|,,?/,
+					'punctuation': /[\[\]]/,
+					'environment': {
+						pattern: RegExp('(\\{)' + envVars),
+						lookbehind: true,
+						alias: 'constant'
+					}
+				}
+			},
+			/\$(?:\w+|[#?*!@$])/
+		],
+		// Escape sequences from echo and printf's manuals, and escaped quotes.
+		'entity': /\\(?:[abceEfnrtv\\"]|O?[0-7]{1,3}|U[0-9a-fA-F]{8}|u[0-9a-fA-F]{4}|x[0-9a-fA-F]{1,2})/
+	};
+
+	Prism.languages.bash = {
+		'shebang': {
+			pattern: /^#!\s*\/.*/,
+			alias: 'important'
+		},
+		'comment': {
+			pattern: /(^|[^"{\\$])#.*/,
+			lookbehind: true
+		},
+		'function-name': [
+			// a) function foo {
+			// b) foo() {
+			// c) function foo() {
+			// but not “foo {”
+			{
+				// a) and c)
+				pattern: /(\bfunction\s+)[\w-]+(?=(?:\s*\(?:\s*\))?\s*\{)/,
+				lookbehind: true,
+				alias: 'function'
+			},
+			{
+				// b)
+				pattern: /\b[\w-]+(?=\s*\(\s*\)\s*\{)/,
+				alias: 'function'
+			}
+		],
+		// Highlight variable names as variables in for and select beginnings.
+		'for-or-select': {
+			pattern: /(\b(?:for|select)\s+)\w+(?=\s+in\s)/,
+			alias: 'variable',
+			lookbehind: true
+		},
+		// Highlight variable names as variables in the left-hand part
+		// of assignments (“=” and “+=”).
+		'assign-left': {
+			pattern: /(^|[\s;|&]|[<>]\()\w+(?:\.\w+)*(?=\+?=)/,
+			inside: {
+				'environment': {
+					pattern: RegExp('(^|[\\s;|&]|[<>]\\()' + envVars),
+					lookbehind: true,
+					alias: 'constant'
+				}
+			},
+			alias: 'variable',
+			lookbehind: true
+		},
+		// Highlight parameter names as variables
+		'parameter': {
+			pattern: /(^|\s)-{1,2}(?:\w+:[+-]?)?\w+(?:\.\w+)*(?=[=\s]|$)/,
+			alias: 'variable',
+			lookbehind: true
+		},
+		'string': [
+			// Support for Here-documents https://en.wikipedia.org/wiki/Here_document
+			{
+				pattern: /((?:^|[^<])<<-?\s*)(\w+)\s[\s\S]*?(?:\r?\n|\r)\2/,
+				lookbehind: true,
+				greedy: true,
+				inside: insideString
+			},
+			// Here-document with quotes around the tag
+			// → No expansion (so no “inside”).
+			{
+				pattern: /((?:^|[^<])<<-?\s*)(["'])(\w+)\2\s[\s\S]*?(?:\r?\n|\r)\3/,
+				lookbehind: true,
+				greedy: true,
+				inside: {
+					'bash': commandAfterHeredoc
+				}
+			},
+			// “Normal” string
+			{
+				// https://www.gnu.org/software/bash/manual/html_node/Double-Quotes.html
+				pattern: /(^|[^\\](?:\\\\)*)"(?:\\[\s\S]|\$\([^)]+\)|\$(?!\()|`[^`]+`|[^"\\`$])*"/,
+				lookbehind: true,
+				greedy: true,
+				inside: insideString
+			},
+			{
+				// https://www.gnu.org/software/bash/manual/html_node/Single-Quotes.html
+				pattern: /(^|[^$\\])'[^']*'/,
+				lookbehind: true,
+				greedy: true
+			},
+			{
+				// https://www.gnu.org/software/bash/manual/html_node/ANSI_002dC-Quoting.html
+				pattern: /\$'(?:[^'\\]|\\[\s\S])*'/,
+				greedy: true,
+				inside: {
+					'entity': insideString.entity
+				}
+			}
+		],
+		'environment': {
+			pattern: RegExp('\\$?' + envVars),
+			alias: 'constant'
+		},
+		'variable': insideString.variable,
+		'function': {
+			pattern: /(^|[\s;|&]|[<>]\()(?:add|apropos|apt|apt-cache|apt-get|aptitude|aspell|automysqlbackup|awk|basename|bash|bc|bconsole|bg|bzip2|cal|cargo|cat|cfdisk|chgrp|chkconfig|chmod|chown|chroot|cksum|clear|cmp|column|comm|composer|cp|cron|crontab|csplit|curl|cut|date|dc|dd|ddrescue|debootstrap|df|diff|diff3|dig|dir|dircolors|dirname|dirs|dmesg|docker|docker-compose|du|egrep|eject|env|ethtool|expand|expect|expr|fdformat|fdisk|fg|fgrep|file|find|fmt|fold|format|free|fsck|ftp|fuser|gawk|git|gparted|grep|groupadd|groupdel|groupmod|groups|grub-mkconfig|gzip|halt|head|hg|history|host|hostname|htop|iconv|id|ifconfig|ifdown|ifup|import|install|ip|java|jobs|join|kill|killall|less|link|ln|locate|logname|logrotate|look|lpc|lpr|lprint|lprintd|lprintq|lprm|ls|lsof|lynx|make|man|mc|mdadm|mkconfig|mkdir|mke2fs|mkfifo|mkfs|mkisofs|mknod|mkswap|mmv|more|most|mount|mtools|mtr|mutt|mv|nano|nc|netstat|nice|nl|node|nohup|notify-send|npm|nslookup|op|open|parted|passwd|paste|pathchk|ping|pkill|pnpm|podman|podman-compose|popd|pr|printcap|printenv|ps|pushd|pv|quota|quotacheck|quotactl|ram|rar|rcp|reboot|remsync|rename|renice|rev|rm|rmdir|rpm|rsync|scp|screen|sdiff|sed|sendmail|seq|service|sftp|sh|shellcheck|shuf|shutdown|sleep|slocate|sort|split|ssh|stat|strace|su|sudo|sum|suspend|swapon|sync|sysctl|tac|tail|tar|tee|time|timeout|top|touch|tr|traceroute|tsort|tty|umount|uname|unexpand|uniq|units|unrar|unshar|unzip|update-grub|uptime|useradd|userdel|usermod|users|uudecode|uuencode|v|vcpkg|vdir|vi|vim|virsh|vmstat|wait|watch|wc|wget|whereis|which|who|whoami|write|xargs|xdg-open|yarn|yes|zenity|zip|zsh|zypper)(?=$|[)\s;|&])/,
+			lookbehind: true
+		},
+		'keyword': {
+			pattern: /(^|[\s;|&]|[<>]\()(?:case|do|done|elif|else|esac|fi|for|function|if|in|select|then|until|while)(?=$|[)\s;|&])/,
+			lookbehind: true
+		},
+		// https://www.gnu.org/software/bash/manual/html_node/Shell-Builtin-Commands.html
+		'builtin': {
+			pattern: /(^|[\s;|&]|[<>]\()(?:\.|:|alias|bind|break|builtin|caller|cd|command|continue|declare|echo|enable|eval|exec|exit|export|getopts|hash|help|let|local|logout|mapfile|printf|pwd|read|readarray|readonly|return|set|shift|shopt|source|test|times|trap|type|typeset|ulimit|umask|unalias|unset)(?=$|[)\s;|&])/,
+			lookbehind: true,
+			// Alias added to make those easier to distinguish from strings.
+			alias: 'class-name'
+		},
+		'boolean': {
+			pattern: /(^|[\s;|&]|[<>]\()(?:false|true)(?=$|[)\s;|&])/,
+			lookbehind: true
+		},
+		'file-descriptor': {
+			pattern: /\B&\d\b/,
+			alias: 'important'
+		},
+		'operator': {
+			// Lots of redirections here, but not just that.
+			pattern: /\d?<>|>\||\+=|=[=~]?|!=?|<<[<-]?|[&\d]?>>|\d[<>]&?|[<>][&=]?|&[>&]?|\|[&|]?/,
+			inside: {
+				'file-descriptor': {
+					pattern: /^\d/,
+					alias: 'important'
+				}
+			}
+		},
+		'punctuation': /\$?\(\(?|\)\)?|\.\.|[{}[\];\\]/,
+		'number': {
+			pattern: /(^|\s)(?:[1-9]\d*|0)(?:[.,]\d+)?\b/,
+			lookbehind: true
 		}
-		return pattern
-			.replace(/<self>/g, '[^\\s\\S]')
-			.replace(/<str>/g, '(?:' + stringLike + ')')
-			.replace(/<comment>/g, '(?:' + commentLike + ')');
+	};
+
+	commandAfterHeredoc.inside = Prism.languages.bash;
+
+	/* Patterns in command substitution. */
+	var toBeCopied = [
+		'comment',
+		'function-name',
+		'for-or-select',
+		'assign-left',
+		'parameter',
+		'string',
+		'environment',
+		'function',
+		'keyword',
+		'builtin',
+		'boolean',
+		'file-descriptor',
+		'operator',
+		'punctuation',
+		'number'
+	];
+	var inside = insideString.variable[1].inside;
+	for (var i = 0; i < toBeCopied.length; i++) {
+		inside[toBeCopied[i]] = Prism.languages.bash[toBeCopied[i]];
 	}
 
-	var round = nested(/\((?:[^()'"@/]|<str>|<comment>|<self>)*\)/.source, 2);
-	var square = nested(/\[(?:[^\[\]'"@/]|<str>|<comment>|<self>)*\]/.source, 1);
-	var curly = nested(/\{(?:[^{}'"@/]|<str>|<comment>|<self>)*\}/.source, 2);
-	var angle = nested(/<(?:[^<>'"@/]|<comment>|<self>)*>/.source, 1);
-
-	var inlineCs = /@/.source +
-		/(?:await\b\s*)?/.source +
-		'(?:' + /(?!await\b)\w+\b/.source + '|' + round + ')' +
-		'(?:' + /[?!]?\.\w+\b/.source + '|' + '(?:' + angle + ')?' + round + '|' + square + ')*' +
-		/(?![?!\.(\[]|<(?!\/))/.source;
-
-	// Note about the above bracket patterns:
-	// They all ignore HTML expressions that might be in the C# code. This is a problem because HTML (like strings and
-	// comments) is parsed differently. This is a huge problem because HTML might contain brackets and quotes which
-	// messes up the bracket and string counting implemented by the above patterns.
-	//
-	// This problem is not fixable because 1) HTML expression are highly context sensitive and very difficult to detect
-	// and 2) they require one capturing group at every nested level. See the `tagRegion` pattern to admire the
-	// complexity of an HTML expression.
-	//
-	// To somewhat alleviate the problem a bit, the patterns for characters (e.g. 'a') is very permissive, it also
-	// allows invalid characters to support HTML expressions like this: <p>That's it!</p>.
-
-	var tagAttrInlineCs = /@(?![\w()])/.source + '|' + inlineCs;
-	var tagAttrValue = '(?:' +
-		/"[^"@]*"|'[^'@]*'|[^\s'"@>=]+(?=[\s>])/.source +
-		'|' +
-		'["\'][^"\'@]*(?:(?:' + tagAttrInlineCs + ')[^"\'@]*)+["\']' +
-		')';
-
-	var tagAttrs = /(?:\s(?:\s*[^\s>\/=]+(?:\s*=\s*<tagAttrValue>|(?=[\s/>])))+)?/.source.replace(/<tagAttrValue>/, tagAttrValue);
-	var tagContent = /(?!\d)[^\s>\/=$<%]+/.source + tagAttrs + /\s*\/?>/.source;
-	var tagRegion =
-		/\B@?/.source +
-		'(?:' +
-		/<([a-zA-Z][\w:]*)/.source + tagAttrs + /\s*>/.source +
-		'(?:' +
-		(
-			/[^<]/.source +
-			'|' +
-			// all tags that are not the start tag
-			// eslint-disable-next-line regexp/strict
-			/<\/?(?!\1\b)/.source + tagContent +
-			'|' +
-			// nested start tag
-			nested(
-				// eslint-disable-next-line regexp/strict
-				/<\1/.source + tagAttrs + /\s*>/.source +
-				'(?:' +
-				(
-					/[^<]/.source +
-					'|' +
-					// all tags that are not the start tag
-					// eslint-disable-next-line regexp/strict
-					/<\/?(?!\1\b)/.source + tagContent +
-					'|' +
-					'<self>'
-				) +
-				')*' +
-				// eslint-disable-next-line regexp/strict
-				/<\/\1\s*>/.source,
-				2
-			)
-		) +
-		')*' +
-		// eslint-disable-next-line regexp/strict
-		/<\/\1\s*>/.source +
-		'|' +
-		/</.source + tagContent +
-		')';
-
-	// Now for the actual language definition(s):
-	//
-	// Razor as a language has 2 parts:
-	//  1) CSHTML: A markup-like language that has been extended with inline C# code expressions and blocks.
-	//  2) C#+HTML: A variant of C# that can contain CSHTML tags as expressions.
-	//
-	// In the below code, both CSHTML and C#+HTML will be create as separate language definitions that reference each
-	// other. However, only CSHTML will be exported via `Prism.languages`.
-
-	Prism.languages.cshtml = Prism.languages.extend('markup', {});
-
-	var csharpWithHtml = Prism.languages.insertBefore('csharp', 'string', {
-		'html': {
-			pattern: RegExp(tagRegion),
-			greedy: true,
-			inside: Prism.languages.cshtml
-		},
-	}, { csharp: Prism.languages.extend('csharp', {}) });
-
-	var cs = {
-		pattern: /\S[\s\S]*/,
-		alias: 'language-csharp',
-		inside: csharpWithHtml
-	};
-
-	var inlineValue = {
-		pattern: RegExp(/(^|[^@])/.source + inlineCs),
-		lookbehind: true,
-		greedy: true,
-		alias: 'variable',
-		inside: {
-			'keyword': /^@/,
-			'csharp': cs
-		}
-	};
-
-	Prism.languages.cshtml.tag.pattern = RegExp(/<\/?/.source + tagContent);
-	Prism.languages.cshtml.tag.inside['attr-value'].pattern = RegExp(/=\s*/.source + tagAttrValue);
-	Prism.languages.insertBefore('inside', 'punctuation', { 'value': inlineValue }, Prism.languages.cshtml.tag.inside['attr-value']);
-
-	Prism.languages.insertBefore('cshtml', 'prolog', {
-		'razor-comment': {
-			pattern: /@\*[\s\S]*?\*@/,
-			greedy: true,
-			alias: 'comment'
-		},
-
-		'block': {
-			pattern: RegExp(
-				/(^|[^@])@/.source +
-				'(?:' +
-				[
-					// @{ ... }
-					curly,
-					// @code{ ... }
-					/(?:code|functions)\s*/.source + curly,
-					// @for (...) { ... }
-					/(?:for|foreach|lock|switch|using|while)\s*/.source + round + /\s*/.source + curly,
-					// @do { ... } while (...);
-					/do\s*/.source + curly + /\s*while\s*/.source + round + /(?:\s*;)?/.source,
-					// @try { ... } catch (...) { ... } finally { ... }
-					/try\s*/.source + curly + /\s*catch\s*/.source + round + /\s*/.source + curly + /\s*finally\s*/.source + curly,
-					// @if (...) {...} else if (...) {...} else {...}
-					/if\s*/.source + round + /\s*/.source + curly + '(?:' + /\s*else/.source + '(?:' + /\s+if\s*/.source + round + ')?' + /\s*/.source + curly + ')*',
-					// @helper Ident(params) { ... }
-					/helper\s+\w+\s*/.source + round + /\s*/.source + curly,
-				].join('|') +
-				')'
-			),
-			lookbehind: true,
-			greedy: true,
-			inside: {
-				'keyword': /^@\w*/,
-				'csharp': cs
-			}
-		},
-
-		'directive': {
-			pattern: /^([ \t]*)@(?:addTagHelper|attribute|implements|inherits|inject|layout|model|namespace|page|preservewhitespace|removeTagHelper|section|tagHelperPrefix|using)(?=\s).*/m,
-			lookbehind: true,
-			greedy: true,
-			inside: {
-				'keyword': /^@\w+/,
-				'csharp': cs
-			}
-		},
-
-		'value': inlineValue,
-
-		'delegate-operator': {
-			pattern: /(^|[^@])@(?=<)/,
-			lookbehind: true,
-			alias: 'operator'
-		}
-	});
-
-	Prism.languages.razor = Prism.languages.cshtml;
-
+	Prism.languages.sh = Prism.languages.bash;
+	Prism.languages.shell = Prism.languages.bash;
 }(Prism));
 
-Prism.languages.sql = {
+Prism.languages.python = {
 	'comment': {
-		pattern: /(^|[^\\])(?:\/\*[\s\S]*?\*\/|(?:--|\/\/|#).*)/,
-		lookbehind: true
-	},
-	'variable': [
-		{
-			pattern: /@(["'`])(?:\\[\s\S]|(?!\1)[^\\])+\1/,
-			greedy: true
-		},
-		/@[\w.$]+/
-	],
-	'string': {
-		pattern: /(^|[^@\\])("|')(?:\\[\s\S]|(?!\2)[^\\]|\2\2)*\2/,
-		greedy: true,
-		lookbehind: true
-	},
-	'identifier': {
-		pattern: /(^|[^@\\])`(?:\\[\s\S]|[^`\\]|``)*`/,
-		greedy: true,
+		pattern: /(^|[^\\])#.*/,
 		lookbehind: true,
+		greedy: true
+	},
+	'string-interpolation': {
+		pattern: /(?:f|fr|rf)(?:("""|''')[\s\S]*?\1|("|')(?:\\.|(?!\2)[^\\\r\n])*\2)/i,
+		greedy: true,
 		inside: {
-			'punctuation': /^`|`$/
+			'interpolation': {
+				// "{" <expression> <optional "!s", "!r", or "!a"> <optional ":" format specifier> "}"
+				pattern: /((?:^|[^{])(?:\{\{)*)\{(?!\{)(?:[^{}]|\{(?!\{)(?:[^{}]|\{(?!\{)(?:[^{}])+\})+\})+\}/,
+				lookbehind: true,
+				inside: {
+					'format-spec': {
+						pattern: /(:)[^:(){}]+(?=\}$)/,
+						lookbehind: true
+					},
+					'conversion-option': {
+						pattern: /![sra](?=[:}]$)/,
+						alias: 'punctuation'
+					},
+					rest: null
+				}
+			},
+			'string': /[\s\S]+/
 		}
 	},
-	'function': /\b(?:AVG|COUNT|FIRST|FORMAT|LAST|LCASE|LEN|MAX|MID|MIN|MOD|NOW|ROUND|SUM|UCASE)(?=\s*\()/i, // Should we highlight user defined functions too?
-	'keyword': /\b(?:ACTION|ADD|AFTER|ALGORITHM|ALL|ALTER|ANALYZE|ANY|APPLY|AS|ASC|AUTHORIZATION|AUTO_INCREMENT|BACKUP|BDB|BEGIN|BERKELEYDB|BIGINT|BINARY|BIT|BLOB|BOOL|BOOLEAN|BREAK|BROWSE|BTREE|BULK|BY|CALL|CASCADED?|CASE|CHAIN|CHAR(?:ACTER|SET)?|CHECK(?:POINT)?|CLOSE|CLUSTERED|COALESCE|COLLATE|COLUMNS?|COMMENT|COMMIT(?:TED)?|COMPUTE|CONNECT|CONSISTENT|CONSTRAINT|CONTAINS(?:TABLE)?|CONTINUE|CONVERT|CREATE|CROSS|CURRENT(?:_DATE|_TIME|_TIMESTAMP|_USER)?|CURSOR|CYCLE|DATA(?:BASES?)?|DATE(?:TIME)?|DAY|DBCC|DEALLOCATE|DEC|DECIMAL|DECLARE|DEFAULT|DEFINER|DELAYED|DELETE|DELIMITERS?|DENY|DESC|DESCRIBE|DETERMINISTIC|DISABLE|DISCARD|DISK|DISTINCT|DISTINCTROW|DISTRIBUTED|DO|DOUBLE|DROP|DUMMY|DUMP(?:FILE)?|DUPLICATE|ELSE(?:IF)?|ENABLE|ENCLOSED|END|ENGINE|ENUM|ERRLVL|ERRORS|ESCAPED?|EXCEPT|EXEC(?:UTE)?|EXISTS|EXIT|EXPLAIN|EXTENDED|FETCH|FIELDS|FILE|FILLFACTOR|FIRST|FIXED|FLOAT|FOLLOWING|FOR(?: EACH ROW)?|FORCE|FOREIGN|FREETEXT(?:TABLE)?|FROM|FULL|FUNCTION|GEOMETRY(?:COLLECTION)?|GLOBAL|GOTO|GRANT|GROUP|HANDLER|HASH|HAVING|HOLDLOCK|HOUR|IDENTITY(?:COL|_INSERT)?|IF|IGNORE|IMPORT|INDEX|INFILE|INNER|INNODB|INOUT|INSERT|INT|INTEGER|INTERSECT|INTERVAL|INTO|INVOKER|ISOLATION|ITERATE|JOIN|KEYS?|KILL|LANGUAGE|LAST|LEAVE|LEFT|LEVEL|LIMIT|LINENO|LINES|LINESTRING|LOAD|LOCAL|LOCK|LONG(?:BLOB|TEXT)|LOOP|MATCH(?:ED)?|MEDIUM(?:BLOB|INT|TEXT)|MERGE|MIDDLEINT|MINUTE|MODE|MODIFIES|MODIFY|MONTH|MULTI(?:LINESTRING|POINT|POLYGON)|NATIONAL|NATURAL|NCHAR|NEXT|NO|NONCLUSTERED|NULLIF|NUMERIC|OFF?|OFFSETS?|ON|OPEN(?:DATASOURCE|QUERY|ROWSET)?|OPTIMIZE|OPTION(?:ALLY)?|ORDER|OUT(?:ER|FILE)?|OVER|PARTIAL|PARTITION|PERCENT|PIVOT|PLAN|POINT|POLYGON|PRECEDING|PRECISION|PREPARE|PREV|PRIMARY|PRINT|PRIVILEGES|PROC(?:EDURE)?|PUBLIC|PURGE|QUICK|RAISERROR|READS?|REAL|RECONFIGURE|REFERENCES|RELEASE|RENAME|REPEAT(?:ABLE)?|REPLACE|REPLICATION|REQUIRE|RESIGNAL|RESTORE|RESTRICT|RETURN(?:ING|S)?|REVOKE|RIGHT|ROLLBACK|ROUTINE|ROW(?:COUNT|GUIDCOL|S)?|RTREE|RULE|SAVE(?:POINT)?|SCHEMA|SECOND|SELECT|SERIAL(?:IZABLE)?|SESSION(?:_USER)?|SET(?:USER)?|SHARE|SHOW|SHUTDOWN|SIMPLE|SMALLINT|SNAPSHOT|SOME|SONAME|SQL|START(?:ING)?|STATISTICS|STATUS|STRIPED|SYSTEM_USER|TABLES?|TABLESPACE|TEMP(?:ORARY|TABLE)?|TERMINATED|TEXT(?:SIZE)?|THEN|TIME(?:STAMP)?|TINY(?:BLOB|INT|TEXT)|TOP?|TRAN(?:SACTIONS?)?|TRIGGER|TRUNCATE|TSEQUAL|TYPES?|UNBOUNDED|UNCOMMITTED|UNDEFINED|UNION|UNIQUE|UNLOCK|UNPIVOT|UNSIGNED|UPDATE(?:TEXT)?|USAGE|USE|USER|USING|VALUES?|VAR(?:BINARY|CHAR|CHARACTER|YING)|VIEW|WAITFOR|WARNINGS|WHEN|WHERE|WHILE|WITH(?: ROLLUP|IN)?|WORK|WRITE(?:TEXT)?|YEAR)\b/i,
-	'boolean': /\b(?:FALSE|NULL|TRUE)\b/i,
-	'number': /\b0x[\da-f]+\b|\b\d+(?:\.\d*)?|\B\.\d+\b/i,
-	'operator': /[-+*\/=%^~]|&&?|\|\|?|!=?|<(?:=>?|<|>)?|>[>=]?|\b(?:AND|BETWEEN|DIV|ILIKE|IN|IS|LIKE|NOT|OR|REGEXP|RLIKE|SOUNDS LIKE|XOR)\b/i,
-	'punctuation': /[;[\]()`,.]/
+	'triple-quoted-string': {
+		pattern: /(?:[rub]|br|rb)?("""|''')[\s\S]*?\1/i,
+		greedy: true,
+		alias: 'string'
+	},
+	'string': {
+		pattern: /(?:[rub]|br|rb)?("|')(?:\\.|(?!\1)[^\\\r\n])*\1/i,
+		greedy: true
+	},
+	'function': {
+		pattern: /((?:^|\s)def[ \t]+)[a-zA-Z_]\w*(?=\s*\()/g,
+		lookbehind: true
+	},
+	'class-name': {
+		pattern: /(\bclass\s+)\w+/i,
+		lookbehind: true
+	},
+	'decorator': {
+		pattern: /(^[\t ]*)@\w+(?:\.\w+)*/m,
+		lookbehind: true,
+		alias: ['annotation', 'punctuation'],
+		inside: {
+			'punctuation': /\./
+		}
+	},
+	'keyword': /\b(?:_(?=\s*:)|and|as|assert|async|await|break|case|class|continue|def|del|elif|else|except|exec|finally|for|from|global|if|import|in|is|lambda|match|nonlocal|not|or|pass|print|raise|return|try|while|with|yield)\b/,
+	'builtin': /\b(?:__import__|abs|all|any|apply|ascii|basestring|bin|bool|buffer|bytearray|bytes|callable|chr|classmethod|cmp|coerce|compile|complex|delattr|dict|dir|divmod|enumerate|eval|execfile|file|filter|float|format|frozenset|getattr|globals|hasattr|hash|help|hex|id|input|int|intern|isinstance|issubclass|iter|len|list|locals|long|map|max|memoryview|min|next|object|oct|open|ord|pow|property|range|raw_input|reduce|reload|repr|reversed|round|set|setattr|slice|sorted|staticmethod|str|sum|super|tuple|type|unichr|unicode|vars|xrange|zip)\b/,
+	'boolean': /\b(?:False|None|True)\b/,
+	'number': /\b0(?:b(?:_?[01])+|o(?:_?[0-7])+|x(?:_?[a-f0-9])+)\b|(?:\b\d+(?:_\d+)*(?:\.(?:\d+(?:_\d+)*)?)?|\B\.\d+(?:_\d+)*)(?:e[+-]?\d+(?:_\d+)*)?j?(?!\w)/i,
+	'operator': /[-+%=]=?|!=|:=|\*\*?=?|\/\/?=?|<[<=>]?|>[=>]?|[&|^~]/,
+	'punctuation': /[{}[\];(),.:]/
 };
 
-(function () {
+Prism.languages.python['string-interpolation'].inside['interpolation'].inside.rest = Prism.languages.python;
 
-	if (typeof Prism === 'undefined' || typeof document === 'undefined') {
-		return;
-	}
-
-	/**
-	 * Plugin name which is used as a class name for <pre> which is activating the plugin
-	 *
-	 * @type {string}
-	 */
-	var PLUGIN_NAME = 'line-numbers';
-
-	/**
-	 * Regular expression used for determining line breaks
-	 *
-	 * @type {RegExp}
-	 */
-	var NEW_LINE_EXP = /\n(?!$)/g;
-
-
-	/**
-	 * Global exports
-	 */
-	var config = Prism.plugins.lineNumbers = {
-		/**
-		 * Get node for provided line number
-		 *
-		 * @param {Element} element pre element
-		 * @param {number} number line number
-		 * @returns {Element|undefined}
-		 */
-		getLine: function (element, number) {
-			if (element.tagName !== 'PRE' || !element.classList.contains(PLUGIN_NAME)) {
-				return;
-			}
-
-			var lineNumberRows = element.querySelector('.line-numbers-rows');
-			if (!lineNumberRows) {
-				return;
-			}
-			var lineNumberStart = parseInt(element.getAttribute('data-start'), 10) || 1;
-			var lineNumberEnd = lineNumberStart + (lineNumberRows.children.length - 1);
-
-			if (number < lineNumberStart) {
-				number = lineNumberStart;
-			}
-			if (number > lineNumberEnd) {
-				number = lineNumberEnd;
-			}
-
-			var lineIndex = number - lineNumberStart;
-
-			return lineNumberRows.children[lineIndex];
-		},
-
-		/**
-		 * Resizes the line numbers of the given element.
-		 *
-		 * This function will not add line numbers. It will only resize existing ones.
-		 *
-		 * @param {HTMLElement} element A `<pre>` element with line numbers.
-		 * @returns {void}
-		 */
-		resize: function (element) {
-			resizeElements([element]);
-		},
-
-		/**
-		 * Whether the plugin can assume that the units font sizes and margins are not depended on the size of
-		 * the current viewport.
-		 *
-		 * Setting this to `true` will allow the plugin to do certain optimizations for better performance.
-		 *
-		 * Set this to `false` if you use any of the following CSS units: `vh`, `vw`, `vmin`, `vmax`.
-		 *
-		 * @type {boolean}
-		 */
-		assumeViewportIndependence: true
-	};
-
-	/**
-	 * Resizes the given elements.
-	 *
-	 * @param {HTMLElement[]} elements
-	 */
-	function resizeElements(elements) {
-		elements = elements.filter(function (e) {
-			var codeStyles = getStyles(e);
-			var whiteSpace = codeStyles['white-space'];
-			return whiteSpace === 'pre-wrap' || whiteSpace === 'pre-line';
-		});
-
-		if (elements.length == 0) {
-			return;
-		}
-
-		var infos = elements.map(function (element) {
-			var codeElement = element.querySelector('code');
-			var lineNumbersWrapper = element.querySelector('.line-numbers-rows');
-			if (!codeElement || !lineNumbersWrapper) {
-				return undefined;
-			}
-
-			/** @type {HTMLElement} */
-			var lineNumberSizer = element.querySelector('.line-numbers-sizer');
-			var codeLines = codeElement.textContent.split(NEW_LINE_EXP);
-
-			if (!lineNumberSizer) {
-				lineNumberSizer = document.createElement('span');
-				lineNumberSizer.className = 'line-numbers-sizer';
-
-				codeElement.appendChild(lineNumberSizer);
-			}
-
-			lineNumberSizer.innerHTML = '0';
-			lineNumberSizer.style.display = 'block';
-
-			var oneLinerHeight = lineNumberSizer.getBoundingClientRect().height;
-			lineNumberSizer.innerHTML = '';
-
-			return {
-				element: element,
-				lines: codeLines,
-				lineHeights: [],
-				oneLinerHeight: oneLinerHeight,
-				sizer: lineNumberSizer,
-			};
-		}).filter(Boolean);
-
-		infos.forEach(function (info) {
-			var lineNumberSizer = info.sizer;
-			var lines = info.lines;
-			var lineHeights = info.lineHeights;
-			var oneLinerHeight = info.oneLinerHeight;
-
-			lineHeights[lines.length - 1] = undefined;
-			lines.forEach(function (line, index) {
-				if (line && line.length > 1) {
-					var e = lineNumberSizer.appendChild(document.createElement('span'));
-					e.style.display = 'block';
-					e.textContent = line;
-				} else {
-					lineHeights[index] = oneLinerHeight;
-				}
-			});
-		});
-
-		infos.forEach(function (info) {
-			var lineNumberSizer = info.sizer;
-			var lineHeights = info.lineHeights;
-
-			var childIndex = 0;
-			for (var i = 0; i < lineHeights.length; i++) {
-				if (lineHeights[i] === undefined) {
-					lineHeights[i] = lineNumberSizer.children[childIndex++].getBoundingClientRect().height;
-				}
-			}
-		});
-
-		infos.forEach(function (info) {
-			var lineNumberSizer = info.sizer;
-			var wrapper = info.element.querySelector('.line-numbers-rows');
-
-			lineNumberSizer.style.display = 'none';
-			lineNumberSizer.innerHTML = '';
-
-			info.lineHeights.forEach(function (height, lineNumber) {
-				wrapper.children[lineNumber].style.height = height + 'px';
-			});
-		});
-	}
-
-	/**
-	 * Returns style declarations for the element
-	 *
-	 * @param {Element} element
-	 */
-	function getStyles(element) {
-		if (!element) {
-			return null;
-		}
-
-		return window.getComputedStyle ? getComputedStyle(element) : (element.currentStyle || null);
-	}
-
-	var lastWidth = undefined;
-	window.addEventListener('resize', function () {
-		if (config.assumeViewportIndependence && lastWidth === window.innerWidth) {
-			return;
-		}
-		lastWidth = window.innerWidth;
-
-		resizeElements(Array.prototype.slice.call(document.querySelectorAll('pre.' + PLUGIN_NAME)));
-	});
-
-	Prism.hooks.add('complete', function (env) {
-		if (!env.code) {
-			return;
-		}
-
-		var code = /** @type {Element} */ (env.element);
-		var pre = /** @type {HTMLElement} */ (code.parentNode);
-
-		// works only for <code> wrapped inside <pre> (not inline)
-		if (!pre || !/pre/i.test(pre.nodeName)) {
-			return;
-		}
-
-		// Abort if line numbers already exists
-		if (code.querySelector('.line-numbers-rows')) {
-			return;
-		}
-
-		// only add line numbers if <code> or one of its ancestors has the `line-numbers` class
-		if (!Prism.util.isActive(code, PLUGIN_NAME)) {
-			return;
-		}
-
-		// Remove the class 'line-numbers' from the <code>
-		code.classList.remove(PLUGIN_NAME);
-		// Add the class 'line-numbers' to the <pre>
-		pre.classList.add(PLUGIN_NAME);
-
-		var match = env.code.match(NEW_LINE_EXP);
-		var linesNum = match ? match.length + 1 : 1;
-		var lineNumbersWrapper;
-
-		var lines = new Array(linesNum + 1).join('<span></span>');
-
-		lineNumbersWrapper = document.createElement('span');
-		lineNumbersWrapper.setAttribute('aria-hidden', 'true');
-		lineNumbersWrapper.className = 'line-numbers-rows';
-		lineNumbersWrapper.innerHTML = lines;
-
-		if (pre.hasAttribute('data-start')) {
-			pre.style.counterReset = 'linenumber ' + (parseInt(pre.getAttribute('data-start'), 10) - 1);
-		}
-
-		env.element.appendChild(lineNumbersWrapper);
-
-		resizeElements([pre]);
-
-		Prism.hooks.run('line-numbers', env);
-	});
-
-	Prism.hooks.add('line-numbers', function (env) {
-		env.plugins = env.plugins || {};
-		env.plugins.lineNumbers = true;
-	});
-
-}());
+Prism.languages.py = Prism.languages.python;
 

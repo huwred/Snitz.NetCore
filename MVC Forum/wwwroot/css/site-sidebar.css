@@ -1,0 +1,117 @@
+﻿html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#sidebar {
+    width: 240px;
+    height: 100vh;
+    position: fixed;
+    top: 56px; /* height of navbar */
+    overflow-y: auto;
+    transition: width 1s;
+}
+
+    #sidebar.collapsed {
+        left: -240px;
+        transition: width 1s;
+        width: 0px;
+    }
+
+#main-content {
+    flex: 1 0 auto;
+    margin-top: 70px;
+    margin-left: 240px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    transition: margin-left 1s;
+}
+
+    #main-content::-webkit-scrollbar {
+        display: none;
+    }
+
+footer {
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+
+#sidebar.collapsed + #main-content {
+    margin-left: 0;
+}
+
+.sidebar-toggle {
+    cursor: pointer;
+}
+
+#side-menu {
+    position: relative;
+    margin: 20px;
+    /* width: 180px; */
+}
+
+    #side-menu ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+        #side-menu ul li {
+            /* Sub Menu */
+        }
+
+            #side-menu ul li a {
+                display: block;
+                padding: 10px 15px;
+                color: var(--bs-heading-color);
+                text-decoration: none;
+                -webkit-transition: 0.2s linear;
+                -moz-transition: 0.2s linear;
+                -ms-transition: 0.2s linear;
+                -o-transition: 0.2s linear;
+                transition: 0.2s linear;
+            }
+
+                #side-menu ul li a:hover {
+                    background: var(--primary-header);
+                    color: #fff;
+                }
+
+                #side-menu ul li a .fa {
+                    width: 16px;
+                    text-align: center;
+                    margin-right: 5px;
+                    float: right;
+                }
+
+        #side-menu ul ul {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        #side-menu ul li ul li a {
+            border-left: 4px solid transparent;
+            padding: 10px 20px;
+        }
+
+            #side-menu ul li ul li a:hover {
+                border-left: 4px solid #3498db;
+            }
+
+.navbar > .container, .navbar > .container-fluid, .navbar > .container-sm, .navbar > .container-md, .navbar > .container-lg, .navbar > .container-xl, .navbar > .container-xxl {
+    display: flex;
+    flex-wrap: inherit;
+    align-items: center;
+    justify-content: start !important;
+}
+
+.content {
+    flex: 1 0 auto;
+}
+
+.image-gallery > li {
+    flex-basis: 200px;
+}
