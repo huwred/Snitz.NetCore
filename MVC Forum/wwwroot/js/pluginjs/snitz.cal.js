@@ -12,9 +12,9 @@ if ($('.cal-dates').length >= 1) {
     });
 }
 $(document).on("change", '#countryRegion', function () {
-    var val = $(this).val(); //$('#change-holidays').val() + '|' + 
-    console.log("change" + val);
-    var url = SnitzVars.baseUrl + "/Calendar/GetHolidays/"
+    var val = $('#change-holidays').val() + '|' + $(this).val();
+    console.log("change " + val);
+    var url = SnitzVars.baseUrl + "/Calendar/GetHolidays/";
     FullCalendarNew(url, 'calendar', '', val);
 });
 
@@ -22,68 +22,53 @@ $('#change-holidays')
     .on("change",function () {
         var val = $(this).val();
         populateRegions(val);
+        localStorage.setItem('pubCountry', val);
         var url = SnitzVars.baseUrl + "/Calendar/GetHolidays/"
-        FullCalendar(url, 'calendar', '', val);
+        FullCalendarNew(url, 'calendar', '', val);
 
     });
 
 UpComingCalendar = function(url, divid) {
-    var d = new Date();
-    var day = d.getDate();
-    var month = d.getMonth() + 1;
-    var year = d.getFullYear();
-    var date = '' + year + '-' + (month <= 9 ? '0' + month : month) + '-' + (day <= 9 ? '0' + day : day);
+
     var calendarEl = document.getElementById(divid);
-
+    let selectedCountry = localStorage.getItem('pubCountry');
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        headerToolbar: {
-                left: 'title',
-                center: '',
-                right: ''
-            },
-
-        initialView: 'customListView',
-        initialDate: date,
+        initialView: 'upcomingListView',
         locale: SnitzVars.forumlang,
-        dayMaxEvents: true,
-            //isJalaali: SnitzVars.forumlang === 'fa',
-            //isRTL: SnitzVars.forumlang === 'fa',
-            views: {
-                month: { // name of view
-                    titleFormat: 'DD/MM/YY'
-                    // other view-specific options here
-                },
-                listWeek: { buttonText: 'list week' },
-                listMonth: { buttonText: 'list month' },
-                customListView: {
-                    type: 'list',
-                    duration: { weeks: 5 },
-                    buttonText: 'Custom List'
-                  }
-            },
-            allDayText: 'all-day',
+        views: {
+            upcomingListView: {
+                type: 'list',
+                visibleRange: function (currentDate) {
+                    // Generate a new date for manipulating in the next step
+                    var startDate = new Date(currentDate.valueOf());
+                    var endDate = new Date(currentDate.valueOf());
 
-            //timeFormat: 'HH:mm',
-            //titleFormat: 'Upcoming Events', //TODO
-            height: 400,
-            eventSources: [
-                { url: url },
-                { url: SnitzVars.baseUrl + "/Calendar/GetHolidays" },
-                { url: SnitzVars.baseUrl + "/Calendar/GetBirthDays" }
-            ],
-            loading: function(bool) {
-                if (bool) {
-                    $("#calendar-list").css({ "visibility": "hidden" });
-                    $("#calendar-list").css({ "height": "0px" });
-                    $('#upcoming-events').show();
-                } else {
-                    $("#calendar-list").css({ "visibility": "visible" });
-                    $('#cal-loading i').hide();
-                    $('#cal-loading').hide();
-                    $("#calendar-list").css({ "height": "auto" });
+                    // Adjust the start & end dates, respectively
+                    startDate.setDate(startDate.getDate() - 1); // One day in the past
+                    endDate.setDate(endDate.getDate() + 28); // Two days into the future
+                    return { start: startDate, end: endDate };
+                },
+                buttonText: 'Custom List'
                 }
-            },
-            //defaultDate: moment(date)
+        },
+        height: 400,
+        eventSources: [
+            { url: url },
+            { url: SnitzVars.baseUrl + "/Calendar/GetHolidays/?country=" + selectedCountry },
+            { url: SnitzVars.baseUrl + "/Calendar/GetBirthDays" }
+        ],
+        loading: function(bool) {
+            if (bool) {
+                $("#calendar-list").css({ "visibility": "hidden" });
+                $("#calendar-list").css({ "height": "0px" });
+                $('#upcoming-events').show();
+            } else {
+                $("#calendar-list").css({ "visibility": "visible" });
+                $('#cal-loading i').hide();
+                $('#cal-loading').hide();
+                $("#calendar-list").css({ "height": "auto" });
+            }
+        }
     });
     calendar.render();
 };
@@ -93,7 +78,6 @@ ClubCalendar = function (url, divid, catfilter) {
     var day = d.getDate();
     var month = d.getMonth() + 1;
     var year = d.getFullYear();
-
     var fullweeks = 52;
 
     if (catfilter.length > 1) {
@@ -105,7 +89,7 @@ ClubCalendar = function (url, divid, catfilter) {
     }
     if (view === "disContinued") {
         console.log(view);
-        month = month - 6;
+        month = month - 12;
         if (month < 0) {
             month = 12 + month;
             year = year - 1;
@@ -131,20 +115,45 @@ ClubCalendar = function (url, divid, catfilter) {
                     //titleFormat: pastEventsTitle,
                 }
             },
-        initialView: view,
-        initialDate: date,
-        //firstDay: n,
-            //dateFormat: 'DD/MM/YY',
-            //timeFormat: 'HH:mm',
+            eventDidMount: function (info) {
+                // Create custom HTML for extra fields
+                var extra = document.createElement('div');
+                extra.classList.add('custom-field');
+                extra.innerHTML =
+                    '<strong>Club:</strong> ' + (info.event.extendedProps.clublong || 'N/A') +
+                    '<br><strong>Location:</strong> ' + (info.event.extendedProps.location.name || 'N/A') +
+                    '<p> ' + (info.event.extendedProps.details || 'N/A') + '</p>';
+
+                // Append to the event's main element
+                info.el.querySelector('.fc-list-event-title').appendChild(extra);
+                var time = document.createElement('div');
+                time.innerHTML =
+                    (info.event.extendedProps.club || 'N/A');
+                info.el.querySelector('.fc-list-event-time').appendChild(time);
+                if (SnitzVars.isAdmin) {
+                    var trash = document.createElement("i");
+                    trash.classList.add("fa");
+                    trash.classList.add("fa-trash-can");
+                    trash.setAttribute("data-id", info.event.id);
+                    var edit = document.createElement("i");
+                    edit.classList.add("fa");
+                    edit.classList.add("fa-pencil");
+                    edit.setAttribute("data-id", info.event.id);
+                    info.el.querySelector('.fc-list-event-time').appendChild(trash);
+                    info.el.querySelector('.fc-list-event-time').appendChild(edit);
+                }
+
+                //fc-list-event-time
+            },
+            initialView: view,
+            initialDate: date,
             eventSources: [url],
             navLinks: false, // can click day/week names to navigate views
             editable: false,
             //eventLimit: true // allow "more" link when too many events
     });
     calendar.render();
-    //if (catfilter.length > 1) {
-    //    $('#' + divid).fullCalendar('gotoDate', catfilter);
-    //}
+
     if ($('.my-fc-list>span').is(':empty')) {
         $('.my-fc-list>span').html('No Events');
     }
@@ -156,7 +165,24 @@ calcWeeks = function(parm1) {
     var date2 = new Date();
     return (date2 - date1) / (1000 * 60 * 60 * 24 * 7).toFixed(2);
 };
-
+$(document).on("click", ".fc-list-event-time .fa-trash-can",function (e) {
+    e.preventDefault();
+    var id = $(this).data('id');
+    var href = SnitzVars.baseUrl + "/Events/DeleteEvent/" + id;
+    (async () => {
+        const result = await b_confirm("Delete this event")
+        if (result) {
+            $.get(href, function (result) {
+                window.location.reload();
+            });
+        }
+    })();
+});
+$(document).on("click", ".fc-list-event-time .fa-pencil", function (e) {
+    e.preventDefault();
+    var id = $(this).data('id');
+    location.href = SnitzVars.baseUrl + "/Events/AddEditEvent/" + id;
+});
 postEvent = function(event, arr) {
 
     if ($('#startdate').val() === '') {
@@ -216,10 +242,8 @@ setForumEventsAuth = function(event) {
 
 FullCalendarNew = function (url, divid, firstday, country) {
     var calendarEl = document.getElementById('calendar');
-    //var localeSelectorEl = document.getElementById('locale-selector');
-
     var url = SnitzVars.baseUrl + "/Calendar/GetCalendarEvents/"
-    var holidayUrl = SnitzVars.baseUrl + "/Calendar/GetHolidays/" + country;
+    var holidayUrl = SnitzVars.baseUrl + "/Calendar/GetHolidays/?country=" + country;
     var eventsUrl = SnitzVars.baseUrl + "/Events/GetClubCalendarEvents/-1?old=0&calendar=1";
     var birthdayUrl = SnitzVars.baseUrl + "/Calendar/GetBirthDays";
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -229,19 +253,10 @@ FullCalendarNew = function (url, divid, firstday, country) {
             right: 'multiMonthYear,dayGridMonth,timeGridWeek'
         },
         firstDay: firstday,
-        //initialView: 'month',
         locale: SnitzVars.forumlang,
-        //initialDate: '2023-01-12',
         editable: true,
         selectable: true,
-        dayMaxEvents: true, // allow "more" link when too many events
-        // multiMonthMaxColumns: 1, // guarantee single column
-        // showNonCurrentDates: true,
-        // fixedWeekCount: false,
-        // businessHours: true,
-        // weekends: false,
-
-        //timeFormat: 'HH:mm',
+        dayMaxEvents: true, 
         eventSources: [
             { url: url },
             { url: eventsUrl },
@@ -251,19 +266,5 @@ FullCalendarNew = function (url, divid, firstday, country) {
     });
 
     calendar.render();
-    // build the locale selector's options
-    //calendar.getAvailableLocaleCodes().forEach(function (localeCode) {
-    //    var optionEl = document.createElement('option');
-    //    optionEl.value = localeCode;
-    //    optionEl.selected = localeCode == SnitzVars.forumlang;
-    //    optionEl.innerText = localeCode;
-    //    localeSelectorEl.appendChild(optionEl);
-    //});
 
-    //// when the selected option changes, dynamically change the calendar option
-    //localeSelectorEl.addEventListener('change', function () {
-    //    if (this.value) {
-    //        calendar.setOption('locale', this.value);
-    //    }
-    //});
 }

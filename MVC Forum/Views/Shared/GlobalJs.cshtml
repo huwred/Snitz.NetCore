@@ -3,8 +3,10 @@
 @inject UserManager<ForumUser> userManager
 @{
     int pending = 0;
+    bool adminuser = false;
     if (User.IsInRole("Administrator"))
     {
+        adminuser = true;
         pending = userManager.Users.Include(u => u.Member).Where(u => !u.EmailConfirmed || (u.LockoutEnabled && u.LockoutEnd != null)).Count();
     }
     var timeout = SnitzConfig.GetIntValue("STRFLOODCHECKTIME", 30);
@@ -13,6 +15,7 @@
 <script type="text/javascript">
     var SnitzVars = SnitzVars ||
     {
+        isAdmin: '@adminuser',
         floodErr: '@floodErr',
         toolTips: {
             fileBtn: '@Localizer["tipAttach"]', //"Attach a file to the post" ,
