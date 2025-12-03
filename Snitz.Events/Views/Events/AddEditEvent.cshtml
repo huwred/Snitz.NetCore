@@ -16,13 +16,12 @@
             <div class="row-fluid">
                 <input type="hidden" value="@ViewBag.CatFilter" id="cat_filter" />
                 <div id="calendar">
-                    @using (Html.BeginForm("AddEditEvent", "Events", FormMethod.Post, new { @class = "form form-horizontal" }))
-                    {
+                    <form asp-action="AddEditEvent" asp-controller="Events" method="post" class="form form-horizontal">
                         <div class="row g-3 align-items-center">
                             <div class="col-2">
                                 <label for="Title" class="col-form-label">@Localizer["lblEventTitle"]</label>
                             </div>
-                            <div class="col-4">
+                            <div class="col-7">
                                 @Html.TextBoxFor(model => model.Title, new { @class = "form-control", @maxlength = 90 })
                             </div>
                         </div>
@@ -64,7 +63,7 @@
                                 @foreach (var option in Model.Categories)
                                 {
                                     <div class="form-check form-check-inline">
-                                        <input type="radio" class="form-check-input" asp-for="CatId" value="@option.Value" id="option-@option.Value">
+                                        <input type="radio" class="form-check-input" name="CatId" value="@option.Key" id="option-@option.Value">
                                         <label class="form-check-label" for="option-@option.Value">@option.Value</label>
                                     </div>
                                 }
@@ -88,11 +87,11 @@
                         </div>
                         <div class="row g-3 align-items-center">
                             <div class="col-2">
-                                <label for="EventLocation" class="col-form-label">@Localizer["lblEventDetails"]</label>
+                                <label for="msg-text" class="col-form-label">@Localizer["lblEventDetails"]</label>
                             </div>
-                            <div class="col-6">
+                            <div class="col-9">
                                 <div class="form-group" id="editorDiv">
-                                    <textarea type="text" class="form-control" name="Description" rows="5">@Model.Description</textarea>
+                                    <textarea type="text" class="form-control" id="msg-text" name="Description" rows="5">@Model.Description</textarea>
                                 </div>
                             </div>
                         </div>
@@ -106,7 +105,7 @@
                         </div>
                         <div class="row g-3 align-items-center">
                             <div class="col-2">
-                                @Html.HiddenFor(model => model.Id)
+                                <input type="hidden" name="formToken" value="@ViewBag.FormToken" />
                             </div>
                             <div class="col-auto">
                                 <input type="button" value="@Localizer["btnCancel"]" class="btn btn-sm btn-warning cancel" />
@@ -114,25 +113,23 @@
                                 <input type="submit" value="@Localizer["btnSave"]" class="btn btn-sm btn-success" />
                             </div>
                         </div>
-                    }
-
-
+                    </form>
                 </div>
             </div>
-
         </div>
         <partial name="_SideBox" model="Model" />
-
     </div>
 </div>
 <div class="container-fluid">
-
 
 </div>
 
 
 @section Scripts {
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script type="text/javascript" src="~/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="~/js/addpostform.min.js"></script>
     <environment include="Development">
         <script src="~/js/pluginjs/snitz.cal.js"></script>
     </environment>
@@ -143,4 +140,25 @@
     {
         <script type="text/javascript" src="~/_content/Snitz.Events/js/lang/@langscript"></script>
     }
+    <script>
+         eventAdded = function(xhr){
+             location.reload();
+        }
+
+        tinymce.remove();
+        tinymce.init({
+            selector: 'textarea#msg-text',
+            height: 200,
+            plugins: 'code emoticons codesample link lists ',
+            branding: false,
+            statusbar: false,
+            relative_urls : false,
+            remove_script_host : true,
+            toolbar: SnitzVars.pmtoolbardef,
+            emoticons_database: 'emojiimages',
+            emoticons_images_url: SnitzVars.baseUrl + '/images/emoticon/',
+            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+
+        });
+    </script>
 }

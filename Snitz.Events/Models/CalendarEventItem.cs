@@ -99,14 +99,14 @@ namespace Snitz.Events.Models
         }
 
         [NotMapped]
-        public virtual IEnumerable<string> SelectedDays { get; set; }
+        public virtual IEnumerable<string>? SelectedDays { get; set; }
 
-        public virtual ClubCalendarCategory Cat { get; set; }
-        public virtual ClubCalendarClub Club { get; set; }
-        public virtual ClubCalendarLocation Loc { get; set; }
+        public virtual ClubCalendarCategory? Cat { get; set; }
+        public virtual ClubCalendarClub? Club { get; set; }
+        public virtual ClubCalendarLocation? Loc { get; set; }
 
         [NotMapped]
-        public virtual int[] Days { get; set; }
+        public virtual int[]? Days { get; set; }
 
     }
 

@@ -474,3 +474,4 @@ FodyWeavers.xsd
 /MVC Forum/Views/PhotoAlbum/_MemberSlideShow.cshtml
 /MVC Forum/Views/PhotoAlbum/Gallery.cshtml
 /MVC Forum/Views/PhotoAlbum/Index.cshtml
+/MVC Forum/Views/Calendar/Index.cshtml

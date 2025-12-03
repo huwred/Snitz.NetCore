@@ -6,7 +6,7 @@
 @model dynamic
 
 @{
-    Layout = "Layout";
+    //Layout = "Layout";
     ViewBag.Title = SnitzConfig.ForumTitle + " | " + @Localizer["calTitle"];
     string[] rtlLangs = new string[] { "ar", "arc", "dv", "fa", "ha", "khw", "ks", "ku", "ps", "ur", "yi", "he" };
 
@@ -34,19 +34,19 @@
     <snitz-breadcrumb show-filter="false"></snitz-breadcrumb>
     <h5>@Localizer["calTitle"]</h5>
     <hr class="title" />
-    <div class="row-fluid">
-        <div class="col-3 d-none">
+    <div class="row">
+        <div class="col-3 ">
             @Html.DropDownList("STRCALCOUNTRY",
-            new SelectList(countries, "countryCode", "fullName", ""),
+            new SelectList(countries, "countryCode", "fullName", "gbr"),
                         "Select Country",
-                        new { @class = "form-select", @id = "countryRegion" })
+                        new { @class = "form-select", @id = "change-holidays" })
         </div>
         <div class="col-3">
-            <select class="form-select" name="STRCALREGION" id="countryRegion" style="display: none;">
+            <select class="form-select d-none" name="STRCALREGION" id="countryRegion" >
                 <option value=''>No Regions</option>
             </select>
         </div>
-        <span snitz-if="@(SnitzConfig.GetValue("STRCALCOUNTRY") != "")" class="col-10 form-text">Public holiday data for @SnitzConfig.GetValue("STRCALCOUNTRY") supplied by <a href="http://kayaposoft.com/enrico/" title="Enrico Service is a free service written in PHP providing public holidays for several countries" data-toggle="tooltip">Enrico</a></span>
+        <span snitz-if="@(SnitzConfig.GetValue("STRCALCOUNTRY") != "")" class="col-10 form-text">Public holiday data supplied by <a href="http://kayaposoft.com/enrico/" title="Enrico Service is a free service written in PHP providing public holidays for several countries" data-toggle="tooltip">Enrico</a></span>
 
         @* <select id="locale-selector"></select> *@
     </div>
@@ -72,9 +72,18 @@
 
         $(document)
             .ready(function () {
-                FullCalendarNew("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', 'gbr');
-                @* populateRegions($('#change-holidays').val()); *@
+                let selectedCountry = localStorage.getItem('pubCountry');
+                if(selectedCountry !== "null" && selectedCountry !== null){
+                    $('#change-holidays').val(selectedCountry);
+                    FullCalendarNew("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', selectedCountry);
+
+                }else{
+                    FullCalendarNew("@Url.Action("GetCalendarEvents")", 'calendar', '@SnitzConfig.GetValue("INTFIRSTDAYOFWEEK")', 'gbr');
+                    $('#change-holidays').val('gbr');
+                }
+                populateRegions($('#change-holidays').val());
             });
+
         function populateRegions(country) {
             var subItems = "";
             $.getJSON("@Url.Action("GetRegions", "Calendar")", { id: country }, function (data) {

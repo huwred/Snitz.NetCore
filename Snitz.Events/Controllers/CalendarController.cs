@@ -134,7 +134,7 @@ public class CalendarController : Controller
     /// <param name="country">The country for which to retrieve public holidays. If not specified, holidays for all countries are returned.</param>
     /// <returns>A <see cref="JsonResult"/> containing the list of public holidays. If an error occurs, the response status code
     /// is set to 400, and an error message is returned.</returns>
-    [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
+    //[ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
     public JsonResult GetHolidays(string country = "")
     {
         try

@@ -1,9 +1,11 @@
 ﻿using BbCodeFormatter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using MySqlX.XDevAPI.Common;
 using SmartBreadcrumbs.Nodes;
 using Snitz.Events.Models;
 using Snitz.Events.ViewModels;
@@ -121,7 +123,9 @@ public class EventsController : Controller
             {
                 vm.Clubs.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
             }
-                
+            var token = Guid.NewGuid().ToString();
+                TempData["FormToken"] = token;
+                ViewBag.FormToken = token;                
             return View(vm);
     }
     [HttpGet]
@@ -180,11 +184,26 @@ public class EventsController : Controller
 
     }
     [HttpPost]
-    public IActionResult AddEvent(CalendarEventItem model)
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public IActionResult AddEditEvent(CalendarEventItem model, string formToken)
     {
-        _eventsRepository.AddEvent(model,_memberService);
+        if (TempData["FormToken"] == null || TempData["FormToken"]?.ToString() != formToken)
+        {
+            var message = "Duplicate submission detected.";
+            return BadRequest(message);
+        }
 
-        return Json(new{url=Url.Action("Index", "Topic", new { id = model.TopicId }),id = model.TopicId});
+        if (!ModelState.IsValid)
+        {
+            var message = string.Join(" | ", ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage));
+            return BadRequest(message);
+        }
+
+        _eventsRepository.AddEvent(model, _memberService);
+        return RedirectToAction("Index");
     }
 
     [HttpPost]
@@ -205,8 +224,8 @@ public class EventsController : Controller
     public JsonResult GetClubCalendarEvents(string id,string old, int calendar = 0, string start = "", string end = "")
     {
         var currmembername = _memberService.Current()?.Name;
-        return _eventsRepository.GetClubCalendarEvents(id, old, calendar, start, end,currmembername??"");
 
+        return _eventsRepository.GetClubCalendarEvents(id, old, calendar, start, end,currmembername??"");
     }
 
     #region Admin Actions
@@ -408,13 +427,13 @@ public class EventsController : Controller
             return Json("Problem removing list item");
         }
 
-    [HttpPost]
+    [HttpGet]
     public IActionResult DeleteEvent(int id)
     {
         try
         {
             _eventsRepository.DeleteEvent(id);
-            return Ok();
+            return RedirectToAction("Index");
         }
         catch (Exception e)
         {

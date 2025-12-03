@@ -139,7 +139,7 @@ namespace Snitz.Events.Models
                 .Include(ce => ce.Cat)
                 .Include(ce => ce.Club)
                 .Include(ce => ce.Loc)
-                .Where(ce => ce.ClubId != null && ce.TopicId < 0)
+                .Where(ce => ce.ClubId != null && ce.TopicId <= 0)
                 .ToList();
 
             if (start != null)
@@ -280,7 +280,7 @@ namespace Snitz.Events.Models
                 _dbContext.EventItems
                     .Include(e=> e.Topic)
                     .Include(e => e.Author)
-                    .Where(e=>e.TopicId != null);
+                    .Where(e=>e.TopicId > 0);
 
             var eventList = from item in eventDetails
                 let itemStartDate = item.StartDate
@@ -345,15 +345,18 @@ namespace Snitz.Events.Models
             {
                 eventDetails = GetAllClubEvents(id,old,start.Replace("-", ""),end.Replace("-", "")).ToList();
             }
+
             if (calendar == 1)
             {
                 var eventList = from item in eventDetails
+                    let itemStartDate = item.StartDate
+                    where itemStartDate != null
                     select new
                     {
                         id = "_ce" + item.Id,
                         title = WebUtility.HtmlDecode(_bbCodeProcessor.Format(item.Title)),
                         author = item.Author,
-                        start = item.StartDate.Value.ToString("s"),
+                        start = itemStartDate.Value.ToString("s"),
                         end = item.EndDate.HasValue ? item.EndDate.Value.ToString("s") : "",
                         allDay = item.IsAllDayEvent,
                         editable = false,
@@ -365,6 +368,8 @@ namespace Snitz.Events.Models
             else
             {
                 var eventList = from item in eventDetails
+                let itemStartDate = item.StartDate
+                where itemStartDate != null
                     select new
                     {
                         id = item.Id,
@@ -372,18 +377,20 @@ namespace Snitz.Events.Models
                         author = item.Author,
                         currentuser = currmember,
                         description = _bbCodeProcessor.Format(item.Description),
-                        start = item.StartDate.Value.ToString("s"),
+                        start = itemStartDate.Value.ToString("s"),
                         enddate = item.EndDate.HasValue ? item.EndDate.Value.ToString("s") : "",
                         allDay = item.IsAllDayEvent,
-                        //editable = (item.AuthorId == _memberService.Current().Id) || User.IsInRole("Administrator"),
+                        //editable = (item.Author.Name == currmember) || User.IsInRole("Administrator"),
                         location = item.Loc,
                         club = item.Club.Abbreviation,
                         clublong = item.Club.ShortName,
-                        category = item.Cat.Name,
-                        posted = item.Posted.FromForumDateStr().ToString("s"),
+                        category = item.Cat?.Name ?? "",
+                        details = WebUtility.HtmlDecode(_bbCodeProcessor.Format(item.Description)),
+                        //posted = item.Posted.FromForumDateStr().ToString("s"),
                         url = ""
                     };
-                return new JsonResult(eventList.ToArray());                    
+                var check = eventList.ToArray();
+                return new JsonResult(check);
             }
     }
         /// <summary>
@@ -427,9 +434,18 @@ namespace Snitz.Events.Models
         else
         {
             model.AuthorId = memberService.Current()?.Id;
+            model.Posted = DateTime.UtcNow.ToForumDateStr();
             _dbContext.EventItems.Add(model);
         }
-        _dbContext.SaveChanges();
+        try
+        {
+            _dbContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("AddEvent", ex);
+        }
+
     }
         /// <summary>
         /// Retrieves a list of category summaries, including the category ID, name, and the count of events associated
