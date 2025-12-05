@@ -1,10 +1,43 @@
 ﻿@{
-    ViewBag.Title = "Error";
+    ViewBag.Title = "500 Internal Server Error";
+}
+@section MetaData{
+    <title>@ViewBag.Title - @Config.Value.strForumTitle</title>
+    <meta name="title" content="@ViewBag.Title - @Config.Value.strForumTitle" />
+}
+@section Styles{
+    <style>
+        .error-container {
+            text-align: center;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: bold;
+            color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;
+            
+        }
+
+        .error-message {
+            font-size: 1.5rem;
+            margin: 20px 0;
+        }
+
+        .error-description {
+            font-size: 1rem;
+            color: #555;
+        }
+
+    </style>
 }
 
-<h1>Oops!</h1>
+<div class="error-container">
+    <div class="error-code">Oops!</div>
+    <div class="error-message">Something went wrong.</div>
+    <div class="error-description mb-5">
+        Our server encountered an unexpected issue. Please try again later 
+    </div>
 
-<p>Something went wrong. We are very sorry, please try again in a moment. If the error persists...</p>
-
+</div>
 
 

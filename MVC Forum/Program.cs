@@ -19,7 +19,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MVCForum.Extensions;
 using MVCForum.Security;
-using NUglify.Helpers;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
@@ -35,7 +34,6 @@ using SnitzCore.Service.Hangfire;
 using SnitzCore.Service.MiddleWare;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -169,7 +167,7 @@ builder.Services.AddTransient<IHtmlLocalizerFactory, EFStringLocalizerFactory>()
 builder.Services.AddTransient<IPasswordPolicyService, PasswordPolicyService>();
 builder.Services.AddTransient<IAdRotator, BannerService>();
 builder.Services.AddScoped<SignInManager<ForumUser>, CustomSignInManager>();
-builder.Services.AddMvc().AddViewLocalization();
+builder.Services.AddMvc().AddViewLocalization().AddSessionStateTempDataProvider();;
 if(!string.IsNullOrWhiteSpace(builder.Configuration["SnitzForums:VisitorTracking"]))
 {
     builder.Services.AddScoped<ILogRepository, VisitorLogRepository>();
@@ -287,11 +285,12 @@ app.UseMultiLanguages(builder.Configuration.GetSection(SnitzForums.SectionName),
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+    app.UseExceptionHandler("/Error/500");
+    //app.UseDeveloperExceptionPage();
 }
 else
 {
-    app.UseExceptionHandler();
+    app.UseExceptionHandler("/Error/500");
 }
 
 //Pi doesn't like this, could be newt!
@@ -314,7 +313,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 app.UseYGfilemanager("");//builder.Configuration["SnitzForums:VirtualPath"]
 app.UseRouting();
-app.UseStatusCodePages(async context => {
+app.UseStatusCodePages(context => {
     var request = context.HttpContext.Request;
     var response = context.HttpContext.Response;
     //using System.Net;
@@ -324,6 +323,15 @@ app.UseStatusCodePages(async context => {
     {
         response.Redirect(request.PathBase + "/Account/Login");  //redirect to the login page.
     }
+    else if (response.StatusCode == (int)HttpStatusCode.NotFound)
+    {
+        var originalUrl = request.Path + request.QueryString;
+        response.Redirect($"/Error404?url={WebUtility.UrlEncode(originalUrl)}");
+    }else if (response.StatusCode >= 400)
+    {
+        response.Redirect($"/Error/{response.StatusCode}");
+    }
+    return Task.CompletedTask;
 });
 
 app.UseAuthentication();
