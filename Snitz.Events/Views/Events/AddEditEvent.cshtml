@@ -5,6 +5,7 @@
     CultureInfo ci = CultureInfo.CurrentUICulture;
     string clang = ci.TwoLetterISOLanguageName;
     string langscript = clang + ".js";
+
 }
 @section Styles {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
@@ -25,6 +26,7 @@
                                 @Html.TextBoxFor(model => model.Title, new { @class = "form-control", @maxlength = 90 })
                             </div>
                         </div>
+
                         <div class="row g-3 align-items-center">
                             <div class="col-2">
                                 <label for="StartDate" class="col-form-label">@Localizer["lblStartDate"]</label>
@@ -55,6 +57,7 @@
                                 }
                             </div>
                         </div>
+
                         <div class="row g-3 align-items-center">
                             <div class="col-2">
                                 <label for="CatId" class="col-form-label">@Localizer["lblEventCategory"]</label>
@@ -105,7 +108,7 @@
                         </div>
                         <div class="row g-3 align-items-center">
                             <div class="col-2">
-                                <input type="hidden" name="formToken" value="@ViewBag.FormToken" />
+                                <input type="text" style="display:none;" name="formToken" value="@ViewBag.FormToken" />
                             </div>
                             <div class="col-auto">
                                 <input type="button" value="@Localizer["btnCancel"]" class="btn btn-sm btn-warning cancel" />
@@ -134,7 +137,7 @@
         <script src="~/js/pluginjs/snitz.cal.js"></script>
     </environment>
     <environment exclude="Development">
-        <script src="~/js/pluginjs/snitz.cal.min.js"></script>
+        <script src="~/js/pluginjs/snitz.cal.min.js" asp-append-version="true"></script>
     </environment>
     @if (clang != "en")
     {

@@ -361,7 +361,7 @@ namespace Snitz.Events.Models
                         allDay = item.IsAllDayEvent,
                         editable = false,
                         className = "event-club",
-                        url = $"/Event/{item.Id}"
+                        url = $"/Events/Event/{item.Id}"
                     };
                 return new JsonResult(eventList.ToArray());
             }

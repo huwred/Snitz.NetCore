@@ -159,14 +159,12 @@
                     e.preventDefault();
                     var data = $('#editItemForm').serialize();
                     var action = $('#editItemForm').attr('action');
-                    console.log(action)
                     $.ajax({
                         type: "POST",
                         url: action,
                         data: data,
                         success: function (data) {
                             if (data.success) {
-                                alert(data.responseText);
                                 $('#listeditor').modal('hide');
                                 location.reload();
                                 return false;

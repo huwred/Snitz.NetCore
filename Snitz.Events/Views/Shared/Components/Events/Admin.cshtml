@@ -37,7 +37,7 @@
                             <select class="form-select-sm" name="INTFIRSTDAYOFWEEK" asp-for="FirstDayofWeek" asp-items="@Html.GetEnumSelectList<CalEnums.CalDays>()">
                                 <option>Please Select</option>
                             </select>
-                        </div>a
+                        </div>
                         <div class="mb-3 form-check">
                             <input class="form-check-input" id="ShowBirthdays" type="checkbox" name="INTCALSHOWBDAYS" data-size="mini" checked="@Model.ShowBirthdays" value="1" />
                             <label for="ShowBirthdays" class="form-check-label">@Localizer["calShowBDays"]</label>

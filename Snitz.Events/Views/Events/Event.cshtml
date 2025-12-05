@@ -1,0 +1,40 @@
+@using Snitz.Events.Models
+@model CalendarEventItem
+
+@{
+    ViewData["Title"] = Model?.Title ?? "Event Details";
+}
+
+<h2>@Model?.Title</h2>
+
+@if (Model == null)
+{
+    <div class="alert alert-warning">Event not found.</div>
+}
+else
+{
+    <div class="event-details">
+        <dl class="row">
+            <dt class="col-sm-3">Category</dt>
+            <dd class="col-sm-9">@Model.Cat?.Name</dd>
+
+            <dt class="col-sm-3">Club</dt>
+            <dd class="col-sm-9">@Model.Club?.LongName</dd>
+
+            <dt class="col-sm-3">Location</dt>
+            <dd class="col-sm-9">@Model.Loc?.Name</dd>
+
+            <dt class="col-sm-3">Start Date</dt>
+            <dd class="col-sm-9">@Model.StartDate?.ToString("yyyy-MM-dd HH:mm")</dd>
+
+            <dt class="col-sm-3">End Date</dt>
+            <dd class="col-sm-9">@Model.EndDate?.ToString("yyyy-MM-dd HH:mm")</dd>
+        </dl>
+        <div class="event-description">
+            <h4>Description</h4>
+            <div>
+                @Html.Raw(Model.Description)
+            </div>
+        </div>
+    </div>
+}

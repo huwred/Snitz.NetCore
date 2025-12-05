@@ -29,6 +29,7 @@ public class EventsController : Controller
     private readonly Dictionary<int, string> _locations = new();
     private readonly Dictionary<int, string> _clubs = new();
     private readonly Dictionary<int, string> _categories = new();
+    protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
     public EventsController(ISnitzConfig config,EventContext dbContext,ICodeProcessor BbCodeProcessor,
         IMember memberService,IOptions<SnitzForums> options,SnitzDbContext snitzContext,IHttpClientFactory factory)
@@ -46,7 +47,6 @@ public class EventsController : Controller
         _categories = dbContext.Set<ClubCalendarCategory>().ToDictionary(t => t.Id, t => t.Name);
 
     }
-    
     [HttpGet]
     public ActionResult Index(int id=0, int old=0)
     {
@@ -61,25 +61,25 @@ public class EventsController : Controller
             AllowedRoles = new List<string>()
         };
 
-            if(!String.IsNullOrWhiteSpace(_config.GetValue("STRRESTRICTROLES")))
-                vm.AllowedRoles = _config.GetValue("STRRESTRICTROLES").Split(',').ToList();
+        if(!string.IsNullOrWhiteSpace(_config.GetValue("STRRESTRICTROLES")))
+            vm.AllowedRoles = [.. _config.GetValue("STRRESTRICTROLES").Split(',')];
 
-            if (id == -1 )
-            {
-                ViewBag.StartDate = _eventsRepository.OldestEvent();
-                ViewBag.OldNew = -1;
-            }else if (old < 0)
-            {
-                ViewBag.OldNew = -1;
-                ViewBag.StartDate = _eventsRepository.OldestEvent();
-            }
-            else
-            {
-                ViewBag.StartDate = DateTime.UtcNow.ToString("yyyy-MM-dd");
-                ViewBag.OldNew = 0;
-            }
+        if (id == -1 )
+        {
+            ViewBag.StartDate = _eventsRepository.OldestEvent();
+            ViewBag.OldNew = -1;
+        }else if (old < 0)
+        {
+            ViewBag.OldNew = -1;
+            ViewBag.StartDate = _eventsRepository.OldestEvent();
+        }
+        else
+        {
+            ViewBag.StartDate = DateTime.UtcNow.ToString("yyyy-MM-dd");
+            ViewBag.OldNew = 0;
+        }
 
-            ViewBag.CatSummary = _eventsRepository.GetCategorySummaryList(ViewBag.StartDate);
+        ViewBag.CatSummary = _eventsRepository.GetCategorySummaryList(ViewBag.StartDate);
         vm.CatSummary = ViewBag.CatSummary;
         ViewBag.CatFilter = id;
         ViewBag.TotalEvents = 0;
@@ -89,44 +89,20 @@ public class EventsController : Controller
         }
         return View(vm);
     }
-    [Authorize]
-    public IActionResult AddEditEvent(int id)
+
+    public IActionResult Event(int id)
     {
-            var BookmarkPage = new MvcBreadcrumbNode("Index", "Events", "mnuEvents");
-            var addPage = new MvcBreadcrumbNode("AddEditEvent", "Events", "New Event"){ Parent = BookmarkPage };
-            ViewData["BreadcrumbNode"] = addPage;
+        var eventItem = _eventsRepository.GetClubEventById(id);
+        return View(eventItem);
+    }
 
-            var vm = new ClubEventViewModel();
-            vm.CatSummary = _eventsRepository.GetCategorySummaryList(_eventsRepository.OldestEvent());
-            var evnt = _eventsRepository.GetClubEventById(id) ?? new ClubCalendarEventItem();
-            vm.Id = evnt.Id;
-            vm.Title = evnt.Title;
-            vm.Description = evnt.Description;
-            vm.CatId = evnt.CatId;
-            vm.ClubId = evnt.ClubId;
-            vm.LocId = evnt.LocId;
-            vm.StartDate = evnt.StartDate;
-            vm.EndDate = evnt.EndDate;
+    [HttpPost]
+    [Authorize]
+    public IActionResult AddEvent(CalendarEventItem model)
+    {
+        _eventsRepository.AddEvent(model,_memberService);
 
-            vm.Categories = new Dictionary<int, string>();
-            vm.Locations = new Dictionary<int, string>();
-            vm.Clubs = new Dictionary<int, string>();
-            foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarCategory>().ToDictionary(t => t.Id, t => t.Name))
-            {
-                vm.Categories.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
-            }
-            foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarLocation>().ToDictionary(t => t.Id, t => t.Name))
-            {
-                vm.Locations.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
-            }
-            foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarClub>().ToDictionary(t => t.Id, t => t.ShortName))
-            {
-                vm.Clubs.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
-            }
-            var token = Guid.NewGuid().ToString();
-                TempData["FormToken"] = token;
-                ViewBag.FormToken = token;                
-            return View(vm);
+        return Json(new{url=Url.Action("Index", "Topic", new { id = model.TopicId }),id = model.TopicId});
     }
     [HttpGet]
     [Authorize]
@@ -183,13 +159,55 @@ public class EventsController : Controller
         return View(vm);
 
     }
+    [Authorize]
+    public IActionResult AddEditEvent(int id)
+    {
+            var BookmarkPage = new MvcBreadcrumbNode("Index", "Events", "mnuEvents");
+            var addPage = new MvcBreadcrumbNode("AddEditEvent", "Events", "New Event"){ Parent = BookmarkPage };
+            ViewData["BreadcrumbNode"] = addPage;
+
+            var vm = new ClubEventViewModel();
+            vm.CatSummary = _eventsRepository.GetCategorySummaryList(_eventsRepository.OldestEvent());
+            var evnt = _eventsRepository.GetClubEventById(id) ?? new ClubCalendarEventItem();
+            vm.Id = evnt.Id;
+            vm.Title = evnt.Title;
+            vm.Description = evnt.Description;
+            vm.CatId = evnt.CatId;
+            vm.ClubId = evnt.ClubId;
+            vm.LocId = evnt.LocId;
+            vm.StartDate = evnt.StartDate;
+            vm.EndDate = evnt.EndDate;
+
+            vm.Categories = new Dictionary<int, string>();
+            vm.Locations = new Dictionary<int, string>();
+            vm.Clubs = new Dictionary<int, string>();
+            foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarCategory>().ToDictionary(t => t.Id, t => t.Name))
+            {
+                vm.Categories.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
+            }
+            foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarLocation>().ToDictionary(t => t.Id, t => t.Name))
+            {
+                vm.Locations.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
+            }
+            foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarClub>().ToDictionary(t => t.Id, t => t.ShortName))
+            {
+                vm.Clubs.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
+            }
+            var token = Guid.NewGuid().ToString();
+                TempData["FormToken"] = token;
+                ViewBag.FormToken = token;                
+            return View(vm);
+    }
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
     public IActionResult AddEditEvent(CalendarEventItem model, string formToken)
     {
-        if (TempData["FormToken"] == null || TempData["FormToken"]?.ToString() != formToken)
+        var tempToken = TempData.Peek("FormToken")?.ToString();
+        if (tempToken == null || tempToken != formToken)
         {
+            _logger.Warn($@"FormToken mismatch {formToken} - {TempData["FormToken"]}");
+            _logger.Warn($@"TempToken mismatch {tempToken}");
             var message = "Duplicate submission detected.";
             return BadRequest(message);
         }
@@ -230,204 +248,205 @@ public class EventsController : Controller
 
     #region Admin Actions
 
-        [HttpGet]
-        [Authorize(Roles = "Administrator")]
-        public PartialViewResult Admin()
+    [HttpGet]
+    [Authorize(Roles = "Administrator,ClubAdmin")]
+    public PartialViewResult Admin()
+    {
+        var vm = new EventsAdminViewModel
         {
-            var vm = new EventsAdminViewModel
-            {
                 
-                Categories = new Dictionary<int, string>(),
-                Locations = new Dictionary<int, string>(),
-                Clubs = new Dictionary<int, string>()
-            };
+            Categories = new Dictionary<int, string>(),
+            Locations = new Dictionary<int, string>(),
+            Clubs = new Dictionary<int, string>()
+        };
 
-            foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarCategory>().ToDictionary(t => t.Id, t => t.Name))
-            {
-                vm.Categories.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
-            }
-            foreach (KeyValuePair<int, string> forum in _locations)
-            {
-                vm.Locations.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
-            }
-            foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarClub>().ToDictionary(t => t.Id, t => t.ShortName))
-            {
-                vm.Clubs.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
-            }
-            return PartialView("_Admin",vm);
-        }
-
-        [HttpGet]
-        [Authorize(Roles ="Administrator")]
-        public PartialViewResult AddEditCategory(int id)
+        foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarCategory>().ToDictionary(t => t.Id, t => t.Name))
         {
-            EditListViewModel vm;
-            if (id == 0)
-            {
-                vm = new EditListViewModel() {ListType = "cat", Order = 99 };
-                return PartialView("_AddEditListItem", vm);
-            }
-            var cat = _context.Set<ClubCalendarCategory>().FirstOrDefault(c => c.Id == id);
-            vm = new EditListViewModel()
-            {
-                Id = cat.Id,
-                Name = cat.Name,
-                Order = cat.Order,
-                ListType = "cat"
-            };
-            return PartialView("_AddEditListItem",vm);            
+            vm.Categories.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
         }
-
-        [HttpGet]
-        [Authorize(Roles = "Administrator")]
-        public PartialViewResult AddEditLocation(int id)
+        foreach (KeyValuePair<int, string> forum in _locations)
         {
-            EditListViewModel vm;
-            if (id == 0)
-            {
-                vm = new EditListViewModel() { ListType = "loc" , Order=99};
-                return PartialView("_AddEditListItem", vm);
-            }
-            var loc = _context.Set<ClubCalendarLocation>().FirstOrDefault(c => c.Id == id);
-            vm = new EditListViewModel(){
-                Id = loc.Id,
-                Name = loc.Name,
-                Order = loc.Order,
-                ListType = "loc"
-            };
-            return PartialView("_AddEditListItem",vm);
-                
+            vm.Locations.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
         }
-
-        [HttpGet]
-        [Authorize(Roles = "Administrator")]
-        public PartialViewResult AddEditClub(int id)
+        foreach (KeyValuePair<int, string> forum in _context.Set<ClubCalendarClub>().ToDictionary(t => t.Id, t => t.ShortName))
         {
-            var Locations = new Dictionary<int, string>();
-                foreach (KeyValuePair<int, string> forum in _locations)
-                {
-                    Locations.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
-                }
-            ViewBag.Locations = Locations;
-            if (id == 0)
-            {
-                ClubCalendarClub vm = new ClubCalendarClub() { Order = 99 };
-                return PartialView("_AddEditClubItem", vm);
-            }else {
-                var vm = _context.Set<ClubCalendarClub>().FirstOrDefault(c => c.Id == id);
-
-                return PartialView("_AddEditClubItem", vm);
-            }
+            vm.Clubs.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
         }
-
-        [HttpPost]
-        [Authorize(Roles = "Administrator")]
-        public ActionResult AddEditClub(ClubCalendarClub vm)
-        {
-            if (ModelState.IsValid)
-            {
-                if (vm.Id == 0)
-                {
-                    _context.Add(vm);
-                }
-                else
-                {
-                    var existingClub = _context.Set<ClubCalendarClub>().FirstOrDefault(c => c.Id == vm.Id);
-                    if (existingClub != null)
-                    {
-                        existingClub.LongName = vm.LongName;
-                        existingClub.ShortName = vm.ShortName;
-                        existingClub.Abbreviation = vm.Abbreviation;
-                        existingClub.Order = vm.Order;
-                        existingClub.DefLocId = vm.DefLocId;
-                    }
-                    _context.Update(existingClub);
-                }
-                
-                _context.SaveChanges();
-                return Json(new { success = true, responseText = "Club Added!" });
-            }
-            var locations = new Dictionary<int, string>();
-                foreach (KeyValuePair<int, string> forum in _locations)
-                {
-                    locations.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
-                }            
-            ViewBag.Locations = locations;
-            return PartialView("_AddEditClubItem", vm);
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Administrator")]
-        public ActionResult AddEditItem(EditListViewModel vm)
-        {
-            if (ModelState.IsValid)
-            {
-                    switch (vm.ListType)
-                    {
-                        case "cat":
-                            _eventsRepository.SaveEventCategory(vm);
-
-                            break;
-                        case "loc":
-                            _eventsRepository.SaveEventLocation(vm);
-                            break;
-
-                    }
-                return Json(new { success = true, responseText = "Item Added!" });;
-            }
-            return PartialView("_AddEditListItem", vm);
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Administrator")]
-        public JsonResult Delete(int id, string t)
-        {
-            Response.StatusCode = (int)HttpStatusCode.OK;
-            switch (t)
-            {
-                case "cat":
-                    try
-                    {
-                        _eventsRepository.DeleteCategory(id);
-                        return Json(new { success = true, responseText = "Delete success!" });
-                    }
-                    catch (Exception e)
-                    {
-                        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Json(e.Message);
-                    }
-                    break;
-                case "club":
-                    try
-                    {
-                        _eventsRepository.DeleteClub(id);
-                        return Json(new { success = true, responseText = "Delete success!" });
-                    }
-                    catch (Exception e)
-                    {
-                        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Json(e.Message);
-                    }
-                    break;
-                case "loc":
-                    try
-                    {
-                        _eventsRepository.DeleteLocation(id);
-                        return Json(new { success = true, responseText = "Delete success!" });
-                    }
-                    catch (Exception e)
-                    {
-                        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Json(e.Message);
-                    }
-                    break;
-            }
-            
-            Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return Json("Problem removing list item");
-        }
+        return PartialView("_Admin",vm);
+    }
 
     [HttpGet]
+    [Authorize(Roles ="Administrator,ClubAdmin")]
+    public PartialViewResult AddEditCategory(int id)
+    {
+        EditListViewModel vm;
+        if (id == 0)
+        {
+            vm = new EditListViewModel() {ListType = "cat", Order = 99 };
+            return PartialView("_AddEditListItem", vm);
+        }
+        var cat = _context.Set<ClubCalendarCategory>().FirstOrDefault(c => c.Id == id);
+        vm = new EditListViewModel()
+        {
+            Id = cat.Id,
+            Name = cat.Name,
+            Order = cat.Order,
+            ListType = "cat"
+        };
+        return PartialView("_AddEditListItem",vm);            
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Administrator,ClubAdmin")]
+    public PartialViewResult AddEditLocation(int id)
+    {
+        EditListViewModel vm;
+        if (id == 0)
+        {
+            vm = new EditListViewModel() { ListType = "loc" , Order=99};
+            return PartialView("_AddEditListItem", vm);
+        }
+        var loc = _context.Set<ClubCalendarLocation>().FirstOrDefault(c => c.Id == id);
+        vm = new EditListViewModel(){
+            Id = loc.Id,
+            Name = loc.Name,
+            Order = loc.Order,
+            ListType = "loc"
+        };
+        return PartialView("_AddEditListItem",vm);
+                
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Administrator,ClubAdmin")]
+    public PartialViewResult AddEditClub(int id)
+    {
+        var Locations = new Dictionary<int, string>();
+            foreach (KeyValuePair<int, string> forum in _locations)
+            {
+                Locations.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
+            }
+        ViewBag.Locations = Locations;
+        if (id == 0)
+        {
+            ClubCalendarClub vm = new ClubCalendarClub() { Order = 99 };
+            return PartialView("_AddEditClubItem", vm);
+        }else {
+            var vm = _context.Set<ClubCalendarClub>().FirstOrDefault(c => c.Id == id);
+
+            return PartialView("_AddEditClubItem", vm);
+        }
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Administrator,ClubAdmin")]
+    public ActionResult AddEditClub(ClubCalendarClub vm)
+    {
+        if (ModelState.IsValid)
+        {
+            if (vm.Id == 0)
+            {
+                _context.Add(vm);
+            }
+            else
+            {
+                var existingClub = _context.Set<ClubCalendarClub>().FirstOrDefault(c => c.Id == vm.Id);
+                if (existingClub != null)
+                {
+                    existingClub.LongName = vm.LongName;
+                    existingClub.ShortName = vm.ShortName;
+                    existingClub.Abbreviation = vm.Abbreviation;
+                    existingClub.Order = vm.Order;
+                    existingClub.DefLocId = vm.DefLocId;
+                }
+                _context.Update(existingClub);
+            }
+                
+            _context.SaveChanges();
+            return Json(new { success = true, responseText = "Club Added!" });
+        }
+        var locations = new Dictionary<int, string>();
+            foreach (KeyValuePair<int, string> forum in _locations)
+            {
+                locations.Add(forum.Key, _bbCodeProcessor.Format(forum.Value));
+            }            
+        ViewBag.Locations = locations;
+        return PartialView("_AddEditClubItem", vm);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Administrator,ClubAdmin")]
+    public ActionResult AddEditItem(EditListViewModel vm)
+    {
+        if (ModelState.IsValid)
+        {
+                switch (vm.ListType)
+                {
+                    case "cat":
+                        _eventsRepository.SaveEventCategory(vm);
+
+                        break;
+                    case "loc":
+                        _eventsRepository.SaveEventLocation(vm);
+                        break;
+
+                }
+            return Json(new { success = true, responseText = "Item Added!" });;
+        }
+        return PartialView("_AddEditListItem", vm);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Administrator,ClubAdmin")]
+    public JsonResult Delete(int id, string t)
+    {
+        Response.StatusCode = (int)HttpStatusCode.OK;
+        switch (t)
+        {
+            case "cat":
+                try
+                {
+                    _eventsRepository.DeleteCategory(id);
+                    return Json(new { success = true, responseText = "Delete success!" });
+                }
+                catch (Exception e)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return Json(e.Message);
+                }
+                break;
+            case "club":
+                try
+                {
+                    _eventsRepository.DeleteClub(id);
+                    return Json(new { success = true, responseText = "Delete success!" });
+                }
+                catch (Exception e)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return Json(e.Message);
+                }
+                break;
+            case "loc":
+                try
+                {
+                    _eventsRepository.DeleteLocation(id);
+                    return Json(new { success = true, responseText = "Delete success!" });
+                }
+                catch (Exception e)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return Json(e.Message);
+                }
+                break;
+        }
+            
+        Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        return Json("Problem removing list item");
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Administrator,ClubAdmin")]
     public IActionResult DeleteEvent(int id)
     {
         try

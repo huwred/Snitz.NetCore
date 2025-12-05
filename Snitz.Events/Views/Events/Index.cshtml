@@ -48,7 +48,7 @@
         <script src="~/js/pluginjs/snitz.cal.js"></script>
     </environment>
     <environment exclude="Development">
-        <script src="~/js/pluginjs/snitz.cal.min.js"></script>
+        <script src="~/js/pluginjs/snitz.cal.min.js" asp-append-version="true"></script>
     </environment>
     <script src='~/_content/Snitz.Events/js/dist/index.global.min.js'></script>
     <script src="~/_content/Snitz.Events/js/locales-all.global.min.js"></script>
@@ -71,13 +71,11 @@
 
             });
         function filterClub() {
-            alert($('#club-filter option:selected').text());
             $("li[data-club!='" + $('#club-filter option:selected').text() + "']").hide();
             $("li[data-club='" + $('#club-filter option:selected').text() + "']").show();
             $(".dropdown").show();
         }
         function filterLocation() {
-            alert($('#loc-filter option:selected').val());
             $("li[data-loc!='" + $('#loc-filter option:selected').text() + "']").hide();
             $("li[data-loc='" + $('#loc-filter option:selected').text() + "']").show();
             $(".dropdown").show();

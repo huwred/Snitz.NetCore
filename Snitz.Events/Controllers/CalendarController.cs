@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SmartBreadcrumbs.Nodes;
 using Snitz.Events.Models;
 using SnitzCore.Data;
@@ -109,18 +110,30 @@ public class CalendarController : Controller
     {
         string datetime = DateTime.UtcNow.ToForumDateStr(true);
 
-        IEnumerable<CalendarEventItem> eventDetails = _context.EventItems.OrderBy(e=>e.Start).Where(e=> string.Compare(e.Start,datetime) > 0).Take(count);
+        IEnumerable<CalendarEventItem> eventDetails = _context.EventItems
+                            .Include(ce => ce.Author)
+                .Include(ce => ce.Cat)
+                .Include(ce => ce.Club)
+                .Include(ce => ce.Loc)
+                .AsNoTracking()
+            .OrderBy(e=>e.Start).Where(e=> string.Compare(e.Start,datetime) > 0).Take(count);
 
             var eventList = from item in eventDetails
                 select new
                 {
-                    id = item.TopicId,
+                    id = item.Id,
                     title = _bbCodeProcessor.Format(item.Title),
                     start = item.StartDate.Value.ToString("s"),
                     end = item.EndDate.HasValue ? item.EndDate.Value.ToString("s") : "",
                     allDay = item.IsAllDayEvent,
                     editable = false,
-                    url = "/Topic/" + item.TopicId
+                    url = "/Topic/" + item.TopicId,
+                    className = item.TopicId > 0 ? "topic-event" : "club-event",
+                    location = item.Loc,
+                    club = item.Club?.Abbreviation,
+                    clublong = item.Club?.ShortName,
+                    category = item.Cat?.Name ?? "",
+                    details = WebUtility.HtmlDecode(_bbCodeProcessor.Format(item.Description)),
                 };
 
             return Json(eventList.ToArray());

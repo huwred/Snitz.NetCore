@@ -42,7 +42,7 @@ namespace Snitz.Events.Models
         [Key]
         public int Id { get; set; }
         [Column("TOPIC_ID")]
-        public int TopicId { get; set; }
+        public int TopicId { get; set; } = 0;
         [Column("EVENT_ALLDAY")]
         public bool IsAllDayEvent { get; set; }
         [Column("EVENT_DATE")]
