@@ -13,7 +13,6 @@ if ($('.cal-dates').length >= 1) {
 }
 $(document).on("change", '#countryRegion', function () {
     var val = $('#change-holidays').val() + '|' + $(this).val();
-    console.log("change " + val);
     var url = SnitzVars.baseUrl + "/Calendar/GetHolidays/";
     FullCalendarNew(url, 'calendar', '', val);
 });
@@ -28,8 +27,28 @@ $('#change-holidays')
 
     });
 
-UpComingCalendar = function(url, divid) {
+$(document).on("click", ".fc-list-event-time .fa-trash-can", function (e) {
+    e.preventDefault();
+    var id = $(this).data('id');
+    var href = SnitzVars.baseUrl + "/Events/DeleteEvent/" + id;
+    (async () => {
+        const result = await b_confirm("Delete this event")
+        if (result) {
+            $.get(href, function (result) {
+                window.location.reload();
+            });
+        }
+    })();
+});
 
+$(document).on("click", ".fc-list-event-time .fa-pencil", function (e) {
+    e.preventDefault();
+    var id = $(this).data('id');
+    location.href = SnitzVars.baseUrl + "/Events/AddEditEvent/" + id;
+});
+
+UpComingCalendar = function(url, divid) {
+    console.log(url);
     var calendarEl = document.getElementById(divid);
     let selectedCountry = localStorage.getItem('pubCountry');
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -45,11 +64,53 @@ UpComingCalendar = function(url, divid) {
 
                     // Adjust the start & end dates, respectively
                     startDate.setDate(startDate.getDate() - 1); // One day in the past
-                    endDate.setDate(endDate.getDate() + 28); // Two days into the future
+                    endDate.setDate(endDate.getDate() + 21); // three weeks into the future
                     return { start: startDate, end: endDate };
                 },
                 buttonText: 'Custom List'
                 }
+        },
+        eventDidMount: function (info) {
+            // Create custom HTML for club-events
+            if (info.event.classNames.includes('club-event')) {
+                let starttime = info.event.start.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                let endtime = info.event.end.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                info.el.innerHTML = ''; //clear the display
+                var extra = document.createElement('td');
+                extra.setAttribute("colspan", "3");
+                extra.innerHTML =
+                    '<p><strong>' + (info.event.title || 'N/A') +
+                    '</strong><br><b>Location:</b> ' + (info.event.extendedProps.location.name || 'N/A') +
+                    '<br>' + (starttime || 'N/A') + ' - ' + (endtime || 'N/A') + '</p>';
+                info.el.appendChild(extra);
+            } else if (info.event.classNames.includes('topic-event')) {
+                let starttime = info.event.start.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                let endtime = info.event.end.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                info.el.innerHTML = ''; //clear the display
+                var extra = document.createElement('td');
+                extra.setAttribute("colspan", "3");
+                extra.innerHTML =
+                    '<p><strong>' + (info.event.title || 'N/A') +
+                    '</strong>' +
+                    '<br>' + (starttime || 'N/A') + ' - ' + (endtime || 'N/A') + '</p>';
+                info.el.appendChild(extra);
+            }
         },
         height: 400,
         eventSources: [
@@ -165,24 +226,7 @@ calcWeeks = function(parm1) {
     var date2 = new Date();
     return (date2 - date1) / (1000 * 60 * 60 * 24 * 7).toFixed(2);
 };
-$(document).on("click", ".fc-list-event-time .fa-trash-can",function (e) {
-    e.preventDefault();
-    var id = $(this).data('id');
-    var href = SnitzVars.baseUrl + "/Events/DeleteEvent/" + id;
-    (async () => {
-        const result = await b_confirm("Delete this event")
-        if (result) {
-            $.get(href, function (result) {
-                window.location.reload();
-            });
-        }
-    })();
-});
-$(document).on("click", ".fc-list-event-time .fa-pencil", function (e) {
-    e.preventDefault();
-    var id = $(this).data('id');
-    location.href = SnitzVars.baseUrl + "/Events/AddEditEvent/" + id;
-});
+
 postEvent = function(event, arr) {
 
     if ($('#startdate').val() === '') {
