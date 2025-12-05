@@ -31,13 +31,20 @@ else
             <div class="card mb-2">
                 <div class="card-header @ViewData["panel"] subforum-title">
                     <i class="fa fa-bar-chart" aria-hidden="true"></i>&nbsp;@Model.Poll.Question
-                    @if (User.IsInRole("Administrator") && Model.Poll.Topic.Status == 1 && SnitzConfig.GetIntValue("INTFEATUREDPOLLID") != Model.Poll.Id)
+                    @if (User.IsInRole("Administrator"))
                     {
-                        <span class="pull-right flip"><a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = Model.Poll.Id })" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a></span>
-                    }
-                    @if (User.IsInRole("Administrator") && Model.Poll.Topic.Status == 1 && SnitzConfig.GetIntValue("INTFEATUREDPOLLID") == Model.Poll.Id)
-                    {
-                        <span class="pull-right flip"><a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = 0 })" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart"></i></a></span>
+                        <span class="float-end">
+                        @if (Model.Poll.Topic.Status == 1 && SnitzConfig.GetIntValue("INTFEATUREDPOLLID") != Model.Poll.Id)
+                        {
+                            <span class="float-end"><a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = Model.Poll.Id })" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa-solid fa-square-poll-vertical"></i></a></span>
+                        }
+                        @if (Model.Poll.Topic.Status == 1 && SnitzConfig.GetIntValue("INTFEATUREDPOLLID") == Model.Poll.Id)
+                        {
+                            <span class="float-end"><a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = 0 })" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa-solid fa-magnifying-glass-chart"></i></a></span>
+                        }
+
+                        <a href="@Url.Action("Delete", "Polls", new { id = Model.Poll.Id })" title="Delete Poll" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                        </span>
                     }
                 </div>
                 <div class="card-body p-2">

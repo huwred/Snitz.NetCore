@@ -98,10 +98,21 @@ namespace MVCForum.Controllers
         public IActionResult Delete(int id, string returnUrl)
         {
             var poll = _snitzDbContext.Polls.Find(id);
+
             if (poll != null)
             {
+                var topicid = poll.TopicId;
+                var topic = _snitzDbContext.Posts.Find(topicid);
+                if(topic != null)
+                { 
+                    topic.Ispoll = 0;
+                    _snitzDbContext.Update(topic);
+                }
                 _snitzDbContext.Polls.Remove(poll);
+
                 _snitzDbContext.SaveChanges();
+                _snitzDbContext.PollAnswers.Where(a=>a.PollId == id).ExecuteDelete();
+                _snitzDbContext.PollVotes.Where(a=>a.PollId == id).ExecuteDelete();
             }
             if (_config.GetIntValue("INTFEATUREDPOLLID") == id)
             {

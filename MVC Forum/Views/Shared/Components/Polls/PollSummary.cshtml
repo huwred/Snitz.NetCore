@@ -4,7 +4,7 @@
 @using SnitzCore.Service.TagHelpers
 @model MVCForum.ViewModels.Post.PollViewModel
 @{
-    var totalvotes = Model.Poll.PollAnswers.Sum(a => a.Count);
+    var totalvotes = Model.Poll.PollAnswers?.Sum(a => a.Count);
     CultureInfo uk = new CultureInfo("en-GB");
     string culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
 }
@@ -18,30 +18,24 @@
             <span>@Model.Poll.Question @if (!Model.Poll.Question.Contains("?")) { @Html.Raw("?"); }</span>
             @if ( User.IsInRole("Administrator") )
             {
-                <span class="pull-right flip fs-5">
+                <span class="float-end fs-5">
                     @if (SnitzConfig.GetIntValue("INTFEATUREDPOLLID") != Model.Poll.Id)
                     {
-                        <a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = Model.Poll.Id })" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart m-1"></i></a>
+                        <a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = Model.Poll.Id })" title="@Localizer["MakeFeaturedPoll"]" data-toggle="tooltip"><i class="fa-solid fa-square-poll-vertical"></i></a>
                     }
                     else
                     {
-                        <a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = 0 })" title="@Localizer["UnFeaturedPoll"]" data-toggle="tooltip"><i class="fa fa-bar-chart m-1"></i></a>
+                        <a href="@Url.Action("MakeFeaturedPoll", "Polls", new { id = 0 })" title="@Localizer["UnFeaturedPoll"]" data-toggle="tooltip"><i class="fa-solid fa-magnifying-glass-chart"></i></a>
                     }
-                    @if (Model.Poll.Topic == null)
+                    @if(Model.Poll.Topic?.Status == 1)
                     {
-                        <a href="@Url.Action("Delete", "Polls", new { id = Model.Poll.Id })" title="Delete Poll" data-toggle="tooltip"><i class="fa fa-trash m-1"></i></a>
+                        <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="Lock Poll" data-toggle="tooltip"><i class="fa fa-lock"></i></a>
                     }
                     else
                     {
-                        if(Model.Poll.Topic.Status == 1)
-                        {
-                            <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="Lock Poll" data-toggle="tooltip"><i class="fa fa-lock m-1"></i></a>
-                        }
-                        else
-                        {
-                            <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="UnLock Poll" data-toggle="tooltip"><i class="fa fa-unlock m-1"></i></a>
-                        }
+                        <a href="@Url.Action("Lock", "Polls", new { id = Model.TopicId, pollid = Model.Poll.Id })" title="UnLock Poll" data-toggle="tooltip"><i class="fa fa-unlock"></i></a>
                     }
+                    <a href="@Url.Action("Delete", "Polls", new { id = Model.Poll.Id })" title="Delete Poll" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
                 </span>
             }
 
@@ -60,7 +54,7 @@
                     </div>
                 </div>
             }
-            <label>@Localizer["VotesCast"]:&nbsp;</label>@totalvotes.ToLangNum(culture) <br />
+            <label>@Localizer["VotesCast"]:&nbsp;</label>@totalvotes <br />
             <label snitz-if="@(Model.Poll.Lastvote != null)">@Localizer["LastVote"]:&nbsp;</label>
             <snitz-datetime snitz-if="@(Model.Poll.Lastvote != null)" datetime="@Model.Poll.Lastvote?.FromForumDateStr()"></snitz-datetime>
 
