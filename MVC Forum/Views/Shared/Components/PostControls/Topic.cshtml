@@ -124,12 +124,12 @@
                     })
             });
 
-        $(".post-moderate").on("click",
+        $(".post-moderate").off().on("click",
             function(e) {
                 e.preventDefault();
                 $(".popover").hide();
                 var topicid = $(this).data("id");
-                
+                console.log(topicid);
                 $.get(SnitzVars.baseUrl + "/Topic/Moderate/" + topicid,
                     function(data) {
                         $('#moderateModal #send-email').html('Post');
@@ -137,7 +137,7 @@
                         $('#postModeration').html(data);
                         $("#moderateModal").modal('show');
                     });
-                $(document).on("submit",
+                $(document).off().on("submit",
                     "#moderateForm",
                     function(e) {
                         e.preventDefault();
@@ -152,7 +152,7 @@
                             if (response.result) {
                                 $("#send-email").blur();
                                 $('#moderateModal').modal('hide');
-                                location.reload;
+                                window.location.reload();
                             } else {
                                 //Dont close the modal, display the error
                                 $('#postModeration').html(response);
@@ -160,7 +160,7 @@
                         });
                     });
             });
-        $(".reply-moderate").on("click",
+        $(".reply-moderate").off().on("click",
             function(e) {
                 e.preventDefault();
                 $(".popover").hide();
@@ -188,7 +188,7 @@
                             if (response.result) {
                                 $("#send-email").blur();
                                 $('#moderateModal').modal('hide');
-                                location.reload;
+                                window.location.reload();
                             } else {
                                 //Dont close the modal, display the error
                                 $('#postModeration').html(response);

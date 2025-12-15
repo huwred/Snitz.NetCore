@@ -7,7 +7,7 @@
     }
 }
 <div class="container" id="approvalForm">
-    <form id="moderateForm" asp-controller="@controller" asp-action="ModeratePost" data-ajax="true" class="needs-validation" novalidate data-toggle="validator">
+    <form id="moderateForm" asp-controller="@controller" asp-action="ModeratePost" class="needs-validation" novalidate>
         @Html.HiddenFor(m => m.Id)
         <div class="form-horizontal">
             <div class="mb-3">
@@ -33,7 +33,7 @@
                     <input class="form-check-input" type="radio" name="PostStatus" id="inlineRadio3" value="OnHold" checked="@(Model.PostStatus=="OnHold")" required>
                     <label class="form-check-label" for="inlineRadio3">Hold</label>
                 </div>
-
+                <input type="text" style="display:none;" name="formToken" value="@ViewBag.FormToken" />
             </div>
 
         </div>
