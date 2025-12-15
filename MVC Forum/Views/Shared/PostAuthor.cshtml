@@ -3,10 +3,9 @@
 @{
     var ranking = MemberService.GetRankings();
     var rankType = SnitzConfig.GetIntValue("STRSHOWRANK", 0);
-    bool showEmail = Model.ReceiveEmail == 1 && User.Identity!.IsAuthenticated && SnitzConfig.GetIntValue("STREMAIL") == 1;
+    bool showEmail = (Model.ReceiveEmail == 1 || User.IsInRole("Administrator")) && User.Identity!.IsAuthenticated && SnitzConfig.IsEnabled("STREMAIL");
     bool showPM = SnitzConfig.GetIntValue("STRPMSTATUS") == 1 && Model.Pmreceive == 1 && User.Identity!.IsAuthenticated;
-    bool showHome = Model.Privateprofile != 1 && !string.IsNullOrWhiteSpace(Model.Homepage) && SnitzConfig.GetIntValue("STRHOMEPAGE") == 1;
-    showEmail = showEmail || User.IsInRole("Administrator");
+    bool showHome = Model.Privateprofile != 1 && !string.IsNullOrWhiteSpace(Model.Homepage) && SnitzConfig.IsEnabled("STRHOMEPAGE");
 }
 <div class="authors flex-grow-0 flex-shrink-1 border-end">
     <div class="username"><a href="~/Account/Detail/@Model.Name" data-toggle="tooltip" title="@Localizer["lblView"] @Localizer["ProfileDetails", Model.Name]">@Model.Name</a></div>

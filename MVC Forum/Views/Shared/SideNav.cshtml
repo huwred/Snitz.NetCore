@@ -52,7 +52,7 @@
             <a href="#about" role="button" id="navbarDropdownAbout">More ... <div class='fa fa-caret-down right'></div></a>
             <ul>
                 <li><a href="~/About#about">@Localizer["mnuAbout"]</a></li>
-                <li><a href="~/About#contact">@Localizer["mnuContact"]</a></li>
+                <li snitz-if="@(SnitzConfig.IsEnabled("STREMAIL"))"><a href="~/About#contact">@Localizer["mnuContact"]</a></li>
                 <li><a href="~/About#privacy">@Localizer["mnuPrivacyPolicy"]</a></li>
                 <li><a href="~/About#cookie">@Localizer["mnuCookies"]</a></li>
             </ul>

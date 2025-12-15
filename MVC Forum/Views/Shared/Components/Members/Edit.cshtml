@@ -222,8 +222,11 @@
                     {
                         req = SnitzConfig.GetIntValue(reqProp, 0) == 1;
                     }
-
-                    <div class="col-6 form-label" snitz-if="@(!property.PropertyReadOnly())">
+                    if ((property.Name == "Pmemail" || property.Name == "ReceiveEmail") && !SnitzConfig.IsEnabled("STREMAIL"))
+                    {
+                        showme = false;
+                    }
+                    <div class="col-6 form-label" snitz-if="@(!property.PropertyReadOnly() && showme)">
                         <snitz-config config-type="checkbox" can-edit="@canedit" property-info="@property" property-val="@property.GetValue(Model.Member, null)" property-req="@(req)" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></snitz-config>
                     </div>
                 }

@@ -26,10 +26,10 @@
     <div snitz-if="@Model.CanEdit" class="col">
         <div class="card" id="member-tools">
             <ul class="nav flex-column">
-                <li class="nav-item"><a class="nav-link active" asp-controller="Account" asp-action="Files" asp-route-id="@Model?.Id">@Localizer["mnuManageFiles"]</a></li>
-                <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="NewEmail" asp-route-id="">@Localizer["mnuChangeEmail"]</a></li>
-                <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="ChangeUsername" asp-route-id="@Model?.Id">@Localizer["mnuChangeUsername"]</a></li>
-                <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="ResetPassword" asp-route-id="">@Localizer["mnuChangePassword"]</a></li>
+                <li class="nav-item"><a class="nav-link active" rel="nofollow" asp-controller="Account" asp-action="Files" asp-route-id="@Model?.Id">@Localizer["mnuManageFiles"]</a></li>
+                <li snitz-if="@(SnitzConfig.IsEnabled("STREMAIL"))" class="nav-item"><a class="nav-link" rel="nofollow" asp-controller="Account" asp-action="NewEmail" asp-route-id="">@Localizer["mnuChangeEmail"]</a></li>
+                <li snitz-if="@(SnitzConfig.IsEnabled("STREMAIL"))" class="nav-item"><a class="nav-link" rel="nofollow" asp-controller="Account" asp-action="ChangeUsername" asp-route-id="@Model?.Id">@Localizer["mnuChangeUsername"]</a></li>
+                <li snitz-if="@(SnitzConfig.IsEnabled("STREMAIL"))" class="nav-item"><a class="nav-link" rel="nofollow" asp-controller="Account" asp-action="ResetPassword" asp-route-id="">@Localizer["mnuChangePassword"]</a></li>
             </ul>
 
         </div>

@@ -47,8 +47,11 @@
     </li>
 </ul>
 <p>For any other web browser, please visit your web browser's official web pages.</p>
+
 <h2>Contact Us</h2>
 <p>If you have any questions about this Cookies Policy, You can contact us:</p>
 <ul>
-    <li>By visiting this page on our website: <a href="@(SnitzConfig.ForumUrl + "About#contact")" rel="nofollow noopener" target="_blank">Contact Us</a></li>
+    <li snitz-if="@(SnitzConfig.IsEnabled("STREMAIL"))">By visiting this page on our website: <a href="@(SnitzConfig.ForumUrl + "About#contact")" rel="nofollow noopener" target="_blank">Contact Us</a></li>
+    <li snitz-if="@(!SnitzConfig.IsEnabled("STREMAIL"))"><a href="mailto:@(SnitzConfig.GetValueWithDefault("STRCONTACTEMAIL",""))" >Contact Us</a></li>
+
 </ul>

@@ -802,13 +802,17 @@ namespace MVCForum.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult NewEmail()
         {
             var member = _memberService.Current();
             var memberPage = new MvcBreadcrumbNode("Index", "Account", "lblMembers");
             var myPage = new MvcBreadcrumbNode("Detail", "Account", "Profile"){ Parent = memberPage };
             var thisPage = new MvcBreadcrumbNode("NewEmail", "Account", _languageResource.GetString("ChangeEmail")) { Parent = myPage };
-
+            if(member == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
             ViewData["BreadcrumbNode"] = thisPage; 
             var model = new ChangeEmailModel
             {

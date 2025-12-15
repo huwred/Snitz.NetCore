@@ -9,7 +9,7 @@
                 <label asp-for="RecievePM" class="form-check-label"></label>
                 <input asp-for="RecievePM" class="form-check-input" />
             </div>
-            <div class="form-check mb-3">
+            <div snitz-if="@(SnitzConfig.IsEnabled("STREMAIL"))" class="form-check mb-3">
                 <label asp-for="EmailNotification" class="form-check-label"></label>
                 <input asp-for="EmailNotification" class="form-check-input" />
             </div>
