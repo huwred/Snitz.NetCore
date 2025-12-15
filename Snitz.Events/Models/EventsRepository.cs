@@ -55,9 +55,9 @@ namespace Snitz.Events.Models
         {
             try
             {
-                var auth = _snitzContext.Database.SqlQuery<int>(
-                    $"SELECT F_ALLOWEVENTS AS Value FROM FORUM_FORUM WHERE FORUM_ID={forumid}").Single();
-                return auth;
+                var auth = _snitzContext.Database.SqlQuery<int?>(
+                    $"SELECT F_ALLOWEVENTS AS Value FROM FORUM_FORUM WHERE FORUM_ID={forumid}").SingleOrDefault();
+                return auth != null ? auth.Value : 0;
             }
             catch (Exception e)
             {
@@ -215,7 +215,7 @@ namespace Snitz.Events.Models
                                     start = itemStartDate.Value.ToString("s"), //item.StartDate.Value.WithYear(today).ToString("s"),
                                     allDay = true,
                                     editable = false,
-                                    url = "/Account/Detail/" + item.Title,
+                                    url = _config.RootFolder + "/Account/Detail/" + item.Title,
                                     className = "event-birthday"
                                 };
                 _logger.Info($"returnArray {eventList.Count()}");
@@ -295,7 +295,7 @@ namespace Snitz.Events.Models
                     end = item.EndDate?.ToString("s") ?? "",
                     allDay = item.IsAllDayEvent,
                     editable = false,
-                    url = "/Topic/Index/" + item.TopicId
+                    url = _config.RootFolder + "/Topic/Index/" + item.TopicId
                 };
             try
             {
@@ -361,7 +361,7 @@ namespace Snitz.Events.Models
                         allDay = item.IsAllDayEvent,
                         editable = false,
                         className = "event-club",
-                        url = $"/Events/Event/{item.Id}"
+                        url = $"{_config.RootFolder}/Events/Event/{item.Id}"
                     };
                 return new JsonResult(eventList.ToArray());
             }

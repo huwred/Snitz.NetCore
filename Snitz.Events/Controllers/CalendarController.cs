@@ -127,7 +127,7 @@ public class CalendarController : Controller
                     end = item.EndDate.HasValue ? item.EndDate.Value.ToString("s") : "",
                     allDay = item.IsAllDayEvent,
                     editable = false,
-                    url = "/Topic/" + item.TopicId,
+                    url = _config.RootFolder + "/Topic/" + item.TopicId,
                     className = item.TopicId > 0 ? "topic-event" : "club-event",
                     location = item.Loc,
                     club = item.Club?.Abbreviation,

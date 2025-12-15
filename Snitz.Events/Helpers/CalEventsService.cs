@@ -21,9 +21,9 @@ namespace Snitz.Events.Helpers
             try
             {
                 //    return _dbContext.EventItems.SingleOrDefault(e=>e.TopicId == topicid) != null;
-                var auth = _snitzDbContext.Database.SqlQuery<int>(
-                    $"SELECT C_ID AS Value FROM CAL_EVENTS WHERE TOPIC_ID={topicid}").Single();
-                return true;
+                var auth = _snitzDbContext.Database.SqlQuery<int?>(
+                    $"SELECT C_ID AS Value FROM CAL_EVENTS WHERE TOPIC_ID={topicid}").SingleOrDefault();
+                return auth != null;
             }
             catch (Exception)
             {
@@ -36,9 +36,9 @@ namespace Snitz.Events.Helpers
         {
             try
             {
-                var auth = _snitzDbContext.Database.SqlQuery<int>(
-                    $"SELECT F_ALLOWEVENTS AS Value FROM FORUM_FORUM WHERE FORUM_ID={forumid}").Single();
-                return auth;
+                var auth = _snitzDbContext.Database.SqlQuery<int?>(
+                    $"SELECT F_ALLOWEVENTS AS Value FROM FORUM_FORUM WHERE FORUM_ID={forumid}").SingleOrDefault();
+                return auth != null ? auth.Value : 0;
             }
             catch (Exception e)
             {
