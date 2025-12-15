@@ -45,7 +45,8 @@ namespace SnitzCore.Service.TagHelpers
 
         [HtmlAttributeName("replies")]
         public int Replies { get; set; }
-
+        [HtmlAttributeName("uReplies")]
+        public int UReplies { get; set; }
         [HtmlAttributeName("views")]
         public string? Views { get; set; }
         [HtmlAttributeName("lastpost")]
@@ -190,6 +191,17 @@ namespace SnitzCore.Service.TagHelpers
                 overlayTag.AddClass("fa", HtmlEncoder.Default);
                 overlayTag.AddClass("fa-thumb-tack", HtmlEncoder.Default);
                 overlayTag.AddClass("fa-stack-1x", HtmlEncoder.Default);
+            }
+            else if (UReplies > 0)
+            {
+                output.Attributes.RemoveAll("title");
+                output.Attributes.Add("title", _languageResource.GetString($"{icon}{newposts}{locked}_unmoderatedreplies"));
+                    mainTag.AddClass("fa", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-triangle-exclamation", HtmlEncoder.Default);
+                    mainTag.AddClass("fa-2x", HtmlEncoder.Default);
+
+                    output.Attributes.Add("data-toggle","tooltip");
+                    output.Content.AppendHtml(mainTag);
             }
             else if (Replies == 0 && Blog != true)
             {
