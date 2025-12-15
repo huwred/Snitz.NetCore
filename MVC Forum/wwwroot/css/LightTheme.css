@@ -283,6 +283,13 @@ footer {
     background-color: #ddd;
 }
 
+.pagination.quicklink a {
+    color: darkslategrey;
+    margin-inline: 1px !important;
+    padding: 1px 2px !important;
+    /*border: solid 0.5px darkslategrey;*/
+}
+
 /* ########################################### */
 /*            detail.html                      */
 /* ########################################### */
@@ -335,12 +342,12 @@ footer {
     transition: .5s ease;
     background-color: #fff;
 }
-.pagination a {
+/*.pagination a {
     color: darkslategrey;
     margin-inline: 5px;
     padding: 5px 10px;
     border: solid 0.5px darkslategrey;
-}
+}*/
 
 .cell {
     border: 1px solid gray;

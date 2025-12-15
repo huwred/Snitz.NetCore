@@ -178,7 +178,7 @@ a:active,a:hover {
 /* ########################################### */
 
 .subforum-title, .subforum-title a, .subforum-title a:active, .subforum-title a:hover, .subforum-title a:visited {
-    background-color: transparent;
+    background-color: var(--primary-header);
     color: var(--primary-header-text) !important;
     text-decoration: none;
 }
