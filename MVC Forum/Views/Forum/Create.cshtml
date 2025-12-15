@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Identity
 @model MVCForum.ViewModels.Forum.NewForumModel
 @{
+    var syslevelsubs = SnitzConfig.GetIntValue("STRSUBSCRIPTION");
     var toplevelsubs = Model.CategorySubs;
 
 }
@@ -115,13 +116,19 @@
                 <div snitz-if="@(!SnitzConfig.IsEnabled("STRMODERATION"))">
                     <input type="hidden" asp-for="@Model.Moderation" />
                 </div>
-                <div snitz-if="@(toplevelsubs == null || (CategorySubscription)toplevelsubs != CategorySubscription.None)" class="mb-3 row">
-                    <label asp-for="Subscription" class="form-label col-2">@Localizer["forumSubscription"]</label>
-                    <div class="col-10 col-lg-6">
-                        <enum-select name="Subscription" enum-min="@Model.CategorySubs" enum-type="typeof(ForumSubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></enum-select>
+                <div snitz-if="@syslevelsubs > 0">
+                    <div snitz-if="@(toplevelsubs == null || (CategorySubscription)toplevelsubs != CategorySubscription.None)" class="mb-3 row">
+                        <label asp-for="Subscription" class="form-label col-2">@Localizer["forumSubscription"]</label>
+                        <div class="col-10 col-lg-6">
+                            <enum-select name="Subscription" enum-min="@Model.CategorySubs" enum-type="typeof(ForumSubscription)" selected-value="(int)Model.Subscription" text-localizer-delegate="delegate (string s) { return Localizer[s].Value; }"></enum-select>
+                        </div>
+                    </div>
+                    <div snitz-if="@(toplevelsubs != null && (CategorySubscription)toplevelsubs == CategorySubscription.None)">
+                        <input type="hidden" asp-for="@Model.Subscription" />
                     </div>
                 </div>
-                <div snitz-if="@(toplevelsubs != null && (CategorySubscription)toplevelsubs == CategorySubscription.None)">
+                <div snitz-if="@syslevelsubs < 1">
+                    <label asp-for="Subscription" class="form-label col-3">Subscriptions Disabled</label>
                     <input type="hidden" asp-for="@Model.Subscription" />
                 </div>
                 <div class="mb-3 form-check">
