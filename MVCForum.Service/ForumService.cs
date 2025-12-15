@@ -173,7 +173,9 @@ namespace SnitzCore.Service
         {
             try
             {
-                return  _dbContext.Forums.AsNoTracking().Include(f=>f.Category).Single(f=>f.Id==id);
+                var result =  _dbContext.Forums.AsNoTracking().Include(f=>f.Category).Include(f=>f.ForumModerators);
+                //EfNullCheckHelper.CheckForNullableValueErrors<Forum>(result);
+                return result.Single(f=>f.Id==id);
             }
             catch (Exception e)
             {
@@ -371,9 +373,9 @@ namespace SnitzCore.Service
         {
             try
             {
-                var auth = _dbContext.Database.SqlQuery<int>(
-                    $"SELECT F_ALLOWEVENTS AS Value FROM FORUM_FORUM WHERE FORUM_ID={id}").Single();
-                return auth;
+                var auth = _dbContext.Database.SqlQuery<int?>(
+                    $"SELECT F_ALLOWEVENTS AS Value FROM FORUM_FORUM WHERE FORUM_ID={id}").SingleOrDefault();
+                return auth != null ? auth.Value : 0;
             }
             catch (Exception)
             {

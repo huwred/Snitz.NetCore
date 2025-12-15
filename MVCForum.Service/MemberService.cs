@@ -561,10 +561,14 @@ namespace SnitzCore.Service
         /// langword="null"/> if no such member exists.</returns>
         public Member? GetByUsername(string username)
         {
-            return _dbContext.Members.AsNoTracking()
+            var results = _dbContext.Members.AsNoTracking()
                 .Include(m=>m.Subscriptions).AsNoTracking()
+                .Where(m=>m.Name == username && m.Status == 1);
                 //in case multiple
-                .FirstOrDefault(m=>m.Name == username && m.Status == 1);
+                //.FirstOrDefault(m=>m.Name == username && m.Status == 1);
+
+            
+            return results.FirstOrDefault();
         }
 
         /// <summary>
@@ -1099,5 +1103,16 @@ namespace SnitzCore.Service
             return false;
         }
 
+        public bool IsModeratorOfForum(int? forumId, int? memberid)
+        {
+            if (forumId == null || memberid == null) return false;
+
+            var forum = _dbContext.Forums.Find(forumId);
+            if (forum == null) return false; 
+            
+            var isModerator = _dbContext.ForumModerator
+                .Any(fm => fm.ForumId == forumId && fm.MemberId == memberid);
+            return isModerator;
+        }
     }
 }

@@ -28,7 +28,7 @@ namespace SnitzCore.Service
         public void Topic(int topicid)
         {
             var topic = _dbContext.Posts.Include(r=>r.Member).SingleOrDefault(r=>r.Id == topicid);
-            if (topic==null || topic.Id == 0)
+            if (topic==null || topic.Id == 0 || !_config.IsEnabled("STREMAIL"))
             {
                 return;
             }
@@ -92,7 +92,7 @@ namespace SnitzCore.Service
         {
 
             var reply = _dbContext.Replies.Include(r=>r.Member).SingleOrDefault(r=>r.Id == replyid);
-            if (reply == null || reply.Id == 0)
+            if (reply == null || reply.Id == 0 || !_config.IsEnabled("STREMAIL"))
             {
                 return;
             }
@@ -159,8 +159,6 @@ namespace SnitzCore.Service
 
                     }
 
-
-                    //email.Send();
                 }
                 catch (Exception ex)
                 {

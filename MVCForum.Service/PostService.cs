@@ -114,10 +114,10 @@ namespace SnitzCore.Service
                     post.Content.Replace(badword.Key, badword.Value.ReplaceWith);
                 }
             }
-            int? moderated = null;
+            int moderated = -1;
             if (post.Status == (short)Status.UnModerated || post.Status == (short)Status.OnHold)
             {
-                moderated = -1;
+                moderated = 1;
             }
             _dbContext.Replies.Add(post);
             await _dbContext.SaveChangesAsync();
@@ -1129,6 +1129,10 @@ namespace SnitzCore.Service
             if (moderatedcount != null)
             {
                 topic.UnmoderatedReplies += moderatedcount.Value;
+                if(topic.UnmoderatedReplies < 0)
+                {
+                    topic.UnmoderatedReplies = 0;
+                }
             }
             try
             {
