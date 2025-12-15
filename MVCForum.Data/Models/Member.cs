@@ -6,6 +6,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SnitzCore.Data.Models;
 
+#nullable enable
+
 [SnitzTable("MEMBERS","MEMBER")]
 public partial class Member
 {
@@ -180,7 +182,7 @@ public partial class Member
     [Column("M_PWKEY")]
     [ProfileDisplay("Password Key",SystemField = true,Order=9999)]
     [StringLength(32)]
-    public string? Pwkey { get; set; }
+    public string? Pwkey { get; set; } = "";
 
     [Column("M_SHA256")]
     [ProfileDisplay("Sha256",SystemField = true,Order=9999)]
@@ -241,7 +243,7 @@ public partial class Member
     #endregion
 
     [Column("M_PMEMAIL")]
-    [ProfileDisplay("ProfilePMNotify", Order = 25, FieldType = "checkbox")]
+    [ProfileDisplay("ProfilePMNotify",ReadOnly = true, Order = 25, FieldType = "checkbox")]
     public int? Pmemail { get; set; } = 0;
 
     [Column("M_PMRECEIVE")]

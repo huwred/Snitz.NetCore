@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using log4net;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using SnitzCore.Data;
 using System;
 using System.Configuration;
 using System.IO;
@@ -18,13 +20,16 @@ namespace MVCForum.Extensions
             ArgumentException.ThrowIfNullOrEmpty(nameof(provider), provider);
             provider = provider?.ToLower();
             var connectionstring = configuration.GetConnectionString("SnitzConnection");
+
             return provider switch
             {
                 Mssql => builder.UseSqlServer(connectionstring, opt => 
                 {
                     opt.UseCompatibilityLevel(120);
                     opt.MigrationsAssembly("MSSqlMigrations");
-                }),
+                })    ,    
+            //    .LogTo(message => 
+            //LogManager.GetLogger(typeof(SnitzDbContext)).Debug(message)),
 
                 Sqlite => builder.UseSqlite(connectionstring?.Replace("|DataDirectory|",path), opt => 
                 {
@@ -52,6 +57,8 @@ namespace MVCForum.Extensions
                     opt.UseCompatibilityLevel(120);
                     opt.MigrationsAssembly("MSSqlMigrations");
                 }),
+            //    .LogTo(message => 
+            //LogManager.GetLogger(typeof(SnitzDbContext)).Debug(message)),
 
                 Sqlite => builder.UseSqlite(connection?.Replace("|DataDirectory|",path), opt => 
                 {

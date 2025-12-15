@@ -38,6 +38,8 @@ namespace SnitzCore.Data
         MigratePassword ValidateMember(Member member, string password);
 
         Member? Current();
+
+        bool IsModeratorOfForum(int? forumId,int? memberid);
         Task UpdatePostCount(int memberid);
         IEnumerable<int> ForumSubscriptions();
         IEnumerable<int> TopicSubscriptions();
