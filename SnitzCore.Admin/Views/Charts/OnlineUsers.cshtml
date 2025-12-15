@@ -35,7 +35,6 @@
 </table>
 @section Scripts {
     <script src="https://cdn.datatables.net/v/bs5/dt-2.3.4/rg-1.6.0/datatables.min.js" integrity="sha384-Ql5E/R+8cLi6ljMnTZCTm7jVTzeYhv5s/K+l3qEvtG1aQD+3RcpUpA2uBHwCCZ7k" crossorigin="anonymous"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const button = document.getElementById("grp-user");
@@ -50,8 +49,6 @@
                     .dataSrc('userName')
                     .disable()
                     .draw();
-
- 
                 // Toggle the visibility
                 column.visible(!column.visible());
             }else{
@@ -105,7 +102,7 @@
             pageLength: 100,
         });
         table = new DataTable('#onlineusers',{
-            lengthMenu: [50, 100,250, -1],
+            lengthMenu: [50, 100,250, 500],
             pageLength: 100,
             processing: true,
             serverSide: true,
@@ -196,30 +193,71 @@
             chart.canvas.parentNode.style.height = '400px';
             chart.canvas.parentNode.style.width = '400px';
         });
-        fetch(SnitzVars.baseUrl + '/Charts/VisitsByHour', fetchOptions)
+
+        // fetch(SnitzVars.baseUrl + '/Charts/VisitsByHour', fetchOptions)
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         const labels = data.map(d => d.hour.toString().padStart(2, '0') + ':00');
+        //         const counts = data.map(d => d.count);
+
+        //         const ctx = document.getElementById('visitorsHourlyChart').getContext('2d');
+        //         new Chart(ctx, {
+        //             type: 'bar',
+        //             data: {
+        //                 labels: labels,
+        //                 datasets: [{
+        //                     label: 'Visits per Hour (All Time)',
+        //                     data: counts,
+        //                     backgroundColor: 'rgba(255, 159, 64, 0.5)',
+        //                     borderColor: 'rgba(255, 159, 64, 1)',
+        //                     borderWidth: 1
+        //                 }]
+        //             },
+        //             options: {
+        //                 responsive: true,
+        //                 scales: {
+        //                     x: { title: { display: true, text: 'Hour of Day' } },
+        //                     y: { title: { display: true, text: 'Visits' }, beginAtZero: true, precision: 0 }
+        //                 }
+        //             }
+        //         });
+        //     });
+
+        fetch(SnitzVars.baseUrl + '/Charts/VisitorLogByDay')
             .then(response => response.json())
             .then(data => {
-                const labels = data.map(d => d.hour.toString().padStart(2, '0') + ':00');
-                const counts = data.map(d => d.count);
-
+                const labels = data.map(item => {
+                    // Format date as yyyy-MM-dd
+                    const dateObj = new Date(item.date);
+                    return dateObj.toISOString().split('T')[0];
+                });
+                const counts = data.map(item => item.count);
                 const ctx = document.getElementById('visitorsHourlyChart').getContext('2d');
                 new Chart(ctx, {
-                    type: 'bar',
+                    type: 'line',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Visits per Hour (All Time)',
+                            label: 'Visits Per Day',
                             data: counts,
-                            backgroundColor: 'rgba(255, 159, 64, 0.5)',
-                            borderColor: 'rgba(255, 159, 64, 1)',
-                            borderWidth: 1
+                            borderColor: '#36A2EB',
+                            backgroundColor: 'rgba(54,162,235,0.2)',
+                            fill: true,
+                            tension: 0.1
                         }]
                     },
                     options: {
                         responsive: true,
+                        plugins: {
+                            legend: { display: true },
+                            title: {
+                                display: true,
+                                text: 'Visitor Log By Day'
+                            }
+                        },
                         scales: {
-                            x: { title: { display: true, text: 'Hour of Day' } },
-                            y: { title: { display: true, text: 'Visits' }, beginAtZero: true, precision: 0 }
+                            x: { title: { display: true, text: 'Date' } },
+                            y: { title: { display: true, text: 'Visits' }, beginAtZero: true }
                         }
                     }
                 });

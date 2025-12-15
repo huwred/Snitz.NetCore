@@ -163,6 +163,7 @@ namespace SnitzCore.BackOffice.Controllers
         public string? logger { get; set; }
         public string? message { get; set; }
 
+        public string? path { get; set; }
         public string? exception { get; set; }
     }
 }
