@@ -3,6 +3,7 @@
 @using Snitz.Events.Helpers
 @using Snitz.PostThanks.Helpers
 @using SnitzCore.Data
+@using SnitzCore.Data.Extensions
 @using SnitzCore.Service.Extensions
 @using SnitzCore.Service.TagHelpers
 @model MVCForum.ViewModels.Post.PostListingModel
@@ -11,7 +12,11 @@
     var eventservice = pluginservices.FirstOrDefault(t => t.GetType() == typeof(CalEventsService));
     var answeredClass = "";
     var moderatedClass = $"modstatus-{Model.Status}";
-    if (Model.UnmoderatedReplies > 0 && User.IsInRole("Administrator"))
+
+    var currmember = MemberService.Current();
+    var subscriptions = currmember?.Subscriptions;
+    var isForumModerator = MemberService.IsModeratorOfForum(Model.Forum?.Id,currmember?.Id);
+    if (Model.UnmoderatedReplies > 0 && (User.IsAdministrator() || isForumModerator))
     {
         moderatedClass = "modstatus-2";
     }
@@ -19,7 +24,6 @@
     {
         answeredClass = "answered-overlay";
     }
-    var subscriptions = MemberService.Current()?.Subscriptions;
 
     bool archives = ViewData["Archives"] != null ? (bool)ViewData["Archives"]! : false;
     bool allowrating = Model.Forum != null ? Model.Forum.AllowTopicRating : Model.ForumAllowRating == 1;
@@ -30,24 +34,30 @@
         TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.Forum.Id);
     }
     var isblog = Model.Topic?.Forum?.Type == (int)ForumType.BlogPosts;
+    var tsort = SnitzCookie.GetCookieValue("tsort");
+    if (tsort == null)
+    {
+        tsort = SnitzConfig.GetValueWithDefault("STRTOPICSORT", "asc")!;
+    }
+
 }
 <div class="table-row @answeredClass rounded-2 @moderatedClass">
     <div class="status pt-3" data-status="@Model.Status" style="z-index: 2">
         @if (eventservice != null && eventservice.EnabledForTopic(Model.Id))
         {
-            <snitz-topic-icon plugin-icon="fa-calendar" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
+            <snitz-topic-icon plugin-icon="fa-calendar" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" uReplies="@Model.UnmoderatedReplies" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         else if (Model.HasPoll)
         {
-            <snitz-topic-icon plugin-icon="fa-bar-chart" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
+            <snitz-topic-icon plugin-icon="fa-bar-chart" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" uReplies="@Model.UnmoderatedReplies" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         else if (archives)
         {
-            <snitz-topic-icon plugin-icon="fa-archive" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
+            <snitz-topic-icon plugin-icon="fa-archive" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" uReplies="@Model.UnmoderatedReplies" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         else
         {
-            <snitz-topic-icon blog="@(isblog)" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
+            <snitz-topic-icon blog="@(isblog)" sticky="@Model.IsSticky" answered="@Model.Answered" status="@Model.Status" replies="@Model.RepliesCount" uReplies="@Model.UnmoderatedReplies" views="@Model.ViewCount" lastpost="@Model?.LastPostDate?.LocalTime(SnitzCookie)"></snitz-topic-icon>
         }
         <span class="d-block d-md-none fs-4 bold" title="@Localizer["lblReplies"]">@Model?.RepliesCount</span>
     </div>
@@ -76,7 +86,8 @@
                         {
                             PageCount = (Model.RepliesCount / ViewBag.PageSize) + rem,
                             PageSize = ViewBag.PageSize,
-                            Page = Model.Id
+                            Page = Model.Id,
+                            SortDir = tsort
                         };
                         <partial name="QuickPaging" model="paging"/>
                     }

@@ -25,6 +25,11 @@
     {
         TempData["allowThanks"] = thanksservice.EnabledForTopic(Model.Forum.Id);
     }
+    var tsort = SnitzCookie.GetCookieValue("tsort");
+    if (tsort == null)
+    {
+        tsort = SnitzConfig.GetValueWithDefault("STRTOPICSORT", "asc")!;
+    }
 }
 <div class="table-row @answeredClass rounded-2">
 
@@ -73,6 +78,7 @@
                             PageSize = ViewBag.PageSize,
                             Page = Model.Id,
                             Archived = archives,
+                            SortDir = tsort
                         };
                         <partial name="QuickPaging" model="paging"/>
                     }
