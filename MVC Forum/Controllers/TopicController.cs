@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using MVCForum.ViewModels;
 using MVCForum.ViewModels.Post;
 using Org.BouncyCastle.Asn1.X509;
@@ -84,6 +85,7 @@ namespace MVCForum.Controllers
             bool passwordrequired = false;
             bool notallowed = false;
             bool isadministrator = User.IsInRole("Administrator");
+            
             bool signedin = false;
             ViewBag.RequireAuth = false;
             if (User.Identity is { IsAuthenticated: true })
@@ -93,7 +95,20 @@ namespace MVCForum.Controllers
 
             if(sortdir == "")
             {
-                sortdir = _config.GetValueWithDefault("STRTOPICSORT","asc");
+                var tsort = _cookie.GetCookieValue("tsort");
+                if(tsort != null)
+                {
+                    sortdir = tsort;
+                }
+                else
+                {
+                    sortdir = _config.GetValueWithDefault("STRTOPICSORT","asc")!;
+                    _cookie.SetCookie("tsort",sortdir!,DateTime.MaxValue);
+                }
+            }
+            else
+            {
+                _cookie.SetCookie("tsort",sortdir!,DateTime.MaxValue);
             }
 
             var post = _postService.GetTopicAsync(id).Result;
@@ -118,6 +133,11 @@ namespace MVCForum.Controllers
                 }
             }
             bool ismoderator = User.IsInRole($"Forum_{post.ForumId}");
+            var currmember = _memberService.Current();
+            if(currmember != null)
+            {
+                ismoderator = ismoderator || _snitzDbContext.ForumModerator.Where(f=>f.MemberId == currmember.Id && f.ForumId == post.ForumId).Any();
+            }
             notallowed = CheckAuthorisation(post.Forum!.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
             if (!isadministrator && passwordrequired)
             {
@@ -133,7 +153,7 @@ namespace MVCForum.Controllers
                 post = _postService.GetTopicWithRelated(id).Result;
             }
 
-            if(_memberService.Current() != null)
+            if(currmember != null)
             { 
                 _cookie.UpdateTopicTrack(post.Id.ToString()); 
             }
@@ -306,7 +326,20 @@ namespace MVCForum.Controllers
 
             if(sortdir == "")
             {
-                sortdir = _config.GetValueWithDefault("STRTOPICSORT","asc");
+                var tsort = _cookie.GetCookieValue("tsort");
+                if(tsort != null)
+                {
+                    sortdir = tsort;
+                }
+                else
+                {
+                    sortdir = _config.GetValueWithDefault("STRTOPICSORT","asc")!;
+                    _cookie.SetCookie("tsort",sortdir!,DateTime.MaxValue);
+                }
+            }
+            else
+            {
+                _cookie.SetCookie("tsort",sortdir!,DateTime.MaxValue);
             }
 
             var post = _postService.GetTopicAsync(id).Result;
@@ -331,6 +364,12 @@ namespace MVCForum.Controllers
                 }
             }
             bool ismoderator = User.IsInRole($"Forum_{post.ForumId}");
+            var currmember = _memberService.Current();
+            if(currmember != null)
+            {
+                ismoderator = ismoderator || _snitzDbContext.ForumModerator.Where(f=>f.MemberId == currmember.Id && f.ForumId == post.ForumId).Any();
+            }
+
             notallowed = CheckAuthorisation(post.Forum!.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
             if (!isadministrator && passwordrequired)
             {
@@ -456,6 +495,12 @@ namespace MVCForum.Controllers
             bool notallowed = false;
             bool ismoderator = User.IsInRole($"Forum_{post.ForumId}");
             bool isadministrator = User.IsInRole("Administrator");
+            var currmember = _memberService.Current();
+            if(currmember != null)
+            {
+                ismoderator = ismoderator || _snitzDbContext.ForumModerator.Where(f=>f.MemberId == currmember.Id && f.ForumId == post.ForumId).Any();
+            }
+
 
             notallowed = CheckAuthorisation(post!.Forum!.Privateforums, signedin, ismoderator, isadministrator, ref passwordrequired);
             if (!isadministrator && passwordrequired)
@@ -1344,9 +1389,16 @@ namespace MVCForum.Controllers
         [Authorize(Roles = "Administrator,Moderator")]
         [ValidateAntiForgeryToken]
         [Route("Topic/ModeratePost/")]
-        public async Task<ActionResult> ModeratePost(ApproveTopicViewModal vm)
+        public async Task<ActionResult> ModeratePost(ApproveTopicViewModal vm, string formToken)
         {
-
+        var tempToken = TempData.Peek("FormToken")?.ToString();
+        if (tempToken == null || tempToken != formToken)
+        {
+            _logger.Warn($@"FormToken mismatch {formToken} - {TempData["FormToken"]}");
+            _logger.Warn($@"TempToken mismatch {tempToken}");
+            var message = "Duplicate submission detected.";
+            return BadRequest(message);
+        }
             if (ModelState.IsValid)
             {
                 var topic = _postService.GetTopicAsync(vm.Id).Result;
@@ -1402,7 +1454,7 @@ namespace MVCForum.Controllers
 
                         break;
                 }
-                if (vm.EmailAuthor)
+                if (vm.EmailAuthor && _config.IsEnabled("STREMAIL"))
                 {
                     _mailSender.ModerationEmail(author, subject, message, forum, topic);
                 }
@@ -1426,6 +1478,9 @@ namespace MVCForum.Controllers
         {
             var topic = _postService.GetTopic(id);
             ApproveTopicViewModal vm = new ApproveTopicViewModal {Id = id,IsReply=false, PostStatus = ((Status)topic.Status).ToString()};
+            var token = Guid.NewGuid().ToString();
+                TempData["FormToken"] = token;
+                ViewBag.FormToken = token;
             return PartialView("popModerate",vm);
         }
 
@@ -1919,6 +1974,7 @@ namespace MVCForum.Controllers
             }
 
             var donotModerate = User.IsInRole("Administrator") || User.IsInRole("Forum_" + model.ForumId);
+            donotModerate = donotModerate || _snitzDbContext.ForumModerator.Where(f=>f.MemberId == memberid && f.ForumId == model.ForumId).Any();
             var forum = _forumService.Get(model.ForumId);
 
             return new Post()

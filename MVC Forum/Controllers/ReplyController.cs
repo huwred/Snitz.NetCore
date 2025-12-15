@@ -14,6 +14,7 @@ using SnitzCore.Data.Interfaces;
 using SnitzCore.Data.Models;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -214,14 +215,14 @@ namespace MVCForum.Controllers
 
             var topic = _snitzDbContext.Posts.Find(reply.PostId) ?? new Post(){Id = reply.PostId};
             
-            topic.UnmoderatedReplies += moderated;
-            topic.LastPostReplyId = reply.Id;
-            topic.LastPostDate = reply.Created;
-            topic.LastPostAuthorId = reply.MemberId;
-            //if(model.Id == 0 && reply.Status < 2)   
-            //{ 
-            //    topic.ReplyCount += (1 - moderated); 
-            //}
+            //topic.UnmoderatedReplies += moderated;
+            if(moderated != 1)
+            {
+                topic.LastPostReplyId = reply.Id;
+                topic.LastPostDate = reply.Created;
+                topic.LastPostAuthorId = reply.MemberId;
+            }
+
             topic.Status = (short)(model.IsLocked ? 0 : 1);
             topic.IsSticky = (short)(model.IsSticky ? 1 : 0);
             topic.ArchiveFlag = (short)(model.DoNotArchive ? 1 : 0);
@@ -506,15 +507,22 @@ namespace MVCForum.Controllers
             {
                 return _postService.GetReplyForUdate(model.Id);
             }
+            var forum = _forumService.Get(model.ForumId);
 
             var donotModerate = User.IsInRole("Administrator") || User.IsInRole("Forum_" + model.ForumId);
-            var forum = _forumService.Get(model.ForumId);
+            if (forum.ForumModerators.Any())
+            {
+                if(forum.ForumModerators.Any(x => x.MemberId == memberid))
+                {
+                    donotModerate = true;
+                }
+            }
             return new PostReply()
             {
                 Id = model.Id,
                 Content = model.Content,
                 Created = DateTime.UtcNow.ToForumDateStr(),
-                Status = (forum.Moderation == Moderation.AllPosts) && !(donotModerate)
+                Status = (forum.Moderation == Moderation.AllPosts || forum.Moderation == Moderation.Replies) && !(donotModerate)
                 ? (short)Status.UnModerated
                 : (short)Status.Open,
                 MemberId = memberid,

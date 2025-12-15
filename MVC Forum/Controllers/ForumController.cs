@@ -590,7 +590,7 @@ namespace MVCForum.Controllers
                 posts = posts
                 .Where(f =>  catfilter.Contains(f.CategoryId));
             }
-            if (!User.IsInRole("Administrator")) //TODO: Is the member a moderator?
+            if (!User.IsAdministrator() && !User.IsModerator()) //TODO: Is the member a moderator?
             {
                 var viewableForums = _memberService.ViewableForums(User);
                 var cmemberid = currmember == null ? 0 : currmember.Id;
@@ -761,8 +761,8 @@ namespace MVCForum.Controllers
                 NewPassword = forum.Password,
                 AllowedMembers = _forumService.AllowedUsers(id),
                 AllowTopicRating = forum.Rating ?? 0,
-                PostAuth = (PostAuthType)forum.Postauth,
-                ReplyAuth = (PostAuthType)forum.Replyauth,
+                PostAuth = forum.Postauth != null ? (PostAuthType)forum.Postauth : 0,
+                ReplyAuth = forum.Replyauth != null ? (PostAuthType)forum.Replyauth : 0,
                 Url = forum.Url
             };
             return View("Create",model);
@@ -961,7 +961,7 @@ namespace MVCForum.Controllers
                 Answered = p.Answered,
                 HasPoll = p.Ispoll == 1,
                 AllowRating = p.AllowRating,
-                ForumAllowRating = p.Forum.Rating,
+                ForumAllowRating = p.Forum?.Rating,
                 Rating = p.GetTopicRating()
             }).OrderByDescending(p=>p.LastPostDate);
 
@@ -1069,10 +1069,9 @@ namespace MVCForum.Controllers
                 CacheProvider.Remove("AllForums");
                 return Json(new { redirectToUrl = Url.Action("Index", "Category",new{id=forum.CategoryId}) });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return Json(false);
-                //throw;
             }
 
         }
@@ -1135,7 +1134,9 @@ namespace MVCForum.Controllers
         public IActionResult DelModerator(string username, int forumid)
         {
             var member = _memberService.GetByUsername(username);
-            _snitzDbContext.ForumModerator.Where(f=>f.MemberId == member.Id && f.ForumId == forumid).ExecuteDelete();
+            if (member != null) {
+                _snitzDbContext.ForumModerator.Where(f=>f.MemberId == member.Id && f.ForumId == forumid).ExecuteDelete();
+            }
             return Json(new { redirectToUrl = Url.Action("Edit", "Forum",new{id = forumid}) });
 
         }
