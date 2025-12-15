@@ -203,6 +203,8 @@
 
             return false;
         });
+        //removeDataValAttributes($("#Terms"));
+
         // Disable form submissions if there are invalid fields
         (function() {
             'use strict';
@@ -261,6 +263,17 @@
                 });
         $.fn.datepicker.defaults.format = "mm/dd/yyyy";
 
+function removeDataValAttributes($el) {
+    $el.removeAttr("required");
+    $el.each(function () {
+        // Get a copy of the attributes to avoid modifying while iterating
+        $.each($.makeArray(this.attributes), function (_, attr) {
+            if (attr && attr.name && attr.name.toLowerCase().startsWith("data-val")) {
+                $(attr.ownerElement).removeAttr(attr.name);
+            }
+        });
+    });
+}
             $(function () {
                 $('#datepicker').datepicker({
 
