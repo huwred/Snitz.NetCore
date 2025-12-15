@@ -14,7 +14,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:53818"
+      "applicationUrl": "https://localhost:53818",
+      "nativeDebugging": true,
+      "sqlDebugging": true
     }
   },
   "iisSettings": {

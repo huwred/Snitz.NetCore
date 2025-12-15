@@ -89,6 +89,10 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
     options.UseDatabase(builder.Configuration.GetConnectionString("DBProvider"), builder.Configuration, System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     options.EnableDetailedErrors();
+    //options.UseLoggerFactory(LoggerFactory.Create(builder =>
+    //    {
+    //        builder.AddLog4Net();
+    //    }));
 
 },ServiceLifetime.Scoped);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -285,12 +289,13 @@ app.UseMultiLanguages(builder.Configuration.GetSection(SnitzForums.SectionName),
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error/500");
-    //app.UseDeveloperExceptionPage();
+    //app.UseExceptionHandler("/Error/handle-exception");
+    app.UseDeveloperExceptionPage();
 }
 else
 {
-    app.UseExceptionHandler("/Error/500");
+    //app.UseDeveloperExceptionPage();
+    app.UseExceptionHandler("/Error/handle-exception");
 }
 
 //Pi doesn't like this, could be newt!
@@ -313,7 +318,8 @@ app.UseStaticFiles(new StaticFileOptions
 });
 app.UseYGfilemanager("");//builder.Configuration["SnitzForums:VirtualPath"]
 app.UseRouting();
-app.UseStatusCodePages(context => {
+app.UseStatusCodePages(context =>
+{
     var request = context.HttpContext.Request;
     var response = context.HttpContext.Response;
     //using System.Net;
@@ -327,10 +333,11 @@ app.UseStatusCodePages(context => {
     {
         var originalUrl = request.Path + request.QueryString;
         response.Redirect($"/Error404?url={WebUtility.UrlEncode(originalUrl)}");
-    }else if (response.StatusCode >= 400)
-    {
-        response.Redirect($"/Error/{response.StatusCode}");
     }
+    //else if (response.StatusCode >= 400)
+    //{
+    //    response.Redirect($"/Error/{response.StatusCode}");
+    //}
     return Task.CompletedTask;
 });
 

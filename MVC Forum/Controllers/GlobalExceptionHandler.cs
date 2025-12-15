@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Threading;
@@ -10,15 +11,20 @@ using System.Threading.Tasks;
 
 internal sealed class GlobalExceptionHandler : IExceptionHandler
 {
-    private static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
+    private readonly ILogger<GlobalExceptionHandler> _logger;
+
+    public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+    {
+        _logger = logger;
+    }
 
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
         CancellationToken cancellationToken)
     {
-        _logger.Error(httpContext.Request.Path.Value);
-        _logger.Error(exception.Message, exception);
+        _logger.LogError(httpContext.Request.Path.Value);
+        _logger.LogError(exception.Message, exception);
 
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
@@ -27,8 +33,8 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
         if (accept.Contains("text/html"))
         {
             // Redirect to your error page for HTML requests
-            httpContext.Response.Redirect($"/Error/500");
-            return true;
+            //httpContext.Response.Redirect($"/Error/500");
+            return false;
         }
         else
         {
