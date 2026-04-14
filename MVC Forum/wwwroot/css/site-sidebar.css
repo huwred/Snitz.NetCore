@@ -81,7 +81,7 @@ footer {
                     color: #fff;
                 }
 
-                #side-menu ul li a .fa {
+                #side-menu ul li a .fa, #side-menu ul li a .fa-solid {
                     width: 16px;
                     text-align: center;
                     margin-right: 5px;

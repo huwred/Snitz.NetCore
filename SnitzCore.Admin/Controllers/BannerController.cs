@@ -24,5 +24,11 @@ namespace SnitzCore.BackOffice.Controllers
              _bannerService.Save(updatedAd);
             return Content("Banner updated");
         }
+        public IActionResult Delete(string id)
+        {
+             _bannerService.Delete(id);
+            //TODO: remove the image file?
+            return Content("Banner removed");
+        }
     }
 }

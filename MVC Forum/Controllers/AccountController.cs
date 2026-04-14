@@ -13,6 +13,7 @@ using MVCForum.ViewModels;
 using MVCForum.ViewModels.Member;
 using MVCForum.ViewModels.User;
 using NuGet.Common;
+using NUglify.Helpers;
 using SmartBreadcrumbs.Nodes;
 using SnitzCore.Data;
 using SnitzCore.Data.Extensions;
@@ -184,6 +185,13 @@ namespace MVCForum.Controllers
         public IActionResult DetailPopup(int id, string lang="")
         {
             Member? member = _memberService.GetById(id);
+            if(member == null){
+                return NotFound();
+            }
+            if (lang.IsNullOrWhiteSpace())
+            {
+                lang = "en";
+            }
             return PartialView($"Lang/{lang}/popProfile",member);
         }
         public async Task<IActionResult> Detail(string? id)

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using MyCSharp.HttpUserAgentParser;
+using MyCSharp.HttpUserAgentParser.AspNetCore;
 using Newtonsoft.Json;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Service.Extensions;
@@ -21,13 +23,15 @@ namespace SnitzCore.Service.MiddleWare
         private readonly MaxMindDb geo;
         private readonly IMemoryCache cache;
         private readonly Func<WebRequest, bool> compiledRule;
+        private readonly IHttpUserAgentParserAccessor _parserAccessor;
 
         public VisitorTrackingMiddleware(RequestDelegate next, MaxMindDb geo, IMemoryCache cache,
-        IOptions<Rule> ruleset)
+        IOptions<Rule> ruleset,IHttpUserAgentParserAccessor parserAccessor)
         {
             _next = next;
             this.geo = geo;
             this.cache = cache;
+            _parserAccessor = parserAccessor;
             this.compiledRule = new MRE().CompileRule<WebRequest>(ruleset.Value);
         }
 
@@ -51,12 +55,26 @@ namespace SnitzCore.Service.MiddleWare
             try
             {
                 var wr = new WebRequest(context.Request, geo, cache);
-
-                databaseLogger.Log(
-                    context.Request.Headers["User-Agent"].ToString(),
+                HttpUserAgentInformation?  info = _parserAccessor.Get(context);
+                if (info != null)
+                {
+                    var os = info?.Platform?.Name;
+                    var browser = info?.Name;
+                    var version = info?.Version;
+                    databaseLogger.Log(
+                    $"{browser}:{version} - {os}",
                     context.Request.GetEncodedPathAndQuery(),
                     context.User.Identity?.IsAuthenticated == true ? context.User.Identity.Name.ToLowerInvariant() : $"Anonymous {wr?.IpCountry}",
                     context.Connection.RemoteIpAddress?.ToString());
+                }
+                else
+                {
+                    databaseLogger.Log(
+                        context.Request.Headers["User-Agent"].ToString(),
+                        context.Request.GetEncodedPathAndQuery(),
+                        context.User.Identity?.IsAuthenticated == true ? context.User.Identity.Name.ToLowerInvariant() : $"Anonymous {wr?.IpCountry}",
+                        context.Connection.RemoteIpAddress?.ToString());
+                }
             }
             catch (Exception)
             {

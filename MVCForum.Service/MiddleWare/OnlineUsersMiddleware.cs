@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using MyCSharp.HttpUserAgentParser.AspNetCore;
 using SnitzCore.Data.Interfaces;
 using SnitzCore.Service.Extensions;
 using System;
@@ -25,14 +26,16 @@ namespace SnitzCore.Service.MiddleWare
         private readonly RequestDelegate _next;
         private readonly string _cookieName;
         private readonly int _lastActivityMinutes;
+        private readonly IHttpUserAgentParserAccessor _parserAccessor;
         private static readonly ConcurrentDictionary<string, bool> _allKeys = new ConcurrentDictionary<string, bool>();
         protected static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType!);
 
-        public OnlineUsersMiddleware(RequestDelegate next, string cookieName = "UserGuid", int lastActivityMinutes = 10)
+        public OnlineUsersMiddleware(RequestDelegate next,IHttpUserAgentParserAccessor parserAccessor, string cookieName = "UserGuid", int lastActivityMinutes = 10)
         {
             _next = next;
             _cookieName = cookieName;
             _lastActivityMinutes = lastActivityMinutes;
+            _parserAccessor = parserAccessor;
         }
 
         public Task InvokeAsync(HttpContext context, IMemoryCache memoryCache, ISnitzConfig snitzConfig,IConfiguration config)

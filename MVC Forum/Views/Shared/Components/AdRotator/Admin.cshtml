@@ -17,6 +17,9 @@
             <div class="form-group">
                 <admin-config config-key="INTSIDEBANNER" config-label="Banners in side bar" config-val="@SnitzConfig.GetIntValue("INTSIDEBANNER", 0)"></admin-config>
             </div>
+            <p class="form-text">
+                    Upload your banner images to the /Content/BannerAds folder using the <a href="~/FileManager">File Explorer</a>.
+            </p>
 @*             <div class="form-group">
                 <admin-config config-type="number" config-key="INTADDURATION" config-label="Duration (secs)" config-val="@SnitzConfig.GetIntValue("INTADDURATION", 0)"></admin-config>
             </div> *@
@@ -31,7 +34,7 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="flush-heading_@i">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse_@i" aria-expanded="false" aria-controls="flush-collapse_@i">
-                                <image src="@basePath/Content/BannerAds/@Model.Adverts[i].Image" class="rounded d-block m-1" alt="@Model.Adverts[i].AltText"></image>
+                                <image src="@basePath/Content/BannerAds/@Model.Adverts[i].Image?width=@Model.Adverts[i].Width" class="rounded d-block m-1" alt="@Model.Adverts[i].AltText"></image>
                                 <span class="h5">
                                     Location: @Model.Adverts[i].Keyword<br/>
                                     Impressions: @Model.Adverts[i].Impressions<br />
@@ -46,7 +49,7 @@
                                         <input type="hidden" name="Id" value="@Model.Adverts[i].Id" />
                                         <input type="hidden" name="CLicks" value="@Model.Adverts[i].Clicks" />
                                         <input type="hidden" name="Impressions" value="@Model.Adverts[i].Impressions" />
-                                        <input type="hidden" name="Image" value="@Model.Adverts[i].Image" />
+                                        <input type="text" name="Image" value="@Model.Adverts[i].Image" />
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
@@ -91,7 +94,7 @@
                                     </div>
                                     <div class="mb-3" id="ads-result-@i"></div>
                                     <button type="submit" class="btn btn-primary">Save</button>
-                                    <button type="button" class="btn btn-danger" data-id="@Model.Adverts[i].Id">Delete</button>
+                                    <button type="button" class="btn btn-danger del-banner" data-id="@Model.Adverts[i].Id">Delete</button>
                                 </form>
                             </div>
                         </div>

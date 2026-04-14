@@ -12,11 +12,13 @@
         if (!string.IsNullOrWhiteSpace(referer) && ! referer.Contains("Account"))
         {
             Uri baseUri = new Uri(referer);
-            returnurl = baseUri.AbsolutePath;
+            var absPath = baseUri.AbsolutePath;
+            returnurl = absPath.StartsWith("/") ? absPath : "/" + absPath;
         }
         else
         {
-            returnurl = Context.Request.Query["ReturnUrl"].ToString();
+            var absPath = Context.Request.Query["ReturnUrl"].ToString();
+            returnurl = absPath.StartsWith("/") ? absPath : "/" + absPath;
         }
     }
     <div class="m-2 bg-form border border-dark rounded" style="@hideme" id="login-form">

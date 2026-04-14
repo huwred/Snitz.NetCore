@@ -19,6 +19,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MVCForum.Extensions;
 using MVCForum.Security;
+using MyCSharp.HttpUserAgentParser.AspNetCore.DependencyInjection;
+using MyCSharp.HttpUserAgentParser.MemoryCache.DependencyInjection;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
@@ -74,7 +76,6 @@ if (string.IsNullOrEmpty(version))
     app.Run();
 
     return;
-
 }
 
 builder.Services.Configure<SnitzForums>(builder.Configuration.GetSection("SnitzForums"));
@@ -89,10 +90,6 @@ builder.Services.AddDbContext<SnitzDbContext>(options =>
     options.UseDatabase(builder.Configuration.GetConnectionString("DBProvider"), builder.Configuration, System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     options.EnableDetailedErrors();
-    //options.UseLoggerFactory(LoggerFactory.Create(builder =>
-    //    {
-    //        builder.AddLog4Net();
-    //    }));
 
 },ServiceLifetime.Scoped);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -179,13 +176,11 @@ if(!string.IsNullOrWhiteSpace(builder.Configuration["SnitzForums:VisitorTracking
     builder.Services.AddHostedService(sp => sp.GetService<ILoggerService>() as DatabaseLoggerService);
 }
 
-
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddYGfilemanager();
 builder.Services.AddResponseCaching();
 builder.Services.AddBreadcrumbs(Assembly.GetExecutingAssembly(), options =>
 {
-    //options.DontLookForDefaultNode = builder.Configuration["SnitzForums:LandingPage"] != "";
     options.TagName = "nav";
     options.TagClasses = "";
     options.OlClasses = "breadcrumb";
@@ -238,10 +233,7 @@ builder.Services.AddImageSharp(
         };
     });
 
-//var path = System.IO.Path.Combine(builder.Environment.ContentRootPath, "App_Data");
-
 builder.Services.RegisterPlugins(builder.Configuration,dataDir);
-
 
 builder.Services.AddHangfire(configuration => configuration
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_110)
@@ -273,12 +265,13 @@ builder.Services.AddProblemDetails();
 builder.Services.AddSingleton(builder.Environment.ContentRootFileProvider);
 
 builder.Services.AddDataProtection()
-.PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(dataDir, @"dpkeys")))
-.SetApplicationName("snitz-core");
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(dataDir, @"dpkeys")))
+    .SetApplicationName("snitz-core");
 
-    builder.Services.Configure<MicroRuleEngine.Rule>(opt => builder.Configuration.GetSection("Configuration:Ruleset").Bind(opt));
-    builder.Services.AddSingleton(new MaxMindDb(Path.Combine(dataDir,builder.Configuration["Configuration:GeoLiteFile"])));
+builder.Services.Configure<MicroRuleEngine.Rule>(opt => builder.Configuration.GetSection("Configuration:Ruleset").Bind(opt));
+builder.Services.AddSingleton(new MaxMindDb(Path.Combine(dataDir,builder.Configuration["Configuration:GeoLiteFile"])));
 builder.Services.AddDetection();
+builder.Services.AddHttpUserAgentMemoryCachedParser().AddHttpUserAgentParserAccessor();
 app = builder.Build();
 
 app.MigrateDatabase();
@@ -289,13 +282,23 @@ app.UseMultiLanguages(builder.Configuration.GetSection(SnitzForums.SectionName),
 
 if (app.Environment.IsDevelopment())
 {
-    //app.UseExceptionHandler("/Error/handle-exception");
     app.UseDeveloperExceptionPage();
 }
 else
 {
-    //app.UseDeveloperExceptionPage();
-    app.UseExceptionHandler("/Error/handle-exception");
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            // Ensure we include any PathBase (app-relative virtual path) when redirecting
+            var pathBase = context.Request.PathBase.HasValue ? context.Request.PathBase.ToString() : string.Empty;
+            var target = pathBase + "/Error/handle-exception";
+
+            // Use a 302 redirect to the error handling page under the app's base path
+            context.Response.Redirect(target);
+            await Task.CompletedTask;
+        });
+    });
 }
 
 //Pi doesn't like this, could be newt!
@@ -332,7 +335,7 @@ app.UseStatusCodePages(context =>
     else if (response.StatusCode == (int)HttpStatusCode.NotFound)
     {
         var originalUrl = request.Path + request.QueryString;
-        response.Redirect($"/Error404?url={WebUtility.UrlEncode(originalUrl)}");
+        response.Redirect($"{request.PathBase}/Error404?url={WebUtility.UrlEncode(originalUrl)}");
     }
     //else if (response.StatusCode >= 400)
     //{

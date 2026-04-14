@@ -4,7 +4,7 @@
 }
 <div class="sidebar-advert mb-3">
     <a href="@Url.Action("RecordClick", "Home", new { id = Model.Id })" title="@Model.AltText" target="_blank" rel="nofollow">
-        <img src="@basePath/Content/BannerAds/@Model.Image" class="rounded mx-auto d-block" alt="@Model.AltText" />
+        <img src="@basePath/Content/BannerAds/@Model.Image?width=@Model.Width" class="rounded mx-auto d-block" alt="@Model.AltText" />
     </a>
 @*     <div class="img-overlay">
         <a href="#" class="icon">

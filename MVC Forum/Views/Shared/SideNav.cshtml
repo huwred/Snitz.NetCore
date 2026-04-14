@@ -21,8 +21,6 @@
                                         || (SnitzConfig.GetIntValue("INTCALEVENTS") == 1 && (SnitzConfig.GetIntValue("INTPUBLICEVENTS") == 1 && User.Identity.IsAuthenticated)))"><hr class="dropdown-divider" /></li>
                 @await Component.InvokeAsync("Polls", new { template = "MenuItem" })
                 @await Component.InvokeAsync("Events", new { template = "MenuItem" })
-                <li snitz-if="@(SnitzConfig.IsEnabled("INTLEADERBOARD"))"><a asp-controller="Charts" asp-action="Leaderboard">@Localizer["mnuLeaderboard"]</a></li>
-                <li snitz-if="@(SnitzConfig.IsEnabled("INTDONATIONS"))" ><a asp-controller="Paypal" asp-action="Donate" title="Help keep Snitz running with a small donation">@Localizer["mnuDonate"]</a></li>
             </ul>
         </li>
         <li class="sub-menu" snitz-if="@(SnitzConfig.GetIntValue("STRPHOTOALBUM") == 1)">
@@ -49,10 +47,13 @@
         }
         <li><a asp-controller="FAQ" asp-action="Index">@Localizer["mnuForumFAQ"]</a></li>
         <li class='sub-menu' snitz-if="@(SnitzConfig.GetIntValue("SHOWABOUT",1) == 1)">
-            <a href="#about" role="button" id="navbarDropdownAbout">More ... <div class='fa fa-caret-down right'></div></a>
+            <a href="#about" role="button" id="navbarDropdownAbout">More <div class='fa-solid fa-ellipsis-vertical right'></div></a>
             <ul>
+                <li snitz-if="@(SnitzConfig.IsEnabled("INTLEADERBOARD"))"><a asp-controller="Charts" asp-action="Leaderboard">@Localizer["mnuLeaderboard"]</a></li>
                 <li><a href="~/About#about">@Localizer["mnuAbout"]</a></li>
                 <li snitz-if="@(SnitzConfig.IsEnabled("STREMAIL"))"><a href="~/About#contact">@Localizer["mnuContact"]</a></li>
+                <li snitz-if="@(SnitzConfig.IsEnabled("INTDONATIONS"))"><a asp-controller="Paypal" asp-action="Donate" title="Help keep Snitz running with a small donation">@Localizer["mnuDonate"]</a></li>
+
                 <li><a href="~/About#privacy">@Localizer["mnuPrivacyPolicy"]</a></li>
                 <li><a href="~/About#cookie">@Localizer["mnuCookies"]</a></li>
             </ul>

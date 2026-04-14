@@ -25,7 +25,6 @@
 
 <script src="https://www.paypalobjects.com/donate/sdk/donate-sdk.js" charset="UTF-8"></script>
 <script>
-    document.getElementById("donationBanner").style.display = "none";
     PayPal.Donation.Button({
         env: '@env',
         hosted_button_id: '@buttonId',
@@ -35,8 +34,14 @@
             alt: 'Make a donation with PayPal button'
         },
         onComplete: function (params) {
+            console.log(params);
             // Your onComplete handler
         },
     }).render('#paypal-donate-button-container');
+    
+    const pbanner = document.getElementById("donationBanner");
+    if (pbanner) {
+        pbanner.style.display = "none";
+    }
 
 </script>

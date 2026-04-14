@@ -5,7 +5,6 @@
     z-index: 1031;
     height: 2em;
     width: 2em;
-    overflow: show;
     margin: auto;
     top: 0;
     left: 0;
@@ -124,3 +123,40 @@
     }
 }
 
+/* Container for the sweep effect */
+.cylon {
+    position: relative;
+    width: 300px;
+    height: 20px;
+    background: #222;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px #000 inset;
+}
+
+    /* The moving light */
+    .cylon::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -50%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient( 90deg, rgba(255, 0, 0, 0) 0%, rgba(255, 0, 0, 0.8) 50%, rgba(255, 0, 0, 0) 100% );
+        animation: sweep 2.5s infinite ease-in-out;
+    }
+
+/* Animation keyframes */
+@keyframes sweep {
+    0% {
+        left: -50%;
+    }
+
+    50% {
+        left: 100%;
+    }
+
+    100% {
+        left: -50%;
+    }
+}

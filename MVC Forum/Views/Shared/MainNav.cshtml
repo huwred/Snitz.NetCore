@@ -5,7 +5,7 @@
 
 @{
     var currentTheme = SnitzCookie.GetCookieValue("snitztheme") ?? SnitzConfig.GetValueWithDefault("STRDEFAULTTHEME", "SnitzTheme");
-    var currForumUser = UserManager.GetUserAsync(User).Result;
+    var currForumUser = await UserManager.GetUserAsync(User);
     var navcss = currentTheme!.Contains("Dark") ? "navbar-dark bg-dark" : "navbar-light bg-dark";
 }
 

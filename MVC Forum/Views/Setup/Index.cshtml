@@ -6,12 +6,10 @@
 @{
     Layout = null;
     ViewBag.Version = "";
-    var version = Assembly.GetEntryAssembly()?.
-      GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.
-      InformationalVersion;
+    var version = Assembly.GetEntryAssembly().GetName().Version; ;
     if(version != null)
     {
-        ViewBag.Version = version.Split("+")[0];
+        ViewBag.Version = version;
     }
 }
 

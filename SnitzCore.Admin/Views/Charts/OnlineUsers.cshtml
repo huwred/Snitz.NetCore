@@ -121,31 +121,31 @@
             autoWidth: true,
             orderCellsTop: true,
             order: [
-                [2, 'asc'],
+                //[2, 'asc'],
                 [0, 'desc']
             ],
-            rowGroup: {
-                dataSrc: [
-                        'userName'
-                ],
-                startRender: function (rows, group) {
-                    var collapsed = !!collapsedGroups[group]; // Check if the group is collapsed
-                    // Hide rows if the group is collapsed
-                    rows.nodes().each(function (row) {
-                        row.style.display = collapsed ? 'none' : '';
-                    });
-                    // Add a toggle icon for collapse/expand
-                    var toggleClass = collapsed ? 'fa-plus-square' : 'fa-minus-square';
-                    var colspan = rows.columns()[0].length;
-                    return $('<tr/>')
-                    .append('<td colspan="' + colspan + '"><span class="fa ' + toggleClass + ' toggler"></span> ' + group + ' (' + rows.count() + ')</td>')
-                    .attr('data-name', group)
-                    .toggleClass('collapsed', collapsed);
-                }
-            },
+            // rowGroup: {
+            //     dataSrc: [
+            //             'userName'
+            //     ],
+            //     startRender: function (rows, group) {
+            //         var collapsed = !!collapsedGroups[group]; // Check if the group is collapsed
+            //         // Hide rows if the group is collapsed
+            //         rows.nodes().each(function (row) {
+            //             row.style.display = collapsed ? 'none' : '';
+            //         });
+            //         // Add a toggle icon for collapse/expand
+            //         var toggleClass = collapsed ? 'fa-plus-square' : 'fa-minus-square';
+            //         var colspan = rows.columns()[0].length;
+            //         return $('<tr/>')
+            //         .append('<td colspan="' + colspan + '"><span class="fa ' + toggleClass + ' toggler"></span> ' + group + ' (' + rows.count() + ')</td>')
+            //         .attr('data-name', group)
+            //         .toggleClass('collapsed', collapsed);
+            //     }
+            // },
             columnDefs: [
                 { targets: [3, 4], orderable: false},
-                { targets: [2], visible: false }
+                //{ targets: [2], visible: false }
             ],
             layout: {
                 bottomEnd: {
@@ -238,7 +238,7 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Visits Per Day',
+                            label: 'Page Views Per Day',
                             data: counts,
                             borderColor: '#36A2EB',
                             backgroundColor: 'rgba(54,162,235,0.2)',
@@ -252,12 +252,12 @@
                             legend: { display: true },
                             title: {
                                 display: true,
-                                text: 'Visitor Log By Day'
+                                text: 'Page View log By Day'
                             }
                         },
                         scales: {
                             x: { title: { display: true, text: 'Date' } },
-                            y: { title: { display: true, text: 'Visits' }, beginAtZero: true }
+                            y: { title: { display: true, text: 'Views' }, beginAtZero: true }
                         }
                     }
                 });

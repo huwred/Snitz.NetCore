@@ -277,7 +277,18 @@
                 var checked = $(this).prop('checked');
                 $('#PMENABLED').prop('disabled', !checked);
             });
-
+            $('.del-banner').on("click",function(e){
+                e.preventDefault();
+                $.ajax({
+                    url: SnitzVars.baseUrl + "/Banner/Delete/" + $(this).data("id"),
+                    type: "GET",
+                    success: function(data) {
+                        //alert(data); // the View
+                        $("[id^='ads-result-']").html('Great!');
+                        location.reload();
+                    }
+                });
+            })
         })
 
 

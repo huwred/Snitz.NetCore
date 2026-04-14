@@ -121,12 +121,12 @@
                 <span class="ms-2">@Localizer["lblPostedBy"] <b><member-link text-localizer-delegate="delegate(string s) { return Localizer[s].Value; }" member-name="@Model.LastPostAuthorName"></member-link></b></span>
             </span>
         }
-        <div class="d-sm-inline-flex d-md-none bd-highlight fs-5 post-buttons">
+@*         <div class="d-sm-inline-flex d-md-none bd-highlight fs-5 post-buttons">
             @if (!archives)
             {
                 @await Component.InvokeAsync("PostControls", new { post = Model?.Topic, forlist = true })
             }
-        </div>
+        </div> *@
     </div>
     <div class="subscribe d-none d-xl-inline-flex">
         <input snitz-if="@(User?.IsInRole("Administrator"))" rel="tooltip" type="checkbox" title="@Localizer["tipSelectForMerge"]" class="form-check-input topic-select" value="@Model?.Id" name="topicselected" aria-label="Select Topic" />

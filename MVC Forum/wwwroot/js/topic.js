@@ -17,9 +17,12 @@
 $(document).ready(function() {
     var replyid = $.getUrlParam('replyid');
     if (replyid) {
-        $([document.documentElement, document.body]).animate({
-            scrollTop: $("#reply-" + replyid).offset().top
-        }, 300);
+        var $target = $("#reply-" + replyid);
+        if ($target.length) {
+            $([document.documentElement, document.body]).animate({
+                scrollTop: $target.offset().top
+            }, 300);
+        }
     } else {
         $(window).scroll(lazyload);
 
@@ -49,6 +52,8 @@ $(document).ready(function() {
             }
         });
     });
+    const code = document.getElementsByTagName('code');
+    Array.from(code).forEach(el => { Prism.highlightElement(el) });
 });
 
 $('.modal-link').on('click', function (e) {
@@ -62,7 +67,7 @@ $('.modal-link').on('click', function (e) {
 $('.send-email').on('click', function (e) {
     e.preventDefault();
     var userid = $(this).data('id');
-    $.get(SnitzVars.baseUrl +  + '/Account/EmailMember/' + userid, function (data) {
+    $.get(SnitzVars.baseUrl + '/Account/EmailMember/' + userid, function (data) {
         $('#emailContainer').html(data);
         $.validator.unobtrusive.parse($("#emailMemberForm"));
         $('#emailModal').modal('show');
@@ -180,27 +185,25 @@ $('body').off().on("click", ".email-link", function(e) {
         $(":reset").on("click", function () {
             $('#send-email').prop('disabled', false);
         });
-        $('body').on("click",
-            "#send-email",
-            function(e) {
-                e.preventDefault();
-                $(this).prop('disabled', true);
-                var post_url = $('#sendemail-form').attr("action");
-                var form_data = $('#sendemail-form').serialize();
-                $.ajax({
-                    url: post_url,
-                    type: "POST",
-                    data: form_data
-                }).done(function(response) {
-                    if (response.result) {
-                        $('#memberModal').modal('hide');
-                    } else {
-                        //Dont close the modal, display the error
-                        $('#member-modal').html(response);
-                    }
-                });
-
+        $('body').off("click", "#send-email").on("click", "#send-email", function(e) {
+            e.preventDefault();
+            $(this).prop('disabled', true);
+            var post_url = $('#sendemail-form').attr("action");
+            var form_data = $('#sendemail-form').serialize();
+            $.ajax({
+                url: post_url,
+                type: "POST",
+                data: form_data
+            }).done(function(response) {
+                if (response.result) {
+                    $('#memberModal').modal('hide');
+                } else {
+                    //Dont close the modal, display the error
+                    $('#member-modal').html(response);
+                }
             });
+
+        });
         $('#memberModal').data('id', memberid).modal('show');
 });
 
@@ -293,9 +296,6 @@ Prism.hooks.add("before-highlight",
         env.code = env.element.innerText;
     });
 
-code = document.getElementsByTagName('code');
-Array.from(code).forEach(el => { Prism.highlightElement(el) });
-
 function lazyload(){
     var wt = $(window).scrollTop();    //* top of the window
     var wb = wt + $(window).height();  //* bottom of the window
@@ -321,4 +321,14 @@ document.querySelectorAll('.star-rating:not(.readonly) label').forEach(star => {
         }, 200);
     });
 });
+
+
+if (!string.IsNullOrEmpty(include))
+{
+    if (!string.IsNullOrEmpty(path))
+    {
+        File.WriteAllText(path, sb.ToString());
+    }
+    return sb.ToString();
+}
 
