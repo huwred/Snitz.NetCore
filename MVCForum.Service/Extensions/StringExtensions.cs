@@ -17,10 +17,12 @@ namespace SnitzCore.Service.Extensions
             uri2 = uri2.TrimStart('/');
             return $"{uri1}/{uri2}";
         }
+        
         public static bool Contains(this string source, string toCheck, StringComparison comp)
         {
             return source?.IndexOf(toCheck, comp) >= 0;
         }
+        
         public static string ToEnglishNumber(this string str)
         {
             string englishNumbers = "";
@@ -38,6 +40,7 @@ namespace SnitzCore.Service.Extensions
             }
             return englishNumbers;
         }
+        
         public static string ToLangNum(this long i, string lang)
         {
             if (lang == "fa")
@@ -47,6 +50,7 @@ namespace SnitzCore.Service.Extensions
             }
             return i.ToString();
         }
+        
         public static string ToLangNum(this int i, string lang)
         {
             if (lang == "fa")
@@ -56,6 +60,7 @@ namespace SnitzCore.Service.Extensions
             }
             return i.ToString();
         }
+        
         public static string GetReverseDNS(string ip, int timeout)
         {
             try
@@ -73,6 +78,7 @@ namespace SnitzCore.Service.Extensions
                 return ip;
             }
         }
+        
         public static string LocalReturnUrl(this string? returnUrl,string? forumurl)
         {
             if(returnUrl != null && forumurl != null)
@@ -81,14 +87,15 @@ namespace SnitzCore.Service.Extensions
             }
             return string.IsNullOrEmpty(returnUrl) ? "/" : returnUrl;
         }
+        
         /// <summary>
         /// Turns a List<typeparamref name="T"/> into a csv file
         /// </summary>
         /// <typeparam name="T">Type of Object</typeparam>
         /// <param name="list">List of objects to convert</param>
-        /// <param name="path"></param>
-        /// <param name="include">Comma seperated string of properties to include</param>
-        /// <param name="exclude">Comma seperated string of properties to exclude</param>
+        /// <param name="path">Optional file path to write CSV to disk</param>
+        /// <param name="include">Comma separated string of properties to include</param>
+        /// <param name="exclude">Comma separated string of properties to exclude</param>
         /// <remarks>
         /// <paramref name="include"/> + <paramref name="exclude"/> are mutually exclusive
         /// If <paramref name="include"/> is non empty, only those properties defined will be exported
@@ -109,23 +116,17 @@ namespace SnitzCore.Service.Extensions
 
         private static string? CreateCsvFile<T>(IList<T> list, string path, string include, string exclude)
         {
-            //Variables for build CSV string
             StringBuilder sb = new StringBuilder();
 
-            //Get property collection and set selected property list
             PropertyInfo[] props = typeof(T).GetProperties();
             List<PropertyInfo> propList = GetSelectedProperties(props, include, exclude);
 
-            //Iterate through data list collection
             foreach (var item in list)
             {
                 List<string?> propValues = new List<string?>();
 
-                //Iterate through property collection
                 foreach (var prop in propList)
                 {
-                    //Construct property value string with double quotes for issue of any comma in string type data
-                    var val = prop.PropertyType == typeof(string) ? "\"{0}\"" : "{0}";
                     var propval = prop.GetValue(item, null);
                     if (propval == null)
                     {
@@ -133,30 +134,42 @@ namespace SnitzCore.Service.Extensions
                     }
                     else
                     {
-                        propValues.Add(string.Format(val, ((string)propval).Replace("\"", "'")));
+                        // FIX: Type-safe formatting based on actual property type
+                        if (prop.PropertyType == typeof(string))
+                        {
+                            // Escape quotes and wrap in quotes for CSV
+                            propValues.Add(string.Format("\"{0}\"", ((string)propval).Replace("\"", "'")));
+                        }
+                        else
+                        {
+                            // Non-string types don't need quote wrapping
+                            propValues.Add(propval.ToString());
+                        }
                     }
                 }
 
-                string line = string.Empty;
-                //Add line for the values
-                line = string.Join(",", propValues);
+                string line = string.Join(",", propValues);
                 sb.AppendLine(line);
             }
-            if (!string.IsNullOrEmpty(sb.ToString()) && path != "")
+            
+            if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                //MemoryStream memoryStream = new MemoryStream();
-                //TextWriter tw = new StreamWriter(memoryStream); 
-
-                //tw.Write(sb.ToString());
+                // FIX: Implement file writing if path is provided
+                if (!string.IsNullOrEmpty(path))
+                {
+                    File.WriteAllText(path, sb.ToString());
+                }
                 return sb.ToString();
-                //File.WriteAllText(path, sb.ToString());
             }
             return null;
         }
+        
         private static List<PropertyInfo> GetSelectedProperties(PropertyInfo[] props, string include, string exclude)
         {
             List<PropertyInfo> propList = new List<PropertyInfo>();
-            if (include != "") //Do include first
+            
+            // FIX: Consistent string empty checks
+            if (!string.IsNullOrEmpty(include))
             {
                 var includeProps = include.ToLower().Split(',').ToList();
                 foreach (var item in props)
@@ -166,7 +179,7 @@ namespace SnitzCore.Service.Extensions
                         propList.Add(item);
                 }
             }
-            else if (exclude != "") //Then do exclude
+            else if (!string.IsNullOrEmpty(exclude))
             {
                 var excludeProps = exclude.ToLower().Split(',');
                 foreach (var item in props)
@@ -176,13 +189,15 @@ namespace SnitzCore.Service.Extensions
                         propList.Add(item);
                 }
             }
-            else //Default
+            else
             {
                 propList.AddRange(props.ToList());
             }
             return propList;
         }
+        
         private delegate IPHostEntry GetHostEntryHandler(string ip);
+        
         private static string ConvertDigitChar(this int digit, CultureInfo destination)
         {
             string res = digit.ToString();
@@ -192,6 +207,7 @@ namespace SnitzCore.Service.Extensions
             }
             return res;
         }
+        
         private static string ConvertDigitChar(this long digit, CultureInfo destination)
         {
             string res = digit.ToString();

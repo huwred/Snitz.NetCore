@@ -139,3 +139,11 @@
             });
     </script>
 </storecontent>
+@section Scripts {
+    <script>
+        // Pass server-side values to JavaScript
+        var maxFileSize = @SnitzConfig.GetIntValue("INTMAXFILESIZE", 5);
+        var topicId = @Model.Id;
+    </script>
+    <script src="~/js/topic.js"></script>
+}
